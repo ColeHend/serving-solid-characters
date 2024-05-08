@@ -2,8 +2,10 @@ import { Accessor, Component, For, JSX, Show, Signal, createSignal } from "solid
 import navStyles from './navbar.module.scss';
 import useStyle from "../../customHooks/utility/style/styleHook";
 import useTabs from "../../customHooks/utility/tabBar";
-import { effect } from "solid-js/web";
+import { Portal, effect } from "solid-js/web";
 import { A } from "@solidjs/router";
+import Modal from "../popup/popup.component";
+import NavMenu from "./navMenu/navMenu";
 
 type Props = {
     style: CSSModuleClasses[string],
@@ -21,14 +23,13 @@ const Navbar: Component<Props> = (props) => {
     const stylin = useStyle(); 
     const refresh = createSignal(false);
     const [pageName, setPageName] = createSignal(window.location.pathname);
-
     const Buttons: Tab[] = [
         {Name: "Home", Link: "/"},
         {Name: "Characters", Link: "/characters"},
         {Name: "Info", Link: "/info"}
     ];
     let tabs = useTabs(pageName);
-
+    
     return (
         <div class={navStyles.navbar}>
             <div class={`${props.style}`}>
@@ -44,7 +45,7 @@ const Navbar: Component<Props> = (props) => {
                         )}
                     </For>
                 </ul>
-                <button class={`${stylin.accent} ${stylin.hover}`}>User</button>
+                <NavMenu></NavMenu>
             </div>
             <Show when={tabs().length > 0}>
                 <div class={props.style}>

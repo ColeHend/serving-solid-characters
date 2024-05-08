@@ -6,6 +6,7 @@
     font-weight: 400;
     font-size: 1rem;
 }
+
 .navbar {
     :nth-child(1) {
         display: flex;
@@ -45,7 +46,7 @@
             margin-right: 20px;
             padding: 15px 10px;
             height: max-content;
-            width: 55px;
+            width: 75px;
             overflow: hidden;
             text-overflow: ellipsis;
         }

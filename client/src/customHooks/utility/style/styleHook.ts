@@ -4,14 +4,16 @@ const lightTheme: Style = {
     primary: lightStyle.primary,
     accent: lightStyle.accent,
     warn: lightStyle.warn,
-    hover: lightStyle.hover
+    hover: lightStyle.hover,
+    popup: lightStyle.popup
 };
 
 const darkTheme: Style = {
     primary: darkStyle.primary,
     accent: darkStyle.accent,
     warn: darkStyle.warn,
-    hover: darkStyle.hover
+    hover: darkStyle.hover,
+    popup: darkStyle.popup
 };
 
 export default function useStyle(styleType: string = 'dark'): Style {
@@ -30,4 +32,5 @@ export interface Style {
     accent: CSSModuleClasses[string];
     warn: CSSModuleClasses[string];
     hover: CSSModuleClasses[string];
+    popup: CSSModuleClasses[string];
 }
