@@ -42,13 +42,20 @@
         }
         button {
             float: right;
-            border-radius: 100%;
+            // border-radius: 100%;
+            border: none;
             margin-right: 20px;
-            padding: 15px 10px;
+            // padding: 15px 10px;
             height: max-content;
             width: 75px;
             overflow: hidden;
             text-overflow: ellipsis;
+            svg {
+                &:hover {
+                    width: 33pt;
+                    height: 33pt;
+                }
+            }
         }
     }
 
