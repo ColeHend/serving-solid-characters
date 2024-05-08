@@ -29,14 +29,11 @@ const Navbar: Component<Props> = (props) => {
     ];
     let tabs = useTabs(pageName);
 
-    effect(()=>{
-        console.log("pageName",  window.location.pathname);
-    })
     return (
         <div class={navStyles.navbar}>
-            <div class={props.style}>
+            <div class={`${props.style}`}>
                 <span>
-                        MySite
+                    MySite
                 </span>
                 <ul>
                     <For each={Buttons}>
@@ -47,6 +44,7 @@ const Navbar: Component<Props> = (props) => {
                         )}
                     </For>
                 </ul>
+                <button class={`${stylin.accent} ${stylin.hover}`}>User</button>
             </div>
             <Show when={tabs().length > 0}>
                 <div class={props.style}>

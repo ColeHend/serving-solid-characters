@@ -1,22 +1,22 @@
-import { type Component, For } from 'solid-js';
+import { type Component, For, createResource } from 'solid-js';
+import { effect } from 'solid-js/web';
 import useDnDClasses from './customHooks/dndInfo/useDnDClasses';
-import styles from './App.module.css';
 import useStyle from './customHooks/utility/style/styleHook';
 import useDnDSpells from './customHooks/dndInfo/useDnDSpells';
-import { effect } from 'solid-js/web';
 import useDnDFeats from './customHooks/dndInfo/useDnDFeats';
 import useDnDRaces from './customHooks/dndInfo/useDnDRaces';
 import useDnDBackgrounds from './customHooks/dndInfo/useDnDBackgrounds';
 import useDnDItems from './customHooks/dndInfo/useDnDItems';
+import styles from './App.module.css';
+
 const App: Component = () => {
+  const stylin = useStyle();      
   const dndSrdClasses = useDnDClasses();
   const dndSrdSpells = useDnDSpells();
   const dndSrdFeats = useDnDFeats();
   const dndSrdRaces = useDnDRaces();
   const dndSrdItems = useDnDItems();
   const dndSrdBackgrounds = useDnDBackgrounds();
-
-  const stylin = useStyle();      
   
   effect(()=>{
     console.log("dndSrdClasses", dndSrdClasses());
