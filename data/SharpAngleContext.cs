@@ -16,7 +16,7 @@ namespace sharpAngleTemplate.data
         public DbSet<User> Users => Set<User>();
         public DbSet<SpellEntity> Pokemon => Set<SpellEntity>();
 
-        public DbSet<ClassEntity> Classes => Set<ClassEntity>();
+        // public DbSet<ClassEntity> Classes => Set<ClassEntity>();
 
     }
 }

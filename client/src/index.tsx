@@ -3,7 +3,11 @@ import { render } from 'solid-js/web';
 
 import './index.css';
 import App from './App';
-import { Router, Route } from "@solidjs/router";
+import { Router, Route, RouteSectionProps } from "@solidjs/router";
+import Navbar from './components/navbar/navbar';
+import useStyle from './customHooks/utility/style/styleHook';
+import useTabs from './customHooks/utility/tabBar';
+import { Component, JSX } from 'solid-js';
 
 const root = document.getElementById('root');
 
@@ -13,6 +17,16 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-render(() => <Router>
-      <Route path="/" component={App} /> 
-</Router>, root!);
+
+const RootApp: Component<RouteSectionProps<unknown>> = (props)=>{
+  const stylin = useStyle(); 
+  
+  return <div style={{"height": "100vh"}} class={stylin.primary}>
+  <Navbar style={stylin.accent} />
+  {props.children}
+  </div>
+}    
+
+render(()=> <Router root={RootApp}>
+<Route path="/" component={App} /> 
+</Router>, root!)

@@ -1,0 +1,25 @@
+.primary {
+    font: 1em Roboto;
+    background-color: #3F51B5;
+    color: black;
+}
+.accent {
+    font: 1em Roboto;
+    background-color: #2196F3;
+    color: black;
+}
+.warn {
+    color: red;
+}
+.hover {
+    &:hover {
+        button {
+            font-weight: bold;
+        }
+        link {
+            background-color: #5C6BC0;
+        }
+        font-size: 1.05rem;
+        cursor: pointer;
+    }
+}

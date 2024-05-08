@@ -1,21 +1,21 @@
-import type { DnDClass } from "../../models/class.model";
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, tap } from "rxjs";
 import HttpClient$ from "../utility/httpClientObs";
+import { Race } from "../../models/race.model";
 
 
-const [classes, setClasses] = createSignal<DnDClass[]>([]);
+const [race, setRace] = createSignal<Race[]>([]);
 
-export default function useDnDClasses(): Accessor<DnDClass[]> {
+export default function useDnDRaces(): Accessor<Race[]> {
 
-    HttpClient$.post<DnDClass[]>("/api/DnDInfo/Classes",{}).pipe(
+    HttpClient$.post<Race[]>("/api/DnDInfo/Races",{}).pipe(
         catchError((err, caught)=>{
             console.error("Error: ", err);
             return caught;
         }),
-        tap((classes) => setClasses(classes)),
+        tap((classes) => setRace(classes)),
     ).subscribe();
 
-    return classes;
+    return race;
 }

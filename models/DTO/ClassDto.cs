@@ -14,7 +14,7 @@ namespace sharpAngleTemplate.models.DTO
         public string SpellCastingAbility { get; set; } = string.Empty;
         public List<ClassLevelDTO> Class_Levels { get; set; } = new List<ClassLevelDTO>();
         public SkillDTO Skills { get; set; } = new SkillDTO();
-        public ClassInvocationsEntity[]? Invocations { get; set; }
+        // public ClassInvocationsEntity[]? Invocations { get; set; }
 
     }
 
