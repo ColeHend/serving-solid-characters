@@ -1,16 +1,15 @@
 /* @refresh reload */
 import { render } from 'solid-js/web';
 import { Router, Route, RouteSectionProps } from "@solidjs/router";
-import { Component, JSX, lazy } from 'solid-js';
+import { Component, lazy } from 'solid-js';
 import './index.css';
 import App from './App';
+import Navbar from './components/navbar/navbar';
+import useStyle from './customHooks/utility/style/styleHook';
+
 const Characters = lazy(() => import('./components/characters/characters'));
 const CharacterCreate = lazy(() => import('./components/characters/create/create'));
 const CharacterView = lazy(() => import('./components/characters/view/view'));
-import Navbar from './components/navbar/navbar';
-
-import useStyle from './customHooks/utility/style/styleHook';
-import useTabs from './customHooks/utility/tabBar';
 
 const root = document.getElementById('root');
 
