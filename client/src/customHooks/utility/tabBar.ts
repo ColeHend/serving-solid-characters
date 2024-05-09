@@ -11,6 +11,7 @@ export default function useTabs(pageName: Accessor<string>): Accessor<Tab[]> {
         switch (true) {
             case pageName().startsWith('/info'):
                 const theTabs = [
+                    { Name: "All", Link: "/info" },
                     { Name: "Races", Link: "/info/races" },
                     { Name: "Spells", Link: "/info/spells" },
                     { Name: "Feats", Link: "/info/feats" }
