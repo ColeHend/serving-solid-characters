@@ -35,8 +35,12 @@ export default function useTabs(pageName: Accessor<string>): Accessor<Tab[]> {
                 ]);
                 break;
 
-            case pageName().startsWith('/characters'):
-                // Add your code here for the condition case
+            case pageName().startsWith('/homebrew'):
+                setTabPage([
+                    { Name: "All", Link: "/homebrew" },
+                    { Name: "View", Link: "/homebrew/view" },
+                    { Name: "Create", Link: "/homebrew/create" }
+                ]);
                 break;
 
             default:
