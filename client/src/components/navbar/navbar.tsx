@@ -26,7 +26,8 @@ const Navbar: Component<Props> = (props) => {
     const Buttons: Tab[] = [
         {Name: "Home", Link: "/"},
         {Name: "Characters", Link: "/characters"},
-        {Name: "Info", Link: "/info"}
+        {Name: "Info", Link: "/info"},
+        {Name: "Homebrew", Link: "/homebrew"}
     ];
     let tabs = useTabs(pageName);
     

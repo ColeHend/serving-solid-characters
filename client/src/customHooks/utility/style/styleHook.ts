@@ -5,7 +5,10 @@ const lightTheme: Style = {
     accent: lightStyle.accent,
     warn: lightStyle.warn,
     hover: lightStyle.hover,
-    popup: lightStyle.popup
+    popup: lightStyle.popup,
+    table: lightStyle.table,
+    tBody: lightStyle.tBody,
+    tHead: lightStyle.tHead
 };
 
 const darkTheme: Style = {
@@ -13,7 +16,10 @@ const darkTheme: Style = {
     accent: darkStyle.accent,
     warn: darkStyle.warn,
     hover: darkStyle.hover,
-    popup: darkStyle.popup
+    popup: darkStyle.popup,
+    table: darkStyle.table,
+    tBody: darkStyle.tBody,
+    tHead: darkStyle.tHead
 };
 
 export default function useStyle(styleType: string = 'dark'): Style {
@@ -33,4 +39,7 @@ export interface Style {
     warn: CSSModuleClasses[string];
     hover: CSSModuleClasses[string];
     popup: CSSModuleClasses[string];
+    table: CSSModuleClasses[string];
+    tBody?: CSSModuleClasses[string];
+    tHead?: CSSModuleClasses[string];
 }

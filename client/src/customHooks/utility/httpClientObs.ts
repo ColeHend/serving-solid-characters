@@ -1,10 +1,30 @@
 import { Observable } from 'rxjs';
+import { Accessor, createSignal } from 'solid-js';
 
 interface HttpConfig {
     headers?: {[key: string]: string}
 }
 
 class HttpClientObs {
+    private loggedIn = createSignal<{[key: string]: string}>({});
+    private tokenValue = createSignal<string>("");
+
+    public set token(val: string) {
+        this.tokenValue[1](val);
+        this.loggedIn[1]({
+            Authorization: `Bearer ${val}`
+        })
+    }
+
+    public get token(): Accessor<string>{
+        return this.tokenValue[0];
+    }
+    
+    public clearToken() {
+        this.loggedIn[1]({
+            Authorization: ``
+        });
+    }
     public toObservable<T>(promise: Promise<T>) {
         return new Observable<T>((observer) => {
             promise
@@ -22,6 +42,7 @@ class HttpClientObs {
                 headers: {
                     "Content-Type": "application/json",
                     ...config?.headers,
+                    ...this.loggedIn[0]()
                 },
                 body: JSON.stringify(body),
             })
@@ -44,6 +65,7 @@ class HttpClientObs {
                 headers: {
                     "Content-Type": "application/json",
                     ...config?.headers,
+                    ...this.loggedIn[0]()
                 },
             })
                 .then((response) => {

@@ -8,6 +8,7 @@ import Navbar from './components/navbar/navbar';
 import useStyle from './customHooks/utility/style/styleHook';
 import useTabs from './customHooks/utility/tabBar';
 import { Component, JSX } from 'solid-js';
+import masterSpells from './components/infoTab/Spells/Spells';
 
 const root = document.getElementById('root');
 
@@ -21,7 +22,7 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 const RootApp: Component<RouteSectionProps<unknown>> = (props)=>{
   const stylin = useStyle(); 
   
-  return <div style={{"height": "100vh"}} class={stylin.primary}>
+  return <div style={{"height": "100vh", "max-height": "100vh","overflow-y": "hidden"}} class={stylin.primary}>
   <Navbar style={stylin.accent} />
   {props.children}
   </div>
@@ -29,4 +30,6 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props)=>{
 
 render(()=> <Router root={RootApp}>
 <Route path="/" component={App} /> 
+<Route path="/info/spells" component={masterSpells} />
 </Router>, root!)
+
