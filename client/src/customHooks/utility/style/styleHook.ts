@@ -21,6 +21,7 @@ export default function useStyle(styleType: string = 'dark'): Style {
         case "light":
             return lightTheme;
         case "dark":
+            document.body.style.backgroundColor = "#212121";
             return darkTheme;
         default:
             return darkTheme;

@@ -8,16 +8,21 @@
 }
 
 .navbar {
+    $mobile: 850px;
     :nth-child(1) {
         display: flex;
         flex-direction: row;
-        width: 100%;
+        width: 100vw;
         span {
             display: inline-block;
             font-size: 1.5rem;
             font-weight: bold;
             margin: 15px 5%;
             width: min-content;
+            @media screen and (max-width: $mobile){
+                font-size: 1.2rem;
+                margin: 10px 5%;
+            }
         }
         
         ul {
@@ -27,6 +32,9 @@
             display: flex;
             padding: 0;
             margin: 17px 5%;
+            @media screen and (max-width: $mobile){
+                flex-wrap: wrap;
+            }
             
             li {
                 margin: 0 1rem;
@@ -37,6 +45,13 @@
                     &:hover {
                         color: #fff;
                     }
+                }
+                @media screen and (max-width: $mobile){
+                    
+                    font-size: 1rem;
+                    margin: 17px 1%;
+                    padding: 0 10px;
+                    max-width: 78px;
                 }
             }
         }
@@ -56,6 +71,9 @@
                     height: 33pt;
                 }
             }
+            @media screen and (max-width: $mobile){
+                float: left;
+            }
         }
     }
 
@@ -68,10 +86,17 @@
             display: flex;
             padding: 0;
             margin: 17px 5%;
-
+            width: 100%;
+            @media screen and (max-width: $mobile){
+                flex-wrap: wrap;
+            }
             li {
+                @media screen and (max-width: $mobile){
+                    margin-top: 15px;
+                    
+                }
                 margin: 0 1rem;
-
+                width: 50px;
                 a {
                     text-decoration: none;
                     &:hover {

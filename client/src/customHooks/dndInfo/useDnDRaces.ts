@@ -1,6 +1,6 @@
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
-import { catchError, tap } from "rxjs";
+import { catchError, of, take, tap } from "rxjs";
 import HttpClient$ from "../utility/httpClientObs";
 import { Race } from "../../models/race.model";
 
@@ -10,11 +10,12 @@ const [race, setRace] = createSignal<Race[]>([]);
 export default function useDnDRaces(): Accessor<Race[]> {
 
     HttpClient$.post<Race[]>("/api/DnDInfo/Races",{}).pipe(
-        catchError((err, caught)=>{
+        take(1),
+        catchError((err)=>{
             console.error("Error: ", err);
-            return caught;
+            return of(null);
         }),
-        tap((classes) => setRace(classes)),
+        tap((classes) => !!classes ? setRace(classes) : null),
     ).subscribe();
 
     return race;

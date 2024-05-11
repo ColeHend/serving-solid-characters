@@ -1,20 +1,48 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+import { ManifestOptions, PWAIntegration, VitePWA, VitePWAOptions } from 'vite-plugin-pwa';
 // import devtools from 'solid-devtools/vite';
+const manifest: Partial<ManifestOptions> = require('./manifest.json');
+const pwaOptions: Partial<VitePWAOptions> = //
+{
+  registerType: 'autoUpdate',
+  devOptions: {
+    enabled: true,
+    type: 'module',
+    navigateFallback: '/index.html',
+    navigateFallbackAllowlist: [/^\/$/],
+  },
+  includeAssets: ["**/*.{png,svg,ico,json}"],
+  workbox: {
+    globPatterns: [
+      "**/*.{js,jsx,css,scss,ts,tsx,html,woff,woff2}"
+    ]
+  },
+  injectRegister: 'auto',
+  outDir: '../wwwroot',
+  // strategies: 'injectManifest',
+  // filename: 'claims-sw.ts',
+  // injectManifest: {
+  //   minify: false,
+  //   enableWorkboxModulesLogs: true,
+  // },
+  manifest: manifest,
+};
+
+console.log("pwaOptions: ", pwaOptions);
 
 export default defineConfig({
   plugins: [
-    /* 
-    Uncomment the following line to enable solid-devtools.
-    For more info see https://github.com/thetarnav/solid-devtools/tree/main/packages/extension#readme
-    */
-    // devtools(),
+    // devtools(), // uncomment to enable solid devtools
     solidPlugin(),
+    VitePWA(pwaOptions)
   ],
   server: {
     port: 3000,
   },
   build: {
     target: 'esnext',
-  },
+    outDir: '../wwwroot',
+  }
+
 });
