@@ -77,9 +77,20 @@ builder.WebHost.ConfigureServices(services =>
 {
     services.AddSpaStaticFiles(configuration =>
     {
-        configuration.RootPath = "client/build";
+        configuration.RootPath = "wwwroot";
     });
     
+});
+
+builder.WebHost.ConfigureKestrel((context, options) =>
+{
+    options.ListenLocalhost(5000);
+    options.Listen(System.Net.IPAddress.Parse("192.168.1.100"), 5000, listenOptions =>
+    {
+        // mkcert <address>
+        // openssl pkcs12 -export -out mydomains.pfx -inkey example.com+5-key.pem -in example.com+5.pem 
+        listenOptions.UseHttps("nethost.pfx", "password");
+    });
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -94,22 +105,36 @@ builder.Services.AddSwaggerGen(c=>{
 
     c.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-
-
+// builder.WebHost.ConfigureKestrel((context, options)=>
+// {
+//     options.
+// })
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 
 
-// app.UseHttpsRedirection();
-
-app.UseStaticFiles();
+app.UseHttpsRedirection();
+string path;
+// if (false == true && app.Environment.IsDevelopment())
+// {
+//     path = Path.Combine(Directory.GetCurrentDirectory(), "client", "dist");
+// }
+// else
+// {
+// }
+    path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+Console.WriteLine(path);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(path)
+});
 app.UseRouting();
 
 app.UseAuthentication();
@@ -121,6 +146,8 @@ app.UseEndpoints(endpoints =>
     endpoints.MapDefaultControllerRoute();
 });
 
+app.UseSpaStaticFiles();
+
 app.UseSpa(spa =>
 {
     spa.Options.SourcePath = "client";
@@ -128,7 +155,13 @@ app.UseSpa(spa =>
     if (app.Environment.IsDevelopment())
     {
         // spa.UseReactDevelopmentServer(npmScript: "build");
-        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+        spa.UseProxyToSpaDevelopmentServer("http://192.168.1.100:3000/");
+    } else {
+        spa.Options.DefaultPage = "/index.html";
+        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(path)
+        };
     }
 });
 
