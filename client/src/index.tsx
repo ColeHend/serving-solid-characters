@@ -81,7 +81,9 @@ render(
         <Route path="/" component={Characters} />
         <Route path="/view" component={CharacterView} />
         <Route path="/create" component={CharacterCreate} />
-        <Route path="/info/spells" component={masterSpells} />
+      </Route>
+      <Route path="/info" >
+        <Route path="/spells" component={masterSpells} />
       </Route>
     </Router>
   ),
