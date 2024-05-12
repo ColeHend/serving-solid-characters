@@ -1,10 +1,78 @@
 .SpellsBody{
-    margin: 4% 10%;
+    margin: 4% 7%;
     padding: 0% 5%;
-    height: 80%;
+    height: 70%;
+    border-radius: 15px;
+    overflow-x: hidden !important;
     overflow-y: scroll;
+    max-width: 90vw !important;
+
+    #materials_needed {
+        word-wrap:normal;
+    }
+
+    textarea {
+        width: 70vw;
+        height: 19vh;
+        border: none;
+        resize: none;
+
+        font-size: 1em;
+    }
+
+    @media screen and (max-width: 800px){
+        $fontSize: .8em;
+        
+        width: 90%;
+        margin: 1% 0%;
+        overflow-x: hidden !important;
+
+        textarea {
+            width: 70vw;
+            height: 19vh;
+            border: none;
+            overflow-y: scroll;
+        }
+
+        // width:65vw;
+        table {
+            width: 80%;
+            font-size: $fontSize;
+            tr  {
+                width: min-content;
+                td {
+                    // width: min-content;
+                    text-wrap:wrap;
+                }
+                th {
+                    width: min-content;
+                }
+            }
+        }
+    }
+    .TableRow{
+        padding: 0% 5%;
+        margin-top: 0% 10%;
+        max-width: 80% !important;
+        @media screen and (max-width: 800px){
+            width: 15vw;            
+            
+        } 
+    }
 }
-.TableRow{
-    padding: 0% 5%;
-    margin: 0% 2%;
+
+.headerBar{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    :nth-child(1){
+        display: flex;
+        flex-direction: column;
+    }
+    @media screen and (max-width: 800px){
+        width: 90%;
+        
+    }
 }
+

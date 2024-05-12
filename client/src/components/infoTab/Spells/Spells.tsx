@@ -4,50 +4,74 @@ import useStyle from "../../../customHooks/utility/style/styleHook";
 import useDnDSpells from "../../../customHooks/dndInfo/useDnDSpells";
 import { effect } from "solid-js/web";
 import TableRow from "./TableRow/tableRow";
+import Paginator from "../../paginator/paginator";
+import { Spell } from "../../../models/spell.model";
 
 const masterSpells: Component = () => {
     const stylin = useStyle();
     const dndSrdSpells = useDnDSpells();
 
     const [RowShown, SetRowShown] = createSignal<number[]>([]);
+    const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
 
     const toggleRow = (index: number) => !hasIndex(index) ? SetRowShown([...RowShown(), index]) : SetRowShown(RowShown().filter(i => i !== index));
     const hasIndex = (index: number) => RowShown().includes(index);
+    const spellLevel = (spellLevel: string) => { 
+        switch(spellLevel){
+            case "0":
+                return "Cantrip";
+            case "1":
+                return "1st";
+            case "2":
+                return "2nd";
+            case "3":
+                return "3rd";
+            default:
+                return `${spellLevel}th`;
+        }
+    }
 
     return (
         <div class={`${stylin.accent} ${styles.SpellsBody}`}>
             <h1>Spells</h1>
             <table class={`${stylin.table}`}>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th></th>
-                    </tr>
-                </thead>
                 <tbody>
-                    <For each={dndSrdSpells()}>{(spell, i) =>
+                    <For each={paginatedSpells()}>{(spell, i) =>
                         <>
                             <tr class={`${styles.TableRow}`}>
-                                {spell.name}
+                                <td class={styles.headerBar}>
+                                    {/* left side */}
+                                    <span>
+                                        <span>{spell.name}</span>
+                                        <span>{spell.school}</span>
+                                        <Show when={spell.concentration}><span>{spell.duration}</span></Show>
+                                         
+                                    </span>
+
+                                    {/* ride side */}
+                                    <span>
+                                        {spellLevel(spell.level)}
+                                    </span>
+                                     
+                                </td>
                                 <td>
-                                    <button onClick={() => toggleRow(i())} >↓</button>
+                                    <button onClick={() => toggleRow(i())}>
+                                        {hasIndex(i()) ? "↑" : "↓"}
+                                    </button>
                                 </td>
                             </tr>
                             <Show when={hasIndex(i())} >
                                 <TableRow spell={spell}></TableRow>
                             </Show>
                             <br />
-                            <hr style="width:65vw; margin-left:%;" />
+                            <hr />
                             <br />
                         </>
-
-
-                        // <TableRow spell={spell}></TableRow>
                     }</For>
                 </tbody>
             </table>
             <div id="pagginator">
-
+            <Paginator items={dndSrdSpells} setPaginatedItems={setPaginatedSpells}></Paginator>
             </div>
         </div>
     )

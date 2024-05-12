@@ -15,7 +15,7 @@ const TableRow: Component<Props> = (props) => {
 
     function spellComponents(){
         let components = []
-        let toReturn = "";
+        let toReturn = [];
         if(isVerbal){
             components.push("V")
         }
@@ -25,27 +25,41 @@ const TableRow: Component<Props> = (props) => {
         if(isMaterial){
             components.push("M")
         }
-        toReturn = components.join(", ")
+        toReturn.push(components.join(", "));
 
         if(isMaterial){
-            return toReturn + ` (${props.spell.materials_Needed})`
+            toReturn.push(props.spell.materials_Needed)
         }
         return toReturn
     }
     
+    let compsArr = spellComponents()
+
     return (
         <>
             <tr class={`${styles.TableRow}`}>
-                <td>level:{props.spell.level}</td>
-                <td>school:{props.spell.school}</td>
-                <td>casting time:{props.spell.castingTime}</td>
-                <td>range: {props.spell.range}</td>
-                <td>components: {spellComponents()}</td>
-                <td>duration: {props.spell.duration}</td>
-                <td>classes: {props.spell.classes.join(", ")}</td>
-                <td>subclasses: {props.spell.subClasses.join(", ")}</td>
-                <td>Description: {props.spell.desc}</td>
-                <Show when={!!props.spell.higherLevel}><td>at higher levels: {props.spell.higherLevel}</td></Show>
+                <td><h2><strong>{props.spell.name}</strong></h2></td>
+                <td><strong>Level:</strong> {props.spell.level}</td>
+                <td><strong>School:</strong> {props.spell.school}</td>
+                <td><strong>Casting time:</strong> {props.spell.castingTime}</td>
+                <td><strong>Range:</strong> {props.spell.range}</td>
+                <td><strong>Components:</strong> {compsArr[0]}</td>
+                <Show when={isMaterial}>
+                    <td><strong>Materials:</strong> {compsArr[1]}</td>
+                </Show>
+                <td><strong>Duration:</strong> {props.spell.duration}</td>
+                <td><strong>Classes:</strong> {props.spell.classes.join(", ")}</td>
+                <td><strong>Subclasses:</strong> {props.spell.subClasses.join(", ")}</td>
+                <td>
+                    <strong>Description:</strong>
+                </td>
+                <td>
+                    <textarea name="spell_desc">{props.spell.desc}</textarea>
+                </td>
+                <Show when={!!props.spell.higherLevel}><td><strong>higher levels:</strong></td></Show>
+                <Show when={!!props.spell.higherLevel}><td>
+                    <textarea >{props.spell.higherLevel}</textarea>    
+                </td></Show>
             </tr>
         </>
     );
