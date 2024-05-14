@@ -43,8 +43,8 @@ const masterSpells: Component = () => {
                                     {/* left side */}
                                     <span>
                                         <span>{spell.name}</span>
-                                        <span>{spell.school}</span>
-                                        <Show when={spell.concentration}><span>{spell.duration}</span></Show>
+                                        <span><i>{spell.school}</i></span>
+                                        <Show when={spell.concentration}><span><i>{spell.duration}</i></span></Show>
                                          
                                     </span>
 
@@ -63,9 +63,7 @@ const masterSpells: Component = () => {
                             <Show when={hasIndex(i())} >
                                 <TableRow spell={spell}></TableRow>
                             </Show>
-                            <br />
                             <hr />
-                            <br />
                         </>
                     }</For>
                 </tbody>

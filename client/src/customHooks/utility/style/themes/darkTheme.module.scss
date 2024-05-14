@@ -9,12 +9,10 @@ $mobile: 800px;
     background-color: $primary;
     color: white;
     border-color: white;
+    overflow-x: hidden;
 
     li a {
         color: white;
-    }
-    @media screen and (max-width: $mobile){
-        overflow-x: hidden;
     }
 }
 
@@ -139,8 +137,7 @@ $mobile: 800px;
 
     td {
         background-color: $tertiary;
-        padding: 5px;
-        margin: 10px;
+        
         color: white;
         
         button {

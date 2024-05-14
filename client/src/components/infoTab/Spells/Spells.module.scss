@@ -1,10 +1,10 @@
+$fontSize: .8em;
 .SpellsBody{
     margin: 4% 7%;
     padding: 0% 5%;
-    height: 70%;
     border-radius: 15px;
     overflow-x: hidden !important;
-    overflow-y: scroll;
+    overflow-y: auto;
     max-width: 90vw !important;
 
     #materials_needed {
@@ -21,7 +21,6 @@
     }
 
     @media screen and (max-width: 800px){
-        $fontSize: .8em;
         
         width: 90%;
         margin: 1% 0%;
@@ -35,20 +34,7 @@
         }
 
         // width:65vw;
-        table {
-            width: 80%;
-            font-size: $fontSize;
-            tr  {
-                width: min-content;
-                td {
-                    // width: min-content;
-                    text-wrap:wrap;
-                }
-                th {
-                    width: min-content;
-                }
-            }
-        }
+        
     }
     .TableRow{
         padding: 0% 5%;
@@ -58,6 +44,26 @@
             width: 15vw;            
             
         } 
+    }
+}
+
+table {
+    width: 80%;
+    @media screen and (max-width: 800px) {
+        font-size: $fontSize !important;
+    }
+    border-radius: 10px;
+    tr  {
+        width: min-content;
+        td {
+            // width: min-content;
+            text-wrap:wrap;
+            padding: 5px;
+            margin: 10px;
+        }
+        th {
+            width: min-content;
+        }
     }
 }
 

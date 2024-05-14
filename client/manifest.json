@@ -1,6 +1,6 @@
 {
     "name": "Solid Characters",
-    "short_name": "vite-template-solid",
+    "short_name": "solid-characters",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait",

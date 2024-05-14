@@ -32,6 +32,7 @@ const Navbar: Component<Props> = (props) => {
     ];
     let tabs = useTabs(pageName);
     const [showList, setShowList] = props.list;
+    
     const [showFullList, setShowFullList] = createSignal(false);
     effect(()=>{
         setShowFullList(!showList());

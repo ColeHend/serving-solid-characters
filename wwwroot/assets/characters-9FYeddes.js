@@ -1,1 +1,0 @@
-import{u as e,c as s,a as r,t as n}from"./index-G6JhsBPo.js";const c="_mainBody_zsf9w_1",o={mainBody:c};var m=n("<div><h1>Characters");const d=()=>{const t=e();return(()=>{var a=m();return s(()=>r(a,`${t.accent} ${o.mainBody}`)),a})()};export{d as default};
