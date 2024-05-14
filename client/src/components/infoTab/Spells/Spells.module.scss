@@ -1,4 +1,4 @@
-$fontSize: .8em;
+
 .SpellsBody{
     margin: 4% 7%;
     padding: 0% 5%;
@@ -50,7 +50,7 @@ $fontSize: .8em;
 table {
     width: 80%;
     @media screen and (max-width: 800px) {
-        font-size: $fontSize !important;
+        font-size: .8em !important;
     }
     border-radius: 10px;
     tr  {
