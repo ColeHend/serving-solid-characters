@@ -1,0 +1,28 @@
+.chip {
+    display: inline-block;
+    border-radius: 15px;
+    padding: 2pt 8pt;
+    margin-bottom: 1px;
+
+    button {
+        width: min-content;
+        height: min-content;
+        border-radius: 100%;
+        font-size: 1.5em;
+        padding: 0px;
+        margin: 0px;
+    }
+
+
+    @media  screen and (max-width: 768px){
+        font-size: .8rem;
+        padding: 5px 5px;
+
+        button {
+            font-size: .6rem;
+            padding: 0px;
+            margin: 0px;
+        }
+        
+    }
+}

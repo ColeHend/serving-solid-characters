@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { ManifestOptions, PWAIntegration, VitePWA, VitePWAOptions } from 'vite-plugin-pwa';
-// import devtools from 'solid-devtools/vite';
+import devtools from 'solid-devtools/vite'
 const manifest: Partial<ManifestOptions> = require('./manifest.json');
 const pwaOptions: Partial<VitePWAOptions> = //
 {
@@ -33,12 +33,14 @@ console.log("pwaOptions: ", pwaOptions);
 
 export default defineConfig({
   plugins: [
-    // devtools(), // uncomment to enable solid devtools
+    devtools({
+      autoname: true, // e.g. enable autoname
+    }),
     solidPlugin(),
     VitePWA(pwaOptions)
   ],
   server: {
-    port: 3000,
+    port: 3000
   },
   build: {
     target: 'esnext',

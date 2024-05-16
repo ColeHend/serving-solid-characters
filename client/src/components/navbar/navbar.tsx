@@ -4,7 +4,7 @@ import useStyle from "../../customHooks/utility/style/styleHook";
 import useTabs from "../../customHooks/utility/tabBar";
 import { Portal, effect } from "solid-js/web";
 import { A } from "@solidjs/router";
-import Modal from "../popup/popup.component";
+import Modal from "../shared/popup/popup.component";
 import NavMenu from "./navMenu/navMenu";
 
 type Props = {
@@ -32,6 +32,7 @@ const Navbar: Component<Props> = (props) => {
     ];
     let tabs = useTabs(pageName);
     const [showList, setShowList] = props.list;
+    
     const [showFullList, setShowFullList] = createSignal(false);
     effect(()=>{
         setShowFullList(!showList());

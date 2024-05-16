@@ -1,8 +1,9 @@
 {
     "name": "Solid Characters",
-    "short_name": "vite-template-solid",
+    "short_name": "solid-characters",
     "start_url": "/",
     "display": "standalone",
+    "orientation": "portrait",
     "background_color": "#ffffff",
     "lang": "en",
     "scope": "/",
@@ -47,6 +48,12 @@
             "src": "icons/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "icons/icon512_maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ]
 }

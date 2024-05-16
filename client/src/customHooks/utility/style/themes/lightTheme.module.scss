@@ -35,3 +35,24 @@
     z-index: 1000;
     text-align: center;
 }
+.table {
+    font: 1em Roboto;
+    background-color: #ffffff00;
+    color: black;
+    th {
+        background-color: #2196F3;
+        color: black;
+    }
+    td {
+        background-color: #3F51B5;
+        color: black;
+    }
+}
+.tBody {
+    background-color: #3F51B5;
+    color: black;
+}
+.THead {
+    background-color: #2196F3;
+    color: black;
+}

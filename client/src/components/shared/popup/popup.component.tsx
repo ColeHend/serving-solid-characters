@@ -2,8 +2,8 @@
 /* use:clickOutside is not actually an error! Solid fixes on compile! */
 import { Accessor, Component, JSX, Setter, createSignal } from "solid-js";
 import { Portal, effect } from "solid-js/web";
-import useStyle from "../../customHooks/utility/style/styleHook";
-import clickOutside from "../../customHooks/utility/clickOutside";
+import useStyle from "../../../customHooks/utility/style/styleHook";
+import clickOutside from "../../../customHooks/utility/clickOutside";
 type Props = {
     children?: JSX.Element,
     width: string,

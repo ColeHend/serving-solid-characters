@@ -62,10 +62,11 @@
             margin-right: 20px;
             // padding: 15px 10px;
             height: max-content;
-            width: 75px;
+            width: min-content;
             overflow: hidden;
             text-overflow: ellipsis;
             svg {
+                width: 30pt;
                 &:hover {
                     width: 33pt;
                     height: 33pt;

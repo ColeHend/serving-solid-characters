@@ -1,4 +1,4 @@
-import { type Component, For, createResource } from 'solid-js';
+import { type Component, For, createResource, JSX } from 'solid-js';
 import { effect } from 'solid-js/web';
 import useDnDClasses from './customHooks/dndInfo/useDnDClasses';
 import useStyle from './customHooks/utility/style/styleHook';
@@ -9,6 +9,7 @@ import useDnDBackgrounds from './customHooks/dndInfo/useDnDBackgrounds';
 import useDnDItems from './customHooks/dndInfo/useDnDItems';
 import styles from './App.module.css';
 import ReloadPrompt from './ReloadPrompt';
+import { DnDClass } from './models/class.model';
 
 const App: Component = () => {
   const stylin = useStyle();       
@@ -37,17 +38,9 @@ const App: Component = () => {
   // effect(()=>{
   //   console.log("dndSrdBackgrounds", dndSrdBackgrounds());
   // });
-  
   return (
       <div class={`${stylin.accent} ${styles.AppBody}`}>
         <h1>Home</h1>
-        <ul>
-          <For each={dndSrdClasses()}>
-            {(dndClass) => (
-              <li>{dndClass.name}</li>
-            )}
-          </For>
-        </ul>
         <ReloadPrompt />
       </div>
   );

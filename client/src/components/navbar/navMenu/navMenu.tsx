@@ -1,5 +1,5 @@
 import { Component, For, Show, createSignal } from "solid-js";
-import Modal from "../../popup/popup.component";
+import Modal from "../../shared/popup/popup.component";
 import useStyle from "../../../customHooks/utility/style/styleHook";
 import menuStyles from "./navMenu.module.scss";
 
@@ -49,7 +49,7 @@ const NavMenu: Component = () => {
                 </svg>        
             </button>
             <Show when={showMenu()}>
-                <Modal width="10%" height="25%" translate={{x:"36vw",y:"-40vh"}} backgroundClick={[showMenu, setShowMenu]} >
+                <Modal width="10%" height="25%" translate={{x:"36vw",y:"-40vh"}}  backgroundClick={[showMenu, setShowMenu]} >
                     <ul class={`${menuStyles.menuButtons}`}>
                         <For each={menuButtons}>
                             {(button) => (

@@ -5,10 +5,11 @@
   "scripts": {
     "start": "vite --host",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --emptyOutDir",
     "serve": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator"
   },
+  "type": "module",
   "license": "MIT",
   "peerDependencies": {
     "@vite-pwa/assets-generator": "^0.2.4",
@@ -26,7 +27,7 @@
     "@types/node": "^20.12.11",
     "@vite-pwa/assets-generator": "^0.2.4",
     "sass": "^1.77.0",
-    "solid-devtools": "^0.29.2",
+    "solid-devtools": "^0.30.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
     "vite-plugin-pwa": "^0.20.0",
