@@ -6,6 +6,7 @@ import "./index.css";
 import App from "./App";
 import Navbar from "./components/navbar/navbar";
 import useStyle from "./customHooks/utility/style/styleHook";
+import 'solid-devtools';
 const Characters = lazy(() => import("./components/characters/characters"));
 const CharacterCreate = lazy(
   () => import("./components/characters/create/create")

@@ -4,8 +4,9 @@ import useStyle from "../../../customHooks/utility/style/styleHook";
 import useDnDSpells from "../../../customHooks/dndInfo/useDnDSpells";
 import { effect } from "solid-js/web";
 import TableRow from "./TableRow/tableRow";
-import Paginator from "../../paginator/paginator";
+import Paginator from "../../shared/paginator/paginator";
 import { Spell } from "../../../models/spell.model";
+import SearchBar from "./searchBar/searchBar";
 
 const masterSpells: Component = () => {
     const stylin = useStyle();
@@ -14,6 +15,7 @@ const masterSpells: Component = () => {
     const [RowShown, SetRowShown] = createSignal<number[]>([]);
     const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
 
+    const [searchResults, setSearchResults] = createSignal<any[]>([]);
     const toggleRow = (index: number) => !hasIndex(index) ? SetRowShown([...RowShown(), index]) : SetRowShown(RowShown().filter(i => i !== index));
     const hasIndex = (index: number) => RowShown().includes(index);
     const spellLevel = (spellLevel: string) => { 
@@ -34,6 +36,9 @@ const masterSpells: Component = () => {
     return (
         <div class={`${stylin.accent} ${styles.SpellsBody}`}>
             <h1>Spells</h1>
+
+            <SearchBar searchResults={searchResults} setSearchResults={setSearchResults} spellsSrd={dndSrdSpells}></SearchBar>
+
             <table class={`${stylin.table}`}>
                 <tbody>
                     <For each={paginatedSpells()}>{(spell, i) =>
@@ -69,7 +74,7 @@ const masterSpells: Component = () => {
                 </tbody>
             </table>
             <div id="pagginator">
-            <Paginator items={dndSrdSpells} setPaginatedItems={setPaginatedSpells}></Paginator>
+            <Paginator items={searchResults} setPaginatedItems={setPaginatedSpells}></Paginator>
             </div>
         </div>
     )

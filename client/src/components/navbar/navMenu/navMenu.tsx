@@ -1,5 +1,5 @@
 import { Component, For, Show, createSignal } from "solid-js";
-import Modal from "../../popup/popup.component";
+import Modal from "../../shared/popup/popup.component";
 import useStyle from "../../../customHooks/utility/style/styleHook";
 import menuStyles from "./navMenu.module.scss";
 

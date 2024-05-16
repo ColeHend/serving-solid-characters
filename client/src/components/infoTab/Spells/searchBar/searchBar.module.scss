@@ -1,0 +1,49 @@
+.searchBar {
+    width: 30%;
+    margin: 0 auto;
+    background-color: white;
+    height: 1.5rem;
+    padding: 5px;
+    padding-bottom: 10px;
+    border-radius: 15px;
+    margin-bottom: 5pt;
+    select {
+        color: black;
+        width: 20%;
+        font-size: .8rem;
+    }
+    span {
+        padding-left: 1%;
+        width: 50px !important;
+        color: black;
+    }
+    svg {
+        height: 1.4rem;
+        width: 1.4rem;
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    input {
+        width: 70%;
+        border: none;
+        outline: none;
+    }
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+        
+        input {
+            width: 60%;
+        }
+        select {
+            overflow-y: scroll !important;
+        }
+    }
+}
+.chipBar{
+    margin: 0 10pt;
+    :nth-child(n){
+        margin-left: 5px;
+    }
+}
