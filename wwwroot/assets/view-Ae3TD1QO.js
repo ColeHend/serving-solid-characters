@@ -1,0 +1,1 @@
+import{u as t,c as s,a as r,t as n}from"./index-5Mdl4-AY.js";const c="_mainBody_zsf9w_1",o={mainBody:c};var i=n("<div><h1>Characters View");const l=()=>{const e=t();return(()=>{var a=i();return s(()=>r(a,`${e.accent} ${o.mainBody}`)),a})()};export{l as default};
