@@ -22,8 +22,20 @@ const SearchBar: Component<Props> = (props) => {
     const [searchChip, setSearchChip] = createSignal<Chip>({ key: "", value: "" });
     const [searchKey, setSearchKey] = createSignal<string>("name");
     const [searchValue, setSearchValue] = createSignal<string>("");
+    const [ischecked, setIsChecked] = createSignal<boolean>(false);
     const [chipBar, setChipBar] = createSignal<Chip[]>([]);
     const stylin = useStyle();
+
+    const spellSchools = [
+        "Abjuration",
+        "Conjuration",
+        "Divination",
+        "Enchantment",
+        "Evocation",
+        "Illusion",
+        "Necromancy",
+        "Transmutation"
+    ]
 
     effect(() => {
         props.setSearchResults(props.spellsSrd().filter((spell: Spell) => {
@@ -44,8 +56,7 @@ const SearchBar: Component<Props> = (props) => {
                                     .toLowerCase()
                                     .includes(chippy.value.toLowerCase());
                             case typeof spellValue === "boolean":
-                                return spellValue
-                                    .toString()
+                                return ` ${spellValue} `
                                     .toLowerCase()
                                     .includes(chippy.value.toLowerCase());
                         }
@@ -60,6 +71,14 @@ const SearchBar: Component<Props> = (props) => {
     });
 
     effect(()=>{
+        if (typeof props.spellsSrd()[0][searchKey() as keyof Spell] === 'boolean') {
+            setSearchValue(`${ischecked()}`)
+        }
+    })
+
+    effect(()=>{
+
+
         setChipBar((oldChips)=>!!searchChip().key ?[...oldChips, searchChip()] : oldChips);
         setSearchValue("");
         if (!!(document.getElementById("searchBar") as HTMLSelectElement)) {
@@ -68,8 +87,7 @@ const SearchBar: Component<Props> = (props) => {
 
     })
 
-    
-
+    const checkbox = document.getElementById("booleanCheckbox") as HTMLInputElement
     return (
         <div>
             <div class={`${styles.searchBar}`}>
@@ -83,14 +101,64 @@ const SearchBar: Component<Props> = (props) => {
                             </For>
                         </select>
                 </span>
-                <input
-                    id="searchBar"
-                    onChange={(e) => setSearchValue(e.currentTarget.value)}
-                    onKeyDown={(e) => {(e.key === "Enter") && setSearchChip((old)=>({key: searchKey(), value: e.currentTarget.value }))}}
-                    placeholder="Search Spells..."
-                    value={searchValue()}
-                    type="text"
-                />
+                <Switch>
+                    <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "string"}>
+                        <Switch fallback={
+                            <input
+                        id="searchBar"
+                        onChange={(e) => setSearchValue(e.currentTarget.value)}
+                        onKeyDown={(e) => {(e.key === "Enter") && setSearchChip((old)=>({key: searchKey(), value: e.currentTarget.value.trim() }))}}
+                        placeholder="Search Spells..."
+                        value={searchValue()}
+                        type="text"
+                        />
+
+                        }>
+                            <Match when={searchKey() === "school"}>
+                                <select onChange={(e)=>setSearchValue(e.currentTarget.value)}>
+                                    <For each={spellSchools}>
+                                        {(school)=>
+                                            <option value={school}>{school}</option>
+                                        }
+                                    </For>
+                                </select>
+                            </Match>
+                        </Switch>
+
+                        
+                    </Match>
+                    <Match when={Array.isArray(props.spellsSrd()[0][searchKey() as keyof Spell])}>
+                        <input
+                        id="searchBar"
+                        onChange={(e) => setSearchValue(e.currentTarget.value)}
+                        onKeyDown={(e) => {(e.key === "Enter") && setSearchChip((old)=>({key: searchKey(), value: e.currentTarget.value.trim() }))}}
+                        placeholder="Search Spells..."
+                        value={searchValue()}
+                        type="text"
+                        />
+                        
+                        
+                    </Match>
+                    <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "boolean"}>
+                        <div class={`${styles.booleanSelect}`} id="booleanBar">
+                            <span>
+                                <label for="falsebox">
+                                    <Show when={ischecked() === false}>
+                                        false
+                                    </Show>
+                                    <Show when={ischecked() === true}>
+                                        true
+                                    </Show>
+                                </label>
+                                <input type="checkbox" checked={ischecked()} id="booleanCheckbox" onchange={()=>{
+                                    setIsChecked(!ischecked())
+                                    setSearchValue(`${ischecked()}`)
+                                }}/>
+                            </span>
+                        </div>
+                    </Match>
+                </Switch>
+               
 
             </div>
             <Show when={chipBar().length > 0}>

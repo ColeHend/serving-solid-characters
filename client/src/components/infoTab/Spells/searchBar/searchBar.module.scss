@@ -29,6 +29,27 @@
         border: none;
         outline: none;
     }
+    label {
+        color: black
+    }
+
+    .booleanSelect {
+        margin-left: 40%;
+        margin-top: -5%;
+
+        label {
+            width: min-content;
+            height: min-content;
+
+            margin-right: 10px;
+        }
+
+        input {
+            width: min-content;
+            height: max-content;
+        }
+        
+    }
 
     @media screen and (max-width: 768px) {
         width: 100%;
