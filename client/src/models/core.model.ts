@@ -1,7 +1,7 @@
 export interface Feature<T, K> {
     Info:  Info<K>;
-    Name:  string;
-    Value: T;
+    name:  string;
+    value: T;
 }
 
 export interface Info<T> {

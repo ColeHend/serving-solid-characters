@@ -1,8 +1,8 @@
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, of, take, tap } from "rxjs";
-import HttpClient$ from "../utility/httpClientObs";
-import { Feat } from "../../models/feat.model";
+import HttpClient$ from "../../utility/httpClientObs";
+import { Feat } from "../../../models/feat.model";
 
 
 const [feats, setFeats] = createSignal<Feat[]>([]);

@@ -1,9 +1,9 @@
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, concatMap, of, take, tap } from "rxjs";
-import HttpClient$ from "../utility/httpClientObs";
-import { Spell } from "../../models/spell.model";
-import LocalSrdDB from "../utility/localDB/srdDBFile"
+import HttpClient$ from "../../utility/httpClientObs";
+import { Spell } from "../../../models/spell.model";
+import LocalSrdDB from "../../utility/localDB/srdDBFile"
 
 const [spells, setSpells] = createSignal<Spell[]>([]);
 

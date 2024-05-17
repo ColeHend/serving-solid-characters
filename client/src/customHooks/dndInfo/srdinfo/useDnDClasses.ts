@@ -1,9 +1,9 @@
-import type { DnDClass } from "../../models/class.model";
+import type { DnDClass } from "../../../models/class.model";
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, concatMap, of, take, tap } from "rxjs";
-import HttpClient$ from "../utility/httpClientObs";
-import LocalSrdDB from "../utility/localDB/srdDBFile"
+import HttpClient$ from "../../utility/httpClientObs";
+import LocalSrdDB from "../../utility/localDB/srdDBFile"
 
 const [classes, setClasses] = createSignal<DnDClass[]>([]);
 
