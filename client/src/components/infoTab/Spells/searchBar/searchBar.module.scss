@@ -11,6 +11,10 @@
         color: black;
         width: 20%;
         font-size: .8rem;
+
+        &:hover {
+            cursor: pointer;
+        }
     }
     span {
         padding-left: 1%;
@@ -44,9 +48,12 @@
             margin-right: 10px;
         }
 
-        input {
+        input[type="checkbox"]  {
             width: min-content;
             height: max-content;
+            &:hover {
+                cursor: pointer !important;
+            }
         }
         
     }
