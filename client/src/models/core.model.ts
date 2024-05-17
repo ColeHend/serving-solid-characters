@@ -1,22 +1,22 @@
 export interface Feature<T, K> {
-    Info:  Info<K>;
-    Name:  string;
-    Value: T;
+    info:  Info<K>;
+    name:  string;
+    value: T;
 }
 
 export interface Info<T> {
-    ClassName:    string;
-    SubclassName: string;
-    Level:        number;
-    Type:         string;
-    Other:        T;
+    className:    string;
+    subclassName: string;
+    level:        number;
+    type:         string;
+    other:        T;
 }
 
 export interface Choice<T>
 {
-    Choose:  number;
-    Type:    string;
-    Choices: T[];
+    choose:  number;
+    type:    string;
+    choices: T[];
 }
 
 export interface StartingEquipment {
