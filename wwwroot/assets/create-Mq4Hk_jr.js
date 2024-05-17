@@ -1,0 +1,1 @@
+import{u as t,c as r,a as s,t as n}from"./index-QW1j2Poi.js";const c="_mainBody_zsf9w_1",o={mainBody:c};var m=n("<div><h1>Characters Create");const d=()=>{const e=t();return(()=>{var a=m();return r(()=>s(a,`${e.accent} ${o.mainBody}`)),a})()};export{d as default};

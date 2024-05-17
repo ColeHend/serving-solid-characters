@@ -1,4 +1,4 @@
-function beutifyChip(input: string): string {
+export function beutifyChip(input: string): string {
     return input
         .replace(/[_-]/g, ' ') // Replace underscores and dashes with spaces
         .split(' ') // Split the string into words
