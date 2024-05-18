@@ -8,8 +8,8 @@ import useDnDFeats from "../../../customHooks/dndInfo/srdinfo/useDnDFeats";
 import useDnDItems from "../../../customHooks/dndInfo/srdinfo/useDnDItems";
 import useDnDRaces from "../../../customHooks/dndInfo/srdinfo/useDnDRaces";
 import useDnDSpells from "../../../customHooks/dndInfo/srdinfo/useDnDSpells";
-import StatBlock from "./stat/stat";
-import { g } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import StatBlock from "./stat-bar/stat/stat";
+import StatBar from "./stat-bar/statBar";
 
 
 const CharacterView: Component = () => {
@@ -69,37 +69,11 @@ const CharacterView: Component = () => {
                             <option value={JSON.stringify(character)}>{character.name}</option>
                         )}</For>
                     </select>
-                    {currentCharacter().name}
                 </div>
                 <div>
                     <div>
                         <h2>Stats</h2>
-                        <div class={`${styles.statBlocks}`}>
-                            <StatBlock stat={fullStats().str} name="Strength" 
-                                proficientMod={getProficiencyBonus(currentCharacter().level)}
-                                skills={currentCharacter().skills?.proficient ?? []} 
-                                expertise={currentCharacter().skills?.expertise}/>
-                            <StatBlock stat={fullStats().dex} name="Dexterity" 
-                                proficientMod={getProficiencyBonus(currentCharacter().level)}  
-                                skills={currentCharacter().skills?.proficient ?? []} 
-                                expertise={currentCharacter().skills?.expertise}/>
-                            <StatBlock stat={fullStats().con} name="Constitution"  
-                                proficientMod={getProficiencyBonus(currentCharacter().level)} 
-                                skills={currentCharacter().skills?.proficient ?? []} 
-                                expertise={currentCharacter().skills?.expertise}/>
-                            <StatBlock stat={fullStats().int} name="Intelligence"   
-                                proficientMod={getProficiencyBonus(currentCharacter().level)}
-                                skills={currentCharacter().skills?.proficient ?? []} 
-                                expertise={currentCharacter().skills?.expertise}/>
-                            <StatBlock stat={fullStats().wis} name="Wisdom"   
-                                proficientMod={getProficiencyBonus(currentCharacter().level)}
-                                skills={currentCharacter().skills?.proficient ?? []} 
-                                expertise={currentCharacter().skills?.expertise}/>
-                            <StatBlock stat={fullStats().cha} name="Charisma"  
-                                proficientMod={getProficiencyBonus(currentCharacter().level)}
-                                skills={currentCharacter().skills?.proficient ?? []} 
-                                expertise={currentCharacter().skills?.expertise}/>
-                        </div>
+                        <StatBar fullStats={fullStats} currentCharacter={currentCharacter}/>
                     </div>
                 </div>
             </div>

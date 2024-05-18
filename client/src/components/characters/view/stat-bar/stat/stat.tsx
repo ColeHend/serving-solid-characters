@@ -1,5 +1,5 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
-import useStyle from "../../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../../../customHooks/utility/style/styleHook";
 import styles from "./stat.module.scss";
 import { effect } from "solid-js/web";
 interface SkillProficiency {
