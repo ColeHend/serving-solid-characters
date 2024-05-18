@@ -18,6 +18,7 @@ import featsList from "./components/infoTab/Feats/feats";
 import Homebrew from "./components/homebrew/homebrew";
 import Create from "./components/homebrew/create/create";
 import View from "./components/homebrew/view/view";
+import races from "./components/infoTab/Races/races";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -93,8 +94,10 @@ render(
         <Route path="/create" component={CharacterCreate} />
       </Route>
       <Route path="/info" >
+        <Route path="/" component={masterSpells} />
         <Route path="/spells" component={masterSpells} />
         <Route path="/feats" component={featsList} />
+        <Route path="/races" component={races} />
       </Route>
       <Route path="/homebrew">
         <Route path="/" component={Homebrew} />
