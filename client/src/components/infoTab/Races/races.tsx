@@ -90,7 +90,7 @@ const races: Component = () => {
                           <h3>speed:</h3>
 
                           <span>
-                            {race.speed}
+                            {race.speed}ft
                           </span>
 
                           <h3>race specific traits:</h3>
