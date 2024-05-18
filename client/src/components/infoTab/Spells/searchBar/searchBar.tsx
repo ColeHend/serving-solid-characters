@@ -1,5 +1,5 @@
 import { Accessor, Component, For, Match, Setter, Show, Switch, createSignal } from "solid-js";
-import useDnDSpells from "../../../../customHooks/dndInfo/useDnDSpells";
+import useDnDSpells from "../../../../customHooks/dndInfo/srdinfo/useDnDSpells";
 import { Spell } from "../../../../models/spell.model";
 import { effect } from "solid-js/web";
 import { get } from "http";

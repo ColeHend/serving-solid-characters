@@ -1,0 +1,80 @@
+.statStyle {
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid;
+}
+.stat { // (all stats) change a stat block
+    display: flex;
+    flex-direction: row;
+    width: min-content;
+    margin: 7px;
+    :nth-child(1) { // the number block
+        display: flex;
+        flex-direction: column;
+        border: 1px solid;
+        border-radius: 15px;
+        max-height: 7rem;
+        width: 7rem;
+        margin-right: 10px;
+
+        span { // the modifier number
+            border: 1px solid;
+            padding: 10px;
+            border-radius: 10px;
+            width: 1.5rem;
+            margin: 0 auto;
+            transform: translateY(-1.5rem);
+            text-align: center;
+        }
+        ul {
+            display: flex;
+            flex-direction: column;
+            list-style: none;
+            padding-left: 0px;
+            transform: translateY(-2rem);
+            margin: 0 auto;
+            :first-child { // the stat num
+                padding: 20px;
+                font-size: 1.2rem;
+            }
+            li { // stat name
+                border: none;
+                width: min-content;
+                margin: 0 auto;
+                padding: 0px;
+            }
+        }
+    }
+    margin-bottom: 35px;
+}
+.secondBox {// the proficiency block
+    border: 0px solid;
+    height: max-content;
+    width: max-content;
+    ul {
+        display: flex;
+        flex-direction: column;
+        list-style: none;
+        width: fit-content;
+        margin: 0px;
+        padding: 5px;
+        li {
+            display: flex;
+            flex-direction: row;
+            margin: 2px !important;
+            :first-child {
+                margin: 5px;
+                padding: 0px;
+                width: 1rem;
+                margin-right: 10px;
+            }
+            label {
+                margin-left: 10px;
+                text-align: right;
+            }
+
+            border: none;
+            width: 100%;
+        }
+    }
+}

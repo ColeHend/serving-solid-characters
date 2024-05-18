@@ -3,10 +3,10 @@ import { Choice, Feature } from "./core.model";
 export interface Race {
     name: string;
     speed: number;
-    Age: string;
-    Alignment: string;
-    Size: string;
-    SizeDescription: string;
+    age: string;
+    alignment: string;
+    size: string;
+    sizeDescription: string;
     languages: string[];
     languageChoice: Choice<string>;
     languageDesc: string;
@@ -16,7 +16,7 @@ export interface Race {
     startingProficiencyChoices: Choice<Feature<string, string>>;
     abilityBonuses: Feature<number, string>[];
     abilityBonusChoice: Choice<Feature<number, string>>;
-    Subraces: Subrace[];
+    subRaces: Subrace[];
 }
 
 export interface Subrace {

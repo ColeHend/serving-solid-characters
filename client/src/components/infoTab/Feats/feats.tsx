@@ -1,5 +1,5 @@
 import { Component, For, Match, Show ,Switch,createSignal } from "solid-js";
-import useDnDFeats from "../../../customHooks/dndInfo/useDnDFeats";
+import useDnDFeats from "../../../customHooks/dndInfo/srdinfo/useDnDFeats";
 import useStyle from "../../../customHooks/utility/style/styleHook";
 import styles from "./feats.module.scss";
 import { Feat } from "../../../models/feat.model";
