@@ -7,3 +7,4 @@ const useGetRaces = () => {
     const allRaces = createMemo(()=>[...dndSrdRaces()]);
     return allRaces;
 }
+export default useGetRaces;
