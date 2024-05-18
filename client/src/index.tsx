@@ -89,6 +89,7 @@ render(
       <Route path="/characters">
         <Route path="/" component={Characters} />
         <Route path="/view" component={CharacterView} />
+        <Route path="/view/:name" component={CharacterView} />
         <Route path="/create" component={CharacterCreate} />
       </Route>
       <Route path="/info" >

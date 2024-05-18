@@ -10,12 +10,16 @@ import useDnDRaces from "../../../customHooks/dndInfo/srdinfo/useDnDRaces";
 import useDnDSpells from "../../../customHooks/dndInfo/srdinfo/useDnDSpells";
 import StatBlock from "./stat-bar/stat/stat";
 import StatBar from "./stat-bar/statBar";
+import { useParams } from "@solidjs/router";
+import { effect } from "solid-js/web";
 
 
 const CharacterView: Component = () => {
     const stylin = useStyle();
+    const routedSelected = useParams()
     const [characters, setCharacters] = useCharacters();
-    const [currentCharacter, setCurrentCharacter] = createSignal<Character>(characters()[0]);
+    const selectedCharacter = characters().filter(x=>x.name?.toLowerCase() === routedSelected.name?.toLowerCase())[0] ?? characters()[0];
+    const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
     const dndSrdClasses = useDnDClasses();
     const dndSrdSpells = useDnDSpells();
     const dndSrdFeats = useDnDFeats();
@@ -59,12 +63,21 @@ const CharacterView: Component = () => {
 
         return fullStats;
     });
+
+    effect(()=>{
+        if (!!routedSelected.name) {
+            if (!!(document.getElementById("characterSelect") as HTMLSelectElement)) {
+                (document.getElementById("characterSelect") as HTMLSelectElement).selectedIndex = characters().findIndex(x=>x.name.toLowerCase() === routedSelected.name.toLowerCase());
+            }
+        }
+    })
+
     return (
         <div class={`${stylin.accent} ${styles.mainBody}`}>
             <h1>Characters View</h1>
             <div>
                 <div>
-                    <select onChange={(e)=>setCurrentCharacter(()=>JSON.parse(e.target.value))}>
+                    <select value={JSON.stringify(currentCharacter())} onChange={(e)=>setCurrentCharacter(()=>JSON.parse(e.target.value))}>
                         <For each={characters()}>{(character) => (
                             <option value={JSON.stringify(character)}>{character.name}</option>
                         )}</For>

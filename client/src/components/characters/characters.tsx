@@ -29,13 +29,19 @@ const Characters: Component = () => {
                     <tbody>
                         <For each={characters()}>{(character: Character) => (
                             <tr>
-                                <td>{character.name}</td>
-                                <td>{character.race}</td>
-                                <td>{character.background}</td>
-                                <td>{character.level}</td>
-                                <td>{character.class}</td>
-                                <td>{character.subclass}</td>
-                                <td><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg></button></td>
+                                    <td>{character.name}</td>
+                                    <td>{character.race}</td>
+                                    <td>{character.background}</td>
+                                    <td>{character.level}</td>
+                                    <td>{character.class}</td>
+                                    <td>{character.subclass}</td>
+                                    <td>
+                                        <a href={`/characters/view/${character.name}`}>
+                                            <button>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+                                            </button>
+                                        </a>
+                                    </td>
                             </tr>
                         )}</For>
                     </tbody>
