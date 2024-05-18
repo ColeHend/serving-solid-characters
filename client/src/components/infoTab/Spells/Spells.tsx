@@ -2,7 +2,6 @@ import { Component, For, Show, createSignal } from "solid-js";
 import styles from "./Spells.module.scss";
 import useStyle from "../../../customHooks/utility/style/styleHook";
 import useDnDSpells from "../../../customHooks/dndInfo/srdinfo/useDnDSpells";
-import { effect } from "solid-js/web";
 import TableRow from "./TableRow/tableRow";
 import Paginator from "../../shared/paginator/paginator";
 import { Spell } from "../../../models/spell.model";
@@ -73,7 +72,7 @@ const masterSpells: Component = () => {
                     }</For>
                 </tbody>
             </table>
-            <div id="pagginator">
+            <div>
             <Paginator items={searchResults} setPaginatedItems={setPaginatedSpells}></Paginator>
             </div>
         </div>

@@ -18,16 +18,16 @@ const Paginator: Component<Props<any[]>> = (props) => {
     const stylin = useStyle();
 
     // the paginator --------------------------------
-    const spells = createMemo(() => props.items().slice((currentPage() - 1) * itemsPerPage(), currentPage() * itemsPerPage()))
+    const theItems = createMemo(() => props.items().slice((currentPage() - 1) * itemsPerPage(), currentPage() * itemsPerPage()))
     // the paginator --------------------------------
 
     const lastpage = createMemo(() => Math.ceil(props.items().length / itemsPerPage()));
 
-
+    // could potentially be a prop
     const ItemsPerPageArr = [10, 20, 50, 100];
 
     effect(() => {
-        setPaginatedItems(spells());
+        setPaginatedItems(theItems());
     });
     
     return (

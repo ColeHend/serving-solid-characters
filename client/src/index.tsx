@@ -14,6 +14,7 @@ const CharacterCreate = lazy(
 const CharacterView = lazy(() => import("./components/characters/view/view"));
 import { useRegisterSW } from "virtual:pwa-register/solid";
 import masterSpells from "./components/infoTab/Spells/Spells";
+import featsList from "./components/infoTab/Feats/feats";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -89,6 +90,7 @@ render(
       </Route>
       <Route path="/info" >
         <Route path="/spells" component={masterSpells} />
+        <Route path="/feats" component={featsList} />
       </Route>
     </Router>
   ),
