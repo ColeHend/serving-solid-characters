@@ -17,12 +17,7 @@ const featsList: Component = () => {
     const stylin = useStyle();
     
     const srdFeats = useDnDFeats();
-
-    effect(() => {
-        console.log("Feats: ", srdFeats());
-        
-    })
-
+    
     return (
         <div class={`${stylin.accent} ${styles.featsList}`}>
             <h1>Feats</h1>
@@ -80,39 +75,3 @@ const featsList: Component = () => {
     )
 };
 export default featsList;
-
-
-
-
-/**
- * 
- * 
- * 
- * 
- *   
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
