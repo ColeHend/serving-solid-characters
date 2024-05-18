@@ -1,0 +1,28 @@
+.featsList {
+    padding: 10pt;
+
+    ol {
+
+        list-style-type:circle;
+
+        span {
+            word-wrap: wrap;
+            font-size: .8rem;
+        }
+    
+    }
+    
+
+}
+.PreReqsBar {
+    display: flex;
+    flex-direction: column;
+    // justify-content: space-between;
+    div {
+        display: flex;
+        flex-direction: row;
+        :nth-child(n) {
+            margin-right: 10px;
+        }
+    }
+}
