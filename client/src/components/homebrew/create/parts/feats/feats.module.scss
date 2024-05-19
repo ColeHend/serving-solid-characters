@@ -1,0 +1,57 @@
+.body {
+    width: 70%;
+    min-height: 70%;
+    margin: 0 auto;
+    border-radius: 15px;
+    h1 {
+        width: 100%;
+        text-align: center;
+    }
+
+    @media screen and (min-width: 769px){
+        transform: translateY(-75%);
+        
+    }
+
+    @media screen and (max-width: 768px){
+        width: 100%;
+        
+    }
+}
+.name {
+    width: 100%;
+}
+
+.preRequisites {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    :nth-child(2) {
+        display: flex;
+        flex-direction: row;
+    }
+    :nth-child(3) {
+        display: flex;
+        flex-direction: column;
+        :nth-child(n) {
+            display: flex;
+            flex-direction: row;
+        }
+    }
+}
+
+
+.Description {
+    width: 100%;
+            div {
+                text-align: center;
+            }
+            textarea {
+                resize: none;
+                width: 50%;
+                height: 100%;
+                min-height: 200px;
+                margin: 0 auto;
+            }
+}

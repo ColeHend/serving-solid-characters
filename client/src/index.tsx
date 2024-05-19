@@ -18,6 +18,14 @@ import featsList from "./components/infoTab/Feats/feats";
 import Homebrew from "./components/homebrew/homebrew";
 import Create from "./components/homebrew/create/create";
 import View from "./components/homebrew/view/view";
+import Classes from "./components/homebrew/create/parts/classes/classes";
+import Items from "./components/homebrew/create/parts/items/items";
+import Feats from "./components/homebrew/create/parts/feats/feats";
+import Backgrounds from "./components/homebrew/create/parts/backgrounds/backgrounds";
+import Spells from "./components/homebrew/create/parts/spells/spells";
+import Races from "./components/homebrew/create/parts/races/races";
+
+
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -99,7 +107,15 @@ render(
       <Route path="/homebrew">
         <Route path="/" component={Homebrew} />
         <Route path="/view" component={View} />
-        <Route path="/create" component={Create} />
+        <Route path="/create" >
+          <Route path="/" component={Create} />
+          <Route path="/classes" component={Classes} />
+          <Route path="/items" component={Items} />
+          <Route path="/feats" component={Feats} />
+          <Route path="/backgrounds" component={Backgrounds} />
+          <Route path="/spells" component={Spells} />
+          <Route path="/races" component={Races} />
+        </Route>
       </Route>
     </Router>
   ),
