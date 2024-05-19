@@ -18,19 +18,37 @@ const Sidebar: Component<Props> = (props) => {
     let toggleRow = props.toggleRow;
     let hasIndex = props.hasIndex;
 
+    const moveToElement = async (id: string) => {
+      console.log("element id: ",id);
+      
+
+      const element = document.getElementById(id) as HTMLElement;
+
+      if (!!element) {
+        
+        element.scrollIntoView({ behavior: "smooth" });
+        
+      } else {
+        console.log("element not found");
+        console.log(` found : ${element}`);
+        
+        
+      }
+    }
+
     return (
         <div class={`${stylin.accent} ${styles.fixed}`}> {/* sidebar  */}
         <For each={dndSrdRaces()}>
           {(race, i) => (
             <div class={`${styles.sidebar}`}>
               <div class={`${styles.flexrow}`}>
-                <span onClick={() => toggleRow(i())}><Banner styles={styles} /></span> <span>{race.name}</span>
+                <span onClick={() => toggleRow(i())}><Banner styles={styles} /></span> <span onClick={()=>moveToElement(race.name)}>{race.name}</span>
                 <br />
               </div>
               <Show when={hasIndex(i())}> {/** shown when the flag is clicked */}
                 <div class={`${styles.sidebar_shown}`}>
                   <Show when={race.subRaces.length > 0}>
-                    <button>subraces</button> {/** aaaaand here */}
+                    <button onClick={()=>moveToElement(race.subRaces[0].name)}>subraces</button> {/** aaaaand here */}
                   </Show>
                 </div>
               </Show>

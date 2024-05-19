@@ -36,7 +36,7 @@ const races: Component = () => {
               {(race, i) =>
                 <>
                   <div>
-                    <h1>{race.name}</h1>
+                    <h1 id={`${race.name}`}>{race.name}</h1>
 
 
                     <h2>{race.name} traits</h2>
