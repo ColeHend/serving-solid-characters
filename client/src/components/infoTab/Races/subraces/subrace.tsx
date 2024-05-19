@@ -33,12 +33,14 @@ const Subrace: Component<Props> = (props) => {
                 <span>name: {subrace.name}</span>
 
                 <br />
+                <br />
 
                 <span>Ability Score increases:</span>
                 <Show when={subrace.abilityBonuses.length > 0}>
                   <For each={subrace.abilityBonuses}>
                     {(bonus) => (
                       <span>
+                        <br />
                         <span>{bonus.name}</span> <span>{bonus.value}</span>
                         <br />
                       </span>
@@ -46,15 +48,15 @@ const Subrace: Component<Props> = (props) => {
                   </For>
                 </Show>
 
-                <br />
 
                 {/* ------------------\ Starting Profs /--------------------- */}
+{/*                
                 <For each={subrace.startingProficiencies}>
                   {(prof) => <>
                     <span>{prof.value}</span>
                     <br />
                   </>}
-                </For>
+                </For> */}
 
                 <Show when={subrace.traits.length > 0}>
                   <For each={subrace.traits}>
@@ -80,7 +82,6 @@ const Subrace: Component<Props> = (props) => {
                   </span>
                 </Show>
                 
-                <div>
                   <Show when={subrace.languageChoice.choices.length > 0}>
                     <h3>languages to choose from</h3>
                     <For each={subrace.languageChoice.choices}>
@@ -90,7 +91,7 @@ const Subrace: Component<Props> = (props) => {
                       </>}
                     </For>
                   </Show>
-                </div>
+                
                 
               </div>
             )}
