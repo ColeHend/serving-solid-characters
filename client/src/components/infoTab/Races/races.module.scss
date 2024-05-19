@@ -32,6 +32,7 @@
             font-size: 1.2em;
         }
     }
+
 }
 .sidebar_shown {
     display: flex;
@@ -44,22 +45,35 @@
     flex-direction: row;
 }
 .thePage {
-    margin-left: 10%;
+    margin-left: 15%;
     margin-top: 2%;
-    width: 90%;
-    height: 100%;
+    width: 70%;
     display: flex;
     flex-direction: column;
+
+    h1 {
+        text-align: center;
+
+    }
 }
 .outerStyles {
  margin: 5%;
  padding: 15px;
  border-radius: 15px;
- height: 100%;
- overflow-y: scroll;
+
+ h1 {
+        text-align: center;
+ }
 }
 .fixed {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 1);
     position: fixed;
+    
+    transform: translateY(50%);
+
+    padding: 15px;
+    border-radius: 10px;
+    margin-left: 30px;
 }
 .flexrow {
     display: flex;
@@ -68,4 +82,10 @@
 }
 .wrap {
     text-wrap: wrap;
+}
+.abilityscore {
+    display: "flex"; 
+    flex-direction: "row"; 
+    justify-content: "space-between"; 
+    width: 10%; 
 }
