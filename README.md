@@ -78,9 +78,9 @@ dotnet run
 ```
 ## ⛏️ Built Using <a name = "built_using"></a>
 
-- [SQL]() - Database
+- [SQL, Dexie]() - Database
 - [Entity Framework]() - Server Framework
-- [Angular]() - Web Framework
+- [SolidJS]() - Web Framework
 - [Asp.net 6]() - Server Environment
 
 ## ✍️ Authors <a name = "authors"></a>
