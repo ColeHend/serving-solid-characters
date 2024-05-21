@@ -86,6 +86,7 @@ dotnet run
 ## ✍️ Authors <a name = "authors"></a>
 
 - [@colehend](https://github.com/colehend) - Idea & Initial work
+- [@SladeAnderson](https://github.com/SladeAnderson) - Ideas & Addtional work
 
 See also the list of [contributors]() who participated in this project.
 
