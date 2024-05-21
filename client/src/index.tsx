@@ -34,7 +34,7 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-const intervalMS = 20 * 1000;
+const intervalMS = 30 * 24 * 60 * 60 * 1000;
 const { needRefresh, offlineReady, updateServiceWorker } = useRegisterSW({
   onRegisteredSW(url, r) {
     r &&
@@ -42,8 +42,6 @@ const { needRefresh, offlineReady, updateServiceWorker } = useRegisterSW({
         Characters.preload();
         CharacterCreate.preload();
         CharacterView.preload();
-        console.log("onRegisteredSW: ", r);
-        console.log("onRegisteredSW.url: ", url);
         r.update();
       }, intervalMS);
   },
@@ -98,7 +96,6 @@ render(
       <Route path="/characters">
         <Route path="/" component={Characters} />
         <Route path="/view" component={CharacterView} />
-        <Route path="/view/:name" component={CharacterView} />
         <Route path="/create" component={CharacterCreate} />
       </Route>
       <Route path="/info" >
