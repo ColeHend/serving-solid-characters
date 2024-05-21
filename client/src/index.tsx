@@ -26,6 +26,7 @@ import Spells from "./components/homebrew/create/parts/spells/spells";
 import Races from "./components/homebrew/create/parts/races/races";
 
 
+import races from "./components/infoTab/Races/races";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -103,6 +104,7 @@ render(
       <Route path="/info" >
         <Route path="/spells" component={masterSpells} />
         <Route path="/feats" component={featsList} />
+        <Route path="/races" component={races} />
       </Route>
       <Route path="/homebrew">
         <Route path="/" component={Homebrew} />

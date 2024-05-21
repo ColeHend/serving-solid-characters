@@ -21,6 +21,7 @@ export interface Race {
 
 export interface Subrace {
     name: string;
+    desc: string;
     traits: Feature<string[], string>[];
     traitChoice: Choice<Feature<string[], string>>;
     abilityBonuses: Feature<number, string>[];
@@ -31,6 +32,6 @@ export interface Subrace {
     sizeDescription: string;
     languages: string[];
     languageChoice: Choice<string>;
-    startingProficiencies: Feature<string, string>[];
+    startingProficiencies?: Array<Feature<string, string>> ;
     startingProficiencyChoices: Choice<Feature<string, string>>;
 }
