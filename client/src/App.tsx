@@ -10,6 +10,7 @@ import useDnDItems from './customHooks/dndInfo/srdinfo/useDnDItems';
 import styles from './App.module.css';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
+import ExpansionPanel from './components/shared/expansion/expansion';
 
 const App: Component = () => {
   const stylin = useStyle();       
@@ -23,8 +24,15 @@ const App: Component = () => {
   return (
       <div class={`${stylin.accent} ${styles.AppBody}`}>
         <h1>Home</h1>
-        <div>
-          Welcome to my app. This is a work in progress.
+        <div style={{width: "30%"}}>
+          <ExpansionPanel>
+            <div>
+                Welcome to my app. This is a work in progress.
+            </div>
+            <div style={{padding: "15px"}}>
+                It'll be great eventually.
+            </div>
+          </ExpansionPanel>
         </div>
         <ReloadPrompt />
       </div>

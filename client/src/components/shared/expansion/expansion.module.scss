@@ -1,20 +1,25 @@
 .header {
     width: 100%;
-    border: 1px solid;
+    border-bottom: 1px solid;
     display: flex;
     flex-direction: row;
     border-radius: 10px;
+    box-shadow: inset 1px 1px 5px 1px;
+    :first-child {
+        flex-grow: 1;
+    }
     :last-child {
         align-self: flex-end;
         padding: 10px;
     }
 }
 .body {
-    border: 1px solid;
     border-radius: 10px;
     width: 100%;
 }
 .totalPanel {
     display: flex !important;
     flex-direction: column !important;
+    border: 1px solid;
+    border-radius: 10px;
 }
