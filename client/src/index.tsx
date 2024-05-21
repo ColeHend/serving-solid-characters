@@ -94,7 +94,6 @@ render(
         <Route path="/create" component={CharacterCreate} />
       </Route>
       <Route path="/info" >
-        <Route path="/" component={masterSpells} />
         <Route path="/spells" component={masterSpells} />
         <Route path="/feats" component={featsList} />
         <Route path="/races" component={races} />

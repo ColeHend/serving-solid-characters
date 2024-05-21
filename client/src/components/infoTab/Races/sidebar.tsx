@@ -2,6 +2,7 @@ import { Component, For, Show, createSignal } from "solid-js";
 import { Race } from "../../../models/race.model";
 import useStyle from "../../../customHooks/utility/style/styleHook";
 import Banner from "./banner";
+import { effect } from "solid-js/web";
 
 type Props = {
     dndSrdRaces: () => Race[];
@@ -38,15 +39,13 @@ const Sidebar: Component<Props> = (props) => {
       }
     }
 
-
-
     return (
       <>
           <Show when={shown() === true}>
             <div class={`${stylin.accent} ${styles.fixed}`}> {/* sidebar  */}
             <For each={dndSrdRaces()}>
               {(race, i) => (
-                <div class={`${styles.sidebar}`}>
+                <div id="raceSideBar" class={`${styles.sidebar}`}>
                   <div class={`${styles.flexrow}`}>
                     <span onClick={() => toggleRow(i())}><Banner styles={styles} /></span> <span onClick={()=>moveToElement(race.name)}>{race.name}</span>
                     <br />

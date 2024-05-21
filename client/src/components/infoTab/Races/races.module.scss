@@ -1,4 +1,14 @@
+$mobile: 800px;
 
+@keyframes slidein {
+    from {
+        transform: translateX(0%);
+    }
+
+    to {
+        transform: translateX((100%));
+    }
+}
 
 .sidebar {
     display: flex;
@@ -34,7 +44,6 @@
             font-size: 1.2em;
         }
     }
-
 }
 .sidebar_shown {
     display: flex;
@@ -76,6 +85,10 @@
     padding: 15px;
     border-radius: 10px;
     margin-left: 30px;
+
+    @media screen and (max-width: $mobile) {
+        transform: translateY(-10vh);
+    }
 }
 .flexrow {
     display: flex;
@@ -92,10 +105,18 @@
     width: 10%; 
 }
 .sideBarBtn {
+    position: fixed;
     transform: translateY(28vh) translateX(10.4vw);
     padding: 10px;
     border-radius: 9px;
     border: none;
     height: 6%;
-    
+
+    @media screen and (max-width: $mobile) {
+        transform: translateX(-5%);
+    }
+}
+
+.animate {  
+    animation: slidein 2s ease-in-out alternate
 }
