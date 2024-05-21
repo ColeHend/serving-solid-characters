@@ -1,12 +1,4 @@
-import {
-  Component,
-  For,
-  Match,
-  Show,
-  Switch,
-  createMemo,
-  createSignal,
-} from "solid-js";
+import { Component, For, Show } from "solid-js";
 import { Race } from "../../../../models/race.model";
 import useStyle from "../../../../customHooks/utility/style/styleHook";
 import style from "./subrace.module.scss";
@@ -50,7 +42,7 @@ const Subrace: Component<Props> = (props) => {
 
 
                 {/* ------------------\ Starting Profs /--------------------- */}
-{/*                
+                {/*                
                 <For each={subrace.startingProficiencies}>
                   {(prof) => <>
                     <span>{prof.value}</span>

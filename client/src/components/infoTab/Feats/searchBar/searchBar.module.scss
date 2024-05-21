@@ -9,4 +9,8 @@
         border: none;
         outline: none;
     }
+
+    @media screen and (max-width: 800px) {
+        width: 50%;
+    }
 }
