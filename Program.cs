@@ -84,11 +84,15 @@ builder.WebHost.ConfigureServices(services =>
 
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
-    options.ListenLocalhost(5000);
+    // how to generate a https certificate run these two commands with your info.
+    // mkcert <address>
+    // openssl pkcs12 -export -out <mydomains>.pfx -inkey <example.com+5-key>.pem -in <example.com+5>.pem 
+    options.ListenLocalhost(5000, listenOptions =>
+    {
+        listenOptions.UseHttps("nethost.pfx", "password");
+    });
     options.Listen(System.Net.IPAddress.Parse("192.168.1.100"), 5000, listenOptions =>
     {
-        // mkcert <address>
-        // openssl pkcs12 -export -out mydomains.pfx -inkey example.com+5-key.pem -in example.com+5.pem 
         listenOptions.UseHttps("nethost.pfx", "password");
     });
 });
