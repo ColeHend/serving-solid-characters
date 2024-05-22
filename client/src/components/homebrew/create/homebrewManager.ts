@@ -1,14 +1,8 @@
 import { createSignal, createMemo, type Accessor, type Setter } from "solid-js";
-import { Feat } from "../../../models/feat.model";
-import { Item } from "../../../models/items.model";
-import { Spell } from "../../../models/spell.model";
-import { DnDClass } from "../../../models/class.model";
-import { Background } from "../../../models/background.model";
-import { Race } from "../../../models/race.model";
-import homebrewDB from "../../../customHooks/utility/localDB/homebrewDBFile";
+import { Feat, Item, Spell, DnDClass, Background, Race } from "../../../models/";
 import { concatMap, take, of, tap, Observable, catchError } from "rxjs";
+import homebrewDB from "../../../customHooks/utility/localDB/homebrewDBFile";
 import httpClient$ from "../../../customHooks/utility/httpClientObs";
-import { h } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 
 export default class HomebrewManager {
     public classes: Accessor<DnDClass[]>;
