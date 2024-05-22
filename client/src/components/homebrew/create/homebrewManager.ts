@@ -114,6 +114,12 @@ export default class HomebrewManager {
         const updatedClasses = this.classes();
         updatedClasses.splice(index, 1);
         this.setClasses([...updatedClasses]);
+        httpClient$.toObservable(homebrewDB.classes.clear()).pipe(
+            take(1),
+            concatMap(() => {
+                return httpClient$.toObservable(homebrewDB.classes.bulkAdd(this.classes()));
+            })
+        ).subscribe();
     }
 
     public addItem = (newItem: Item) => {
