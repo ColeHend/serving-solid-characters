@@ -16,10 +16,10 @@ const ExpansionPanel: Component<Props> = (props)=>{
                     {props.children[0]}
                 </span>
                 <span onClick={()=>setOpen(old =>!old)} class={`${stylin.hover}`}>
-                    <Show when={open()}>
+                    <Show when={!open()}>
                         ↓
                     </Show>
-                    <Show when={!open()}>
+                    <Show when={open()}>
                         ↑
                     </Show>
                 </span>
