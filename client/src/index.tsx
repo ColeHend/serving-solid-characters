@@ -34,7 +34,7 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-const intervalMS = 30 * 24 * 60 * 60 * 1000;
+const intervalMS = 60 * 1000;
 const { needRefresh, offlineReady, updateServiceWorker } = useRegisterSW({
   onRegisteredSW(url, r) {
     r &&
