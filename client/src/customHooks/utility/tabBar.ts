@@ -13,8 +13,10 @@ export default function useTabs(pageName: Accessor<string>): Accessor<Tab[]> {
                 const theTabs = [
                     { Name: "All", Link: "/info" },
                     { Name: "Races", Link: "/info/races" },
+                    { Name: "Items", Link: "/info/items" },
                     { Name: "Spells", Link: "/info/spells" },
-                    { Name: "Feats", Link: "/info/feats" }
+                    { Name: "Feats", Link: "/info/feats" },
+                    { Name: "Classes", Link: "/info/classes"}
                 ];
 
                 if (defaultSystem === GameSystems.DnD5e) {

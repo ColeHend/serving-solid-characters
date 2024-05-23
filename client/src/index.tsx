@@ -13,8 +13,6 @@ const CharacterCreate = lazy(
 );
 const CharacterView = lazy(() => import("./components/characters/view/view"));
 import { useRegisterSW } from "virtual:pwa-register/solid";
-import masterSpells from "./components/infoTab/Spells/Spells";
-import featsList from "./components/infoTab/Feats/feats";
 import Homebrew from "./components/homebrew/homebrew";
 import Create from "./components/homebrew/create/create";
 import View from "./components/homebrew/view/view";
@@ -26,6 +24,8 @@ import Spells from "./components/homebrew/create/parts/spells/spells";
 import Races from "./components/homebrew/create/parts/races/races";
 
 
+import masterSpells from "./components/infoTab/Spells/Spells";
+import featsList from "./components/infoTab/Feats/feats";
 import races from "./components/infoTab/Races/races";
 import Viewbackgrounds from "./components/infoTab/Backgrounds/backgrounds";
 const root = document.getElementById("root");
