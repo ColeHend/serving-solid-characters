@@ -6,6 +6,8 @@ import { Feat } from "../../../models/feat.model";
 import Paginator from "../../shared/paginator/paginator";
 import FeatsSearch from "./searchBar/searchBar";
 import { effect } from "solid-js/web";
+import useGetFeats from "../../../customHooks/data/useGetFeats";
+import { PreReqType } from "../../homebrew/create/parts/feats/feats";
 
 const featsList: Component = () => {
     const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
@@ -16,61 +18,98 @@ const featsList: Component = () => {
     
     const stylin = useStyle();
     
-    const srdFeats = useDnDFeats();
+    const srdFeats = useGetFeats(); 
+    // const srdFeats = useDnDFeats();
     
     return (
         <div class={`${stylin.accent} ${styles.featsList}`}>
-            <h1>Feats</h1>
+            <div class={`${styles.body}`}>
+                <h1>Feats</h1>
 
-            <FeatsSearch items={srdFeats} setSearchRes={setSearchResult} />
+                <FeatsSearch items={srdFeats} setSearchRes={setSearchResult} />
 
-            <ol>
-                <For each={searchResult()}>
-                    {(feat, i)=>
-                        <>
-                            <li> 
-                                {feat.name} <button onClick={()=>toggleRow(i())}>{hasIndex(i()) ? "↑" : "↓"}</button> 
-                            </li>
-                            <Show when={hasIndex(i())}>
-                                <>
-                                <div class={`${styles.PreReqsBar}`}>
-                                    <For each={feat.preReqs}>{(preReq)=>
-                                        <div>
-                                            <Switch>
-                                                <Match when={preReq.info.type === "AbilityScore"}>
-                                                    <div>
-                                                        Ability Score Requirement: 
-                                                    </div>
-                                                    <span>
-                                                        {preReq.name} of {preReq.value}
-                                                    </span>
-                                                </Match>
-                                            </Switch>
-                                        </div>
-                                    }</For>
-                                </div>
-                                    <br />
-                                    <div>
-                                        Description:
+                <ol>
+                    <For each={searchResult()}>
+                        {(feat, i)=>
+                            <>
+                                <li> 
+                                    {feat.name} <button onClick={()=>toggleRow(i())}>{hasIndex(i()) ? "↑" : "↓"}</button> 
+                                </li>
+                                <Show when={hasIndex(i())}>
+                                    <>
+                                    <div class={`${styles.PreReqsBar}`}>
+                                        <For each={feat.preReqs}>{(preReq)=>
+                                            <div>
+                                                <Switch>
+                                                    <Match when={preReq.info.type === PreReqType[0]}>
+                                                        <div>
+                                                            Ability Score Requirement: 
+                                                        </div>
+                                                        <span>
+                                                            {/* this might change  */}
+
+                                                            {preReq.name} of {preReq.value}
+                                                        </span>
+                                                    </Match>
+                                                    <Match when={preReq.info.type === PreReqType[1]}>
+                                                        <div>
+                                                            Class Requirement:
+                                                        </div>
+                                                        <span>
+                                                            {/* this might change  */}
+
+
+                                                            {preReq.value}
+                                                        </span>
+                                                    </Match>
+                                                    <Match when={preReq.info.type === PreReqType[2]}>
+                                                        <div>
+                                                            class level Requirement:
+                                                        </div>
+                                                        <span>
+                                                            {/* this might change  */}
+
+                                                            {preReq.name} {preReq.value}
+                                                        </span>
+                                                    </Match>
+                                                    <Match when={preReq.info.type === PreReqType[3]}>
+                                                        <div>
+                                                            classes Requirement:
+                                                        </div>
+                                                        <span>
+                                                            {/* this might change  */}
+
+                                                            {preReq.name}
+                                                        </span>
+                                                    </Match>
+
+                                                </Switch>
+                                            </div>
+                                        }</For>
                                     </div>
-                                    <span>
-                                        <For each={feat.desc}>
-                                            {(desc, i)=>
-                                                <>
-                                                    {desc}
-                                                    <br />
-                                                </>
-                                            }
-                                        </For>
-                                    </span>
-                                </>
-                            </Show>
-                        </>
-                    }
-                </For>
-            </ol>
+                                        <br />
+                                        <div>
+                                            Description:
+                                        </div>
+                                        <span>
+                                            <For each={feat.desc}>
+                                                {(desc, i)=>
+                                                    <>
+                                                        {desc}
+                                                        <br />
+                                                    </>
+                                                }
+                                            </For>
+                                        </span>
+                                    </>
+                                </Show>
+                            </>
+                        }
+                    </For>
+                </ol>
 
-            <Paginator items={srdFeats} setPaginatedItems={setPaginatedFeats} />
+                <Paginator items={srdFeats} setPaginatedItems={setPaginatedFeats} />
+            </div>
         </div>
     )
 };
