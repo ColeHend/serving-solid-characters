@@ -1,10 +1,10 @@
 import type { Choice, Feature, Item } from "./core.model";
 
 export interface Background {
-    Name:                     string;
-    StartingProficiencies:    Feature<string, string>[];
-    LanguageChoice:           Choice<string>;
-    StartingEquipment:        Item[];
-    StartingEquipmentChoices: Choice<Item>[];
-    Feature:                  Feature<string[], string>[];
+    name:                     string;
+    startingProficiencies:    Feature<string, string>[];
+    languageChoice:           Choice<string>;
+    startingEquipment:        Item[];
+    startingEquipmentChoices: Choice<Item>[];
+    feature:                  Feature<string[], string>[];
 }

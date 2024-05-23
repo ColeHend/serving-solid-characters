@@ -6,10 +6,11 @@ import TableRow from "./TableRow/tableRow";
 import Paginator from "../../shared/paginator/paginator";
 import { Spell } from "../../../models/spell.model";
 import SearchBar from "./searchBar/searchBar";
+import useGetSpells from "../../../customHooks/data/useGetSpells";
 
 const masterSpells: Component = () => {
     const stylin = useStyle();
-    const dndSrdSpells = useDnDSpells();
+    const dndSrdSpells = useGetSpells();
 
     const [RowShown, SetRowShown] = createSignal<number[]>([]);
     const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);

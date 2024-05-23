@@ -1,5 +1,10 @@
 .featsList {
     padding: 10pt;
+    margin: 0 auto;
+    margin-top: 3%;
+    width: 90%;
+    padding: 10px;
+    border-radius: 15px;
 
     ol {
 
@@ -24,5 +29,12 @@
         :nth-child(n) {
             margin-right: 10px;
         }
+    }
+}
+.body {
+    margin-left: 35%;
+
+    @media screen and (max-width: 768px){
+        margin-left: 0;
     }
 }
