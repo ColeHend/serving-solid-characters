@@ -19,7 +19,6 @@ const Viewclasses: Component = () => {
     
     
     
-    
     }
 
     return (
@@ -63,6 +62,11 @@ const Viewclasses: Component = () => {
                             </span>
 
                             <br />
+                            <div>{Class.startingEquipment.choice1.flatMap(x => x.choices).map(x => x.item).join("\n")}</div>
+                            <div>{Class.startingEquipment.choice2.flatMap(x => x.choices).map(x => x.item).join("\n")}</div>
+                            <div>{Class.startingEquipment.choice3.flatMap(x => x.choices).map(x => x.item).join("\n")}</div>
+                            <div>{Class.startingEquipment.choice4.flatMap(x => x.choices).map(x => x.item).join("\n")}</div>
+
                             <br />
 
 

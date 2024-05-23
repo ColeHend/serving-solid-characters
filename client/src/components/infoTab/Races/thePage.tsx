@@ -1,6 +1,7 @@
 import { Component, For, Show } from "solid-js";
 import { Race } from "../../../models/race.model";
 import Subrace from "./subraces/subrace";
+import { effect } from "solid-js/web";
 
 type Props = {
   styles: CSSModuleClasses;
@@ -10,7 +11,7 @@ type Props = {
 const ThePage: Component<Props> = (props) => {
   let styles = props.styles;
   let dndSrdRaces = props.dndSrdRaces;
-
+  
   return (
     <div class={`${styles.thePage}`}>
       {/* the page  */}
@@ -22,7 +23,7 @@ const ThePage: Component<Props> = (props) => {
 
               <h2>{race.name} traits</h2>
               <div>
-                <h3>ability score increases: </h3>
+                <h3>Ability Score Increases: </h3>
                 <div class={`${styles.abilityscore}`}>
                   <For each={race.abilityBonuses}>
                     {(bonus) => (
@@ -35,23 +36,23 @@ const ThePage: Component<Props> = (props) => {
                   </For>
                 </div>
 
-                <h3>age:</h3>
+                <h3>Age:</h3>
 
                 <span class={`${styles.wrap}`}>{race.age}</span>
 
-                <h3>alignment:</h3>
+                <h3>Alignment:</h3>
 
                 <span class={`${styles.wrap}`}>{race.alignment}</span>
 
-                <h3>size:</h3>
+                <h3>Size:</h3>
 
                 <span class={`${styles.wrap}`}>{race.sizeDescription}</span>
 
-                <h3>speed:</h3>
+                <h3>Speed:</h3>
 
                 <span>{race.speed}ft</span>
 
-                <h3>race specific traits:</h3>
+                <h3>Race Specific Traits:</h3>
 
                 <span>
                   {/* {race.traits} */}
@@ -71,8 +72,11 @@ const ThePage: Component<Props> = (props) => {
                     )}
                   </For>
                 </span>
+                <h3>Proficiencies</h3>
 
-                <h3>languages:</h3>
+                <div>{race.startingProficencies.map(x => x.value).join("\n")}</div>
+
+                <h3>Languages:</h3>
 
                 {race.languageDesc}
 

@@ -12,7 +12,7 @@ export interface Race {
     languageDesc: string;
     traits: Feature<string[], string>[];
     traitChoice: Choice<Feature<string[], string>>;
-    startingProficiencies: Feature<string, string>[];
+    startingProficencies: Feature<string, string>[];
     startingProficiencyChoices: Choice<Feature<string, string>>;
     abilityBonuses: Feature<number, string>[];
     abilityBonusChoice: Choice<Feature<number, string>>;
@@ -32,6 +32,6 @@ export interface Subrace {
     sizeDescription: string;
     languages: string[];
     languageChoice: Choice<string>;
-    startingProficiencies?: Array<Feature<string, string>> ;
+    startingProficencies?: Array<Feature<string, string>> ;
     startingProficiencyChoices: Choice<Feature<string, string>>;
 }

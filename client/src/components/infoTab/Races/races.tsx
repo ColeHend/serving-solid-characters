@@ -22,7 +22,9 @@ const races: Component = () => {
       ? SetRowShown([...RowShown(), index])
       : SetRowShown(RowShown().filter((i) => i !== index));
   const hasIndex = (index: number) => RowShown().includes(index);
-
+  effect(()=>{
+    console.log(dndSrdRaces());
+    })
   return (
     <>
       <Sidebar dndSrdRaces={dndSrdRaces} styles={styles} toggleRow={toggleRow} hasIndex={hasIndex} />
