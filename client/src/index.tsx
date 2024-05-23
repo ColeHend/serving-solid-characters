@@ -28,6 +28,7 @@ import masterSpells from "./components/infoTab/Spells/Spells";
 import featsList from "./components/infoTab/Feats/feats";
 import races from "./components/infoTab/Races/races";
 import Viewbackgrounds from "./components/infoTab/Backgrounds/backgrounds";
+import Viewclasses from "./components/infoTab/Classes/Classes";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -103,6 +104,7 @@ render(
         <Route path="/races" component={races} />
         <Route path="/spells" component={masterSpells} />
         <Route path="/feats" component={featsList} />
+        <Route path="/classes" component={Viewclasses} />
         <Route path="/backgrounds" component={Viewbackgrounds} />
       </Route>
       <Route path="/homebrew">
