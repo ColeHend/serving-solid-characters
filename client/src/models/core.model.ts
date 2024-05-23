@@ -24,8 +24,8 @@ export interface StartingEquipment {
     quantity: number;
     choice1: Choice<string>[];
     choice2: Choice<string>[];
-    choice3: Choice<Feature<number, string>>[];
-    choice4: Choice<Feature<number, string>>[];
+    choice3: Choice<Feature<any, string>>[];
+    choice4: Choice<Feature<any, string>>[];
 }
 
 export interface Item {
