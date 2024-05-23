@@ -27,6 +27,7 @@ import Races from "./components/homebrew/create/parts/races/races";
 
 
 import races from "./components/infoTab/Races/races";
+import Viewbackgrounds from "./components/infoTab/Backgrounds/backgrounds";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -99,9 +100,10 @@ render(
         <Route path="/create" component={CharacterCreate} />
       </Route>
       <Route path="/info" >
+        <Route path="/races" component={races} />
         <Route path="/spells" component={masterSpells} />
         <Route path="/feats" component={featsList} />
-        <Route path="/races" component={races} />
+        <Route path="/backgrounds" component={Viewbackgrounds} />
       </Route>
       <Route path="/homebrew">
         <Route path="/" component={Homebrew} />
