@@ -62,10 +62,7 @@ const Viewclasses: Component = () => {
                             </span>
 
                             <br />
-                            <div>{Class.startingEquipment.choice1.flatMap(x => x.choices).map(x => x.item).join("\n")}</div>
-                            <div>{Class.startingEquipment.choice2.flatMap(x => x.choices).map(x => x.item).join("\n")}</div>
-                            <div>{Class.startingEquipment.choice3.flatMap(x => x.choices).map(x => x.item).join("\n")}</div>
-                            <div>{Class.startingEquipment.choice4.flatMap(x => x.choices).map(x => x.item).join("\n")}</div>
+                            
 
                             <br />
 
@@ -107,7 +104,138 @@ const Viewclasses: Component = () => {
                             </Show>
                             
                             <br />
+
+                            <h2>
+                                Starting Equipment
+                            </h2>
+
+                            <br />
+
+                            <span>
+                                Choose: {Class.startingEquipment.choice1[0].choose}
+                            </span>
+
+                            <Show when={Class.startingEquipment.choice1.length >= 1}>
+                                <For each={Class.startingEquipment.choice1}>
+                                    {(choice, i) =>
+                                        <div>   
+                                            <Show when={i() >= 1}>
+                                                <br />
+                                                <span>
+                                                    Choose: {choice.choose}
+                                                </span>
+                                                <br />
+                                            </Show>
+
+                                            <span>
+                                                <For each={choice.choices}>
+                                                    {(item,i)=>
+                                                        <>
+                                                            <br />
+                                                            <span>{item.item}</span>
+                                                            <br />
+                                                        </>
+                                                    }
+                                                </For>
+                                            </span>
+                                        </div>
+                                    }
+                                </For>
+                            </Show>
                             
+                            <br />
+
+                            <Show when={Class.startingEquipment.choice2}>
+                                <For each={Class.startingEquipment.choice2}>
+                                    {(choice)=>
+                                        <div>
+                                            <br />
+                                            <span>Choose: {choice.choose}</span>
+
+                                            <br />
+
+                                            <span>
+                                                <For each={choice.choices}>
+                                                    {(item)=>
+                                                        <>
+                                                            <br />
+                                                            <span>{item.item}</span>
+                                                            <br />
+                                                        </>
+                                                    }
+                                                </For>
+                                            </span>
+                                        </div>
+                                    }
+                                </For>
+                            </Show>
+
+                            <br />
+                            
+                            <Show when={Class.startingEquipment.choice3}>
+                                <For each={Class.startingEquipment.choice3}>
+                                    {(choice)=>
+                                        <div>
+                                            <br />
+                                            <span>Choose: {choice.choose}</span>
+
+                                            <br />
+
+                                            <span>
+                                                <For each={choice.choices}>
+                                                    {(item)=>
+                                                        <>
+                                                            <br />
+                                                            <span>{item.item}</span>
+                                                            <br />
+                                                        </>
+                                                    }
+                                                </For>
+                                            </span>
+                                        </div>
+                                    }
+                                </For>
+                            </Show>
+
+                            <br />
+
+                            <Show when={Class.startingEquipment.choice4}>
+                                <For each={Class.startingEquipment.choice4}>
+                                    {(choice)=>
+                                        <div>
+                                            <br />
+                                            <span>Choose: {choice.choose}</span>
+
+                                            <span>
+                                                <For each={choice.choices}>
+                                                    {(item)=>
+                                                        <>
+                                                            <br />
+                                                            <span>{item.item}</span>
+                                                            <br />
+                                                        </>
+                                                    }
+                                                </For>
+                                            </span>
+                                        </div>
+                                    }
+                                </For>
+                            </Show>
+
+                            <br />
+
+                            <Show when={Class.classLevels.length >= 1}>
+                                <For each={Class.classLevels}>
+                                    {(feature)=>
+                                        <>
+                                           
+                                        </>
+                                    }
+                                </For>
+                            </Show>
+
+
+                            <hr style={{width:"100%"}} />                           
                         </div>
                     }
                 </For>
