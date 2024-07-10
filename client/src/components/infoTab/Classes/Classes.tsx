@@ -4,6 +4,7 @@ import useGetClasses from "../../../customHooks/data/useGetClasses";
 import { it } from "node:test";
 import { effect } from "solid-js/web";
 import ExpansionPanel from "../../shared/expansion/expansion";
+import FeatureTable from "./FeatureTable";
 
 const Viewclasses: Component = () => {
 
@@ -29,54 +30,7 @@ const Viewclasses: Component = () => {
 
                             {/* the feature table */}
 
-                            <table style={{width:"65%"}}>
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            Level
-                                        </th>
-                                        <th>
-                                            Proficiency Bonus
-                                        </th>
-                                        <th>
-                                            Features
-                                        </th>
-                                        <For each={Object.keys(Class.classLevels[0].classSpecific)}>
-                                            {(Specifickey)=>
-                                                <th>
-                                                    {Specifickey}
-                                                </th>
-                                            }
-                                        </For>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <For each={Class.classLevels.sort((a,b)=> a.info.level - b.info.level)}>
-                                        {(item)=>
-                                            <tr style={{"text-align": "center"}}>
-                                                <td>{item.info.level}</td>
-
-                                                <td>{item.profBonus}</td>
-
-                                                <td>
-                                                    {item.features.map(x => x.name).join(", ")}
-                                                </td>
-                                                
-                                                {/* class specific stuff ↓ needs alot work */}
-
-                                                <For each={Object.keys(item.classSpecific)}>
-                                                    {(Specifickey)=>
-                                                        <td>
-                                                            <span>{item.classSpecific[Specifickey]}</span>
-                                                        </td>
-                                                    }
-                                                </For>
-                                            </tr>
-
-                                        }
-                                    </For>
-                                </tbody>
-                            </table>
+                            <FeatureTable Class={Class} />
 
                             <h2>Proficiencies</h2>
                             <span>Armor: {Class.proficiencies.filter(x => x.includes("armor")).join(", ")} </span> <span><Show when={Class.proficiencies.filter(x =>x === "Shields")}>& Shields</Show></span>
