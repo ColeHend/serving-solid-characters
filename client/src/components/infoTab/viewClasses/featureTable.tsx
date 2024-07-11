@@ -1,7 +1,6 @@
-
-
 import { Component, For, Show } from "solid-js";
 import { DnDClass } from "../../../models/class.model";
+import { formatKeysForDisplay, toDisplayFormat } from "../../../customHooks/utility/stringsHelper";
 
 type Props = {
     Class: DnDClass
@@ -28,7 +27,7 @@ const FeatureTable: Component<Props> = (props) => {
                 <For each={Object.keys(Class.classLevels[0].classSpecific)}>
                     {(Specifickey)=>
                         <th>
-                            {Specifickey}
+                            {toDisplayFormat(Specifickey)}
                         </th>
                     }
                 </For>

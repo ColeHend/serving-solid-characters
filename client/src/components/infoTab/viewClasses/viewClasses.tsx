@@ -14,6 +14,9 @@ const viewClasses: Component = () => {
         console.log(dndSrdClasses());
         
     })
+
+    
+
     return (
         <div class={`${styles.CenterPage} ${stylin.accent}`}> 
 
