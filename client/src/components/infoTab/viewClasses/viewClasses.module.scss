@@ -1,0 +1,28 @@
+$mobile: 800px;
+
+.CenterPage {
+    margin: 0 auto;
+    width: 90%;
+    margin-top: 3%;
+    text-align: center;
+    
+}
+
+.eachPage {
+    padding: 15px;
+}
+
+.Center {
+    margin: 0 auto;
+    width: 90%;
+}
+
+.CenterTable {
+    margin: 0 auto;
+    width: 65%;
+    margin-left: 32%;
+
+    @media screen and (max-width) {
+        margin-left: 0;
+    }
+}

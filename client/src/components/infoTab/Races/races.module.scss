@@ -33,12 +33,11 @@ $mobile: 800px;
         background-color: inherit;
         color: white;
         border: none;
+        font-size: 1em;
 
         &:hover {
             cursor: pointer;
         }
-
-        font-size: 1em;
 
         &:active {
             font-size: 1.2em;
@@ -73,7 +72,7 @@ $mobile: 800px;
  border-radius: 15px;
 
  h1 {
-        text-align: center;
+    text-align: center;
  }
 }
 .fixed {

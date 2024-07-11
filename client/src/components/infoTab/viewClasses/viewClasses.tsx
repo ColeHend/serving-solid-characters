@@ -1,13 +1,12 @@
 import { Component, For, Show, Switch, Match } from "solid-js";
 import ExpansionPanel from "../../shared/expansion/expansion";
-import FeatureTable from "./FeatureTable/FeatureTable";
+import FeatureTable from "./featureTable";
 import useGetClasses from "../../../customHooks/data/useGetClasses";
 import useStyle from "../../../customHooks/utility/style/styleHook";
 import styles from "./viewClasses.module.scss"
 import { effect } from "solid-js/web";
 
-const Viewclasses: Component = () => {
-
+const viewClasses: Component = () => {
     const stylin = useStyle();
     const dndSrdClasses = useGetClasses();
 
@@ -15,21 +14,21 @@ const Viewclasses: Component = () => {
         console.log(dndSrdClasses());
         
     })
-
-
     return (
-        <div class={`${stylin.accent} ${styles.allClasses}`}>
+        <div class={`${styles.CenterPage} ${stylin.accent}`}> 
 
                 <For each={dndSrdClasses()}>
                     {(Class) =>
-                        <div class={`${styles.eachClass} `} >
+                        <div class={`${styles.eachPage}`}>
                             <h1>{Class.name}</h1>
 
 
                             {/* the feature table */}
+                            <div class={`${styles.CenterTable}`}>
+                                <FeatureTable Class={Class} />
 
-                            <FeatureTable Class={Class} />
-
+                            </div>
+                            
                             <h2>Proficiencies</h2>
                             <span>Armor: {Class.proficiencies.filter(x => x.includes("armor")).join(", ")} </span> <span><Show when={Class.proficiencies.filter(x =>x === "Shields")}>& Shields</Show></span>
                             
@@ -69,7 +68,7 @@ const Viewclasses: Component = () => {
                             <br />
                             
                             {/* Skills */}
-                            <ExpansionPanel style={{width:"50%"}}>
+                            <ExpansionPanel class={`${styles.Center}`} style={{width:"50%"}}>
                                 <div>
                                     <h2>
                                         Skills
@@ -107,7 +106,7 @@ const Viewclasses: Component = () => {
                             <br />
                             
                             {/* Starting Equipment */}
-                            <ExpansionPanel style={{width:"50%"}}>
+                            <ExpansionPanel class={`${styles.Center}`} style={{width:"50%"}}>
                                 <div>
                                     <h2>
                                         Starting Equipment
@@ -116,20 +115,18 @@ const Viewclasses: Component = () => {
                                 <div>
                                     <br />
 
-                                    <span>
-                                        Choose: {Class.startingEquipment.choice1[0].choose}
-                                    </span>
-
                                     <Show when={Class.startingEquipment.choice1.length >= 1}>
                                         <For each={Class.startingEquipment.choice1}>
                                             {(choice, i) =>
                                                 <div>   
-                                                    <Show when={i() >= 1}>
-                                                        <br />
-                                                        <span>
-                                                            Choose: {choice.choose}
-                                                        </span>
-                                                        <br />
+                                                    <Show when={i() < 1}>
+                                                        <h3>choice 1</h3>
+                                                    </Show>
+
+                                                    <br />
+                                                     
+                                                    <Show when={i() < 1}>
+                                                        <span>choose:  {choice.choose}</span>
                                                     </Show>
 
                                                     <span>
@@ -138,6 +135,10 @@ const Viewclasses: Component = () => {
                                                                 <>
                                                                     <br />
                                                                     <span>{item.item}</span>
+
+
+
+                                                                    <br />
                                                                     <br />
                                                                 </>
                                                             }
@@ -149,13 +150,21 @@ const Viewclasses: Component = () => {
                                     </Show>
                                     
                                     <br />
+                                    <br />
 
                                     <Show when={Class.startingEquipment.choice2}>
                                         <For each={Class.startingEquipment.choice2}>
-                                            {(choice)=>
+                                            {(choice, i)=>
                                                 <div>
+                                                    <Show when={i() < 1}>
+                                                        <h3>choice 2</h3>
+                                                    </Show>
+
                                                     <br />
-                                                    <span>Choose: {choice.choose}</span>
+
+                                                    <Show when={i() < 1}>
+                                                        <span>choose:  {choice.choose}</span>
+                                                    </Show>
 
                                                     <br />
 
@@ -163,8 +172,12 @@ const Viewclasses: Component = () => {
                                                         <For each={choice.choices}>
                                                             {(item)=>
                                                                 <>
-                                                                    <br />
+                                                                   <br />
                                                                     <span>{item.item}</span>
+
+
+
+                                                                    <br />
                                                                     <br />
                                                                 </>
                                                             }
@@ -179,10 +192,17 @@ const Viewclasses: Component = () => {
                                     
                                     <Show when={Class.startingEquipment.choice3}>
                                         <For each={Class.startingEquipment.choice3}>
-                                            {(choice)=>
+                                            {(choice, i)=>
                                                 <div>
+                                                    <Show when={i() < 1}>
+                                                        <h3>choice 3</h3>
+                                                    </Show>
+
                                                     <br />
-                                                    <span>Choose: {choice.choose}</span>
+
+                                                    <Show when={i() < 1}>
+                                                        <span>choose:  {choice.choose}</span>
+                                                    </Show>
 
                                                     <br />
 
@@ -192,6 +212,10 @@ const Viewclasses: Component = () => {
                                                                 <>
                                                                     <br />
                                                                     <span>{item.item}</span>
+
+
+
+                                                                    <br />
                                                                     <br />
                                                                 </>
                                                             }
@@ -206,10 +230,17 @@ const Viewclasses: Component = () => {
 
                                     <Show when={Class.startingEquipment.choice4}>
                                         <For each={Class.startingEquipment.choice4}>
-                                            {(choice)=>
+                                            {(choice, i)=>
                                                 <div>
+                                                    <Show when={i() < 1}>
+                                                        <h3>choice 4</h3>
+                                                    </Show>
+                                                    
                                                     <br />
-                                                    <span>Choose: {choice.choose}</span>
+
+                                                    <Show when={i() < 1}>
+                                                        <span>choose:  {choice.choose}</span>
+                                                    </Show>
 
                                                     <span>
                                                         <For each={choice.choices}>
@@ -217,6 +248,10 @@ const Viewclasses: Component = () => {
                                                                 <>
                                                                     <br />
                                                                     <span>{item.item}</span>
+
+
+
+                                                                    <br />
                                                                     <br />
                                                                 </>
                                                             }
@@ -237,4 +272,4 @@ const Viewclasses: Component = () => {
         </div>
     )
 };
-export default Viewclasses
+export default viewClasses

@@ -13,14 +13,14 @@
 }
 .hover {
     &:hover {
+        font-size: 1.05rem;
+        cursor: pointer;
         button {
             font-weight: bold;
         }
         link {
             background-color: #5C6BC0;
         }
-        font-size: 1.05rem;
-        cursor: pointer;
     }
 }
 .popup {

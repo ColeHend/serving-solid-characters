@@ -1,10 +1,10 @@
+
+
 import { Component, For, Show } from "solid-js";
-import { DnDClass } from "../../../../models/class.model";
+import { DnDClass } from "../../../models/class.model";
 
 type Props = {
     Class: DnDClass
-
-
 }
 
 
@@ -13,7 +13,7 @@ const FeatureTable: Component<Props> = (props) => {
     const Class = props.Class
 
     return (
-        <table style={{width:"64%"}}>
+        <table style={{width:"100%"}}>
         <thead>
             <tr>
                 <th>
