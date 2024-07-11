@@ -1,10 +1,10 @@
 import { Component, For, Show, Switch, Match } from "solid-js";
-import useStyle from "../../../customHooks/utility/style/styleHook";
-import useGetClasses from "../../../customHooks/data/useGetClasses";
-import { it } from "node:test";
-import { effect } from "solid-js/web";
 import ExpansionPanel from "../../shared/expansion/expansion";
-import FeatureTable from "./FeatureTable";
+import FeatureTable from "./FeatureTable/FeatureTable";
+import useGetClasses from "../../../customHooks/data/useGetClasses";
+import useStyle from "../../../customHooks/utility/style/styleHook";
+import styles from "./viewClasses.module.scss"
+import { effect } from "solid-js/web";
 
 const Viewclasses: Component = () => {
 
@@ -18,13 +18,11 @@ const Viewclasses: Component = () => {
 
 
     return (
-        <>
-
-            <div class={`${stylin.accent}`}>
+        <div class={`${stylin.accent} ${styles.allClasses}`}>
 
                 <For each={dndSrdClasses()}>
                     {(Class) =>
-                        <div >
+                        <div class={`${styles.eachClass} `} >
                             <h1>{Class.name}</h1>
 
 
@@ -236,8 +234,7 @@ const Viewclasses: Component = () => {
                         </div>
                     }
                 </For>
-            </div>
-        </>
+        </div>
     )
 };
 export default Viewclasses

@@ -10,10 +10,6 @@ const Viewbackgrounds: Component = () => {
     const stylin = useStyle();
     const backgrounds = useGetBackgrounds();
 
-    effect(()=>{    
-        console.log("backgrounds: ", backgrounds());
-    });
-
     return (
         <div class={`${stylin.accent} ${styles.allBackgrounds}`}>
             <h1>Backgrounds</h1>

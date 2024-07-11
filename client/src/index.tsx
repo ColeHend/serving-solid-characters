@@ -28,7 +28,7 @@ import masterSpells from "./components/infoTab/Spells/Spells";
 import featsList from "./components/infoTab/Feats/feats";
 import races from "./components/infoTab/Races/races";
 import Viewbackgrounds from "./components/infoTab/Backgrounds/backgrounds";
-import Viewclasses from "./components/infoTab/Classes/Classes";
+import Viewclasses from "./components/infoTab/Classes/viewClasses";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(

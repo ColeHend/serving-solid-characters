@@ -1,5 +1,5 @@
 import { Component, For, Show } from "solid-js";
-import { DnDClass } from "../../../models/class.model";
+import { DnDClass } from "../../../../models/class.model";
 
 type Props = {
     Class: DnDClass
