@@ -149,7 +149,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 2,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "-"}
+                            {"Free Modifications", "-"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -188,7 +188,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 2,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "2"}
+                            {"Free Modifications", "2"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -230,7 +230,7 @@ namespace sharpAngleTemplate.models.repositories
                             }
                         },
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "2"}
+                            {"Free Modifications", "2"}
                         },
                         Spellcasting = new Dictionary<string, int>(){
                             {"cantrips_known",2},
@@ -260,7 +260,7 @@ namespace sharpAngleTemplate.models.repositories
                             }
                         },
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "2"}
+                            {"Free Modifications", "2"}
                         },
                         Spellcasting = new Dictionary<string, int>(){
                             {"cantrips_known",2},
@@ -284,7 +284,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 3,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "3"}
+                            {"Free Modifications", "3"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -322,7 +322,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 3,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "3"}
+                            {"Free Modifications", "3"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -352,7 +352,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 3,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "3"}
+                            {"Free Modifications", "3"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -382,7 +382,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 3,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "3"}
+                            {"Free Modifications", "3"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -412,7 +412,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 4,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "4"}
+                            {"Free Modifications", "4"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -447,7 +447,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 4,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "4"}
+                            {"Free Modifications", "4"}
                         },
                         Features = new List<Feature<object, string>>()
                         {
@@ -479,7 +479,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 4,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "4"}
+                            {"Free Modifications", "4"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -509,7 +509,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 4,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "4"}
+                            {"Free Modifications", "4"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -539,7 +539,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 5,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "5"}
+                            {"Free Modifications", "5"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -575,7 +575,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 5,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "5"}
+                            {"Free Modifications", "5"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -605,7 +605,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 5,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "5"}
+                            {"Free Modifications", "5"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -635,7 +635,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 5,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "5"}
+                            {"Free Modifications", "5"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -665,7 +665,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 6,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "6"}
+                            {"Free Modifications", "6"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -699,7 +699,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 6,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "6"}
+                            {"Free Modifications", "6"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -735,7 +735,7 @@ namespace sharpAngleTemplate.models.repositories
                         },
                         ProfBonus = 6,
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "6"}
+                            {"Free Modifications", "6"}
                         },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
@@ -771,7 +771,7 @@ namespace sharpAngleTemplate.models.repositories
                             }
                         },
                         ClassSpecific = new Dictionary<string, string>(){
-                            {"freeModifications", "6"}
+                            {"Free Modifications", "6"}
                         },
                         Spellcasting = new Dictionary<string, int>(){
                             {"cantrips_known",5},
