@@ -148,6 +148,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 2,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "-"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Spellcasting",
@@ -184,6 +187,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 2,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "2"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Apprentice Forgemaster",
@@ -223,6 +229,9 @@ namespace sharpAngleTemplate.models.repositories
                                 Value = "You gain a subclass feature at this level."
                             }
                         },
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "2"}
+                        },
                         Spellcasting = new Dictionary<string, int>(){
                             {"cantrips_known",2},
                             {"spells_known", 0},
@@ -250,6 +259,9 @@ namespace sharpAngleTemplate.models.repositories
                                 Value = "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
                             }
                         },
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "2"}
+                        },
                         Spellcasting = new Dictionary<string, int>(){
                             {"cantrips_known",2},
                             {"spells_known", 0},
@@ -271,6 +283,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 3,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "3"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Adept Forgemaster",
@@ -306,6 +321,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 3,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "3"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Specialty Build",
@@ -333,6 +351,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 3,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "3"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Forgemaster Focus feature",
@@ -360,6 +381,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 3,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "3"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Ability Score Improvement",
@@ -387,6 +411,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 4,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "4"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Expert Forgemaster",
@@ -419,6 +446,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 4,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "4"}
+                        },
                         Features = new List<Feature<object, string>>()
                         {
                             new Feature<object, string>(){
@@ -448,6 +478,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 4,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "4"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Forgemaster Focus feature",
@@ -475,6 +508,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 4,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "4"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Ability Score Improvement",
@@ -502,6 +538,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 5,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "5"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "True Forgemaster",
@@ -535,6 +574,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 5,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "5"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Mobile Builds",
@@ -562,6 +604,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 5,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "5"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Forgemaster Focus feature",
@@ -589,6 +634,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 5,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "5"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Ability Score Improvement",
@@ -616,6 +664,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 6,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "6"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Grand Forgemaster",
@@ -647,6 +698,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 6,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "6"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Legendary Builds",
@@ -680,6 +734,9 @@ namespace sharpAngleTemplate.models.repositories
                             Type = "Class Feature",
                         },
                         ProfBonus = 6,
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "6"}
+                        },
                         Features = new List<Feature<object, string>>(){
                             new Feature<object, string>(){
                                 Name = "Ability Score Improvement",
@@ -712,6 +769,9 @@ namespace sharpAngleTemplate.models.repositories
                                 Name = "Forgemaster Focus feature",
                                 Value = "You gain a subclass feature at this level."
                             }
+                        },
+                        ClassSpecific = new Dictionary<string, string>(){
+                            {"freeModifications", "6"}
                         },
                         Spellcasting = new Dictionary<string, int>(){
                             {"cantrips_known",5},
