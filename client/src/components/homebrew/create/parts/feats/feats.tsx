@@ -24,14 +24,16 @@ const Feats: Component = () => {
     const classes = useGetClasses();
     const feats = useGetFeats();
     const homebrewManager = new HomebrewManager();
-    const [preReqs, setPreReqs] = createSignal<Feature<string, string>[]>([])
-    const [selectedType, setSelectedType] = createSignal<number>(0);
-    const [featName, setFeatName] = createSignal<string>('');
-    const [multipleClasses, setMultipleClasses] = createSignal<string[]>([]);
+    const [ preReqs, setPreReqs ] = createSignal<Feature<string, string>[]>([])
+    const [ selectedType, setSelectedType ] = createSignal<number>(0);
+    const [ featName, setFeatName ] = createSignal<string>('');
+    const [ multipleClasses, setMultipleClasses ] = createSignal<string[]>([]);
+    const [ keyName, setKeyName ] = createSignal<string>('str');
+    const [ keyValue, setKeyValue ] = createSignal<string>('0');
 
     const addPreReq = (e: Event) => {
         switch (selectedType()) {
-            case 0:
+            case 0: // Ability Score
                 setPreReqs(old=>[...old, {
                     info: {
                         className: '',
@@ -40,10 +42,10 @@ const Feats: Component = () => {
                         type: PreReqType[0],
                         other: ''
                     },
-                    name: 'STR', 
-                    value: '0'}])
+                    name: keyName(), 
+                    value: keyValue()}])
                 break;
-            case 1:
+            case 1: // Class
                 setPreReqs(old=>[...old, {
                     info: {
                         className: '',
@@ -52,10 +54,10 @@ const Feats: Component = () => {
                         type: PreReqType[1],
                         other: ''
                     },
-                    name: '', 
-                    value: classes()[0].name}])
+                    name: keyName(), 
+                    value: keyValue()}])
                 break;
-            case 2:
+            case 2: // Class Level
                 setPreReqs(old=>[...old, {
                     info: {
                         className: '',
@@ -64,10 +66,10 @@ const Feats: Component = () => {
                         type: PreReqType[2],
                         other: ''
                     },
-                    name: classes()[0].name, 
-                    value: '0'}])
+                    name: keyName(), 
+                    value: keyValue()}])
                 break;
-            case 3:
+            case 3: // Class Array
                 setPreReqs(old=>[...old, {
                     info: {
                         className: '',
@@ -76,8 +78,8 @@ const Feats: Component = () => {
                         type: PreReqType[3],
                         other: ''
                     },
-                    name: '', 
-                    value: ''}])
+                    name: keyName(), 
+                    value: keyValue()}])
                 break;
         
             default:
@@ -113,7 +115,26 @@ const Feats: Component = () => {
     }
 
     effect(()=>{
-        console.log("preReqs: ", preReqs())
+        switch (selectedType()) {
+            case 0: // Ability Score
+                setKeyName('STR');
+                setKeyValue('0');
+                break;
+            case 1: // Class
+                setKeyName('Class');
+                setKeyValue('Barbarian');
+                break;
+            case 2: // Class Level
+                setKeyName('Barbarian');
+                setKeyValue('0');
+                break;
+            case 3: // Class Array
+                setKeyName('');
+                setKeyValue('');
+                break;
+            default:
+                break;
+        }
     })
     effect(()=>{
         const newFeat: Feat = {} as Feat;
@@ -126,7 +147,7 @@ const Feats: Component = () => {
             <HomebrewSidebar />
             <div class={`${stylin.accent} ${styles.body}`}>
                 <h1>Feats</h1>
-                <div>
+                <div class="featHomebrew">
                     <div class={`${styles.name}`}>
                         <h2 >Add Name</h2>
                         <input type="text" id="featName" onChange={(e)=>setFeatName(e.currentTarget.value)} />
@@ -140,16 +161,10 @@ const Feats: Component = () => {
                                 <option value={PreReqType.CharacterLevel}>Class Level</option>
                                 <option value={PreReqType.ClassArray}>Classes</option>
                             </select>
-                            <button onClick={addPreReq}>Add</button> 
-                        </div>
-                        <div >
-                            <For each={preReqs()}>
-                                {(preReq, i) => (
-                                    <div>
-                                        <Switch>
-                                            <Match when={preReq.info.type === PreReqType[0]}>
+                            <Switch>
+                                            <Match when={selectedType() === PreReqType["AbilityScore"]}>
                                                 <div>
-                                                    <select onChange={(e)=>updateASPreReq({stat:e.currentTarget.value}, i())}>
+                                                    <select onChange={(e)=>setKeyName(e.currentTarget.value)}>
                                                         <option value={"STR"}>Strength</option>
                                                         <option value={"DEX"}>Dexterity</option>
                                                         <option value={"CON"}>Constitution</option>
@@ -157,12 +172,15 @@ const Feats: Component = () => {
                                                         <option value={"WIS"}>Wisdom</option>
                                                         <option value={"CHA"}>Charisma</option>
                                                     </select>
-                                                    <input type="number" onChange={(e)=>updateASPreReq({value:+e.currentTarget.value},i())} />
+                                                    <input type="number" onChange={(e)=>setKeyValue(e.currentTarget.value)} />
                                                 </div>
                                             </Match>
-                                            <Match when={preReq.info.type === PreReqType[1]}>
+                                            <Match when={selectedType() === PreReqType["Class"]}>
                                                 <div>
-                                                    <select onChange={(e)=>updateClassPreReq(e.currentTarget.value, i())}>
+                                                    <select onChange={(e)=>{
+                                                        setKeyName("Class")
+                                                        setKeyValue(e.currentTarget.value)
+                                                    }}>
                                                         <For each={classes()}>
                                                             {(classObj) => (
                                                                 <option value={classObj.name}>{classObj.name}</option>
@@ -171,27 +189,32 @@ const Feats: Component = () => {
                                                     </select>
                                                 </div>
                                             </Match>
-                                            <Match when={preReq.info.type === PreReqType[2]}>
+                                            <Match when={selectedType() === PreReqType["CharacterLevel"]}>
                                                 <div>
-                                                    <select onChange={(e)=>updateClassLevelPreReq({className: e.currentTarget.value},i())} >
+                                                    <select onChange={(e)=>setKeyName(e.currentTarget.value)} >
                                                         <For each={classes()}>
                                                             {(classObj) => (
                                                                 <option value={classObj.name}>{classObj.name}</option>
                                                             )}
                                                         </For>
                                                     </select>
-                                                    <input type="number" onChange={(e)=>updateClassLevelPreReq({level:+e.currentTarget.value},i())} />
+                                                    <input type="number" onChange={(e)=>setKeyValue(e.currentTarget.value)} />
                                                 </div>
                                             </Match>
-                                            <Match when={preReq.info.type === PreReqType[3]}>
+                                            <Match when={selectedType() === PreReqType["ClassArray"]}>
                                                 <div>
-                                                    <MultiSelect runOnChange={()=>updateClassesPreReq(multipleClasses(), i())} options={()=>classes().map(x => x.name)} selectedOptions={setMultipleClasses} />
-                                                    <span>{multipleClasses().join(',')}</span>
+                                                    {/* <MultiSelect runOnChange={()=>updateClassesPreReq(multipleClasses(), i())} options={()=>classes().map(x => x.name)} selectedOptions={setMultipleClasses} />
+                                                    <span>{multipleClasses().join(',')}</span> */}
                                                 </div>
                                             </Match>
                                         </Switch>
-                                    </div>
-                                )}
+                            <button disabled={preReqs().length >= 10} onClick={addPreReq}>Add</button> 
+                        </div>
+                        <div class={`${styles.chipBar}`}>
+                            <span class={`${stylin.tertiary}`}>{keyName()} : {keyValue()}</span>
+                            <For each={preReqs()}>
+                                {(preReq, i) => (<span class={`${stylin.tertiary}`}>{preReq.name} : {preReq.value} <button class={`${stylin.hover} ${styles.removeChipButton}`}
+                                onClick={()=>setPreReqs((old) => old.filter((x, ind) => ind !== i()))}>X</button></span>)}
                             </For>
                         </div>
                     </div>
