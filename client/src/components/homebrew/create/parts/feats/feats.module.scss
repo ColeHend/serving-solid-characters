@@ -21,26 +21,38 @@
 .name {
     width: 100%;
 }
+.featHomebrew {
+    width: max-content;
+}
+#featName {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    input {
+        width: 50%;
+        margin: 0 auto;
+    }
 
+}
+.removeChipButton {
+    margin: 0 !important;
+    margin-left: 5px !important;
+    padding: 0 !important;
+    font-size: 1rem !important;
+}
 .preRequisites {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: left;
+    margin: auto 0;
+    max-width: 100%;
     :nth-child(2) {
         display: flex;
         flex-direction: row;
-    }
-    :nth-child(3) {
-        display: flex;
-        flex-direction: column;
-        :nth-child(n) {
-            display: flex;
-            flex-direction: row;
-        }
+        justify-content: left;
     }
 }
-
 
 .Description {
     width: 100%;
@@ -54,4 +66,20 @@
                 min-height: 200px;
                 margin: 0 auto;
             }
+}
+
+.chipBar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    :nth-child(n) {
+        padding: 5px 10px;
+        margin: 0 5px;
+        border-radius: 15px;
+        width: max-content;
+        margin: 5px;
+    }
 }
