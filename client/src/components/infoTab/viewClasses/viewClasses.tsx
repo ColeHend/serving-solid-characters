@@ -18,7 +18,7 @@ const viewClasses: Component = () => {
     
 
     return (
-        <div class={`${styles.CenterPage} ${stylin.accent}`}> 
+        <div class={`${stylin.accent} ${styles.CenterPage}`}> 
 
                 <For each={dndSrdClasses()}>
                     {(Class) =>
@@ -87,7 +87,6 @@ const viewClasses: Component = () => {
                                                     <span>Choose: {Choice.choose}</span>
 
                                                     <br />
-                                                    <br />
 
                                                     <For each={Choice.choices}>
                                                         {(choice)=>
@@ -132,29 +131,29 @@ const viewClasses: Component = () => {
                                                         <span>choose:  {choice.choose}</span>
                                                     </Show>
 
+                                                    <br />
+
                                                     <span>
                                                         <For each={choice.choices}>
                                                             {(item,i)=>
                                                                 <>
                                                                     <br />
                                                                     <span>{item.item}</span>
-
-
-
-                                                                    <br />
                                                                     <br />
                                                                 </>
                                                             }
                                                         </For>
                                                     </span>
+
+                                                    <Show when={i() <= 0}>
+                                                        <br />
+                                                        <span>or</span>
+                                                    </Show>
                                                 </div>
                                             }
                                         </For>
                                     </Show>
-                                    
-                                    <br />
-                                    <br />
-
+                                
                                     <Show when={Class.startingEquipment.choice2}>
                                         <For each={Class.startingEquipment.choice2}>
                                             {(choice, i)=>
@@ -178,20 +177,20 @@ const viewClasses: Component = () => {
                                                                    <br />
                                                                     <span>{item.item}</span>
 
-
-
-                                                                    <br />
                                                                     <br />
                                                                 </>
                                                             }
                                                         </For>
                                                     </span>
+                                                    
+                                                    <Show when={i() <= 0}>
+                                                        <br />
+                                                        <span>or</span>
+                                                    </Show>
                                                 </div>
                                             }
                                         </For>
                                     </Show>
-
-                                    <br />
                                     
                                     <Show when={Class.startingEquipment.choice3}>
                                         <For each={Class.startingEquipment.choice3}>
@@ -216,20 +215,20 @@ const viewClasses: Component = () => {
                                                                     <br />
                                                                     <span>{item.item}</span>
 
-
-
-                                                                    <br />
                                                                     <br />
                                                                 </>
                                                             }
                                                         </For>
                                                     </span>
+
+                                                    <Show when={i() <= 0}>
+                                                        <br />
+                                                        <span>or</span>
+                                                    </Show>
                                                 </div>
                                             }
                                         </For>
                                     </Show>
-
-                                    <br />
 
                                     <Show when={Class.startingEquipment.choice4}>
                                         <For each={Class.startingEquipment.choice4}>
@@ -252,14 +251,16 @@ const viewClasses: Component = () => {
                                                                     <br />
                                                                     <span>{item.item}</span>
 
-
-
-                                                                    <br />
                                                                     <br />
                                                                 </>
                                                             }
                                                         </For>
                                                     </span>
+
+                                                    <Show when={i() <= 0}>
+                                                        <br />
+                                                        <span>or</span>
+                                                    </Show>
                                                 </div>
                                             }
                                         </For>
