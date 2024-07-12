@@ -14,6 +14,8 @@ const Viewbackgrounds: Component = () => {
         <div class={`${stylin.accent} ${styles.allBackgrounds}`}>
             <h1>Backgrounds</h1>
 
+            
+
             <div class={`${styles.backgrounds}`} style={{width:"50%"}}>
                 <For each={backgrounds()}>
                     {(background) =>
