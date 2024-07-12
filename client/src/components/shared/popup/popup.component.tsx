@@ -11,9 +11,7 @@ type Props = {
     translate?: {
         x?: string,
         y?: string
-    },
-    translateX?: string,
-    translateY?: string,
+    }
     backgroundClick?: [ Accessor<boolean>, Setter<boolean>]
 }
 
@@ -23,7 +21,7 @@ const Modal:Component<Props> = (props)=>{
 
     return(
         <Portal >
-            <div use:clickOutside={()=>setBackClick(!backClick())} style={{
+            <div use:clickOutside={()=>setBackClick(old => !old)} style={{
                     width:props.width, 
                     height:props.height,
                     transform: `translate(${props.translate.x ?? "-50%"},${props.translate.y ?? "-50%"})` 
