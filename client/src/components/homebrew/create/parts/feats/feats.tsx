@@ -11,6 +11,7 @@ import { effect} from "solid-js/web";
 import HomebrewManager from "../../homebrewManager";
 import MultiSelect from "../../../../shared/multiSelect/MultiSelect";
 import { Feat } from "../../../../../models/feat.model";
+import { BehaviorSubject } from "rxjs";
 
 export enum PreReqType {
     AbilityScore,
@@ -24,13 +25,22 @@ const Feats: Component = () => {
     const classes = useGetClasses();
     const feats = useGetFeats();
     const homebrewManager = new HomebrewManager();
+    const currentFeat$ = new BehaviorSubject<Feat>({} as Feat);
     const [ preReqs, setPreReqs ] = createSignal<Feature<string, string>[]>([])
     const [ selectedType, setSelectedType ] = createSignal<number>(0);
     const [ featName, setFeatName ] = createSignal<string>('');
-    const [ multipleClasses, setMultipleClasses ] = createSignal<string[]>([]);
     const [ keyName, setKeyName ] = createSignal<string>('str');
     const [ keyValue, setKeyValue ] = createSignal<string>('0');
-
+    const [ featDescription, setFeatDescription ] = createSignal<string>('');
+    const [ shouldAdd, setShouldAdd ] = createSignal<boolean>(false);
+    const clearFields = () => {
+        setPreReqs([]);
+        setSelectedType(PreReqType.AbilityScore);
+        setFeatName('');
+        setKeyName('str');
+        setKeyValue('0');
+        setFeatDescription('');
+    }
     const addPreReq = (e: Event) => {
         switch (selectedType()) {
             case 0: // Ability Score
@@ -69,49 +79,10 @@ const Feats: Component = () => {
                     name: keyName(), 
                     value: keyValue()}])
                 break;
-            case 3: // Class Array
-                setPreReqs(old=>[...old, {
-                    info: {
-                        className: '',
-                        subclassName: '',
-                        level: 0,
-                        type: PreReqType[3],
-                        other: ''
-                    },
-                    name: keyName(), 
-                    value: keyValue()}])
-                break;
-        
             default:
                 break;
         }
         
-    }
-    const updateASPreReq = (stats: {stat?: string, value?: number}, index: number) => {
-        setPreReqs(old=>{
-            if (!!stats.stat) old[index].name = stats.stat;
-            if (!!stats.value) old[index].value = stats.value.toString();
-            return old;
-        })
-    }
-    const updateClassPreReq = (className: string, index: number) => {
-        setPreReqs(old=>{
-            old[index].value = className;
-            return JSON.parse(JSON.stringify(old));
-        })
-    }
-    const updateClassLevelPreReq = (values: {className?: string, level?: number}, index: number) => {
-        setPreReqs(old=>{
-            if (!!values.className) old[index].name = values.className;
-            if (!!values.level) old[index].value = values.level.toString();
-            return JSON.parse(JSON.stringify(old));
-        })
-    }
-    const updateClassesPreReq = (classes: string[], index: number) => {
-        setPreReqs(old=>{
-            old[index].name = classes.join(',');
-            return JSON.parse(JSON.stringify(old));
-        })
     }
 
     effect(()=>{
@@ -140,7 +111,15 @@ const Feats: Component = () => {
         const newFeat: Feat = {} as Feat;
         newFeat.name = featName();
         newFeat.preReqs = preReqs();
-        console.log("newFeat: ", newFeat)
+        newFeat.desc = [featDescription()];
+        currentFeat$.next(newFeat);
+    })
+    effect(()=>{
+        if(shouldAdd()) {
+            homebrewManager.addFeat(currentFeat$.value);
+            setShouldAdd(false);
+            clearFields();
+        }
     })
     return (
         <>
@@ -150,12 +129,12 @@ const Feats: Component = () => {
                 <div class="featHomebrew">
                     <div class={`${styles.name}`}>
                         <h2 >Add Name</h2>
-                        <input type="text" id="featName" onChange={(e)=>setFeatName(e.currentTarget.value)} />
+                        <input type="text" id="featName" value={featName()} onChange={(e)=>setFeatName(e.currentTarget.value)} />
                     </div>
                     <div class={`${styles.preRequisites}`}>
                         <h2>Add Pre-Requisites</h2>
                         <div>
-                            <select onChange={(e)=>setSelectedType(()=>+e.currentTarget.value)} >
+                            <select value={selectedType()} onChange={(e)=>setSelectedType(()=>+e.currentTarget.value)} >
                                 <option value={PreReqType.AbilityScore}>Ability Score</option>
                                 <option value={PreReqType.Class}>Class</option>
                                 <option value={PreReqType.CharacterLevel}>Class Level</option>
@@ -220,8 +199,9 @@ const Feats: Component = () => {
                     </div>
                     <div class={`${styles.Description}`}>
                         <h2>Description</h2>
-                        <textarea id="featDescription" name="featDescription" />
+                        <textarea id="featDescription" name="featDescription" value={featDescription()} onChange={(e)=>setFeatDescription(e.currentTarget.value)} />
                     </div>
+                    <button class={`${styles.addButton}`} onClick={()=>setShouldAdd(true)}>Add Feat</button>
                 </div>
             </div>
         </>
