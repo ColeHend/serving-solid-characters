@@ -26,6 +26,12 @@ const Paginator: Component<Props<any[]>> = (props) => {
     // could potentially be a prop
     const ItemsPerPageArr = [10, 20, 50, 100];
 
+    effect(()=>{
+        if(currentPage() > lastpage()) {
+            setCurrentPage(lastpage())
+        }
+    })
+
     effect(() => {
         setPaginatedItems(theItems());
     });

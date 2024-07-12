@@ -11,7 +11,6 @@ $mobile: 800px;
 .eachPage {
     padding: 15px;
     width: 70%;
-    margin-left: 12%;
 }
 
 .Center {
@@ -22,8 +21,7 @@ $mobile: 800px;
 .CenterTable {
     margin: 0 auto;
     width: 45%;
-    margin-left: 25%;
-
+    
     @media screen and (max-width) {
         margin-left: 0;
     }

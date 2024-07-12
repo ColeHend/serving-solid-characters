@@ -1,9 +1,9 @@
-import { Component, For, Show } from "solid-js";
+import { Accessor, Component, For, Show } from "solid-js";
 import { DnDClass } from "../../../models/class.model";
 import { formatKeysForDisplay, toDisplayFormat } from "../../../customHooks/utility/stringsHelper";
 import styles from "./featureTable.module.scss";
 type Props = {
-    Class: DnDClass
+    Class: Accessor<DnDClass>,
 }
 
 
@@ -11,7 +11,7 @@ const FeatureTable: Component<Props> = (props) => {
 
     const Class = props.Class
     const fixedSelectValues = (key: string) => {
-        switch (props.Class.name.toLowerCase()) {
+        switch (props.Class().name.toLowerCase()) {
             case "rogue":
             case "monk":
                 if(!Number.isNaN(+key)) return key
@@ -22,7 +22,7 @@ const FeatureTable: Component<Props> = (props) => {
     }
 
     const fixedSorerer = (keyArr: string[]) => {
-        if (props.Class.name.toLowerCase() === "sorcerer") {
+        if (props.Class().name.toLowerCase() === "sorcerer") {
             return keyArr.slice(1)
         }
         return keyArr
@@ -40,7 +40,7 @@ const FeatureTable: Component<Props> = (props) => {
                     <th>
                         Features
                     </th>
-                    <For each={fixedSorerer(Object.keys(Class.classLevels[0].classSpecific))}>
+                    <For each={fixedSorerer(Object.keys(Class().classLevels[0].classSpecific))}>
                         {(Specifickey)=>
                             <th>
                                 {toDisplayFormat(Specifickey)}
@@ -50,7 +50,7 @@ const FeatureTable: Component<Props> = (props) => {
                 </tr>
             </thead>
             <tbody>
-                <For each={Class.classLevels.sort((a,b)=> a.info.level - b.info.level)}>
+                <For each={Class().classLevels.sort((a,b)=> a.info.level - b.info.level)}>
                     {(item)=>
                             <tr style={{border: "1px solid white"}} class={`${styles.tableRow}`}>
                                 

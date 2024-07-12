@@ -5,7 +5,7 @@ import styles from "./races.module.scss";
 import { effect } from "solid-js/web";
 import { Race } from "../../../models/race.model";
 import Subrace from "./subraces/subrace";
-import Banner from "./banner";
+import Banner from "../../shared/Banner/banner";
 import Sidebar from "./sidebar";
 import ThePage from "./thePage";
 
