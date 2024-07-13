@@ -1,4 +1,4 @@
-import { Component, For, Match, Show ,Switch,createSignal } from "solid-js";
+import { Component, For, Match, Show ,Switch,createMemo,createSignal } from "solid-js";
 import useDnDFeats from "../../../customHooks/dndInfo/srdinfo/useDnDFeats";
 import useStyle from "../../../customHooks/utility/style/styleHook";
 import styles from "./feats.module.scss";
@@ -8,10 +8,15 @@ import FeatsSearch from "./searchBar/searchBar";
 import { effect } from "solid-js/web";
 import useGetFeats from "../../../customHooks/data/useGetFeats";
 import { PreReqType } from "../../homebrew/create/parts/feats/feats";
+import SearchBar from "../../shared/components/SearchBar/SearchBar";
 
 const featsList: Component = () => {
     const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
     const [searchResult, setSearchResult] = createSignal<Feat[]>([]);
+    const displayResults = createMemo(()=>{
+        if (searchResult().length === 0) return paginatedFeats();
+        return searchResult();
+    })
     const [RowShown, SetRowShown] = createSignal<number[]>([]);
     const hasIndex = (index: number) => RowShown().includes(index);
     const toggleRow = (index: number) => !hasIndex(index) ? SetRowShown([...RowShown(), index]) : SetRowShown(RowShown().filter(i => i !== index));
@@ -25,11 +30,11 @@ const featsList: Component = () => {
         <div class={`${stylin.accent} ${styles.featsList}`}>
             <div class={`${styles.body}`}>
                 <h1>Feats</h1>
-
-                <FeatsSearch items={srdFeats} setSearchRes={setSearchResult} />
-
+                <div style={{height: "5vh", width: "35%"}}>
+                    <SearchBar placeholder="Search Feats..." dataSource={srdFeats} setResults={setSearchResult} />
+                </div>
                 <ol>
-                    <For each={searchResult()}>
+                    <For each={displayResults()}>
                         {(feat, i)=>
                             <>
                                 <li> 
