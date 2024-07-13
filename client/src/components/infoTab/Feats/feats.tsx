@@ -1,14 +1,14 @@
 import { Component, For, Match, Show ,Switch,createMemo,createSignal } from "solid-js";
-import useDnDFeats from "../../../customHooks/dndInfo/srdinfo/useDnDFeats";
-import useStyle from "../../../customHooks/utility/style/styleHook";
+import useDnDFeats from "../../../shared/customHooks/dndInfo/srdinfo/useDnDFeats";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./feats.module.scss";
 import { Feat } from "../../../models/feat.model";
-import Paginator from "../../shared/paginator/paginator";
+import Paginator from "../../../shared/components/paginator/paginator";
 import FeatsSearch from "./searchBar/searchBar";
 import { effect } from "solid-js/web";
-import useGetFeats from "../../../customHooks/data/useGetFeats";
+import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
 import { PreReqType } from "../../homebrew/create/parts/feats/feats";
-import SearchBar from "../../shared/components/SearchBar/SearchBar";
+import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 
 const featsList: Component = () => {
     const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);

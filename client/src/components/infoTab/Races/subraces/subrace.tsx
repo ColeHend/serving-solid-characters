@@ -1,8 +1,8 @@
 import { Component, For, Show } from "solid-js";
 import { Race } from "../../../../models/race.model";
-import useStyle from "../../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../../shared/customHooks/utility/style/styleHook";
 import style from "./subrace.module.scss";
-import ExpansionPanel from "../../../shared/expansion/expansion";
+import ExpansionPanel from "../../../../shared/components/expansion/expansion";
 
 type Props = {
   race: Race;

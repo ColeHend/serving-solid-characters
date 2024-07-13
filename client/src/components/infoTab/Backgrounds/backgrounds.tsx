@@ -1,10 +1,10 @@
 import { Component, createMemo, createSignal, For  } from "solid-js";
-import useStyle from "../../../customHooks/utility/style/styleHook";
-import useGetBackgrounds from "../../../customHooks/data/useGetBackgrounds";
-import ExpansionPanel from "../../shared/expansion/expansion";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
+import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
+import ExpansionPanel from "../../../shared/components/expansion/expansion";
 import styles from "./backgrounds.module.scss";
 import { effect } from "solid-js/web";
-import SearchBar from "../../shared/components/SearchBar/SearchBar";
+import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 
 const Viewbackgrounds: Component = () => {
 

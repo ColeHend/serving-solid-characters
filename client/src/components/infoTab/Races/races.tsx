@@ -1,11 +1,11 @@
 import { Component, For, Match, Show, Switch, createMemo, createSignal } from "solid-js";
-import useGetRaces from "../../../customHooks/data/useGetRaces";
-import useStyle from "../../../customHooks/utility/style/styleHook";
+import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./races.module.scss";
 import { effect } from "solid-js/web";
 import { Race } from "../../../models/race.model";
 import Subrace from "./subraces/subrace";
-import Banner from "../../shared/Banner/banner";
+import Banner from "../../../shared/components/Banner/banner";
 import Sidebar from "./sidebar";
 import ThePage from "./thePage";
 

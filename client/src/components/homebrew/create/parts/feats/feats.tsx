@@ -6,7 +6,7 @@ import HomebrewSidebar from "../../sidebar";
 import useGetClasses from "../../../../../customHooks/data/useGetClasses";
 import useGetFeats from "../../../../../customHooks/data/useGetFeats";
 import { Feature } from "../../../../../models/core.model";
-import ExpansionPanel from "../../../../shared/expansion/expansion";
+import ExpansionPanel from "../../../../shared/components/expansion/expansion";
 import { effect} from "solid-js/web";
 import HomebrewManager from "../../homebrewManager";
 import MultiSelect from "../../../../shared/multiSelect/MultiSelect";

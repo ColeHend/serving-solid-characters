@@ -1,6 +1,6 @@
 import { Accessor, Component, For, Show } from "solid-js";
 import { DnDClass } from "../../../models/class.model";
-import { formatKeysForDisplay, toDisplayFormat } from "../../../customHooks/utility/stringsHelper";
+import { formatKeysForDisplay, toDisplayFormat } from "../../../shared/customHooks/utility/stringsHelper";
 import styles from "./featureTable.module.scss";
 type Props = {
     Class: Accessor<DnDClass>,

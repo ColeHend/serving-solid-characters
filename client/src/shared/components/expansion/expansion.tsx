@@ -1,5 +1,5 @@
 import {type Component, For, Show, createSignal, JSX} from "solid-js";
-import useStyle from "../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../../customHooks/utility/style/styleHook";
 import styles from './expansion.module.scss';
 
 type Props = {

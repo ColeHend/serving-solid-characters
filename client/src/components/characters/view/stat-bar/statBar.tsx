@@ -2,8 +2,8 @@ import { Accessor, Component } from "solid-js";
 import {
   Character,
   Stats,
-} from "../../../../customHooks/dndInfo/useCharacters";
-import useStyle from "../../../../customHooks/utility/style/styleHook";
+} from "../../../../shared/customHooks/dndInfo/useCharacters";
+import useStyle from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./statBar.module.scss";
 import StatBlock from "./stat/stat";
 

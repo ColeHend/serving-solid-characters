@@ -1,13 +1,13 @@
 import { Accessor, Component, For, Match, Setter, Show, Switch, createSignal } from "solid-js";
-import useDnDSpells from "../../../../customHooks/dndInfo/srdinfo/useDnDSpells";
+import useDnDSpells from "../../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import { Spell } from "../../../../models/spell.model";
 import { effect } from "solid-js/web";
 import { get } from "http";
 import Chip from "./chip";
-import useStyle from "../../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./searchBar.module.scss";
 import ClearAllBtn from "./clearAllBtn";
-import { beutifyChip } from "../../../../customHooks/utility/beautifyChip";
+import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
 interface Chip {
     key: string;
     value: string;

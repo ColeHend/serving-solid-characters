@@ -1,6 +1,6 @@
 import { Component } from "solid-js";
-import useStyle from "../../customHooks/utility/style/styleHook";
-import Carousel from "../shared/components/Carosel/Carosel";
+import useStyle from "../../shared/customHooks/utility/style/styleHook";
+import Carousel from "../../shared/components/Carosel/Carosel";
 
 const Homebrew: Component = () => {
     const stylin = useStyle();

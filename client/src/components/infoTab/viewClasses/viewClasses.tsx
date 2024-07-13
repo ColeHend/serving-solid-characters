@@ -1,8 +1,8 @@
 import { Component, For, Show, Switch, Match, createSignal, createMemo } from "solid-js";
-import ExpansionPanel from "../../shared/expansion/expansion";
+import ExpansionPanel from "../../../shared/components/expansion/expansion";
 import FeatureTable from "./featureTable";
-import useGetClasses from "../../../customHooks/data/useGetClasses";
-import useStyle from "../../../customHooks/utility/style/styleHook";
+import useGetClasses from "../../../shared/customHooks/data/useGetClasses";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./viewClasses.module.scss"
 import { useSearchParams,useParams } from "@solidjs/router";
 import { effect } from "solid-js/web";

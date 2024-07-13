@@ -1,6 +1,6 @@
 import { Component } from "solid-js";
 import styles from "./chip.module.scss";
-import useStyle from "../../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../../shared/customHooks/utility/style/styleHook";
 
 type Props = {
     key: string;

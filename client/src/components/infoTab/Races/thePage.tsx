@@ -2,7 +2,7 @@ import { Component, For, Show } from "solid-js";
 import { Race } from "../../../models/race.model";
 import Subrace from "./subraces/subrace";
 import { effect } from "solid-js/web";
-import ExpansionPanel from "../../shared/expansion/expansion";
+import ExpansionPanel from "../../../shared/components/expansion/expansion";
 
 type Props = {
   styles: CSSModuleClasses;
