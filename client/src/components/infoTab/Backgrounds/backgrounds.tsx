@@ -1,15 +1,20 @@
-import { Component, For  } from "solid-js";
+import { Component, createMemo, createSignal, For  } from "solid-js";
 import useStyle from "../../../customHooks/utility/style/styleHook";
 import useGetBackgrounds from "../../../customHooks/data/useGetBackgrounds";
 import ExpansionPanel from "../../shared/expansion/expansion";
 import styles from "./backgrounds.module.scss";
 import { effect } from "solid-js/web";
+import SearchBar from "../../shared/components/SearchBar/SearchBar";
 
 const Viewbackgrounds: Component = () => {
 
     const stylin = useStyle();
     const backgrounds = useGetBackgrounds();
-
+    const [searchResult, setSearchResult] = createSignal(backgrounds() || []);
+    const displayResults = createMemo(()=>{
+        if (searchResult().length === 0) return backgrounds();
+        return searchResult();
+    })
     effect(()=>{    
         console.log("backgrounds: ", backgrounds());
     });
@@ -17,9 +22,11 @@ const Viewbackgrounds: Component = () => {
     return (
         <div class={`${stylin.accent} ${styles.allBackgrounds}`}>
             <h1>Backgrounds</h1>
-
+            <div style={{width: "35%", height: "5vh", margin: "0 auto"}}>
+                <SearchBar placeholder="Search Backgrounds..." dataSource={backgrounds} setResults={setSearchResult} />
+            </div>
             <div class={`${styles.backgrounds}`} style={{width:"50%"}}>
-                <For each={backgrounds()}>
+                <For each={displayResults()}>
                     {(background) =>
                         
                             <ExpansionPanel styles={styles}>
