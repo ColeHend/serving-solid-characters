@@ -1,5 +1,5 @@
 import { Component } from "solid-js";
-import useStyle from "../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 
 const View: Component = () => {
     const stylin = useStyle();     
