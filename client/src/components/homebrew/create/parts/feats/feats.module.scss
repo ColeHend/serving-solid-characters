@@ -9,8 +9,9 @@
     }
 
     @media screen and (min-width: 769px){
-        transform: translateY(-75%);
-        
+        position: absolute;
+        top: 150px;
+        left: 250px;
     }
 
     @media screen and (max-width: 768px){

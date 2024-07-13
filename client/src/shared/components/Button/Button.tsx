@@ -78,5 +78,5 @@ const Button: Component<Props> = (props)=> {
         </>
     )
 }
-
+export { Button };
 export default Button;

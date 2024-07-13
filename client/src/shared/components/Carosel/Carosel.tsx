@@ -64,4 +64,5 @@ const Carousel: Component<CarouselProps> = (props) => {
     );
   };
   
+  export { Carousel };
   export default Carousel;

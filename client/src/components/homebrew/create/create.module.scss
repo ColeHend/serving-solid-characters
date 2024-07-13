@@ -6,7 +6,6 @@
     border-radius: 15px;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transform: translateY(25%);
 
     ul {
         list-style: none;
@@ -18,7 +17,11 @@
             text-decoration: none;
         }
     }
-
+    @media screen and (min-width: 769px){
+        position: absolute;
+        top: 140px;
+        left: 15px;
+    }
     @media screen and (max-width: 768px){
         width: 100%;
     }
@@ -27,15 +30,17 @@
 .body {
     min-height: 70%;
     margin: 0 auto;
+    padding: 15px;
     border-radius: 15px;
     width: 70%;
     h1 {
         width: 100%;
         text-align: center;
     }
-    @media screen and (min-width: 769px){
-        transform: translateY(-75%);
-        
+    @media screen and (min-width: 769px) {
+        position: absolute;
+        top: 150px;
+        left: 250px;
     }
     @media screen and (max-width: 768px){
         width: 100%;

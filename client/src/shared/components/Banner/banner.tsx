@@ -13,5 +13,5 @@ const Banner: Component<Props> = (props) => {
       </svg>
     );
   };
-
+export { Banner };
 export default Banner;

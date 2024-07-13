@@ -9,5 +9,5 @@ const Option: Component<JSX.OptionHTMLAttributes<HTMLOptionElement>> = (props)=>
         />
     )
 }
-
+export { Option };
 export default Option;
