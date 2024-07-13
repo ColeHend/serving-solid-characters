@@ -1,4 +1,4 @@
-import { Component, For, Show, Switch, Match, createSignal, createMemo } from "solid-js";
+import { Component, For, Show, Switch, Match, createSignal, createMemo, Accessor } from "solid-js";
 import ExpansionPanel from "../../../shared/components/expansion/expansion";
 import FeatureTable from "./featureTable";
 import useGetClasses from "../../../shared/customHooks/data/useGetClasses";
@@ -6,9 +6,11 @@ import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./viewClasses.module.scss"
 import { useSearchParams,useParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
-import { DnDClass } from "../../../models";
-import { LevelEntity, Subclass } from "../../../models/class.model";
+import type { DnDClass } from "../../../models";
+import Carousel from "../../../shared/components/Carosel/Carosel";
 import { Feature } from "../../../models/core.model";
+import { Subclass } from "../../../models/class.model";
+
 
 const viewClasses: Component = () => {
     const stylin = useStyle();
@@ -19,12 +21,72 @@ const viewClasses: Component = () => {
     
     if (!!!searchParam.name) setSearchParam({name: dndSrdClasses().length > 0 ? dndSrdClasses()[currentClassIndex()].name : "barbarian"})
         
-    const currentClass = createMemo(()=>dndSrdClasses().length > 0 && currentClassIndex() >= 0 && currentClassIndex() < dndSrdClasses().length ? dndSrdClasses()[currentClassIndex()] : ({} as DnDClass))
+    const currentClass:Accessor<DnDClass> = createMemo(()=>dndSrdClasses().length > 0 && currentClassIndex() >= 0 && currentClassIndex() < dndSrdClasses().length ? dndSrdClasses()[currentClassIndex()] : ({} as DnDClass))
+
+    const currentSubclasses = createMemo(()=>currentClass().subclasses.length > 0 ? currentClass().subclasses : [] as Subclass[])
 
     effect(()=>{
         setSearchParam({name: dndSrdClasses().length > 0 ? currentClass().name : "barbarian"})
+        console.table(currentClass());
+    
     })
- 
+
+    currentClass().subclasses
+
+    const classFeatureNullCheck = (value: unknown) => {
+        const val = JSON.parse(JSON.stringify(value))
+        if (typeof val === 'string') return val
+        if (Array.isArray(val)) return val.join("\n \n")
+        return "-unknown-";
+    }
+
+    const currentSubClassElement = (subClasses : Accessor<Subclass[]>) => {
+        return subClasses().map(subClass => ({
+            name: subClass.name, element: 
+            <div>
+                <h3>{subClass.name}</h3>    
+
+                <span>
+                    {subClass.desc?.join(" \n")}
+                </span>
+
+                <br />
+
+                <span>
+                    {subClass.subclassFlavor}
+                </span>
+
+                <br />
+                
+                <Show when={subClass.spells?.length >= 1}>
+                    <h4>Spells Gained</h4>
+                
+                    <span>
+                        {
+                            subClass.spells?.join("\n")
+                        }
+                    </span>
+
+                    <br />
+                </Show>
+
+                <span>
+                    <For each={subClass.features}>
+                        {(feature)=>
+                            <>
+                                <h5> {feature.name} </h5>
+
+                                <span> { classFeatureNullCheck(feature?.value) } </span>
+                            </>
+                        }
+                    </For>
+                </span>
+
+
+            </div>
+        }))
+    }
+
     return (
         <div class={`${stylin.accent} ${styles.CenterPage}`}> 
             {/* Current Class Selector */}
@@ -45,7 +107,7 @@ const viewClasses: Component = () => {
                         </div>
                         
                         <h2>Proficiencies</h2>
-                        <span>Armor: {currentClass().proficiencies.filter(x => x.includes("armor")).join(", ")} </span> <span><Show when={currentClass().proficiencies.filter(x =>x === "Shields")}>& Shields</Show></span>
+                        <span>Armor: {currentClass().proficiencies.filter(x => x.includes("armor")).join(", ")} </span> <span><Show when={currentClass().proficiencies.filter(x => x === "Shields")}>& Shields</Show></span>
                         
                         <br />
 
@@ -276,9 +338,47 @@ const viewClasses: Component = () => {
                                 </Show>
                             </div>
                         </ExpansionPanel>
-
                         
-                        {/* add feature and Subclass carousell */}
+                        <br />
+
+                        <ExpansionPanel class={`${styles.Center}`} style={{width:"50%"}}>
+                            <div>
+                                <h2>
+                                    Features
+                                </h2>
+                            </div>
+                            <div>
+                                <For each={currentClass().classLevels}>
+                                    {(classLevel)=>
+                                       <>
+                                            <br />
+
+                                            <For each={classLevel.features}>
+                                                { (feature) =>
+                                                    <div>
+                                                        <h3>{feature.name}</h3>
+
+                                                        <span>
+                                                            {
+                                                                classFeatureNullCheck(feature.value)
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                }
+                                            </For>
+                                            
+                                            <br />
+                                       </>
+                                    }
+                                </For>
+                            </div>
+                        </ExpansionPanel>
+                        
+                        <div class={`${styles.subClasses}`}>
+                            <Carousel elements={currentSubClassElement(currentSubclasses)} />
+                        </div>
+        
+                       
 
                     </div>
                 
