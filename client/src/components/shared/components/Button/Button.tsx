@@ -9,7 +9,7 @@ import clickOutside from "../../../../customHooks/utility/clickOutside";
 
 export interface MenuButton {
     name: string,
-    condition: () => boolean,
+    condition?: () => boolean,
     action: () => void
 }
 interface ShowMenu {
@@ -28,16 +28,9 @@ interface Props extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button: Component<Props> = (props)=> {
     const [showMenu, setShowMenu] = createSignal<ShowMenu>({show: false, lastX: 0, lastY: 0});
     const isMenuButton = createMemo(()=>!!props.menuItems);
-    const filteredMenuItems = createMemo(()=>props.menuItems?.filter(x=>x.condition()) ?? []);
+    const filteredMenuItems = createMemo(()=>props.menuItems?.filter(x=>(!!x.condition ? x.condition() : true)) ?? []);
     const stylin = useStyles();
 
-    effect(()=>{
-        console.log("ff: ", showMenu());
-    })
-    effect(()=>{
-        console.log("menu:", props.menuItems);
-        
-    })
     const menuStyle: Accessor<JSX.CSSProperties> = createMemo(()=>({
         position:"absolute", 
         top: props.overrideY ?? `${showMenu().lastY}px`, 
@@ -70,7 +63,7 @@ const Button: Component<Props> = (props)=> {
                         <ul class={`${style.menuButtons}`}>
                             <For each={props.menuItems}>
                                 {(button) => (
-                                    <Show when={button.condition() && showMenu() && isMenuButton()}>
+                                    <Show when={(!!button.condition ? button.condition() : true) && showMenu() && isMenuButton()}>
                                         <li style={{height:`${100 / filteredMenuItems().length}%`}} class={`${stylin.hover}`}>
                                             <button class={`${stylin.accent} ${style.menuButton}`} onClick={button.action}>
                                                 {button.name}

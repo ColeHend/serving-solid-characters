@@ -12,7 +12,6 @@ const Characters: Component = () => {
     const menuButtons = (character: Character) => ([
         {
             name: "View Character",
-            condition: ()=>true,
             action: ()=>{window.location.href = `/characters/view?name=${character.name}`}
         }
     ]);
