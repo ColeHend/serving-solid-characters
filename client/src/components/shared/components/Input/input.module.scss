@@ -1,0 +1,32 @@
+.input {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 15px;
+    padding: 10px 15px;
+    font-size: 1.2rem;
+    margin: 10px 0;
+    
+    &:focus {
+        outline: none;
+    }
+
+    &.error {
+        border: 1px solid red;
+    }
+
+    &.success {
+        border: 1px solid green;
+    }
+
+    &.warning {
+        border: 1px solid orange;
+    }
+
+    &.info {
+        border: 1px solid blue;
+    }
+
+    &.disabled {
+        border: 1px solid gray;
+    }
+}

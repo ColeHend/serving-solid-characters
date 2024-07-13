@@ -1,3 +1,4 @@
+//ts-nocheck
 import { Setter, onCleanup } from "solid-js";
 
 export default function clickOutside(el: Element, accessor: () => any) {

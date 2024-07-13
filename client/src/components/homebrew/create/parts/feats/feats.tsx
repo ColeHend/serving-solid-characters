@@ -12,6 +12,10 @@ import HomebrewManager from "../../homebrewManager";
 import MultiSelect from "../../../../shared/multiSelect/MultiSelect";
 import { Feat } from "../../../../../models/feat.model";
 import { BehaviorSubject } from "rxjs";
+import Input from "../../../../shared/components/Input/Input";
+import Select from "../../../../shared/components/Select/Select";
+import Option from "../../../../shared/components/Select/Option";
+import Chip from "../../../../shared/components/Chip/Chip";
 
 export enum PreReqType {
     AbilityScore,
@@ -129,55 +133,55 @@ const Feats: Component = () => {
                 <div class="featHomebrew">
                     <div class={`${styles.name}`}>
                         <h2 >Add Name</h2>
-                        <input type="text" id="featName" value={featName()} onChange={(e)=>setFeatName(e.currentTarget.value)} />
+                        <Input type="text" id="featName" value={featName()} onChange={(e)=>setFeatName(e.currentTarget.value)} />
                     </div>
                     <div class={`${styles.preRequisites}`}>
                         <h2>Add Pre-Requisites</h2>
                         <div>
-                            <select value={selectedType()} onChange={(e)=>setSelectedType(()=>+e.currentTarget.value)} >
-                                <option value={PreReqType.AbilityScore}>Ability Score</option>
-                                <option value={PreReqType.Class}>Class</option>
-                                <option value={PreReqType.CharacterLevel}>Class Level</option>
-                                <option value={PreReqType.ClassArray}>Classes</option>
-                            </select>
+                            <Select value={selectedType()} onChange={(e)=>setSelectedType(()=>+e.currentTarget.value)} disableUnselected={true} >
+                                <Option value={PreReqType.AbilityScore}>Ability Score</Option>
+                                <Option value={PreReqType.Class}>Class</Option>
+                                <Option value={PreReqType.CharacterLevel}>Class Level</Option>
+                                <Option value={PreReqType.ClassArray}>Classes</Option>
+                            </Select>
                             <Switch>
                                             <Match when={selectedType() === PreReqType["AbilityScore"]}>
                                                 <div>
-                                                    <select onChange={(e)=>setKeyName(e.currentTarget.value)}>
-                                                        <option value={"STR"}>Strength</option>
-                                                        <option value={"DEX"}>Dexterity</option>
-                                                        <option value={"CON"}>Constitution</option>
-                                                        <option value={"INT"}>Intelligence</option>
-                                                        <option value={"WIS"}>Wisdom</option>
-                                                        <option value={"CHA"}>Charisma</option>
-                                                    </select>
-                                                    <input type="number" onChange={(e)=>setKeyValue(e.currentTarget.value)} />
+                                                    <Select onChange={(e)=>setKeyName(e.currentTarget.value)}>
+                                                        <Option value={"STR"}>Strength</Option>
+                                                        <Option value={"DEX"}>Dexterity</Option>
+                                                        <Option value={"CON"}>Constitution</Option>
+                                                        <Option value={"INT"}>Intelligence</Option>
+                                                        <Option value={"WIS"}>Wisdom</Option>
+                                                        <Option value={"CHA"}>Charisma</Option>
+                                                    </Select>
+                                                    <Input type="number" onChange={(e)=>setKeyValue(e.currentTarget.value)} />
                                                 </div>
                                             </Match>
                                             <Match when={selectedType() === PreReqType["Class"]}>
                                                 <div>
-                                                    <select onChange={(e)=>{
+                                                    <Select onChange={(e)=>{
                                                         setKeyName("Class")
                                                         setKeyValue(e.currentTarget.value)
                                                     }}>
                                                         <For each={classes()}>
                                                             {(classObj) => (
-                                                                <option value={classObj.name}>{classObj.name}</option>
+                                                                <Option value={classObj.name}>{classObj.name}</Option>
                                                             )}
                                                         </For>
-                                                    </select>
+                                                    </Select>
                                                 </div>
                                             </Match>
                                             <Match when={selectedType() === PreReqType["CharacterLevel"]}>
                                                 <div>
-                                                    <select onChange={(e)=>setKeyName(e.currentTarget.value)} >
+                                                    <Select onChange={(e)=>setKeyName(e.currentTarget.value)} >
                                                         <For each={classes()}>
                                                             {(classObj) => (
-                                                                <option value={classObj.name}>{classObj.name}</option>
+                                                                <Option value={classObj.name}>{classObj.name}</Option>
                                                             )}
                                                         </For>
-                                                    </select>
-                                                    <input type="number" onChange={(e)=>setKeyValue(e.currentTarget.value)} />
+                                                    </Select>
+                                                    <Input type="number" onChange={(e)=>setKeyValue(e.currentTarget.value)} />
                                                 </div>
                                             </Match>
                                             <Match when={selectedType() === PreReqType["ClassArray"]}>
@@ -190,10 +194,9 @@ const Feats: Component = () => {
                             <button disabled={preReqs().length >= 10} onClick={addPreReq}>Add</button> 
                         </div>
                         <div class={`${styles.chipBar}`}>
-                            <span class={`${stylin.tertiary}`}>{keyName()} : {keyValue()}</span>
+                            <Chip key={keyName()} value={keyValue()} />
                             <For each={preReqs()}>
-                                {(preReq, i) => (<span class={`${stylin.tertiary}`}>{preReq.name} : {preReq.value} <button class={`${stylin.hover} ${styles.removeChipButton}`}
-                                onClick={()=>setPreReqs((old) => old.filter((x, ind) => ind !== i()))}>X</button></span>)}
+                                {(preReq, i) => (<Chip key={preReq.name} value={preReq.value} remove={()=>setPreReqs((old) => old.filter((x, ind) => ind !== i()))} />)}
                             </For>
                         </div>
                     </div>
