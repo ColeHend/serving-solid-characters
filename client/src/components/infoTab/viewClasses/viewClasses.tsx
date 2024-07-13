@@ -374,7 +374,7 @@ const viewClasses: Component = () => {
                             </div>
                         </ExpansionPanel>
                         
-                        <div style={{margin:"5%", "max-width":"80%"}}>
+                        <div class={`${styles.subClasses}`}>
                             <Carousel elements={currentSubClassElement(currentSubclasses)} />
                         </div>
         
