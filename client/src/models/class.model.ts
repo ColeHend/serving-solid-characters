@@ -23,7 +23,7 @@ export interface LevelEntity {
 export interface Subclass {
     name: string;
     subclassFlavor: string;
-    description: string[];
+    desc: string[];
     features: Feature<unknown, string>[];
     class: string;
     spells: Spell[];
