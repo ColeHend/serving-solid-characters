@@ -1,8 +1,8 @@
 import { createSignal, createMemo, type Accessor, type Setter } from "solid-js";
 import { Feat, Item, Spell, DnDClass, Background, Race } from "../../../models/";
 import { concatMap, take, of, tap, Observable, catchError } from "rxjs";
-import homebrewDB from "../../../customHooks/utility/localDB/homebrewDBFile";
-import httpClient$ from "../../../customHooks/utility/httpClientObs";
+import homebrewDB from "../../../shared/customHooks/utility/localDB/homebrewDBFile";
+import httpClient$ from "../../../shared/customHooks/utility/httpClientObs";
 
 export default class HomebrewManager {
     public classes: Accessor<DnDClass[]>;

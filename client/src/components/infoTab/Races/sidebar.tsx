@@ -1,7 +1,7 @@
 import { Component, For, Show, createSignal } from "solid-js";
 import { Race } from "../../../models/race.model";
-import useStyle from "../../../customHooks/utility/style/styleHook";
-import Banner from "../../shared/Banner/banner";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
+import Banner from "../../../shared/components/Banner/banner";
 import { effect } from "solid-js/web";
 
 type Props = {

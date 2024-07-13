@@ -1,9 +1,9 @@
 import { Accessor, Component, For, createSignal, createMemo, Setter } from "solid-js";
-import { Spell } from "../../../../models/spell.model";
+import { Spell } from "../../../models/spell.model";
 import { effect } from "solid-js/web";
 import Modal from "../popup/popup.component";
 import { create } from "domain";
-import useStyle from "../../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 
 type Props<T> = {
     items: Accessor<T>;

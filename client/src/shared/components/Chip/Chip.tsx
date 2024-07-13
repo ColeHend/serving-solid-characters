@@ -1,5 +1,5 @@
 import { Component, JSX, Show } from "solid-js";
-import useStyles from "../../../../customHooks/utility/style/styleHook";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./Chip.module.scss";
 interface Props {
     class?: string;

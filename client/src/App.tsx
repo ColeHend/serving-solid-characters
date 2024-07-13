@@ -1,16 +1,16 @@
 import { type Component, For, createResource, JSX } from 'solid-js';
 import { effect } from 'solid-js/web';
-import useDnDClasses from './customHooks/dndInfo/srdinfo/useDnDClasses';
-import useStyle from './customHooks/utility/style/styleHook';
-import useDnDSpells from './customHooks/dndInfo/srdinfo/useDnDSpells';
-import useDnDFeats from './customHooks/dndInfo/srdinfo/useDnDFeats';
-import useDnDRaces from './customHooks/dndInfo/srdinfo/useDnDRaces';
-import useDnDBackgrounds from './customHooks/dndInfo/srdinfo/useDnDBackgrounds';
-import useDnDItems from './customHooks/dndInfo/srdinfo/useDnDItems';
+import useDnDClasses from './shared/customHooks/dndInfo/srdinfo/useDnDClasses';
+import useStyle from './shared/customHooks/utility/style/styleHook';
+import useDnDSpells from './shared/customHooks/dndInfo/srdinfo/useDnDSpells';
+import useDnDFeats from './shared/customHooks/dndInfo/srdinfo/useDnDFeats';
+import useDnDRaces from './shared/customHooks/dndInfo/srdinfo/useDnDRaces';
+import useDnDBackgrounds from './shared/customHooks/dndInfo/srdinfo/useDnDBackgrounds';
+import useDnDItems from './shared/customHooks/dndInfo/srdinfo/useDnDItems';
 import styles from './App.module.css';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
-import ExpansionPanel from './components/shared/components/expansion/expansion';
+import ExpansionPanel from './shared/components/expansion/expansion';
 
 const App: Component = () => {
   const stylin = useStyle();       

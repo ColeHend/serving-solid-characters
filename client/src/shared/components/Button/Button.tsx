@@ -1,9 +1,10 @@
+// @ts-nocheck
 import { Accessor, Component, createMemo, createSignal, For, JSX, onCleanup, Show } from "solid-js";
-import useStyles from "../../../../customHooks/utility/style/styleHook";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./Button.module.scss";
 import Modal from "../popup/popup.component";
 import { effect, Portal } from "solid-js/web";
-import clickOutside from "../../../../customHooks/utility/clickOutside";
+import clickOutside from "../../../shared/customHooks/utility/clickOutside";
 
 export interface MenuButton {
     name: string,

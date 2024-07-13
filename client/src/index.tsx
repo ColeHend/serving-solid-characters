@@ -5,7 +5,7 @@ import { Component, createSignal, lazy, onMount } from "solid-js";
 import "./index.css";
 import App from "./App";
 import Navbar from "./components/navbar/navbar";
-import useStyle from "./customHooks/utility/style/styleHook";
+import useStyle from "./shared/customHooks/utility/style/styleHook";
 import 'solid-devtools';
 const Characters = lazy(() => import("./components/characters/characters"));
 const CharacterCreate = lazy(

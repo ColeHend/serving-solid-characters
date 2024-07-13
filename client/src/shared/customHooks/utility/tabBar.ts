@@ -1,7 +1,7 @@
 import { Accessor, createSignal } from "solid-js";
-import { Tab } from "../../components/navbar/navbar";
+import { Tab } from "../../../components/navbar/navbar";
 import { effect } from "solid-js/web";
-import { GameSystems } from "../../models/enums/gameSystems";
+import { GameSystems } from "../../../models/enums/gameSystems";
 
 export default function useTabs(pageName: Accessor<string>): Accessor<Tab[]> {
     const [getTabPage, setTabPage] = createSignal<Tab[]>([]);
