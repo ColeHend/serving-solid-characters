@@ -7,6 +7,7 @@ using sharpAngleTemplate.models.entities;
 using sharpAngleTemplate.tools;
 using FeatsEntity;
 using BackgroundsEntity;
+using CoreModels;
 
 namespace sharpAngleTemplate.models.repositories
 {
@@ -44,8 +45,8 @@ namespace sharpAngleTemplate.models.repositories
         }
 
         public List<ClassEntity> GetClasses()
-        {
-            return classDTOs;
+        { 
+            return classDTOs.AddForgemaster();
         }
         public List<SpellEntity> GetSpells()
         {

@@ -1,7 +1,7 @@
 import { Accessor, Component, createMemo, createSignal, For, JSX, onCleanup, Show } from "solid-js";
 import useStyles from "../../../../customHooks/utility/style/styleHook";
 import style from "./Button.module.scss";
-import Modal from "../../popup/popup.component";
+import Modal from "../popup/popup.component";
 import { effect, Portal } from "solid-js/web";
 import clickOutside from "../../../../customHooks/utility/clickOutside";
 

@@ -22,10 +22,10 @@ export interface Choice<T>
 export interface StartingEquipment {
     class: string;
     quantity: number;
-    choice1: Choice<string>[];
-    choice2: Choice<string>[];
-    choice3: Choice<Feature<number, string>>[];
-    choice4: Choice<Feature<number, string>>[];
+    choice1: Choice<Item>[];
+    choice2: Choice<Item>[];
+    choice3: Choice<Item>[];
+    choice4: Choice<Item>[];
 }
 
 export interface Item {

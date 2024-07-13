@@ -1,12 +1,12 @@
 import { Accessor, Component, For, JSX, Show, Signal, createSignal, onMount, onCleanup, Setter } from "solid-js";
 import navStyles from './navbar.module.scss';
-import useStyle from "../../customHooks/utility/style/styleHook";
-import useTabs from "../../customHooks/utility/tabBar";
+import useStyle from "../../shared/customHooks/utility/style/styleHook";
+import useTabs from "../../shared/customHooks/utility/tabBar";
 import { Portal, effect } from "solid-js/web";
 import { A } from "@solidjs/router";
-import Modal from "../shared/popup/popup.component";
+import Modal from "../../shared/components/popup/popup.component";
 import NavMenu from "./navMenu/navMenu";
-import Button, { MenuButton } from "../shared/components/Button/Button";
+import Button, { MenuButton } from "../../shared/components/Button/Button";
 
 type Props = {
     style: CSSModuleClasses[string],

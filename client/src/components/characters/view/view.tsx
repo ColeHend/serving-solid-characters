@@ -1,18 +1,18 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
-import useStyle from "../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./view.module.scss";
-import useCharacters, { Character, Stats } from "../../../customHooks/dndInfo/useCharacters";
+import useCharacters, { Character, Stats } from "../../../shared/customHooks/dndInfo/useCharacters";
 import StatBlock from "./stat-bar/stat/stat";
 import StatBar from "./stat-bar/statBar";
 import { useParams, useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
-import useGetClasses from "../../../customHooks/data/useGetClasses";
-import useGetSpells from "../../../customHooks/data/useGetSpells";
-import useGetFeats from "../../../customHooks/data/useGetFeats";
-import useGetRaces from "../../../customHooks/data/useGetRaces";
-import useGetItems from "../../../customHooks/data/useGetItems";
-import useGetBackgrounds from "../../../customHooks/data/useGetBackgrounds";
-import useGetFullStats from "../../../customHooks/dndInfo/useGetFullStats";
+import useGetClasses from "../../../shared/customHooks/data/useGetClasses";
+import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
+import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
+import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
+import useGetItems from "../../../shared/customHooks/data/useGetItems";
+import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
+import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
 
 
 const CharacterView: Component = () => {

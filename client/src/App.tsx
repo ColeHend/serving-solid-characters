@@ -10,7 +10,7 @@ import useDnDItems from './customHooks/dndInfo/srdinfo/useDnDItems';
 import styles from './App.module.css';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
-import ExpansionPanel from './components/shared/expansion/expansion';
+import ExpansionPanel from './components/shared/components/expansion/expansion';
 
 const App: Component = () => {
   const stylin = useStyle();       

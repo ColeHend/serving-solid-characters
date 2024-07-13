@@ -1,16 +1,17 @@
 import {type Component, For, Show, createSignal, JSX} from "solid-js";
-import useStyle from "../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../../customHooks/utility/style/styleHook";
 import styles from './expansion.module.scss';
 
 type Props = {
     children: [JSX.Element, JSX.Element],
-    styles?: CSSModuleClasses
+    styles?: CSSModuleClasses,
+    [key:string]: any
 }
 const ExpansionPanel: Component<Props> = (props)=>{
     const[open, setOpen] = createSignal(false);
     const stylin = useStyle();
     return (
-        <div class={`${styles.totalPanel} ${props.styles}`}>
+        <div class={`${styles.totalPanel} ${props.styles}`} {...props}>
             <div class={`${stylin.accent} ${styles.header}`}>
                 <span>
                     {props.children[0]}

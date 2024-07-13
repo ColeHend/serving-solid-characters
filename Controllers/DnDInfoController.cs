@@ -11,6 +11,7 @@ using sharpAngleTemplate.models.entities;
 using FeatsEntity;
 using BackgroundsEntity;
 using Microsoft.OpenApi.Any;
+using sharpAngleTemplate.Repositories;
 
 [ApiController]
     [Route("api/[controller]/[action]")]
@@ -28,7 +29,7 @@ using Microsoft.OpenApi.Any;
         [HttpPost()]
         public ActionResult<List<ClassEntity>> Classes()
         {
-            var classes = dndInfoRepository.GetClasses();
+            var classes = dndInfoRepository.GetClasses().Where(x=> x.Id != 0).DistinctBy(x=>x.Id);
             return Ok(classes);
         }
 

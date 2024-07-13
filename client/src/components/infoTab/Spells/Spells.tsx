@@ -1,12 +1,12 @@
 import { Component, For, Show, createSignal } from "solid-js";
 import styles from "./Spells.module.scss";
-import useStyle from "../../../customHooks/utility/style/styleHook";
-import useDnDSpells from "../../../customHooks/dndInfo/srdinfo/useDnDSpells";
+import useStyle from "../../../shared/customHooks/utility/style/styleHook";
+import useDnDSpells from "../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import TableRow from "./TableRow/tableRow";
-import Paginator from "../../shared/paginator/paginator";
+import Paginator from "../../../shared/components/paginator/paginator";
 import { Spell } from "../../../models/spell.model";
 import SearchBar from "./searchBar/searchBar";
-import useGetSpells from "../../../customHooks/data/useGetSpells";
+import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
 
 const masterSpells: Component = () => {
     const stylin = useStyle();

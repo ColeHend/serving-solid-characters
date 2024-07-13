@@ -1,9 +1,9 @@
 import { Component, For, createSignal } from "solid-js";
-import useStyle from "../../customHooks/utility/style/styleHook";
+import useStyle from "../../shared/customHooks/utility/style/styleHook";
 import styles from "./characters.module.scss";
 import { Feature } from "../../models/core.model";
-import useCharacters, { Character } from "../../customHooks/dndInfo/useCharacters";
-import Button, { MenuButton } from "../shared/components/Button/Button";
+import useCharacters, { Character } from "../../shared/customHooks/dndInfo/useCharacters";
+import Button, { MenuButton } from "../../shared/components/Button/Button";
 
 
 const Characters: Component = () => {

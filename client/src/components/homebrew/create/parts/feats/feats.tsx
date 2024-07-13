@@ -1,21 +1,21 @@
 import { Component, For, Match, Switch, createSignal, untrack, } from "solid-js";
-import useStyle from "../../../../../customHooks/utility/style/styleHook";
+import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from './feats.module.scss'
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
-import useGetClasses from "../../../../../customHooks/data/useGetClasses";
-import useGetFeats from "../../../../../customHooks/data/useGetFeats";
+import useGetClasses from "../../../../../shared/customHooks/data/useGetClasses";
+import useGetFeats from "../../../../../shared/customHooks/data/useGetFeats";
 import { Feature } from "../../../../../models/core.model";
-import ExpansionPanel from "../../../../shared/expansion/expansion";
+import ExpansionPanel from "../../../../../shared/components/expansion/expansion";
 import { effect} from "solid-js/web";
 import HomebrewManager from "../../homebrewManager";
-import MultiSelect from "../../../../shared/multiSelect/MultiSelect";
+import MultiSelect from "../../../../../shared/components/multiSelect/MultiSelect";
 import { Feat } from "../../../../../models/feat.model";
 import { BehaviorSubject } from "rxjs";
-import Input from "../../../../shared/components/Input/Input";
-import Select from "../../../../shared/components/Select/Select";
-import Option from "../../../../shared/components/Select/Option";
-import Chip from "../../../../shared/components/Chip/Chip";
+import Input from "../../../../../shared/components/Input/Input";
+import Select from "../../../../../shared/components/Select/Select";
+import Option from "../../../../../shared/components/Select/Option";
+import Chip from "../../../../../shared/components/Chip/Chip";
 
 export enum PreReqType {
     AbilityScore,

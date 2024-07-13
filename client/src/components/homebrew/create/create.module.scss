@@ -25,20 +25,18 @@
 }
 
 .body {
+    min-height: 70%;
+    margin: 0 auto;
+    border-radius: 15px;
+    width: 70%;
     h1 {
         width: 100%;
         text-align: center;
     }
-    width: 70%;
-    min-height: 70%;
-    margin: 0 auto;
-    border-radius: 15px;
-
     @media screen and (min-width: 769px){
         transform: translateY(-75%);
         
     }
-
     @media screen and (max-width: 768px){
         width: 100%;
         

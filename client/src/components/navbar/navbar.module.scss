@@ -92,12 +92,12 @@
                 flex-wrap: wrap;
             }
             li {
+                margin: 0 1rem;
+                width: 50px;
                 @media screen and (max-width: $mobile){
                     margin-top: 15px;
                     
                 }
-                margin: 0 1rem;
-                width: 50px;
                 a {
                     text-decoration: none;
                     &:hover {
