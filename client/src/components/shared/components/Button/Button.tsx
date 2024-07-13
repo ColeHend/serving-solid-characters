@@ -1,5 +1,3 @@
-// @ts-nocheckd
-/* use:clickOutside is not actually an error! Solid fixes on compile! */
 import { Accessor, Component, createMemo, createSignal, For, JSX, onCleanup, Show } from "solid-js";
 import useStyles from "../../../../customHooks/utility/style/styleHook";
 import style from "./Button.module.scss";
@@ -39,13 +37,13 @@ const Button: Component<Props> = (props)=> {
     } as JSX.CSSProperties));
     let myRef: HTMLButtonElement;
     let menuRef: HTMLDivElement;
+    const outsideFunction = ()=>clickOutside(menuRef, ()=>setShowMenu({show: false, lastX: 0, lastY: 0}));
+
     if (props.enableBackgroundClick) {
-        document.body.addEventListener("click", ()=>clickOutside(menuRef, ()=>setShowMenu({show: false, lastX: 0, lastY: 0})));
+        document.body.addEventListener("click", outsideFunction);
     }
     onCleanup(()=>{
-        if (props.enableBackgroundClick) {
-            document.body.removeEventListener("click", ()=>clickOutside(menuRef, ()=>setShowMenu({show: false, lastX: 0, lastY: 0})));
-        }
+        document.body.removeEventListener("click", outsideFunction);
     });
     return (
         <>
@@ -65,7 +63,7 @@ const Button: Component<Props> = (props)=> {
                                 {(button) => (
                                     <Show when={(!!button.condition ? button.condition() : true) && showMenu() && isMenuButton()}>
                                         <li style={{height:`${100 / filteredMenuItems().length}%`}} class={`${stylin.hover}`}>
-                                            <button class={`${stylin.accent} ${style.menuButton}`} onClick={button.action}>
+                                            <button class={`${stylin.accent} ${style.menuButton}`} on:click={button.action}>
                                                 {button.name}
                                             </button>
                                         </li>
