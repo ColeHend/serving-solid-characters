@@ -27,12 +27,18 @@ const viewClasses: Component = () => {
 
     effect(()=>{
         setSearchParam({name: dndSrdClasses().length > 0 ? currentClass().name : "barbarian"})
-        console.table(currentClass());
-    
     })
 
     currentClass().subclasses
 
+    /**
+     *  it takes in an unknown value, clones. making the value an object.
+     * 
+     *  then checks if its just a string or an array
+     * 
+     * @param {unknown} value the unknown value
+     * @returns the cloned value as a nice string
+     */
     const classFeatureNullCheck = (value: unknown) => {
         const val = JSON.parse(JSON.stringify(value))
         if (typeof val === 'string') return val

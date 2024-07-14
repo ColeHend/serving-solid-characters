@@ -91,7 +91,7 @@ builder.WebHost.ConfigureKestrel((context, options) =>
     {
         listenOptions.UseHttps("nethost.pfx", "password");
     });
-    options.Listen(System.Net.IPAddress.Parse("192.168.1.100"), 5000, listenOptions =>
+    options.Listen(System.Net.IPAddress.Parse("192.168.1.101"), 5000, listenOptions =>
     {
         listenOptions.UseHttps("nethost.pfx", "password");
     });
@@ -159,7 +159,7 @@ app.UseSpa(spa =>
     if (app.Environment.IsDevelopment())
     {
         // spa.UseReactDevelopmentServer(npmScript: "build");
-        spa.UseProxyToSpaDevelopmentServer("http://192.168.1.100:3000/");
+        spa.UseProxyToSpaDevelopmentServer("http://192.168.1.101:3000/");
     } else {
         spa.Options.DefaultPage = "/index.html";
         spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
