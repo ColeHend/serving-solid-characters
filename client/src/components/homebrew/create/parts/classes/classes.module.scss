@@ -14,3 +14,127 @@
         
     }
 }
+.textArea {
+    resize: none;
+    width: 50%;
+    height: 100px;
+    border-radius: 10px;
+    padding: 5px;
+}
+.hasCasting {
+    display: flex;
+    flex-direction: row;
+    label {
+        height: min-content;
+        margin: auto 0;
+        margin-left: 10px;
+    }
+    span {
+        margin: auto 0;
+        padding: 5px;
+        width: min-content;
+        margin-right: 25px;
+    }
+}
+.hasCastingMain {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    div {
+        width: max-content;
+    }
+    label {
+        height: min-content;
+        margin: auto 0;
+        margin-left: 10px;
+    }
+    span {
+        margin: auto 0;
+        padding: 5px;
+        width: min-content;
+        margin-right: 25px;
+    }
+}
+.subclassLevels {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.itemStuff {
+    :nth-child(1) {
+        display: flex;
+        flex-direction: column;
+        margin: 15px 10px;
+        justify-content: left;
+        input {
+            margin: 10px;
+        }
+    }
+    :nth-child(2) {
+        display: flex;
+        flex-direction: row;
+        margin: 15px 10px;
+        justify-content: left;
+        flex-wrap: wrap;
+        input {
+            margin: 10px;
+        }
+    }
+}
+.otherStuff {
+    display: flex;
+    flex-direction: row;
+    margin: 15px 10px;
+    width: 100%;
+    justify-content: space-around;
+    input {
+        margin: 10px;
+    }
+
+}
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin: 0 10px;
+    button {
+        margin: 10px;
+        font-size: 1rem;
+    }
+}
+.statProf {
+    display: flex;
+    justify-content:left;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0 10px;
+    width: 69%;
+    input {
+        width: min-content;
+        margin: 10px;
+    }
+}
+.toolProf {
+    display: flex;
+    justify-content:left;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0 10px;
+    input {
+        width: min-content;
+        margin: 10px;
+    }
+}
+.Tools {
+    display: inline;
+    width: min-content;
+}
+.Columns {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0 10px;
+}
+.Column {
+    width: 45%;
+}
