@@ -9,6 +9,7 @@ import { effect } from "solid-js/web";
 import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
 import { PreReqType } from "../../homebrew/create/parts/feats/feats";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import { useSearchParams } from "@solidjs/router";
 
 const featsList: Component = () => {
     const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
@@ -24,8 +25,16 @@ const featsList: Component = () => {
     const stylin = useStyle();
     
     const srdFeats = useGetFeats(); 
-    // const srdFeats = useDnDFeats();
-    
+
+    const [searchParam, setSearchParam] = useSearchParams();
+    if (!!!searchParam.name) setSearchParam({name: srdFeats()[0]?.name });
+    const selectedFeat = srdFeats().filter(feat=>feat.name?.toLowerCase() === (searchParam.name || srdFeats()[0].name).toLowerCase())[0];
+    const [currentFeat, setCurrentFeat] = createSignal<Feat>(selectedFeat);
+
+    effect(()=>{
+        setSearchParam({name:currentFeat().name })
+    })
+
     return (
         <div class={`${stylin.accent} ${styles.featsList}`}>
             <div class={`${styles.body}`}>
@@ -38,12 +47,17 @@ const featsList: Component = () => {
                         {(feat, i)=>
                             <>
                                 <li> 
-                                    {feat.name} <button onClick={()=>toggleRow(i())}>{hasIndex(i()) ? "↑" : "↓"}</button> 
+                                    {feat.name} <button 
+                                        onClick={()=> {
+                                            toggleRow(i());
+                                            setCurrentFeat(feat);
+                                            
+                                        }}>{hasIndex(i()) ? "↑" : "↓"}</button> 
                                 </li>
                                 <Show when={hasIndex(i())}>
                                     <>
                                     <div class={`${styles.PreReqsBar}`}>
-                                        <For each={feat.preReqs}>{(preReq)=>
+                                        <For each={currentFeat().preReqs}>{(preReq)=>
                                             <div>
                                                 <Switch>
                                                     <Match when={preReq.info.type === PreReqType[0]}>
@@ -92,20 +106,20 @@ const featsList: Component = () => {
                                             </div>
                                         }</For>
                                     </div>
-                                        <br />
-                                        <div>
-                                            Description:
-                                        </div>
-                                        <span>
-                                            <For each={feat.desc}>
-                                                {(desc, i)=>
-                                                    <>
-                                                        {desc}
-                                                        <br />
-                                                    </>
-                                                }
-                                            </For>
-                                        </span>
+                                    <br />
+                                    <div>
+                                        Description:
+                                    </div>
+                                    <span>
+                                        <For each={currentFeat().desc}>
+                                            {(desc, i)=>
+                                                <>
+                                                    {desc}
+                                                    <br />
+                                                </>
+                                            }
+                                        </For>
+                                    </span>
                                     </>
                                 </Show>
                             </>

@@ -10,6 +10,7 @@ import type { DnDClass } from "../../../models";
 import Carousel from "../../../shared/components/Carosel/Carosel";
 import { Feature } from "../../../models/core.model";
 import { Subclass } from "../../../models/class.model";
+import Button from "../../../shared/components/Button/Button";
 
 
 const viewClasses: Component = () => {
@@ -23,13 +24,12 @@ const viewClasses: Component = () => {
         
     const currentClass:Accessor<DnDClass> = createMemo(()=>dndSrdClasses().length > 0 && currentClassIndex() >= 0 && currentClassIndex() < dndSrdClasses().length ? dndSrdClasses()[currentClassIndex()] : ({} as DnDClass))
 
-    const currentSubclasses = createMemo(()=>currentClass().subclasses.length > 0 ? currentClass().subclasses : [] as Subclass[])
+    const currentSubclasses = createMemo(()=>currentClass()?.subclasses?.length > 0 ? currentClass()?.subclasses : [] as Subclass[])
 
     effect(()=>{
         setSearchParam({name: dndSrdClasses().length > 0 ? currentClass().name : "barbarian"})
     })
 
-    currentClass().subclasses
 
     /**
      *  it takes in an unknown value, clones. making the value an object.

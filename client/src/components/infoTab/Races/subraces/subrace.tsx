@@ -16,7 +16,7 @@ const Subrace: Component<Props> = (props) => {
 
   return (
     <>
-      <Show when={race.subRaces.length > 0}>
+      <Show when={race?.subRaces?.length > 0}>
         <ExpansionPanel>
           <div>
             <h3>
@@ -24,11 +24,11 @@ const Subrace: Component<Props> = (props) => {
             </h3>
           </div>
           <div>
-            <Show when={race.subRaces.length > 0}>
+            <Show when={race?.subRaces.length > 0}>
               <br />
 
               <div>
-                <For each={race.subRaces}>
+                <For each={race?.subRaces}>
                   {(subrace) => (
                     <>
                       <div id={`${subrace.name}`} class={`${style.subrace}`}>

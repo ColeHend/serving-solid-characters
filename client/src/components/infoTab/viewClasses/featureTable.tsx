@@ -40,7 +40,7 @@ const FeatureTable: Component<Props> = (props) => {
                     <th>
                         Features
                     </th>
-                    <For each={fixedSorerer(Object.keys(Class().classLevels[0].classSpecific))}>
+                    <For each={fixedSorerer(Object.keys(Class()?.classLevels[0]?.classSpecific))}>
                         {(Specifickey)=>
                             <th>
                                 {toDisplayFormat(Specifickey)}

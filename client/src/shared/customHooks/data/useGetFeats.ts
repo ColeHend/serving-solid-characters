@@ -2,7 +2,7 @@ import { createMemo, createSignal } from "solid-js";
 import useDnDFeats from "../dndInfo/srdinfo/useDnDFeats";
 import homebrewDB from "../utility/localDB/homebrewDBFile";
 import HttpClient$ from "../utility/httpClientObs";
-import { Feat } from "../../models";
+import { Feat } from "../../../models";
 import { take, tap } from "rxjs";
 const [homebrewFeats, setHomebrewFeats] = createSignal<Feat[]>([]);
 const useGetFeats = () => {

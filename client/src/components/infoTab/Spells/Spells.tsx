@@ -7,17 +7,28 @@ import Paginator from "../../../shared/components/paginator/paginator";
 import { Spell } from "../../../models/spell.model";
 import SearchBar from "./searchBar/searchBar";
 import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
+import { useSearchParams } from "@solidjs/router";
+import { effect } from "solid-js/web";
 
 const masterSpells: Component = () => {
     const stylin = useStyle();
     const dndSrdSpells = useGetSpells();
 
+    // search param stuff
+
+    const [searchParam, setSearchParam] = useSearchParams();
+    if (!!!searchParam.name) setSearchParam({name: dndSrdSpells()[0]?.name});
+    const selectedSpell = dndSrdSpells().filter(x=>x.name.toLowerCase() === (searchParam.name || dndSrdSpells()[0].name).toLowerCase())[0];
+    const [currentSpell,setCurrentSpell] = createSignal<Spell>(selectedSpell);
+    
+    //-------------
+
     const [RowShown, SetRowShown] = createSignal<number[]>([]);
     const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
-
     const [searchResults, setSearchResults] = createSignal<any[]>([]);
     const toggleRow = (index: number) => !hasIndex(index) ? SetRowShown([...RowShown(), index]) : SetRowShown(RowShown().filter(i => i !== index));
     const hasIndex = (index: number) => RowShown().includes(index);
+
     const spellLevel = (spellLevel: string) => { 
         switch(spellLevel){
             case "0":
@@ -32,6 +43,10 @@ const masterSpells: Component = () => {
                 return `${spellLevel}th`;
         }
     }
+
+    effect(()=>{
+        setSearchParam({name: currentSpell()?.name ?? ""})
+    })
 
     return (
         <div class={`${stylin.accent} ${styles.SpellsBody}`}>
@@ -60,13 +75,17 @@ const masterSpells: Component = () => {
                                      
                                 </td>
                                 <td>
-                                    <button onClick={() => toggleRow(i())}>
+                                    <button onClick={() => 
+                                        {
+                                            toggleRow(i());
+                                            setCurrentSpell(()=>spell);
+                                        }}>
                                         {hasIndex(i()) ? "↑" : "↓"}
                                     </button>
                                 </td>
                             </tr>
                             <Show when={hasIndex(i())} >
-                                <TableRow spell={spell}></TableRow>
+                                <TableRow spell={currentSpell()}></TableRow>
                             </Show>
                             <hr />
                         </>

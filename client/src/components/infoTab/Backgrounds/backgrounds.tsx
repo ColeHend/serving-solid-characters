@@ -5,6 +5,8 @@ import ExpansionPanel from "../../../shared/components/expansion/expansion";
 import styles from "./backgrounds.module.scss";
 import { effect } from "solid-js/web";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import { useSearchParams } from "@solidjs/router";
+import { Background } from "../../../models";
 
 const Viewbackgrounds: Component = () => {
 
@@ -15,9 +17,19 @@ const Viewbackgrounds: Component = () => {
         if (searchResult().length === 0) return backgrounds();
         return searchResult();
     })
+
+    const [searchParam, setSearchParam] = useSearchParams();
+    if (!!!searchParam.name) setSearchParam({name: backgrounds()[0]?.name})
+    const selectedBackground = backgrounds().filter(x=>x.name.toLowerCase() === (searchParam.name || backgrounds()[0].name).toLowerCase())[0]
+    const [currentBackground,setCurrentBackground] = createSignal<Background>(selectedBackground); 
+
     effect(()=>{    
-        console.log("backgrounds: ", backgrounds());
+        setSearchParam({name: currentBackground()?.name})
     });
+
+    const setTheCurrentBackG = (item?: object )=> {
+        setCurrentBackground(item as Background);
+    }
 
     return (
         <div class={`${stylin.accent} ${styles.allBackgrounds}`}>
@@ -29,17 +41,17 @@ const Viewbackgrounds: Component = () => {
                 <For each={displayResults()}>
                     {(background) =>
                         
-                            <ExpansionPanel styles={styles}>
+                            <ExpansionPanel extraSetter={setTheCurrentBackG(background)} styles={styles}>
                                 <div>
-                                    {background.name}
+                                    {currentBackground().name}
                                 </div>
                                 <div class={`${styles.body}`}>
                                     <h2>
-                                        {background.name}
+                                        {currentBackground().name}
                                     </h2>
 
                                     <div>
-                                        <For each={background.feature}>
+                                        <For each={currentBackground().feature}>
                                             {(feature) =>
                                                 <>
                                                     <span>
@@ -57,12 +69,12 @@ const Viewbackgrounds: Component = () => {
                                         </For>
                                     </div>
 
-                                    <h3>{background.languageChoice.type}</h3>
+                                    <h3>{currentBackground().languageChoice.type}</h3>
 
-                                    <h3>choose: {background.languageChoice.choose}</h3>
+                                    <h3>choose: {currentBackground().languageChoice.choose}</h3>
 
                                     <div>
-                                        <For each={background.languageChoice.choices}>
+                                        <For each={currentBackground().languageChoice.choices}>
                                             {(choice)=>
                                                 <>
                                                     <span>{choice}</span>
@@ -76,7 +88,7 @@ const Viewbackgrounds: Component = () => {
                                     
                                     <h3>Starting Equipment</h3>
                                     <div>
-                                        <For each={background.startingEquipment}>
+                                        <For each={currentBackground().startingEquipment}>
                                             {(item)=>
                                                 <>
                                                     <span>{item.item}</span>
@@ -89,7 +101,7 @@ const Viewbackgrounds: Component = () => {
                                     <br />
 
                                     <div>
-                                        <For each={background.startingEquipmentChoices}>
+                                        <For each={currentBackground().startingEquipmentChoices}>
                                             {(choice)=>
                                                 <>
                                                     <h3>Choose: {choice.choose}</h3>
@@ -108,7 +120,7 @@ const Viewbackgrounds: Component = () => {
                                     
                                     <h3>Skill Proficiencies</h3>
                                     <div>
-                                        <For each={background.startingProficiencies}>
+                                        <For each={currentBackground().startingProficiencies}>
                                             {(prof)=>
                                                 <>
                                                     <span>{prof.value}</span>
