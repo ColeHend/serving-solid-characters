@@ -27,6 +27,13 @@ const FeatureTable: Component<Props> = (props) => {
         }
         return keyArr
     }
+
+    const highestClassSpecificKeyAmountFirstArr = () => {
+        const classSpecific = props.Class().classLevels
+        const sorted = classSpecific.sort((b, a) => Object.keys(a.classSpecific).length - Object.keys(b.classSpecific).length)
+        return sorted
+    }
+
     return (
         <table class={`${styles.table}`}>
             <thead>
@@ -40,7 +47,7 @@ const FeatureTable: Component<Props> = (props) => {
                     <th>
                         Features
                     </th>
-                    <For each={fixedSorerer(Object.keys(Class()?.classLevels[0]?.classSpecific))}>
+                    <For each={fixedSorerer(Object.keys(highestClassSpecificKeyAmountFirstArr()[0].classSpecific))}>
                         {(Specifickey)=>
                             <th>
                                 {toDisplayFormat(Specifickey)}

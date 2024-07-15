@@ -1,0 +1,20 @@
+.body {
+    min-height: 70%;
+    margin: 0 auto;
+    margin-top: 20px;
+    border-radius: 15px;
+    width: 70%;
+    padding: 10px;
+    h1 {
+        width: 100%;
+        text-align: center;
+    }
+    @media screen and (min-width: 769px){
+        // transform: translateY(-75%);
+        
+    }
+    @media screen and (max-width: 768px){
+        width: 100%;
+        
+    }
+}

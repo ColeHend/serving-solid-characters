@@ -29,6 +29,7 @@ import featsList from "./components/infoTab/Feats/feats";
 import races from "./components/infoTab/Races/races";
 import Viewbackgrounds from "./components/infoTab/Backgrounds/backgrounds";
 import viewClasses from "./components/infoTab/viewClasses/viewClasses";
+import Subclasses from "./components/homebrew/create/parts/subclasses/subclasses";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -113,6 +114,7 @@ render(
         <Route path="/create" >
           <Route path="/" component={Create} />
           <Route path="/classes" component={Classes} />
+          <Route path={"/subclasses"} component={Subclasses} />
           <Route path="/items" component={Items} />
           <Route path="/feats" component={Feats} />
           <Route path="/backgrounds" component={Backgrounds} />
