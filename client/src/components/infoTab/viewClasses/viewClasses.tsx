@@ -10,6 +10,7 @@ import type { DnDClass } from "../../../models";
 import Carousel from "../../../shared/components/Carosel/Carosel";
 import { Feature } from "../../../models/core.model";
 import { Subclass } from "../../../models/class.model";
+import Button from "../../../shared/components/Button/Button";
 
 
 const viewClasses: Component = () => {
@@ -31,8 +32,15 @@ const viewClasses: Component = () => {
 
     })
 
-    currentClass().subclasses
 
+    /**
+     *  it takes in an unknown value, clones. making the value an object.
+     * 
+     *  then checks if its just a string or an array
+     * 
+     * @param {unknown} value the unknown value
+     * @returns the cloned value as a nice string
+     */
     const classFeatureNullCheck = (value: unknown) => {
         const val = JSON.parse(JSON.stringify(value))
         if (typeof val === 'string') return val

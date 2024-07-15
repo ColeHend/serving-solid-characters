@@ -1,10 +1,11 @@
-import {type Component, For, Show, createSignal, JSX} from "solid-js";
+import {type Component, For, Show, createSignal, JSX, Accessor,Setter} from "solid-js";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from './expansion.module.scss';
 
 type Props = {
     children: [JSX.Element, JSX.Element],
     styles?: CSSModuleClasses,
+    extraLogic?: () => void,
     [key:string]: any
 }
 const ExpansionPanel: Component<Props> = (props)=>{
@@ -16,7 +17,10 @@ const ExpansionPanel: Component<Props> = (props)=>{
                 <span>
                     {props.children[0]}
                 </span>
-                <span onClick={()=>setOpen(old =>!old)} class={`${stylin.hover}`}>
+                <span onClick={()=>{
+                    setOpen(old =>!old);
+                    !!props.extraLogic ? props.extraLogic() : null 
+                }} class={`${stylin.hover}`}>
                     <Show when={!open()}>
                         ↓
                     </Show>
