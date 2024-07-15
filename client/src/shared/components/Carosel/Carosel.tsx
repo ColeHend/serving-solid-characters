@@ -8,6 +8,7 @@ import { effect } from "solid-js/web";
 
 interface CarouselProps {
     elements: {name:string, element: JSX.Element}[];
+    notFoundName?: string;
 }
   
 const Carousel: Component<CarouselProps> = (props) => {
@@ -33,13 +34,13 @@ const Carousel: Component<CarouselProps> = (props) => {
         if (props.elements.length > 0) {
             return props.elements[currentIndex()].name;
         }
-        return "No Elements Found";
+        return !!props.notFoundName ? `No ${props.notFoundName} Found` : "No Elements Found";
     });
     const slideElement = createMemo(()=>{
         if (props.elements.length > 0) {
             return props.elements[currentIndex()].element;
         }
-        return <div>No Elements Found</div>;
+        return !!props.notFoundName ? <div>No {props.notFoundName} Found</div> : <div>No Elements Found</div>;
     });
   
     return (
@@ -64,4 +65,5 @@ const Carousel: Component<CarouselProps> = (props) => {
     );
   };
   
+  export { Carousel };
   export default Carousel;

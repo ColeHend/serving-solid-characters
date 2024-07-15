@@ -11,6 +11,16 @@ const Backgrounds: Component = () => {
             <HomebrewSidebar />
             <div class={`${stylin.accent} ${styles.body}`}>
                 <h1>backgrounds</h1>
+                <div>
+                    <p>ideals</p>
+                    <p>bonds</p>
+                    <p>flaws</p>
+                    <p>personality traits</p>
+                    <p>background features</p>
+                    <p>languages</p>
+                    <p>skills</p>
+                    <p>tools</p>
+                </div>
             </div>
         </>
     );

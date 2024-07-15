@@ -14,5 +14,5 @@ const Chip: Component<Props> = (props)=> {
         onClick={props.remove}>X</button></Show></span>
     )
 }
-
+export { Chip };
 export default Chip;

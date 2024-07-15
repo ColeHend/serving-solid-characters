@@ -33,4 +33,5 @@ const ExpansionPanel: Component<Props> = (props)=>{
         </div>
     )
 }
+export { ExpansionPanel };
 export default ExpansionPanel;

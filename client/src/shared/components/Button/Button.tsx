@@ -50,9 +50,9 @@ const Button: Component<Props> = (props)=> {
         <>
             <button
             ref={(el)=>(myRef = el!)}
+            onClick={(e)=>(setShowMenu((old)=>({show: !old.show, lastX: e.clientX, lastY: e.clientY})))}
             {...props}
             class={`${stylin.accent} ${stylin.hover} ${props.class ?? ""}`}
-            onClick={(e)=>(setShowMenu((old)=>({show: !old.show, lastX: e.clientX, lastY: e.clientY})))}
             >
                 {props.children}
             </button>
@@ -78,5 +78,5 @@ const Button: Component<Props> = (props)=> {
         </>
     )
 }
-
+export { Button };
 export default Button;

@@ -8,9 +8,10 @@ import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 type Props<T> = {
     items: Accessor<T>;
     setPaginatedItems: Setter<T>;
+    itemsPerPage?: number[];
 };
 
-const Paginator: Component<Props<any[]>> = (props) => {
+const Paginator = <T,>(props: Props<T[]>) => {
     const [currentPage, setCurrentPage] = createSignal(1);
     const [itemsPerPage, setItemsPerPage] = createSignal(10);
     const setPaginatedItems = props.setPaginatedItems;
@@ -24,7 +25,7 @@ const Paginator: Component<Props<any[]>> = (props) => {
     const lastpage = createMemo(() => Math.ceil(props.items().length / itemsPerPage()));
 
     // could potentially be a prop
-    const ItemsPerPageArr = [10, 20, 50, 100];
+    const ItemsPerPageArr = props.itemsPerPage ?? [10, 20, 50, 100];
 
     effect(()=>{
         if(currentPage() > lastpage()) {
@@ -58,4 +59,5 @@ const Paginator: Component<Props<any[]>> = (props) => {
         </div>
     );
 };
+export { Paginator };
 export default Paginator;

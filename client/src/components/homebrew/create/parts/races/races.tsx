@@ -11,6 +11,14 @@ const Races: Component = () => {
             <HomebrewSidebar />
             <div class={`${stylin.accent} ${styles.body}`}>
                 <h1>races</h1>
+                <div>
+                    <p>name</p>
+                    <p>size</p>
+                    <p>speed</p>
+                    <p>ability score increase</p>
+                    <p>age range</p>
+                    <p>features</p>
+                </div>
             </div>
         </>
     );

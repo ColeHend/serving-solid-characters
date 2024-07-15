@@ -1,5 +1,5 @@
 import { Component, JSX, Show } from "solid-js";
-import useStyles from "../../../../customHooks/utility/style/styleHook";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./Select.module.scss";
 import Option from "./Option";
 interface SelectProps extends JSX.InputHTMLAttributes<HTMLSelectElement> {
@@ -16,5 +16,5 @@ const Select: Component<SelectProps> = (props)=> {
         </select>
     )
 }
-
+export { Select };
 export default Select;

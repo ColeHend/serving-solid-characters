@@ -1,5 +1,5 @@
 import { Component, JSX } from "solid-js";
-import useStyles from "../../../../customHooks/utility/style/styleHook";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./input.module.scss";
 
 const Input: Component<JSX.InputHTMLAttributes<HTMLInputElement>> = (props)=> {
@@ -10,5 +10,5 @@ const Input: Component<JSX.InputHTMLAttributes<HTMLInputElement>> = (props)=> {
         />
     )
 }
-
+export { Input };
 export default Input;
