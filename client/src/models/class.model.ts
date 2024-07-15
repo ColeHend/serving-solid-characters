@@ -16,6 +16,7 @@ export interface DnDClass {
         level: number;
         name: string;
         spellcastingAbility: string;
+        casterType: string;
         info: Array<{name: string, desc: string[]}>
     }
 }

@@ -30,39 +30,7 @@ import {
 import useGetClasses from "../../../../../shared/customHooks/data/useGetClasses";
 import useGetItems from "../../../../../shared/customHooks/data/useGetItems";
 import LevelBuilder from "./levelBuilder";
-
-const getClass = (
-  name: string,
-  hitDie: number,
-  proficiencies: string[],
-  proficiencyChoices: Choice<string>[],
-  savingThrows: string[],
-  startingEquipment: StartingEquipment,
-  classLevels: LevelEntity[],
-  features: Feature<unknown, string>[],
-  subclasses: Subclass[],
-  level: number = 0,
-  spellcastingAbility: string = "",
-  spellcastingInfo: { name: string; desc: string[] }[] = []
-) => {
-  return {
-    name,
-    hitDie,
-    proficiencies,
-    proficiencyChoices,
-    savingThrows,
-    startingEquipment,
-    classLevels,
-    features,
-    subclasses,
-    spellcasting: {
-      level,
-      name,
-      spellcastingAbility,
-      info: spellcastingInfo
-    }
-  } as DnDClass;
-}
+import { effect } from "solid-js/web";
 
 const Classes: Component = () => {
   // ----------------- simple data ---
@@ -101,12 +69,11 @@ const Classes: Component = () => {
   const [spellcastingLevel, setSpellCastingLevel] = createSignal<number>(1);
   const [spelllistUsed, setSpellListUsed] = createSignal<string>("");
   const [hasSpellCasting, setHasSpellCasting] = createSignal(false);
+  const [casterType, setCasterType] = createSignal("");
 
   // --- other stuff ---
   const stylin = useStyle();
-  const allLevelsArr = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-  ];
+  const [allLevelsArr, setAllLevelArr] = createSignal(new Array(20).fill(0).map((x, i) => i + 1));
   const skills = [
     "Acrobatics",
     "Animal Handling",
@@ -143,8 +110,49 @@ const Classes: Component = () => {
       choice3: [],
       choice4: [],
     });
-  const [classLevels, setClassLevels] = createSignal<LevelEntity[]>([]);
-  const [features, setFeatures] = createSignal<Feature<unknown, string>[]>([]);
+  const [classLevels, setClassLevels] = createSignal<LevelEntity[]>(new Array(20).fill({
+    info: {
+      className: "",
+      subclassName: "",
+      level: 0,
+      type: "",
+      other: ""
+    },
+    level: 0,
+    profBonus: 0,
+    features: [],
+    classSpecific: {},
+    spellcasting: {}
+  }).map((x,i)=>{
+    return {
+      ...x,
+      info: {
+        ...x.info,
+        level: (i + 1)
+      },
+      level: (i + 1),
+      profBonus: Math.ceil((i + 1) / 4) + 1,
+    }
+  }));
+  const [features, setFeatures] = createSignal<Feature<unknown, string>[]>(new Array(20).fill({
+    info: {
+      className: name(),
+      subclassName: "",
+      level: 0,
+      type: "",
+      other: ""
+      },
+      name: "",
+      value: ""
+      }).map((x,i)=>{
+        return {
+          ...x,
+          info: {
+            ...x.info,
+            level: (i + 1)
+          },
+        }
+      }));
   const [subclasses, setSubclasses] = createSignal<Subclass[]>([]);
 
   const selectableChoices = createMemo(() => {
@@ -162,21 +170,37 @@ const Classes: Component = () => {
     }
   });
 
-  const currentClass: Accessor<DnDClass> = createMemo(() =>
-    getClass(
-      name(),
-      hitDie(),
-      proficiencies(),
-      proficiencyChoices(),
-      savingThrows(),
-      startingEquipment(),
-      classLevels(),
-      features(),
-      subclasses(),
-      spellcastingLevel(),
-      spellcastingAbility(),
-      spellcastingInfo()
-    )
+  const currentClass: Accessor<DnDClass> = createMemo(() => {
+    const theClass:DnDClass = {
+      name: name(),
+      hitDie: hitDie(),
+      proficiencies: proficiencies(),
+      proficiencyChoices: skillProficiencies().length > 0 ? [{choose: skillProfAmount(), type: "Skill", choices: skillProficiencies()}] : [],
+      savingThrows: statProficiencies(),
+      startingEquipment: startingEquipment(),
+      classLevels: classLevels().map((y) => {
+        return {
+          ...y,
+          info: {
+            ...y.info,
+            className: name()
+          },
+          features: features().filter((x) => x.info.level === y.info.level),
+        }
+      }),
+      features: features(),
+      subclasses: subclasses(),
+      spellcasting: hasSpellCasting() ? {
+        level: spellcastingLevel(),
+        name: spelllistUsed(),
+        spellcastingAbility: spellcastingAbility(),
+        casterType: casterType(),
+        info: spellcastingInfo(),
+      } : undefined,
+      id: 0
+    }
+    return theClass;
+  }
   );
 
   const addStartingItem = (group: number) => {
@@ -243,13 +267,15 @@ const Classes: Component = () => {
     console.log("Starting Equipment: ", startingEquipment());
   };
 // ---- effects
-
+effect(()=>{
+  console.log("Class: ", currentClass());
+})
 // ----------------- JSX -----------------
   return (
     <>
       <HomebrewSidebar />
       <div class={`${stylin.accent} ${styles.body}`}>
-        <h1>classes</h1>
+        <h1>Classes</h1>
         <div class={styles.Columns}>
           <div class={`${styles.Column}`}>
             <h3>Name</h3>
@@ -322,11 +348,12 @@ const Classes: Component = () => {
                       type="checkbox"
                       value={`${proficiencies().includes(armor)}`}
                       onChange={(e) =>
-                        e.currentTarget.checked
-                          ? setProficiencies((old) =>
-                            old.filter((x) => x !== armor)
-                          )
-                          : setProficiencies((old) => [...old, armor])
+                        !e.currentTarget.checked
+                          ? setProficiencies((old) => {
+                            old = old.filter((x) => x !== armor)
+                            return JSON.parse(JSON.stringify(old)); 
+                          })
+                          : setProficiencies((old) => JSON.parse(JSON.stringify([...old, armor])))
                       }
                     />
                   </div>
@@ -343,11 +370,11 @@ const Classes: Component = () => {
                       type="checkbox"
                       value={`${proficiencies().includes(weapon)}`}
                       onChange={(e) =>
-                        e.currentTarget.checked
+                        !e.currentTarget.checked
                           ? setProficiencies((old) =>
-                            old.filter((x) => x !== weapon)
+                            JSON.parse(JSON.stringify(old.filter((x) => x !== weapon)))
                           )
-                          : setProficiencies((old) => [...old, weapon])
+                          : setProficiencies((old) => JSON.parse(JSON.stringify([...old, weapon])))
                       }
                     />
                   </div>
@@ -377,10 +404,8 @@ const Classes: Component = () => {
                         type="checkbox"
                         onChange={(e) =>
                           e.currentTarget.checked
-                            ? setSkillProficiencies((old) => [...old, skill])
-                            : setSkillProficiencies((old) =>
-                              old.filter((x) => x !== skill)
-                            )
+                            ? setSkillProficiencies((old) => JSON.parse(JSON.stringify([...old, skill])))
+                            : setSkillProficiencies((old) => JSON.parse(JSON.stringify(old.filter((x) => x !== skill))))
                         }
                       />
                     </label>
@@ -596,7 +621,7 @@ const Classes: Component = () => {
             }}
           >
             <Option value={0}>None</Option>
-            <For each={allLevelsArr}>
+            <For each={allLevelsArr()}>
               {(level) => <Option value={level}>Level {level}</Option>}
             </For>
           </Select>
@@ -625,6 +650,7 @@ const Classes: Component = () => {
             </For>
           </div>
         </div>
+        <div>
         <h4>Spellcasting</h4>
         <label for="HasSpellCasting">
           Has SpellCasting?
@@ -709,21 +735,104 @@ const Classes: Component = () => {
         </Show>
         <h3>Level up Features</h3>
         <Carousel
-          elements={allLevelsArr.map((x) => ({
+          elements={allLevelsArr().map((x) => ({
             name: `Level ${x}`,
             element: (
               <LevelBuilder
+              setClassLevels={setClassLevels}
+                classLevels={classLevels}
                 hasSpellCasting={hasSpellCasting}
                 allClasses={allClasses}
                 features={features}
                 setFeatures={setFeatures}
                 name={name}
                 level={x}
+                casterType={casterType}
+                setCasterType={setCasterType}
               />
             ),
           }))}
         />
-        <h3>New Related like battle master manuvers</h3>
+        </div>
+        <div>
+          <Button
+            onClick={() => {
+              if (!HomebrewManager.classes().map((x) => x.name).includes(name())) {
+                HomebrewManager.addClass(currentClass());
+                setCasterType("");
+                setSpellCastingAbility("");
+                setSpellCastingLevel(1);
+                setSpellListUsed("");
+                setHasSpellCasting(false);
+                setSpellCastingInfo([]);
+                setName("");
+                setHitDie(0);
+                setStatProficiencies([]);
+                setProficiencies([]);
+                setSkillProfAmount(1);
+                setSkillProficiencies([]);
+                setProficiencyChoices([]);
+                setToolChoices([]);
+                setToolChoiceAmount(1);
+                setSubclassLevels([]);
+                setSelectedSubclassLevel(0);  
+                setStartingEquipment({
+                  class: "",
+                  quantity: 0,
+                  choice1: [],
+                  choice2: [],
+                  choice3: [],
+                  choice4: [],
+                });
+                setClassLevels(new Array(20).fill({
+                  info: {
+                    className: "",
+                    subclassName: "",
+                    level: 0,
+                    type: "",
+                    other: ""
+                  },
+                  level: 0,
+                  profBonus: 0,
+                  features: [],
+                  classSpecific: {}
+                }).map((x,i)=>{
+                  return {
+                    ...x,
+                    info: {
+                      ...x.info,
+                      level: (i + 1)
+                    },
+                    level: (i + 1),
+                    profBonus: Math.ceil((i + 1) / 4) + 1,
+                  }
+                }));
+                setFeatures(new Array(20).fill({
+                  info: {
+                    className: name(),
+                    subclassName: "",
+                    level: 0,
+                    type: "",
+                    other: ""
+                    },
+                    name: "",
+                    value: ""
+                    }).map((x,i)=>{
+                      return {
+                        ...x,
+                        info: {
+                          ...x.info,
+                          level: (i + 1)
+                        },
+                      }
+                    }));
+                setSubclasses([]);
+              }
+            }}
+          >
+            Save Class
+          </Button>
+        </div>
       </div>
     </>
   );
