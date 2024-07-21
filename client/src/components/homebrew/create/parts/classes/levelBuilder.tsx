@@ -32,6 +32,7 @@ interface Props {
   setClassLevels: Setter<LevelEntity[]>;
   casterType: Accessor<string>;
   setCasterType: Setter<string>;
+  useCastingCalc: Accessor<boolean>;
 }
 const LevelBuilder: Component<Props> = (props) => {
   const [{setClassLevels, level, features, setFeatures, name, hasSpellCasting, classLevels, casterType, setCasterType }] = splitProps(props, [
@@ -121,7 +122,14 @@ const LevelBuilder: Component<Props> = (props) => {
                     </>}</For>
                 </div>
                 <div>
-                    <Input placeholder="Spells Known" />
+                  <Show when={!props.useCastingCalc()}>
+                    <Input placeholder="Spells Known" type="number" onChange={(e)=>{
+                      setClassLevels((old)=>{
+                        old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, spells_known : +e.currentTarget.value}
+                        return JSON.parse(JSON.stringify(old));
+                      });
+                    }} />
+                  </Show>
                     <Select value={casterType()} onChange={(e)=>{
                         setCasterType(e.currentTarget.value);
                     }}  disableUnselected={true}>

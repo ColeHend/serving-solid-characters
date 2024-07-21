@@ -1,9 +1,10 @@
 import type { DnDClass } from "../../../../models/class.model";
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
-import { catchError, concatMap, of, take, tap } from "rxjs";
+import { catchError, concatMap, mergeMap, of, take, tap } from "rxjs";
 import HttpClient$ from "../../utility/httpClientObs";
-import LocalSrdDB from "../../utility/localDB/srdDBFile"
+import LocalSrdDB from "../../utility/localDB/srdDBFile";
+import HomebrewManager from "../../../../shared/customHooks/homebrewManager";
 
 const [classes, setClasses] = createSignal<DnDClass[]>([]);
 
@@ -37,6 +38,12 @@ export default function useDnDClasses(): Accessor<DnDClass[]> {
                 } else {
                     return of(classes);
                 }
+            }),
+            concatMap((classes)=>{
+                if (!!classes) {
+                    return of(classes.concat(HomebrewManager.classes()));
+                }
+                return of(classes);
             }),
             tap((classes) => !!classes && classes.length > 0 ? setClasses(classes) : null),
         ).subscribe();
