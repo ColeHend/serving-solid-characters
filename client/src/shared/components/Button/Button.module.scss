@@ -18,3 +18,10 @@
         cursor: pointer;
     }
 }
+.customButtonStyle {
+    &:disabled {
+        &:hover {
+            cursor: not-allowed;
+        }
+    }
+}

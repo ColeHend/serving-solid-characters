@@ -101,6 +101,10 @@
         font-size: 1rem;
     }
 }
+.checkbox {
+    width: min-content !important;
+    margin: 0 10px !important;
+}
 .statProf {
     display: flex;
     justify-content:left;

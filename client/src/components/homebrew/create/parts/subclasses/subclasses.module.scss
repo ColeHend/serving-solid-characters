@@ -14,3 +14,34 @@
         
     }
 }
+
+.textArea {
+    resize: none;
+    width: 50%;
+    height: 100px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.checkBox {
+    margin: 0px;
+    width: min-content;
+}
+
+.castingRowOne {
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    span {
+        margin-right: 10px;
+    }
+}
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px;
+    span {
+        margin-right: 10px;
+    }
+}
