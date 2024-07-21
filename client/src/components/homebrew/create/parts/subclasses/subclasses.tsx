@@ -375,11 +375,6 @@ const Subclasses: Component = () => {
                             <div>
                                 <h3>Spells Table</h3>
                                 <div>
-                                    <div>
-                                        {currentSubclass().spells.sort((a,b)=> +a.level - +b.level).map(spell=>`${spell.name} - ${getAddNumberAccent(+spell.level)}`).join(", ")}
-                                    </div>
-                                </div>
-                                <div>
                                     <Select value={JSON.stringify(selectedSpell())} onChange={(e)=>setSelectedSpell(JSON.parse(e.currentTarget.value))} >
                                         <For each={allSpells()}>{(spell)=>(
                                             <Option value={JSON.stringify(spell)}>{spell.name}</Option>
@@ -387,6 +382,13 @@ const Subclasses: Component = () => {
                                     </Select>
                                     <Button onClick={(e)=>setCurrentSubclass(old=>({...old, spells: [...old.spells, selectedSpell()]}))}
                                     >Add Spell</Button>
+                                </div>
+                                <div>
+                                    <For each={currentSubclass().spells}>{(spell)=>(
+                                        <Chip key={getAddNumberAccent(+spell.level)} value={spell.name} remove={()=>{
+                                            setCurrentSubclass(old=>({...old, spells: old.spells.filter((x)=> x.name !== spell.name)}));
+                                        }} />
+                                    )}</For>
                                 </div>
                             </div>
                             <div>
