@@ -32,3 +32,10 @@ Your app is ready to be deployed!
 ## Deployment
 
 You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+
+## Notes 
+
+Add Spell casting table to feature table. Also, add subrace display to `races` 
+
+
+
