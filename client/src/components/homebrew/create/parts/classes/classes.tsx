@@ -32,8 +32,10 @@ import useGetItems from "../../../../../shared/customHooks/data/useGetItems";
 import LevelBuilder from "./levelBuilder";
 import { effect } from "solid-js/web";
 import { SpellsKnown } from "../subclasses/subclasses";
+import { useSearchParams } from "@solidjs/router";
 
 const Classes: Component = () => {
+  const [searchParam, setSearchParam] = useSearchParams();
   // ----------------- simple data ---
   const [name, setName] = createSignal<string>("");
   const [hitDie, setHitDie] = createSignal<number>(0);
@@ -162,18 +164,18 @@ const Classes: Component = () => {
   const selectableChoices = createMemo(() => {
     switch (currentItemChoiceGroup()) {
       case 1:
-        return startingEquipment().choice1;
+        return startingEquipment()?.choice1;
       case 2:
-        return startingEquipment().choice2;
+        return startingEquipment()?.choice2;
       case 3:
-        return startingEquipment().choice3;
+        return startingEquipment()?.choice3;
       case 4:
-        return startingEquipment().choice4;
+        return startingEquipment()?.choice4;
       default:
-        return startingEquipment().choice1;
+        return startingEquipment()?.choice1;
     }
   });
-
+  
   const currentClass: Accessor<DnDClass> = createMemo(() => {
     const theClass:DnDClass = {
       name: name(),
@@ -189,7 +191,7 @@ const Classes: Component = () => {
             ...y.info,
             className: name()
           },
-          features: features().filter((x) => x.info.level === y.info.level),
+          features: features().filter((x) => x?.info?.level === y?.info?.level),
         }
       }),
       features: features(),
@@ -275,7 +277,58 @@ const Classes: Component = () => {
   };
 // ---- effects
 effect(()=>{
-  console.log("Class: ", currentClass());
+  console.log("Search Param: ", searchParam);
+  if (!!searchParam.name) {
+    const foundClass = allClasses().find((x) => x.name === searchParam.name);
+    console.log("Found Class: ", foundClass);
+    if (!!foundClass && name() !== foundClass.name) {
+      setName(foundClass.name);
+      setHitDie(foundClass.hitDie);
+      setProficiencies(foundClass.proficiencies);
+      setSkillProfAmount(foundClass.proficiencyChoices[0].choose);
+      setSkillProficiencies(foundClass.proficiencyChoices[0].choices.map(x=>x.replace("Skill:", "").trim()));
+      setStatProficiencies(foundClass.savingThrows);
+      setStartingEquipment(!!foundClass.startingEquipment ? foundClass.startingEquipment : {
+        class: "",
+        quantity: 0,
+        choice1: [],
+        choice2: [],
+        choice3: [],
+        choice4: []
+      });
+      setClassLevels(foundClass.classLevels);
+      
+      if (!!!foundClass.features?.length || foundClass.classLevels?.length > foundClass.features?.length) {
+        setFeatures(foundClass.classLevels.sort((a,b)=>a.level-b.level).flatMap((x) => x.features).map((x,i) => {
+          return {
+            ...x,
+            info: {
+              ...x.info,
+              className: foundClass.name,
+              level: i + 1,
+            },
+          }
+        }));
+      } else {
+        setFeatures(foundClass.features);
+      }
+      
+      setSubclasses(foundClass.subclasses);
+      setSubclassLevels(foundClass.subclassLevels);
+      setSpellCastingAbility(foundClass.spellcasting?.spellcastingAbility || "");
+      setSpellCastingLevel(foundClass.spellcasting?.level || 1);
+      setSpellListUsed(foundClass.classLevels.filter(x=>!!x.spellcasting).length > 0 ? foundClass.classLevels.filter(x=>!!x.spellcasting)[0].info.className : "");
+      setHasSpellCasting(!!foundClass.spellcasting || foundClass.classLevels.map(x=>!!x.spellcasting).includes(true));
+      setCasterType(foundClass.spellcasting?.casterType || "");
+      setUseCastingCalc(!!foundClass.spellcasting);
+      setSpellsKnownCalc(foundClass.spellcasting?.spellsKnownCalc || SpellsKnown.None);
+      setSpellsKnownRoundup(!!foundClass.spellcasting?.spellsKnownRoundup);
+    }
+  }
+})
+
+effect(()=>{
+  console.log("Current Class: ", currentClass());
 })
 // ----------------- JSX -----------------
   return (
@@ -311,6 +364,7 @@ effect(()=>{
                       <label for={stat}>{stat}:</label>
                       <Input
                         type="checkbox"
+                        checked={statProficiencies().includes(stat)}
                         onChange={(e) =>
                           e.currentTarget.checked
                             ? setStatProficiencies((old) => [...old, stat])
@@ -330,6 +384,7 @@ effect(()=>{
                       <label for={stat}>{stat}:</label>
                       <Input
                         type="checkbox"
+                        checked={statProficiencies().includes(stat)}
                         onChange={(e) =>
                           e.currentTarget.checked
                             ? setStatProficiencies((old) => [...old, stat])
@@ -353,7 +408,7 @@ effect(()=>{
                     <label for={armor}>{armor}</label>
                     <Input
                       type="checkbox"
-                      value={`${proficiencies().includes(armor)}`}
+                      checked={proficiencies().map(x=>x.toLowerCase()).includes(armor.toLowerCase())}
                       onChange={(e) =>
                         !e.currentTarget.checked
                           ? setProficiencies((old) => {
@@ -375,7 +430,7 @@ effect(()=>{
                     <label for={weapon}>{weapon}</label>
                     <Input
                       type="checkbox"
-                      value={`${proficiencies().includes(weapon)}`}
+                      checked={proficiencies().map(x=>x.toLowerCase()).includes(weapon.toLowerCase())}
                       onChange={(e) =>
                         !e.currentTarget.checked
                           ? setProficiencies((old) =>
@@ -409,6 +464,7 @@ effect(()=>{
                       {skill}{" "}
                       <Input
                         type="checkbox"
+                        checked={skillProficiencies().map(x=>x.toLowerCase()).includes(skill.toLowerCase())}
                         onChange={(e) =>
                           e.currentTarget.checked
                             ? setSkillProficiencies((old) => JSON.parse(JSON.stringify([...old, skill])))
@@ -425,6 +481,7 @@ effect(()=>{
               <div>
                 <div>
                   <Select
+                    value={currentItemChoiceGroup()}
                     onChange={(e) =>
                       setCurrentItemChoiceGroup(+e.currentTarget.value)
                     }
@@ -435,6 +492,7 @@ effect(()=>{
                     </For>
                   </Select>
                   <Select
+                    value={currentItemChoiceIndex()}
                     onChange={(e) =>
                       setCurrentItemChoiceIndex(+e.currentTarget.value)
                     }
@@ -485,6 +543,7 @@ effect(()=>{
                               <Input
                                 type="number"
                                 placeholder="How many can be chosen?"
+                                value={item.choose}
                                 onInput={(e) =>
                                   setCurrentItemChoiceAmount(
                                     +e.currentTarget.value
@@ -589,6 +648,7 @@ effect(()=>{
             <label for="all">
               <Input
                 type="checkbox"
+                checked={toolChoices().length === allTools().length}
                 onChange={(e) =>
                   e.currentTarget.checked
                     ? setToolChoices(allTools().map((x) => x.name))

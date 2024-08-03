@@ -12,6 +12,7 @@ import useDnDSpells from "../../../../../shared/customHooks/dndInfo/srdinfo/useD
 import { Spell } from "../../../../../models/spell.model";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared/customHooks/utility/Tools";
+import { useSearchParams } from "@solidjs/router";
 
 export enum SpellsKnown {
     None = 0,
@@ -24,6 +25,7 @@ export enum SpellsKnown {
 }
 
 const Subclasses: Component = () => {
+    const [searchParam, setSearchParam] = useSearchParams();
     const stylin = useStyle();
     const allClasses = useDnDClasses();
     const allClassNames = ()=> allClasses().map((c)=> c.name);
@@ -249,6 +251,19 @@ const Subclasses: Component = () => {
         }
     })
     
+    effect(()=>{
+        if (!!searchParam.name && !!searchParam.subclass) {
+            if (searchParam.name !== currentSubclass().class && searchParam.subclass !== currentSubclass().name) {
+                const [ currentClass ] = allClasses().filter((c)=> c.name.toLowerCase() === searchParam.name!.toLowerCase());
+                if (!!currentClass) {
+                    const [ currentSubclass ] = currentClass.subclasses.filter((s)=> s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
+                    setCurrentSubclass(currentSubclass);
+                }
+            }
+        } else {
+            setSearchParam({name: currentSubclass().class, subclass: currentSubclass().name});
+        }
+    })
     return (
         <>
             <HomebrewSidebar />

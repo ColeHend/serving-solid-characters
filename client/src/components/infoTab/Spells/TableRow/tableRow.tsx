@@ -54,11 +54,11 @@ const TableRow: Component<Props> = (props) => {
                     <strong>Description:</strong>
                 </td>
                 <td>
-                    <textarea name="spell_desc">{props.spell.desc}</textarea>
+                    <textarea disabled name="spell_desc">{props.spell.desc}</textarea>
                 </td>
                 <Show when={!!props.spell.higherLevel}><td><strong>higher levels:</strong></td></Show>
                 <Show when={!!props.spell.higherLevel}><td>
-                    <textarea >{props.spell.higherLevel}</textarea>    
+                    <textarea disabled>{props.spell.higherLevel}</textarea>    
                 </td></Show>
             </tr>
         </>
