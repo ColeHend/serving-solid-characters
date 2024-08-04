@@ -56,8 +56,8 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
       }
     ].sort((a, b) => a.Name > b.Name ? 1 : -1));
     const charChildMenu: ExtendedTab[] = [
-      { Name: "View", Link: "/view", isOpen: false },
-      { Name: "Create", Link: "/create", isOpen: false }
+      { Name: "View", Link: "/characters/view", isOpen: false },
+      { Name: "Create", Link: "/characters/create", isOpen: false }
     ];
     const infoChildMenu: ExtendedTab[] = [
       { Name: "Spells", Link: "/info/spells", isOpen: false },
