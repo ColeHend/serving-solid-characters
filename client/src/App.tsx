@@ -11,7 +11,7 @@ import styles from './App.module.css';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import ExpansionPanel from './shared/components/expansion/expansion';
-import { SharedHookContext } from './rootApp';
+import { SharedHookContext } from './components/rootApp';
 import { useInjectServices } from './shared/customHooks/injectServices';
 import userSettings from './shared/customHooks/userSettings';
 import getUserSettings from './shared/customHooks/userSettings';

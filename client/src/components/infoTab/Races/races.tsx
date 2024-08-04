@@ -10,7 +10,7 @@ import Sidebar from "./sidebar";
 import ThePage from "./thePage";
 import { useSearchParams } from "@solidjs/router";
 import Button from "../../../shared/components/Button/Button";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 

@@ -12,7 +12,7 @@ import useDnDSpells from "../../../../../shared/customHooks/dndInfo/srdinfo/useD
 import { Spell } from "../../../../../models/spell.model";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared/customHooks/utility/Tools";
-import { SharedHookContext } from "../../../../../rootApp";
+import { SharedHookContext } from "../../../../rootApp";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
 

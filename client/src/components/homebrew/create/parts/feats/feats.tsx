@@ -16,7 +16,7 @@ import Select from "../../../../../shared/components/Select/Select";
 import Option from "../../../../../shared/components/Select/Option";
 import Chip from "../../../../../shared/components/Chip/Chip";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
-import { SharedHookContext } from "../../../../../rootApp";
+import { SharedHookContext } from "../../../../rootApp";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
 

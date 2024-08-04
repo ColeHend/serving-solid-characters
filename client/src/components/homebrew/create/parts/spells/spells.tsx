@@ -3,7 +3,7 @@ import useStyle from "../../../../../shared/customHooks/utility/style/styleHook"
 import styles from './spells.module.scss'
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
-import { SharedHookContext } from "../../../../../rootApp";
+import { SharedHookContext } from "../../../../rootApp";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
 

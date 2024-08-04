@@ -7,7 +7,7 @@ import { effect } from "solid-js/web";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 

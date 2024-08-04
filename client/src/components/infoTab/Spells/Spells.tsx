@@ -9,7 +9,7 @@ import SearchBar from "./searchBar/searchBar";
 import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 

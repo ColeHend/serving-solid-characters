@@ -3,7 +3,7 @@ import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from './expansion.module.scss';
 import Button from "../Button/Button";
 import { DownArrow, UpArrow } from "../../svgs/arrows";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../../components/rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../customHooks/userSettings";
 

@@ -1,5 +1,5 @@
 import { useContext } from "solid-js";
-import { SharedHookContext } from "../../rootApp";
+import { SharedHookContext } from "../../components/rootApp";
 import { HookContext } from "../../models/hookContext";
 
 export function useInjectServices(): HookContext {

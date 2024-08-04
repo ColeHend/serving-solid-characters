@@ -33,7 +33,7 @@ import useGetItems from "../../../../../shared/customHooks/data/useGetItems";
 import LevelBuilder from "./levelBuilder";
 import { effect } from "solid-js/web";
 import { SpellsKnown } from "../subclasses/subclasses";
-import { SharedHookContext } from "../../../../../rootApp";
+import { SharedHookContext } from "../../../../rootApp";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
 

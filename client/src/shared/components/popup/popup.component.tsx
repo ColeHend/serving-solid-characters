@@ -4,7 +4,7 @@ import { Accessor, Component, JSX, Setter, createMemo, createSignal, useContext 
 import { Portal, effect } from "solid-js/web";
 import clickOutside from "../../../shared/customHooks/utility/clickOutside";
 import Button from "../Button/Button";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../../components/rootApp";
 import userSettings from "../../customHooks/userSettings";
 import useStyles from "../../customHooks/utility/style/styleHook";
 import getUserSettings from "../../customHooks/userSettings";
@@ -42,9 +42,7 @@ const Modal:Component<Props> = (props)=>{
                     </h2>
                     <Button onClick={()=>setBackClick(old => !old)}><b>X</b></Button>
                 </div>
-                <div>
-                    {props.children}
-                </div>
+                {props.children}
             </div>
         </Portal>
     );

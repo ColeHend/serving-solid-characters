@@ -10,7 +10,7 @@ import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
 import { PreReqType } from "../../homebrew/create/parts/feats/feats";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 

@@ -3,7 +3,7 @@ import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from './create.module.scss';
 import type { Tab } from "../../navbar/navbar";
 import HomebrewSidebar from "./sidebar";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../rootApp";
 const Create: Component = () => {
     const sharedHooks = useContext(SharedHookContext);
     const stylin = sharedHooks?.useStyle();

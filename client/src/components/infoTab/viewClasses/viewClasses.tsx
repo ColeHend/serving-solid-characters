@@ -11,7 +11,7 @@ import Carousel from "../../../shared/components/Carosel/Carosel";
 import { Feature } from "../../../models/core.model";
 import { Subclass } from "../../../models/class.model";
 import Button from "../../../shared/components/Button/Button";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 

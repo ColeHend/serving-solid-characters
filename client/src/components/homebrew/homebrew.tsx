@@ -1,7 +1,7 @@
 import { Component, useContext } from "solid-js";
 import useStyle from "../../shared/customHooks/utility/style/styleHook";
 import Carousel from "../../shared/components/Carosel/Carosel";
-import { SharedHookContext } from "../../rootApp";
+import { SharedHookContext } from "../rootApp";
 
 const Homebrew: Component = () => {
     const sharedHooks = useContext(SharedHookContext);

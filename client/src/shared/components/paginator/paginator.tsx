@@ -4,7 +4,7 @@ import { effect } from "solid-js/web";
 import Modal from "../popup/popup.component";
 import { create } from "domain";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../../components/rootApp";
 
 type Props<T> = {
     items: Accessor<T>;

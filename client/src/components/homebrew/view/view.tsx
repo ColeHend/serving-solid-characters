@@ -7,7 +7,7 @@ import Table from "./table/Table";
 import useDnDSpells from "../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import HomebrewManager from '../../../shared/customHooks/homebrewManager';
 import { MenuButton } from "../../../shared/components/Button/Button";
-import { SharedHookContext } from "../../../rootApp";
+import { SharedHookContext } from "../../rootApp";
 
 const View: Component = () => {
     const sharedHooks = useContext(SharedHookContext);

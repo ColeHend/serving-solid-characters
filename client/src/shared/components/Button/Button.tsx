@@ -32,9 +32,7 @@ const Button: Component<Props> = (props)=> {
     const filteredMenuItems = createMemo(()=>props.menuItems?.filter(x=>(!!x.condition ? x.condition() : true)) ?? []);
     const sharedHooks = useInjectServices();
     const [userSettings, setUserSettings] = getUserSettings();
-    effect(()=>{
-        console.log('Button User Settings: ', userSettings());
-    })
+
     const stylin = createMemo(()=>useStyles(userSettings().theme));
 
     let myRef: HTMLButtonElement;

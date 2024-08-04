@@ -4,7 +4,7 @@ import styles from './items.module.scss'
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
 import Carousel from "../../../../../shared/components/Carosel/Carosel";
-import { SharedHookContext } from "../../../../../rootApp";
+import { SharedHookContext } from "../../../../rootApp";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
 

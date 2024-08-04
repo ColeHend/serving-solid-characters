@@ -27,11 +27,6 @@ const darkTheme: Style = {
 export default function useStyle(styleType?: string): Style {
     const [settingStyle, setSettings] = getUserSettings();
     const chosenTheme = styleType ?? settingStyle().theme;
-    effect(()=>{
-        console.log('Style User Settings: ', settingStyle());
-        console.log('Chosen Theme: ', chosenTheme);
-        
-    })
     
     switch (chosenTheme) {
         case "light":

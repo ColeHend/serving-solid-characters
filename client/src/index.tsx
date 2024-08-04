@@ -26,7 +26,7 @@ import races from "./components/infoTab/Races/races";
 import Viewbackgrounds from "./components/infoTab/Backgrounds/backgrounds";
 import viewClasses from "./components/infoTab/viewClasses/viewClasses";
 import Subclasses from "./components/homebrew/create/parts/subclasses/subclasses";
-import RootApp from "./rootApp";
+import RootApp from "./components/rootApp";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(

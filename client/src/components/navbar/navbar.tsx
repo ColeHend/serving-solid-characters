@@ -8,7 +8,7 @@ import Modal from "../../shared/components/popup/popup.component";
 import NavMenu from "./navMenu/navMenu";
 import Button, { MenuButton } from "../../shared/components/Button/Button";
 import BarMenu from "../../shared/svgs/barMenu";
-import { SharedHookContext } from "../../rootApp";
+import { SharedHookContext } from "../rootApp";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
 
