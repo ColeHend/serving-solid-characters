@@ -49,7 +49,7 @@ const masterSpells: Component = () => {
     })
 
     return (
-        <div class={`${stylin.accent} ${styles.SpellsBody}`}>
+        <div class={`${stylin.primary} ${styles.SpellsBody}`}>
             <h1>Spells</h1>
 
             <SearchBar searchResults={searchResults} setSearchResults={setSearchResults} spellsSrd={dndSrdSpells}></SearchBar>

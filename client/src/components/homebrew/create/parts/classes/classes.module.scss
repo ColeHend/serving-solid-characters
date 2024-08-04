@@ -6,7 +6,7 @@
     @media screen and (min-width: 769px){
         position: absolute;
         top: 150px;
-        left: 250px;
+        left: 50px;
     }
 
     @media screen and (max-width: 768px){
@@ -100,6 +100,10 @@
         margin: 10px;
         font-size: 1rem;
     }
+}
+.checkbox {
+    width: min-content !important;
+    margin: 0 10px !important;
 }
 .statProf {
     display: flex;

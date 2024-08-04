@@ -8,8 +8,7 @@ const Backgrounds: Component = () => {
     const stylin = useStyle();
     return (
         <>
-            <HomebrewSidebar />
-            <div class={`${stylin.accent} ${styles.body}`}>
+            <div class={`${stylin.primary} ${styles.body}`}>
                 <h1>backgrounds</h1>
                 <div>
                     <p>ideals</p>

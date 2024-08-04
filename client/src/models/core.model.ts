@@ -33,3 +33,8 @@ export interface Item {
     quantity: number;
     desc: string[];
 }
+
+export interface Description {
+    desc: string[];
+    name: string;
+}

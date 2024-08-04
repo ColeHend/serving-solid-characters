@@ -22,9 +22,9 @@ const App: Component = () => {
   const dndSrdBackgrounds = useDnDBackgrounds();
 
   return (
-      <div class={`${stylin.accent} ${styles.AppBody}`}>
+      <div class={`${stylin.primary} ${styles.AppBody}`}>
         <h1>Home</h1>
-        <div style={{width: "30%"}}>
+        <div>
           <ExpansionPanel>
             <div>
                 Welcome to my app. This is a work in progress.

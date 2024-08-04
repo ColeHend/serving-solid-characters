@@ -38,7 +38,7 @@ const races: Component = () => {
   })
   return (
     <>
-      <div class={`${stylin.accent} ${styles.outerStyles}`} id="racesComp">
+      <div class={`${stylin.primary} ${styles.outerStyles}`} id="racesComp">
         <h1>Races</h1>
 
         <div class={`${styles.SelectorBar}`}>

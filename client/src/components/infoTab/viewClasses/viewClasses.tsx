@@ -96,7 +96,7 @@ const viewClasses: Component = () => {
     }
 
     return (
-        <div class={`${stylin.accent} ${styles.CenterPage}`}>
+        <div class={`${stylin.primary} ${styles.CenterPage}`}>
             {/* Current Class Selector */}
             <div>
                 <button onClick={() => currentClassIndex() === 0 ? setCurrentCharacterIndex(old => (dndSrdClasses().length - 1)) : setCurrentCharacterIndex(old => old - 1)}>←</button>

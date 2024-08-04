@@ -1,4 +1,5 @@
-import type { Choice, StartingEquipment, Feature, Info } from "./core.model";
+import { SpellsKnown } from "../components/homebrew/create/parts/subclasses/subclasses";
+import type { Choice, StartingEquipment, Feature, Info, Description } from "./core.model";
 import { Spell } from "./spell.model";
 
 export interface DnDClass {
@@ -12,13 +13,8 @@ export interface DnDClass {
     classLevels: LevelEntity[];
     features: Feature<unknown, string>[];
     subclasses: Subclass[];
-    spellcasting?: {
-        level: number;
-        name: string;
-        spellcastingAbility: string;
-        casterType: string;
-        info: Array<{name: string, desc: string[]}>
-    }
+    subclassLevels: number[];
+    spellcasting?: ClassCasting
 }
 export interface LevelEntity {
     info: Info<string>;
@@ -36,4 +32,22 @@ export interface Subclass {
     features: Feature<unknown, string>[];
     class: string;
     spells: Spell[];
+    spellcasting?: SubclassCasting
+}
+interface Spellcasting {
+    name: string;
+    spellsKnownCalc: SpellsKnown;
+    spellsKnownRoundup?: boolean;
+    spellcastingAbility: string;
+    casterType: string;
+    info: Array<Description>
+}
+export interface SubclassCasting extends Spellcasting {
+    castingLevels: {
+        spellcasting: {[key: string]: number;};
+        level: number;
+    }[];
+}
+export interface ClassCasting extends Spellcasting {
+    level: number;
 }

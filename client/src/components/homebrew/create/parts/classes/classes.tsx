@@ -31,6 +31,7 @@ import useGetClasses from "../../../../../shared/customHooks/data/useGetClasses"
 import useGetItems from "../../../../../shared/customHooks/data/useGetItems";
 import LevelBuilder from "./levelBuilder";
 import { effect } from "solid-js/web";
+import { SpellsKnown } from "../subclasses/subclasses";
 
 const Classes: Component = () => {
   // ----------------- simple data ---
@@ -70,6 +71,9 @@ const Classes: Component = () => {
   const [spelllistUsed, setSpellListUsed] = createSignal<string>("");
   const [hasSpellCasting, setHasSpellCasting] = createSignal(false);
   const [casterType, setCasterType] = createSignal("");
+  const [useCastingCalc, setUseCastingCalc] = createSignal(false);
+  const [spellsKnownCalc, setSpellsKnownCalc] = createSignal<SpellsKnown>(SpellsKnown.None);
+  const [spellsKnownRoundup, setSpellsKnownRoundup] = createSignal(false);
 
   // --- other stuff ---
   const stylin = useStyle();
@@ -190,12 +194,15 @@ const Classes: Component = () => {
       }),
       features: features(),
       subclasses: subclasses(),
+      subclassLevels: subclassLevels(),
       spellcasting: hasSpellCasting() ? {
         level: spellcastingLevel(),
         name: spelllistUsed(),
         spellcastingAbility: spellcastingAbility(),
         casterType: casterType(),
         info: spellcastingInfo(),
+        spellsKnownCalc: spellsKnownCalc(),
+        spellsKnownRoundup: spellsKnownRoundup()
       } : undefined,
       id: 0
     }
@@ -273,8 +280,7 @@ effect(()=>{
 // ----------------- JSX -----------------
   return (
     <>
-      <HomebrewSidebar />
-      <div class={`${stylin.accent} ${styles.body}`}>
+      <div class={`${stylin.primary} ${styles.body}`}>
         <h1>Classes</h1>
         <div class={styles.Columns}>
           <div class={`${styles.Column}`}>
@@ -616,6 +622,7 @@ effect(()=>{
           <h3>Subclass Levels</h3>
           <Select
             disableUnselected={true}
+            value={selectedSubclassLevel()}
             onChange={(e) => {
               setSelectedSubclassLevel(+e.currentTarget.value);
             }}
@@ -657,7 +664,7 @@ effect(()=>{
         </label>
         <Input
           type="checkbox"
-          style={{ width: "min-content" }}
+          class={`${styles.checkbox}`}
           checked={hasSpellCasting()}
           onChange={(e) => setHasSpellCasting(e.currentTarget.checked)}
         />
@@ -712,7 +719,40 @@ effect(()=>{
                 name="levelGained"
               />
             </div>
+            <div>
+              <label for="useCastingCalc">Use Casting Calculation</label>
+              <Input
+                type="checkbox"
+                class={`${styles.checkbox}`}
+                checked={useCastingCalc()}
+                onChange={(e) => setUseCastingCalc(e.currentTarget.checked)}
+              />
+            </div>
           </div>
+          <Show when={useCastingCalc()}>
+            <div>
+              <label for="spellsKnownCalc">Spells Known Calculation</label>
+              <Select
+                onChange={(e) => setSpellsKnownCalc(+e.currentTarget.value)}
+                name="spellsKnownCalc"
+                disableUnselected={true}
+              >
+                <Option value={SpellsKnown.None}>None</Option>
+                <Option value={SpellsKnown.Level}>Level</Option>
+                <Option value={SpellsKnown.HalfLevel}>Half Level</Option>
+                <Option value={SpellsKnown.StatModPlusLevel}>Stat Modifier + Level</Option>
+                <Option value={SpellsKnown.StatModPlusHalfLevel}>Stat Modifier + Half Level</Option>
+                <Option value={SpellsKnown.StatModPlusThirdLevel}>Stat Modifier + Third Level</Option>
+              </Select>
+              <label for="spellsKnownRoundup">Round Up Spells Known?</label>
+              <Input
+                type="checkbox"
+                class={`${styles.checkbox}`}
+                checked={spellsKnownRoundup()}
+                onChange={(e) => setSpellsKnownRoundup(e.currentTarget.checked)}
+              />
+            </div>
+          </Show>
           <div>
             <Button onClick={(e) => { setSpellCastingInfo(old => [...old, { name: "", desc: [""] }]) }}>Add Spellcasting Info Section</Button>
             <For each={spellcastingInfo()} >{(obj, i) => <>
@@ -740,6 +780,7 @@ effect(()=>{
             element: (
               <LevelBuilder
               setClassLevels={setClassLevels}
+              useCastingCalc={useCastingCalc}
                 classLevels={classLevels}
                 hasSpellCasting={hasSpellCasting}
                 allClasses={allClasses}

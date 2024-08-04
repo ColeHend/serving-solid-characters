@@ -34,7 +34,10 @@
   }
   
   .carouselButton {
-    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0.5;
+    &:hover {
+      opacity: 1;
+    }
     color: white;
     border: none;
     padding: 10px;

@@ -21,7 +21,8 @@ interface Props extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
     overrideX?: string,
     overrideY?: string,
     menuStyle?: CSSModuleClasses[string],
-    enableBackgroundClick?: boolean
+    enableBackgroundClick?: boolean,
+    onClick?: (e: MouseEvent) => any
 }
 
 const Button: Component<Props> = (props)=> {
@@ -30,14 +31,14 @@ const Button: Component<Props> = (props)=> {
     const filteredMenuItems = createMemo(()=>props.menuItems?.filter(x=>(!!x.condition ? x.condition() : true)) ?? []);
     const stylin = useStyles();
 
+    let myRef: HTMLButtonElement;
+    let menuRef: HTMLDivElement;
     const menuStyle: Accessor<JSX.CSSProperties> = createMemo(()=>({
         position:"absolute", 
         top: props.overrideY ?? `${showMenu().lastY}px`, 
-        left: props.overrideX ?? `${showMenu().lastX}px`,
+        left: props.overrideX ?? `${showMenu().lastX > (50 * .9) ? showMenu().lastX - +this.menuRef.width : showMenu().lastX}px`,
         display: `${showMenu().show ? "block" : "none"}`
     } as JSX.CSSProperties));
-    let myRef: HTMLButtonElement;
-    let menuRef: HTMLDivElement;
     const outsideFunction = ()=>clickOutside(menuRef, ()=>setShowMenu({show: false, lastX: 0, lastY: 0}));
 
     if (props.enableBackgroundClick) {
@@ -45,19 +46,19 @@ const Button: Component<Props> = (props)=> {
     }
     onCleanup(()=>{
         document.body.removeEventListener("click", outsideFunction);
-    });
+    }); 
     return (
         <>
             <button
             ref={(el)=>(myRef = el!)}
-            onClick={(e)=>(setShowMenu((old)=>({show: !old.show, lastX: e.clientX, lastY: e.clientY})))}
+            onClick={!!props.onClick ? props.onClick : (e)=>(setShowMenu((old)=>({show: !old.show, lastX: e.clientX, lastY: e.clientY})))}
             {...props}
-            class={`${stylin.accent} ${stylin.hover} ${props.class ?? ""}`}
+            class={`${stylin.accent} ${stylin.hover} ${style.customButtonStyle} ${props.class ?? ""}`}
             >
                 {props.children}
             </button>
             <Portal mount={document.getElementById("root")!}>
-                <Show when={showMenu() && isMenuButton()}>
+                <Show when={showMenu().show && isMenuButton()}>
                     <div ref={(el)=>(menuRef = el!)} class={`${stylin.popup} ${stylin.primary} ${props.menuStyle ?? ""}`} style={menuStyle()} >
                         <ul class={`${style.menuButtons}`}>
                             <For each={props.menuItems}>
