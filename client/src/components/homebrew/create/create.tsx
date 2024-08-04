@@ -10,14 +10,13 @@ const Create: Component = () => {
 
     return (
         <>
-            <HomebrewSidebar />
-            <div class={`${stylin.accent} ${styles.body}`}>
+            <div class={`${stylin.primary} ${styles.body}`}>
                 <h1>Create</h1>
                 <div class={`${styles.bodyMenu} `}>
                     <For each={homebrewMenu()}>
                         {(menu, i) => (
                             <>
-                                    <a class={`${stylin.accent}`} href={`/homebrew/create/${menu.name.toLowerCase()}`}>
+                                    <a class={`${stylin.primary}`} href={`/homebrew/create/${menu.name.toLowerCase()}`}>
                                         <div class={`${stylin.hover}`}>
                                             <p>
                                                 {menu.name}

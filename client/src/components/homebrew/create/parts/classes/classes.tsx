@@ -280,8 +280,7 @@ effect(()=>{
 // ----------------- JSX -----------------
   return (
     <>
-      <HomebrewSidebar />
-      <div class={`${stylin.accent} ${styles.body}`}>
+      <div class={`${stylin.primary} ${styles.body}`}>
         <h1>Classes</h1>
         <div class={styles.Columns}>
           <div class={`${styles.Column}`}>

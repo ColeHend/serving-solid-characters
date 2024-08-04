@@ -32,12 +32,12 @@ const Viewbackgrounds: Component = () => {
     }
 
     return (
-        <div class={`${stylin.accent} ${styles.allBackgrounds}`}>
+        <div class={`${stylin.primary} ${styles.allBackgrounds}`}>
             <h1>Backgrounds</h1>
             <div style={{width: "35%", height: "5vh", margin: "0 auto"}}>
                 <SearchBar placeholder="Search Backgrounds..." dataSource={backgrounds} setResults={setSearchResult} />
             </div>
-            <div class={`${styles.backgrounds}`} style={{width:"50%"}}>
+            <div class={`${styles.backgrounds}`} >
                 <For each={displayResults()}>
                     {(background) =>
                         

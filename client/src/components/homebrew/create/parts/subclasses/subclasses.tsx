@@ -251,8 +251,7 @@ const Subclasses: Component = () => {
     
     return (
         <>
-            <HomebrewSidebar />
-            <div class={`${stylin.accent} ${styles.body}`}>
+            <div class={`${stylin.primary} ${styles.body}`}>
                 <h1>subclasses</h1>
                 <div>
                     <h2>Choose a class</h2>

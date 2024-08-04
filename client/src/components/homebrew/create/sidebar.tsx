@@ -18,7 +18,7 @@ const HomebrewSidebar: Component = () => {
     ]);
 
     return (
-        <div class={`${stylin.accent} ${styles.sidebar}`}>
+        <div class={`${stylin.primary} ${styles.sidebar}`}>
                 <ul>
                     <For each={homebrewTypes()}>
                         {(type) => (

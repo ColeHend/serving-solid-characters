@@ -134,8 +134,7 @@ const Feats: Component = () => {
   });
   return (
     <>
-      <HomebrewSidebar />
-      <div class={`${stylin.accent} ${styles.body}`}>
+      <div class={`${stylin.primary} ${styles.body}`}>
         <h1>Feats</h1>
         <div class="featHomebrew">
           <div class={`${styles.name}`}>
