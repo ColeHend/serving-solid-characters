@@ -8,8 +8,7 @@ const Races: Component = () => {
     const stylin = useStyle();
     return (
         <>
-            <HomebrewSidebar />
-            <div class={`${stylin.accent} ${styles.body}`}>
+            <div class={`${stylin.primary} ${styles.body}`}>
                 <h1>races</h1>
                 <div>
                     <p>name</p>

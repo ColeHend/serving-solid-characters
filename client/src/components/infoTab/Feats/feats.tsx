@@ -36,7 +36,7 @@ const featsList: Component = () => {
     })
 
     return (
-        <div class={`${stylin.accent} ${styles.featsList}`}>
+        <div class={`${stylin.primary} ${styles.featsList}`}>
             <div class={`${styles.body}`}>
                 <h1>Feats</h1>
                 <div style={{height: "5vh", width: "35%"}}>

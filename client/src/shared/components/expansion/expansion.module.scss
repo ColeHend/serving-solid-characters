@@ -1,5 +1,6 @@
 .header {
     width: 100%;
+    max-width: 100%;
     border-bottom: 1px solid;
     display: flex;
     flex-direction: row;
@@ -12,12 +13,25 @@
         align-self: flex-end;
         padding: 10px;
     }
+    text-wrap: wrap;
+    button {
+        height: min-content;
+        background: none;
+        svg {
+            height: 50%;
+        }
+    }
 }
 .body {
     border-radius: 10px;
     width: 100%;
+    max-width: 100%;
+    :nth-child(n) {
+        text-wrap: wrap !important;
+    }
 }
 .totalPanel {
+    max-width: 100%;
     display: flex !important;
     flex-direction: column !important;
     border: 1px solid;

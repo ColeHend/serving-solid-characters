@@ -9,8 +9,7 @@ const Items: Component = () => {
     const stylin = useStyle();
     return (
         <>
-            <HomebrewSidebar />
-            <div class={`${stylin.accent} ${styles.body}`}>
+            <div class={`${stylin.primary} ${styles.body}`}>
                 <h1>Items</h1>
                 <h2>Item Types</h2>
                 <div>

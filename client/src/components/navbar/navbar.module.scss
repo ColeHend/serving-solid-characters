@@ -8,20 +8,27 @@
 }
 
 .navbar {
-    $mobile: 850px;
+    $mobile: 768px;
     :nth-child(1) {
         display: flex;
         flex-direction: row;
         width: 100vw;
+        @media screen and (max-width: $mobile){
+            width: 100%;
+        }
         span {
             display: inline-block;
             font-size: 1.5rem;
             font-weight: bold;
             margin: 15px 5%;
             width: min-content;
+            a {
+                width: min-content;
+            }
             @media screen and (max-width: $mobile){
                 font-size: 1.2rem;
                 margin: 10px 5%;
+                flex-grow: 1;
             }
         }
         
@@ -33,15 +40,24 @@
             padding: 0;
             margin: 17px 5%;
             @media screen and (max-width: $mobile){
+                display: none;
                 flex-wrap: wrap;
             }
             
             li {
                 margin: 0 1rem;
-                max-width: 78px;
+                width: min-content;
+                justify-content: center;
+                max-width: 125px;
+                border-radius: 15px;
+                text-align: center;
+                padding: 10px 0 !important;
                 a {
-                    max-width: 78px;
+                    max-width: 125px;
                     text-decoration: none;
+                    text-align: center;
+                    width: min-content;
+                    padding: 0px 10px;
                     &:hover {
                         color: #fff;
                     }
@@ -57,7 +73,7 @@
         }
         button {
             float: right;
-            // border-radius: 100%;
+            border-radius: 15px;
             border: none;
             margin-right: 20px;
             // padding: 15px 10px;
@@ -73,37 +89,7 @@
                 }
             }
             @media screen and (max-width: $mobile){
-                float: left;
-            }
-        }
-    }
-
-    :nth-child(2) {
-        display: flex;
-        flex-direction: row;
-        ul {
-            width: min-content;
-            list-style-type: none;
-            display: flex;
-            padding: 0;
-            margin: 17px 5%;
-            width: 100%;
-            @media screen and (max-width: $mobile){
-                flex-wrap: wrap;
-            }
-            li {
-                margin: 0 1rem;
-                width: 50px;
-                @media screen and (max-width: $mobile){
-                    margin-top: 15px;
-                    
-                }
-                a {
-                    text-decoration: none;
-                    &:hover {
-                        color: #fff;
-                    }
-                }
+                float: right;
             }
         }
     }
