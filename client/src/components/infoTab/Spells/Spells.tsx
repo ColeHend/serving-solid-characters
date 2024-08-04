@@ -1,4 +1,4 @@
-import { Component, For, Show, createSignal } from "solid-js";
+import { Component, For, Show, createMemo, createSignal, useContext } from "solid-js";
 import styles from "./Spells.module.scss";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import useDnDSpells from "../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
@@ -9,9 +9,14 @@ import SearchBar from "./searchBar/searchBar";
 import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
+import { SharedHookContext } from "../../rootApp";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../../shared/customHooks/userSettings";
 
 const masterSpells: Component = () => {
-    const stylin = useStyle();
+    const sharedHooks = useContext(SharedHookContext);
+    const [userSettings, setUserSettings] = getUserSettings();
+    const stylin = createMemo(()=>useStyles(userSettings().theme));
     const dndSrdSpells = useGetSpells();
 
     // search param stuff
@@ -49,12 +54,12 @@ const masterSpells: Component = () => {
     })
 
     return (
-        <div class={`${stylin.primary} ${styles.SpellsBody}`}>
+        <div class={`${stylin()?.primary} ${styles.SpellsBody}`}>
             <h1>Spells</h1>
 
             <SearchBar searchResults={searchResults} setSearchResults={setSearchResults} spellsSrd={dndSrdSpells}></SearchBar>
 
-            <table class={`${stylin.table}`}>
+            <table class={`${stylin()?.table}`}>
                 <tbody>
                     <For each={paginatedSpells()}>{(spell, i) =>
                         <>

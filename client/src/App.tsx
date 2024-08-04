@@ -1,4 +1,4 @@
-import { type Component, For, createResource, JSX } from 'solid-js';
+import { type Component, For, createResource, JSX, useContext, createMemo } from 'solid-js';
 import { effect } from 'solid-js/web';
 import useDnDClasses from './shared/customHooks/dndInfo/srdinfo/useDnDClasses';
 import useStyle from './shared/customHooks/utility/style/styleHook';
@@ -11,9 +11,16 @@ import styles from './App.module.css';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import ExpansionPanel from './shared/components/expansion/expansion';
+import { SharedHookContext } from './components/rootApp';
+import { useInjectServices } from './shared/customHooks/injectServices';
+import userSettings from './shared/customHooks/userSettings';
+import getUserSettings from './shared/customHooks/userSettings';
+import useStyles from './shared/customHooks/utility/style/styleHook';
 
 const App: Component = () => {
-  const stylin = useStyle();       
+  const [userSettings, setUserSettings] = getUserSettings();
+  const sharedHooks = useInjectServices();
+  const stylin = createMemo(()=>useStyles(userSettings().theme)); ;       
   const dndSrdClasses = useDnDClasses();
   const dndSrdSpells = useDnDSpells();
   const dndSrdFeats = useDnDFeats();
@@ -22,7 +29,7 @@ const App: Component = () => {
   const dndSrdBackgrounds = useDnDBackgrounds();
 
   return (
-      <div class={`${stylin.primary} ${styles.AppBody}`}>
+      <div class={`${stylin()?.primary} ${styles.AppBody}`}>
         <h1>Home</h1>
         <div>
           <ExpansionPanel>

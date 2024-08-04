@@ -1,7 +1,9 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
-import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
+import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./stat.module.scss";
 import { effect } from "solid-js/web";
+import getUserSettings from "../../../../../shared/customHooks/userSettings";
+
 interface SkillProficiency {
     name: string;
     proficient: boolean;
@@ -39,7 +41,9 @@ type Props = {
 
 const StatBlock: Component<Props> = (props) => {
   const getStatMod = (stat: number) => Math.floor((stat - 10) / 2);
-  const stylin = useStyle();
+  const [userSettings, setUserSettings] = getUserSettings();
+  const stylin = createMemo(()=>useStyles(userSettings().theme));
+
   const [skills, setSkills] = createSignal<SkillProficiency[]>(allSkills);
   
   effect(()=>{
@@ -92,7 +96,7 @@ const StatBlock: Component<Props> = (props) => {
     <div class={`${styles.statStyle}`}>
       <div class={`${styles.stat}`}>
         <span>
-          <span class={`${stylin.accent}`}>{getStatMod(props.stat)}</span>
+          <span class={`${stylin().accent}`}>{getStatMod(props.stat)}</span>
           <ul>
             <li>{props.stat}</li>
             <li>{props.name}</li>
