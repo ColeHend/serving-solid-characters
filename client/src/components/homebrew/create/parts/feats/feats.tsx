@@ -1,4 +1,4 @@
-import { Component, For, Match, Switch, createSignal, untrack } from "solid-js";
+import { Component, For, Match, Switch, createSignal, untrack, useContext, createMemo } from "solid-js";
 import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./feats.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
@@ -16,7 +16,9 @@ import Select from "../../../../../shared/components/Select/Select";
 import Option from "../../../../../shared/components/Select/Option";
 import Chip from "../../../../../shared/components/Chip/Chip";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
-
+import { SharedHookContext } from "../../../../rootApp";
+import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../../../../shared/customHooks/userSettings";
 
 export enum PreReqType {
   AbilityScore,
@@ -25,7 +27,9 @@ export enum PreReqType {
 }
 
 const Feats: Component = () => {
-  const stylin = useStyle();
+  const sharedHooks = useContext(SharedHookContext);
+  const [userSettings, setUserSettings] = getUserSettings();
+  const stylin = createMemo(()=>useStyles(userSettings().theme));
   const classes = useGetClasses();
   const feats = useGetFeats();
   const homebrewManager = HomebrewManager;
@@ -134,8 +138,7 @@ const Feats: Component = () => {
   });
   return (
     <>
-      <HomebrewSidebar />
-      <div class={`${stylin.accent} ${styles.body}`}>
+      <div class={`${stylin()?.primary} ${styles.body}`}>
         <h1>Feats</h1>
         <div class="featHomebrew">
           <div class={`${styles.name}`}>

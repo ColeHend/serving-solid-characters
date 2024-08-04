@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo, createSignal } from "solid-js";
+import { Component, For, Show, createMemo, createSignal, useContext } from "solid-js";
 import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from './subclasses.module.scss'
 import type { Tab } from "../../../../navbar/navbar";
@@ -13,6 +13,9 @@ import { Spell } from "../../../../../models/spell.model";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared/customHooks/utility/Tools";
 import { useSearchParams } from "@solidjs/router";
+import { SharedHookContext } from "../../../../rootApp";
+import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../../../../shared/customHooks/userSettings";
 
 export enum SpellsKnown {
     None = 0,
@@ -26,7 +29,9 @@ export enum SpellsKnown {
 
 const Subclasses: Component = () => {
     const [searchParam, setSearchParam] = useSearchParams();
-    const stylin = useStyle();
+    const sharedHooks = useContext(SharedHookContext);
+    const [userSettings, setUserSettings] = getUserSettings();
+    const stylin = createMemo(()=>useStyles(userSettings().theme));
     const allClasses = useDnDClasses();
     const allClassNames = ()=> allClasses().map((c)=> c.name);
     const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(1);
@@ -266,8 +271,7 @@ const Subclasses: Component = () => {
     })
     return (
         <>
-            <HomebrewSidebar />
-            <div class={`${stylin.accent} ${styles.body}`}>
+            <div class={`${stylin()?.primary} ${styles.body}`}>
                 <h1>subclasses</h1>
                 <div>
                     <h2>Choose a class</h2>

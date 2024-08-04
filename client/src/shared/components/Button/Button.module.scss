@@ -9,16 +9,19 @@
     }
 }
 .menuButton {
-    border: none;
     width: 100%;
     height: 75%;
-    padding: 10px;
-    border-radius: 10px;
     &:hover {
         cursor: pointer;
     }
 }
 .customButtonStyle {
+    border-radius: 15px;
+    padding: 10px;
+    border: none;
+    margin: 5px;
+    // box-shadow: none;
+    // background-color: inherit;
     &:disabled {
         &:hover {
             cursor: not-allowed;

@@ -1,4 +1,4 @@
-import { Component } from "solid-js";
+import { Component, useContext } from "solid-js";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import style from './view.module.scss'
 import Carousel from "../../../shared/components/Carosel/Carosel";
@@ -7,11 +7,13 @@ import Table from "./table/Table";
 import useDnDSpells from "../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import HomebrewManager from '../../../shared/customHooks/homebrewManager';
 import { MenuButton } from "../../../shared/components/Button/Button";
+import { SharedHookContext } from "../../rootApp";
 
 const View: Component = () => {
-    const stylin = useStyle();   
+    const sharedHooks = useContext(SharedHookContext);
+    const stylin = sharedHooks?.useStyle();  
     return (
-        <div class={`${stylin.accent} ${style.body}`}>
+        <div class={`${stylin?.accent} ${style.body}`}>
             <h1>View</h1>
             <div style={{"text-align": "left"}}>
                 <Carousel elements={[

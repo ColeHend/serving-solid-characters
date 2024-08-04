@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, For  } from "solid-js";
+import { Component, createMemo, createSignal, For, useContext  } from "solid-js";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
 import ExpansionPanel from "../../../shared/components/expansion/expansion";
@@ -7,10 +7,14 @@ import { effect } from "solid-js/web";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models";
+import { SharedHookContext } from "../../rootApp";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../../shared/customHooks/userSettings";
 
 const Viewbackgrounds: Component = () => {
-
-    const stylin = useStyle();
+    const sharedContext = useContext(SharedHookContext);
+    const [userSettings, setUserSettings] = getUserSettings();
+    const stylin = createMemo(()=>useStyles(userSettings().theme));
     const backgrounds = useGetBackgrounds();
     const [searchResult, setSearchResult] = createSignal(backgrounds() || []);
     const displayResults = createMemo(()=>{
@@ -32,12 +36,12 @@ const Viewbackgrounds: Component = () => {
     }
 
     return (
-        <div class={`${stylin.accent} ${styles.allBackgrounds}`}>
+        <div class={`${stylin()?.primary} ${styles.allBackgrounds}`}>
             <h1>Backgrounds</h1>
             <div style={{width: "35%", height: "5vh", margin: "0 auto"}}>
                 <SearchBar placeholder="Search Backgrounds..." dataSource={backgrounds} setResults={setSearchResult} />
             </div>
-            <div class={`${styles.backgrounds}`} style={{width:"50%"}}>
+            <div class={`${styles.backgrounds}`} >
                 <For each={displayResults()}>
                     {(background) =>
                         
