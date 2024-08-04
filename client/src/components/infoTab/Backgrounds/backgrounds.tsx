@@ -20,7 +20,7 @@ const Viewbackgrounds: Component = () => {
 
     const [searchParam, setSearchParam] = useSearchParams();
     if (!!!searchParam.name) setSearchParam({name: backgrounds()[0]?.name})
-    const selectedBackground = backgrounds().filter(x=>x.name.toLowerCase() === (searchParam.name || backgrounds()[0].name).toLowerCase())[0]
+    const selectedBackground = backgrounds().filter(x=>x.name?.toLowerCase() === (searchParam?.name || backgrounds()[0]?.name).toLowerCase())[0]
     const [currentBackground,setCurrentBackground] = createSignal<Background>(selectedBackground); 
 
     effect(()=>{    
@@ -37,7 +37,7 @@ const Viewbackgrounds: Component = () => {
             <div style={{width: "35%", height: "5vh", margin: "0 auto"}}>
                 <SearchBar placeholder="Search Backgrounds..." dataSource={backgrounds} setResults={setSearchResult} />
             </div>
-            <div class={`${styles.backgrounds}`} style={{width:"50%"}}>
+            <div class={`${styles.backgrounds}`}>
                 <For each={displayResults()}>
                     {(background) =>
                         

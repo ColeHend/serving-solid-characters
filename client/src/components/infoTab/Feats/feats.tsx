@@ -28,11 +28,11 @@ const featsList: Component = () => {
 
     const [searchParam, setSearchParam] = useSearchParams();
     if (!!!searchParam.name) setSearchParam({name: srdFeats()[0]?.name });
-    const selectedFeat = srdFeats().filter(feat=>feat.name?.toLowerCase() === (searchParam.name || srdFeats()[0].name).toLowerCase())[0];
+    const selectedFeat = srdFeats().filter(feat=>feat.name?.toLowerCase() === (searchParam.name || srdFeats()[0]?.name).toLowerCase())[0];
     const [currentFeat, setCurrentFeat] = createSignal<Feat>(selectedFeat);
 
     effect(()=>{
-        setSearchParam({name:currentFeat().name })
+        setSearchParam({name:currentFeat()?.name })
     })
 
     return (

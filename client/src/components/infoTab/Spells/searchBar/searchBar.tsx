@@ -78,8 +78,10 @@ const SearchBar: Component<Props> = (props) => {
     });
 
     effect(()=>{
-        if (typeof props.spellsSrd()[0][searchKey() as keyof Spell] === 'boolean') {
-            setSearchValue(`${ischecked()}`)
+        if (props.spellsSrd().length > 0) {
+            if (typeof props.spellsSrd()[0][searchKey() as keyof Spell] === 'boolean') {
+                setSearchValue(`${ischecked()}`)
+            }
         }
     })
 

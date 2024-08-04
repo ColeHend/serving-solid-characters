@@ -29,8 +29,8 @@ const FeatureTable: Component<Props> = (props) => {
     }
 
     const highestClassSpecificKeyAmountFirstArr = () => {
-        const classSpecific = props.Class().classLevels
-        const sorted = classSpecific.sort((b, a) => Object.keys(a.classSpecific).length - Object.keys(b.classSpecific).length)
+        const classSpecific = props.Class()?.classLevels
+        const sorted = classSpecific?.sort((b, a) => Object.keys(a.classSpecific).length - Object.keys(b.classSpecific).length)
         return sorted
     }
 

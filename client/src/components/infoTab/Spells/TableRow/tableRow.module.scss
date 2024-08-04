@@ -2,6 +2,13 @@
     display: flex;
     flex-direction: column;
 
+    .wrap {
+        text-wrap: wrap;
+    } 
+    
+    .maxWidth {
+        max-width: 60%;
+    }
     @media screen and (max-width: 800px){
         width: min-content;            
         max-width: 90vw;        

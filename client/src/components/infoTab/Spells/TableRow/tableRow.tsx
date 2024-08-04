@@ -45,7 +45,7 @@ const TableRow: Component<Props> = (props) => {
                 <td><strong>Range:</strong> {props.spell.range}</td>
                 <td><strong>Components:</strong> {compsArr[0]}</td>
                 <Show when={isMaterial}>
-                    <td><strong>Materials:</strong> {compsArr[1]}</td>
+                    <td class={`${styles.wrap} ${styles.maxWidth}`}><strong>Materials:</strong> {compsArr[1]}</td>
                 </Show>
                 <td><strong>Duration:</strong> {props.spell.duration}</td>
                 <td><strong>Classes:</strong> {props.spell.classes.join(", ")}</td>

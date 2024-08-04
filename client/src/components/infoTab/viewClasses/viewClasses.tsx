@@ -17,7 +17,7 @@ const viewClasses: Component = () => {
     const stylin = useStyle();
     const dndSrdClasses = useGetClasses();
     const [searchParam, setSearchParam] = useSearchParams();
-    const selectedClass = dndSrdClasses().findIndex((val) => val.name.toLowerCase() === searchParam.name?.toLowerCase());
+    const selectedClass = dndSrdClasses().findIndex((val) => val.name?.toLowerCase() === searchParam?.name?.toLowerCase());
     const [currentClassIndex, setCurrentCharacterIndex] = createSignal<number>(selectedClass >= 0 ? selectedClass : 0)
 
     if (!!!searchParam.name) setSearchParam({ name: dndSrdClasses().length > 0 ? dndSrdClasses()[currentClassIndex()].name : "barbarian" })

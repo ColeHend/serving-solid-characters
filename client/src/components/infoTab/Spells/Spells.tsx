@@ -18,7 +18,7 @@ const masterSpells: Component = () => {
 
     const [searchParam, setSearchParam] = useSearchParams();
     if (!!!searchParam.name) setSearchParam({name: dndSrdSpells()[0]?.name});
-    const selectedSpell = dndSrdSpells().filter(x=>x.name.toLowerCase() === (searchParam.name || dndSrdSpells()[0].name).toLowerCase())[0];
+    const selectedSpell = dndSrdSpells().filter(x=>x.name?.toLowerCase() === (searchParam?.name || dndSrdSpells()[0]?.name).toLowerCase())[0];
     const [currentSpell,setCurrentSpell] = createSignal<Spell>(selectedSpell);
     
     //-------------
