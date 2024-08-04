@@ -1,3 +1,5 @@
+import { effect } from 'solid-js/web';
+import getUserSettings from '../../userSettings';
 import darkStyle from './themes/darkTheme.module.scss';
 import lightStyle from './themes/lightTheme.module.scss'
 const lightTheme: Style = {
@@ -22,8 +24,16 @@ const darkTheme: Style = {
     table: darkStyle.table,
 };
 
-export default function useStyle(styleType: string = 'dark'): Style {
-    switch (styleType.toLowerCase()) {
+export default function useStyle(styleType?: string): Style {
+    const [settingStyle, setSettings] = getUserSettings();
+    const chosenTheme = styleType ?? settingStyle().theme;
+    effect(()=>{
+        console.log('Style User Settings: ', settingStyle());
+        console.log('Chosen Theme: ', chosenTheme);
+        
+    })
+    
+    switch (chosenTheme) {
         case "light":
             document.body.style.backgroundColor = "#fff";
             return lightTheme;

@@ -1,9 +1,10 @@
-import { Accessor, Component, For, createSignal, createMemo, Setter } from "solid-js";
+import { Accessor, Component, For, createSignal, createMemo, Setter, useContext } from "solid-js";
 import { Spell } from "../../../models/spell.model";
 import { effect } from "solid-js/web";
 import Modal from "../popup/popup.component";
 import { create } from "domain";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
+import { SharedHookContext } from "../../../rootApp";
 
 type Props<T> = {
     items: Accessor<T>;
@@ -16,7 +17,8 @@ const Paginator = <T,>(props: Props<T[]>) => {
     const [itemsPerPage, setItemsPerPage] = createSignal(10);
     const setPaginatedItems = props.setPaginatedItems;
 
-    const stylin = useStyle();
+    const sharedHooks = useContext(SharedHookContext);
+    const stylin = sharedHooks?.useStyle();
 
     // the paginator --------------------------------
     const theItems = createMemo(() => props.items().slice((currentPage() - 1) * itemsPerPage(), currentPage() * itemsPerPage()))
@@ -38,7 +40,7 @@ const Paginator = <T,>(props: Props<T[]>) => {
     });
     
     return (
-        <div class={`${stylin.accent} `}>
+        <div class={`${stylin?.accent} `}>
             <button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</button>
             <button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</button>
             <select onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>

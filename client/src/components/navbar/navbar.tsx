@@ -1,4 +1,4 @@
-import { Accessor, Component, For, JSX, Show, Signal, createSignal, onMount, onCleanup, Setter, useContext } from "solid-js";
+import { Accessor, Component, For, JSX, Show, Signal, createSignal, onMount, onCleanup, Setter, useContext, createMemo } from "solid-js";
 import navStyles from './navbar.module.scss';
 import useStyle from "../../shared/customHooks/utility/style/styleHook";
 import useTabs from "../../shared/customHooks/utility/tabBar";
@@ -9,6 +9,8 @@ import NavMenu from "./navMenu/navMenu";
 import Button, { MenuButton } from "../../shared/components/Button/Button";
 import BarMenu from "../../shared/svgs/barMenu";
 import { SharedHookContext } from "../../rootApp";
+import useStyles from "../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../shared/customHooks/userSettings";
 
 type Props = {
     style?: CSSModuleClasses[string],
@@ -24,7 +26,8 @@ export interface Tab {
 }
 
 const Navbar: Component<Props> = (props) => {
-    const stylin = useContext(SharedHookContext)?.useStyle();
+    const [userSettings, setUserSettings] = getUserSettings();
+    const stylin = createMemo(()=>useStyles(userSettings().theme));
     const refresh = createSignal(false);
     const [loggedIn, setLoggedIn] = createSignal(false);
     const [pageName, setPageName] = createSignal(window.location.pathname);
@@ -71,7 +74,7 @@ const Navbar: Component<Props> = (props) => {
         setSettingX(!!props.isMobile ? "6vw" :"93vw");
     });
     return (
-        <div class={`${stylin?.primary} ${navStyles.navbar}`}>
+        <div class={`${stylin()?.primary} ${navStyles.navbar}`}>
             <div  class={`${props.style ?? ''}`}>
                 <span>
                     <A href="/">
@@ -91,7 +94,7 @@ const Navbar: Component<Props> = (props) => {
                     <For each={Buttons}>
                         {(button, i) => (
                                 <Show when={!props.isMobile || i() === 0 || showFullList()}>
-                                    <li class={`${stylin?.accent} ${stylin?.hover} ${isActiveNav(button)}`}>
+                                    <li class={`${stylin()?.accent} ${stylin()?.hover} ${isActiveNav(button)}`}>
                                         <A onClick={()=>setPageName(button.Link)} href={button.Link}>{button.Name}</A>
                                     </li>
                                 </Show>

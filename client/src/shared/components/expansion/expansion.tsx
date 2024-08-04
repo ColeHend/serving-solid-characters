@@ -1,8 +1,11 @@
-import {type Component, For, Show, createSignal, JSX, Accessor,Setter} from "solid-js";
+import {type Component, For, Show, createSignal, JSX, Accessor,Setter, useContext, createMemo} from "solid-js";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from './expansion.module.scss';
 import Button from "../Button/Button";
 import { DownArrow, UpArrow } from "../../svgs/arrows";
+import { SharedHookContext } from "../../../rootApp";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../customHooks/userSettings";
 
 type Props = {
     children: [JSX.Element, JSX.Element],
@@ -11,18 +14,20 @@ type Props = {
     [key:string]: any
 }
 const ExpansionPanel: Component<Props> = (props)=>{
+    const [userSettings, setUserSettings] = getUserSettings();
     const[open, setOpen] = createSignal(false);
-    const stylin = useStyle();
+    const sharedHooks = useContext(SharedHookContext);
+    const stylin = createMemo(()=>useStyles(userSettings().theme));
     return (
         <div class={`${styles.totalPanel} ${props.styles}`} {...props}>
-            <div class={`${stylin.accent} ${styles.header}`}>
+            <div class={`${stylin()?.accent} ${styles.header}`}>
                 <span>
                     {props.children[0]}
                 </span>
                 <Button onClick={()=>{
                     setOpen(old =>!old);
                     !!props.extraLogic ? props.extraLogic() : null 
-                }} class={`${stylin.hover}`}>
+                }} class={`${stylin()?.hover}`}>
                     <Show when={!open()}>
                         <DownArrow />
                     </Show>
@@ -32,7 +37,7 @@ const ExpansionPanel: Component<Props> = (props)=>{
                 </Button>
             </div>
             <Show when={open()}>
-                <div class={`${stylin.accent} ${styles.body}`}>
+                <div class={`${stylin()?.accent} ${styles.body}`}>
                     {props.children[1]}
                 </div>
             </Show>

@@ -5,6 +5,7 @@ import {
   Show,
   createMemo,
   createSignal,
+  useContext,
   type JSX,
 } from "solid-js";
 import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
@@ -32,6 +33,9 @@ import useGetItems from "../../../../../shared/customHooks/data/useGetItems";
 import LevelBuilder from "./levelBuilder";
 import { effect } from "solid-js/web";
 import { SpellsKnown } from "../subclasses/subclasses";
+import { SharedHookContext } from "../../../../../rootApp";
+import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../../../../shared/customHooks/userSettings";
 
 const Classes: Component = () => {
   // ----------------- simple data ---
@@ -76,7 +80,9 @@ const Classes: Component = () => {
   const [spellsKnownRoundup, setSpellsKnownRoundup] = createSignal(false);
 
   // --- other stuff ---
-  const stylin = useStyle();
+  const sharedHooks = useContext(SharedHookContext);
+  const [userSettings, setUserSettings] = getUserSettings();
+  const stylin = createMemo(()=>useStyles(userSettings().theme));
   const [allLevelsArr, setAllLevelArr] = createSignal(new Array(20).fill(0).map((x, i) => i + 1));
   const skills = [
     "Acrobatics",
@@ -280,7 +286,7 @@ effect(()=>{
 // ----------------- JSX -----------------
   return (
     <>
-      <div class={`${stylin.primary} ${styles.body}`}>
+      <div class={`${stylin()?.primary} ${styles.body}`}>
         <h1>Classes</h1>
         <div class={styles.Columns}>
           <div class={`${styles.Column}`}>

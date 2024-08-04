@@ -1,13 +1,17 @@
-import { Component, For, createSignal } from "solid-js";
+import { Component, For, createSignal, createMemo } from "solid-js";
 import useStyle from "../../shared/customHooks/utility/style/styleHook";
 import styles from "./characters.module.scss";
 import { Feature } from "../../models/core.model";
 import useCharacters, { Character } from "../../shared/customHooks/dndInfo/useCharacters";
 import Button, { MenuButton } from "../../shared/components/Button/Button";
+import useStyles from "../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../shared/customHooks/userSettings";
 
 
 const Characters: Component = () => {
-    const stylin = useStyle();
+    const [userSettings, setUserSettings] = getUserSettings();
+  const stylin = createMemo(()=>useStyles(userSettings().theme));
+
     const [characters, setCharacters] = useCharacters();
     const menuButtons = (character: Character) => ([
         {
@@ -16,7 +20,7 @@ const Characters: Component = () => {
         }
     ]);
     return (
-        <div class={`${stylin.accent} ${styles.mainBody}`}>
+        <div class={`${stylin().accent} ${styles.mainBody}`}>
             <h1 style={{margin: "0 auto", width: "min-content"}}>Characters</h1>
             <div>
                 <table style={{width: "50%", margin: "0 auto"}}>
