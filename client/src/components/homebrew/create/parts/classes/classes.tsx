@@ -187,7 +187,7 @@ const Classes: Component = () => {
       name: name(),
       hitDie: hitDie(),
       proficiencies: proficiencies(),
-      proficiencyChoices: skillProficiencies().length > 0 ? [{choose: skillProfAmount(), type: "Skill", choices: skillProficiencies()}] : [],
+      proficiencyChoices: !!skillProficiencies()?.length ? [{choose: skillProfAmount(), type: "Skill", choices: skillProficiencies()}] : [],
       savingThrows: statProficiencies(),
       startingEquipment: startingEquipment(),
       classLevels: classLevels().map((y) => {
@@ -291,8 +291,8 @@ effect(()=>{
       setName(foundClass.name);
       setHitDie(foundClass.hitDie);
       setProficiencies(foundClass.proficiencies);
-      setSkillProfAmount(foundClass.proficiencyChoices[0].choose);
-      setSkillProficiencies(foundClass.proficiencyChoices[0].choices.map(x=>x.replace("Skill:", "").trim()));
+      setSkillProfAmount(foundClass.proficiencyChoices[0]?.choose ?? 0);
+      setSkillProficiencies(foundClass.proficiencyChoices[0]?.choices.map(x=>x.replace("Skill:", "").trim()));
       setStatProficiencies(foundClass.savingThrows);
       setStartingEquipment(!!foundClass.startingEquipment ? foundClass.startingEquipment : {
         class: "",
@@ -469,7 +469,7 @@ effect(()=>{
                       {skill}{" "}
                       <Input
                         type="checkbox"
-                        checked={skillProficiencies().map(x=>x.toLowerCase()).includes(skill.toLowerCase())}
+                        checked={skillProficiencies()?.map(x=>x.toLowerCase()).includes(skill.toLowerCase())}
                         onChange={(e) =>
                           e.currentTarget.checked
                             ? setSkillProficiencies((old) => JSON.parse(JSON.stringify([...old, skill])))

@@ -1,6 +1,5 @@
-// @ts-nocheck
-import { Component, createMemo, createSignal, For, JSX } from "solid-js";
-import useStyles from "../../../../customHooks/utility/style/styleHook";
+import { Accessor, Component, createMemo, createSignal, For, JSX, Setter, splitProps } from "solid-js";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./Carosel.module.scss";
 import Button from "../Button/Button";
 import { effect } from "solid-js/web";
@@ -8,28 +7,26 @@ import { effect } from "solid-js/web";
 
 interface CarouselProps {
     elements: {name:string, element: JSX.Element}[];
+    startingIndex?: number;
     notFoundName?: string;
+    currentIndex?: [Accessor<number>, Setter<number>];
 }
   
-const Carousel: Component<CarouselProps> = (props) => {
-    const [currentIndex, setCurrentIndex] = createSignal(0);
-  
-    const nextSlide = () => {
-        if (currentIndex() !== props.elements.length - 1) {
-            setCurrentIndex((old)=> old + 1);
-        } else {
-            setCurrentIndex(0);
+const Carousel: Component<CarouselProps> = ({startingIndex = 0, ...props}) => {
+    // ----- Signals -----
+    const [internalIndex, setInternalIndex] = createSignal(startingIndex);
+    const [propIndex, other] = splitProps(props, ["currentIndex"]);
+    
+    const getPropIndex = () => propIndex.currentIndex![0]();
+    const setPropIndex = (index: number) => propIndex.currentIndex![1](index);
+    
+    // ----- Memoized Values -----
+    const currentIndex = createMemo(()=>{
+        if (props.elements.length === 2) {
+            return getPropIndex();
         }
-    };
-  
-    const prevSlide = () => {
-        if (currentIndex() !== 0) {
-            setCurrentIndex((old)=> old - 1);
-        } else {
-            setCurrentIndex(props.elements.length - 1);
-        }
-    };
-
+        return internalIndex();
+    })
     const slideName = createMemo(()=>{
         if (props.elements.length > 0) {
             return props.elements[currentIndex()].name;
@@ -42,11 +39,35 @@ const Carousel: Component<CarouselProps> = (props) => {
         }
         return !!props.notFoundName ? <div>No {props.notFoundName} Found</div> : <div>No Elements Found</div>;
     });
+
+    // ----- Functions -----
+    const nextSlide = () => {
+        if (currentIndex() !== props.elements.length - 1) {
+            setInternalIndex((old)=> old + 1);
+        } else {
+            setInternalIndex(0);
+        }
+    };
+  
+    const prevSlide = () => {
+        if (currentIndex() !== 0) {
+            setInternalIndex((old)=> old - 1);
+        } else {
+            setInternalIndex(props.elements.length - 1);
+        }
+    };
+    // ----- Effects -----
+    effect(()=>{
+        if (!!props.currentIndex) {
+            setPropIndex(currentIndex());
+        }
+    })
+    // ----- TSX -----
   
     return (
       <div class={`${style.carousel}`}>
         <div class={`${style.carouselHeader}`}>
-            <Button class={`${style.carouselButton}`} on:click={prevSlide}>
+            <Button class={`${style.carouselButton}`} onClick={prevSlide}>
             &#10094;
             </Button>
             <div class={`${style.carouselSlides} ${style.header}`}>
@@ -54,7 +75,7 @@ const Carousel: Component<CarouselProps> = (props) => {
                     {slideName()}
                 </div>
             </div>
-            <Button class={`${style.carouselButton} `} on:click={nextSlide}>
+            <Button class={`${style.carouselButton} `} onClick={nextSlide}>
             &#10095;
             </Button>
         </div>
