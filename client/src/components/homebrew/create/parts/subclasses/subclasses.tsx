@@ -12,6 +12,7 @@ import useDnDSpells from "../../../../../shared/customHooks/dndInfo/srdinfo/useD
 import { Spell } from "../../../../../models/spell.model";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared/customHooks/utility/Tools";
+import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../../../rootApp";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
@@ -27,6 +28,7 @@ export enum SpellsKnown {
 }
 
 const Subclasses: Component = () => {
+    const [searchParam, setSearchParam] = useSearchParams();
     const sharedHooks = useContext(SharedHookContext);
     const [userSettings, setUserSettings] = getUserSettings();
     const stylin = createMemo(()=>useStyles(userSettings().theme));
@@ -254,6 +256,19 @@ const Subclasses: Component = () => {
         }
     })
     
+    effect(()=>{
+        if (!!searchParam.name && !!searchParam.subclass) {
+            if (searchParam.name !== currentSubclass().class && searchParam.subclass !== currentSubclass().name) {
+                const [ currentClass ] = allClasses().filter((c)=> c.name.toLowerCase() === searchParam.name!.toLowerCase());
+                if (!!currentClass) {
+                    const [ currentSubclass ] = currentClass.subclasses.filter((s)=> s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
+                    setCurrentSubclass(currentSubclass);
+                }
+            }
+        } else {
+            setSearchParam({name: currentSubclass().class, subclass: currentSubclass().name});
+        }
+    })
     return (
         <>
             <div class={`${stylin()?.primary} ${styles.body}`}>

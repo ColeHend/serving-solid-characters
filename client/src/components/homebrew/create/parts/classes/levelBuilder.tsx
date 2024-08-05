@@ -169,7 +169,7 @@ const LevelBuilder: Component<Props> = (props) => {
         <Button>Add Existing Feature</Button>
       </div>
       <h3>Features</h3>
-      <For each={features().filter((x) => x.info.level === level)}>
+      <For each={features().filter((x) => x?.info?.level === level)}>
         {(feature, i) => {
           return (
             <div>
@@ -254,7 +254,7 @@ const LevelBuilder: Component<Props> = (props) => {
                   return JSON.parse(JSON.stringify(old));
                 });
               }} />
-              <Input type="number" value={classLevels()[level - 1].classSpecific[item]} onChange={(e)=>{
+              <Input value={classLevels()[level - 1].classSpecific[item]} onChange={(e)=>{
                 setClassLevels((old)=>{
                   old[level - 1].classSpecific[item] = e.currentTarget.value;
                   return JSON.parse(JSON.stringify(old));

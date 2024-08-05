@@ -1,14 +1,22 @@
-//ts-nocheck
 import { Setter, onCleanup } from "solid-js";
 
-export default function clickOutside(el: Element, accessor: () => any) {
-    const body = document.getElementById("root")!;
+export default function clickOutside(element: Element, accessor: () => any): void {
+    const rootElement = document.getElementById("root");
 
-    const onClick = (e: Event) => !el.contains(e.target as Node) && accessor()?.();
+    if (!rootElement) {
+        console.warn("Root element not found.");
+        return;
+    }
 
-    body.addEventListener("click", onClick)
-    
+    const handleClick = (event: MouseEvent) => {
+        if (!!element && Object.keys(element).includes("contains") && !element.contains(event.target as Node)) {
+            accessor()?.();
+        }
+    };
+
+    rootElement.addEventListener("click", handleClick);
+
     onCleanup(() => {
-        body.removeEventListener("click", onClick);
+        rootElement.removeEventListener("click", handleClick);
     });
 }
