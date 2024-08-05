@@ -1,18 +1,22 @@
-import { Component, For, Show, createSignal } from "solid-js";
+import { Component, For, Show, createSignal, useContext } from "solid-js";
 import styles from "./Spells.module.scss";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import useDnDSpells from "../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
-import TableRow from "./TableRow/tableRow";
 import Paginator from "../../../shared/components/paginator/paginator";
 import { Spell } from "../../../models/spell.model";
 import SearchBar from "./searchBar/searchBar";
 import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
+import { ExpansionPanel } from "../../../shared/components";
+import { SharedHookContext } from "../../../rootApp";
 
 const masterSpells: Component = () => {
-    const stylin = useStyle();
+    const sharedHooks = useContext(SharedHookContext);
+    
+    const stylin = sharedHooks?.useStyle();
     const dndSrdSpells = useGetSpells();
+    let compArr:any[] = [];
 
     // search param stuff
 
@@ -23,11 +27,8 @@ const masterSpells: Component = () => {
     
     //-------------
 
-    const [RowShown, SetRowShown] = createSignal<number[]>([]);
     const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
     const [searchResults, setSearchResults] = createSignal<any[]>([]);
-    const toggleRow = (index: number) => !hasIndex(index) ? SetRowShown([...RowShown(), index]) : SetRowShown(RowShown().filter(i => i !== index));
-    const hasIndex = (index: number) => RowShown().includes(index);
 
     const spellLevel = (spellLevel: string) => { 
         switch(spellLevel){
@@ -43,57 +44,81 @@ const masterSpells: Component = () => {
                 return `${spellLevel}th`;
         }
     }
+    
 
+    const spellComponents = (spell:Spell) => {
+        const components = []
+        if(spell.isVerbal) components.push("V");
+        if(spell.isSomatic) components.push("S");
+        if(spell.isMaterial) components.push("M");
+        if (!!spell.materials_Needed) {
+            return [components.join(', '), spell.materials_Needed ?? null].join(', ')
+        }
+        return components.join(', ')
+    }
+    
     effect(()=>{
         setSearchParam({name: currentSpell()?.name ?? ""})
     })
-
+    
     return (
-        <div class={`${stylin.primary} ${styles.SpellsBody}`}>
+        <div class={`${stylin?.primary} ${styles.SpellsBody}`}>
             <h1>Spells</h1>
 
             <SearchBar searchResults={searchResults} setSearchResults={setSearchResults} spellsSrd={dndSrdSpells}></SearchBar>
 
-            <table class={`${stylin.table}`}>
-                <tbody>
-                    <For each={paginatedSpells()}>{(spell, i) =>
+            <ul>
+                <For each={paginatedSpells()}>
+                    {(spell, i)=>
                         <>
-                            <tr class={`${styles.TableRow}`}>
-                                <td class={styles.headerBar}>
-                                    {/* left side */}
-                                    <span>
-                                        <span>{spell.name}</span>
-                                        <span><i>{spell.school}</i></span>
-                                        <Show when={spell.concentration}><span><i>{spell.duration}</i></span></Show>
-                                         
-                                    </span>
+                            <Show when={!sharedHooks?.isMobile()}>
+                                <ExpansionPanel startOpen={currentSpell().name === spell.name}>
+                                    <div class={`${styles.headerBar}`}>
+                                        <span>{spell.name}</span> <span>{spellLevel(spell.level)}</span>
+                                    </div>
+                                    <div class={`${styles.view}`}>
+                                        <div>
+                                            <h1>{spell.name}</h1>
 
-                                    {/* ride side */}
-                                    <span>
-                                        {spellLevel(spell.level)}
-                                    </span>
-                                     
-                                </td>
-                                <td>
-                                    <button onClick={() => 
-                                        {
-                                            toggleRow(i());
-                                            setCurrentSpell(()=>spell);
-                                        }}>
-                                        {hasIndex(i()) ? "↑" : "↓"}
-                                    </button>
-                                </td>
-                            </tr>
-                            <Show when={hasIndex(i())} >
-                                <TableRow spell={currentSpell()}></TableRow>
+                                            <h2>{spellLevel(spell.level)} {spell.school}</h2>
+
+                                            <h2>Casting time: {spell.castingTime} </h2>
+
+                                            <h2>Range: {spell.range} </h2>
+
+                                            <h2>Component: {spellComponents(spell)}</h2>
+
+                                            <h2>Duration: {spell.duration}</h2>
+
+                                            <h2>Classes: {spell.classes.join(", ")}</h2>
+
+                                            <h2>SubClasses: {spell.subClasses.join(", ")}</h2>
+
+                                            <textarea rows={Math.ceil(spell.desc.length/85)} readOnly>
+                                                {spell.desc}
+                                            </textarea>
+
+                                            <Show when={!!spell.higherLevel}>
+                                                <h4>At Higher Levels:  </h4> <span>{spell.higherLevel}</span>
+                                            </Show>
+                                        </div>
+                                    </div>
+                                </ExpansionPanel>
                             </Show>
-                            <hr />
+                            <Show when={sharedHooks?.isMobile()}>
+                                <div class={`${styles.headerBar}`}>
+                                    <span>{spell.name}</span> <span>{spellLevel(spell.level)}</span>
+                                </div>
+
+                                <hr />
+                            </Show>
                         </>
-                    }</For>
-                </tbody>
-            </table>
-            <div>
-            <Paginator items={searchResults} setPaginatedItems={setPaginatedSpells}></Paginator>
+                    }
+                </For>
+            </ul>
+
+            <div class={`${styles.center}`}>
+                <Paginator items={searchResults} setPaginatedItems={setPaginatedSpells}></Paginator>
             </div>
         </div>
     )

@@ -1,13 +1,12 @@
 import { Accessor, Component, For, Match, Setter, Show, Switch, createSignal } from "solid-js";
-import useDnDSpells from "../../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import { Spell } from "../../../../models/spell.model";
 import { effect } from "solid-js/web";
-import { get } from "http";
 import Chip from "./chip";
-import useStyle from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./searchBar.module.scss";
 import ClearAllBtn from "./clearAllBtn";
 import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
+import { Select } from "../../../../shared/components";
+
 interface Chip {
     key: string;
     value: string;
@@ -15,8 +14,8 @@ interface Chip {
 }
 
 type Props = {
-    searchResults: Accessor<any[]>;
-    setSearchResults: Setter<any[]>;
+    searchResults: Accessor<Spell[]>;
+    setSearchResults: Setter<Spell[]>;
     spellsSrd: Accessor<Spell[]>;
 };
 const SearchBar: Component<Props> = (props) => {
@@ -25,11 +24,28 @@ const SearchBar: Component<Props> = (props) => {
     const [searchValue, setSearchValue] = createSignal<string>("");
     const [ischecked, setIsChecked] = createSignal<boolean>(false);
     const [chipBar, setChipBar] = createSignal<Chip[]>([]);
-    const [isOther, setIsOther] = createSignal<boolean>(false);
-    const stylin = useStyle();
 
-    const checkbox = document.getElementById("booleanCheckbox") as HTMLInputElement
-
+    const getKeyOptions = (key: keyof Spell): string[] => {
+        if (Array.isArray(props.spellsSrd()[0][key])) {
+            const daVal = !!props.spellsSrd()[0][key] && Array.isArray(props.spellsSrd()[0][key]) ? (props.spellsSrd()[0][key] as string[])[0] : null;
+            if (typeof daVal === 'string') {
+                const allValues = props.spellsSrd().flatMap(x=> {
+                    if (x[key]?.toString().includes(',')) {
+                        return x[key]?.toString().split(',');
+                    } else {
+                        return x[key]?.toString();
+                    }
+                }) as string[];
+                
+                return ([...new Set<string>(allValues)]).sort().filter(x=>!!x);
+            } else {
+                return [...new Set<string>(...props.spellsSrd().flatMap(x=> Array.isArray(x[key]) ? x[key] : []))].sort().filter(x=>!!x);
+            }
+        }
+        const theSet = new Set<string>();
+        props.spellsSrd().map(x=> !!x[key] && !Array.isArray(x[key]) ? x[key] : '').map(x=>theSet.add(`${x}`));
+        return [...theSet].sort().filter(x=>!!x);
+    }
 
     const spellSchools = [
         "Abjuration",
@@ -42,34 +58,34 @@ const SearchBar: Component<Props> = (props) => {
         "Transmutation"
     ]
 
-
-
     effect(() => {
         props.setSearchResults(props.spellsSrd().filter((spell: Spell) => {
             if (!!spell && chipBar().length > 0){
-                const chipValueCheck = chipBar().map((chippy) => {
-                    const spellValue = spell[chippy.key as keyof Spell];
-                    
+                const keyTypes = [...new Set<string>(chipBar().map(x=>x.key))]
+                const keyGroups = keyTypes.map(x=>chipBar().filter(y=>y.key === x));
+                const keyChecks = keyGroups.map(group => group.map(x=> {
+                    const spellValue = spell[x.key as keyof Spell];
                     if (!!spellValue) {
                         switch (true) {
                             case typeof spellValue === "string":           
                                 return spellValue
                                     .toLowerCase()
-                                    .includes(chippy.value.toLowerCase());
+                                    .includes(x.value.toLowerCase());
                             case Array.isArray(spellValue):
 
                                 return spellValue
                                     .join(" ")
                                     .toLowerCase()
-                                    .includes(chippy.value.toLowerCase());
+                                    .includes(x.value.toLowerCase());
                             case typeof spellValue === "boolean":
                                 return ` ${spellValue} `
                                     .toLowerCase()
-                                    .includes(chippy.value.toLowerCase());
+                                    .includes(x.value.toLowerCase());
                         }
                     }
                     return false;
-                });
+                }))
+                const chipValueCheck = keyChecks.map(x=>x.includes(true))
                 
                 return !chipValueCheck.includes(false);
             }
@@ -86,14 +102,11 @@ const SearchBar: Component<Props> = (props) => {
     })
 
     effect(()=>{
-
-
         setChipBar((oldChips)=>!!searchChip().key ?[...oldChips, searchChip()] : oldChips);
         setSearchValue("");
         if (!!(document.getElementById("searchBar") as HTMLSelectElement)) {
             (document.getElementById("searchBar") as HTMLInputElement).value = "";
         }                                                                                          
-
     })
     
 
@@ -138,15 +151,42 @@ const SearchBar: Component<Props> = (props) => {
             <div class={`${styles.searchBar}`}>
                 <SearchGlass onClick={()=>setSearchChip((old)=>({key: searchKey(), value: beutifyChip(searchValue())  }))}  />
                 <span>
-                        <select onChange={(e)=>setSearchKey(e.target.value)} id="chipDropdown">
+                        <Select onChange={(e)=>setSearchKey(e.target.value)} id="chipDropdown">
                             <For each={Object.keys(props.spellsSrd()[0]).filter(x=> !["materials_Needed","higherLevel","page"].includes(x) )}>
                                 {(key) => 
                                     <option value={key}>{beutifyKey(key)}</option>
                                 }
                             </For>
-                        </select>
+                        </Select>
                 </span>
                 <Switch>
+                    <Match when={Array.isArray(props.spellsSrd()[0][searchKey() as keyof Spell]) || ['damageType', 'castingTime', 'range', 'duration'].includes(searchKey())}>
+                        <Select onChange={(e) => setSearchValue(e.currentTarget.value)}>
+                            <For each={getKeyOptions(searchKey() as keyof Spell)}>
+                                {(option)=>
+                                    <option value={option}>{option}</option>
+                                }
+                            </For>
+                        </Select>
+                    </Match>
+                    <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "boolean"}>
+                        <div class={`${styles.booleanSelect}`} id="booleanBar">
+                            <span>
+                                <label for="falsebox">
+                                    <Show when={ischecked() === false}>
+                                        false
+                                    </Show>
+                                    <Show when={ischecked() === true}>
+                                        true
+                                    </Show>
+                                </label>
+                                <input type="checkbox" checked={ischecked()} id="booleanCheckbox" onchange={()=>{
+                                    setIsChecked(!ischecked())
+                                    setSearchValue(`${ischecked()}`)
+                                }}/>
+                            </span>
+                        </div>
+                    </Match>
                     <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "string"}>
                         <Switch fallback={
                             <input
@@ -185,43 +225,11 @@ const SearchBar: Component<Props> = (props) => {
                                     <option value="9">9</option>
                                 </select>
                             </Match>
-                        </Switch>
-
-                        
+                        </Switch> 
                     </Match>
-                    <Match when={Array.isArray(props.spellsSrd()[0][searchKey() as keyof Spell])}>
-                        <input
-                        id="searchBar"
-                        onChange={(e) => setSearchValue(e.currentTarget.value)}
-                        onKeyDown={(e) => {(e.key === "Enter") && setSearchChip((old)=>({key: searchKey(), value: beutifyChip(e.currentTarget.value) }))}}
-                        placeholder="Search Spells..."
-                        value={searchValue()}
-                        type="text"
-                        />
-                        
-                        
-                    </Match>
-                    <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "boolean"}>
-                        <div class={`${styles.booleanSelect}`} id="booleanBar">
-                            <span>
-                                <label for="falsebox">
-                                    <Show when={ischecked() === false}>
-                                        false
-                                    </Show>
-                                    <Show when={ischecked() === true}>
-                                        true
-                                    </Show>
-                                </label>
-                                <input type="checkbox" checked={ischecked()} id="booleanCheckbox" onchange={()=>{
-                                    setIsChecked(!ischecked())
-                                    setSearchValue(`${ischecked()}`)
-                                }}/>
-                            </span>
-                        </div>
-                    </Match>
+                    
+                   
                 </Switch>
-               
-
             </div>
             <Show when={chipBar().length > 0}>
                 <div class={`${styles.chipBar}`}>

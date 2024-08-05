@@ -8,10 +8,11 @@ type Props = {
     children: [JSX.Element, JSX.Element],
     styles?: CSSModuleClasses,
     extraLogic?: () => void,
+    startOpen?: boolean,
     [key:string]: any
 }
 const ExpansionPanel: Component<Props> = (props)=>{
-    const[open, setOpen] = createSignal(false);
+    const[open, setOpen] = createSignal(!!props.startOpen);
     const stylin = useStyle();
     return (
         <div class={`${styles.totalPanel} ${props.styles}`} {...props}>
