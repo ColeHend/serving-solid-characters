@@ -1,4 +1,4 @@
-import { Accessor, Component, For, Match, Show, Switch, createMemo, createSignal } from "solid-js";
+import { Accessor, Component, For, Match, Show, Switch, createMemo, createSignal, useContext } from "solid-js";
 import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./races.module.scss";
@@ -10,12 +10,16 @@ import Sidebar from "./sidebar";
 import ThePage from "./thePage";
 import { useSearchParams } from "@solidjs/router";
 import Button from "../../../shared/components/Button/Button";
-
+import { SharedHookContext } from "../../rootApp";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../../shared/customHooks/userSettings";
 
 const races: Component = () => {
   // import services ↓
   const dndSrdRaces = useGetRaces();
-  const stylin = useStyle();
+  const sharedHooks = useContext(SharedHookContext);
+  const [userSettings, setUserSettings] = getUserSettings();
+  const stylin = createMemo(()=>useStyles(userSettings().theme));
 
   // signals ↓
   const [RowShown, SetRowShown] = createSignal<number[]>([]);
@@ -38,7 +42,7 @@ const races: Component = () => {
   })
   return (
     <>
-      <div class={`${stylin.primary} ${styles.outerStyles}`} id="racesComp">
+      <div class={`${stylin().primary} ${styles.outerStyles}`} id="racesComp">
         <h1>Races</h1>
 
         <div class={`${styles.SelectorBar}`}>

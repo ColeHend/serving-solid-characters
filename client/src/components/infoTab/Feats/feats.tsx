@@ -1,4 +1,4 @@
-import { Component, For, Match, Show ,Switch,createMemo,createSignal } from "solid-js";
+import { Component, For, Match, Show ,Switch,createMemo,createSignal, useContext } from "solid-js";
 import useDnDFeats from "../../../shared/customHooks/dndInfo/srdinfo/useDnDFeats";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./feats.module.scss";
@@ -10,6 +10,9 @@ import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
 import { PreReqType } from "../../homebrew/create/parts/feats/feats";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
+import { SharedHookContext } from "../../rootApp";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../../shared/customHooks/userSettings";
 
 const featsList: Component = () => {
     const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
@@ -22,7 +25,9 @@ const featsList: Component = () => {
     const hasIndex = (index: number) => RowShown().includes(index);
     const toggleRow = (index: number) => !hasIndex(index) ? SetRowShown([...RowShown(), index]) : SetRowShown(RowShown().filter(i => i !== index));
     
-    const stylin = useStyle();
+    const sharedHooks = useContext(SharedHookContext);
+    const [userSettings, setUserSettings] = getUserSettings();
+    const stylin = createMemo(()=>useStyles(userSettings().theme));
     
     const srdFeats = useGetFeats(); 
 
@@ -36,7 +41,7 @@ const featsList: Component = () => {
     })
 
     return (
-        <div class={`${stylin.primary} ${styles.featsList}`}>
+        <div class={`${stylin()?.primary} ${styles.featsList}`}>
             <div class={`${styles.body}`}>
                 <h1>Feats</h1>
                 <div style={{height: "5vh", width: "35%"}}>

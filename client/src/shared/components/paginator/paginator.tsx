@@ -1,9 +1,11 @@
-import { Accessor, Component, For, createSignal, createMemo, Setter } from "solid-js";
+import { Accessor, Component, For, createSignal, createMemo, Setter, useContext } from "solid-js";
+import { Spell } from "../../../models/spell.model";
 import { effect } from "solid-js/web";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./paginator.module.scss";
 import Button from "../Button/Button";
 import Select from "../Select/Select";
+import { SharedHookContext } from "../../../components/rootApp";
 
 type Props<T> = {
     items: Accessor<T>;
@@ -16,7 +18,8 @@ const Paginator = <T,>(props: Props<T[]>) => {
     const [itemsPerPage, setItemsPerPage] = createSignal(10);
     const setPaginatedItems = props.setPaginatedItems;
 
-    const stylin = useStyle();
+    const sharedHooks = useContext(SharedHookContext);
+    const stylin = sharedHooks?.useStyle();
 
     // the paginator --------------------------------
     const theItems = createMemo(() => props.items().slice((currentPage() - 1) * itemsPerPage(), currentPage() * itemsPerPage()))
@@ -38,10 +41,10 @@ const Paginator = <T,>(props: Props<T[]>) => {
     });
     
     return (
-        <div class={`${stylin.accent} ${style.paginator}`}>
-            <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</Button>
-            <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</Button>
-            <Select disableUnselected={true} onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>
+        <div class={`${stylin?.accent} `}>
+            <button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</button>
+            <button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</button>
+            <select onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>
                 <For each={ItemsPerPageArr}>
                     {(item) => 
                         <option value={item}>
@@ -49,7 +52,7 @@ const Paginator = <T,>(props: Props<T[]>) => {
                         </option>
                     }
                 </For>
-            </Select>
+            </select>
             <div class={style.pageView}>
                 <div>{currentPage()}</div> / <div>{lastpage()}</div>
             </div>

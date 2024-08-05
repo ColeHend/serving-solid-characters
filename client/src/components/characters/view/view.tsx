@@ -13,10 +13,14 @@ import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
 import useGetItems from "../../../shared/customHooks/data/useGetItems";
 import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
 import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
+import getUserSettings from "../../../shared/customHooks/userSettings";
 
 
 const CharacterView: Component = () => {
-    const stylin = useStyle();
+    const [userSettings, setUserSettings] = getUserSettings();
+  const stylin = createMemo(()=>useStyles(userSettings().theme));
+
     const routedSelected = useParams()
     const [searchParam, setSearchParam] = useSearchParams();
     const [characters, setCharacters] = useCharacters();
@@ -36,7 +40,7 @@ const CharacterView: Component = () => {
         setSearchParam({name: currentCharacter().name})
     })
     return (
-        <div class={`${stylin.accent} ${styles.mainBody}`}>
+        <div class={`${stylin().accent} ${styles.mainBody}`}>
             <h1>Characters View</h1>
             <div>
                 <div>

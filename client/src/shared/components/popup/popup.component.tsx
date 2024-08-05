@@ -1,10 +1,15 @@
 // @ts-nocheck
 /* use:clickOutside is not actually an error! Solid fixes on compile! */
-import { Accessor, Component, JSX, Setter, createSignal } from "solid-js";
+import { Accessor, Component, JSX, Setter, createMemo, createSignal, useContext } from "solid-js";
 import { Portal, effect } from "solid-js/web";
-import useStyle from "../../../customHooks/utility/style/styleHook";
-import clickOutside from "../../../customHooks/utility/clickOutside";
+import clickOutside from "../../../shared/customHooks/utility/clickOutside";
+import Button from "../Button/Button";
+import { SharedHookContext } from "../../../components/rootApp";
+import userSettings from "../../customHooks/userSettings";
+import useStyles from "../../customHooks/utility/style/styleHook";
+import getUserSettings from "../../customHooks/userSettings";
 type Props = {
+    title?: string,
     children?: JSX.Element,
     width: string,
     height: string,
@@ -16,16 +21,27 @@ type Props = {
 }
 
 const Modal:Component<Props> = (props)=>{
-    const stylin = useStyle(); 
+    const [userSettings, setUserSettings] = getUserSettings();
+    const sharedHooks = useContext(SharedHookContext);
+    const stylin = createMemo(()=>useStyles(userSettings().theme)); 
     const [backClick, setBackClick] = props.backgroundClick ?? createSignal(true);
-
+    const defaultX = props.translate?.x ?? "-50%";
+    const defaultY = props.translate?.y ?? "-50%";
     return(
         <Portal >
             <div use:clickOutside={()=>setBackClick(old => !old)} style={{
                     width:props.width, 
                     height:props.height,
-                    transform: `translate(${props.translate.x ?? "-50%"},${props.translate.y ?? "-50%"})` 
-                }} class={`${stylin.popup} ${stylin.primary}`}>
+                    transform: `translate(${defaultX},${defaultY})`,
+                    padding: "0px",
+                    "padding-bottom": "5px" 
+                }} class={`${stylin()?.popup} ${stylin()?.primary}`}>
+                <div class={stylin()?.accent} style="display:flex; justify-content:space-between;">
+                    <h2 style="margin-left: 5%">
+                        {props.title ?? "Modal"}
+                    </h2>
+                    <Button onClick={()=>setBackClick(old => !old)}><b>X</b></Button>
+                </div>
                 {props.children}
             </div>
         </Portal>

@@ -18,8 +18,11 @@ interface TableProps<T> {
 }
 
 const Table = <T,>(props: TableProps<T>) => {
+    const [data, xxxx] = createSignal<T[]>(props.data);
     const [paginated, setPaginated] = createSignal<T[]>(props.data);
+    const paginatedMemo = createMemo(()=>paginated());
     const [dummyPage, setDummyPage] = createSignal<T[]>([]);
+    const menuItems = createMemo(()=>!!props.button ? paginatedMemo().map(x=>props.button!.generateMenuButtons(x)) : []);
   return (
       <>
         <table>
@@ -36,8 +39,8 @@ const Table = <T,>(props: TableProps<T>) => {
             </tr>
             </thead>
             <tbody>
-                <For each={paginated()}>
-                    {(child) => <tr>
+                <For each={paginatedMemo()}>
+                    {(child, i) => <tr>
                         <For each={props.keys}>
                             {(key) => <td>{`${child[key]}`}</td>}
                         </For>
@@ -46,7 +49,7 @@ const Table = <T,>(props: TableProps<T>) => {
                             enableBackgroundClick={props.button?.backgroundClick}
                             overrideX={props.button?.overideX} 
                             overrideY={props.button?.overideY} 
-                            menuItems={(!!props.button ? props.button.generateMenuButtons(child) : undefined)} >
+                            menuItems={menuItems()[i()]}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
                             </Button>
                         </Show>
@@ -55,7 +58,7 @@ const Table = <T,>(props: TableProps<T>) => {
             </tbody>
         </table>
         <Show when={props.paginator}>
-            <Paginator<T> setPaginatedItems={setPaginated} items={paginated} itemsPerPage={props.paginator} />
+            <Paginator<T> setPaginatedItems={setPaginated} items={data} itemsPerPage={props.paginator} />
         </Show>
       </>
   );
