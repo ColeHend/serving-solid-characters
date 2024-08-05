@@ -44,7 +44,7 @@ const featsList: Component = () => {
         <div class={`${stylin()?.primary} ${styles.featsList}`}>
             <div class={`${styles.body}`}>
                 <h1>Feats</h1>
-                <div style={{height: "5vh", width: "35%"}}>
+                <div style={{height: "5vh", width: "45%"}}>
                     <SearchBar placeholder="Search Feats..." dataSource={srdFeats} setResults={setSearchResult} />
                 </div>
                 <ol>

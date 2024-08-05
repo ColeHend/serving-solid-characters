@@ -1,5 +1,5 @@
 import { Accessor, Component, createSignal, JSX, Setter } from "solid-js";
-import useStyles from "../../../../customHooks/utility/style/styleHook";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./SearchBar.module.scss";
 interface Props<T> extends JSX.InputHTMLAttributes<HTMLInputElement> {
     dataSource: Accessor<T[]>,

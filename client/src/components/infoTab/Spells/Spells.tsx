@@ -50,7 +50,6 @@ const masterSpells: Component = () => {
         }
     }
     
-
     const spellComponents = (spell:Spell) => {
         const components = []
         if(spell.isVerbal) components.push("V");
@@ -68,8 +67,8 @@ const masterSpells: Component = () => {
     
     return (
         <div class={`${stylin()?.primary} ${styles.SpellsBody}`}>
-            <h1>Spells</h1>
-
+            <h1 class={`${styles.center}`}>Spells</h1>
+            <br />
             <SearchBar searchResults={searchResults} setSearchResults={setSearchResults} spellsSrd={dndSrdSpells}></SearchBar>
 
             <ul>
@@ -77,7 +76,7 @@ const masterSpells: Component = () => {
                     {(spell, i)=>
                         <>
                             <Show when={!sharedHooks?.isMobile()}>
-                                <ExpansionPanel startOpen={currentSpell().name === spell.name}>
+                                <ExpansionPanel extraLogic={()=>setCurrentSpell(spell)} startOpen={currentSpell().name === spell.name}>
                                     <div class={`${styles.headerBar}`}>
                                         <span>{spell.name}</span> <span>{spellLevel(spell.level)}</span>
                                     </div>
@@ -114,14 +113,13 @@ const masterSpells: Component = () => {
                                 <div class={`${styles.headerBar}`}>
                                     <span onClick={()=>{
                                     setCurrentSpell(spell)
-                                    setShowSpell(old=>!old);
-                                    console.log("spell", spell);
-                                    console.log("current spell", currentSpell());
-                                    console.log("background click", showSpell());
-                                    
-                                    
-                                    
-                                }}>{spell.name}</span> <span>{spellLevel(spell.level)}</span>
+                                    setShowSpell(old=>!old); 
+                                    }}>{spell.name}</span> 
+
+                                    <span onClick={()=>{
+                                    setCurrentSpell(spell)
+                                    setShowSpell(old=>!old); 
+                                    }}>{spellLevel(spell.level)}</span>
                                 </div>
                                 
                                 <hr />
