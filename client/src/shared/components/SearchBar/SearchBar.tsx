@@ -22,6 +22,8 @@ const SearchBar = <T,>(props: Props<T>) => {
             <input
             type="text"
             onChange={(e) => setSearchValue(e.currentTarget.value)}
+            onKeyDown={(e) => {if(e.key === "Enter") searchClick()}}
+            value={searchValue()}
             onSubmit={()=>searchClick()}
             {...props}
             class={`${style.input} ${(props.class ?? "")}`}
