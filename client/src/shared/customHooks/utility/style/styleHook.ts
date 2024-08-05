@@ -2,6 +2,8 @@ import { effect } from 'solid-js/web';
 import getUserSettings from '../../userSettings';
 import darkStyle from './themes/darkTheme.module.scss';
 import lightStyle from './themes/lightTheme.module.scss'
+import { useContext, createMemo } from 'solid-js';
+import { SharedHookContext } from '../../../../components/rootApp';
 const lightTheme: Style = {
     body: lightStyle.body,
     primary: lightStyle.primary,
@@ -38,6 +40,12 @@ export default function useStyle(styleType?: string): Style {
         default:
             return darkTheme;
     }
+}
+
+export function useUserStyles() {
+    const [userSettings, setUserSettings] = getUserSettings();
+    const sharedHooks = useContext(SharedHookContext);
+    return createMemo(()=>useStyle(userSettings().theme));
 }
 
 export interface Style {

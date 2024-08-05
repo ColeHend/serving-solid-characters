@@ -12,6 +12,8 @@ import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { ExpansionPanel } from "../../../shared/components";
+import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
+
 
 const masterSpells: Component = () => {
     const sharedHooks = useContext(SharedHookContext);
@@ -31,6 +33,7 @@ const masterSpells: Component = () => {
 
     const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
     const [searchResults, setSearchResults] = createSignal<any[]>([]);
+    const [showSpell,setShowSpell] = createSignal(false)
 
     const spellLevel = (spellLevel: string) => { 
         switch(spellLevel){
@@ -109,10 +112,23 @@ const masterSpells: Component = () => {
                             </Show>
                             <Show when={sharedHooks?.isMobile()}>
                                 <div class={`${styles.headerBar}`}>
-                                    <span>{spell.name}</span> <span>{spellLevel(spell.level)}</span>
+                                    <span onClick={()=>{
+                                    setCurrentSpell(spell)
+                                    setShowSpell(old=>!old);
+                                    console.log("spell", spell);
+                                    console.log("current spell", currentSpell());
+                                    console.log("background click", showSpell());
+                                    
+                                    
+                                    
+                                }}>{spell.name}</span> <span>{spellLevel(spell.level)}</span>
                                 </div>
-
+                                
                                 <hr />
+
+                                <Show when={showSpell()}>
+                                    <SpellModal spell={currentSpell} backgroundClick={[showSpell,setShowSpell]} />
+                                </Show>
                             </Show>
                         </>
                     }
