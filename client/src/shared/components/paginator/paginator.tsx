@@ -41,9 +41,9 @@ const Paginator = <T,>(props: Props<T[]>) => {
     });
     
     return (
-        <div class={`${stylin?.accent} `}>
-            <button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</button>
-            <button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</button>
+        <div class={`${stylin?.accent} ${style.paginator} `}>
+            <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</Button>
+            <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</Button>
             <select onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>
                 <For each={ItemsPerPageArr}>
                     {(item) => 

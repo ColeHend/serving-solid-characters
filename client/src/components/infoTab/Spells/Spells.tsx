@@ -96,9 +96,9 @@ const masterSpells: Component = () => {
 
                                             <h2>SubClasses: {spell.subClasses.join(", ")}</h2>
 
-                                            <textarea rows={Math.ceil(spell.desc.length/85)} readOnly>
+                                            <span>
                                                 {spell.desc}
-                                            </textarea>
+                                            </span>
 
                                             <Show when={!!spell.higherLevel}>
                                                 <h4>At Higher Levels:  </h4> <span>{spell.higherLevel}</span>

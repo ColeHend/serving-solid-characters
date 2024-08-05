@@ -24,7 +24,7 @@
         font-size: 1em;
     }
 
-    @media screen and (max-width: 800px){
+    @media screen and (max-width: 768px){
         
         width: 90%;
         margin: 1% 0%;
@@ -90,19 +90,6 @@
             font-family: 'Bookinsanity';
             font-weight: 100;
             color: #000;
-        }
-
-        textarea {
-            font-family: 'Bookinsanity';
-            font-weight: 100;
-            color: #000;
-            margin-left: 12px;
-            border: none;
-            background: none;
-            text-wrap: wrap;
-            width: 100%;
-            height: fit-content();
-            font-size:small;
         }
     }
 }
