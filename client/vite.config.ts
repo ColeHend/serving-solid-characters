@@ -12,7 +12,7 @@ const pwaOptions: Partial<VitePWAOptions> = //
     navigateFallback: '/index.html',
     navigateFallbackAllowlist: [/^\/$/],
   },
-  includeAssets: ["**/*.{png,svg,ico,json}"],
+  includeAssets: ["**/*.{png,svg,ico,json,jpg}"],
   workbox: {
     globPatterns: [
       "**/*.{js,jsx,css,scss,ts,tsx,html,woff,woff2}"

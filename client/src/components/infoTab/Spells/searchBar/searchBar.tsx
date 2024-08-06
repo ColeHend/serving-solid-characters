@@ -110,39 +110,19 @@ const SearchBar: Component<Props> = (props) => {
     })
     
 
-    const beutifyKey = (Key: string) => {
+    const beautifyKey = (Key: string) => {
+        const capFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+        const spaceBeforeCap = (str: string) => str.replace(/([A-Z])/g, ' $1').trim();
+        if (Key.startsWith("is")) Key = Key.replace("is", "");
+        Key = capFirstLetter(Key);
+        Key = spaceBeforeCap(Key);
         switch (Key) { 
-            case "name":
-                return "Name";
-            case "level":
-                return "Level";
-            case "school":
-                return "School";
-            case "castingTime":
-                return "Casting Time";
-            case "range":
-                return "Range";
-            case "duration":
-                return "Duration";
             case "concentration":
                 return "Conc";
-            case "ritual":
-                return "Ritual";
             case "damageType":
                 return "Dmg Type";
-            case "isMaterial":
-                return "Material";
-            case "isSomatic":
-                return "Somatic";
-            case "isVerbal":
-                return "Verbal";
-            case "classes":
-                return "Classes";
-            case "desc":
-                return "Desc";
-            case "subClasses":
-                return "Subclasses";
-            
+            default:
+                return Key;
         }
     }
     
@@ -154,7 +134,7 @@ const SearchBar: Component<Props> = (props) => {
                 </Button>
                 <Select class={`${styles.all}`} disableUnselected={true} onChange={(e)=>setSearchKey(e.target.value)} id="chipDropdown">
                     <For each={Object.keys(props.spellsSrd()[0]).filter(x=> !["materials_Needed","higherLevel","page"].includes(x) )}>{(key) => 
-                        <Option value={key}>{beutifyKey(key)}</Option>
+                        <Option value={key}>{beautifyKey(key)}</Option>
                     }</For>
                 </Select>
                 <Switch>
@@ -225,7 +205,7 @@ const SearchBar: Component<Props> = (props) => {
                 <div class={`${styles.chipBar}`}>
                     <ClearAllBtn clear={()=>setChipBar([])} />
                     <For each={chipBar()}>
-                        {(chip, i) => <Chip key={beutifyKey(chip.key) ?? '' } value={chip.value} clear={()=>setChipBar((oldChipBar)=>oldChipBar.filter((x, index) => index !== i() ))}/>}
+                        {(chip, i) => <Chip key={beautifyKey(chip.key) ?? '' } value={chip.value} clear={()=>setChipBar((oldChipBar)=>oldChipBar.filter((x, index) => index !== i() ))}/>}
                     </For>
                 </div>
             </Show>
