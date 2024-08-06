@@ -23,7 +23,8 @@ interface Props extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
     overrideY?: string,
     menuStyle?: CSSModuleClasses[string],
     enableBackgroundClick?: boolean,
-    onClick?: (e: MouseEvent) => any
+    onClick?: (e: MouseEvent) => any,
+    transparent?: boolean
 }
 
 const Button: Component<Props> = (props)=> {
@@ -57,7 +58,7 @@ const Button: Component<Props> = (props)=> {
             ref={(el)=>(myRef = el!)}
             onClick={!!props.onClick ? props.onClick : (e)=>(setShowMenu((old)=>({show: !old.show, lastX: e.clientX, lastY: e.clientY})))}
             {...props}
-            class={`${stylin()?.accent} ${stylin()?.hover} ${style.customButtonStyle} ${props.class ?? ""}`}
+            class={`${stylin()?.accent} ${stylin()?.hover} ${style.customButtonStyle} ${!!props.transparent ? style.transparent : ""} ${props.class ?? ""} `}
             >
                 {props.children}
             </button>

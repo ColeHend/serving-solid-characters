@@ -14,7 +14,7 @@ import {
   Option,
   Carousel,
   Chip,
-} from "../../../../../shared/components/index";
+} from "../../../../../shared/components";
 import { Feature, Info } from "../../../../../models/core.model";
 import styles from "./classes.module.scss";
 import { DnDClass } from "../../../../../models";

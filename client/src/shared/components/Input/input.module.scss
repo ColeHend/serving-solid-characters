@@ -59,8 +59,8 @@
 }
 
 .transparent {
-    background-color: inherit;
-    color: white;
+    background-color: inherit !important;
+    color: inherit !important;
     border: none;
     :focus {
         outline: none;

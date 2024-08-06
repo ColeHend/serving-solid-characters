@@ -4,11 +4,12 @@ import style from "./Select.module.scss";
 import Option from "./Option";
 interface SelectProps extends JSX.InputHTMLAttributes<HTMLSelectElement> {
     disableUnselected?: boolean;
+    transparent?: boolean;
 }
 const Select: Component<SelectProps> = (props)=> {
-    const [customProps, normalProps] = splitProps(props, ["disableUnselected", "class"]);
+    const [customProps, normalProps] = splitProps(props, ["disableUnselected", "class", "transparent"]);
     return (
-        <select {...normalProps} class={`${style.select} ${customProps.class ?? ""}`}>
+        <select {...normalProps} class={`${style.select} ${!!customProps.transparent ? style.transparent : ""} ${customProps.class ?? ""}`}>
             <Show when={!!!customProps.disableUnselected}>
                 <Option>--------</Option>
             </Show>

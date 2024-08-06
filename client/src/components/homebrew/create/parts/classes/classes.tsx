@@ -348,11 +348,11 @@ effect(()=>{
               value={name()}
               placeholder="What is the class name?"
               onInput={(e) => setName(e.currentTarget.value)}
-              transparent={true}
             />
             <h3>Hit Die</h3>
             <Select
               value={hitDie()}
+              transparent={true}
               onChange={(e) => setHitDie(+e.currentTarget.value)}
             >
               <Option value={4}>d4</Option>
