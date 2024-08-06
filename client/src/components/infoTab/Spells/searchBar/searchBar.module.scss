@@ -1,19 +1,27 @@
 .searchBar {
-    width: 30%;
+    display: flex;
+    flex-direction: row;
     margin: 0 auto;
     background-color: white;
     height: 1.5rem;
+    width: 30%;
     padding: 5px;
     padding-bottom: 10px;
     border-radius: 15px;
     margin-bottom: 5pt;
     select {
         color: black;
-        width: 20%;
+        width: min-content;
         font-size: .8rem;
 
         &:hover {
             cursor: pointer;
+        }
+        border: none;
+        border-bottom: 1px solid black;
+        border-radius: 20px;
+        &:focus {
+            outline: none;
         }
     }
     span {
@@ -29,7 +37,7 @@
         }
     }
     input {
-        width: 70%;
+        flex-grow: 1;
         border: none;
         outline: none;
     }
@@ -38,19 +46,20 @@
     }
 
     .booleanSelect {
-        margin-left: 40%;
-        margin-top: -5%;
-
+        display: flex;
+        flex-direction: row;
+        color: black;
         label {
             width: min-content;
             height: min-content;
-
-            margin-right: 10px;
+            margin-left: 10px;
         }
 
         input[type="checkbox"]  {
             width: min-content;
             height: max-content;
+            border: 1px solid black;
+            margin: 0px;
             &:hover {
                 cursor: pointer !important;
             }

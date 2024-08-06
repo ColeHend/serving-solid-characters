@@ -348,6 +348,7 @@ effect(()=>{
               value={name()}
               placeholder="What is the class name?"
               onInput={(e) => setName(e.currentTarget.value)}
+              transparent={true}
             />
             <h3>Hit Die</h3>
             <Select

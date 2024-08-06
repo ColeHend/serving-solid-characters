@@ -1,4 +1,4 @@
-import { Accessor, Component, For, Match, Setter, Show, Switch, createSignal } from "solid-js";
+import { Accessor, Component, For, JSX, Match, Setter, Show, Switch, createSignal } from "solid-js";
 import useDnDSpells from "../../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import { Spell } from "../../../../models/spell.model";
 import { effect } from "solid-js/web";
@@ -8,6 +8,7 @@ import useStyle from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./searchBar.module.scss";
 import ClearAllBtn from "./clearAllBtn";
 import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
+import { Input, Select } from "../../../../shared/components";
 interface Chip {
     key: string;
     value: string;
@@ -135,16 +136,30 @@ const SearchBar: Component<Props> = (props) => {
         <div>
             <div class={`${styles.searchBar}`}>
                 <SearchGlass onClick={()=>setSearchChip((old)=>({key: searchKey(), value: beutifyChip(searchValue())  }))}  />
-                <span>
-                        <select onChange={(e)=>setSearchKey(e.target.value)} id="chipDropdown">
-                            <For each={Object.keys(props.spellsSrd()[0]).filter(x=> !["materials_Needed","higherLevel","page"].includes(x) )}>
-                                {(key) => 
-                                    <option value={key}>{beutifyKey(key)}</option>
-                                }
-                            </For>
-                        </select>
-                </span>
+                <Select disableUnselected={true} onChange={(e)=>setSearchKey(e.target.value)} id="chipDropdown">
+                    <For each={Object.keys(props.spellsSrd()[0]).filter(x=> !["materials_Needed","higherLevel","page"].includes(x) )}>
+                        {(key) => 
+                            <option value={key}>{beutifyKey(key)}</option>
+                        }
+                    </For>
+                </Select>
                 <Switch>
+                    <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "boolean"}>
+                        <span class={`${styles.booleanSelect}`} id="booleanBar">
+                            <Input type="checkbox" checked={ischecked()} id="booleanCheckbox" onchange={()=>{
+                                setIsChecked(!ischecked())
+                                setSearchValue(`${ischecked()}`)
+                            }}/>
+                            <label for="falsebox">
+                                <Show when={ischecked() === false}>
+                                    false
+                                </Show>
+                                <Show when={ischecked() === true}>
+                                    true
+                                </Show>
+                            </label>
+                        </span>
+                    </Match>
                     <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "string"}>
                         <Switch fallback={
                             <input
@@ -157,6 +172,18 @@ const SearchBar: Component<Props> = (props) => {
                         />
 
                         }>
+                            <Match when={["school", "level"].includes(searchKey())}>
+                                <select onChange={(e)=>setSearchValue(e.currentTarget.value)}>
+                                    <For each={spellSchools}>
+                                        {(school)=>
+                                            <>
+                                                <option value={school}>{school}</option>
+                                                
+                                            </>
+                                        }
+                                    </For>
+                                </select>
+                            </Match>
                             <Match when={searchKey() === "school"}>
                                 <select onChange={(e)=>setSearchValue(e.currentTarget.value)}>
                                     <For each={spellSchools}>
@@ -184,8 +211,6 @@ const SearchBar: Component<Props> = (props) => {
                                 </select>
                             </Match>
                         </Switch>
-
-                        
                     </Match>
                     <Match when={Array.isArray(props.spellsSrd()[0][searchKey() as keyof Spell])}>
                         <input
@@ -196,30 +221,9 @@ const SearchBar: Component<Props> = (props) => {
                         value={searchValue()}
                         type="text"
                         />
-                        
-                        
                     </Match>
-                    <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "boolean"}>
-                        <div class={`${styles.booleanSelect}`} id="booleanBar">
-                            <span>
-                                <label for="falsebox">
-                                    <Show when={ischecked() === false}>
-                                        false
-                                    </Show>
-                                    <Show when={ischecked() === true}>
-                                        true
-                                    </Show>
-                                </label>
-                                <input type="checkbox" checked={ischecked()} id="booleanCheckbox" onchange={()=>{
-                                    setIsChecked(!ischecked())
-                                    setSearchValue(`${ischecked()}`)
-                                }}/>
-                            </span>
-                        </div>
-                    </Match>
+                    
                 </Switch>
-               
-
             </div>
             <Show when={chipBar().length > 0}>
                 <div class={`${styles.chipBar}`}>

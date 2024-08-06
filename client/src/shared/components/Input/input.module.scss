@@ -5,7 +5,30 @@
     padding: 10px 15px;
     font-size: 1.2rem;
     margin: 10px 0;
-    
+    &[type="checkbox"] {
+        -webkit-appearance: none;
+        border: 1px solid #cacece;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+        padding: 10px;
+        border-radius: 5px;
+        display: inline-block;
+        position: relative;
+        &:checked {
+            background-color: inherit;
+            border: 1px solid #adb8c0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05), inset 15px 10px -12px rgba(255,255,255,0.1);
+            color: inherit;
+            &:after {
+                content: '\2714';
+                position: absolute;
+                top: -15%;
+                left: 15%;
+                width: 10px;
+                height: 10px;
+                border-radius: 10%;
+            }
+        }
+    }
     &:focus {
         outline: none;
     }
@@ -28,5 +51,18 @@
 
     &.disabled {
         border: 1px solid gray;
+    }
+}
+
+.checkbox {
+    cursor: pointer;
+}
+
+.transparent {
+    background-color: inherit;
+    color: white;
+    border: none;
+    :focus {
+        outline: none;
     }
 }
