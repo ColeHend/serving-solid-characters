@@ -30,7 +30,7 @@ const races: Component = () => {
   const hasIndex = (index: number) => RowShown().includes(index);
 
   const [searchParam,setSearchParam] = useSearchParams();
-  const selectedRace = dndSrdRaces()?.findIndex((val)=>val.name.toLowerCase() === searchParam.name?.toLowerCase())
+  const selectedRace = dndSrdRaces()?.findIndex((val)=>val.name?.toLowerCase() === searchParam?.name?.toLowerCase())
   const [currentRaceIndex,setCurrentRaceIndex] = createSignal<number>(selectedRace >= 0 ? selectedRace : 0) 
   
   if(!!!searchParam.name) setSearchParam({name: dndSrdRaces().length > 0 ? dndSrdRaces()[currentRaceIndex()].name: "dragonborn" });
@@ -46,9 +46,15 @@ const races: Component = () => {
         <h1>Races</h1>
 
         <div class={`${styles.SelectorBar}`}>
-          <button onClick={()=>currentRaceIndex() === 0 ? setCurrentRaceIndex(old=> (dndSrdRaces().length - 1)) : setCurrentRaceIndex(old=>old - 1)}>←</button>
+          <button 
+            onClick={
+              ()=>currentRaceIndex() === 0 ? setCurrentRaceIndex(old=> (dndSrdRaces().length - 1)) : setCurrentRaceIndex(old=>old - 1)
+              }>←</button>
           <span>{currentRace().name}</span>
-          <button onClick={()=>currentRaceIndex() === (dndSrdRaces().length - 1) ? setCurrentRaceIndex(old=> 0) : setCurrentRaceIndex(old=>old + 1)}>→</button>
+          <button 
+            onClick={
+              ()=>currentRaceIndex() === (dndSrdRaces().length - 1) ? setCurrentRaceIndex(old=> 0) : setCurrentRaceIndex(old=>old + 1)
+              }>→</button>
         </div>
 {/* 
         <div>

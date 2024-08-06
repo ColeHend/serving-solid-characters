@@ -1,4 +1,4 @@
-import { type Component, For, createResource, JSX, useContext, createMemo } from 'solid-js';
+import { type Component, For, createResource, JSX, useContext, createMemo, createSignal } from 'solid-js';
 import { effect } from 'solid-js/web';
 import useDnDClasses from './shared/customHooks/dndInfo/srdinfo/useDnDClasses';
 import useStyle from './shared/customHooks/utility/style/styleHook';
@@ -7,7 +7,7 @@ import useDnDFeats from './shared/customHooks/dndInfo/srdinfo/useDnDFeats';
 import useDnDRaces from './shared/customHooks/dndInfo/srdinfo/useDnDRaces';
 import useDnDBackgrounds from './shared/customHooks/dndInfo/srdinfo/useDnDBackgrounds';
 import useDnDItems from './shared/customHooks/dndInfo/srdinfo/useDnDItems';
-import styles from './App.module.css';
+import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import ExpansionPanel from './shared/components/expansion/expansion';
@@ -16,6 +16,7 @@ import { useInjectServices } from './shared/customHooks/injectServices';
 import userSettings from './shared/customHooks/userSettings';
 import getUserSettings from './shared/customHooks/userSettings';
 import useStyles from './shared/customHooks/utility/style/styleHook';
+import TextArea from './shared/components/TextArea/TextArea';
 
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
@@ -27,17 +28,21 @@ const App: Component = () => {
   const dndSrdRaces = useDnDRaces();
   const dndSrdItems = useDnDItems();
   const dndSrdBackgrounds = useDnDBackgrounds();
-
+  const [testText, setTestText] = createSignal("This \nis \na test");
+  const [bannerText, setBannerText] = createSignal("It'll be great eventually.");
   return (
       <div class={`${stylin()?.primary} ${styles.AppBody}`}>
         <h1>Home</h1>
+        <div style={{width:"100%"}}>
+          <TextArea readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
+        </div>
         <div>
           <ExpansionPanel>
             <div>
                 Welcome to my app. This is a work in progress.
             </div>
-            <div style={{padding: "15px"}}>
-                It'll be great eventually.
+            <div style={{width:"100%",padding: "15px"}}>
+              <TextArea readOnly={true} transparent={true} tooltip='Testing' text={bannerText} setText={setBannerText} />
             </div>
           </ExpansionPanel>
         </div>

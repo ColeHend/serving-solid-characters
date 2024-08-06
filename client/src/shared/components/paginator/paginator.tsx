@@ -1,9 +1,10 @@
 import { Accessor, Component, For, createSignal, createMemo, Setter, useContext } from "solid-js";
 import { Spell } from "../../../models/spell.model";
 import { effect } from "solid-js/web";
-import Modal from "../popup/popup.component";
-import { create } from "domain";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
+import style from "./paginator.module.scss";
+import Button from "../Button/Button";
+import Select from "../Select/Select";
 import { SharedHookContext } from "../../../components/rootApp";
 
 type Props<T> = {
@@ -40,9 +41,9 @@ const Paginator = <T,>(props: Props<T[]>) => {
     });
     
     return (
-        <div class={`${stylin?.accent} `}>
-            <button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</button>
-            <button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</button>
+        <div class={`${stylin?.accent} ${style.paginator} `}>
+            <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</Button>
+            <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</Button>
             <select onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>
                 <For each={ItemsPerPageArr}>
                     {(item) => 
@@ -52,11 +53,11 @@ const Paginator = <T,>(props: Props<T[]>) => {
                     }
                 </For>
             </select>
-            <span>
-                {currentPage()} / {lastpage()}
-            </span>
-            <button disabled={currentPage() === lastpage()} onClick={()=>setCurrentPage(currentPage() + 1)}>→</button>
-            <button disabled={currentPage() === lastpage()} onClick={()=>setCurrentPage(lastpage())}>→→</button>
+            <div class={style.pageView}>
+                <div>{currentPage()}</div> / <div>{lastpage()}</div>
+            </div>
+            <Button disabled={currentPage() === lastpage()} onClick={()=>setCurrentPage(currentPage() + 1)}>→</Button>
+            <Button disabled={currentPage() === lastpage()} onClick={()=>setCurrentPage(lastpage())}>→→</Button>
             
         </div>
     );

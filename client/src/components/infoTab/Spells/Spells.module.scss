@@ -7,66 +7,22 @@
     overflow-y: auto;
     max-width: 90vw !important;
 
+    ul {
+        list-style: none;
+    }
+
     #materials_needed {
         word-wrap:normal;
     }
 
-    textarea {
-        width: 70vw;
-        height: 19vh;
-        border: none;
-        resize: none;
-
-        font-size: 1em;
-    }
-
-    @media screen and (max-width: 800px){
+    @media screen and (max-width: 768px){
         
         width: 90%;
-        margin: 1% 0%;
+        margin: 2% 2%;
         overflow-x: hidden !important;
-
-        textarea {
-            width: 70vw;
-            height: 19vh;
-            border: none;
-            overflow-y: scroll;
-        }
-
-        // width:65vw;
         
     }
-    .TableRow{
-        padding: 0% 5%;
-        margin-top: 0% 10%;
-        max-width: 80% !important;
-        @media screen and (max-width: 800px){
-            width: 15vw;            
-            
-        } 
-    }
 }
-
-table {
-    width: 80%;
-    border-radius: 10px;
-    @media screen and (max-width: 800px) {
-        font-size: .8em !important;
-    }
-    tr  {
-        width: min-content;
-        td {
-            // width: min-content;
-            text-wrap:wrap;
-            padding: 5px;
-            margin: 10px;
-        }
-        th {
-            width: min-content;
-        }
-    }
-}
-
 .headerBar{
     width: 100%;
     display: flex;
@@ -76,9 +32,50 @@ table {
         display: flex;
         flex-direction: column;
     }
-    @media screen and (max-width: 800px){
+    @media screen and (max-width: 768px){
         width: 90%;
-        
     }
 }
+.view {
+    padding: 15px;
+    div {
+        background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
+        width: 95%;
+        height: max-content;
+        border-radius: 12px;
+        text-wrap: wrap;
+        padding: 15px;
+        padding-bottom: -5px;
+        
+        h1{
+            font-family: 'Mr_Eaves_Small_Caps';
+            font-weight: 100;
+            color: #AA0505;
+            margin-left: 12px;
+        }
 
+        h2 {
+            font-family: 'Bookinsanity';
+            font-weight: 100;
+            color: #000;
+            margin-left: 12px;
+        }
+        
+        h4 {
+            font-family: 'Bookinsanity';
+            font-weight: 100;
+            color: #000;
+            margin-left: 12px;
+        }
+
+        span {
+            font-family: 'Bookinsanity';
+            font-weight: 100;
+            color: #000;
+        }
+    }
+}
+.center {
+    margin: 0 auto;
+    width: min-content;
+}

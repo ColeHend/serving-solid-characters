@@ -7,6 +7,10 @@
     li {
         margin: 5px 0;
     }
+    svg {
+        width: 90%;
+        height: 90%;
+    }
 }
 .menuButton {
     width: 100%;
@@ -17,14 +21,20 @@
 }
 .customButtonStyle {
     border-radius: 15px;
-    padding: 10px;
+    padding: 5px;
     border: none;
-    margin: 5px;
-    // box-shadow: none;
-    // background-color: inherit;
+    margin: 10px;
     &:disabled {
         &:hover {
             cursor: not-allowed;
         }
     }
+}
+.transparent {
+    background-color: inherit !important;
+    color: inherit !important;
+    border: none;
+    outline: none;
+    padding: 0px;
+    margin: 0px;
 }

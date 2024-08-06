@@ -1,0 +1,15 @@
+.select {
+    width: max-content;
+    padding: 5px;
+    border-radius: 10px;
+    transition: border-color 0.15s ease-in-out;
+
+}
+
+.transparent {
+    background-color: inherit;
+    color: inherit;
+
+    border: none;
+    outline: none;
+}

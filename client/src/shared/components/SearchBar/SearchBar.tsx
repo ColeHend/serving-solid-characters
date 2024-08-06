@@ -1,5 +1,5 @@
 import { Accessor, Component, createSignal, JSX, Setter } from "solid-js";
-import useStyles from "../../../../customHooks/utility/style/styleHook";
+import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./SearchBar.module.scss";
 interface Props<T> extends JSX.InputHTMLAttributes<HTMLInputElement> {
     dataSource: Accessor<T[]>,
@@ -22,6 +22,8 @@ const SearchBar = <T,>(props: Props<T>) => {
             <input
             type="text"
             onChange={(e) => setSearchValue(e.currentTarget.value)}
+            onKeyDown={(e) => e.key === "Enter" && searchClick()}
+            value={searchValue()}
             onSubmit={()=>searchClick()}
             {...props}
             class={`${style.input} ${(props.class ?? "")}`}

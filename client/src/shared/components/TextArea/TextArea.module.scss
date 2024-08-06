@@ -1,0 +1,22 @@
+.areaStyle {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: inherit;
+    height: 100%;
+    resize:none;
+}
+
+.transparent {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 0.5rem;
+    width: inherit;
+    height: 100%;
+    resize:none;
+    &:focus {
+        outline: none;
+        border: none;
+    }
+}

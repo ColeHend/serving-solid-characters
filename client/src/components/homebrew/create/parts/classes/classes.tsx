@@ -352,6 +352,7 @@ effect(()=>{
             <h3>Hit Die</h3>
             <Select
               value={hitDie()}
+              transparent={true}
               onChange={(e) => setHitDie(+e.currentTarget.value)}
             >
               <Option value={4}>d4</Option>
