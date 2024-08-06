@@ -1,3 +1,5 @@
+import { Spell } from "../../../models";
+
 export function getSpellcastingDictionary(level:number, casterType: string, cantrips = false) {
     const getSlotString = (slot: number) => slot === 0 ? "cantrips_known" : `spell_slots_level_${slot}`;
     const spellcastingObject: {[key:string]:number} = {};
@@ -150,3 +152,30 @@ export function getNumberArray(num: number) {
     return Array.from({ length: num }, (_, i) => i + 1);
 }
 export const getSlotString = (slot: number) => slot === 0 ? "cantrips_known" : `spell_slots_level_${slot}`;
+
+export const spellLevel = (spellLevel: string) => { 
+    switch(spellLevel){
+        case "0":
+            return "Cantrip";
+        case "1":
+            return "1st";
+        case "2":
+            return "2nd";
+        case "3":
+            return "3rd";
+        default:
+            return `${spellLevel}th`;
+    }
+}
+
+
+export const spellComponents = (spell:Spell) => {
+    const components = []
+    if(spell.isVerbal) components.push("V");
+    if(spell.isSomatic) components.push("S");
+    if(spell.isMaterial) components.push("M");
+    if (!!spell.materials_Needed) {
+        return [components.join(', '), spell.materials_Needed ?? null].join(', ')
+    }
+    return components.join(', ')
+}

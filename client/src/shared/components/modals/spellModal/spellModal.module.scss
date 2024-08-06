@@ -1,0 +1,43 @@
+.view {
+    padding: 10% 5%;
+    div {
+        background: none;
+        background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
+        width: 85%;
+        height: max-content;
+        border-radius: 12px;
+        text-wrap: wrap;
+        padding: 15px;
+        padding-bottom: -5px;
+        text-align: left;
+        
+        h1{
+            font-family: 'Mr_Eaves_Small_Caps';
+            font-weight: 100;
+            color: #AA0505;
+            margin-left: 12px;
+            font-size: 1.8em;
+        }
+
+        h2 {
+            font-family: 'Bookinsanity';
+            font-weight: 100;
+            color: #000;
+            margin-left: 12px;
+            font-size: 1.2em;
+        }
+        
+        h4 {
+            font-family: 'Bookinsanity';
+            font-weight: 100;
+            color: #000;
+            margin-left: 12px;
+        }
+
+        span {
+            font-family: 'Bookinsanity';
+            font-weight: 100;
+            color: #000;
+        }
+    }
+}

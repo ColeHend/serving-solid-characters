@@ -100,3 +100,180 @@ code {
   width: 100%;
   margin-bottom: 15px;
 }
+
+// Bookinsanity : Body text ↓
+
+@font-face {
+  font-family: 'Bookinsanity';
+  src: url('./assets/solbera-dnd-fonts-master/Bookinsanity/Bookinsanity.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Bookinsanity';
+  src: url('./assets/solbera-dnd-fonts-master/Bookinsanity/Bookinsanity_Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Bookinsanity';
+  src: url('./assets/solbera-dnd-fonts-master/Bookinsanity/Bookinsanity_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Bookinsanity';
+  src: url('./assets/solbera-dnd-fonts-master/Bookinsanity/Bookinsanity_Bold_Italic.otf') format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+// Scaly_Sans_Caps : Monster Manual quotes ↓
+
+@font-face {
+  font-family: 'Scaly_Sans_Caps';
+  src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans_Caps/Scaly_Sans_Caps.otf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Scaly_Sans_Caps';
+  src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans_Caps/Scaly_Sans_Caps_Bold.otf") format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Scaly_Sans_Caps';
+  src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans_Caps/Scaly_Sans_Caps_Italic.otf") format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Scaly_Sans_Caps';
+  src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans_Caps/Scaly_Sans_Caps_Bold_Italic.otf") format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+// Nodesto_Caps_Condensed : Book and card titles ↓
+
+@font-face {
+  font-family: 'Nodesto_Caps_Condensed';
+  src: url("./assets/solbera-dnd-fonts-master/Nodesto_Caps_Condensed/Nodesto_Caps_Condensed.otf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nodesto_Caps_Condensed';
+  src: url("./assets/solbera-dnd-fonts-master/Nodesto_Caps_Condensed/NodestoCapsCondensed_Bold.otf") format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nodesto_Caps_Condensed';
+  src: url("./assets/solbera-dnd-fonts-master/Nodesto_Caps_Condensed/NodestoCapsCondensed_Italic.otf") format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Nodesto_Caps_Condensed';
+  src: url("./assets/solbera-dnd-fonts-master/Nodesto_Caps_Condensed/NodestoCapsCondensed_Bold_Italic.otf") format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+// Mr_Eaves_Small_Caps : Headings ↓
+
+@font-face {
+  font-family: "Mr_Eaves_Small_Caps";
+  src: url("./assets/solbera-dnd-fonts-master/Mr_Eaves/Mr_Eaves_Small_Caps.otf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+// Zatanna_Misdirection : Titles of tables ↓
+
+@font-face {
+  font-family: "Zatanna_Misdirection";
+  src: url("./assets/solbera-dnd-fonts-master/Zatanna_Misdirection/Zatanna_Misdirection.otf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Zatanna_Misdirection";
+  src: url("./assets/solbera-dnd-fonts-master/Zatanna_Misdirection/Zatanna_Misdirection_Bold.otf") format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Zatanna_Misdirection";
+  src: url("./assets/solbera-dnd-fonts-master/Zatanna_Misdirection/Zatanna_Misdirection_Italic.otf") format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Zatanna_Misdirection";
+  src: url("./assets/solbera-dnd-fonts-master/Zatanna_Misdirection/Zatanna_Misdirection_Bold_Italic.otf") format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+// 	Scaly_Sans : Tables ↓
+
+@font-face {
+  font-family: "Scaly_Sans";
+  src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans/Scaly_Sans.otf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Scaly_Sans";
+  src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans/Scaly_Sans_Bold.otf") format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Scaly_Sans";
+  src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans/Scaly_Sans_Italic.otf") format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Scaly_Sans";
+  src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans/Scaly_Sans_Bold_Italic.otf") format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+// Solbera_Imitation : Drop caps ↓ 
+
+@font-face {
+  font-family: "Solbera_Imitation";
+  src: url("./assets/solbera-dnd-fonts-master/Solbera_Imitation/Solbera_Imitation.otf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+// Dungeon_Drop_Case : Drop caps ↓ 
+
+@font-face {
+  font-family: "Dungeon_Drop_Case";
+  src: url("./assets/solbera-dnd-fonts-master/Dungeon_Drop_Case/Dungeon_Drop_Case.otf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}

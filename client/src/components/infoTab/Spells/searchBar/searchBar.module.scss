@@ -13,8 +13,12 @@
         color: black;
         width: min-content;
         font-size: .8rem;
+        border: none;
+
+        
 
         &:hover {
+            border: none;
             cursor: pointer;
         }
         border: none;

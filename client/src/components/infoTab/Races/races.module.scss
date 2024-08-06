@@ -1,4 +1,4 @@
-$mobile: 800px;
+$mobile: 768px;
 
 @keyframes slidein {
     from {
@@ -80,6 +80,10 @@ $mobile: 800px;
     margin: 0 auto;
     width: 12%;
     
+    @media screen and (max-width: $mobile) {
+        width: 100%;
+        margin-left: 12%;
+    }
  }
 
 }

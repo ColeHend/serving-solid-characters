@@ -11,11 +11,12 @@ type Props = {
     children: [JSX.Element, JSX.Element],
     styles?: CSSModuleClasses,
     extraLogic?: () => void,
+    startOpen?: boolean,
     [key:string]: any
 }
 const ExpansionPanel: Component<Props> = (props)=>{
+    const[open, setOpen] = createSignal(!!props.startOpen);
     const [userSettings, setUserSettings] = getUserSettings();
-    const[open, setOpen] = createSignal(false);
     const sharedHooks = useContext(SharedHookContext);
     const stylin = createMemo(()=>useStyles(userSettings().theme));
     return (

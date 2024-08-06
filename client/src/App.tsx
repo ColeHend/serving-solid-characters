@@ -7,7 +7,7 @@ import useDnDFeats from './shared/customHooks/dndInfo/srdinfo/useDnDFeats';
 import useDnDRaces from './shared/customHooks/dndInfo/srdinfo/useDnDRaces';
 import useDnDBackgrounds from './shared/customHooks/dndInfo/srdinfo/useDnDBackgrounds';
 import useDnDItems from './shared/customHooks/dndInfo/srdinfo/useDnDItems';
-import styles from './App.module.css';
+import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import ExpansionPanel from './shared/components/expansion/expansion';

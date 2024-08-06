@@ -19,12 +19,12 @@ const Viewbackgrounds: Component = () => {
     const [searchResult, setSearchResult] = createSignal(backgrounds() || []);
     const displayResults = createMemo(()=>{
         if (searchResult().length === 0) return backgrounds();
-        return searchResult();
+     
     })
 
     const [searchParam, setSearchParam] = useSearchParams();
     if (!!!searchParam.name) setSearchParam({name: backgrounds()[0]?.name})
-    const selectedBackground = backgrounds().filter(x=>x.name.toLowerCase() === (searchParam.name || backgrounds()[0].name).toLowerCase())[0]
+    const selectedBackground = backgrounds().filter(x=>x.name?.toLowerCase() === (searchParam?.name || backgrounds()[0]?.name).toLowerCase())[0]
     const [currentBackground,setCurrentBackground] = createSignal<Background>(selectedBackground); 
 
     effect(()=>{    
