@@ -25,6 +25,7 @@ type Props = {
 
 /**
  * 
+ * @param title {string} {string} - The title of the modal.
  * @param width {string} {string} - The css width of the modal.
  * @param maxWidth {string} {string} - The optional css max-width of the modal.
  * @param height {string} {string} - The css height of the modal.
