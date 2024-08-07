@@ -15,8 +15,13 @@ const SearchBar = <T,>(props: Props<T>) => {
             if(search.trim().length === 0) return true;
             return JSON.stringify(item).toLowerCase().includes(search.trim());
         });
-        props.setResults(results);
+        if (results.length > 1) {
+            props.setResults(results);
+        } else {
+            props.setResults(props.dataSource());
+        }
     };
+    props.setResults(props.dataSource());
     return (
         <div class={style.searchBar}>
             <input
@@ -24,7 +29,7 @@ const SearchBar = <T,>(props: Props<T>) => {
             onChange={(e) => setSearchValue(e.currentTarget.value)}
             onKeyDown={(e) => e.key === "Enter" && searchClick()}
             value={searchValue()}
-            onSubmit={()=>searchClick()}
+            // onSubmit={()=>searchClick()}
             {...props}
             class={`${style.input} ${(props.class ?? "")}`}
             />

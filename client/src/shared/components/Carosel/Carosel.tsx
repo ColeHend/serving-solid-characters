@@ -17,8 +17,8 @@ const Carousel: Component<CarouselProps> = ({startingIndex = 0, ...props}) => {
     const [internalIndex, setInternalIndex] = createSignal(startingIndex);
     const [propIndex, other] = splitProps(props, ["currentIndex"]);
     
-    const getPropIndex = () => propIndex.currentIndex![0]();
-    const setPropIndex = (index: number) => propIndex.currentIndex![1](index);
+    const getPropIndex = () => !!propIndex.currentIndex ? propIndex.currentIndex[0]() : internalIndex();
+    const setPropIndex = (index: number) => !!propIndex.currentIndex ? propIndex.currentIndex[1](index) : setInternalIndex(index);
     
     // ----- Memoized Values -----
     const currentIndex = createMemo(()=>{

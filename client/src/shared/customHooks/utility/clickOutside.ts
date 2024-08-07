@@ -1,5 +1,11 @@
 import { Setter, onCleanup } from "solid-js";
 
+/**
+ * Registers a click outside event listener on the specified element.
+ * 
+ * @param element - The element to check if a click occurred outside of.
+ * @param accessor - A function to be called when a click occurs outside of the element.
+ */
 export default function clickOutside(element: Element, accessor: () => any): void {
     const rootElement = document.getElementById("root");
 

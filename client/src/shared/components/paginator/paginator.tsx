@@ -15,8 +15,7 @@ type Props<T> = {
 
 const Paginator = <T,>(props: Props<T[]>) => {
     const [currentPage, setCurrentPage] = createSignal(1);
-    const [itemsPerPage, setItemsPerPage] = createSignal(10);
-    const setPaginatedItems = props.setPaginatedItems;
+    const [itemsPerPage, setItemsPerPage] = createSignal(props.itemsPerPage?.[0] ?? 10);
 
     const sharedHooks = useContext(SharedHookContext);
     const stylin = sharedHooks?.useStyle();
@@ -27,24 +26,23 @@ const Paginator = <T,>(props: Props<T[]>) => {
 
     const lastpage = createMemo(() => Math.ceil(props.items().length / itemsPerPage()));
 
-    // could potentially be a prop
     const ItemsPerPageArr = props.itemsPerPage ?? [10, 20, 50, 100];
 
     effect(()=>{
-        if(currentPage() > lastpage()) {
+        if(currentPage() > lastpage()){
             setCurrentPage(lastpage())
         }
     })
 
     effect(() => {
-        setPaginatedItems(theItems());
+        props.setPaginatedItems(theItems());
     });
     
     return (
         <div class={`${stylin?.accent} ${style.paginator} `}>
             <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</Button>
             <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</Button>
-            <select onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>
+            <Select disableUnselected={true} transparent={true} onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>
                 <For each={ItemsPerPageArr}>
                     {(item) => 
                         <option value={item}>
@@ -52,7 +50,7 @@ const Paginator = <T,>(props: Props<T[]>) => {
                         </option>
                     }
                 </For>
-            </select>
+            </Select>
             <div class={style.pageView}>
                 <div>{currentPage()}</div> / <div>{lastpage()}</div>
             </div>

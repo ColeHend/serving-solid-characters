@@ -3,6 +3,10 @@
     display: flex;
     flex-direction: row;
     border-radius: 15px;
+
+    select {
+        color: #000;
+    }
 }
 
 .pageView {
