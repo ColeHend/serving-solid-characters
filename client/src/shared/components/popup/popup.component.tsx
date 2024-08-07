@@ -12,6 +12,8 @@ type Props = {
     title?: string,
     children?: JSX.Element,
     width: string,
+    maxHeight?: string,
+    maxWidth?: string,
     height: string,
     translate?: {
         x?: string,
@@ -23,7 +25,9 @@ type Props = {
 /**
  * 
  * @param width {string} {string} - The css width of the modal.
+ * @param maxWidth {string} {string} - The optional css max-width of the modal.
  * @param height {string} {string} - The css height of the modal.
+ * @param maxHeight {string} {string} - The optional css max-height of the modal.
  * @param translate {x{x: string, y: string} - Override the default x and y coordinates of the modal.
  * @param backgroundClick [Accessor <bool>, Setter <bool>] - A signal and setter for enabling the background click.
  * @returns - A Modal component.
@@ -40,6 +44,8 @@ const Modal:Component<Props> = (props)=>{
             <div use:clickOutside={()=>setBackClick(old => !old)} style={{
                     width:props.width, 
                     height:props.height,
+                    "max-height":props.maxHeight,
+                    "max-width":props.maxWidth,
                     transform: `translate(${defaultX},${defaultY})`,
                     padding: "0px",
                     "padding-bottom": "5px" 
