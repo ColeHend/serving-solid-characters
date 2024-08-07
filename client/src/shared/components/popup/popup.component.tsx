@@ -8,6 +8,7 @@ import { SharedHookContext } from "../../../components/rootApp";
 import userSettings from "../../customHooks/userSettings";
 import useStyles from "../../customHooks/utility/style/styleHook";
 import getUserSettings from "../../customHooks/userSettings";
+import style from "./popup.module.scss";
 type Props = {
     title?: string,
     children?: JSX.Element,
@@ -41,20 +42,23 @@ const Modal:Component<Props> = (props)=>{
     const defaultY = props.translate?.y ?? "-50%";
     return(
         <Portal >
-            <div use:clickOutside={()=>setBackClick(old => !old)} style={{
+            <div 
+                use:clickOutside={()=>setBackClick(old => !old)} 
+                style={{
                     width:props.width, 
                     height:props.height,
                     "max-height":props.maxHeight,
                     "max-width":props.maxWidth,
-                    transform: `translate(${defaultX},${defaultY})`,
-                    padding: "0px",
-                    "padding-bottom": "5px" 
-                }} class={`${stylin()?.popup} ${stylin()?.primary}`}>
-                <div class={stylin()?.accent} style="display:flex; justify-content:space-between;">
-                    <h2 style="margin-left: 5%">
+                    transform: `translate(${defaultX},${defaultY})`
+                }} 
+                class={`${stylin()?.popup} ${stylin()?.primary} ${style.wrapper}`}
+            >
+                <div class={`${stylin()?.accent} ${style.header}`} >
+                    <h2>
                         {props.title ?? "Modal"}
                     </h2>
-                    <Button onClick={()=>setBackClick(old => !old)}><b>X</b></Button>
+                    <span><Button onClick={()=>setBackClick(old => !old)}><b>X</b></Button></span>
+                    
                 </div>
                 {props.children}
             </div>

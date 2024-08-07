@@ -18,7 +18,7 @@ const SubclassModal:Component<Props> = (props) => {
             {props.subclass.name}
             </span> 
             <Show when={showModal()}>
-                <Modal width="50vw" height="max-content" backgroundClick={[showModal, setShowModal]} >
+                <Modal width="50vw" height="max-content" maxHeight="90vh" backgroundClick={[showModal, setShowModal]} >
                     <div>
                     <h3>{props.subclass.name}</h3>
                     <span>
