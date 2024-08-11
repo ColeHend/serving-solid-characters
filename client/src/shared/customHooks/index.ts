@@ -32,3 +32,4 @@ export * from "./utility/localDB/localDB";
 export * from "./utility/localDB/srdDBFile";
 export * from "./utility/localDB/userSettingDB";
 export * from "./utility/tabBar";
+export * from "./utility/imageToText";
