@@ -2,12 +2,12 @@ import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, of, take, tap, concatMap } from "rxjs";
 import HttpClient$ from "../../utility/httpClientObs";
-import { Background } from "../../../models/background.model";
+import { Background } from "../../../../models/background.model";
 import LocalSrdDB from "../../utility/localDB/srdDBFile";
 
 const [background, setBackgrounds] = createSignal<Background[]>([]);
 
-export default function useDnDBackgrounds(): Accessor<Background[]> {
+export function useDnDBackgrounds(): Accessor<Background[]> {
     const LocalBackgrounds = HttpClient$.toObservable(LocalSrdDB.backgrounds.toArray());
     if (background().length === 0) {
         LocalBackgrounds.pipe(
@@ -43,3 +43,4 @@ export default function useDnDBackgrounds(): Accessor<Background[]> {
 
     return background;
 }
+export default useDnDBackgrounds;

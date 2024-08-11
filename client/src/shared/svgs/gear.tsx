@@ -10,5 +10,5 @@ const Gear: Component<Props> = (props) => {
         </svg>
     )
 };
-
+export { Gear };
 export default Gear;

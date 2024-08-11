@@ -9,5 +9,5 @@ const SkinnySnowman: Component<Props> = (props) => {
         </svg>
     )
 };
-
+export { SkinnySnowman };
 export default SkinnySnowman;

@@ -1,24 +1,13 @@
 import { Component, For, Match, Switch, createSignal, untrack, useContext, createMemo } from "solid-js";
-import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./feats.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
-import useGetClasses from "../../../../../shared/customHooks/data/useGetClasses";
-import useGetFeats from "../../../../../shared/customHooks/data/useGetFeats";
+import { useGetClasses, useGetFeats, ExpansionPanel, Input, Select, Option, Chip, homebrewManager, useStyle, getUserSettings, Body } from "../../../../../shared/";
 import { Feature } from "../../../../../models/core.model";
-import ExpansionPanel from "../../../../../shared/components/expansion/expansion";
 import { effect } from "solid-js/web";
-import MultiSelect from "../../../../../shared/components/multiSelect/MultiSelect";
 import { Feat } from "../../../../../models/feat.model";
 import { BehaviorSubject } from "rxjs";
-import Input from "../../../../../shared/components/Input/Input";
-import Select from "../../../../../shared/components/Select/Select";
-import Option from "../../../../../shared/components/Select/Option";
-import Chip from "../../../../../shared/components/Chip/Chip";
-import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { SharedHookContext } from "../../../../rootApp";
-import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
-import getUserSettings from "../../../../../shared/customHooks/userSettings";
 
 export enum PreReqType {
   AbilityScore,
@@ -29,10 +18,9 @@ export enum PreReqType {
 const Feats: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(()=>useStyles(userSettings().theme));
+  const stylin = createMemo(()=>useStyle(userSettings().theme));
   const classes = useGetClasses();
   const feats = useGetFeats();
-  const homebrewManager = HomebrewManager;
   const currentFeat$ = new BehaviorSubject<Feat>({} as Feat);
   const [preReqs, setPreReqs] = createSignal<Feature<string, string>[]>([]);
   const [selectedType, setSelectedType] = createSignal<number>(0);
@@ -138,7 +126,7 @@ const Feats: Component = () => {
   });
   return (
     <>
-      <div class={`${stylin()?.primary} ${styles.body}`}>
+      <Body>
         <h1>Feats</h1>
         <div class="featHomebrew">
           <div class={`${styles.name}`}>
@@ -246,7 +234,7 @@ const Feats: Component = () => {
             Add Feat
           </button>
         </div>
-      </div>
+      </Body>
     </>
   );
 };

@@ -11,7 +11,7 @@ const [currentSettings, setCurrentSettings] = createSignal<UserSettings>({
 });
 const [loaded, setLoaded] = createSignal(false);
 
-export default function getUserSettings(forceReload?: boolean): [Accessor<UserSettings>, Setter<UserSettings>] {
+export function getUserSettings(forceReload?: boolean): [Accessor<UserSettings>, Setter<UserSettings>] {
     if (!!forceReload) setLoaded(false);
     if (!loaded()) {
       setLoaded(true);
@@ -27,6 +27,7 @@ export default function getUserSettings(forceReload?: boolean): [Accessor<UserSe
     
     return [currentSettings, setCurrentSettings];
 }
+export default getUserSettings;
 
 export function saveUserSettings(settings: UserSettings) {
     userSettingDB.userSettings.put(settings);

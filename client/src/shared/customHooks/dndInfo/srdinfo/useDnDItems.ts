@@ -7,7 +7,7 @@ import LocalSrdDB from "../../utility/localDB/srdDBFile";
 
 const [items, setItems] = createSignal<Item[]>([]);
 
-export default function useDnDItems(): Accessor<Item[]> {
+export function useDnDItems(): Accessor<Item[]> {
     const LocalItems = HttpClient$.toObservable(LocalSrdDB.items.toArray());
     if (items().length === 0) {
         LocalItems.pipe(
@@ -43,3 +43,4 @@ export default function useDnDItems(): Accessor<Item[]> {
 
     return items;
 }
+export default useDnDItems;

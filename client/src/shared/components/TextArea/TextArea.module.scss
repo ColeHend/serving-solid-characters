@@ -1,8 +1,12 @@
 .areaStyle {
     padding: 0.5rem;
+    margin-right: 5px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    width: inherit;
+    width: 98%;
+    @media screen and (max-width: 768px) {
+        width: 90%;
+    }
     height: 100%;
     resize:none;
 }

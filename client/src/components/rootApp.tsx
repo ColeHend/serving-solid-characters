@@ -1,28 +1,20 @@
 import { RouteSectionProps, A } from "@solidjs/router";
+import mobileCheck from '../shared/customHooks/utility/mobileCheck'
+import useStyle from "../shared/customHooks/utility/style/styleHook";
+import { MenuButton, Button, Select, Clone, UpArrow, DownArrow, Eye, Gear, Pencil, SkinnySnowman, getUserSettings, useInjectServices  } from "../shared";
 import { Component, createSignal, Show, For, Accessor, createContext, JSX, Setter, children, useContext, createMemo } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar, { Tab } from "./navbar/navbar";
-import { MenuButton, Button, Select } from "../shared/components";
-import useBaseStyle, { Style } from "../shared/customHooks/utility/style/styleHook";
-import { Clone } from "../shared/customHooks/utility/Tools";
-import { UpArrow, DownArrow } from "../shared/svgs/arrows";
-import Eye from "../shared/svgs/eye";
-import Gear from "../shared/svgs/gear";
-import Pencil from "../shared/svgs/pencil";
-import SkinnySnowman from "../shared/svgs/skinnySnowman";
 import { HookContext, ProviderProps } from "../models/hookContext";
 import { ExtendedTab } from "../models/extendedTab";
 import Modal from "../shared/components/popup/popup.component";
 import { UserSettings } from "../models/userSettings";
-import getUserSettings from "../shared/customHooks/userSettings";
-import { useInjectServices } from "../shared/customHooks/injectServices";
-import { mobileCheck } from "../shared/customHooks/utility/mobileCheck";
 import NavMenu from "./navMenu/navMenu";
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
   showList: createSignal(false), 
-  useStyle: useBaseStyle
+  useStyle: ()=>({body: "", primary: "", accent: "", tertiary: "", warn: "", hover: "", popup: "", table: ""})
 };
 export const SharedHookContext = createContext<HookContext>(defaultValue);
 
@@ -32,7 +24,7 @@ const Provider: Component<ProviderProps<HookContext>> = (props) => {
 
 const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   const [defaultUserSettings, setDefaultUserSettings] = getUserSettings();
-    const userStyle = createMemo(()=>useBaseStyle(defaultUserSettings().theme));
+    const userStyle = createMemo(()=>useStyle(defaultUserSettings().theme));
     const [defaultShowList, setDefaultShowList] = createSignal(!mobileCheck());
     const [defaultIsMobile, setDefaultIsMobile] = createSignal(mobileCheck());
 
@@ -51,10 +43,10 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   
   const {isMobile} = useInjectServices();
     return (
-      <SharedHookContext.Provider value={{
+      <Provider value={{
         isMobile: defaultIsMobile,
         showList: [defaultShowList, setDefaultShowList],
-        useStyle: useBaseStyle
+        useStyle: useStyle
       }}>
         <div style={{ height: "100vh" }} class={userStyle().body}>
         <Navbar isMobile={isMobile()} style={"margin-bottom: 15px;"} list={[defaultShowList, setDefaultShowList]} />
@@ -68,7 +60,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   
           </div>
         </div>
-      </SharedHookContext.Provider>
+      </Provider>
     );
   };
 

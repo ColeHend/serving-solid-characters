@@ -11,7 +11,7 @@ interface Props extends JSX.TextareaHTMLAttributes<HTMLTextAreaElement> {
     transparent?: boolean,
     picToTextEnabled?: boolean
 }
-const TextArea: Component<Props> = (props) => {
+export const TextArea: Component<Props> = (props) => {
     const [customProps, normalProps] = splitProps(props, ["text", "setText", "class", "tooltip", "transparent", "picToTextEnabled"]);
 
     function OnInput() {

@@ -1,27 +1,13 @@
 import { type Component, For, createResource, JSX, useContext, createMemo, createSignal } from 'solid-js';
+import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel } from './shared';
 import { effect } from 'solid-js/web';
-import useDnDClasses from './shared/customHooks/dndInfo/srdinfo/useDnDClasses';
-import useStyle from './shared/customHooks/utility/style/styleHook';
-import useDnDSpells from './shared/customHooks/dndInfo/srdinfo/useDnDSpells';
-import useDnDFeats from './shared/customHooks/dndInfo/srdinfo/useDnDFeats';
-import useDnDRaces from './shared/customHooks/dndInfo/srdinfo/useDnDRaces';
-import useDnDBackgrounds from './shared/customHooks/dndInfo/srdinfo/useDnDBackgrounds';
-import useDnDItems from './shared/customHooks/dndInfo/srdinfo/useDnDItems';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
-import ExpansionPanel from './shared/components/expansion/expansion';
-import { SharedHookContext } from './components/rootApp';
-import { useInjectServices } from './shared/customHooks/injectServices';
-import userSettings from './shared/customHooks/userSettings';
-import getUserSettings from './shared/customHooks/userSettings';
-import useStyles from './shared/customHooks/utility/style/styleHook';
-import TextArea from './shared/components/TextArea/TextArea';
-
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const sharedHooks = useInjectServices();
-  const stylin = createMemo(()=>useStyles(userSettings().theme)); ;       
+  const stylin = createMemo(()=>useStyle(userSettings().theme)); ;       
   const dndSrdClasses = useDnDClasses();
   const dndSrdSpells = useDnDSpells();
   const dndSrdFeats = useDnDFeats();
@@ -31,7 +17,7 @@ const App: Component = () => {
   const [testText, setTestText] = createSignal("This \nis \na test");
   const [bannerText, setBannerText] = createSignal("It'll be great eventually.");
   return (
-      <div class={`${stylin()?.primary} ${styles.AppBody}`}>
+      <Body>
         <h1>Home</h1>
         <div style={{width:"100%"}}>
           <TextArea readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
@@ -47,7 +33,7 @@ const App: Component = () => {
           </ExpansionPanel>
         </div>
         <ReloadPrompt />
-      </div>
+      </Body>
   );
 };
 

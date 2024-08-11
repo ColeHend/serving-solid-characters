@@ -1,20 +1,17 @@
 import { Component, For, createSignal, useContext, createMemo } from "solid-js";
-import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
+import { useStyle, Carousel, getUserSettings, Body } from "../../../../../shared/";
 import styles from './items.module.scss'
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
-import Carousel from "../../../../../shared/components/Carosel/Carosel";
 import { SharedHookContext } from "../../../../rootApp";
-import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
-import getUserSettings from "../../../../../shared/customHooks/userSettings";
 
 const Items: Component = () => {
     const sharedHooks = useContext(SharedHookContext);
     const [userSettings, setUserSettings] = getUserSettings();
-    const stylin = createMemo(()=>useStyles(userSettings().theme));
+    const stylin = createMemo(()=>useStyle(userSettings().theme));
     return (
         <>
-            <div class={`${stylin()?.primary} ${styles.body}`}>
+            <Body>
                 <h1>Items</h1>
                 <h2>Item Types</h2>
                 <div>
@@ -49,7 +46,7 @@ const Items: Component = () => {
                 </div>
                   
 
-            </div>
+            </Body>
         </>
     );
 }
