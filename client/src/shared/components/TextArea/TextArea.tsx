@@ -30,7 +30,7 @@ export const TextArea: Component<Props> = (props) => {
         <>
             <Show when={customProps.picToTextEnabled}>
                 <span class={`${!!customProps.transparent ? styles.transparent : ""}`} style={{width: "inherit", "font-size":"1em"}}>
-                    <Button>PiC</Button>
+                    <Button class={`${styles.picButton}`}>Pic</Button>
                 </span>
             </Show>
             <textarea

@@ -1,5 +1,5 @@
 import { type Component, For, createResource, JSX, useContext, createMemo, createSignal } from 'solid-js';
-import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel } from './shared';
+import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel, Markdown } from './shared';
 import { effect } from 'solid-js/web';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
@@ -19,8 +19,11 @@ const App: Component = () => {
   return (
       <Body>
         <h1>Home</h1>
+        <div style={{width: "100%", height: "200px"}}>
+          <Markdown text={testText} />
+        </div>
         <div style={{width:"100%"}}>
-          <TextArea readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
+          <TextArea picToTextEnabled={true} onChange={(e)=>setTestText(e.currentTarget.value)} readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
         </div>
         <div>
           <ExpansionPanel>
