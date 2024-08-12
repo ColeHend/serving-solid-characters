@@ -2,12 +2,12 @@ import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, of, take, tap, concatMap } from "rxjs";
 import HttpClient$ from "../../utility/httpClientObs";
-import { Feat } from "../../../models/feat.model";
+import { Feat } from "../../../../models/feat.model";
 import LocalSrdDB from "../../utility/localDB/srdDBFile";
 
 const [feats, setFeats] = createSignal<Feat[]>([]);
 
-export default function useDnDFeats(): Accessor<Feat[]> {
+export function useDnDFeats(): Accessor<Feat[]> {
   const LocalFeats = HttpClient$.toObservable(LocalSrdDB.feats.toArray());
 
   if (feats().length === 0) {
@@ -44,3 +44,4 @@ export default function useDnDFeats(): Accessor<Feat[]> {
 
   return feats;
 }
+export default useDnDFeats;

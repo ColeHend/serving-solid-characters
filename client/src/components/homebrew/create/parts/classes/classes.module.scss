@@ -135,6 +135,9 @@
 .Columns {
     display: flex;
     flex-direction: row;
+    @media screen and (max-width: 768px){
+        flex-direction: column;
+    }
     flex-wrap: wrap;
     justify-content: space-between;
     margin: 0 10px;

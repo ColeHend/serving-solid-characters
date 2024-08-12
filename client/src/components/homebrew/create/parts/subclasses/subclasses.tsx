@@ -1,21 +1,13 @@
 import { Component, For, Show, createMemo, createSignal, useContext } from "solid-js";
-import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
+import { useStyle, homebrewManager, useDnDSpells, Option, Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Carousel, Chip, Input, Select, useDnDClasses, getUserSettings, Body } from "../../../../../shared";
 import styles from './subclasses.module.scss'
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
-import { Button, Carousel, Chip, Input, Select } from "../../../../../shared/components";
-import useDnDClasses from "../../../../../shared/customHooks/dndInfo/srdinfo/useDnDClasses";
 import { effect } from "solid-js/web";
 import { Subclass } from "../../../../../models/class.model";
-import { Option } from "../../../../../shared/components";
-import useDnDSpells from "../../../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import { Spell } from "../../../../../models/spell.model";
-import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
-import { Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared/customHooks/utility/Tools";
 import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../../../rootApp";
-import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
-import getUserSettings from "../../../../../shared/customHooks/userSettings";
 
 export enum SpellsKnown {
     None = 0,
@@ -31,7 +23,7 @@ const Subclasses: Component = () => {
     const [searchParam, setSearchParam] = useSearchParams();
     const sharedHooks = useContext(SharedHookContext);
     const [userSettings, setUserSettings] = getUserSettings();
-    const stylin = createMemo(()=>useStyles(userSettings().theme));
+    const stylin = createMemo(()=>useStyle(userSettings().theme));
     const allClasses = useDnDClasses();
     const allClassNames = ()=> allClasses().map((c)=> c.name);
     const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(1);
@@ -271,7 +263,7 @@ const Subclasses: Component = () => {
     })
     return (
         <>
-            <div class={`${stylin()?.primary} ${styles.body}`}>
+            <Body>
                 <h1>subclasses</h1>
                 <div>
                     <h2>Choose a class</h2>
@@ -463,8 +455,8 @@ const Subclasses: Component = () => {
                                 <Button onClick={(e)=>{
                                     const updatedClass = allClasses().filter((c)=> c.name === currentSubclass().class)[0];
                                     updatedClass.subclasses = [...updatedClass.subclasses, currentSubclass()];
-                                    HomebrewManager.updateClass(updatedClass);
-                                    HomebrewManager.updateClassesInDB();
+                                    homebrewManager.updateClass(updatedClass);
+                                    homebrewManager.updateClassesInDB();
                                     clearValues();
                                 }}>Save</Button>
                             </Show>
@@ -472,7 +464,7 @@ const Subclasses: Component = () => {
                     </div>
 
                 </div>
-            </div>
+            </Body>
         </>
     );
 }

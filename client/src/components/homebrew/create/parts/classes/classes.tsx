@@ -8,7 +8,6 @@ import {
   useContext,
   type JSX,
 } from "solid-js";
-import useStyle from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classes.module.scss";
 import HomebrewSidebar from "../../sidebar";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
@@ -19,7 +18,12 @@ import {
   Option,
   Carousel,
   Chip,
-} from "../../../../../shared/components/index";
+  useGetClasses,
+  useGetItems,
+  getUserSettings,
+  useStyle,
+  Body
+} from "../../../../../shared/";
 import type { DnDClass } from "../../../../../models";
 import { LevelEntity, Subclass } from "../../../../../models/class.model";
 import {
@@ -28,15 +32,11 @@ import {
   Feature,
   Item,
 } from "../../../../../models/core.model";
-import useGetClasses from "../../../../../shared/customHooks/data/useGetClasses";
-import useGetItems from "../../../../../shared/customHooks/data/useGetItems";
 import LevelBuilder from "./levelBuilder";
 import { effect } from "solid-js/web";
 import { SpellsKnown } from "../subclasses/subclasses";
 import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../../../rootApp";
-import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
-import getUserSettings from "../../../../../shared/customHooks/userSettings";
 
 const Classes: Component = () => {
   const [searchParam, setSearchParam] = useSearchParams();
@@ -84,7 +84,7 @@ const Classes: Component = () => {
   // --- other stuff ---
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(()=>useStyles(userSettings().theme));
+  const stylin = createMemo(()=>useStyle(userSettings().theme));
   const [allLevelsArr, setAllLevelArr] = createSignal(new Array(20).fill(0).map((x, i) => i + 1));
   const skills = [
     "Acrobatics",
@@ -339,7 +339,7 @@ effect(()=>{
 // ----------------- JSX -----------------
   return (
     <>
-      <div class={`${stylin()?.primary} ${styles.body}`}>
+      <Body>
         <h1>Classes</h1>
         <div class={styles.Columns}>
           <div class={`${styles.Column}`}>
@@ -348,6 +348,7 @@ effect(()=>{
               value={name()}
               placeholder="What is the class name?"
               onInput={(e) => setName(e.currentTarget.value)}
+              transparent={true}
             />
             <h3>Hit Die</h3>
             <Select
@@ -460,6 +461,7 @@ effect(()=>{
                 <Input
                   type="number"
                   name="SkillChoice"
+                  transparent={true}
                   placeholder="Can choose how many?"
                   value={skillProfAmount()}
                   onInput={(e) => setSkillProfAmount(+e.currentTarget.value)}
@@ -488,6 +490,7 @@ effect(()=>{
                 <div>
                   <Select
                     value={currentItemChoiceGroup()}
+                    transparent={true}
                     onChange={(e) =>
                       setCurrentItemChoiceGroup(+e.currentTarget.value)
                     }
@@ -499,6 +502,7 @@ effect(()=>{
                   </Select>
                   <Select
                     value={currentItemChoiceIndex()}
+                    transparent={true}
                     onChange={(e) =>
                       setCurrentItemChoiceIndex(+e.currentTarget.value)
                     }
@@ -517,6 +521,7 @@ effect(()=>{
                   <Input
                     placeholder="AMNT"
                     type="number"
+                    transparent={true}
                     style={{ width: "14%" }}
                     value={currentItemAmount()}
                     onInput={(e) =>
@@ -527,6 +532,8 @@ effect(()=>{
                     onChange={(e) => {
                       setCurrentItemChoice(e.currentTarget.value);
                     }}
+                    transparent={true}
+                    value={currentItemChoice()}
                   >
                     <For each={theItems()}>
                       {(item) => <Option value={item.name}>{item.name}</Option>}
@@ -550,6 +557,7 @@ effect(()=>{
                                 type="number"
                                 placeholder="How many can be chosen?"
                                 value={item.choose}
+                                transparent={true}
                                 onInput={(e) =>
                                   setCurrentItemChoiceAmount(
                                     +e.currentTarget.value
@@ -647,6 +655,7 @@ effect(()=>{
             type="number"
             name="ToolChoice"
             placeholder="Can choose how many?"
+            transparent={true}
             value={toolChoiceAmount()}
             onInput={(e) => setToolChoiceAmount(+e.currentTarget.value)}
           />
@@ -689,6 +698,7 @@ effect(()=>{
           <h3>Subclass Levels</h3>
           <Select
             disableUnselected={true}
+            transparent={true}
             value={selectedSubclassLevel()}
             onChange={(e) => {
               setSelectedSubclassLevel(+e.currentTarget.value);
@@ -743,6 +753,7 @@ effect(()=>{
                 onChange={(e) => setSpellListUsed(e.currentTarget.value)}
                 name="spellList"
                 disableUnselected={true}
+                transparent={true}
               >
                 <For
                   each={allClasses().filter((x) =>
@@ -769,6 +780,8 @@ effect(()=>{
                   setSpellCastingAbility(e.currentTarget.value)
                 }
                 name="spellAbility"
+                transparent={true}
+                value={spellcastingAbility()}
                 disableUnselected={true}
               >
                 <For each={["Intelligence", "Wisdom", "Charisma"]}>
@@ -801,6 +814,8 @@ effect(()=>{
               <label for="spellsKnownCalc">Spells Known Calculation</label>
               <Select
                 onChange={(e) => setSpellsKnownCalc(+e.currentTarget.value)}
+                transparent={true}
+                value={spellsKnownCalc()}
                 name="spellsKnownCalc"
                 disableUnselected={true}
               >
@@ -941,7 +956,7 @@ effect(()=>{
             Save Class
           </Button>
         </div>
-      </div>
+      </Body>
     </>
   );
 };

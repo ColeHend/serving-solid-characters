@@ -8,7 +8,7 @@ import HomebrewManager from "../../../../shared/customHooks/homebrewManager";
 
 const [classes, setClasses] = createSignal<DnDClass[]>([]);
 
-export default function useDnDClasses(): Accessor<DnDClass[]> {
+export function useDnDClasses(): Accessor<DnDClass[]> {
     const LocalClasses = HttpClient$.toObservable(LocalSrdDB.classes.toArray());
     
     if (classes().length === 0){
@@ -51,3 +51,4 @@ export default function useDnDClasses(): Accessor<DnDClass[]> {
 
     return classes;
 }
+export default useDnDClasses;
