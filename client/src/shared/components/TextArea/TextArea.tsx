@@ -25,20 +25,12 @@ export const TextArea: Component<Props> = (props) => {
         myElement.setAttribute("style", "height:" + (myElement.scrollHeight) + "px;overflow-y:hidden;");
     }
     onMount(()=>{
-        if (!!myElement) {
-            OnInput();
-        }
+        if (!!myElement) OnInput();
     });
 
-    effect(async ()=>{
-        if (!!imageSrc()) {
-            await useImageToText(imageSrc(), customProps.setText);
-            OnInput();
-        } else {
-            console.log("No image to parse", imageSrc());
-            
-        }
-    })
+    effect(()=>{
+        if (!!imageSrc()) useImageToText(imageSrc(), customProps.setText, ()=>(OnInput()));
+    });
     let myElement!: HTMLTextAreaElement;
     return (
         <>

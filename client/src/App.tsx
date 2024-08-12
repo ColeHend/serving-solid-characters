@@ -14,7 +14,7 @@ const App: Component = () => {
   const dndSrdRaces = useDnDRaces();
   const dndSrdItems = useDnDItems();
   const dndSrdBackgrounds = useDnDBackgrounds();
-  const [testText, setTestText] = createSignal("This \nis \na test");
+  const [testText, setTestText] = createSignal("This **is** _a_ \n# test");
   const [bannerText, setBannerText] = createSignal("It'll be great eventually.");
   return (
       <Body>
