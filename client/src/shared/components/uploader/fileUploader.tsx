@@ -5,6 +5,7 @@ import httpClient$ from "../../customHooks/utility/httpClientObs";
 import { take, tap } from "rxjs";
 import Button from "../Button/Button";
 import { effect } from "solid-js/web";
+import { useInjectServices } from "../..";
 
 declare module "solid-js" {
     namespace JSX {
@@ -21,9 +22,9 @@ interface Props {
 const FileUploader:Component<Props> = (props) => {
     const [customProps, normalProps] = splitProps(props, ["uploadType", "setData"]);
     const { files, selectFiles } = createFileUploader({ accept: customProps.uploadType === "image" ? "image/*" : "file/*" });
-
+    const services = useInjectServices();
     return (
-        <Modal width="30vw" height="30vh">
+        <Modal height={services.isMobile() ? "45vh" : "60vh"}>
             <div>
                 <h1>Modal</h1>
                 <div>
