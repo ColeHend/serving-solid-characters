@@ -1,7 +1,11 @@
-import { Accessor, Component, JSX, onMount, Setter, Show, splitProps } from "solid-js";
+import { Accessor, Component, createSignal, JSX, onMount, Setter, Show, splitProps } from "solid-js";
 import styles from './TextArea.module.scss';
 import { effect } from "solid-js/web";
 import Button from "../Button/Button";
+import Modal from "../popup/popup.component";
+import { Camera, useImageToText } from "../..";
+import { createFileUploader } from "@solid-primitives/upload";
+import FileUploader from "../uploader/fileUploader";
 
 interface Props extends JSX.TextareaHTMLAttributes<HTMLTextAreaElement> {
     text: Accessor<string>,
@@ -13,7 +17,8 @@ interface Props extends JSX.TextareaHTMLAttributes<HTMLTextAreaElement> {
 }
 export const TextArea: Component<Props> = (props) => {
     const [customProps, normalProps] = splitProps(props, ["text", "setText", "class", "tooltip", "transparent", "picToTextEnabled"]);
-
+    const [showPicModal, setShowPicModal] = createSignal(false);
+    const [imageSrc, setImageSrc] = createSignal<string>("");
     function OnInput() {
         myElement.style.height = 'auto';
         myElement.style.height = (myElement.scrollHeight) + "px";
@@ -23,14 +28,28 @@ export const TextArea: Component<Props> = (props) => {
         if (!!myElement) {
             OnInput();
         }
+    });
+
+    effect(async ()=>{
+        if (!!imageSrc()) {
+            await useImageToText(imageSrc(), customProps.setText);
+            OnInput();
+        } else {
+            console.log("No image to parse", imageSrc());
+            
+        }
     })
-    
     let myElement!: HTMLTextAreaElement;
     return (
         <>
             <Show when={customProps.picToTextEnabled}>
                 <span class={`${!!customProps.transparent ? styles.transparent : ""}`} style={{width: "inherit", "font-size":"1em"}}>
-                    <Button>PiC</Button>
+                    <Button class={`${styles.picButton}`} onClick={(e)=>setShowPicModal(old=>!old)}>
+                        <Camera width={"30px"} height={"30px"} style={{fill: "white"}}/>
+                        <Show when={showPicModal()}>
+                            <FileUploader setData={setImageSrc} uploadType="image" />
+                        </Show>
+                    </Button>
                 </span>
             </Show>
             <textarea

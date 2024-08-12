@@ -13,4 +13,5 @@ export * from "./popup/popup.component";
 export * from "./SearchBar/SearchBar";
 export * from "./Select/Select";
 export * from "./TextArea/TextArea";
+export * from "./MarkDown/Markdown.component";
 
