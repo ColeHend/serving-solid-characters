@@ -29,8 +29,12 @@ export function getUserSettings(forceReload?: boolean): [Accessor<UserSettings>,
 }
 export default getUserSettings;
 
-export function saveUserSettings(settings: UserSettings) {
-    userSettingDB.userSettings.put(settings);
+export function saveUserSettings(settings: UserSettings, callback?: ()=>void) {
+    userSettingDB.userSettings.put(settings).then(()=>{
+      if(!!callback) callback();
+    }).catch((err)=>{
+      console.error(err);
+    });
     setCurrentSettings(settings);
 }
 

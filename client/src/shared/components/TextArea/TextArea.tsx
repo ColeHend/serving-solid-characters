@@ -6,6 +6,7 @@ import Modal from "../popup/popup.component";
 import { Camera, useImageToText } from "../..";
 import { createFileUploader } from "@solid-primitives/upload";
 import FileUploader from "../uploader/fileUploader";
+import addSnackbar from "../Snackbar/snackbar";
 
 interface Props extends JSX.TextareaHTMLAttributes<HTMLTextAreaElement> {
     text: Accessor<string>,
@@ -25,20 +26,19 @@ export const TextArea: Component<Props> = (props) => {
         myElement.setAttribute("style", "height:" + (myElement.scrollHeight) + "px;overflow-y:hidden;");
     }
     onMount(()=>{
-        if (!!myElement) {
-            OnInput();
-        }
+        if (!!myElement) OnInput();
     });
 
-    effect(async ()=>{
+    effect(()=>{
+        
         if (!!imageSrc()) {
-            await useImageToText(imageSrc(), customProps.setText);
-            OnInput();
-        } else {
-            console.log("No image to parse", imageSrc());
-            
-        }
-    })
+            addSnackbar({message: "Parsing text from image...", closeTimeout: 2000});
+            useImageToText(imageSrc(), customProps.setText, ()=>{
+                OnInput();
+                addSnackbar({message: "Text parsed from image successfully.", closeTimeout: 2000});
+            });
+        };
+    });
     let myElement!: HTMLTextAreaElement;
     return (
         <>

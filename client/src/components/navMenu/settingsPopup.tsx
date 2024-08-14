@@ -7,6 +7,7 @@ import { Tab } from "../navbar/navbar";
 import { Style } from "../../shared/customHooks/utility/style/styleHook";
 import { saveUserSettings } from "../../shared/customHooks/userSettings";
 import { useInjectServices } from "../../shared/customHooks/injectServices";
+import { addSnackbar } from "../../shared/components/Snackbar/snackbar";
 interface Props {
     defaultUserSettings: Accessor<UserSettings>,
     setDefaultUserSettings: Setter<UserSettings>,
@@ -53,7 +54,11 @@ const SettingsPopup: Component<Props> = (props) => {
                     </Match>
                 </Switch>
                 <div>
-                    <Button onClick={(e)=>saveUserSettings(props.defaultUserSettings())}>Save Settings</Button>
+                    <Button onClick={(e)=>saveUserSettings(props.defaultUserSettings(), ()=>addSnackbar({
+                        message: 'Settings Saved Successfully!',
+                        severity: 'success',
+                        closeTimeout: 4000
+                    }))}>Save Settings</Button>
                 </div>
             </div>
         </div>
