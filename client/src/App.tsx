@@ -4,6 +4,7 @@ import { effect } from 'solid-js/web';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
+import { SnackbarController, addSnackbar } from './shared/components/Snackbar/snackbar';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const sharedHooks = useInjectServices();
@@ -14,7 +15,7 @@ const App: Component = () => {
   const dndSrdRaces = useDnDRaces();
   const dndSrdItems = useDnDItems();
   const dndSrdBackgrounds = useDnDBackgrounds();
-  const [testText, setTestText] = createSignal("This \nis \na test");
+  const [testText, setTestText] = createSignal("This **is** _a_ \n# test");
   const [bannerText, setBannerText] = createSignal("It'll be great eventually.");
   return (
       <Body>
@@ -35,6 +36,7 @@ const App: Component = () => {
             </div>
           </ExpansionPanel>
         </div>
+        <SnackbarController />
         <ReloadPrompt />
       </Body>
   );

@@ -1,0 +1,1 @@
+import{g as a,c as r,b as n,d as c,t as o,u as m}from"./index-6ylVGEay.js";const i="_mainBody_zsf9w_1",d={mainBody:i};var l=o("<div><h1>Characters Create");const f=()=>{const[t,y]=a(),s=r(()=>m(t().theme));return(()=>{var e=l();return n(()=>c(e,`${s().accent} ${d.mainBody}`)),e})()};export{f as default};
