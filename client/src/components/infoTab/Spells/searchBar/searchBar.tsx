@@ -113,9 +113,8 @@ const SearchBar: Component<Props> = (props) => {
     const beautifyKey = (Key: string) => {
         if (Key === "concentration") return "Conc";
         if (Key === "damageType") return "Dmg Type";
-        const capFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-        const spaceBeforeCap = (str: string) => str.replace(/([A-Z])/g, ' $1').trim();
-        return Key.startsWith("is") ? spaceBeforeCap(capFirstLetter(Key.replace("is", ""))): spaceBeforeCap(capFirstLetter(Key));
+        const fixupString = (str: string) => (str.charAt(0).toUpperCase() + str.slice(1)).replace(/([A-Z])/g, ' $1').trim();
+        return Key.startsWith("is") ? fixupString(Key.replace("is", "")): fixupString(Key);
     }
     
     return (
