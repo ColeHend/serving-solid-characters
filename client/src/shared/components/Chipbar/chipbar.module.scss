@@ -10,6 +10,10 @@
     max-width: 88%;
     scroll-behavior: smooth;
     margin: 0px auto;
+    button {
+        width: max-content;
+        padding: 5px;
+    }
 }
 .leftArrow {
     margin-right: 10px;
