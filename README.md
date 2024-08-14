@@ -92,9 +92,7 @@ See also the list of [contributors]() who participated in this project.
 
 ## 🛠 TODO
 - Shared
-  - Snackbar Service
   - Tabs / Tab Bar
-  - Chip Bar
   - table??
 - Basically all of the hombrew tab
 - Alot of the info tab
