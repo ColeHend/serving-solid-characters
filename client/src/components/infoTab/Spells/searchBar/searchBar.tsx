@@ -119,7 +119,6 @@ const SearchBar: Component<Props> = (props) => {
         Key = capFirstLetter(Key);
         Key = spaceBeforeCap(Key);
         return Key;
-        
     }
     
     return (
