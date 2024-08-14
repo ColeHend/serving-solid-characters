@@ -92,7 +92,6 @@ See also the list of [contributors]() who participated in this project.
 
 ## 🛠 TODO
 - Shared
-  - Tabs / Tab Bar
   - table??
 - Basically all of the hombrew tab
 - Alot of the info tab
