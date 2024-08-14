@@ -90,7 +90,7 @@ dotnet run
 
 See also the list of [contributors]() who participated in this project.
 
-## TODO
+## 🛠 TODO
 - Shared
   - Tabs / Tab Bar
   - Chip Bar
