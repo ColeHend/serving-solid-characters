@@ -24,7 +24,7 @@ const FileUploader:Component<Props> = (props) => {
     const { files, selectFiles } = createFileUploader({ accept: customProps.uploadType === "image" ? "image/*" : "file/*" });
     const services = useInjectServices();
     return (
-        <Modal height={services.isMobile() ? "45vh" : "60vh"}>
+        <Modal width={services.isMobile() ? "80vw" : "45vw"} height={services.isMobile() ? "45vh" : "60vh"}>
             <div>
                 <h1>Modal</h1>
                 <div>

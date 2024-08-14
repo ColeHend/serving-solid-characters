@@ -4,6 +4,7 @@ import { effect } from 'solid-js/web';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
+import { SnackbarController, addSnackbar } from './shared/components/Snackbar/snackbar';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const sharedHooks = useInjectServices();
@@ -35,6 +36,7 @@ const App: Component = () => {
             </div>
           </ExpansionPanel>
         </div>
+        <SnackbarController />
         <ReloadPrompt />
       </Body>
   );
