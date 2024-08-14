@@ -15,22 +15,34 @@ interface Props extends JSX.TextareaHTMLAttributes<HTMLTextAreaElement> {
     tooltip?: string,
     transparent?: boolean,
     picToTextEnabled?: boolean
+    minSize?: {width?: number, height?: number}
+    buttons?: {
+        styleType?: "primary" | "accent" | "tertiary",
+    }
 }
 export const TextArea: Component<Props> = (props) => {
-    const [customProps, normalProps] = splitProps(props, ["text", "setText", "class", "tooltip", "transparent", "picToTextEnabled"]);
+    let myElement!: HTMLTextAreaElement;
+    const [customProps, normalProps] = splitProps(props, ["buttons","minSize","text", "setText", "class", "tooltip", "transparent", "picToTextEnabled"]);
     const [showPicModal, setShowPicModal] = createSignal(false);
     const [imageSrc, setImageSrc] = createSignal<string>("");
     function OnInput() {
-        myElement.style.height = 'auto';
-        myElement.style.height = (myElement.scrollHeight) + "px";
-        myElement.setAttribute("style", "height:" + (myElement.scrollHeight) + "px;overflow-y:hidden;");
+        if (!!myElement) {
+            myElement.style.height = 'auto';
+            const minHeight = customProps.minSize?.height ?? 100;
+            const currentHeight = (myElement.scrollHeight < minHeight ? minHeight : myElement.scrollHeight);
+            myElement.style.height = `${currentHeight}px`;
+            myElement.setAttribute("style", "height:" + currentHeight + "px;overflow-y:hidden;");
+        }
     }
     onMount(()=>{
-        if (!!myElement) OnInput();
+        OnInput();
     });
+    effect(()=>{
+        OnInput();
+        customProps.text();
+    })
 
     effect(()=>{
-        
         if (!!imageSrc()) {
             addSnackbar({message: "Parsing text from image...", closeTimeout: 2000});
             useImageToText(imageSrc(), customProps.setText, ()=>{
@@ -39,12 +51,11 @@ export const TextArea: Component<Props> = (props) => {
             });
         };
     });
-    let myElement!: HTMLTextAreaElement;
     return (
         <>
             <Show when={customProps.picToTextEnabled}>
                 <span class={`${!!customProps.transparent ? styles.transparent : ""}`} style={{width: "inherit", "font-size":"1em"}}>
-                    <Button class={`${styles.picButton}`} onClick={(e)=>setShowPicModal(old=>!old)}>
+                    <Button styleType={customProps.buttons?.styleType} class={`${styles.picButton}`} onClick={(e)=>setShowPicModal(old=>!old)}>
                         <Camera width={"30px"} height={"30px"} style={{fill: "white"}}/>
                         <Show when={showPicModal()}>
                             <FileUploader setData={setImageSrc} uploadType="image" />
@@ -54,7 +65,10 @@ export const TextArea: Component<Props> = (props) => {
             </Show>
             <textarea
                 {...normalProps}
-                ref={myElement}
+                ref={(el)=>{
+                    myElement = el;
+                    OnInput();
+                }}
                 class={`${styles.areaStyle} ${customProps.class ?? ""} ${!!customProps.transparent ? styles.transparent : ""}`}
                 value={customProps.text()}
                 onInput={(e) => {
