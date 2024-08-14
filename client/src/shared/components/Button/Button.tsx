@@ -25,6 +25,7 @@ interface Props extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
     enableBackgroundClick?: boolean,
     onClick?: (e: MouseEvent) => any,
     transparent?: boolean
+    styleType?: "primary" | "accent" | "tertiary"
 }
 
 const Button: Component<Props> = (props)=> {
@@ -58,7 +59,7 @@ const Button: Component<Props> = (props)=> {
             ref={(el)=>(myRef = el!)}
             onClick={!!props.onClick ? props.onClick : (e)=>(setShowMenu((old)=>({show: !old.show, lastX: e.clientX, lastY: e.clientY})))}
             {...props}
-            class={`${stylin()?.accent} ${stylin()?.hover} ${style.customButtonStyle} ${!!props.transparent ? style.transparent : ""} ${props.class ?? ""} `}
+            class={`${stylin()[props.styleType ?? "accent"]} ${stylin()?.hover} ${style.customButtonStyle} ${!!props.transparent ? style.transparent : ""} ${props.class ?? ""} `}
             >
                 {props.children}
             </button>
@@ -70,7 +71,7 @@ const Button: Component<Props> = (props)=> {
                                 {(button) => (
                                     <Show when={(!!button.condition ? button.condition() : true) && showMenu() && isMenuButton()}>
                                         <li style={{height:`${100 / filteredMenuItems().length}%`}} class={`${stylin().hover}`}>
-                                            <button class={`${stylin()?.accent} ${style.menuButton}`} on:click={button.action}>
+                                            <button class={`${stylin()[props.styleType ?? "accent"]} ${style.menuButton}`} on:click={button.action}>
                                                 {button.name}
                                             </button>
                                         </li>

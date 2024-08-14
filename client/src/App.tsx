@@ -5,6 +5,7 @@ import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import { SnackbarController, addSnackbar } from './shared/components/Snackbar/snackbar';
+import { Tabs, Tab } from './shared/components/Tabs/tabs';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const sharedHooks = useInjectServices();
@@ -20,22 +21,28 @@ const App: Component = () => {
   return (
       <Body>
         <h1>Home</h1>
-        <div style={{width: "100%", height: "200px"}}>
-          <Markdown text={testText} />
-        </div>
-        <div style={{width:"100%"}}>
-          <TextArea picToTextEnabled={true} onChange={(e)=>setTestText(e.currentTarget.value)} readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
-        </div>
-        <div>
-          <ExpansionPanel>
-            <div>
-                Welcome to my app. This is a work in progress.
-            </div>
-            <div style={{width:"100%",padding: "15px"}}>
-              <TextArea readOnly={true} transparent={true} tooltip='Testing' text={bannerText} setText={setBannerText} />
-            </div>
-          </ExpansionPanel>
-        </div>
+        <Tabs>
+            <Tab name="Welcome">
+              <ExpansionPanel>
+                <div>
+                  Welcome to my app. This is a work in progress.
+                </div>
+                <div style={{width:"100%",padding: "15px"}}>
+                  <TextArea readOnly={true} transparent={true} tooltip='Testing' text={bannerText} setText={setBannerText} />
+                </div>
+              </ExpansionPanel>
+            </Tab>
+            <Tab name="Markdown">
+              <div style={{height:"100%"}}>
+                <div style={{width: "100%", height: "max-content !important"}}>
+                  <Markdown text={testText} />
+                </div>
+                <div style={{width:"100%", height: "max-content", "min-height": "200px"}}>
+                  <TextArea buttons={{styleType: "tertiary"}} picToTextEnabled={true} onChange={(e)=>setTestText(e.currentTarget.value)} readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
+                </div>
+              </div>
+            </Tab>
+          </Tabs>
         <SnackbarController />
         <ReloadPrompt />
       </Body>
