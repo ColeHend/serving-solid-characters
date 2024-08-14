@@ -1,6 +1,7 @@
-import { Component, JSX, Show } from "solid-js";
+import { Component, createMemo, JSX, Show } from "solid-js";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./Chip.module.scss";
+import { Button, getUserSettings } from "../..";
 interface Props {
     class?: string;
     key: string;
@@ -8,10 +9,21 @@ interface Props {
     remove?: ()=> any;
 }
 const Chip: Component<Props> = (props)=> {
-    const stylin = useStyles();
+    const [userSettings, setUserSettings] = getUserSettings();
+    const stylin = createMemo(()=>useStyles(userSettings().theme));
     return (
-        <span class={`${stylin.tertiary} ${style.Chip} ${props.class ?? ""}`}>{props.key} : {props.value}<Show when={!!props.remove}><button class={`${stylin.hover} ${style.removeChipButton}`}
-        onClick={props.remove}>X</button></Show></span>
+        <span class={`${stylin().tertiary} ${style.Chip} ${props.class ?? ""}`}>
+            <span>
+                {props.key}
+            </span>
+            <span>:</span>
+            <span>{props.value}</span>
+            <Show when={!!props.remove}>
+                <Button class={`${stylin().hover} ${style.removeChipButton}`} onClick={props.remove}>
+                    X
+                </Button>
+            </Show>
+        </span>
     )
 }
 export { Chip };

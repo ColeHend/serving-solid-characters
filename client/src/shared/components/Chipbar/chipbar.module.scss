@@ -1,0 +1,24 @@
+.chipbar {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.chipContainer {
+    display: flex;
+    flex-direction: row;
+    overflow-x: hidden;
+    max-width: 88%;
+    scroll-behavior: smooth;
+    margin: 0px auto;
+}
+.leftArrow {
+    margin-right: 10px;
+    align-self: flex-start;
+    margin: auto 0px;
+}
+
+.rightArrow {
+    margin-left: 10px;
+    align-self: flex-end;
+    margin: auto 0px;
+}
