@@ -11,7 +11,10 @@
     resize:none;
 }
 .picButton {
-    padding: 8px !important;
+    padding: 3px 8px !important;
+    background-color: transparent;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
 }
 .transparent {
     background-color: transparent;
