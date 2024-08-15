@@ -6,6 +6,8 @@ import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import { SnackbarController, addSnackbar } from './shared/components/Snackbar/snackbar';
 import { Tabs, Tab } from './shared/components/Tabs/tabs';
+import Table from './shared/components/Table/table';
+import { BottomRow, Cell, Column, Header } from './shared/components/Table/innerTable';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const sharedHooks = useInjectServices();
@@ -40,6 +42,16 @@ const App: Component = () => {
                 <div style={{width:"100%", height: "max-content", "min-height": "200px"}}>
                   <TextArea buttons={{styleType: "tertiary"}} picToTextEnabled={true} onChange={(e)=>setTestText(e.currentTarget.value)} readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
                 </div>
+              </div>
+            </Tab>
+            <Tab name="Table Test">
+              <div>
+                <Table data={dndSrdClasses()} columns={["className"]}>
+                  <Column name='className'>
+                    <Header>Class Name</Header>
+                    <Cell>{(x: DnDClass)=>x.name}</Cell>
+                  </Column>
+                </Table>
               </div>
             </Tab>
           </Tabs>
