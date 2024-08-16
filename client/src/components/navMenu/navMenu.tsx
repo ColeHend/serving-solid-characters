@@ -13,6 +13,7 @@ import { UserSettings } from "../../models/userSettings";
 import { ExtendedTab } from "../../models/extendedTab";
 import SettingsPopup from "./settingsPopup";
 import { useInjectServices } from "../../shared/customHooks/injectServices";
+import Styles from "./navMenu.module.scss";
 
 interface Props {
     userStyle: Accessor<Style>,
@@ -94,27 +95,23 @@ const NavMenu: Component<Props> = (props) => {
       },
     ];
     return (
-        <span class={`${userStyle().primary} ${defaultShowList() ? `navOpen` : `navClosed`}`}>
-            <div class={`${userStyle().accent} topper`}>
-                <h1>
-                    Navigation
-                </h1>
-                <span>
-                    <Button class={userStyle().hover}>
-                        <Gear onClick={(e) => setShowSettings(old => !old)} />
-                        <Show when={showSettings()}>
-                            <Modal title="Settings" width={services.isMobile() ? "90vw":"45vw"} height={services.isMobile() ? "90vh" :"60vh"} backgroundClick={[showSettings, setShowSettings]}>
-                                <SettingsPopup 
-                                    userStyle={userStyle}
-                                    defaultUserSettings={defaultUserSettings} 
-                                    setDefaultUserSettings={setDefaultUserSettings} />
-                            </Modal>
-                        </Show>
-                    </Button>
-                    <Button class={`${userStyle().hover}`} enableBackgroundClick={true} menuItems={settingsOptions()} overrideX={isMobile() ? "42vw" : "93vw"} >
-                        <SkinnySnowman />
-                    </Button>
-                </span>
+        <span class={`${userStyle().primary} ${defaultShowList() ? `${Styles.navOpen}` : `${Styles.navClosed}`}`}>
+            <div class={`${userStyle().accent} ${Styles.topper}`}>
+                <h2>Navigation</h2>
+                <Button class={userStyle().hover}>
+                    <Gear height={30} onClick={(e) => setShowSettings(old => !old)} />
+                    <Show when={showSettings()}>
+                        <Modal title="Settings" width={services.isMobile() ? "90vw":"45vw"} height={services.isMobile() ? "90vh" :"60vh"} backgroundClick={[showSettings, setShowSettings]}>
+                            <SettingsPopup 
+                                userStyle={userStyle}
+                                defaultUserSettings={defaultUserSettings} 
+                                setDefaultUserSettings={setDefaultUserSettings} />
+                        </Modal> 
+                    </Show>
+                </Button>
+                <Button class={`${userStyle().hover}`} enableBackgroundClick={true} menuItems={settingsOptions()} overrideX={isMobile() ? "42vw" : "93vw"} >
+                    <SkinnySnowman height={30} />
+                </Button>
             </div>
             <div class="theLine" />
             <For each={MenuItems()}>{(item) => {

@@ -1,0 +1,46 @@
+.topper {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    border-radius: 15px;
+    :first-child {
+        flex-grow: 1;
+    }
+    button {
+        border: none !important;
+        padding: 0px !important;
+        margin: auto 5px;
+        padding: 5px;
+        height: min-content;
+        svg {
+        height: 40%;
+        margin: auto 5px;
+        path {
+            color: #fff;
+            fill: #fff;
+        }
+        }
+    }
+}
+
+.navOpen {
+    @media screen and (max-width: 768px) {
+        position: absolute;
+        top: 7vh;
+        left: 7vw;
+        min-width: 80vw;
+        width: max-content;
+      }
+    
+      width: 10vw;
+      margin: 10px;
+      max-width: 15%;
+      width: 100%;
+      border-radius: 15px;
+      padding: 5px;
+      height: min-content;
+}
+
+.navClosed {
+    display: none;
+}
