@@ -55,7 +55,7 @@ export const TextArea: Component<Props> = (props) => {
         <>
             <Show when={customProps.picToTextEnabled}>
                 <span class={`${!!customProps.transparent ? styles.transparent : ""}`} style={{width: "inherit", "font-size":"1em"}}>
-                    <Button styleType={customProps.buttons?.styleType} class={`${styles.picButton}`} onClick={(e)=>setShowPicModal(old=>!old)}>
+                    <Button styleType={customProps.buttons?.styleType ?? "accent"} class={`${styles.picButton}`} onClick={(e)=>setShowPicModal(old=>!old)}>
                         <Camera width={"30px"} height={"30px"} style={{fill: "white"}}/>
                         <Show when={showPicModal()}>
                             <FileUploader setData={setImageSrc} uploadType="image" />

@@ -32,13 +32,19 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
       defaultShowList()
       setDefaultIsMobile(mobileCheck());
     })
-    const clickIntercept = () => setDefaultShowList(window.matchMedia("only screen and (max-width: 768px)").matches);
+    const clickIntercept = () => {
+      if (mobileCheck()) {
+        setDefaultShowList(false);
+      } else {
+        setDefaultShowList(window.matchMedia("only screen and (max-width: 768px)").matches)
+      }
+    };
     setDefaultIsMobile(mobileCheck());
       window.addEventListener('resize', clickIntercept);
     
     effect(() => {
       const check = mobileCheck() || window.innerWidth <= 768 ? true : false;
-      setDefaultShowList(!check);
+      // setDefaultShowList(!check);
     });
   
   const {isMobile} = useInjectServices();
