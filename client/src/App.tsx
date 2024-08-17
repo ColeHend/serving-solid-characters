@@ -26,6 +26,26 @@ const App: Component = () => {
       <Body>
         <h1>Home</h1>
         <Tabs>
+					<Tab name="Welcome">
+						<ExpansionPanel>
+							<div>
+								Welcome to my app. This is a work in progress.
+							</div>
+							<div style={{width:"100%",padding: "15px"}}>
+								<TextArea readOnly={true} transparent={true} tooltip='Testing' text={bannerText} setText={setBannerText} />
+							</div>
+						</ExpansionPanel>
+					</Tab>
+					<Tab name="Markdown">
+						<div style={{height:"100%"}}>
+							<div style={{width: "100%", height: "max-content !important"}}>
+								<Markdown text={testText} />
+							</div>
+							<div style={{width:"100%", height: "max-content", "min-height": "200px"}}>
+								<TextArea buttons={{styleType: "tertiary"}} picToTextEnabled={true} onChange={(e)=>setTestText(e.currentTarget.value)} readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
+							</div>
+						</div>
+					</Tab>
           <Tab name="Field Test">
             <div style={{display:"flex", "flex-direction":"row","flex-wrap": "wrap"}}>
               <FormField name='Input Test' style={{height: 'min-content'}}>
@@ -38,26 +58,6 @@ const App: Component = () => {
               </FormField>
             </div>
           </Tab>
-            <Tab name="Welcome">
-              <ExpansionPanel>
-                <div>
-                  Welcome to my app. This is a work in progress.
-                </div>
-                <div style={{width:"100%",padding: "15px"}}>
-                  <TextArea readOnly={true} transparent={true} tooltip='Testing' text={bannerText} setText={setBannerText} />
-                </div>
-              </ExpansionPanel>
-            </Tab>
-            <Tab name="Markdown">
-              <div style={{height:"100%"}}>
-                <div style={{width: "100%", height: "max-content !important"}}>
-                  <Markdown text={testText} />
-                </div>
-                <div style={{width:"100%", height: "max-content", "min-height": "200px"}}>
-                  <TextArea buttons={{styleType: "tertiary"}} picToTextEnabled={true} onChange={(e)=>setTestText(e.currentTarget.value)} readOnly={false} transparent={false} tooltip='Testing' text={testText} setText={setTestText} />
-                </div>
-              </div>
-            </Tab>
           </Tabs>
         <SnackbarController />
         <ReloadPrompt />
