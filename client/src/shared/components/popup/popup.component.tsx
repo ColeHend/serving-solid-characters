@@ -8,6 +8,7 @@ import userSettings from "../../customHooks/userSettings";
 import useStyles from "../../customHooks/utility/style/styleHook";
 import getUserSettings from "../../customHooks/userSettings";
 import { useInjectServices } from "../..";
+import useClickOutside from "solid-click-outside";
 type Props = {
     title?: string,
     children?: JSX.Element,
@@ -28,9 +29,13 @@ const Modal:Component<Props> = (props)=>{
     const services = useInjectServices();
     const defaultX = props.translate?.x ?? "-50%";
     const defaultY = props.translate?.y ?? "-50%";
+		const [popupRef, setPopupRef] = createSignal<HTMLDivElement>();
+		useClickOutside(popupRef, ()=>{
+			setBackClick(old => !old);
+		})
     return(
         <Portal >
-            <div use:clickOutside={()=>setBackClick(old => !old)} style={{
+            <div ref={setPopupRef} style={{
                     width: !!props.width ? props.width : services.isMobile() ? "90vw":"45vw", 
                     height: !!props.height ? props.height : services.isMobile() ? "90vh":"60vh",
                     transform: `translate(${defaultX},${defaultY})`,

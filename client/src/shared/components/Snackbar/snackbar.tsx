@@ -2,7 +2,7 @@ import { Component, createMemo, createSignal, Show, Accessor, Setter, For } from
 import style from "./snackbar.module.scss"; // .snack{Error/Success/Info/Warning}
 import { Portal } from "solid-js/web";
 import { Button, getUserSettings, useStyle } from "../..";
-import { S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import { useInjectServices } from "../..";
 export interface Snackbar {
     message: string;
     severity?: "error" | "warning" | "info" | "success";
@@ -35,6 +35,7 @@ interface SnackbarProps extends Snackbar {
     index: number;
 }
 const Snackbar:Component<SnackbarProps> = (props) => {
+    const injectServices = useInjectServices();
     const [userSettings, setUserSettings] = getUserSettings();
     const [isOpen, setIsOpen] = createSignal(true);
     const stylin = createMemo(()=>useStyle(userSettings().theme));
@@ -44,7 +45,8 @@ const Snackbar:Component<SnackbarProps> = (props) => {
     return (
         <Portal mount={document.body}>
             <Show when={isOpen()}>
-                <div style={{bottom: `${10 + (props.index * (50 + (messageLength * 8)))}px`}} class={`${stylin().primary} ${style.snack} ${style[props.severity ?? "info"]}`}>
+                <div style={{bottom: `${10 + (props.index * (50 + (messageLength * 8)))}px`}} 
+                  class={`${stylin().primary} ${style.snack} ${style[props.severity ?? "info"]}`}>
                     <span>{props.message}</span>
                     <Button onClick={props.onClose} >X</Button>
                 </div>
