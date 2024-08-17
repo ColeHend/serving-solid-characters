@@ -98,7 +98,7 @@ const NavMenu: Component<Props> = (props) => {
         <span class={`${userStyle().primary} ${defaultShowList() ? `${Styles.navOpen}` : `${Styles.navClosed}`}`}>
             <div class={`${userStyle().accent} ${Styles.topper}`}>
                 <h2>Navigation</h2>
-                <Button class={userStyle().hover}>
+                <Button >
                     <Gear height={30} onClick={(e) => setShowSettings(old => !old)} />
                     <Show when={showSettings()}>
                         <Modal title="Settings" width={services.isMobile() ? "90vw":"45vw"} height={services.isMobile() ? "90vh" :"60vh"} backgroundClick={[showSettings, setShowSettings]}>
@@ -109,7 +109,7 @@ const NavMenu: Component<Props> = (props) => {
                         </Modal> 
                     </Show>
                 </Button>
-                <Button class={`${userStyle().hover}`} enableBackgroundClick={true} menuItems={settingsOptions()} overrideX={isMobile() ? "42vw" : "93vw"} >
+                <Button enableBackgroundClick={true} menuItems={settingsOptions()} overrideX={isMobile() ? "42vw" : "93vw"} >
                     <SkinnySnowman height={30} />
                 </Button>
             </div>

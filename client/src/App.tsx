@@ -1,11 +1,12 @@
 import { type Component, For, createResource, JSX, useContext, createMemo, createSignal } from 'solid-js';
-import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel, Markdown } from './shared';
+import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel, Markdown, Input, Select, Option } from './shared';
 import { effect } from 'solid-js/web';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import { SnackbarController, addSnackbar } from './shared/components/Snackbar/snackbar';
 import { Tabs, Tab } from './shared/components/Tabs/tabs';
+import FormField from './shared/components/FormField/formField';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const sharedHooks = useInjectServices();
@@ -18,10 +19,25 @@ const App: Component = () => {
   const dndSrdBackgrounds = useDnDBackgrounds();
   const [testText, setTestText] = createSignal("This **is** _a_ \n# test");
   const [bannerText, setBannerText] = createSignal("It'll be great eventually.");
+	const [testFieldText, setTestFieldText] = createSignal("");
+	const [testCheckbox, setTestCheckbox] = createSignal(false);
+
   return (
       <Body>
         <h1>Home</h1>
         <Tabs>
+          <Tab name="Field Test">
+            <div style={{display:"flex", "flex-direction":"row","flex-wrap": "wrap"}}>
+              <FormField name='Input Test' style={{height: 'min-content'}}>
+                <Input type='text' value={testFieldText()} onChange={(e)=>setTestFieldText(e.currentTarget.value)}  
+									width={700} 
+									style={{"max-width" : "800px !important"}} />
+              </FormField>
+              <FormField name='TextArea Test'>
+                <TextArea text={testFieldText} setText={setTestFieldText} />
+              </FormField>
+            </div>
+          </Tab>
             <Tab name="Welcome">
               <ExpansionPanel>
                 <div>

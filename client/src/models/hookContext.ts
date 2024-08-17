@@ -6,6 +6,7 @@ export interface HookContext {
     isMobile: Accessor<boolean>;
     showList: [Accessor<boolean>, Setter<boolean>];
     useStyle: (styleType?: string) => Style;
+		getMouse: () => {x: number, y: number};
 }
 
 export interface ProviderProps<T> {
