@@ -6,6 +6,8 @@ import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import { SnackbarController, addSnackbar } from './shared/components/Snackbar/snackbar';
 import { Tabs, Tab } from './shared/components/Tabs/tabs';
+import Table from './shared/components/Table/table';
+import { SecondRow, Cell, Column, Header, Row } from './shared/components/Table/innerTable';
 import FormField from './shared/components/FormField/formField';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
@@ -26,6 +28,32 @@ const App: Component = () => {
       <Body>
         <h1>Home</h1>
         <Tabs>
+					<Tab name="Table">
+						<div>
+							<Table dropdownArrow={{width:"30px", height:"30px"}} dropdown={true} data={dndSrdClasses()} columns={["className", 'hitDie', 'saves']}>
+                <Column name='className'>
+                  <Header>Class Name</Header>
+                  <Cell<DnDClass>>{(x, i)=> x.name }</Cell>
+                </Column>
+								<Column name='hitDie'>
+                  <Header>Hit Die</Header>
+                  <Cell<DnDClass>>{(x)=> x.hitDie }</Cell> 
+                </Column>
+								<Column name='saves'>
+                  <Header>Saves</Header>
+                  <Cell<DnDClass>>{(x)=> x.savingThrows?.join(', ') }</Cell> 
+                </Column>
+								<Row style={{height:"40px"}} />
+								<SecondRow<DnDClass> >{(item, i)=>(
+									<div style={{border: "1px solid", padding: "5px", 'border-radius': "10px"}}>
+										<div>{item?.name}</div>
+										<div>{item?.hitDie}</div>
+										<span>{item?.spellcasting?.spellcastingAbility}</span>
+									</div>
+								)}</SecondRow>
+							</Table>
+						</div>
+					</Tab>
 					<Tab name="Welcome">
 						<ExpansionPanel>
 							<div>
