@@ -7,7 +7,7 @@ import { DnDClass } from './models/class.model';
 import { SnackbarController, addSnackbar } from './shared/components/Snackbar/snackbar';
 import { Tabs, Tab } from './shared/components/Tabs/tabs';
 import Table from './shared/components/Table/table';
-import { BottomRow, Cell, Column, Header } from './shared/components/Table/innerTable';
+import { SecondRow, Cell, Column, Header, Row } from './shared/components/Table/innerTable';
 import FormField from './shared/components/FormField/formField';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
@@ -30,19 +30,27 @@ const App: Component = () => {
         <Tabs>
 					<Tab name="Table">
 						<div>
-							<Table data={dndSrdClasses()} columns={["className", 'hitDie', 'saves']}>
+							<Table dropdownArrow={{width:"30px", height:"30px"}} dropdown={true} data={dndSrdClasses()} columns={["className", 'hitDie', 'saves']}>
                 <Column name='className'>
                   <Header>Class Name</Header>
                   <Cell<DnDClass>>{(x, i)=> x.name }</Cell>
                 </Column>
 								<Column name='hitDie'>
                   <Header>Hit Die</Header>
-                  <Cell>{(x: DnDClass)=> x.hitDie }</Cell> 
+                  <Cell<DnDClass>>{(x)=> x.hitDie }</Cell> 
                 </Column>
 								<Column name='saves'>
                   <Header>Saves</Header>
-                  <Cell>{(x: DnDClass)=> x.savingThrows?.join(', ') }</Cell> 
+                  <Cell<DnDClass>>{(x)=> x.savingThrows?.join(', ') }</Cell> 
                 </Column>
+								<Row style={{height:"40px"}} />
+								<SecondRow<DnDClass> >{(item, i)=>(
+									<div style={{border: "1px solid", padding: "5px", 'border-radius': "10px"}}>
+										<div>{item?.name}</div>
+										<div>{item?.hitDie}</div>
+										<span>{item?.spellcasting?.spellcastingAbility}</span>
+									</div>
+								)}</SecondRow>
 							</Table>
 						</div>
 					</Tab>

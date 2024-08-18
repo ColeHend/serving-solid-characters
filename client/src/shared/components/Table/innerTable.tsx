@@ -47,15 +47,29 @@ const Cell = <T=any,>(props: CellProps<T>) => {
     });
     return <>{local.children(rowContext?.getRowItem() ?? {}, rowContext?.getRowI() ?? 0)}</>;
 }
-const BottomRow = <T,>(props: { children: ColumnState<T> }) => {
-    const {tableState, setTableState} = getTableContext<T>();
-		const rowContext = useRowContext();
-
-    onMount(()=>{
-        // if (tableState().shouldUpdate) {
-        //     setTableState((prev)=>({...prev, shouldUpdate: false, bottomRows: [...prev.bottomRows, props.children]}));
-        // }
-    });
-    return <>{props.children(rowContext?.getRowItem(), rowContext?.getRowI() ?? 0)}</>;
+interface RowProps extends JSX.HTMLAttributes<HTMLTableRowElement> {}
+const Row = <T,>(props: RowProps) => {
+		const {tableState, setTableState} = getTableContext<T>();
+		onMount(()=>{
+				setTableState((prev)=>({...prev, rowProps: props}))
+		});
+		return <tr {...props}></tr>;
 }
-export { Column, Header, Cell, BottomRow };
+interface DropRowProps<T> {
+		children: ColumnState<T>;
+		classes?: string;
+		style?: JSX.CSSProperties;
+		[key: string]: any;
+}
+const SecondRow = <T,>(props: DropRowProps<T>) => {
+		const [local, others] = splitProps(props, ["children"]);
+		const rowContext = useRowContext();
+		const {tableState, setTableState} = getTableContext<T>();
+		onMount(()=>{
+				setTableState((prev)=>({...prev, 
+					dropTransform: local.children,
+					dropProps: others}))
+		});
+    return <>{local.children(rowContext?.getRowItem(), rowContext?.getRowI() ?? 0)}</>;
+}
+export { Column, Header, Cell, SecondRow, Row };

@@ -4,7 +4,10 @@ type StateType<T=any> = T;
 export interface TableState<T=any> {
 	headers: JSX.Element[];
 	rowTransform: ((item: T, index: number)=>JSX.Element)[];
+	dropTransform?: ((item: T, index: number)=>JSX.Element);
 	cellProps?: JSX.HTMLAttributes<HTMLTableDataCellElement>[];
+	rowProps?: JSX.HTMLAttributes<HTMLTableRowElement>;
+	dropProps?: JSX.HTMLAttributes<HTMLTableRowElement>;
 	currentColumns: string[];
 	multipleRows?: boolean;
 }
