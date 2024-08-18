@@ -28,6 +28,24 @@ const App: Component = () => {
       <Body>
         <h1>Home</h1>
         <Tabs>
+					<Tab name="Table">
+						<div>
+							<Table data={dndSrdClasses()} columns={["className", 'hitDie', 'saves']}>
+                <Column name='className'>
+                  <Header>Class Name</Header>
+                  <Cell<DnDClass>>{(x, i)=> x.name }</Cell>
+                </Column>
+								<Column name='hitDie'>
+                  <Header>Hit Die</Header>
+                  <Cell>{(x: DnDClass)=> x.hitDie }</Cell> 
+                </Column>
+								<Column name='saves'>
+                  <Header>Saves</Header>
+                  <Cell>{(x: DnDClass)=> x.savingThrows?.join(', ') }</Cell> 
+                </Column>
+							</Table>
+						</div>
+					</Tab>
 					<Tab name="Welcome">
 						<ExpansionPanel>
 							<div>
