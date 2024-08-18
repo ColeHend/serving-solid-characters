@@ -49,8 +49,8 @@ namespace sharpAngleTemplate.models.repositories
                     "Martial weapons",
                 },
                 SavingThrows = new List<string>(){
-                    "Intelligence",
-                    "Constitution",
+                    "INT",
+                    "CON",
                 },
                 StartingEquipment = new StartingEquipmentDto(){
                     Class = "Forgemaster",
