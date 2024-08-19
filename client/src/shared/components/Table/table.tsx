@@ -25,6 +25,7 @@ const Table = <T,>(props: TableProps<T>)=>{
 }
 const TableComponent = <T,>(props: TableProps<T>) => {
 		const state = getTableContext<T>();
+		const [theadRef, setTheadRef] = createSignal<HTMLTableSectionElement>();
 		const [tbodyRef, setTbodyRef] = createSignal<HTMLTableSectionElement>();
 		state.setTableState({headers: [], rowTransform: [], currentColumns: [], });
 		const [local, others] = splitProps(props, ["data", "columns", "children", "dropdown"]);
@@ -32,14 +33,26 @@ const TableComponent = <T,>(props: TableProps<T>) => {
 		const updateState = ()=>state.setTableState(old=>({...old, multipleRows: !!!old?.multipleRows}));
 	  const getCellProps = (i: number)=> !!state.tableState().cellProps ? state.tableState().cellProps![i]: {};
 		const [rerender, setRerender] = createSignal(false);
-		const buildTRow = (row: T, rowI: number)=>{
+		const buildTHeaderRow = ()=>{
+			const getColumnIndex = (name: string)=>state.tableState().currentColumns.findIndex(x=>x===name);
+			const getHeaderTransform = (name: string)=>state.tableState().headers[getColumnIndex(name)];
 			return <tr>
-				{state.tableState().rowTransform.map((cellTransform, i)=>{
-					return <td {...getCellProps(i)}>{cellTransform(row, rowI)}</td>
-				})}
+				<For each={local.columns}>{(column, i)=><th>{getHeaderTransform(column)}</th>}</For>
+			</tr>;
+		}
+		const buildTRow = (row: T, rowI: number)=>{
+			const getColumnIndex = (name: string)=>state.tableState().currentColumns.findIndex(x=>x===name);
+			const getCellTransform = (name: string)=>state.tableState().rowTransform[getColumnIndex(name)];
+			return <tr>
+				<For each={local.columns}>{(column, i)=><td>{getCellTransform(column)(row, rowI)}</td>}</For>
 			</tr>;
 		}
 		createEffect(()=>{
+			const elementhead = theadRef();
+			if (!!elementhead) {
+				elementhead.innerHTML = "";
+				render(()=>buildTHeaderRow(), elementhead);
+			}
 			const element = tbodyRef();
 			if (!!element) {
 				element.innerHTML = "";
@@ -55,14 +68,7 @@ const TableComponent = <T,>(props: TableProps<T>) => {
 		});
     return (
 			<table {...others}>
-				<thead>
-						<tr>
-								<For each={state.tableState().headers}>{(header, i)=>
-									<Show when={local.columns.includes(state.tableState().currentColumns[i()])}>
-										{header}
-								</Show>}</For>
-						</tr>
-				</thead>
+				<thead ref={setTheadRef}></thead>
 				<tbody ref={setTbodyRef}>
 						{props.children}
 				</tbody>
