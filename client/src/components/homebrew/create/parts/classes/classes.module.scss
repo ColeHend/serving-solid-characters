@@ -58,3 +58,38 @@
 		height: min-content;
 	}
 }
+
+.levelSecondRow {
+	display: flex;
+	flex-direction: row;
+	:nth-child(1) {
+		margin: auto 0;
+	}
+}
+
+@mixin tableStyle {
+	margin-left: 10px;
+}
+.wholeTable {
+	width: 100%;
+}
+.rowStyle {
+	:nth-child(3) {
+		margin-left: 15px;
+	}
+}
+.headerStyle {
+	@include tableStyle;
+	text-align: left;
+}
+.cellStyle {
+	@include tableStyle;
+	text-align: left;
+	width: 45px;
+	text-align: center;
+}
+.tableFeature {
+	@include tableStyle;
+	display: flex;
+	flex-direction: row;
+}

@@ -3,6 +3,7 @@ import {
   Component,
   For,
   Show,
+  createEffect,
   createMemo,
   createSignal,
   useContext,
@@ -22,7 +23,9 @@ import {
   useGetItems,
   getUserSettings,
   useStyle,
-  Body
+  Body,
+	SkinnySnowman,
+	Clone
 } from "../../../../../shared/";
 import type { DnDClass } from "../../../../../models";
 import { LevelEntity, Subclass } from "../../../../../models/class.model";
@@ -33,10 +36,11 @@ import {
   Item,
 } from "../../../../../models/core.model";
 import LevelBuilder from "./levelBuilder";
-import { effect } from "solid-js/web";
 import { SpellsKnown } from "../subclasses/subclasses";
-import { useSearchParams } from "@solidjs/router";
+import { A, useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../../../rootApp";
+import Table from '../../../../../shared/components/Table/table';
+import { SecondRow, Cell, Column, Header, Row } from '../../../../../shared/components/Table/innerTable';
 import FormField from "../../../../../shared/components/FormField/formField";
 import Proficiency from "./sections/proficiency";
 import StartEquipment from "./sections/startEquipment";
@@ -58,7 +62,13 @@ const Classes: Component = () => {
 			choice3: [],
 			choice4: []
 		},
-		classLevels: [],
+		classLevels: Array.from({length: 20}, (_, i)=>({
+			level: i+1, 
+			profBonus: (Math.ceil((i+1)/4)+1), 
+			features: [], 
+			classSpecific: {"test": "test"}, 
+			info: { className:"", level: i+1, subclassName:"", type:"", other:""}
+		}),),
 		features: [],
 		subclasses: [],
 		subclassLevels: []
@@ -73,15 +83,62 @@ const Classes: Component = () => {
 		startingEquipment: {...prev.startingEquipment, [`choice${choiceNum}`]: choice}
 	}))};
 
-	const setClassLevels = (classLevels: LevelEntity[]) => setCurrentClass((prev)=>({...prev, classLevels}));
-	const setFeatures = (features: Feature<unknown, string>[]) => setCurrentClass((prev)=>({...prev, features}));
-	const setSubclasses = (subclasses: Subclass[]) => setCurrentClass((prev)=>({...prev, subclasses}));
-	const setSubclassLevels = (subclassLevels: number[]) => setCurrentClass((prev)=>({...prev, subclassLevels}));
+	const setClassLevels = (classLevels: LevelEntity[]) => setCurrentClass((prev)=>Clone({...prev, classLevels}));
+	const setSubclasses = (subclasses: Subclass[]) => setCurrentClass((prev)=>Clone({...prev, subclasses}));
+	const setSubclassLevels = (subclassLevels: number[]) => setCurrentClass((prev)=>Clone({...prev, subclassLevels}));
 	const [userSettings, setUserSettings] = getUserSettings();
 	const themeStyle = createMemo(()=>useStyle(userSettings().theme));
 	const sharedHooks = useContext(SharedHookContext);
+	const [currentColumns, setCurrentColumns] = createSignal<string[]>(["level", "proficiency", "options", "features"]);
+	const [levels, setLevels] = createSignal<number[]>(Array.from({length: 20}, (_, i)=>i+1));
 
-
+	const addClassSpecific = (level: number, feature: string) => {
+		const newClassLevels = currentClass().classLevels.map((x, i)=>i === level ? {...x, classSpecific: {...x.classSpecific, [feature]: feature}} : x);
+		setClassLevels(newClassLevels);
+	};
+	const removeClassSpecific = (level: number, feature: string) => {
+		const newClassLevels: LevelEntity[] = currentClass().classLevels.map((x, i)=>{
+			if (i === level) {
+				const newClassSpecific = {...x.classSpecific};
+				delete newClassSpecific[feature];
+				return {...x, classSpecific: newClassSpecific};
+			}
+			return x;
+		});
+		setClassLevels(newClassLevels);
+	};
+	const addFeature = (level: number, feature?: Feature<unknown, string>) => {
+		if (!feature) {
+			feature = {name: `Feature ${Math.floor(Math.random() * 10) * Math.ceil(Math.random() * 10)}`, value: "a value", info: {
+				className: "",
+				subclassName: "",
+				level,
+				type: "",
+				other: ""
+			}};
+		}
+		const newFeatures = currentClass().classLevels[(level - 1)].features;
+		newFeatures.push(feature);
+		const newClass = {...currentClass()};
+		newClass.classLevels[(level - 1)].features = newFeatures;
+		setCurrentClass(newClass);
+	};
+	const removeFeature = (level: number, name: string) => {
+		const newFeatures = currentClass().classLevels[(level - 1)].features.filter((x)=>x.name !== name);
+		const newClass = {...currentClass()};
+		newClass.classLevels[(level - 1)].features = newFeatures;
+		setCurrentClass(newClass);
+	};
+	const getFeatureChips = (i:number)=>Object.entries((currentClass().classLevels[i]?.classSpecific));
+	createEffect(()=>{
+		console.log("CurrentClass: ", currentClass());
+	});
+	const [tableData, setTableData] = createSignal(currentClass().classLevels);
+	
+	createEffect(()=>{
+		setTableData(Clone(currentClass().classLevels));
+		console.log("TableData: ", tableData());
+	})
 // ----------------- JSX -----------------
   return (
     <>
@@ -110,7 +167,41 @@ const Classes: Component = () => {
 							<StartEquipment currentClass={currentClass()}  setStartEquipChoice={setStartingEquipChoice}/>
 					</div>
 					<div class={`${styles.twoRowContainer}`}>
-						
+						<div class={`${styles.twoRowContainer}`}>
+							<Table class={`${styles.wholeTable}`} data={tableData} columns={currentColumns()}>
+								<Column name="proficiency">
+									<Header class={`${styles.headerStyle}`}>P.B.</Header>
+									<Cell<LevelEntity> class={`${styles.cellStyle}`}>{(x)=>`+${x.profBonus}`}</Cell>
+								</Column>
+								<Column name="level">
+									<Header class={`${styles.headerStyle}`}>Level</Header>
+									<Cell<LevelEntity> class={`${styles.cellStyle}`}>{(x)=>x.level}</Cell>
+								</Column>
+								<Column name="features">
+									<Header class={`${styles.headerStyle}`}>Features</Header>
+									<Cell<LevelEntity> class={`${styles.tableFeature}`}>{(x, i)=>{
+										return <>
+											<Show when={!!x.features?.length}>
+												<Button onClick={(e)=>addFeature(x.level)}>+</Button>
+												<For each={x?.features}>{(entry)=>{
+													return <Chip key={`${entry.info.level} `} value={entry.name} remove={()=>removeFeature(entry.info.level, entry.name)} />
+												}}</For>
+											</Show>
+											<Show when={!!!x.features?.length}>
+												<Button onClick={(e)=>addFeature(x.level)}>+</Button>
+											</Show>
+										</>;
+									}}</Cell>
+								</Column>
+								<Row class={`${styles.rowStyle}`}/>
+								<SecondRow<LevelEntity>>{(level, i)=>(
+									<div class={`${styles.levelSecondRow}`}>
+										{/* <strong>Features: </strong> */}
+											
+									</div>
+								)}</SecondRow>
+							</Table>
+						</div>
 					</div>
 				</div>
       </Body>

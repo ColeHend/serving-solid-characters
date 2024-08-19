@@ -1,14 +1,15 @@
-import { Component, createContext, createSignal, For, useContext, JSX, type Accessor, type Setter, onMount, Show, createEffect, createMemo, splitProps } from "solid-js";
+import { Component, createContext, createSignal, For, useContext, JSX, type Accessor, type Setter, onMount, Show, createEffect, createMemo, splitProps, createReaction, createComputed, createRenderEffect } from "solid-js";
 import { ProviderProps } from "../../../models/hookContext";
 import { Clone } from "../../customHooks";
 import { getTableContext, TableContext, TableProvider, TableState } from "./tableProvider";
 import { RowProvider, useRowContext } from "./rowProvider";
-import { effect } from "solid-js/web";
+import { effect, render } from "solid-js/web";
 import { Button, DownArrow, UpArrow } from "../..";
+import DOMPurify from "dompurify";
 export type ColumnState<T> = (item: T, index: number)=>JSX.Element;
 
 interface TableProps<T> extends JSX.HTMLAttributes<HTMLTableElement> {
-	data: T[];
+	data: Accessor<T[]>;
 	columns: string[];
 	children?: JSX.Element;
 	dropdown?: boolean;
@@ -23,63 +24,47 @@ const Table = <T,>(props: TableProps<T>)=>{
 	}}><TableComponent {...props}/></TableProvider>
 }
 const TableComponent = <T,>(props: TableProps<T>) => {
-		const {tableState, setTableState} = getTableContext<T>();
-		setTableState({headers: [], rowTransform: [], currentColumns: [], });
+		const state = getTableContext<T>();
+		const [tbodyRef, setTbodyRef] = createSignal<HTMLTableSectionElement>();
+		state.setTableState({headers: [], rowTransform: [], currentColumns: [], });
 		const [local, others] = splitProps(props, ["data", "columns", "children", "dropdown"]);
-    const tableData = createMemo(()=> props.data);
 		const [showDropdown, setShowDropdown] = createSignal<{[key:number]: boolean}>({});
-    props.children
-
+		const updateState = ()=>state.setTableState(old=>({...old, multipleRows: !!!old?.multipleRows}));
+	  const getCellProps = (i: number)=> !!state.tableState().cellProps ? state.tableState().cellProps![i]: {};
+		const [rerender, setRerender] = createSignal(false);
+		const buildTRow = (row: T, rowI: number)=>{
+			return <tr>
+				{state.tableState().rowTransform.map((cellTransform, i)=>{
+					return <td {...getCellProps(i)}>{cellTransform(row, rowI)}</td>
+				})}
+			</tr>;
+		}
+		createEffect(()=>{
+			const element = tbodyRef();
+			if (!!element) {
+				element.innerHTML = "";
+				const data = props.data();
+				render(()=>data.map((row, i)=> buildTRow(row, i)), element);
+			}
+		});
+		createEffect(()=>{
+			if (rerender()) {
+				setRerender(false);
+				updateState();
+			}
+		});
     return (
 			<table {...others}>
 				<thead>
 						<tr>
-								<For each={tableState().headers}>{(header, i)=>
-									<Show when={local.columns.includes(tableState().currentColumns[i()])}>
+								<For each={state.tableState().headers}>{(header, i)=>
+									<Show when={local.columns.includes(state.tableState().currentColumns[i()])}>
 										{header}
 								</Show>}</For>
 						</tr>
 				</thead>
-				<tbody>
-						<For each={tableData()}>{(row, rowI)=><>
-								<Show when={!!!tableState().dropTransform}>
-										<tr {...tableState().rowProps}>
-												<For each={tableState().rowTransform}>{(rowTransform, i)=>
-													<Show when={local.columns.includes(tableState().currentColumns[i()])}>
-														<td {...!!tableState().cellProps ? tableState().cellProps![i()] : {}}>{rowTransform(row, i())}</td>
-													</Show>
-												}</For>
-										</tr>
-								</Show>
-								<Show when={!!tableState().dropTransform}>
-										<tr {...tableState().rowProps}>
-											<For each={tableState().rowTransform}>{(rowTransform, i)=>
-												<Show when={local.columns.includes(tableState().currentColumns[i()])}>
-													<td {...!!tableState().cellProps ? tableState().cellProps![i()] : {}}>{rowTransform(row, i())}</td>
-												</Show>
-											}</For>
-											<Show when={local.dropdown}>
-												<td>
-													<Button style={{margin:"0px 0px 0px 5px", padding:"0px"}} onClick={()=>{setShowDropdown(old=>({...old, [rowI()]: !!!old[rowI()]}))}}>
-														<Show when={!!!showDropdown()[rowI()]}>
-															<DownArrow width={props.dropdownArrow?.width} height={props.dropdownArrow?.height} />
-														</Show>
-														<Show when={!!showDropdown()[rowI()]}>
-																<UpArrow width={props.dropdownArrow?.width} height={props.dropdownArrow?.height} />
-														</Show>
-													</Button>
-												</td>
-											</Show>
-										</tr>
-										<Show when={!local.dropdown || !!showDropdown()[rowI()]}>
-											<tr {...tableState().dropProps}>
-													<td colSpan={!!local.dropdown ? ++props.columns.length :props.columns.length}>
-														{tableState().dropTransform?.(row, rowI())}
-													</td>
-											</tr>
-										</Show>
-								</Show>
-						</>}</For>
+				<tbody ref={setTbodyRef}>
+						{props.children}
 				</tbody>
 			</table>
     );
