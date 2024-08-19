@@ -30,7 +30,7 @@ const App: Component = () => {
         <Tabs>
 					<Tab name="Table">
 						<div>
-							<Table dropdownArrow={{width:"30px", height:"30px"}} dropdown={true} data={dndSrdClasses()} columns={["className", 'hitDie', 'saves']}>
+							<Table dropdownArrow={{width:"30px", height:"30px"}} dropdown={true} data={dndSrdClasses} columns={['hitDie', "className", 'saves']}>
                 <Column name='className'>
                   <Header>Class Name</Header>
                   <Cell<DnDClass>>{(x, i)=> x.name }</Cell>
