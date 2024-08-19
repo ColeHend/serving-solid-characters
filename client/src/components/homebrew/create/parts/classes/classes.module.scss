@@ -92,4 +92,5 @@
 	@include tableStyle;
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap;
 }

@@ -194,12 +194,12 @@ const Classes: Component = () => {
 									}}</Cell>
 								</Column>
 								<Row class={`${styles.rowStyle}`}/>
-								<SecondRow<LevelEntity>>{(level, i)=>(
+								{/* <SecondRow<LevelEntity>>{(level, i)=>(
 									<div class={`${styles.levelSecondRow}`}>
 										<strong>Features: </strong>
 											
 									</div>
-								)}</SecondRow>
+								)}</SecondRow> */}
 							</Table>
 						</div>
 					</div>
