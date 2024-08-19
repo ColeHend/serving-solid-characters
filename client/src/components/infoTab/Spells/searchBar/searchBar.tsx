@@ -7,11 +7,8 @@ import styles from "./searchBar.module.scss";
 import ClearAllBtn from "./clearAllBtn";
 import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
 import { Button, Input, Select, Option } from "../../../../shared/components";
-interface Chip {
-    key: string;
-    value: string;
-    
-}
+import Chipbar from "../../../../shared/components/Chipbar/chipbar";
+import type ChipType from "../../../../shared/models/chip";
 
 type Props = { 
     searchResults: Accessor<Spell[]>; 
@@ -19,11 +16,11 @@ type Props = {
     spellsSrd: Accessor<Spell[]>;
 };
 const SearchBar: Component<Props> = (props) => {
-    const [searchChip, setSearchChip] = createSignal<Chip>({ key: "", value: "" });
+    const [searchChip, setSearchChip] = createSignal<ChipType>({ key: "", value: "" });
     const [searchKey, setSearchKey] = createSignal<string>("name");
     const [searchValue, setSearchValue] = createSignal<string>("");
     const [ischecked, setIsChecked] = createSignal<boolean>(false);
-    const [chipBar, setChipBar] = createSignal<Chip[]>([]);
+    const [chipBar, setChipBar] = createSignal<ChipType[]>([]);
 
     const getKeyOptions = (key: keyof Spell): string[] => {
         if (Array.isArray(props.spellsSrd()[0][key])) {
@@ -111,23 +108,14 @@ const SearchBar: Component<Props> = (props) => {
     
 
     const beautifyKey = (Key: string) => {
-        const capFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-        const spaceBeforeCap = (str: string) => str.replace(/([A-Z])/g, ' $1').trim();
-        switch (Key) { 
-            case "concentration":
-                return "Conc";
-            case "damageType":
-                return "Dmg Type";
-            default:
-                if (Key.startsWith("is")) Key = Key.replace("is", "");
-                Key = capFirstLetter(Key);
-                Key = spaceBeforeCap(Key);
-                return Key;
-        }
+        if (Key === "concentration") return "Conc";
+        if (Key === "damageType") return "Dmg Type";
+        const fixupString = (str: string) => (str.charAt(0).toUpperCase() + str.slice(1)).replace(/([A-Z])/g, ' $1').trim();
+        return Key.startsWith("is") ? fixupString(Key.replace("is", "")): fixupString(Key);
     }
     
     return (
-        <div>
+        <div style={{width:"100%"}}>
             <div class={`${styles.searchBar}`}>
                 <Button transparent={true} onClick={()=>setSearchChip((old)=>({key: searchKey(), value: beutifyChip(searchValue())  }))} >
                     <SearchGlass />
@@ -201,14 +189,7 @@ const SearchBar: Component<Props> = (props) => {
                     </Match>
                 </Switch>
             </div>
-            <Show when={chipBar().length > 0}>
-                <div class={`${styles.chipBar}`}>
-                    <ClearAllBtn clear={()=>setChipBar([])} />
-                    <For each={chipBar()}>
-                        {(chip, i) => <Chip key={beautifyKey(chip.key) ?? '' } value={chip.value} clear={()=>setChipBar((oldChipBar)=>oldChipBar.filter((x, index) => index !== i() ))}/>}
-                    </For>
-                </div>
-            </Show>
+            <Chipbar chips={chipBar} setChips={setChipBar} />
         </div>
     );
 };

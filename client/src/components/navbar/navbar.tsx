@@ -1,4 +1,4 @@
-import { Accessor, Component, For, JSX, Show, Signal, createSignal, onMount, onCleanup, Setter, useContext, createMemo } from "solid-js";
+import { Accessor, Component, For, JSX, Show, Signal, createSignal, onMount, onCleanup, Setter, useContext, createMemo, splitProps } from "solid-js";
 import navStyles from './navbar.module.scss';
 import useStyle from "../../shared/customHooks/utility/style/styleHook";
 import useTabs from "../../shared/customHooks/utility/tabBar";
@@ -37,52 +37,21 @@ const Navbar: Component<Props> = (props) => {
         {Name: "Info", Link: "/info"},
         {Name: "Homebrew", Link: "/homebrew"}
     ];
-    const menuButtons: MenuButton[] = [
-        {
-            name: "Login",
-            condition: ()=>!loggedIn(),
-            action: ()=>{setLoggedIn(true)}
-        },
-        {
-            name: "Register",
-            condition: ()=>!loggedIn(),
-            action: ()=>{}
-        },
-        {
-            name: "Logout",
-            condition: loggedIn,
-            action: ()=>{setLoggedIn(false)}
-        },
-        {
-            name: "Profile",
-            condition: loggedIn,
-            action: ()=>{}
-        },
-        {
-            name: "Settings",
-            condition: ()=>true,
-            action: ()=>{}
-        }
-    ]
-    let tabs = useTabs(pageName);
-    const [showList, setShowList] = props.list;
+    const [{"list":[showList, setShowList]}, other] = splitProps(props, ["list"]);
     const isActiveNav = (button: Tab)=>(pageName() === '/' && button.Link === '/') || (pageName().startsWith(button.Link) && pageName() !== '/' && button.Link !== '/') ? navStyles.active : navStyles.inactive;
-    const [showFullList, setShowFullList] = createSignal(false);
-    const [settingX, setSettingX] = createSignal(!!props.isMobile ? "6vw" :"93vw");
     effect(()=>{
-        if (props.isMobile) setShowFullList(false);
-        setSettingX(!!props.isMobile ? "6vw" :"93vw");
+        if (other.isMobile) setShowList(false);
     });
     return (
         <div class={`${stylin()?.primary} ${navStyles.navbar}`}>
-            <div  class={`${props.style ?? ''}`}>
+            <div  class={`${other.style ?? ''}`}>
                 <span>
                     <A href="/">
                         MySite
                     </A>
                 </span>
-                <ul style={props.isMobile ? {margin: "0 auto", width: "min-content"} :{}}>
-                        <Show when={props.isMobile}>
+                <ul style={other.isMobile ? {margin: "0 auto", width: "min-content"} :{}}>
+                        <Show when={other.isMobile}>
                             <li >
                                 <div>
                                     <A href="/">
@@ -93,7 +62,7 @@ const Navbar: Component<Props> = (props) => {
                         </Show>
                     <For each={Buttons}>
                         {(button, i) => (
-                                <Show when={!props.isMobile || i() === 0 || showFullList()}>
+                                <Show when={!other.isMobile || i() === 0 || showList()}>
                                     <li class={`${stylin()?.accent} ${stylin()?.hover} ${isActiveNav(button)}`}>
                                         <A onClick={()=>setPageName(button.Link)} href={button.Link}>{button.Name}</A>
                                     </li>

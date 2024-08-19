@@ -1,0 +1,36 @@
+.formField {
+    display: inline-block;
+    border-radius: 5px;
+    padding-right: 40px;
+		textarea {
+			& {
+				padding-right: 25px;
+			}
+		}
+		padding-bottom: 25px;
+		
+		min-width: 50px;
+		min-height: 30px;
+    width: max-content;
+		height: min-content;
+		label {
+			position: relative;
+			top: -.5rem;
+			padding-right: 10px;
+		}
+    @media screen and (max-width: 768px) {
+        max-width: 75%;
+    }
+}
+
+.moveLegendInside {
+    float: left;
+		display: none;
+}
+
+.checkboxPadding {
+	padding: 0px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}

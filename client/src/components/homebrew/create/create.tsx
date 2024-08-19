@@ -1,5 +1,5 @@
 import { Component, For, Show, createSignal, useContext } from "solid-js";
-import useStyle from "../../../shared/customHooks/utility/style/styleHook";
+import { useStyle, Body } from "../../../shared/";
 import styles from './create.module.scss';
 import type { Tab } from "../../navbar/navbar";
 import HomebrewSidebar from "./sidebar";
@@ -12,7 +12,7 @@ const Create: Component = () => {
 
     return (
         <>
-            <div class={`${stylin?.primary} ${styles.body}`}>
+            <Body>
                 <h1>Create</h1>
                 <div class={`${styles.bodyMenu} `}>
                     <For each={homebrewMenu()}>
@@ -32,7 +32,7 @@ const Create: Component = () => {
                         )}
                     </For>
                 </div>
-            </div>
+            </Body>
         </>
     );
 }

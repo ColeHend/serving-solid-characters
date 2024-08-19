@@ -90,3 +90,12 @@ dotnet run
 
 See also the list of [contributors]() who participated in this project.
 
+## 🛠 TODO
+- Shared
+  - table??
+- Basically all of the hombrew tab
+- Alot of the info tab
+- Character viewing and creating
+- Character PDF Generation and Viewing
+- Import / Export Hombrew and characters
+

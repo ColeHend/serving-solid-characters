@@ -7,4 +7,5 @@ const useGetClasses = () => {
     const allClasses = createMemo(()=>[...dndSrdClasses(), ...HomebrewManager.classes()]);
     return allClasses;
 }
+export { useGetClasses };
 export default useGetClasses;

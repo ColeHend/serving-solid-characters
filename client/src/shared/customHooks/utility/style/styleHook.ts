@@ -26,7 +26,7 @@ const darkTheme: Style = {
     table: darkStyle.table,
 };
 
-export default function useStyle(styleType?: string): Style {
+export function useStyle(styleType?: string): Style {
     const [settingStyle, setSettings] = getUserSettings();
     const chosenTheme = styleType ?? settingStyle().theme;
     
@@ -41,7 +41,6 @@ export default function useStyle(styleType?: string): Style {
             return darkTheme;
     }
 }
-
 export function useUserStyles() {
     const [userSettings, setUserSettings] = getUserSettings();
     const sharedHooks = useContext(SharedHookContext);
@@ -58,3 +57,5 @@ export interface Style {
     popup: CSSModuleClasses[string];
     table: CSSModuleClasses[string];
 }
+
+export default useStyle;

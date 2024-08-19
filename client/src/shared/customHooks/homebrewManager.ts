@@ -347,5 +347,6 @@ class HomebrewManager {
         ).subscribe();
     }
 }
-const man = new HomebrewManager();
-export default man;
+const homebrewManager = new HomebrewManager();
+export { homebrewManager }
+export default homebrewManager;

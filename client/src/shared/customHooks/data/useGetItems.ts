@@ -7,4 +7,5 @@ const useGetItems = () => {
     const allItems = createMemo(()=>[...dndSrdItems()]);
     return allItems;
 }
+export { useGetItems };
 export default useGetItems;

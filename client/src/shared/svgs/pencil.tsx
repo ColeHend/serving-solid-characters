@@ -14,4 +14,5 @@ const Pencil: Component = () => {
 </svg>
     )
 };
+export { Pencil };
 export default Pencil;

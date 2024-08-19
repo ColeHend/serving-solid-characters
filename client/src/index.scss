@@ -16,50 +16,8 @@ code {
   flex-direction: row;
 }
 
-.topper {
-  display: flex;
-  flex-direction: row;
-  padding: 5px;
-  button {
-    border: none !important;
-    padding: 0px !important;
-    margin: 5px;
-    padding: 5px;
-    height: min-content;
-    svg {
-      height: 40%;
-      margin: auto 5px;
-      path {
-        color: #fff;
-        fill: #fff;
-      }
-    }
-  }
-
-}
-
 .body {
   @include sideNav();
-}
-.navOpen {
-  @media screen and (max-width: 768px) {
-    position: absolute;
-    top: 6vh;
-    left: 2vw;
-    min-width: 90vw;
-    width: max-content;
-  }
-
-  width: 10vw;
-  margin: 10px;
-  max-width: 15%;
-  width: 100%;
-  border-radius: 15px;
-  padding: 5px;
-  height: min-content;
-}
-.navClosed {
-  display: none;
 }
 
 .openFirst {
@@ -69,6 +27,8 @@ code {
 .closeFirst {
   width: 95vw;
   max-width: 100%;
+  margin: 0 auto;
+  margin-top: 1em;
 }
 
 .sideHead {

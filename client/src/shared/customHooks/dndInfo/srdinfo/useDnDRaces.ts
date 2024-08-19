@@ -2,12 +2,12 @@ import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, of, take, tap, concatMap } from "rxjs";
 import HttpClient$ from "../../utility/httpClientObs";
-import { Race } from "../../../models/race.model";
+import { Race } from "../../../../models/race.model";
 import LocalSrdDB from "../../utility/localDB/srdDBFile";
 
 const [race, setRace] = createSignal<Race[]>([]);
 
-export default function useDnDRaces(): Accessor<Race[]> {
+export function useDnDRaces(): Accessor<Race[]> {
     const LocalRaces = HttpClient$.toObservable(LocalSrdDB.races.toArray());
     if (race().length === 0) {
         LocalRaces.pipe(
@@ -43,3 +43,4 @@ export default function useDnDRaces(): Accessor<Race[]> {
 
     return race;
 }
+export default useDnDRaces;

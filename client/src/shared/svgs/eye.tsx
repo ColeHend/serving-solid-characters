@@ -10,4 +10,5 @@ const Eye: Component = ()=>{
         </svg>
     )
 }
+export { Eye };
 export default Eye;

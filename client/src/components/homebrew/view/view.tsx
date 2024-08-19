@@ -1,16 +1,9 @@
 import { Component, createMemo, createSignal, useContext } from "solid-js";
-import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import style from './view.module.scss'
-import Carousel from "../../../shared/components/Carosel/Carosel";
 import { Background, DnDClass, Feat, Item, Spell } from "../../../models";
+import { Carousel, homebrewManager, useInjectServices, getUserSettings, useStyle, useDnDSpells, MenuButton, Body } from "../../../shared/";
 import Table from "./table/Table";
-import useDnDSpells from "../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
-import HomebrewManager from '../../../shared/customHooks/homebrewManager';
-import { MenuButton } from "../../../shared/components/Button/Button";
 import { SharedHookContext } from "../../rootApp";
-import { useInjectServices } from "../../../shared/customHooks/injectServices";
-import getUserSettings from "../../../shared/customHooks/userSettings";
-import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
 
@@ -19,9 +12,8 @@ const View: Component = () => {
     const [userSettings, setUserSettings] = getUserSettings();
     
     const navigate = useNavigate();
-    const stylin = createMemo(()=>useStyles(userSettings().theme));
     const elementMemo = createMemo(()=>[
-        {name: "Spells", element: <Table data={HomebrewManager.spells()} keys={["name", "level"]}
+        {name: "Spells", element: <Table data={homebrewManager.spells()} keys={["name", "level"]}
             button={{
                 backgroundClick: true,
                 generateMenuButtons: (data) => ([
@@ -30,7 +22,7 @@ const View: Component = () => {
                 ] as MenuButton[])
             }}
         /> },
-        {name: "Feats", element: <Table data={HomebrewManager.feats()} keys={["name"]} 
+        {name: "Feats", element: <Table data={homebrewManager.feats()} keys={["name"]} 
         button={{
             backgroundClick: true,
             generateMenuButtons: (data) => ([
@@ -40,7 +32,7 @@ const View: Component = () => {
         }}
         /> },
         {name: "Classes", element: <Table 
-        data={HomebrewManager.classes()} 
+        data={homebrewManager.classes()} 
         keys={["name", "hitDie"]}
         paginator={[5, 10, 25, 50, 100]}
         button={{
@@ -52,7 +44,7 @@ const View: Component = () => {
         }}
         /> },
         {name: "Subclasses", element: <Table 
-            data={HomebrewManager.classes().flatMap(x=>x.subclasses)} 
+            data={homebrewManager.classes().flatMap(x=>x.subclasses)} 
             keys={["name", "class"]}
             paginator={[5, 10, 25, 50, 100]}
             button={{
@@ -63,7 +55,7 @@ const View: Component = () => {
                 ] as MenuButton[])
             }}
             /> },
-        {name: "Items", element: <Table data={HomebrewManager.items()} keys={["name"]} 
+        {name: "Items", element: <Table data={homebrewManager.items()} keys={["name"]} 
         button={{
             backgroundClick: true,
             generateMenuButtons: (data) => ([
@@ -72,7 +64,7 @@ const View: Component = () => {
             ] as MenuButton[])
         }}
     /> },
-        {name: "Backgrounds", element: <Table data={HomebrewManager.backgrounds()} keys={["name"]} 
+        {name: "Backgrounds", element: <Table data={homebrewManager.backgrounds()} keys={["name"]} 
         button={{
             backgroundClick: true,
             generateMenuButtons: (data) => ([
@@ -81,7 +73,7 @@ const View: Component = () => {
             ] as MenuButton[])
         }}
     /> },
-        {name: "Races", element: <Table data={HomebrewManager.races()} keys={["name"]} 
+        {name: "Races", element: <Table data={homebrewManager.races()} keys={["name"]} 
         button={{
             backgroundClick: true,
             generateMenuButtons: (data) => ([
@@ -103,12 +95,12 @@ const View: Component = () => {
         setSearchParam({name: elementMemo()[homebrewIndex()].name ?? "spells"})
     })
     return (
-        <div class={`${stylin().primary} ${style.body}`}>
+        <Body>
             <h1>View</h1>
             <div style={{"text-align": "left"}}>
                 <Carousel startingIndex={startingIndex()} currentIndex={[homebrewIndex, setHomebrewIndex]} elements={elementMemo()} />
             </div>
-        </div>
+        </Body>
     );
 }
 export default View;

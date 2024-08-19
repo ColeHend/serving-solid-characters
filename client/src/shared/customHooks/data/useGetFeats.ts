@@ -21,4 +21,5 @@ const useGetFeats = () => {
     const allFeats = createMemo(()=>[...dndSrdFeats(), ...homebrewFeats()]);
     return allFeats;
 }
+export { useGetFeats };
 export default useGetFeats;
