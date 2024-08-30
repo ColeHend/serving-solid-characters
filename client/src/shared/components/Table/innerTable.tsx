@@ -25,9 +25,9 @@ const Header = <T,>(props: HeaderProps) => {
     const {tableState, setTableState} = getTableContext<T>();
 		const [local, others] = splitProps(props, ["children"]);
     onMount(()=> {
-			setTableState((prev)=>({...prev, headers: [...prev.headers, <th {...others}>{props.children}</th>]}));
+			setTableState((prev)=>({...prev, headers: [...prev.headers, <th {...others}>{local.children}</th>]}));
     });
-    return <>{local.children}</>;
+    return <></>;
 }
 interface CellProps<T> {
 		children: ColumnState<T>;
@@ -45,7 +45,7 @@ const Cell = <T=any,>(props: CellProps<T>) => {
 				cellProps: [...(!!prev.cellProps ? prev.cellProps : []), others],
 				rowTransform: [...prev.rowTransform, local.children]}));
     });
-    return <>{local.children(rowContext?.getRowItem() ?? {}, rowContext?.getRowI() ?? 0)}</>;
+    return <></>;
 }
 interface RowProps extends JSX.HTMLAttributes<HTMLTableRowElement> {}
 const Row = <T,>(props: RowProps) => {
@@ -53,7 +53,7 @@ const Row = <T,>(props: RowProps) => {
 		onMount(()=>{
 				setTableState((prev)=>({...prev, rowProps: props}))
 		});
-		return <tr {...props}></tr>;
+		return <></>;
 }
 interface DropRowProps<T> {
 		children: ColumnState<T>;
@@ -70,6 +70,6 @@ const SecondRow = <T,>(props: DropRowProps<T>) => {
 					dropTransform: local.children,
 					dropProps: others}))
 		});
-    return <>{local.children(rowContext?.getRowItem(), rowContext?.getRowI() ?? 0)}</>;
+    return <></>;
 }
 export { Column, Header, Cell, SecondRow, Row };

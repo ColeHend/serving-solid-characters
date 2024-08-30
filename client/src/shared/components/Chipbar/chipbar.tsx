@@ -13,9 +13,9 @@ const Chipbar: Component<Props> = (props) => {
     const [showLeft, setShowLeft] = createSignal(false);
     const [showRight, setShowRight] = createSignal(false);
     const scrollFunction = (e: any) => {
-        setShowRight(chipContainer.scrollLeft !== chipContainer.scrollWidth - chipContainer.clientWidth);
-        setShowLeft(chipContainer.scrollLeft > 0);
-        if (chipContainer.scrollLeft <= 0) {
+        setShowRight(chipContainer?.scrollLeft !== chipContainer?.scrollWidth - chipContainer?.clientWidth);
+        setShowLeft(chipContainer?.scrollLeft > 0);
+        if (chipContainer?.scrollLeft <= 0) {
             setShowLeft(false);
         }
     }
@@ -53,12 +53,14 @@ const Chipbar: Component<Props> = (props) => {
                     </span>
                 </Show>
                 <div ref={chipContainer!} class={`${style.chipContainer}`}>
+									<Show when={props.chips().length > 1}>
                     <span>
                         <Button onClick={() => props.setChips([])}>Clear All</Button>
                     </span>
+									</Show>
                     <For each={props.chips()}>
                         {(chip, i) => (
-                            <Chip key={chip.key} value={chip.value} remove={()=>props.setChips((old)=> [...old].filter((x, index)=>index !== i()))} />
+                            <Chip key={chip.key} value={chip.value} remove={props.chips().length > 0 ? ()=>props.setChips((old)=> [...old].filter((x, index)=>index !== i())) : undefined} />
                         )}
                     </For>
                 </div>
