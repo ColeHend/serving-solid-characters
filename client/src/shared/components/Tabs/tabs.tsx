@@ -1,10 +1,10 @@
-import { Accessor, children, Component, createContext, createMemo, createSignal, For, JSX, onMount, Setter, Show, useContext } from "solid-js";
+import { Accessor, children, Component, createContext, createMemo, createSignal, For, JSX, onCleanup, onMount, Setter, Show, useContext } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { Dynamic, effect } from "solid-js/web";
 import exp from "constants";
 import { ProviderProps } from "../../../models/hookContext";
 import { Tab } from "./tab";
-import { getUserSettings, useStyle } from "../..";
+import { Button, getUserSettings, useStyle } from "../..";
 import style from "./tabs.module.scss";
 
 interface TabStore {
@@ -30,20 +30,66 @@ const Tabs: Component<Props> = (props) => {
     effect(()=>{
         setSelectedTab(Object.keys(tabs())[0]);
         
-    })
+    });
+		const [showLeft, setShowLeft] = createSignal(false);
+    const [showRight, setShowRight] = createSignal(false);
+    const scrollFunction = (e: any) => {
+        setShowRight(tabContainer?.scrollLeft !== tabContainer?.scrollWidth - tabContainer?.clientWidth);
+        setShowLeft(tabContainer?.scrollLeft > 0);
+        if (tabContainer?.scrollLeft <= 0) {
+            setShowLeft(false);
+        }
+    }
+		let tabContainer: HTMLDivElement;
+		effect(()=>{
+			console.log("showLeft", showLeft());
+			console.log("showRight", showRight());
+		})
+		onMount(()=>{
+			if (!!tabContainer) {
+				tabContainer.addEventListener("scroll", scrollFunction)
+				scrollFunction(null);
+			}
+		});
+		onCleanup(()=>{
+				if (!!tabContainer) {
+					tabContainer.removeEventListener("scroll", scrollFunction)
+				}
+		});
+		const scrollLeft = () => {
+			tabContainer.scrollLeft -= 100;
+			scrollFunction(null);
+		}
+		const scrollRight = () => {
+			tabContainer.scrollLeft += 100;
+				scrollFunction(null);
+				setShowLeft(true);
+		}
     const styleType = props.styleType ?? "accent";
     return (
         <div>
             <Provider value={[tabs, setTabs]}>
                 <div class={`${userStyle()[styleType]} ${style.tabs}`}>
-                    <For each={Object.keys(tabs())}>
-                        {(tab, index) => (
-                            <span class={`${useStyle().hover}`} onClick={() => setSelectedTab(tab)}>
-                                <Show when={tab === selectedTab()}><b>{tab}</b></Show>
-                                <Show when={tab !== selectedTab()}>{tab}</Show>
-                            </span>
-                        )}
-                    </For>
+										<Show when={showLeft()}>
+												<span class={`${style.leftArrow}`}>
+														<Button onClick={scrollLeft}>←</Button>
+												</span>
+										</Show>
+                    <div ref={tabContainer!}>
+											<For each={Object.keys(tabs())}>
+													{(tab, index) => (
+															<span class={`${useStyle().hover}`} onClick={() => setSelectedTab(tab)}>
+																	<Show when={tab === selectedTab()}><b>{tab}</b></Show>
+																	<Show when={tab !== selectedTab()}>{tab}</Show>
+															</span>
+													)}
+											</For>
+										</div>
+										<Show when={showRight()}>
+												<span class={`${style.rightArrow}`}>
+														<Button onClick={scrollRight}>→</Button>
+												</span>
+										</Show>
                 </div>
                 <div class={`${userStyle()[styleType]} ${style.tabBody}`}>
                     {currentElement()}
