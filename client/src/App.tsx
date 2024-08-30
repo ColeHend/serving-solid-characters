@@ -28,6 +28,16 @@ const App: Component = () => {
       <Body>
         <h1>Home</h1>
         <Tabs>
+					<Tab name="Welcome">
+						<ExpansionPanel>
+							<div>
+								Welcome to my app. This is a work in progress.
+							</div>
+							<div style={{width:"100%",padding: "15px"}}>
+								<TextArea readOnly={true} transparent={true} tooltip='Testing' text={bannerText} setText={setBannerText} />
+							</div>
+						</ExpansionPanel>
+					</Tab>
 					<Tab name="Table">
 						<div>
 							<Table dropdownArrow={{width:"30px", height:"30px"}} dropdown={true} data={dndSrdClasses()} columns={["className", 'hitDie', 'saves']}>
@@ -54,16 +64,6 @@ const App: Component = () => {
 							</Table>
 						</div>
 					</Tab>
-					<Tab name="Welcome">
-						<ExpansionPanel>
-							<div>
-								Welcome to my app. This is a work in progress.
-							</div>
-							<div style={{width:"100%",padding: "15px"}}>
-								<TextArea readOnly={true} transparent={true} tooltip='Testing' text={bannerText} setText={setBannerText} />
-							</div>
-						</ExpansionPanel>
-					</Tab>
 					<Tab name="Markdown">
 						<div style={{height:"100%"}}>
 							<div style={{width: "100%", height: "max-content !important"}}>
@@ -87,7 +87,6 @@ const App: Component = () => {
             </div>
           </Tab>
           </Tabs>
-        <SnackbarController />
         <ReloadPrompt />
       </Body>
   );
