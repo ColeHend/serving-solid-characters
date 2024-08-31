@@ -194,20 +194,24 @@ const Classes: Component = () => {
 		console.log("TableData: ", tableData());
 	})
 	createEffect(()=>{
+		const currentColumns = ["level", "proficiency", "features"];
 		switch (casterType()) {
 			case "full":
 				clearSpellSlots();
-				setCurrentColumns(["level", "proficiency", "features", "cantrip", "level-1", "level-2", "level-3", "level-4", "level-5", "level-6", "level-7", "level-8", "level-9"]);
+				currentColumns.push(...["cantrip", "level-1", "level-2", "level-3", "level-4", "level-5", "level-6", "level-7", "level-8", "level-9"]);
+				setCurrentColumns(currentColumns);
 				setSpellSlots("full");
 				break;
 			case "half":
 				clearSpellSlots();
-				setCurrentColumns(["level", "proficiency", "features", "cantrip", "level-1", "level-2", "level-3", "level-4", "level-5"]);
+				currentColumns.push(...["cantrip", "level-1", "level-2", "level-3", "level-4", "level-5"]);
+				setCurrentColumns(currentColumns);
 				setSpellSlots("half");
 				break;
 			case "third":
 				clearSpellSlots();
-				setCurrentColumns(["level", "proficiency", "features", "cantrip", "level-1", "level-2", "level-3", "level-4"]);
+				currentColumns.push(...["cantrip", "level-1", "level-2", "level-3", "level-4"]);
+				setCurrentColumns(currentColumns);
 				setSpellSlots("third");
 				break;
 			default:
@@ -264,6 +268,17 @@ const Classes: Component = () => {
 						<Show when={!!casterType()}>
 							<span class={`${styles.selectSpan}`}>
 								<label>Spells Known</label>
+								<Input type="checkbox"
+									tooltip="Round up spells known?"
+									style={{"margin": "0px", 'margin-left': '10px'}} 
+									checked={currentClass().spellcasting?.spellsKnownRoundup ?? false} 
+									onChange={(e)=>{
+										const casterType = currentClass().spellcasting?.casterType as keyof typeof SpellsKnown;
+										if (!!casterType) {
+											const num = +SpellsKnown[casterType] as number;
+											setSpellKnown(num, e.currentTarget.checked);
+										}
+									}}/>
 								<Select disableUnselected transparent
 									value={currentClass().spellcasting?.casterType ?? ''}
 									onChange={(e)=>setSpellKnown(+e.currentTarget.value)}>
@@ -319,7 +334,7 @@ const Classes: Component = () => {
 										<Cell<LevelEntity> class={`${styles.cellStyle}`}>{(x)=>getSpellSlot(x.level, level)}</Cell>
 									</Column>
 								}</For>
-								<Row class={`${styles.rowStyle}`}/>
+								<Row class={`${styles.rowStyle}`}/> 
 								{/* <SecondRow<LevelEntity>>{(level, i)=>(
 									<div class={`${styles.levelSecondRow}`}>
 										<strong>Features: </strong>
