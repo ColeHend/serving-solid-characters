@@ -80,11 +80,10 @@
 }
 .headerStyle {
 	@include tableStyle;
-	text-align: left;
+	text-align: center;
 }
 .cellStyle {
 	@include tableStyle;
-	text-align: left;
 	width: 45px;
 	text-align: center;
 }
