@@ -15,7 +15,7 @@ const pwaOptions: Partial<VitePWAOptions> = //
   includeAssets: ["**/*.{png,svg,ico,json,jpg}"],
   workbox: {
     globPatterns: [
-      "**/*.{js,jsx,css,scss,ts,tsx,html,woff,woff2}"
+      "**/*.{js,jsx,css,scss,ts,tsx,html,woff,woff2,otf}"
     ]
   },
   injectRegister: 'auto',
