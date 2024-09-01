@@ -155,7 +155,7 @@ const Classes: Component = () => {
 		setCurrentClass(newClass);
 	};
 	const getFeatureChips = (i:number)=>Object.entries((currentClass().classLevels[i]?.classSpecific));
-	const tableData = createMemo(()=>currentClass().classLevels);
+	const tableData = () => currentClass().classLevels;
 
 	function getSpellSlot(level: number, slotLevel: number) {
     return getSpellSlots(level, slotLevel, untrack(casterType));

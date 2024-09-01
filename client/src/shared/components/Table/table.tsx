@@ -26,7 +26,7 @@ const Table = <T,>(props: TableProps<T>)=>{
 const TableComponent = <T,>(props: TableProps<T>) => {
 	const state = getTableContext<T>();
 	const [local, others] = splitProps(props, ["data", "columns", "children", "dropdown"]);
-	const tableData = createMemo(()=>local.data());
+	const tableData = () => local.data()
 	const [theadRef, setTheadRef] = createSignal<HTMLTableSectionElement>();
 	const [tbodyRef, setTbodyRef] = createSignal<HTMLTableSectionElement>();
 	state.setTableState({headers: [], rowTransform: [], currentColumns: [], });
