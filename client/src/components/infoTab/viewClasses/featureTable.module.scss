@@ -4,11 +4,17 @@
 
 .table {
     border: 1px solid !important;
+
+    tbody tr {
+        box-shadow: 0 0 4px #ccc !important;
+        &:hover {
+            background-color: #6b6b6b22;
+            // opacity: .3;
+            font-weight: bold;
+        }
+    }
 }
 
-.tableRow {
-    box-shadow: 0 0 4px #ccc !important;
-}
 
 .tableCell {
     border: 1px solid !important;
