@@ -13,11 +13,9 @@ const Chip: Component<Props> = (props)=> {
     const stylin = createMemo(()=>useStyles(userSettings().theme));
     return (
         <span class={`${stylin().tertiary} ${style.Chip} ${props.class ?? ""}`}>
-            <span>
-                {props.key}
-            </span>
+            <span>{props.key}</span>
             <span>:</span>
-            <span>{props.value}</span>
+            <span>{'  '+props.value}</span>
             <Show when={!!props.remove}>
                 <Button class={`${stylin().hover} ${style.removeChipButton}`} onClick={props.remove}>
                     X
