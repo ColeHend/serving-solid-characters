@@ -32,16 +32,14 @@ const TableComponent = <T,>(props: TableProps<T>) => {
 	const [showDropdown, setShowDropdown] = createSignal<{[key:number]: boolean}>({});
 	const getColumnIndex = (name: string)=>state.tableState().currentColumns.findIndex(x=>x===name);
 	const getHeaderTransform = (name: string)=>state.tableState().headers[getColumnIndex(name)];
+	const isDropTable = ()=>!!state.tableState().dropTransform;
 
-	const buildSecondRow = (row: T, rowI: number)=>{
-		const getTransform = state.tableState().dropTransform;
-		if (typeof getTransform !== "function" || !!!state.tableState().dropTransform) {
-			return <></>;
-		}
-		const colSpan = props.dropdown ? local.columns.length + 1 : local.columns.length;
-		return <tr {...state.tableState().dropProps}><td colSpan={colSpan}>{getTransform(row, rowI)}</td></tr>;
-	}
-	const dropCheck = (i: number)=>!!state.tableState().dropTransform && (!!showDropdown()[i] || !Object.keys(props).includes("dropdown"));
+	const dropCheck = (i: number)=>{
+		const hasTransform = !!state.tableState().dropTransform 
+		const showDrop = (!!showDropdown()[i] || !Object.keys(props).includes("dropdown"));
+		console.log(hasTransform, showDrop);
+		return hasTransform && showDrop;
+	};
 
 	props.children;
 	return (
@@ -58,10 +56,15 @@ const TableComponent = <T,>(props: TableProps<T>) => {
 							showDropdown={showDropdown()[i()]} 
 							setShowDropdown={setShowDropdown} 
 							dropdownArrow={others.dropdownArrow} 
+							isDropTable={isDropTable()}
 							row={row} 
 							rowI={i()} />
 						<Show when={dropCheck(i())}>
-							{buildSecondRow(row, i())}
+							<BuildSecondRow 
+								colSpan={local.columns.length} 
+								row={row} 
+								rowI={i()} 
+								transform={state.tableState().dropTransform!} />
 						</Show>
 					</>}</For>
 				</Show>
@@ -77,6 +80,7 @@ interface RowProps<T> extends JSX.HTMLAttributes<HTMLTableRowElement> {
 	dropdownArrow?: {width: string, height: string};
 	row: T;
 	rowI: number;
+	isDropTable: boolean;
 
 }
 const BuildTableRow = <T,>(props: RowProps<T>) => {
@@ -86,7 +90,7 @@ const BuildTableRow = <T,>(props: RowProps<T>) => {
 	const getCellTransform = (name: string)=>state.tableState().rowTransform[getColumnIndex(name)];
 	const hasTransforms = () => !!props.columns.map(x=> getCellTransform(x)).filter(x=>typeof x === "function").length;
 	return <>
-			<Show when={props.showDropdown && hasTransforms()}>
+			<Show when={props.isDropTable && hasTransforms()}>
 				<tr>
 					<For each={props.columns}>{(column, i)=>{
 						const cellTransform = getCellTransform(column);
@@ -110,7 +114,7 @@ const BuildTableRow = <T,>(props: RowProps<T>) => {
 						</td>
 				</tr>
 			</Show>
-			<Show when={!props.showDropdown && hasTransforms()}>
+			<Show when={!props.isDropTable && hasTransforms()}>
 				<tr>
 					<For each={props.columns}>{(column, i)=>{
 						const cellTransform = getCellTransform(column);
@@ -123,6 +127,15 @@ const BuildTableRow = <T,>(props: RowProps<T>) => {
 				</tr>
 			</Show>
 	</>
+}
+interface SecondRowProps<T> {
+	row: T;
+	colSpan: number;
+	rowI: number;
+	transform: ColumnState<T>;
+}
+const BuildSecondRow = <T,>(props: SecondRowProps<T>)=>{
+	return <tr><td colSpan={props.colSpan}>{props.transform(props.row, props.rowI)}</td></tr>;
 }
 
 export { Table };

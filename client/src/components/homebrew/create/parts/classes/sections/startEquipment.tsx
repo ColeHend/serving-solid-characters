@@ -26,12 +26,16 @@ import { DnDClass } from "../../../../../../models";
 import { Choice, Item } from "../../../../../../models/core.model";
 import Modal from "../../../../../../shared/components/popup/popup.component";
 import Tabs, { Tab } from "../../../../../../shared/components/Tabs/tabs";
+import { S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 
 interface Props {
 	currentClass: DnDClass;
 	setStartEquipChoice: (choiceNum: number, choice: Choice<Item>[]) => void;
 }
 const StartingEquipment: Component<Props> = (props) => {
+	const allItems = useGetItems();
+	const allWeapons = createMemo(()=>allItems().filter((item)=>item.equipmentCategory === "Weapon"));
+	const allArmor = createMemo(()=>allItems().filter((item)=>item.equipmentCategory === "Armor"));
 	const [showChoices, setShowChoices] = createSignal(false);
 	const [currentChoiceNum, setCurrentChoiceNum] = createSignal(1);
 	const getChoice = (choiceNum: number) => {
@@ -54,21 +58,6 @@ const StartingEquipment: Component<Props> = (props) => {
 							setCurrentChoiceNum(choiceNum);
 							setShowChoices(true);
 						}}>+</Button></h3>
-						<Show when={showChoices()}>
-							<Modal backgroundClick={[showChoices, setShowChoices]}>
-								<Tabs>
-									<Tab name="Items">
-										<div></div>
-									</Tab>
-									<Tab name="Weapons">
-										<div></div>
-									</Tab>
-									<Tab name="Armor">
-										<div></div>
-									</Tab>
-								</Tabs>
-							</Modal>	
-						</Show>
 						<ul>
 							<For each={getChoice(choiceNum)}>
 								{(item, i)=>(<>
@@ -87,6 +76,41 @@ const StartingEquipment: Component<Props> = (props) => {
 						<i>Add Items to choose from.</i>
 					</Show>
 					</li>)}</For>
+					<Show when={showChoices()}>
+							<Modal backgroundClick={[showChoices, setShowChoices]} title="Add Equipment Choice" >
+								<div>
+									<Tabs>
+										<Tab name="Items">
+											<div style={{height: '100%'}}>
+												<Select>
+													<For each={allItems()}>{(item)=>(
+														<Option value={item.name}>{item.name}</Option>
+													)}</For>
+												</Select>
+											</div>
+										</Tab>
+										<Tab name="Weapons">
+											<div style={{height: '100%'}}>
+												<Select>
+													<For each={allWeapons()}>{(item)=>(
+														<Option value={item.name}>{item.name}</Option>
+													)}</For>
+												</Select>
+											</div>
+										</Tab>
+										<Tab name="Armor">
+											<div style={{height: '100%'}}>
+												<Select>
+													<For each={allArmor()}>{(item)=>(
+														<Option value={item.name}>{item.name}</Option>
+													)}</For>
+												</Select>
+											</div>
+										</Tab>
+									</Tabs>
+								</div>
+							</Modal>	
+						</Show>
 				</ul>
 			</div>
 		</div>
