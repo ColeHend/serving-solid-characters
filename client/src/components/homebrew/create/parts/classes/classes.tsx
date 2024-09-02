@@ -124,13 +124,13 @@ const Classes: Component = () => {
 	const spellCalc = () => currentClass().spellcasting?.spellsKnownCalc;
 	const classLevels = () => currentClass().classLevels;
 	// --- setter functions
-	const setName = (name: string) => setCurrentClass((prev)=>({...prev, name}));
-	const setHitDie = (hitDie: number) => setCurrentClass((prev)=>({...prev, hitDie}));
-	const setProficiencies = (proficiencies: string[]) => setCurrentClass((prev)=>({...prev, proficiencies}));
-	const setProficiencyChoices = (proficiencyChoices: Choice<string>[]) => setCurrentClass((prev)=>({...prev, proficiencyChoices}));
-	const setSavingThrows = (savingThrows: string[]) => setCurrentClass((prev)=>({...prev, savingThrows}));
-	const setStartingEquipment = (startingEquipment: StartingEquipment) => setCurrentClass((prev)=>({...prev, startingEquipment}));
-	const setStartingEquipChoice = (choiceNum: number, choice: Choice<Item>[]) => {setCurrentClass((prev)=>({...prev, 
+	const setName = (name: string) => setCurrentClass((prev)=>Clone({...prev, name}));
+	const setHitDie = (hitDie: number) => setCurrentClass((prev)=>Clone({...prev, hitDie}));
+	const setProficiencies = (proficiencies: string[]) => setCurrentClass((prev)=>Clone({...prev, proficiencies}));
+	const setProficiencyChoices = (proficiencyChoices: Choice<string>[]) => setCurrentClass((prev)=>Clone({...prev, proficiencyChoices}));
+	const setSavingThrows = (savingThrows: string[]) => setCurrentClass((prev)=>Clone({...prev, savingThrows}));
+	const setStartingEquipment = (startingEquipment: StartingEquipment) => setCurrentClass((prev)=>Clone({...prev, startingEquipment}));
+	const setStartingEquipChoice = (choiceNum: number, choice: Choice<Item>[]) => {setCurrentClass((prev)=>Clone({...prev, 
 		startingEquipment: {...prev.startingEquipment, [`choice${choiceNum}`]: choice}
 	}))};
 
@@ -138,19 +138,19 @@ const Classes: Component = () => {
 	const setSubclasses = (subclasses: Subclass[]) => setCurrentClass((prev)=>Clone({...prev, subclasses}));
 	const setSubclassLevels = (subclassLevels: number[]) => setCurrentClass((prev)=>Clone({...prev, subclassLevels}));
 	// - spellcasting
-	const setSpellcastingName = (name: string) => setCurrentClass((prev)=>({...prev,
+	const setSpellcastingName = (name: string) => setCurrentClass((prev)=>Clone({...prev,
 		spellcasting: {...prev?.spellcasting, name}
 	} as DnDClass));
-	const setSpellKnown = (known: SpellsKnown, roundUp: boolean = false) => setCurrentClass((prev)=>({...prev, 
+	const setSpellKnown = (known: SpellsKnown, roundUp: boolean = false) => setCurrentClass((prev)=>Clone({...prev, 
 		spellcasting: {...prev?.spellcasting, spellsKnownCalc: SpellsKnown[known], spellsKnownRoundup: roundUp}
 	} as DnDClass));
-	const setSpellCastingAbility = (ability: CastingStat) => setCurrentClass((prev)=>({...prev, 
+	const setSpellCastingAbility = (ability: CastingStat) => setCurrentClass((prev)=>Clone({...prev, 
 		spellcasting: {...prev?.spellcasting , spellcastingAbility: CastingStat[ability]}
 	} as DnDClass));
-	const setSpellCasterType = (casterType: string) => setCurrentClass((prev)=>({...prev, 
+	const setSpellCasterType = (casterType: string) => setCurrentClass((prev)=>Clone({...prev, 
 		spellcasting: {...prev?.spellcasting, casterType}
 	} as DnDClass));
-	const setSpellCastingInfo = (info: Description[]) => setCurrentClass((prev)=>({...prev, 
+	const setSpellCastingInfo = (info: Description[]) => setCurrentClass((prev)=>Clone({...prev, 
 		spellcasting: {...prev?.spellcasting, info}
 	} as DnDClass));
 
