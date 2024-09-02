@@ -24,12 +24,16 @@ import {
 import FormField from "../../../../../../shared/components/FormField/formField";
 import { DnDClass } from "../../../../../../models";
 import { Choice, Item } from "../../../../../../models/core.model";
+import Modal from "../../../../../../shared/components/popup/popup.component";
+import Tabs, { Tab } from "../../../../../../shared/components/Tabs/tabs";
 
 interface Props {
 	currentClass: DnDClass;
 	setStartEquipChoice: (choiceNum: number, choice: Choice<Item>[]) => void;
 }
 const StartingEquipment: Component<Props> = (props) => {
+	const [showChoices, setShowChoices] = createSignal(false);
+	const [currentChoiceNum, setCurrentChoiceNum] = createSignal(1);
 	const getChoice = (choiceNum: number) => {
 		if (choiceNum === 1) return props.currentClass.startingEquipment.choice1;
 		if (choiceNum === 2) return props.currentClass.startingEquipment.choice2;
@@ -47,8 +51,24 @@ const StartingEquipment: Component<Props> = (props) => {
 					<For each={[1,2,3,4]}>{(choiceNum)=>(<li>
 						<h3>Choice {choiceNum} <Button onClick={(e)=>{
 							e.preventDefault();
-							addChoice(choiceNum);
+							setCurrentChoiceNum(choiceNum);
+							setShowChoices(true);
 						}}>+</Button></h3>
+						<Show when={showChoices()}>
+							<Modal backgroundClick={[showChoices, setShowChoices]}>
+								<Tabs>
+									<Tab name="Items">
+										<div></div>
+									</Tab>
+									<Tab name="Weapons">
+										<div></div>
+									</Tab>
+									<Tab name="Armor">
+										<div></div>
+									</Tab>
+								</Tabs>
+							</Modal>	
+						</Show>
 						<ul>
 							<For each={getChoice(choiceNum)}>
 								{(item, i)=>(<>

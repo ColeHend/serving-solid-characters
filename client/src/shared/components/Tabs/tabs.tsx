@@ -7,23 +7,49 @@ import { Tab } from "./tab";
 import { Button, getUserSettings, useStyle } from "../..";
 import style from "./tabs.module.scss";
 
-interface TabStore {
+interface ITabStore {
     [name: string]: JSX.Element;
 }
 
-export const tabContext = createContext<[Accessor<TabStore>, Setter<TabStore>]>(createSignal<TabStore>({}));
-const Provider: Component<ProviderProps<[Accessor<TabStore>, Setter<TabStore>]>> = (props) => {
-    return <tabContext.Provider value={props.value}>{props.children}</tabContext.Provider>
+const tabContext = createContext<{tabs: Accessor<ITabStore>, setTabs: Setter<ITabStore>}>({
+	tabs: () => ({}), 
+	setTabs: () => {}
+});
+export function getTabContext() {
+		return useContext(tabContext);
+}
+
+interface ITabProvider {
+		children: JSX.Element;
+		value: ITabStore;
+}
+const TabProvider: Component<ITabProvider> = (props) => {
+	const [tabs, setTabs] = createSignal<ITabStore>(props.value, {
+		equals: (a, b)=>{
+			const sameLength = Object.keys(a).length === Object.keys(b).length;
+			if (!sameLength) return false;
+			for (const key in a) {
+				if (a[key] !== b[key]) return false;
+			}
+			if (JSON.stringify(a) !== JSON.stringify(b)) return false;
+			return true
+		}
+	}); 
+    return <tabContext.Provider value={{tabs, setTabs}}>{props.children}</tabContext.Provider>
+}
+
+const Tabs: Component<Props> = (props) => {
+		return <TabProvider value={{}}><TabInternal {...props}/></TabProvider>
 }
 
 interface Props {
     children: JSX.Element;
     styleType?: "primary" | "accent" | "tertiary";
 }
-const Tabs: Component<Props> = (props) => {
+const TabInternal: Component<Props> = (props) => {
     const [defaultUserSettings, setDefaultUserSettings] = getUserSettings();
     const userStyle = createMemo(()=>useStyle(defaultUserSettings().theme));
-    const [tabs, setTabs] = useContext(tabContext);
+    const {tabs, setTabs} = useContext<{tabs: Accessor<ITabStore>, setTabs: Setter<ITabStore>}>(tabContext);
     const [selectedTab, setSelectedTab] = createSignal(Object.keys(tabs())[0]);
     const currentElement = createMemo(() => tabs()[selectedTab()]);
     const currentChildren = children(()=> props.children);
@@ -42,8 +68,7 @@ const Tabs: Component<Props> = (props) => {
     }
 		let tabContainer: HTMLDivElement;
 		effect(()=>{
-			console.log("showLeft", showLeft());
-			console.log("showRight", showRight());
+			console.log("tabs: ", tabs());
 		})
 		onMount(()=>{
 			if (!!tabContainer) {
@@ -68,33 +93,31 @@ const Tabs: Component<Props> = (props) => {
     const styleType = props.styleType ?? "accent";
     return (
         <div>
-            <Provider value={[tabs, setTabs]}>
-                <div class={`${userStyle()[styleType]} ${style.tabs}`}>
-										<Show when={showLeft()}>
-												<span class={`${style.leftArrow}`}>
-														<Button onClick={scrollLeft}>←</Button>
+            <div class={`${userStyle()[styleType]} ${style.tabs}`}>
+							<Show when={showLeft()}>
+									<span class={`${style.leftArrow}`}>
+											<Button onClick={scrollLeft}>←</Button>
+									</span>
+							</Show>
+							<div ref={tabContainer!}>
+								<For each={Object.keys(tabs())}>
+										{(tab, index) => (
+												<span class={`${useStyle().hover}`} onClick={() => setSelectedTab(tab)}>
+														<Show when={tab === selectedTab()}><b>{tab}</b></Show>
+														<Show when={tab !== selectedTab()}>{tab}</Show>
 												</span>
-										</Show>
-                    <div ref={tabContainer!}>
-											<For each={Object.keys(tabs())}>
-													{(tab, index) => (
-															<span class={`${useStyle().hover}`} onClick={() => setSelectedTab(tab)}>
-																	<Show when={tab === selectedTab()}><b>{tab}</b></Show>
-																	<Show when={tab !== selectedTab()}>{tab}</Show>
-															</span>
-													)}
-											</For>
-										</div>
-										<Show when={showRight()}>
-												<span class={`${style.rightArrow}`}>
-														<Button onClick={scrollRight}>→</Button>
-												</span>
-										</Show>
-                </div>
-                <div class={`${userStyle()[styleType]} ${style.tabBody}`}>
-                    {currentElement()}
-                </div>
-            </Provider>
+										)}
+								</For>
+							</div>
+							<Show when={showRight()}>
+									<span class={`${style.rightArrow}`}>
+											<Button onClick={scrollRight}>→</Button>
+									</span>
+							</Show>
+						</div>
+						<div class={`${userStyle()[styleType]} ${style.tabBody}`}>
+								{currentElement()}
+						</div>
         </div>
     );
 };
