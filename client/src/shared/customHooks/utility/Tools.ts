@@ -21,9 +21,9 @@ export function getSpellSlots(level: number, slotLevel: number, casterType: keyo
 	if (slotLevel === 1) return 2 + (effectiveLevel > 2 ? 2 : Math.floor(effectiveLevel / 2));
 	if (slotLevel <= 3) return 2 + (effectiveLevel > 9 ? 1 : effectiveLevel >= (slotLevel * 2) ? 1 : 0);
 	if (slotLevel === 4) return 1 + (effectiveLevel >= 9 ? 2 : effectiveLevel === 8 ? 1 : 0);
-	if (slotLevel === 5) return 1 + (effectiveLevel >= 17 ? 2 : effectiveLevel >= (slotLevel * 2) ? 1 : 0)
-	if (slotLevel <= 7) return 1 + (effectiveLevel > 9 ? 1 : effectiveLevel >= (slotLevel * 2) ? 1 : 0) + highlevelMod();
-	return Math.min(2, 1 + Math.floor((effectiveLevel - slotLevel * 2 + 1) / 2));
+	if (slotLevel === 5) return 1 + (effectiveLevel > 17 ? 2 : effectiveLevel >= (slotLevel * 2) ? 1 : 0)
+	if (slotLevel <= 7) return (effectiveLevel > 9 ? 1 : effectiveLevel >= (slotLevel * 2) ? 1 : 0) + highlevelMod();
+	return Math.min(1, 1 + Math.abs(Math.floor((effectiveLevel - slotLevel * 2) / 2)));
 }
 
 
