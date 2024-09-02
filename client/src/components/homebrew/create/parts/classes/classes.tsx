@@ -264,9 +264,6 @@ const Classes: Component = () => {
 		console.log("CurrentClass: ", currentClass());
 	});
 	createEffect(()=>{
-		console.log("TableData: ", tableData());
-	});
-	createEffect(()=>{
 		const currentColumns = ["level", "proficiency", "features"];
 		
 		switch (casterType()) {

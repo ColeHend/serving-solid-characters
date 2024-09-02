@@ -42,10 +42,7 @@ const TableComponent = <T,>(props: TableProps<T>) => {
 		return <tr {...state.tableState().dropProps}><td colSpan={colSpan}>{getTransform(row, rowI)}</td></tr>;
 	}
 	const dropCheck = (i: number)=>!!state.tableState().dropTransform && (!!showDropdown()[i] || !Object.keys(props).includes("dropdown"));
-	createEffect(()=>{
-		console.log('data: ', local.data());
-		
-	})
+
 	props.children;
 	return (
 		<table {...others}>
