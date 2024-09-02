@@ -1,9 +1,6 @@
-import { Component, createEffect, createSignal, For, JSX, onMount, splitProps, type Accessor, type Setter } from "solid-js";
+import { JSX, onMount, splitProps } from "solid-js";
 import { ColumnState } from "./table";
-import { effect } from "solid-js/web";
-import { Clone } from "../..";
 import { getTableContext } from "./tableProvider";
-import { useRowContext } from "./rowProvider";
 
 interface ColumnProps<T> {
     children: [JSX.Element, JSX.Element, JSX.Element?];
@@ -38,13 +35,13 @@ interface CellProps<T> {
 const Cell = <T=any,>(props: CellProps<T>) => {
 		const [local, others] = splitProps(props, ["children"]);
     const {tableState, setTableState} = getTableContext<T>();
-		const rowContext = useRowContext();
 
     onMount(()=>{
 			setTableState((prev)=>({...prev, 
 				cellProps: [...(!!prev.cellProps ? prev.cellProps : []), others],
 				rowTransform: [...prev.rowTransform, local.children]}));
     });
+		
     return <></>;
 }
 interface RowProps extends JSX.HTMLAttributes<HTMLTableRowElement> {}
@@ -63,7 +60,6 @@ interface DropRowProps<T> {
 }
 const SecondRow = <T,>(props: DropRowProps<T>) => {
 		const [local, others] = splitProps(props, ["children"]);
-		const rowContext = useRowContext();
 		const {tableState, setTableState} = getTableContext<T>();
 		onMount(()=>{
 				setTableState((prev)=>({...prev, 

@@ -10,6 +10,7 @@ import { ExtendedTab } from "../models/extendedTab";
 import Modal from "../shared/components/popup/popup.component";
 import { UserSettings } from "../models/userSettings";
 import NavMenu from "./navMenu/navMenu";
+import { SnackbarController } from "../shared/components/Snackbar/snackbar";
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
@@ -77,6 +78,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   
           </div>
         </div>
+				<SnackbarController />
       </Provider>
     );
   };

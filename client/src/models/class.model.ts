@@ -1,4 +1,5 @@
 import { SpellsKnown } from "../components/homebrew/create/parts/subclasses/subclasses";
+import { CastingStat } from "../shared/models/stats";
 import type { Choice, StartingEquipment, Feature, Info, Description } from "./core.model";
 import { Spell } from "./spell.model";
 
@@ -36,9 +37,9 @@ export interface Subclass {
 }
 interface Spellcasting {
     name: string;
-    spellsKnownCalc: SpellsKnown;
+    spellsKnownCalc: SpellsKnown | string;
     spellsKnownRoundup?: boolean;
-    spellcastingAbility: string;
+    spellcastingAbility: CastingStat | string;
     casterType: string;
     info: Array<Description>
 }
