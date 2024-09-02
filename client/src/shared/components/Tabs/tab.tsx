@@ -1,17 +1,16 @@
-import { JSX, Component, useContext, children } from "solid-js";
+import { JSX, Component, useContext, children, onMount } from "solid-js";
 import { effect } from "solid-js/web";
-import { tabContext } from "./tabs";
+import { getTabContext } from "./tabs";
 
 interface TabProps {
     children: JSX.Element;
     name: string;
 }
 const Tab: Component<TabProps> = (props) => {
-    const [tabStore, setTabStore] = useContext(tabContext);
-    const child = children(()=>props.children);
-    effect(()=>{
+    const {tabs, setTabs} = getTabContext();
+    onMount(()=>{
         if (props.name !== undefined) {
-            setTabStore(old => ({...old, [props.name]: child() }));
+            setTabs(old => ({...old, [props.name]: props.children }));
         }
         
     })

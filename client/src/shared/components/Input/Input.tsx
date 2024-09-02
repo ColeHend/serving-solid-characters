@@ -13,7 +13,7 @@ const Input: Component<InputProps> = (props)=> {
     const [customProps, normalProps] = splitProps(props, ["tooltip", "transparent", "value", "onChange"]);
     const noTransparent = (type?: string) => ["checkbox"].includes(type ?? "text");
 		const context = useFormProvider();
-		const inputValue = createMemo(()=>!!context.getValue ? context.getValue() : props.value);
+		const inputValue = createMemo(()=> props.value);
 
 		onMount(()=>{
 			if (!!context.getName) {
