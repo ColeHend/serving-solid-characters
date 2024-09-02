@@ -19,14 +19,19 @@ import {
   useGetItems,
   getUserSettings,
   useStyle,
-  Body
+  Body,
+	Weapon,
+	Item,
+	Armor
 } from "../../../../../../shared/";
 import FormField from "../../../../../../shared/components/FormField/formField";
 import { DnDClass } from "../../../../../../models";
-import { Choice, Item } from "../../../../../../models/core.model";
+import { Choice } from "../../../../../../models/core.model";
 import Modal from "../../../../../../shared/components/popup/popup.component";
 import Tabs, { Tab } from "../../../../../../shared/components/Tabs/tabs";
 import { S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import { Table } from "../../../../../../shared/components/Table/table";
+import { Column, Header, Cell, Row } from "../../../../../../shared/components/Table/innerTable";
 
 interface Props {
 	currentClass: DnDClass;
@@ -45,8 +50,7 @@ const StartingEquipment: Component<Props> = (props) => {
 		if (choiceNum === 4) return props.currentClass.startingEquipment.choice4;	
 		return [];	
 	};
-	const addChoice = (choiceNum: number) => {
-	};
+	const [selectedItems, setSelectedItems] = createSignal<string[]>([]);
 	return (
 		<div>
 			<h2>Starting Equipment</h2>
@@ -82,16 +86,28 @@ const StartingEquipment: Component<Props> = (props) => {
 									<Tabs>
 										<Tab name="Items">
 											<div style={{height: '100%'}}>
-												<Select>
-													<For each={allItems()}>{(item)=>(
-														<Option value={item.name}>{item.name}</Option>
-													)}</For>
-												</Select>
+												<Table data={allItems} columns={['name', 'price']}>
+													<Column name="name">
+														<Header>Name</Header>
+														<Cell<Item> >{(item, i)=><span title={(item.desc??[]).join('\n')}>{item.name}</span>}</Cell>
+													</Column>
+													<Column name="price">
+														<Header>Price</Header>
+														<Cell<Item>>{(item)=><span title={(item.desc??[]).join('\n')}>
+															{`${item.cost.quantity} ${item.cost.unit}`}
+														</span>}</Cell>
+													</Column>
+													<Row />
+												</Table>
+
+											</div>
+											<div>
+												<Button>Add Items</Button>
 											</div>
 										</Tab>
 										<Tab name="Weapons">
 											<div style={{height: '100%'}}>
-												<Select>
+												<Select transparent>
 													<For each={allWeapons()}>{(item)=>(
 														<Option value={item.name}>{item.name}</Option>
 													)}</For>
@@ -100,7 +116,7 @@ const StartingEquipment: Component<Props> = (props) => {
 										</Tab>
 										<Tab name="Armor">
 											<div style={{height: '100%'}}>
-												<Select>
+												<Select transparent>
 													<For each={allArmor()}>{(item)=>(
 														<Option value={item.name}>{item.name}</Option>
 													)}</For>
