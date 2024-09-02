@@ -1,4 +1,31 @@
 import { Spell } from "../../../models";
+interface typeValues {
+		full: number;
+		half: number;
+		third: number;
+		[other: string]: number;
+}
+export function getSpellSlots(level: number, slotLevel: number, casterType: keyof typeValues, typeValues: typeValues = { full: 1, half: 0.5, third: 1 / 3 }) {
+	if (level < 1 || slotLevel < 1 || slotLevel > 9) return 0;
+
+	const casterFactor = !!typeValues[casterType] ? typeValues[casterType] : 1;
+	const effectiveLevel = Math.ceil(level * casterFactor);
+
+	if (effectiveLevel < slotLevel * 2 - 1) return '-';
+	const highlevelMod = ()=>{
+		if (slotLevel === 5 && effectiveLevel >= 18) return 1;
+		if (slotLevel === 6 && effectiveLevel >= 19) return 1;
+		if (slotLevel === 7 && effectiveLevel >= 20) return 1;
+		return 0;
+	}
+	if (slotLevel === 1) return 2 + (effectiveLevel > 2 ? 2 : Math.floor(effectiveLevel / 2));
+	if (slotLevel <= 3) return 2 + (effectiveLevel > 9 ? 1 : effectiveLevel >= (slotLevel * 2) ? 1 : 0);
+	if (slotLevel === 4) return 1 + (effectiveLevel >= 9 ? 2 : effectiveLevel === 8 ? 1 : 0);
+	if (slotLevel === 5) return 1 + (effectiveLevel > 17 ? 2 : effectiveLevel >= (slotLevel * 2) ? 1 : 0)
+	if (slotLevel <= 7) return (effectiveLevel > 9 ? 1 : effectiveLevel >= (slotLevel * 2) ? 1 : 0) + highlevelMod();
+	return Math.min(1, 1 + Math.abs(Math.floor((effectiveLevel - slotLevel * 2) / 2)));
+}
+
 
 /**
  * Calculates the spellcasting dictionary based on the given level and caster type.

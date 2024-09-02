@@ -7,7 +7,7 @@ import { effect } from "solid-js/web";
 
 interface Props {
     chips: Accessor<ChipType[]>;
-    setChips: Setter<ChipType[]>;
+    setChips?: Setter<ChipType[]>;
 }
 const Chipbar: Component<Props> = (props) => {
     const [showLeft, setShowLeft] = createSignal(false);
@@ -55,12 +55,12 @@ const Chipbar: Component<Props> = (props) => {
                 <div ref={chipContainer!} class={`${style.chipContainer}`}>
 									<Show when={props.chips().length > 1}>
                     <span>
-                        <Button onClick={() => props.setChips([])}>Clear All</Button>
+                        <Button onClick={() => props.setChips?props.setChips([]):null}>Clear All</Button>
                     </span>
 									</Show>
                     <For each={props.chips()}>
                         {(chip, i) => (
-                            <Chip key={chip.key} value={chip.value} remove={props.chips().length > 0 ? ()=>props.setChips((old)=> [...old].filter((x, index)=>index !== i())) : undefined} />
+                            <Chip key={chip.key} value={chip.value} remove={props.chips().length > 0 ? ()=>props.setChips? props.setChips((old)=> [...old].filter((x, index)=>index !== i())): null : undefined} />
                         )}
                     </For>
                 </div>

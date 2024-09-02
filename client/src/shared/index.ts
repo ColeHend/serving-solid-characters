@@ -8,3 +8,4 @@ export * from "./svgs/gear";
 export * from "./svgs/pencil";
 export * from "./svgs/skinnySnowman";
 export * from "./svgs/camera";
+export * from "../models/items.model";
