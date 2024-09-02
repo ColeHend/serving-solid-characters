@@ -84,6 +84,16 @@ const Classes: Component = () => {
 		subclassLevels: []
 	}, {
 		equals: (prev, next) => {
+				if (!!prev.spellcasting && !!next.spellcasting) {
+					if (prev.spellcasting.name !== next.spellcasting.name) return false;
+					if (prev.spellcasting.spellsKnownCalc !== next.spellcasting.spellsKnownCalc) return false;
+					if (prev.spellcasting.spellcastingAbility !== next.spellcasting.spellcastingAbility) return false;
+					if (prev.spellcasting.casterType !== next.spellcasting.casterType) return false;
+					if (JSON.stringify(prev.spellcasting.info) !== JSON.stringify(next.spellcasting.info)) return false;
+					
+				} else {
+					if (!!prev.spellcasting !== !!next.spellcasting) return false;
+				}
 				if (prev.classLevels.length !== next.classLevels.length) return false;
 				for (let i = 0; i < prev.classLevels.length; i++) {
 					const prevLevel = prev.classLevels[i];
@@ -105,6 +115,7 @@ const Classes: Component = () => {
 				for (let i = 0; i < prev.proficiencies.length; i++) {
 					if (prev.proficiencies[i] !== next.proficiencies[i]) return false;
 				}
+				
 				const name = prev.name === next.name;
 				const hitDie = prev.hitDie === next.hitDie;
 				const proficiencyChoices = JSON.stringify(prev.proficiencyChoices) === JSON.stringify(next.proficiencyChoices);
@@ -118,7 +129,17 @@ const Classes: Component = () => {
 	});
 	const tableData = () => currentClass().classLevels
 	const getFeatureChips = (i:number)=>Object.entries((classLevels()[i]?.classSpecific));
-	const [casterType, setCasterType] = createSignal<string>("");
+	const casterType = () => currentClass().spellcasting?.casterType ;
+	const setCasterType = (casterType: string) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, 
+		spellcasting: {
+			level: 0,
+			name: prev.spellcasting?.name ?? "",
+			spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
+			spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
+			casterType: casterType,
+			info: prev.spellcasting?.info ?? []
+		}
+}));
 	const [currentColumns, setCurrentColumns] = createSignal<string[]>(["level", "proficiency", "options", "features"]);
 	const [levels, setLevels] = createSignal<number[]>(Array.from({length: 20}, (_, i)=>i+1));
 	const spellCalc = () => currentClass().spellcasting?.spellsKnownCalc;
@@ -134,25 +155,61 @@ const Classes: Component = () => {
 		startingEquipment: {...prev.startingEquipment, [`choice${choiceNum}`]: choice}
 	}))};
 
-	const setClassLevels = (classLevels: LevelEntity[]) => setCurrentClass((prev)=>Clone({...prev, classLevels}));
-	const setSubclasses = (subclasses: Subclass[]) => setCurrentClass((prev)=>Clone({...prev, subclasses}));
-	const setSubclassLevels = (subclassLevels: number[]) => setCurrentClass((prev)=>Clone({...prev, subclassLevels}));
+	const setClassLevels = (classLevels: LevelEntity[]) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, classLevels}));
+	const setSubclasses = (subclasses: Subclass[]) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, subclasses}));
+	const setSubclassLevels = (subclassLevels: number[]) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, subclassLevels}));
 	// - spellcasting
-	const setSpellcastingName = (name: string) => setCurrentClass((prev)=>Clone({...prev,
-		spellcasting: {...prev?.spellcasting, name}
-	} as DnDClass));
-	const setSpellKnown = (known: SpellsKnown, roundUp: boolean = false) => setCurrentClass((prev)=>Clone({...prev, 
-		spellcasting: {...prev?.spellcasting, spellsKnownCalc: SpellsKnown[known], spellsKnownRoundup: roundUp}
-	} as DnDClass));
-	const setSpellCastingAbility = (ability: CastingStat) => setCurrentClass((prev)=>Clone({...prev, 
-		spellcasting: {...prev?.spellcasting , spellcastingAbility: CastingStat[ability]}
-	} as DnDClass));
-	const setSpellCasterType = (casterType: string) => setCurrentClass((prev)=>Clone({...prev, 
-		spellcasting: {...prev?.spellcasting, casterType}
-	} as DnDClass));
-	const setSpellCastingInfo = (info: Description[]) => setCurrentClass((prev)=>Clone({...prev, 
-		spellcasting: {...prev?.spellcasting, info}
-	} as DnDClass));
+	const setSpellcastingName = (name: string) => setCurrentClass((prev)=>Clone<DnDClass>({...prev,
+		spellcasting: {
+			level: 0,
+			name,
+			spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
+			spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
+			casterType: prev.spellcasting?.casterType ?? "full",
+			info: prev.spellcasting?.info ?? []
+		}
+	}));
+	const setSpellKnown = (known: SpellsKnown, roundUp: boolean = false) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, 
+		spellcasting: {
+			level: 0,
+			name: prev.spellcasting?.name ?? "",
+			spellsKnownCalc: SpellsKnown[known],
+			spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
+			casterType: prev.spellcasting?.casterType ?? "full",
+			info: prev.spellcasting?.info ?? [],
+			spellsKnownRoundup: roundUp
+		}
+	}));
+	const setSpellCastingAbility = (ability: CastingStat) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, 
+		spellcasting: {
+			level: 0,
+			name: prev.spellcasting?.name ?? "",
+			spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
+			spellcastingAbility: CastingStat[ability],
+			casterType: prev.spellcasting?.casterType ?? "full",
+			info: prev.spellcasting?.info ?? []
+		}
+	}));
+	const setSpellCasterType = (casterType: string) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, 
+		spellcasting: {
+			level: 0,
+			name: prev.spellcasting?.name ?? "",
+			spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
+			spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
+			casterType: casterType,
+			info: prev.spellcasting?.info ?? []
+		}
+	}));
+	const setSpellCastingInfo = (info: Description[]) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, 
+		spellcasting: {
+			level: 0,
+			name: prev.spellcasting?.name ?? "",
+			spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
+			spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
+			casterType: prev.spellcasting?.casterType ?? "full",
+			info
+		}
+	}));
 
 	
 	// --- functions
@@ -201,7 +258,7 @@ const Classes: Component = () => {
 	};
 	
 	function getSpellSlot(level: number, slotLevel: number) {
-    return getSpellSlots(level, slotLevel, casterType());
+    return getSpellSlots(level, slotLevel, casterType() ?? '');
 	}
 	const setSpellCantrips = (level: number, cantrips: number) => {
 		const newClassLevels = classLevels().map((x, i)=>i === level - 1 ? {...x, spellcasting: {...x.spellcasting, cantrips_known: cantrips}} : x);
@@ -212,7 +269,7 @@ const Classes: Component = () => {
 		setClassLevels(newClassLevels);
 	}
 	function setSpellSlots(casterType: string) {
-		setCurrentClass((prev)=>({...prev, 
+		setCurrentClass((prev)=>Clone<DnDClass>({...prev, 
 			classLevels: Array.from({length: 20}, (_, i)=>i+1).map((level)=>{
 				const classLevel = prev.classLevels[level-1];
 				const otherKeys = Object.entries(classLevel.spellcasting ?? {}).filter((x)=>!x.includes('spell_slots_level'));
@@ -232,7 +289,7 @@ const Classes: Component = () => {
 				casterType: casterType,
 				info: prev.spellcasting?.info ?? []
 			}
-		}) as DnDClass);
+		}));
 	}
 	function setSpellsKnown(level: number, known: number) {
 		const newClassLevels = currentClass().classLevels.map((x, i)=>i === level - 1 ? {...x, spellcasting: {...x.spellcasting, spells_known: known}} : x);
@@ -240,7 +297,7 @@ const Classes: Component = () => {
 	}
 	
 	function clearSpellSlots() {
-		setCurrentClass((old)=>({...old,
+		setCurrentClass((old)=>Clone<DnDClass>({...old,
 			classLevels: old.classLevels.map((x, i)=>({...x, 
 				spellcasting: {
 					['spells_known']: (x?.spellcasting?.['spells_known'] ?? ++i)
@@ -268,9 +325,8 @@ const Classes: Component = () => {
 		
 		switch (casterType()) {
 			case "full":
-				const typ = untrack(clearSpellSlots);
-				if (!!typ) {
-					currentColumns.push(...[typ, "cantrip", "level-1", "level-2", "level-3", "level-4", "level-5", "level-6", "level-7", "level-8", "level-9"]);
+				if (spellCalc() === 'Other') {
+					currentColumns.push(...['spellsKnown', "cantrip", "level-1", "level-2", "level-3", "level-4", "level-5", "level-6", "level-7", "level-8", "level-9"]);
 				} else {
 					currentColumns.push(...["cantrip", "level-1", "level-2", "level-3", "level-4", "level-5", "level-6", "level-7", "level-8", "level-9"]);
 				}
@@ -278,9 +334,8 @@ const Classes: Component = () => {
 				setSpellSlots("full");
 				break;
 			case "half":
-				const typ2 = untrack(clearSpellSlots);
-				if (!!typ2) {
-					currentColumns.push(...[typ2, "cantrip", "level-1", "level-2", "level-3", "level-4", "level-5"]);
+				if (spellCalc() === 'Other') {
+					currentColumns.push(...['spellsKnown', "cantrip", "level-1", "level-2", "level-3", "level-4", "level-5"]);
 				} else {
 					currentColumns.push(...["cantrip", "level-1", "level-2", "level-3", "level-4", "level-5"]);
 				}
@@ -288,9 +343,8 @@ const Classes: Component = () => {
 				setSpellSlots("half");
 				break;
 			case "third":
-				const typ3 = untrack(clearSpellSlots);
-				if (!!typ3) {
-					currentColumns.push(...[typ3, "cantrip", "level-1", "level-2", "level-3", "level-4"]);
+				if (spellCalc() === 'Other') {
+					currentColumns.push(...['spellsKnown', "cantrip", "level-1", "level-2", "level-3", "level-4"]);
 				} else {
 					currentColumns.push(...["cantrip", "level-1", "level-2", "level-3", "level-4"]);
 				}
@@ -348,8 +402,16 @@ const Classes: Component = () => {
 							<span class={`${styles.selectSpan}`}>
 								<label>Casting Stat</label>
 								<Select disableUnselected transparent 
-									value={currentClass().spellcasting?.spellcastingAbility ?? ""} 
-									onSelect={(e)=>setSpellCastingAbility(+e.currentTarget.value)}> 
+									value={(()=>{
+										const classCast = currentClass().spellcasting;
+										if (!!classCast) {
+											const abilityValue = classCast.spellcastingAbility;
+											if (typeof abilityValue === 'string'  && !/\d/.test(abilityValue)) return JSON.parse(JSON.stringify(CastingStat))[abilityValue].toString();
+											if (typeof abilityValue === 'number' || /\d/.test(abilityValue)) return abilityValue.toString();
+										}
+										return '1';
+									})()} 
+									onChange={(e)=>{setSpellCastingAbility(+e.currentTarget.value)}}> 
 									<For each={[1,2,3]}>{(x)=><>
 										<Option value={x}>{CastingStat[x]}</Option>
 									</>}</For>
