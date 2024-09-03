@@ -1,4 +1,4 @@
-$mobile: 800px;
+$mobile: 768px;
 
 .CenterPage {
     margin: 0 auto;
@@ -7,29 +7,145 @@ $mobile: 800px;
     text-align: center;
     background: none;
     background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
+    border-radius: 15px;
+
+    h1{
+        font-family: 'Mr_Eaves_Small_Caps';
+        font-weight: 100;
+        color: #AA0505;
+        margin-left: 12px;
+        font-size: 1.8em;
+    }
+
+    h2 {
+        font-family: 'Bookinsanity';
+        font-weight: 100;
+        color: #000;
+        margin-left: 12px;
+        font-size: 1.2em;
+    }
+    
+    h4 {
+        font-family: 'Bookinsanity';
+        font-weight: 100;
+        color: #000;
+        margin-left: 12px;
+    }
+
+    span {
+        font-family: 'Bookinsanity';
+        font-weight: 100;
+        color: #000;
+    }
 }
 
 .eachPage {
     padding: 15px;
     width: 70%;
-}
+    table {
 
-.Center {
-    margin: 0 auto;
-    width: 90%;
-}
+        thead {
 
-.CenterTable {
-    margin: 0 auto;
-    width: 45%;
-    
-    @media screen and (max-width) {
-        margin-left: 0;
+            tr{
+
+                th {
+
+                    font-family: 'Zatanna_Misdirection';
+                    font-weight: 100;
+                    color: #000;
+                }
+            }
+        }
+
+        tbody {
+
+            tr {
+                td {
+                    font-family: 'Scaly_Sans';
+                    font-weight: 100;
+                    color: #000;
+                }
+            }
+        }
     }
 }
 
+
 .subClasses {
-    margin: 5% 0 5% 25%;
+    margin-top: 2%;
     max-width: 80%;
+
+}
+.dropCard {
+    width: 50%;
+    div {
+        background-color: none;
+        background: none;
+    }
+    h2 {
+        font-family: 'Nodesto_Caps_Condensed';
+        font-weight: 100;
+        color: #000;
+        font-size: 2em;
+    }
+    h3 {
+        font-family: 'Mr_Eaves_Small_Caps';
+        font-weight: 100;
+        color: #000;
+        font-size: 1.5em;
+    }
+    span {
+        font-family: 'Bookinsanity';
+        font-weight: 100;
+        color: #000;
+    }
+}
+.flexbox {
+    display: flex;
+    flex-direction: row;
+}
+.innerFlexBox {
+    display: flex;
+    flex-direction: column;
+    margin: 0 5%;
+    width: 100%;
+    h3 {
+        font-family: 'Mr_Eaves_Small_Caps';
+        font-weight: 100;
+        color: #000;
+        font-size: 1.5em;
+    }
+    span {
+        font-family: 'Bookinsanity';
+        font-weight: 100;
+        color: #000;
+    }
+}
+.left {
+    width: min-content;
+    text-wrap: nowrap;
+    float: left;
+    span {
+        width: min-content;
+    }
+    div {
+        width: min-content;
+    }
+    h1 {
+        width: min-content;
+    }
+    h2 {
+        width: min-content;
+        margin-left: 33%;
+    }
+    h3 {
+        width: min-content;
+    }
+    br {
+        width: min-content;
+    }
+    hr {
+        width: min-content;
+    }
 
 }

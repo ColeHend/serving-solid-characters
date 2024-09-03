@@ -1,4 +1,4 @@
-import { Accessor, Component, For, JSX, Match, Setter, Show, Switch, createSignal } from "solid-js";
+import { Accessor, Component, For, JSX, Match, Setter, Show, Switch, createEffect, createSignal } from "solid-js";
 import useDnDSpells from "../../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import { Spell } from "../../../../models/spell.model";
 import { effect } from "solid-js/web";
@@ -55,7 +55,7 @@ const SearchBar: Component<Props> = (props) => {
         "Transmutation"
     ]
 
-    effect(() => {
+    createEffect(() => {
         props.setSearchResults(props.spellsSrd().filter((spell: Spell) => {
             if (!!spell && chipBar().length > 0){
                 const keyTypes = [...new Set<string>(chipBar().map(x=>x.key))]
@@ -90,7 +90,7 @@ const SearchBar: Component<Props> = (props) => {
         }));
     });
 
-    effect(()=>{
+    createEffect(()=>{
         if (props.spellsSrd().length > 0) {
             if (typeof props.spellsSrd()[0][searchKey() as keyof Spell] === 'boolean') {
                 setSearchValue(`${ischecked()}`)
@@ -98,7 +98,7 @@ const SearchBar: Component<Props> = (props) => {
         }
     })
 
-    effect(()=>{
+    createEffect(()=>{
         setChipBar((oldChips)=>!!searchChip().key ?[...oldChips, searchChip()] : oldChips);
         setSearchValue("");
         if (!!(document.getElementById("searchBar") as HTMLSelectElement)) {
@@ -113,20 +113,22 @@ const SearchBar: Component<Props> = (props) => {
         const fixupString = (str: string) => (str.charAt(0).toUpperCase() + str.slice(1)).replace(/([A-Z])/g, ' $1').trim();
         return Key.startsWith("is") ? fixupString(Key.replace("is", "")): fixupString(Key);
     }
+
+    const getFirstSpell = ()=> props.spellsSrd().length > 0 ? props.spellsSrd()[0] : {} as Spell
     
     return (
-        <div style={{width:"100%"}}>
+        <div>
             <div class={`${styles.searchBar}`}>
                 <Button transparent={true} onClick={()=>setSearchChip((old)=>({key: searchKey(), value: beutifyChip(searchValue())  }))} >
                     <SearchGlass />
                 </Button>
                 <Select class={`${styles.all}`} disableUnselected={true} onChange={(e)=>setSearchKey(e.target.value)} id="chipDropdown">
-                    <For each={Object.keys(props.spellsSrd()[0]).filter(x=> !["materials_Needed","higherLevel","page"].includes(x) )}>{(key) => 
+                    <For each={Object.keys(getFirstSpell()).filter(x=> !["materials_Needed","higherLevel","page"].includes(x) )}>{(key) => 
                         <Option value={key}>{beautifyKey(key)}</Option>
                     }</For>
                 </Select>
                 <Switch>
-                    <Match when={Array.isArray(props.spellsSrd()[0][searchKey() as keyof Spell]) || ['damageType', 'castingTime', 'range', 'duration'].includes(searchKey())}>
+                    <Match when={Array.isArray(getFirstSpell()[searchKey() as keyof Spell]) || ['damageType', 'castingTime', 'range', 'duration'].includes(searchKey())}>
                         <Select onChange={(e) => setSearchValue(e.currentTarget.value)}>
                             <For each={getKeyOptions(searchKey() as keyof Spell)}>
                                 {(option)=>
@@ -135,7 +137,7 @@ const SearchBar: Component<Props> = (props) => {
                             </For>
                         </Select>
                     </Match>
-                    <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "boolean"}>
+                    <Match when={typeof getFirstSpell()[searchKey() as keyof Spell] === "boolean"}>
                         <div class={`${styles.booleanSelect}`} id="booleanBar">
                             <Input type="checkbox" checked={ischecked()} id="booleanCheckbox" onchange={()=>{
                                     setIsChecked(!ischecked())
@@ -151,7 +153,7 @@ const SearchBar: Component<Props> = (props) => {
                             </label>
                         </div>
                     </Match>
-                    <Match when={typeof props.spellsSrd()[0][searchKey() as keyof Spell] === "string"}>
+                    <Match when={typeof getFirstSpell()[searchKey() as keyof Spell] === "string"}>
                         <Switch fallback={
                             <Input
                         id="searchBar"

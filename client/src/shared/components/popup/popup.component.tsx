@@ -21,6 +21,17 @@ type Props = {
     backgroundClick?: [ Accessor<boolean>, Setter<boolean>]
 }
 
+/**
+ * 
+ * @param title {string} {string} - The title of the modal.
+ * @param width {string} {string} - The css width of the modal.
+ * @param maxWidth {string} {string} - The optional css max-width of the modal.
+ * @param height {string} {string} - The css height of the modal.
+ * @param maxHeight {string} {string} - The optional css max-height of the modal.
+ * @param translate {x{x: string, y: string} - Override the default x and y coordinates of the modal.
+ * @param backgroundClick [Accessor <bool>, Setter <bool>] - A signal and setter for enabling the background click.
+ * @returns - A Modal component.
+ */
 const Modal:Component<Props> = (props)=>{
     const [userSettings, setUserSettings] = getUserSettings();
     const sharedHooks = useContext(SharedHookContext);
@@ -46,7 +57,8 @@ const Modal:Component<Props> = (props)=>{
                     <h2 style="margin-left: 5%">
                         {props.title ?? "Modal"}
                     </h2>
-                    <Button onClick={()=>setBackClick(old => !old)}><b>X</b></Button>
+                    <span><Button onClick={()=>setBackClick(old => !old)}><b>X</b></Button></span>
+                    
                 </div>
                 {props.children}
             </div>
