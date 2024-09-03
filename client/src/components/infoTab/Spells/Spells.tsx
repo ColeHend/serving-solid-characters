@@ -19,7 +19,8 @@ import { effect } from "solid-js/web";
 import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-import { Body, ExpansionPanel } from "../../../shared/components";
+import { Body } from "../../../shared/components";
+import Chip from "../../../shared/components/Chip/Chip";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import Table from "../../../shared/components/Table/table";
 import {
@@ -30,6 +31,7 @@ import {
   SecondRow,
 } from "../../../shared/components/Table/innerTable";
 import { Clone } from "../../../shared";
+import Chipbar from "../../../shared/components/Chipbar/chipbar";
 
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
@@ -136,7 +138,6 @@ const masterSpells: Component = () => {
 
     setTableData(allSpells);
   });
-
   return (
     <Body>
       <h1 class={`${styles.center}`}>Spells</h1>
@@ -211,6 +212,10 @@ const masterSpells: Component = () => {
                   <h2>Classes: {spell.classes.join(", ")}</h2>
 
                   <h2>SubClasses: {spell.subClasses.join(", ")}</h2>
+
+                  <Show when={spell.ritual}>
+                    <Chip class={`${styles.spellChip}`} key="ritual" value="yes" />
+                  </Show>
 
                   <span>{spell.desc}</span>
 
