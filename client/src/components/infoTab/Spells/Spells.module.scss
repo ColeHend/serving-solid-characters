@@ -11,6 +11,10 @@
         list-style: none;
     }
 
+		table {
+			
+		}
+
     #materials_needed {
         word-wrap:normal;
     }
@@ -76,6 +80,6 @@
     }
 }
 .center {
-    margin: 0 auto;
-    width: min-content;
+  text-align: center;
+	margin: 0 auto;
 }

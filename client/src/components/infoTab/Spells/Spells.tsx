@@ -13,6 +13,8 @@ import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { ExpansionPanel } from "../../../shared/components";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
+import Table from "../../../shared/components/Table/table";
+import { Cell, Column, Header, Row, SecondRow } from "../../../shared/components/Table/innerTable";
 
 
 const masterSpells: Component = () => {
@@ -71,12 +73,61 @@ const masterSpells: Component = () => {
             <br />
             <SearchBar searchResults={searchResults} setSearchResults={setSearchResults} spellsSrd={dndSrdSpells}></SearchBar>
 
+						<Table data={paginatedSpells} columns={["Name", "Level"]} dropdown >
+				<Column name="Name">
+					<Header>
+						Name
+					</Header>
+					<Cell<Spell> class={`${styles.center}`}>{(x, i) => <div>
+						<span>{x.name}</span>
+					</div>}</Cell>
+				</Column>
+				<Column name="Level">
+					<Header>
+						Level
+					</Header>
+					<Cell<Spell> class={`${styles.center}`}>{(x, i) => <div>
+						<span>{x.level}</span>
+					</div>}</Cell>
+				</Column>
+
+				<Row />
+				<SecondRow<Spell>>{(spell, i) => <div class={`${styles.view}`}>
+					<div>
+						<h1>{spell.name}</h1>
+
+						<h2>{spellLevel(spell.level)} {spell.school}</h2>
+
+						<h2>Casting time: {spell.castingTime} </h2>
+
+						<h2>Range: {spell.range} </h2>
+
+						<h2>Component: {spellComponents(spell)}</h2>
+
+						<h2>Duration: {spell.duration}</h2>
+
+						<h2>Classes: {spell.classes.join(", ")}</h2>
+
+						<h2>SubClasses: {spell.subClasses.join(", ")}</h2>
+
+						<span>
+							{spell.desc}
+						</span>
+
+						<Show when={!!spell.higherLevel}>
+							<h4>At Higher Levels:  </h4> <span>{spell.higherLevel}</span>
+						</Show>
+					</div>
+				</div>}</SecondRow>
+			</Table>
+
+
             <ul>
                 <For each={paginatedSpells()}>
                     {(spell, i)=>
                         <>
                             <Show when={!sharedHooks?.isMobile()}>
-                                <ExpansionPanel extraLogic={()=>setCurrentSpell(spell)} startOpen={currentSpell().name === spell.name}>
+                                <ExpansionPanel extraLogic={()=>setCurrentSpell(spell)}>
                                     <div class={`${styles.headerBar}`}>
                                         <span>{spell.name}</span> <span>{spellLevel(spell.level)}</span>
                                     </div>
