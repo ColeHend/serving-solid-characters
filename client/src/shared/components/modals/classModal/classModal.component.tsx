@@ -15,6 +15,8 @@ import Paginator from "../../paginator/paginator";
 import { Feature } from "../../../../models/core.model";
 import { classFeatureNullCheck, Clone } from "../../../customHooks/utility/Tools";
 import SubclassModal from "./subclassModal.component";
+import Chipbar from "../../Chipbar/chipbar";
+import ChipType from "../../../models/chip";
 
 type props = {
     currentClass: Accessor<DnDClass>;
@@ -25,6 +27,7 @@ const ClassModal:Component<props> = (props)=> {
     const [userSettings, setUserSettings] = getUserSettings();
     const stylin = createMemo(()=>useStyles(userSettings().theme));
     const [paginatedFeatures,setPaginatedFeatures] = createSignal<Feature<unknown, string>[]>([]);
+    const [equipChips,setEquipChips] = createSignal<ChipType[]>([{key:"test",value:'test'}]);
 
     
     const currentSubclasses = createMemo(() => props.currentClass().subclasses?.length > 0 ? props.currentClass().subclasses : [] as Subclass[])
@@ -33,6 +36,9 @@ const ClassModal:Component<props> = (props)=> {
     // props to pass in
     // the current class
 
+    const getEquipmentChoice = (choiceNum: 1 | 2 | 3 | 4) => {
+        return props.currentClass().startingEquipment[`choice${choiceNum}`];
+    }
 
     return (
         <div class={`${stylin()?.primary} ${styles.CenterPage}`}>
@@ -136,198 +142,55 @@ const ClassModal:Component<props> = (props)=> {
                         </div>
                         <div>
                             <br />
-
-                            <Show when={props.currentClass().startingEquipment.choice1.length >= 1}>
-                                <For each={props.currentClass().startingEquipment.choice1}>
-                                    {(choice, i) =>
-                                        <div>
-                                            <Show when={i() < 1}>
-                                                <h3>choice 1</h3>
-                                            </Show>
-
-                                            <br />
-
-                                            <Show when={i() < 1}>
-                                                <span>choose:  {choice.choose}</span>
-                                            </Show>
-
-                                            <br />
-
-                                            <span>
-                                                <For each={choice.choices}>
-                                                    {(item, i) =>
-                                                        <>
-                                                            <br />
-                                                            <span>{item.item}</span>
-                                                            <br />
-                                                        </>
-                                                    }
-                                                </For>
-                                            </span>
-
-                                            <Show when={i() <= 0}>
+                            
+                            <For each={[1,2,3,4]}>
+                                {(number, i)=>
+                                    <Show when={getEquipmentChoice(number as 1|2|3|4).length >= 1}>
+                                        <For each={getEquipmentChoice(number as 1|2|3|4)}>
+                                        {(choice, i) =>
+                                            <div>
+                                                <Show when={i() < 1}>
+                                                    <h3>choice  {number}</h3>
+                                                </Show>
+    
                                                 <br />
-                                                <span>or</span>
-                                            </Show>
-                                        </div>
-                                    }
-                                </For>
-                            </Show>
-
-                            <Show when={props.currentClass().startingEquipment.choice2}>
-                                <For each={props.currentClass().startingEquipment.choice2}>
-                                    {(choice, i) =>
-                                        <div>
-                                            <Show when={i() < 1}>
-                                                <h3>choice 2</h3>
-                                            </Show>
-
-                                            <br />
-
-                                            <Show when={i() < 1}>
-                                                <span>choose:  {choice.choose}</span>
-                                            </Show>
-
-                                            <br />
-
-                                            <span>
-                                                <For each={choice.choices}>
-                                                    {(item) =>
-                                                        <>
-                                                            <br />
-                                                            <span>{item.item}</span>
-
-                                                            <br />
-                                                        </>
-                                                    }
-                                                </For>
-                                            </span>
-
-                                            <Show when={i() <= 0}>
+    
+                                                <Show when={i() < 1}>
+                                                    <span>choose:  {choice.choose}</span>
+                                                </Show>
+    
                                                 <br />
-                                                <span>or</span>
-                                            </Show>
-                                        </div>
-                                    }
-                                </For>
-                            </Show>
+    
+                                                <span>
+                                                    {/* <For each={choice.choices}>
+                                                        {(item, i) =>
+                                                            <>
+                                                                <br />
+                                                                <span>{item.item}</span>
+                                                                <br />
+                                                            </>
+                                                        }
+                                                    </For> */}
+                                                    <Chipbar chips={equipChips} setChips={setEquipChips} />
+                                                </span>
+    
+                                                <Show when={i() <= 0}>
+                                                    <br />
+                                                    <span>or</span>
+                                                </Show>
+                                            </div>
+                                        }
+                                    </For>
+                                </Show>
+                                }
+                            </For>
+                            
 
-                            <Show when={props.currentClass().startingEquipment.choice3}>
-                                <For each={props.currentClass().startingEquipment.choice3}>
-                                    {(choice, i) =>
-                                        <div>
-                                            <Show when={i() < 1}>
-                                                <h3>choice 3</h3>
-                                            </Show>
-
-                                            <br />
-
-                                            <Show when={i() < 1}>
-                                                <span>choose:  {choice.choose}</span>
-                                            </Show>
-
-                                            <br />
-
-                                            <span>
-                                                <For each={choice.choices}>
-                                                    {(item) =>
-                                                        <>
-                                                            <br />
-                                                            <span>{item.item}</span>
-
-                                                            <br />
-                                                        </>
-                                                    }
-                                                </For>
-                                            </span>
-
-                                            <Show when={i() <= 0}>
-                                                <br />
-                                                <span>or</span>
-                                            </Show>
-                                        </div>
-                                    }
-                                </For>
-                            </Show>
-
-                            <Show when={props.currentClass().startingEquipment.choice4}>
-                                <For each={props.currentClass().startingEquipment.choice4}>
-                                    {(choice, i) =>
-                                        <div>
-                                            <Show when={i() < 1}>
-                                                <h3>choice 4</h3>
-                                            </Show>
-
-                                            <br />
-
-                                            <Show when={i() < 1}>
-                                                <span>choose:  {choice.choose}</span>
-                                            </Show>
-
-                                            <span>
-                                                <For each={choice.choices}>
-                                                    {(item) =>
-                                                        <>
-                                                            <br />
-                                                            <span>{item.item}</span>
-
-                                                            <br />
-                                                        </>
-                                                    }
-                                                </For>
-                                            </span>
-
-                                            <Show when={i() <= 0}>
-                                                <br />
-                                                <span>or</span>
-                                            </Show>
-                                        </div>
-                                    }
-                                </For>
-                            </Show>
+                            
                         </div>
                     </ExpansionPanel>
 
                     <br />
-                        
-                    {/* Features */}
-                    <ExpansionPanel class={`${styles.dropCard}`}>
-                        <div>
-                            <h2>
-                                Features
-                            </h2>
-                        </div>
-                        <div>
-                            <For each={paginatedFeatures()}>
-                                {(feature,i) =>
-                                    <>
-                                        <div class={`${styles.flexbox}`}>
-
-                                                    <Show when={!!feature.name.trim() || !!(feature.value as string).trim()}>
-                                                    <div class={`${styles.innerFlexBox}`}>
-                                                        <h3>{feature.name}</h3>
-                                                        <span>
-                                                            {
-                                                                classFeatureNullCheck(!!JSON.parse(JSON.stringify(feature.value)) && typeof JSON.parse(JSON.stringify(feature.value)) === "object" && JSON.parse((JSON.stringify(feature.value))) !== undefined ?
-                                                                JSON.stringify(feature.value) : feature.value)
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    </Show>
-
-                                        </div>
-                                    </>
-                                }
-                            </For>
-
-                            <div class={`${styles.Center}`}>
-                                <Paginator items={allFeatures} setPaginatedItems={setPaginatedFeatures} itemsPerPage={[2,3,4,5,10]} />
-
-                            </div>
-                            
-                            
-                        </div>
-                    </ExpansionPanel>
 
                     <div class={`${styles.subClasses}`}>
                         <For each={currentSubclasses()}>{(subclass)=>(

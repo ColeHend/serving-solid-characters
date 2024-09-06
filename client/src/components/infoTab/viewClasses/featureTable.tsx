@@ -37,7 +37,7 @@ const FeatureTable: Component<Props> = (props) => {
     return (
         <table class={`${styles.table}`}>
             <thead>
-                <tr class={`${styles.tableRow}`}>
+                <tr>
                     <th>
                         Level
                     </th>
@@ -59,7 +59,7 @@ const FeatureTable: Component<Props> = (props) => {
             <tbody>
                 <For each={Class().classLevels.sort((a,b)=> a.info.level - b.info.level)}>
                     {(item)=>
-                            <tr style={{border: "1px solid white"}} class={`${styles.tableRow}`}>
+                            <tr style={{border: "1px solid white"}}>
                                 
                                 <td>{item.info.level}</td>
 

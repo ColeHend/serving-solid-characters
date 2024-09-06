@@ -6,6 +6,7 @@ import style from "./paginator.module.scss";
 import Button from "../Button/Button";
 import Select from "../Select/Select";
 import { SharedHookContext } from "../../../components/rootApp";
+import { getUserSettings } from "../..";
 
 type Props<T> = {
     items: Accessor<T>;
@@ -14,11 +15,13 @@ type Props<T> = {
 };
 
 const Paginator = <T,>(props: Props<T[]>) => {
+    const sharedHooks = useContext(SharedHookContext);
+
+    const [userSettings, setUserSettings] = getUserSettings();
     const [currentPage, setCurrentPage] = createSignal(1);
     const [itemsPerPage, setItemsPerPage] = createSignal(props.itemsPerPage?.[0] ?? 10);
 
-    const sharedHooks = useContext(SharedHookContext);
-    const stylin = sharedHooks?.useStyle();
+    const stylin = createMemo(()=>useStyle(userSettings().theme))
 
     // the paginator --------------------------------
     const theItems = createMemo(() => props.items().slice((currentPage() - 1) * itemsPerPage(), currentPage() * itemsPerPage()))
@@ -39,7 +42,7 @@ const Paginator = <T,>(props: Props<T[]>) => {
     });
     
     return (
-        <div class={`${stylin?.accent} ${style.paginator} `}>
+        <div class={`${stylin()?.accent} ${style.paginator} `}>
             <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</Button>
             <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</Button>
             <Select disableUnselected={true} transparent={true} onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>
