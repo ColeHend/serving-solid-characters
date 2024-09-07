@@ -67,9 +67,6 @@ const TabInternal: Component<Props> = (props) => {
         }
     }
 		let tabContainer: HTMLDivElement;
-		effect(()=>{
-			console.log("tabs: ", tabs());
-		})
 		onMount(()=>{
 			if (!!tabContainer) {
 				tabContainer.addEventListener("scroll", scrollFunction)

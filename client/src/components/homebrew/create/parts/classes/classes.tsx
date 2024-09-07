@@ -35,7 +35,6 @@ import {
   Choice,
   StartingEquipment,
   Feature,
-  Item,
 	Description,
 } from "../../../../../models/core.model";
 import LevelBuilder from "./levelBuilder";
@@ -50,6 +49,7 @@ import StartEquipment from "./sections/startEquipment";
 import { CastingStat, Stat } from "../../../../../shared/models/stats";
 import { SpellLevels } from "../../../../../shared/models/casting";
 import Chipbar from "../../../../../shared/components/Chipbar/chipbar";
+import { Item } from '../../../../../shared/index';
 
 const Classes: Component = () => {
 	// --- getter functions

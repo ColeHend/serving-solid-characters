@@ -1,4 +1,31 @@
 import { Spell } from "../../../models";
+
+export const SortArrayByKey = <T,>(arr: T[], key: keyof T, isAsc: boolean) => {
+	return arr.sort((a, b) => {
+				switch (key) {
+					case 'cost':
+						const c:any = a[key];
+						const d:any = b[key];
+						if (c['quantity'] > d['quantity']) return isAsc ? 1 : -1;
+						if (c['quantity'] < d['quantity']) return isAsc ? -1 : 1;
+					case 'damage':
+						const e:any = a[key];
+						const f:any = b[key];
+						if (e[0]['damageDice'] > f[0]['damageDice']) return isAsc ? 1 : -1;
+						if (e[0]['damageDice'] < f[0]['damageDice']) return isAsc ? -1 : 1;
+					case 'range':
+						const g:any = a[key];
+						const h:any = b[key];
+						if (g['normal'] > h['normal']) return isAsc ? 1 : -1;
+						if (g['normal'] < h['normal']) return isAsc ? -1 : 1;
+					default:
+						if (a[key] > b[key]) return isAsc ? 1 : -1;
+						if (a[key] < b[key]) return isAsc ? -1 : 1;
+				}
+				return 0;
+		});
+};
+
 interface typeValues {
 		full: number;
 		half: number;

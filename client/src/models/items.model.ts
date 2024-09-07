@@ -13,11 +13,12 @@ export interface Item {
 export interface Weapon extends Item {
     weaponCategory: string;
     weaponRange: string;
+		categoryRange: string;
     damage: {
         damageDice: string;
         damageType: string;
         damageBonus: number;
-    };
+    }[];
     range: {
         normal: number;
         long?: number;

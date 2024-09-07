@@ -1,0 +1,25 @@
+.header {
+	&:hover {
+		cursor: pointer;
+	}
+}
+.paginator {
+	margin: 0 auto;
+}
+.list {
+	list-style: none;
+}
+.tableContainer {
+	max-height: 410px;
+	width: 99%;
+	overflow-y: auto;
+}
+.itemTable {
+	width: 75%;
+	margin: 0 auto;
+}
+.searchBar {
+	max-height: 50px;
+	max-width: 99%;
+	margin-bottom: 5px;
+}
