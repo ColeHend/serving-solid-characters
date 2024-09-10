@@ -1,6 +1,6 @@
 import { Component, For, Show, Switch, Match, createSignal, createMemo, Accessor, useContext } from "solid-js";
 import ExpansionPanel from "../../../shared/components/expansion/expansion";
-import FeatureTable from "./featureTable";
+import FeatureTable from "../../../shared/components/modals/classModal/featureTable/featureTable";
 import useGetClasses from "../../../shared/customHooks/data/useGetClasses";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./viewClasses.module.scss"

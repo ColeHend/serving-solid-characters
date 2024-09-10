@@ -1,5 +1,5 @@
 import { Accessor, Component, createMemo, createSignal, For, JSX, Show, useContext } from "solid-js";
-import FeatureTable from "../../../../components/infoTab/viewClasses/featureTable";
+import FeatureTable from "./featureTable/featureTable";
 import Carousel from "../../Carosel/Carosel";
 import ExpansionPanel from "../../expansion/expansion";
 import { DnDClass, Subclass } from "../../../../models/class.model";

@@ -11,6 +11,8 @@ import BarMenu from "../../shared/svgs/barMenu";
 import { SharedHookContext } from "../rootApp";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
+import { Calculator } from "../../shared/svgs/calulator";
+import DamageCalulator from "../../shared/components/modals/damageCalculator/damageCalculator";
 
 type Props = {
     style?: CSSModuleClasses[string],
@@ -31,6 +33,7 @@ const Navbar: Component<Props> = (props) => {
     const refresh = createSignal(false);
     const [loggedIn, setLoggedIn] = createSignal(false);
     const [pageName, setPageName] = createSignal(window.location.pathname);
+    const [showDamageCalc,setShowDamageCalc] = createSignal(false);
     const Buttons: Tab[] = [
         {Name: "Home", Link: "/"},
         {Name: "Characters", Link: "/characters"},
@@ -70,10 +73,22 @@ const Navbar: Component<Props> = (props) => {
                         )}
                     </For>
                 </ul>
+
+                <div class={`${navStyles.toolBar}`}> 
+                    <Button onClick={()=>setShowDamageCalc(!showDamageCalc())} title="damage calculator">
+                        <Calculator />
+                    </Button>
+                </div>
+
                 <Button onClick={()=>setShowList(old => !old)} >
                     <BarMenu />
                 </Button>
             </div>
+
+
+            <Show when={showDamageCalc()}>
+                <DamageCalulator setter={setShowDamageCalc} accssor={showDamageCalc} />
+            </Show>
         </div>
     )
 }
