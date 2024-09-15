@@ -17,7 +17,7 @@ const Chip: Component<Props> = (props)=> {
     //  const stylin = createMemo(()=>useStyles(userSettings().theme));
     //  
     return (
-        <span class={`${stylin()?.accent} ${style.Chip} ${props.class ?? ""}`}>
+        <span class={`${stylin().accent} ${style.Chip} ${props.class ?? ""}`}>
             <span>{props.key}</span>
             <span>:</span>
             <span>{'  '+props.value}</span>

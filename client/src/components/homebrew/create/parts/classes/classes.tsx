@@ -35,7 +35,6 @@ import {
   Choice,
   StartingEquipment,
   Feature,
-  Item,
 	Description,
 } from "../../../../../models/core.model";
 import LevelBuilder from "./levelBuilder";
@@ -50,6 +49,7 @@ import StartEquipment from "./sections/startEquipment";
 import { CastingStat, Stat } from "../../../../../shared/models/stats";
 import { SpellLevels } from "../../../../../shared/models/casting";
 import Chipbar from "../../../../../shared/components/Chipbar/chipbar";
+import { Item } from '../../../../../shared/index';
 
 const Classes: Component = () => {
 	// --- getter functions
@@ -121,6 +121,23 @@ const Classes: Component = () => {
 				const proficiencyChoices = JSON.stringify(prev.proficiencyChoices) === JSON.stringify(next.proficiencyChoices);
 				const savingThrows = JSON.stringify(prev.savingThrows) === JSON.stringify(next.savingThrows);
 				const startingEquipment = JSON.stringify(prev.startingEquipment) === JSON.stringify(next.startingEquipment);
+				if (!startingEquipment) return false;
+				const itemsArr = ["choice1", "choice2", "choice3", 'choice4'];
+				for (let index = 0; index < 4; index++) {
+					const prevItems = prev.startingEquipment[itemsArr[index] as keyof StartingEquipment] as Choice<Item>[];
+					const nextItems = next.startingEquipment[itemsArr[index] as keyof StartingEquipment] as Choice<Item>[];
+					if (prevItems.length !== nextItems.length) return false;
+					for (let i = 0; i < prevItems.length; i++) {
+						const prevChoices = prevItems[i].choices;
+						const nextChoices = nextItems[i].choices;
+						if (prevChoices.length !== nextChoices.length) return false;
+						if (prevItems[i].type !== nextItems[i].type) return false;
+						if (prevItems[i].choose !== nextItems[i].choose) return false;
+						for (let j = 0; j < prevChoices.length; j++) {
+							if (JSON.stringify(prevChoices[j]) !== JSON.stringify(nextChoices[j])) return false;
+						}
+					}
+				}
 				const subclasses = JSON.stringify(prev.subclasses) === JSON.stringify(next.subclasses);
 				const subclassLevels = JSON.stringify(prev.subclassLevels) === JSON.stringify(next.subclassLevels);
 				const all = [name, hitDie, proficiencyChoices, savingThrows, startingEquipment, subclasses, subclassLevels];
@@ -151,9 +168,37 @@ const Classes: Component = () => {
 	const setProficiencyChoices = (proficiencyChoices: Choice<string>[]) => setCurrentClass((prev)=>Clone({...prev, proficiencyChoices}));
 	const setSavingThrows = (savingThrows: string[]) => setCurrentClass((prev)=>Clone({...prev, savingThrows}));
 	const setStartingEquipment = (startingEquipment: StartingEquipment) => setCurrentClass((prev)=>Clone({...prev, startingEquipment}));
-	const setStartingEquipChoice = (choiceNum: number, choice: Choice<Item>[]) => {setCurrentClass((prev)=>Clone({...prev, 
-		startingEquipment: {...prev.startingEquipment, [`choice${choiceNum}`]: choice}
-	}))};
+	const setStartingEquipChoice = (choiceNum: number, choice: Choice<Item>[]) => {
+		console.log(choice);
+		
+		switch (choiceNum) {
+			case 1:
+				setCurrentClass((prev)=>(({...prev, 
+					startingEquipment: {...prev.startingEquipment, choice1: [...prev.startingEquipment.choice1, ...choice]}
+				} as DnDClass)));
+				break;
+			case 2:
+			setCurrentClass((prev)=>(({...prev, 
+				startingEquipment: {...prev.startingEquipment, choice2: choice}
+			} as DnDClass)));
+			break;
+			case 3:
+				setCurrentClass((prev)=>(({...prev, 
+					startingEquipment: {...prev.startingEquipment, choice3: choice}
+				} as DnDClass)));
+			break;
+			case 4:
+				setCurrentClass((prev)=>(({...prev, 
+					startingEquipment: {...prev.startingEquipment, choice4: choice}
+				} as DnDClass)));
+				break;	
+			default:
+				setCurrentClass((prev)=>(({...prev, 
+					startingEquipment: {...prev.startingEquipment, choice1: choice}
+				} as DnDClass)));
+				break;
+		}
+	};
 
 	const setClassLevels = (classLevels: LevelEntity[]) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, classLevels}));
 	const setSubclasses = (subclasses: Subclass[]) => setCurrentClass((prev)=>Clone<DnDClass>({...prev, subclasses}));

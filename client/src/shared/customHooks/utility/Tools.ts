@@ -1,4 +1,66 @@
 import { Spell } from "../../../models";
+
+
+export class UniqueSet<T> {
+	private set: Map<string, T>;
+	constructor() {
+		this.set = new Map();
+	}
+	public add(item: T) {
+		this.set.set(JSON.stringify(item), item);
+	}
+	public delete(item: T) {
+		this.set.delete(JSON.stringify(item));
+	}
+	public get value() {
+		return Array.from(this.set.values()) as T[];
+	}
+	public set value(value: T[]) {
+		if (!!!value?.length) return ;
+		this.clear();
+		value.forEach((item) => this.add(item));
+	}
+	public clear() {
+		this.set.clear();
+	}
+}
+
+export const SortArrayByKey = <T,>(arr: T[], key: keyof T, isAsc: boolean) => {
+	return arr.sort((a, b) => {
+				switch (key) {
+					case 'cost':
+						const c:any = a[key];
+						const d:any = b[key];
+						if (c['quantity'] > d['quantity']) return isAsc ? 1 : -1;
+						if (c['quantity'] < d['quantity']) return isAsc ? -1 : 1;
+						break;
+					case 'damage':
+						const e:any = a[key];
+						const f:any = b[key];
+						if (e[0]['damageDice'] > f[0]['damageDice']) return isAsc ? 1 : -1;
+						if (e[0]['damageDice'] < f[0]['damageDice']) return isAsc ? -1 : 1;
+						break;
+					case 'range':
+						const g:any = a[key];
+						const h:any = b[key];
+						if (g['normal'] > h['normal']) return isAsc ? 1 : -1;
+						if (g['normal'] < h['normal']) return isAsc ? -1 : 1;
+						break;
+					case 'armorClass':
+						const c1:any = a[key];
+						const d2:any = b[key];
+						if (c1['base'] > d2['base']) return isAsc ? 1 : -1;
+						if (c1['base'] < d2['base']) return isAsc ? -1 : 1;
+						break;
+					default:
+						if (a[key] > b[key]) return isAsc ? 1 : -1;
+						if (a[key] < b[key]) return isAsc ? -1 : 1;
+						break;
+				}
+				return 0;
+		});
+};
+
 interface typeValues {
 		full: number;
 		half: number;

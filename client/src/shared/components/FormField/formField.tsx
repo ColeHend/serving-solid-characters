@@ -39,16 +39,16 @@ const FormField2: Component<Props> = (props) => {
 		context.setName(props.name);
 	});
 	const [fieldMargin, setFieldMargin] = createSignal<string>("10px");
-	const [fieldPadding, setFieldPadding] = createSignal<string>("25px");
+	const [fieldPadding, setFieldPadding] = createSignal<string>("20px");
 	effect(()=>{
 		if (haveInsideText()) {
 			setFieldMargin("10px");
-			if (context.getFieldType() !== "textarea") setFieldPadding("25px");
-			if (context.getFieldType() === "textarea") setFieldPadding("15px");
+			if (context.getFieldType() !== "textarea") setFieldPadding("10px");
+			if (context.getFieldType() === "textarea") setFieldPadding("10px");
 		} else {
 			setFieldMargin("0px");
-			if (context.getFieldType() !== "textarea") setFieldPadding("15px");
-			if (context.getFieldType() === "textarea") setFieldPadding("8px");
+			if (context.getFieldType() !== "textarea") setFieldPadding("0px");
+			if (context.getFieldType() === "textarea") setFieldPadding("3px");
 		}
 	})
 
@@ -61,7 +61,7 @@ const FormField2: Component<Props> = (props) => {
 				}}
 				onClick={() => context.setTextInside(false)}
 				class={`${themeStyle()[local.styleType ?? "accent"]} ${style.formField} ${local.class ?? ''}`}>
-				<legend class={`${haveInsideText() ? `${style.moveLegendInside}` : ``}`}>{!!context.getName() ? context.getName() : ``}</legend>
+				<legend class={`${themeStyle()[local.styleType ?? "accent"]} ${haveInsideText() ? `${style.moveLegendInside}` : ``}`}>{!!context.getName() ? context.getName() : ``}</legend>
 					{theChildren()}
 			</fieldset>
 	);
