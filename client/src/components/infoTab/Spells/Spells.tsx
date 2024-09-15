@@ -90,6 +90,7 @@ const masterSpells: Component = () => {
     return components.join(", ");
   };
 
+						
   const dataSort = (sortBy: keyof Spell) => {
     setCurrentSort((old) => {
       if (old.sortKey === sortBy) {
