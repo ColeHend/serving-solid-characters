@@ -1,0 +1,36 @@
+.wrapper {
+    padding: 0px;
+    overflow-y: hidden;
+    padding-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    :not(span):nth-child(2) {
+        margin-top: 5%;
+        height: 95%;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+    
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5%;
+    overflow-y: hidden;
+    padding: 5px;
+    h2 {
+        text-align: left;
+        margin-left: 5%;
+        flex-grow: 1;
+        padding-bottom: 5px;
+    }
+    span {
+        flex-shrink: 0;
+        width: min-content;
+        height: min-content;
+    }
+}

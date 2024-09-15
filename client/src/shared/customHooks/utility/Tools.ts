@@ -89,6 +89,13 @@ export function getSpellSlots(level: number, slotLevel: number, casterType: keyo
 }
 
 
+/**
+ * Calculates the spellcasting dictionary based on the given level and caster type.
+ * @param level - The level of the character.
+ * @param casterType - The type of caster ("half" or other).
+ * @param cantrips - Optional. Indicates whether cantrips are included. Defaults to false.
+ * @returns The spellcasting dictionary object.
+ */
 export function getSpellcastingDictionary(level:number, casterType: string, cantrips = false) {
     const getSlotString = (slot: number) => slot === 0 ? "cantrips_known" : `spell_slots_level_${slot}`;
     const spellcastingObject: {[key:string]:number} = {};
@@ -219,6 +226,11 @@ export function getSpellcastingDictionary(level:number, casterType: string, cant
     return spellcastingObject;
 }
 
+/**
+ * Returns a string representation of the given number with the appropriate accent.
+ * @param num - The number to add accent to.
+ * @returns The string representation of the number with accent.
+ */
 export const getAddNumberAccent = (num: number)=>{
     switch (num) {
         case 0:
@@ -234,14 +246,42 @@ export const getAddNumberAccent = (num: number)=>{
     }
 }
 
+/**
+ * Clones an object.
+ * 
+ * @param object - The object to clone.
+ * @returns A deep copy of the object.
+ * @template T - The type of the object.
+ */
 export function Clone<T>(object: T) {
     return JSON.parse(JSON.stringify(object)) as T;
 }
+
+/**
+ * Returns an array of numbers from 1 to the specified number.
+ * 
+ * @param num - The specified number.
+ * @returns An array of numbers from 1 to the specified number.
+ */
 export function getNumberArray(num: number) {
     return Array.from({ length: num }, (_, i) => i + 1);
 }
+
+/**
+ * Returns the slot string based on the given slot number.
+ * If the slot number is 0, it returns "cantrips_known".
+ * Otherwise, it returns "spell_slots_level_" followed by the slot number.
+ * 
+ * @param slot - The slot number.
+ * @returns The slot string.
+ */
 export const getSlotString = (slot: number) => slot === 0 ? "cantrips_known" : `spell_slots_level_${slot}`;
 
+/**
+ * Converts a spell level string to its corresponding display value.
+ * @param spellLevel - The spell level string to convert.
+ * @returns The display value of the spell level.
+ */
 export const spellLevel = (spellLevel: string) => { 
     switch(spellLevel){
         case "0":
@@ -258,6 +298,11 @@ export const spellLevel = (spellLevel: string) => {
 }
 
 
+/**
+ * Calculates the spell components for a given spell.
+ * @param spell - The spell object.
+ * @returns The spell components as a string.
+ */
 export const spellComponents = (spell:Spell) => {
     const components = []
     if(spell.isVerbal) components.push("V");
@@ -267,4 +312,19 @@ export const spellComponents = (spell:Spell) => {
         return [components.join(', '), spell.materials_Needed ?? null].join(', ')
     }
     return components.join(', ')
+}
+
+ /**
+*  it takes in an unknown value, clones. making the value an object.
+* 
+*  then checks if its just a string or an array
+* 
+* @param {T} value the unknown value
+* @returns the cloned value as a nice string
+*/
+export const classFeatureNullCheck = <T,>(value: T) => {
+   const val = JSON.parse(JSON.stringify(value))
+   if (typeof val === 'string') return val
+   if (Array.isArray(val)) return val.join("\n \n")
+   return "-unknown-";
 }
