@@ -10,7 +10,7 @@
 	list-style: none;
 }
 .tableContainer {
-	max-height: 410px;
+	max-height: 350px;
 	width: 99%;
 	overflow-y: auto;
 }
@@ -22,4 +22,11 @@
 	max-height: 50px;
 	max-width: 99%;
 	margin-bottom: 5px;
+}
+.checkbox {
+	margin: 0px;
+	width: 30px;
+}
+.choice {
+	width: 165px;
 }

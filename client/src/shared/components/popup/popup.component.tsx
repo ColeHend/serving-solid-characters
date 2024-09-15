@@ -41,7 +41,7 @@ const Modal:Component<Props> = (props)=>{
                     transform: `translate(${defaultX},${defaultY})`,
                     padding: "0px",
                     "padding-bottom": "5px",
-										'padding-top': '4rem',
+										'padding-top': '3.8rem',
 										overflow: 'hidden'
                 }} class={`${stylin()?.popup} ${stylin()?.primary}`}>
                 <div class={stylin()?.accent} style={{
