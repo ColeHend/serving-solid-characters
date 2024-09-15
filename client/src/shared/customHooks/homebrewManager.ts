@@ -3,6 +3,7 @@ import { Accessor, Setter, createSignal, catchError } from "solid-js";
 import { DnDClass, Item, Feat, Spell, Background, Race } from "../../models";
 import homebrewDB from "./utility/localDB/homebrewDBFile";
 import httpClient$ from "./utility/httpClientObs";
+import { Clone } from "./utility/Tools";
 class HomebrewManager {
     public classes: Accessor<DnDClass[]>;
     private setClasses: Setter<DnDClass[]>;
@@ -210,7 +211,7 @@ class HomebrewManager {
             return;
         }
         this.setSpells(old =>[...old, newSpell]);
-        this.addSpellToDB(newSpell).subscribe();
+        this.addSpellToDB(Clone(newSpell)).subscribe();
     }
 
     private addSpellToDB = (newSpell: Spell) => {
@@ -225,7 +226,12 @@ class HomebrewManager {
         const updatedSpells = this.spells();
         updatedSpells[index] = updatedSpell;
         this.setSpells([...updatedSpells]);
+				this.updateSpellInDb(Clone(updatedSpell)).subscribe();
     }
+
+		public updateSpellInDb = (updatedSpell: Spell) => {
+			return httpClient$.toObservable(homebrewDB.spells.put(updatedSpell)).pipe(take(1));
+		}
 
     public updateSpellsInDB = () => {
         this.homebrewSpells$.pipe(

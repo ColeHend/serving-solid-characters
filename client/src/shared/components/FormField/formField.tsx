@@ -61,7 +61,7 @@ const FormField2: Component<Props> = (props) => {
 				}}
 				onClick={() => context.setTextInside(false)}
 				class={`${themeStyle()[local.styleType ?? "accent"]} ${style.formField} ${local.class ?? ''}`}>
-				<legend class={`${haveInsideText() ? `${style.moveLegendInside}` : ``}`}>{!!context.getName() ? context.getName() : ``}</legend>
+				<legend class={`${themeStyle()[local.styleType ?? "accent"]} ${haveInsideText() ? `${style.moveLegendInside}` : ``}`}>{!!context.getName() ? context.getName() : ``}</legend>
 					{theChildren()}
 			</fieldset>
 	);
