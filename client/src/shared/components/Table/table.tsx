@@ -37,7 +37,6 @@ const TableComponent = <T,>(props: TableProps<T>) => {
 	const dropCheck = (i: number)=>{
 		const hasTransform = !!state.tableState().dropTransform 
 		const showDrop = (!!showDropdown()[i] || !Object.keys(props).includes("dropdown"));
-		console.log(hasTransform, showDrop);
 		return hasTransform && showDrop;
 	};
 

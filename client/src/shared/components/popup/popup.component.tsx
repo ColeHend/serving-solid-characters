@@ -51,9 +51,17 @@ const Modal:Component<Props> = (props)=>{
                     height: !!props.height ? props.height : services.isMobile() ? "90vh":"60vh",
                     transform: `translate(${defaultX},${defaultY})`,
                     padding: "0px",
-                    "padding-bottom": "5px" 
+                    "padding-bottom": "5px",
+										'padding-top': '3.8rem',
+										overflow: 'hidden'
                 }} class={`${stylin()?.popup} ${stylin()?.primary}`}>
-                <div class={stylin()?.accent} style="display:flex; justify-content:space-between;">
+                <div class={stylin()?.accent} style={{
+										display:'flex', 
+										'justify-content':'space-between',
+										'position':'fixed',
+										top:0, left:0, right:0
+									}
+								}>
                     <h2 style="margin-left: 5%">
                         {props.title ?? "Modal"}
                     </h2>

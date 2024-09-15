@@ -1,3 +1,5 @@
+import { Armor, Item, Weapon } from "../shared";
+
 export interface Feature<T, K> {
     info:  Info<K>;
     name:  string;
@@ -26,12 +28,6 @@ export interface StartingEquipment {
     choice2: Choice<Item>[];
     choice3: Choice<Item>[];
     choice4: Choice<Item>[];
-}
-
-export interface Item {
-    item: string;
-    quantity: number;
-    desc: string[];
 }
 
 export interface Description {
