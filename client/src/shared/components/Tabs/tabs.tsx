@@ -62,6 +62,7 @@ const Tabs: Component<Props> = (props) => {
 interface Props {
     children: JSX.Element;
     styleType?: "primary" | "accent" | "tertiary";
+		transparent?: boolean;
 }
 const TabInternal: Component<Props> = (props) => {
     const [defaultUserSettings, setDefaultUserSettings] = getUserSettings();
@@ -70,6 +71,7 @@ const TabInternal: Component<Props> = (props) => {
     const [selectedTab, setSelectedTab] = createSignal(Object.keys(tabs())[0]);
     const currentElement = createMemo(() => tabs()[selectedTab()]);
     const currentChildren = children(()=> props.children);
+		const hasTranparent = createMemo(()=>Object.keys(props).includes("transparent"));
     effect(()=>{
         setSelectedTab(Object.keys(tabs())[0]);
         
@@ -107,7 +109,7 @@ const TabInternal: Component<Props> = (props) => {
     const styleType = props.styleType ?? "accent";
     return (
         <div>
-            <div class={`${userStyle()[styleType]} ${style.tabs}`}>
+            <div class={`${userStyle()[styleType]} ${style.tabs} ${hasTranparent() === true ? style.transparent : ""}`}>
 							<Show when={showLeft()}>
 									<span class={`${style.leftArrow}`}>
 											<Button onClick={scrollLeft}>←</Button>
@@ -129,7 +131,7 @@ const TabInternal: Component<Props> = (props) => {
 									</span>
 							</Show>
 						</div>
-						<div class={`${userStyle()[styleType]} ${style.tabBody}`}>
+						<div class={`${userStyle()[styleType]} ${style.tabBody} ${hasTranparent() === true ? style.transparent : ""}`}>
 								{currentElement()}
 						</div>
         </div>
