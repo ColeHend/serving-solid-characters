@@ -1,17 +1,22 @@
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
-import { catchError, concatMap, of, take, tap } from "rxjs";
+import { catchError, combineLatest, concatMap, map, Observable, of, take, tap } from "rxjs";
 import HttpClient$ from "../../utility/httpClientObs";
 import { Spell } from "../../../../models/spell.model";
 import LocalSrdDB from "../../utility/localDB/srdDBFile"
+import LocalHomebrewDB from "../../utility/localDB/homebrewDBFile";
 
 const [spells, setSpells] = createSignal<Spell[]>([]);
 
-export function useDnDSpells(): Accessor<Spell[]> {
+export function useDnDSpells(excludeHomebrew?:boolean): Accessor<Spell[]> {
     const LocalSpells = HttpClient$.toObservable(LocalSrdDB.spells.toArray());
+		const HombrewSpells = HttpClient$.toObservable(LocalHomebrewDB.spells.toArray());
 
     if (spells().length === 0) {
-        LocalSpells.pipe(
+				const allSpells$:Observable<Spell[]> = !!excludeHomebrew ? LocalSpells : combineLatest([LocalSpells, HombrewSpells]).pipe(
+					map(([srdSpells, homebrewSpells])=>[...srdSpells, ...homebrewSpells])
+				);
+        allSpells$.pipe(
             take(1),
             concatMap((spells)=>{
                 if (spells.length > 0) {

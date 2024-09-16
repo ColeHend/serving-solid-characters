@@ -15,6 +15,9 @@ import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
+import { Body } from "../../../shared";
+import Table from "../../../shared/components/Table/table";
+import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
 
 
 const viewClasses: Component = () => {
@@ -28,32 +31,35 @@ const viewClasses: Component = () => {
 
     if (!!!searchParam.name) setSearchParam({ name: dndSrdClasses().length > 0 ? dndSrdClasses()[currentClassIndex()].name : "barbarian" })
 
-    const currentClass: Accessor<DnDClass> = createMemo(() => dndSrdClasses().length > 0 && currentClassIndex() >= 0 && currentClassIndex() < dndSrdClasses().length ? dndSrdClasses()[currentClassIndex()] : ({} as DnDClass))
-
-    const currentSubclasses = createMemo(() => currentClass().subclasses?.length > 0 ? currentClass().subclasses : [] as Subclass[])
+    // const currentClass: Accessor<DnDClass> = createMemo(() => 
+		// 	dndSrdClasses()?.length > 0 && currentClassIndex() >= 0 && currentClassIndex() < dndSrdClasses()?.length ? dndSrdClasses()[currentClassIndex()] : ({} as DnDClass))
+		const [currentClass, setCurrentClass] = createSignal<DnDClass>({} as DnDClass);
+    const currentSubclasses = createMemo(() => currentClass()?.subclasses?.length > 0 ? currentClass()?.subclasses : [] as Subclass[])
+		const [showClass, setShowClass] = createSignal<boolean>(false);
 
     effect(() => {
-        setSearchParam({ name: dndSrdClasses().length > 0 ? currentClass().name : "barbarian" })
+        setSearchParam({ name: dndSrdClasses()?.length > 0 ? currentClass().name : "barbarian" })
         console.table(currentClass());
-
+				console.log(dndSrdClasses());
     })
 
     return (
-        <div class={`${stylin()?.primary} ${styles.CenterPage}`}>
+        <Body class={`${stylin()?.primary} ${styles.CenterPage}`}>
             {/* Current Class Selector */}
-            <div>
-                <Button onClick={() => currentClassIndex() === 0 ? setCurrentCharacterIndex(old => (dndSrdClasses().length - 1)) : setCurrentCharacterIndex(old => old - 1)}>←</Button>
-                <span>{currentClass().name}</span>
-                <Button onClick={() => currentClassIndex() === (dndSrdClasses().length - 1) ? setCurrentCharacterIndex(old => 0) : setCurrentCharacterIndex(old => old + 1)}>→</Button>
-            </div>
-            <hr style={{ width: "100%" }} />
-            <div class={`${styles.eachPage}`}>
-
-                <ClassModal currentClass={currentClass} />
-
-            </div>
-
-        </div>
+            <Table data={dndSrdClasses} columns={["name"]}>
+								<Column name="name">
+									<Header>Name</Header>
+									<Cell<DnDClass>>{(x, i) => <span onClick={() => {
+										setCurrentClass(x);
+										setSearchParam({ name: x.name });
+										setShowClass(!showClass());
+									}}>{x.name}</span>}</Cell>
+								</Column>
+						</Table>
+						<Show when={showClass()}>
+								<ClassModal boolean={showClass} booleanSetter={setShowClass} currentClass={currentClass} />
+						</Show>
+        </Body>
     )
 };
 export default viewClasses

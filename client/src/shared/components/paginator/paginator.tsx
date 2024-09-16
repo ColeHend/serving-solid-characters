@@ -12,6 +12,7 @@ type Props<T> = {
     items: Accessor<T>;
     setPaginatedItems: Setter<T>;
     itemsPerPage?: number[];
+		classes?: string;
 };
 
 const Paginator = <T,>(props: Props<T[]>) => {

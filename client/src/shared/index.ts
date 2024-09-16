@@ -9,3 +9,4 @@ export * from "./svgs/pencil";
 export * from "./svgs/skinnySnowman";
 export * from "./svgs/camera";
 export * from "../models/items.model";
+export * from "../shared/components/index";

@@ -24,7 +24,9 @@ $mobile: 768px;
     color: $font;
     // border-color: white;
     overflow-x: hidden;
-
+		input::placeholder {
+			color: $font;
+		}
     li a {
         color: white;
     }
@@ -34,12 +36,16 @@ $mobile: 768px;
     font: 1em Roboto;
     background-color: $accent;
     color: $font;
-
+		input::placeholder {
+			color: $font;
+		}
 }
 
 .tertiary {
     background-color: $tertiary;
-
+		input::placeholder {
+			color: $font;
+		}
     color: $font;
 
 }

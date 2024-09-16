@@ -1,4 +1,4 @@
-import { Accessor, Component, createSignal, JSX, Setter } from "solid-js";
+import { Accessor, Component, createSignal, JSX, Setter, splitProps } from "solid-js";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./SearchBar.module.scss";
 interface Props<T> extends JSX.InputHTMLAttributes<HTMLInputElement> {
@@ -6,9 +6,11 @@ interface Props<T> extends JSX.InputHTMLAttributes<HTMLInputElement> {
     setResults: Setter<T[]>,
     class?: string,
     tooltip?: string,
+		wrapClass?: string
 }
 const SearchBar = <T,>(props: Props<T>) => {
     const [searchValue, setSearchValue] = createSignal<string>("");
+		const [local, other] = splitProps(props, ['wrapClass', 'tooltip'])
     const searchClick = () => {
         const search = searchValue().toLowerCase();
         const results = props.dataSource().filter((item) => {
@@ -23,7 +25,7 @@ const SearchBar = <T,>(props: Props<T>) => {
     };
     props.setResults(props.dataSource());
     return (
-        <div class={style.searchBar}>
+        <div class={`${style.searchBar} ${local.wrapClass}`}>
             <input
             type="text"
             onChange={(e) => setSearchValue(e.currentTarget.value)}
@@ -33,7 +35,7 @@ const SearchBar = <T,>(props: Props<T>) => {
             {...props}
             class={`${style.input} ${(props.class ?? "")}`}
             />
-            <button onClick={searchClick} title={props.tooltip ?? "Search!"}><SearchGlass /></button>
+            <button onClick={searchClick} title={local.tooltip ?? "Search!"}><SearchGlass /></button>
         </div>
     )
 }

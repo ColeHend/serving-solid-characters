@@ -11,13 +11,16 @@ interface InputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
 }
 const Input: Component<InputProps> = (props)=> {
     const [customProps, normalProps] = splitProps(props, ["tooltip", "transparent", "value", "onChange"]);
-    const noTransparent = (type?: string) => ["checkbox"].includes(type ?? "text");
+    const noTransparent = (type?: string) => "checkbox" !== (type ?? "text");
 		const context = useFormProvider();
 		const inputValue = createMemo(()=> props.value);
-
+		const hasTrasparent = createMemo(() => {
+			return Object.keys(customProps).includes("transparent");
+		})
 		onMount(()=>{
 			if (!!context.getName) {
-				context.setFieldType(props.type ?? "text");
+				context.setFieldType(props.type ?? "text"); 
+				
 			}
 		})
     return (
@@ -60,7 +63,7 @@ const Input: Component<InputProps> = (props)=> {
 				if (!!props.onChange) props.onChange(e);
 				
 			}}
-			class={`${style.input} ${customProps.transparent && !noTransparent(normalProps.type) ? style.transparent : ""} ${props.class ?? ""}`}
+			class={`${style.input} ${hasTrasparent() && noTransparent(normalProps.type) ? style.transparent : ""} ${props.class ?? ""}`}
 			title={customProps.tooltip}
 		/>
     )
