@@ -14,9 +14,9 @@ import Paginator from "../../paginator/paginator";
 import { Feature } from "../../../../models/core.model";
 import Modal from "../../popup/popup.component";
 import ChipType from "../../../models/chip";
-import SubclassModal from "./subclassModal.component";
 import Chipbar from "../../Chipbar/chipbar";
 import Tabs, { Tab } from "../../Tabs/tabs";
+import { classFeatureNullCheck } from "../../../customHooks/utility/Tools";
 
 type props = {
 	currentClass: Accessor<DnDClass>;
@@ -122,13 +122,42 @@ const ClassModal: Component<props> = (props) => {
 									sorry nouthing here yet...  (╯︵╰,)
 								</div>
 							</Tab>
-							<Tab name="Subclasses">
-								<div class={`${styles.subClasses}`}>
-									<For each={currentSubclasses()}>{(subclass) => (
-										<SubclassModal subclass={subclass} />
-									)}</For>
+							<Tab name="Features">
+								<div>
+									sorry nouthing here yet...  (╯︵╰,)
 								</div>
 							</Tab>
+							<For each={currentSubclasses()}>
+								{ (subclass,i) =>  
+								<Tab name={subclass.name}>
+									<div>
+                    <h3>{subclass.name}</h3>
+                    <span>
+                        {subclass.desc?.join(" \n")}
+                    </span>
+                    <br />
+                    <span>
+                        {subclass.subclassFlavor}
+                    </span>
+                    <br />
+                    <Show when={subclass.spells?.length >= 1}>
+                        <h4>Spells Gained</h4>
+                        <span>{
+                            subclass.spells?.join("\n")
+                        }</span>
+                        <br />
+                    </Show>
+                    <span>
+                        <For each={subclass.features}>{(feature) =>
+                            <>
+                                <h5> {feature.name} </h5>
+                                <span> {classFeatureNullCheck(feature?.value)} </span>
+                            </>
+                        }</For>
+                    </span>
+                </div>
+								</Tab>}
+							</For>
 						</Tabs>
 					</div>
 

@@ -134,6 +134,7 @@ const masterSpells: Component = () => {
   });
 
   createEffect(() => {
+    
     const allSpells = dndSrdSpells();
 
     setTableData(allSpells);

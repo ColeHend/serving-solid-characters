@@ -82,6 +82,8 @@ const SearchBar: Component<Props> = (props) => {
                 }))
                 const chipValueCheck = keyChecks.map(x=>x.includes(true))
                 
+                console.log(`noooo!`);
+                
                 return !chipValueCheck.includes(false);
             }
             return true;
