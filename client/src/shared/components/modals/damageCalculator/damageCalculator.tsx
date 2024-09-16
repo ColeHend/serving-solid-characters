@@ -21,20 +21,9 @@ const DamageCalulator:Component<Props> = (props) => {
     backgroundClick={[props.accssor,props.setter]}>
         <div class={`${style.wrapper}`}>
             <div class={`${style.header}`}>
-                <Button>+</Button>
+                
 
-                <Tabs class={`${style.tabBar}`}>
-                    <Tab name="dmg 1" >
-                        asdf
-                    </Tab>
-                    <Tab name="dmg 2" >
-                        asdf
-                    </Tab>
-                    <Tab name="dmg 2" >
-                        asdf
-                    </Tab>
 
-                </Tabs>
             </div>
 
 

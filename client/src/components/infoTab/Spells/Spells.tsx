@@ -160,7 +160,7 @@ const masterSpells: Component = () => {
               <span onClick={() => dataSort("name")}>
                 <strong>Name</strong>
                 <Show when={currentSort().sortKey === "name"}>
-                  <span>{currentSort().isAsc ? "↑" : "↓"}</span>
+                  <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
                 </Show>
               </span>
             </Header>
@@ -177,7 +177,7 @@ const masterSpells: Component = () => {
               <span onClick={() => dataSort("level")}>
                 <strong>Level</strong>
                 <Show when={currentSort().sortKey === "level"}>
-                  <span>{currentSort().isAsc ? "↑" : "↓"}</span>
+                  <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
                 </Show>
               </span>
             </Header>
