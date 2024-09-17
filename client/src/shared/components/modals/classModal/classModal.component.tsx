@@ -124,7 +124,18 @@ const ClassModal: Component<props> = (props) => {
 							</Tab>
 							<Tab name="Features">
 								<div>
-									sorry nouthing here yet...  (╯︵╰,)
+									<For each={props?.currentClass()?.classLevels}>
+										{ (classLevel, i) => <>
+											<For each={classLevel.features}>
+												{ (feature, i) => <div>
+													<h1>{feature.name}  @lvl {classLevel.info.level}</h1>
+
+													<span>{classFeatureNullCheck(feature.value)}</span>
+										        </div>
+												}
+											</For>
+										</>}
+									</For>
 								</div>
 							</Tab>
 							<For each={currentSubclasses()}>

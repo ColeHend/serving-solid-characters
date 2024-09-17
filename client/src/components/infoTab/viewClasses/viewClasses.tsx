@@ -43,10 +43,9 @@ const viewClasses: Component = () => {
       }
     ])
 
+
     effect(() => {
-        setSearchParam({ name: dndSrdClasses()?.length > 0 ? currentClass().name : "barbarian" })
-        console.table(currentClass());
-				console.log(dndSrdClasses());
+        setSearchParam({ name: dndSrdClasses()?.length > 0 ? currentClass().name : "barbarian" })      
     })
 
     return (
@@ -56,7 +55,11 @@ const viewClasses: Component = () => {
             <div class={`${styles.searchBar}`}>
               <SearchBar 
                 dataSource={dndSrdClasses} 
-                setResults={setResults}  />
+                setResults={setResults}
+                searchFunction={(data, search)=>{
+                  return data.name.toLowerCase() === search.toLowerCase();
+                }}
+                class={`${styles.searchBar}`}/>
             </div>
 
             <Table data={paginatedClasses} columns={["name","menu","delete"]} class={`${styles.classesTable}`}>
