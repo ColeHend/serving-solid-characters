@@ -2,9 +2,7 @@ import { Accessor, Component, For, JSX, Match, Setter, Show, Switch, createEffec
 import useDnDSpells from "../../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import { Spell } from "../../../../models/spell.model";
 import { effect } from "solid-js/web";
-import Chip from "./chip";
 import styles from "./searchBar.module.scss";
-import ClearAllBtn from "./clearAllBtn";
 import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
 import { Button, Input, Select, Option } from "../../../../shared/components";
 import Chipbar from "../../../../shared/components/Chipbar/chipbar";
@@ -83,6 +81,8 @@ const SearchBar: Component<Props> = (props) => {
                     return false;
                 }))
                 const chipValueCheck = keyChecks.map(x=>x.includes(true))
+                
+                console.log(`noooo!`);
                 
                 return !chipValueCheck.includes(false);
             }

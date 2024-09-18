@@ -55,16 +55,22 @@ $mobile: 768px;
 }
 
 .hover {
+    
+    button {
+        transform-origin: top left;
+        transition: transform 0.2s ease,background 0.2s ease;
+    
+        &:active {
+            transform: scale(0.9);
+        }
+    }
+    
     li a {
         color: $font;
     }
 
     &:hover {
-        font-size: 1.05rem;
         cursor: pointer;
-        button {
-            font-weight: bold;
-        }
         link {
             background-color: $tertiary;
         }

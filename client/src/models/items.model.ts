@@ -8,6 +8,7 @@ export interface Item {
     weight?: number;
     tags: string[];
     desc: string[];
+    item: string;
 }
 
 export interface Weapon extends Item {

@@ -1,28 +1,34 @@
 import { Accessor, Component, createSignal, JSX, Setter, splitProps } from "solid-js";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./SearchBar.module.scss";
+import { Clone } from "../../customHooks";
 interface Props<T> extends JSX.InputHTMLAttributes<HTMLInputElement> {
     dataSource: Accessor<T[]>,
     setResults: Setter<T[]>,
     class?: string,
     tooltip?: string,
-		wrapClass?: string
+		wrapClass?: string,
+    searchFunction?: (data:T, search:string) => boolean
 }
 const SearchBar = <T,>(props: Props<T>) => {
     const [searchValue, setSearchValue] = createSignal<string>("");
 		const [local, other] = splitProps(props, ['wrapClass', 'tooltip'])
-    const searchClick = () => {
-        const search = searchValue().toLowerCase();
-        const results = props.dataSource().filter((item) => {
-            if(search.trim().length === 0) return true;
-            return JSON.stringify(item).toLowerCase().includes(search.trim());
-        });
-        if (results.length > 1) {
-            props.setResults(results);
-        } else {
-            props.setResults(props.dataSource());
-        }
-    };
+        
+        const searchClick = () => {
+            const search = searchValue().toLowerCase();
+            const results = props.dataSource().filter((item) => {
+
+                if (!!props.searchFunction) return props.searchFunction(item, searchValue());
+                if(search.trim().length === 0) return true;
+                return JSON.stringify(item).toLowerCase().includes(search);
+            });
+            
+            if (results.length >= 1) {
+                props.setResults(Clone(results));
+            } else {
+                props.setResults(props.dataSource());
+            }
+        };
     props.setResults(props.dataSource());
     return (
         <div class={`${style.searchBar} ${local.wrapClass}`}>

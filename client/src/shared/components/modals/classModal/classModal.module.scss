@@ -1,13 +1,16 @@
 $mobile: 768px;
 
 .CenterPage {
+    padding: 0;
     margin: 0 auto;
-    width: 80%;
-    margin-top: 3%;
+    width: 100%;
     text-align: center;
+	margin-top: 0.5%;
     background: none;
     background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
     border-radius: 15px;
+	overflow-y: scroll;
+	height: 100%;
 
     h1{
         font-family: 'Mr_Eaves_Small_Caps';
@@ -15,6 +18,7 @@ $mobile: 768px;
         color: #AA0505;
         margin-left: 12px;
         font-size: 1.8em;
+		z-index: 1;
     }
 
     h2 {
@@ -23,6 +27,7 @@ $mobile: 768px;
         color: #000;
         margin-left: 12px;
         font-size: 1.2em;
+		z-index: 1;
     }
     
     h4 {
@@ -30,29 +35,34 @@ $mobile: 768px;
         font-weight: 100;
         color: #000;
         margin-left: 12px;
+		z-index: 1;
     }
 
     span {
         font-family: 'Bookinsanity';
         font-weight: 100;
         color: #000;
+		z-index: 1;
     }
 }
 
 .eachPage {
-    padding: 15px;
-    width: 70%;
+    width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 10px;
     table {
-
+		margin: 0 auto;
         thead {
 
             tr{
 
                 th {
 
-                    font-family: 'Zatanna_Misdirection';
-                    font-weight: 100;
-                    color: #000;
+                font-family: 'Zatanna_Misdirection';
+                font-weight: 100;
+                color: #000;
                 }
             }
         }
@@ -61,9 +71,9 @@ $mobile: 768px;
 
             tr {
                 td {
-                    font-family: 'Scaly_Sans';
-                    font-weight: 100;
-                    color: #000;
+                font-family: 'Scaly_Sans';
+                font-weight: 100;
+                color: #000;
                 }
             }
         }
@@ -74,36 +84,39 @@ $mobile: 768px;
 .subClasses {
     margin-top: 2%;
     max-width: 80%;
-
+	margin: 0 auto;
 }
+
 .dropCard {
-    width: 50%;
+    width: 35%;
     div {
-        background-color: none;
-        background: none;
+    background-color: none;
+    background: none;
     }
     h2 {
-        font-family: 'Nodesto_Caps_Condensed';
-        font-weight: 100;
-        color: #000;
-        font-size: 2em;
+    font-family: 'Nodesto_Caps_Condensed';
+    font-weight: 100;
+    color: #000;
+    font-size: 2em;
     }
     h3 {
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #000;
-        font-size: 1.5em;
+    font-family: 'Mr_Eaves_Small_Caps';
+    font-weight: 100;
+    color: #000;
+    font-size: 1.5em;
     }
     span {
-        font-family: 'Bookinsanity';
-        font-weight: 100;
-        color: #000;
+    font-family: 'Bookinsanity';
+    font-weight: 100;
+    color: #000;
     }
 }
+
 .flexbox {
     display: flex;
     flex-direction: row;
 }
+
 .innerFlexBox {
     display: flex;
     flex-direction: column;
@@ -124,7 +137,7 @@ $mobile: 768px;
 .left {
     width: min-content;
     text-wrap: nowrap;
-    float: left;
+		margin: 0 auto;
     span {
         width: min-content;
     }
@@ -136,7 +149,7 @@ $mobile: 768px;
     }
     h2 {
         width: min-content;
-        margin-left: 33%;
+				margin: 0 auto;
     }
     h3 {
         width: min-content;
@@ -148,4 +161,32 @@ $mobile: 768px;
         width: min-content;
     }
 
+}
+
+.flexBoxColumn {
+	display: flex;
+	flex-direction: column;
+	margin-top: 2%;
+}
+
+.flexboxRow {
+	display: flex;
+	flex-direction: row;
+	gap: 4%;
+	margin-top: 3%;
+	justify-content: center;
+}
+
+.startingEquipment {
+	display: flex;
+	flex-direction: column;
+}
+
+.tabBar {
+	width: 95%;
+    
+
+    @media screen and (max-width: 756px) {
+        margin: 0;
+    }
 }
