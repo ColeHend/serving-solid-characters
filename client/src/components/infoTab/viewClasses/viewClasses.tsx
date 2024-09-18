@@ -43,7 +43,6 @@ const viewClasses: Component = () => {
       }
     ])
 
-
     effect(() => {
         setSearchParam({ name: dndSrdClasses()?.length > 0 ? currentClass().name : "barbarian" })      
     })
@@ -64,7 +63,7 @@ const viewClasses: Component = () => {
 
             <Table data={paginatedClasses} columns={["name","menu","delete"]} class={`${styles.classesTable}`}>
 								<Column name="name">
-									<Header>Name</Header>
+									<Header><span></span></Header>
 									<Cell<DnDClass>>{(x, i) => <span onClick={() => {
 										setCurrentClass(x);
 										setSearchParam({ name: x.name });
@@ -73,7 +72,7 @@ const viewClasses: Component = () => {
 								</Column>
                 <Column name="menu">
                   <Header><span></span></Header>
-                  <Cell>
+                  <Cell<DnDClass>>
                     {(dndClass, i) => <Button enableBackgroundClick={true} menuItems={menuButtons(dndClass)}>
                       <SkinnySnowman />  
                     </Button>}
@@ -81,7 +80,7 @@ const viewClasses: Component = () => {
                 </Column>
                 <Column name="delete">
                   <Header><span></span></Header>
-                  <Cell>{(dndClass, i) => <Button>
+                  <Cell<DnDClass>>{(dndClass, i) => <Button>
                         x
                       </Button>}
                   </Cell>

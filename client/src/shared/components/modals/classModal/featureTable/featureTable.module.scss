@@ -1,10 +1,9 @@
-.feature {
-    min-width: 400px;
-}
+$mobile-fontsize: .3rem;
 
 .table {
     border: 1px solid !important;
-
+    width: 88%;
+    margin-right: 20%;
     tbody tr {
         box-shadow: 0 0 4px #ccc !important;
         &:hover {
@@ -13,13 +12,4 @@
             font-weight: bold;
         }
     }
-}
-
-
-.tableCell {
-    border: 1px solid !important;
-}
-
-.small {
-	width: 60px;
 }
