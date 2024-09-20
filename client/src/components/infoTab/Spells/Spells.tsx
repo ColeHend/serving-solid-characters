@@ -22,6 +22,8 @@ import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body } from "../../../shared/components";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import Table from "../../../shared/components/Table/table";
+import {Chip} from "../../../shared/components";
+
 import {
   Column,
   Header,
@@ -30,8 +32,7 @@ import {
   SecondRow,
 } from "../../../shared/components/Table/innerTable";
 import { Clone } from "../../../shared";
-import Chipbar from "../../../shared/components/Chipbar/chipbar";
-import Chip from "../../../shared/models/chip";
+import ChipType from "../../../shared/models/chip";
 
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
@@ -56,7 +57,7 @@ const masterSpells: Component = () => {
   const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
   const [searchResults, setSearchResults] = createSignal<any[]>([]);
   const [showSpell, setShowSpell] = createSignal(false);
-  const [spellChips, setSpellChips] = createSignal<Chip[]>([])
+  const [spellChips, setSpellChips] = createSignal<ChipType[]>([])
   const [currentSort, setCurrentSort] = createSignal<{
     sortKey: string;
     isAsc: boolean;
@@ -146,8 +147,6 @@ const masterSpells: Component = () => {
     const allSpells = dndSrdSpells();
 
     setTableData(allSpells);
-
-
   });
 
   return (
@@ -163,11 +162,12 @@ const masterSpells: Component = () => {
       <Table
         class={`${styles.SpellsBody}`}
         data={paginatedSpells}
-        columns={["name","ritual","school","concentration", "level"]}
-        dropdown
-      >
+        columns={["name","school","level"]}
+        dropdownArrow={{width:"0",height:"0"}}>
+        
+
         <Column name="name">
-          <Header>
+          <Header class={styles.clickyHeader}>
             <span onClick={() => dataSort("name")}>
               <strong>Name</strong>
               <Show when={currentSort().sortKey === "name"}>
@@ -183,26 +183,14 @@ const masterSpells: Component = () => {
             )}
           </Cell>
         </Column>
-        <Column name="ritual">
-          <Header>Ritual</Header>
-          <Cell<Spell>>{ (spell,i) => <div>
-            <span onClick={()=>setCurrentObj(spell)}>{spell.ritual ? "ritual" : ""}</span>
-          </div>}</Cell>
-        </Column>
         <Column name="school">
             <Header>School</Header>
             <Cell<Spell>>{ (spell, i) => <div>
                 <span onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
             </div>}</Cell>
         </Column>
-        <Column name="concentration">
-            <Header>Conc</Header>
-            <Cell<Spell>>{ (spell, i) => <div>
-              <span onClick={()=>setCurrentObj(spell)}>{spell.concentration ?"concentration": ""}</span>
-            </div>}</Cell>
-        </Column>
         <Column name="level">
-          <Header>
+          <Header class={styles.clickyHeader}>
             <span onClick={() => dataSort("level")}>
               <strong>Level</strong>
               <Show when={currentSort().sortKey === "level"}>
@@ -221,8 +209,13 @@ const masterSpells: Component = () => {
 
 
         <Row />
-        <SecondRow<Spell>>
-          {(spell, i) => <Chipbar chips={spellChips} setChips={setSpellChips} />}
+        <SecondRow<Spell> >
+          {(spell, i) => 
+            <div>
+              {spell.ritual? <Chip key="ritual" value="yes" />: ""}
+              {spell.concentration? <Chip key="concentration" value="yes" />: ""}
+            </div>
+          }
         </SecondRow>
       </Table>
 

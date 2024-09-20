@@ -6,6 +6,20 @@
     overflow-x: hidden !important;
     overflow-y: auto;
     max-width: 90vw !important;
+    padding-bottom: 5%;
+
+    tbody {
+
+        tr {
+
+            td {
+
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+    }
 
     #materials_needed {
         word-wrap:normal;
@@ -114,5 +128,13 @@
 
     :nth-child(n) {
         color: white !important;
+    }
+}
+
+.clickyHeader {
+
+    &:hover {
+
+        cursor: pointer;
     }
 }
