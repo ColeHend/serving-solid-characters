@@ -112,10 +112,10 @@ const StartingEquipment: Component<Props> = (props) => {
 		!showChoices() && setSelectedWeapons([]);
 		!showChoices() && setSelectedArmor([]);
 	});
-	const addWeapons = () => {
+	const addWeapons = (choose: number = 1) => {
 		const choice = getChoice(currentChoiceNum());
 		const newChoices = [...choice, {
-			choose: 1,
+			choose,
 			type: "weapon",
 			choices: selectedWeapons().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
 		}];
@@ -123,30 +123,38 @@ const StartingEquipment: Component<Props> = (props) => {
 		console.log('newChoices: ', newChoices);
 		props.setStartEquipChoice(currentChoiceNum(), newChoices);
 		setShowChoices(false);
+		setSelectedWeapons([]);
+		setSelectedAmount(1);
 	}
-	const addArmor = () => {
+	const addArmor = (choose: number = 1) => {
 		const choice = getChoice(currentChoiceNum());
 		props.setStartEquipChoice(currentChoiceNum(), [...choice, {
-			choose: 1,
+			choose,
 			type: "armor",
 			choices: selectedArmor().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
 		}]);
 		setShowChoices(false);
+		setSelectedArmor([]);
+		setSelectedAmount(1);
 	}
-	const addItems = () => {
+	const addItems = (choose: number = 1) => {
 		const choice = getChoice(currentChoiceNum());
 		props.setStartEquipChoice(currentChoiceNum(), [...choice, {
-			choose: 1,
+			choose,
 			type: "item",
 			choices: selectedItems().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
 		}]);
 		setShowChoices(false);
+		setSelectedItems([]);
+		setSelectedAmount(1);
 	}
+
+	const [selectedAmount, setSelectedAmount] = createSignal(1);
 	createEffect(()=>{
 		console.log("ClassItems:", getChoice(currentChoiceNum()), selectedItems(), selectedWeapons(), selectedArmor()); 
 	})
 	return (
-		<div>
+		<div class={`${styles.equipContain}`}>
 			<h2>Starting Equipment</h2>
 			<div>
 				<ul class={`${styles.list}`}>
@@ -159,10 +167,22 @@ const StartingEquipment: Component<Props> = (props) => {
 						<ul>
 							<For each={getChoice(choiceNum)}>
 								{(item, i)=>(<>
-									<li>Choose: {item?.choose}
-										<For each={getUniqueItems(item.choices)}>{(choice)=>(
-											<Chip key={`Choice`} value={`${choice.name} ${getItemAmntOnClass(choice, choiceNum, i()) > 1 ? `x${getItemAmntOnClass(choice, choiceNum, i())}`: ``}`} />
-										)}</For>	
+									<li>
+										<span>
+											<Button onClick={(e) => {
+												e.preventDefault();
+												const newChoices = Clone(getChoice(choiceNum)).filter((x, idx)=>idx !== i());
+												props.setStartEquipChoice(choiceNum, newChoices);
+											}}>x</Button>Choose: {item?.choose} 
+										</span>
+										<span>
+											<For each={getUniqueItems(item.choices)}>{(choice)=>(
+												<Chip 
+													key={`Choice`} 
+													value={`${choice.name} ${getItemAmntOnClass(choice, choiceNum, i()) > 1 ? `x${getItemAmntOnClass(choice, choiceNum, i())}`: ``}`}
+													/>
+											)}</For>	
+										</span>
 									</li>
 									<Show when={getChoice(choiceNum).length > 1 && --getChoice(choiceNum).length !== i()}>
 										<li>or</li>
@@ -227,9 +247,15 @@ const StartingEquipment: Component<Props> = (props) => {
 											</div>
 												<Paginator classes={`${styles.paginator}`} items={allItemsT} setPaginatedItems={setPaginatedItems} />
 											<div>
+												<Input type="number" min={1} max={999} style={{width:'50px'}} value={selectedAmount()} onInput={(e)=>{
+													const val = parseInt(e.currentTarget.value);
+													if (val > 0) {
+														setSelectedAmount(val);
+													}
+												}} />
 												<Button onClick={(e)=>{
 													e.preventDefault();
-													addItems();
+													addItems(untrack(selectedAmount));
 												}}>Add Items</Button>
 											</div>
 										</Tab>
@@ -294,9 +320,15 @@ const StartingEquipment: Component<Props> = (props) => {
 											</div>
 												<Paginator classes={`${styles.paginator}`} items={allWeaponsT} setPaginatedItems={setPaginatedWeapons} />
 											<div>
+											<Input type="number" min={1} max={999} style={{width:'50px'}} value={selectedAmount()} onInput={(e)=>{
+													const val = parseInt(e.currentTarget.value);
+													if (val > 0) {
+														setSelectedAmount(val);
+													}
+												}} />
 												<Button onClick={(e)=>{
 													e.preventDefault();
-													addWeapons();
+													addWeapons(untrack(selectedAmount));
 												}}>Add Weapons</Button>
 											</div>
 										</Tab>
@@ -353,9 +385,15 @@ const StartingEquipment: Component<Props> = (props) => {
 											</div>
 												<Paginator classes={`${styles.paginator}`} items={allArmorT} setPaginatedItems={setPaginatedArmor} />
 											<div>
+											<Input type="number" min={1} max={999} style={{width:'50px'}} value={selectedAmount()} onInput={(e)=>{
+													const val = parseInt(e.currentTarget.value);
+													if (val > 0) {
+														setSelectedAmount(val);
+													}
+												}} />
 												<Button onClick={(e)=>{
 													e.preventDefault();
-													addArmor();
+													addArmor(untrack(selectedAmount));
 												}}>Add Armor</Button>
 											</div>
 										</Tab>

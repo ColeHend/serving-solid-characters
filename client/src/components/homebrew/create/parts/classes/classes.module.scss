@@ -21,11 +21,13 @@
 .twoRowContainer {
 	display: flex;
 	flex-direction: row;
-	flex-wrap: wrap;
 	width: 100%;
 	@media screen and (max-width: 768px){
 		flex-direction: column;
 	}
+}
+.divide {
+	flex-grow: 1;
 }
 .rowTwo {
 	display: flex;
@@ -92,4 +94,16 @@
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+}
+.spellcasting {
+	display: flex;
+	flex-direction: column;
+	:nth-child(n) {
+		margin-bottom: 15px;
+		width: max-content;
+	}
+}
+.specific {
+	display: flex;
+	flex-direction: column;
 }
