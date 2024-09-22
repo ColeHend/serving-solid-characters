@@ -1,4 +1,18 @@
-import { Accessor, children, Component, createContext, createMemo, createSignal, For, JSX, onCleanup, onMount, Setter, Show, useContext } from "solid-js";
+import {
+  Accessor,
+  children,
+  Component,
+  createContext,
+  createMemo,
+  createSignal,
+  For,
+  JSX,
+  onCleanup,
+  onMount,
+  Setter,
+  Show,
+  useContext,
+} from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { Dynamic, effect } from "solid-js/web";
 import exp from "constants";
@@ -8,20 +22,23 @@ import { Button, getUserSettings, useStyle } from "../..";
 import style from "./tabs.module.scss";
 
 interface ITabStore {
-    [name: string]: JSX.Element;
+  [name: string]: JSX.Element;
 }
 
-const tabContext = createContext<{tabs: Accessor<ITabStore>, setTabs: Setter<ITabStore>}>({
-	tabs: () => ({}), 
-	setTabs: () => {}
+const tabContext = createContext<{
+  tabs: Accessor<ITabStore>;
+  setTabs: Setter<ITabStore>;
+}>({
+  tabs: () => ({}),
+  setTabs: () => {},
 });
 export function getTabContext() {
-		return useContext(tabContext);
+  return useContext(tabContext);
 }
 
 interface ITabProvider {
-		children: JSX.Element;
-		value: ITabStore;
+  children: JSX.Element;
+  value: ITabStore;
 }
 const TabProvider: Component<ITabProvider> = (props) => {
 	const [tabs, setTabs] = createSignal<ITabStore>(props.value, {
@@ -45,6 +62,7 @@ const Tabs: Component<Props> = (props) => {
 interface Props {
     children: JSX.Element;
     styleType?: "primary" | "accent" | "tertiary";
+		transparent?: boolean;
 }
 const TabInternal: Component<Props> = (props) => {
     const [defaultUserSettings, setDefaultUserSettings] = getUserSettings();
@@ -53,6 +71,7 @@ const TabInternal: Component<Props> = (props) => {
     const [selectedTab, setSelectedTab] = createSignal(Object.keys(tabs())[0]);
     const currentElement = createMemo(() => tabs()[selectedTab()]);
     const currentChildren = children(()=> props.children);
+		const hasTranparent = createMemo(()=>Object.keys(props).includes("transparent"));
     effect(()=>{
         setSelectedTab(Object.keys(tabs())[0]);
         
@@ -90,7 +109,7 @@ const TabInternal: Component<Props> = (props) => {
     const styleType = props.styleType ?? "accent";
     return (
         <div>
-            <div class={`${userStyle()[styleType]} ${style.tabs}`}>
+            <div class={`${userStyle()[styleType]} ${style.tabs} ${hasTranparent() === true ? style.transparent : ""}`}>
 							<Show when={showLeft()}>
 									<span class={`${style.leftArrow}`}>
 											<Button onClick={scrollLeft}>←</Button>
@@ -112,7 +131,7 @@ const TabInternal: Component<Props> = (props) => {
 									</span>
 							</Show>
 						</div>
-						<div class={`${userStyle()[styleType]} ${style.tabBody}`}>
+						<div class={`${userStyle()[styleType]} ${style.tabBody} ${hasTranparent() === true ? style.transparent : ""}`}>
 								{currentElement()}
 						</div>
         </div>
@@ -120,5 +139,6 @@ const TabInternal: Component<Props> = (props) => {
 };
 
 
-export {Tab, Tabs };
+
+export { Tab, Tabs };
 export default Tabs;

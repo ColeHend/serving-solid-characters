@@ -98,3 +98,15 @@
     margin-bottom: 5%;
     // text-align: center;
 }
+
+.spellChip {
+    // background: white;
+    color: white !important;
+    border: 2px solid white;
+    font-family: 'Bookinsanity';
+
+
+    :nth-child(n) {
+        color: white !important;
+    }
+}

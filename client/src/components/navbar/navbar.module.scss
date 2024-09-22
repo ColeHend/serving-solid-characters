@@ -94,3 +94,26 @@
         }
     }
 }
+
+.toolBar {
+    display: flex;
+    flex-direction: row;
+
+    button {
+        border: none;
+        background-color: inherit;
+
+        svg {
+            width: 0.8rem;
+            height: 2.8rem;
+            &:hover {
+                // width: 13pt;
+                // height: 13pt;
+            }
+        }
+    }
+
+    &:hover {
+        // width: ;
+    }
+}
