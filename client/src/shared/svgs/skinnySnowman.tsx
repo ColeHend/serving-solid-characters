@@ -1,6 +1,5 @@
 import { Component, JSX } from "solid-js";
 interface Props extends JSX.SvgSVGAttributes<SVGSVGElement> {
-
 }
 const SkinnySnowman: Component<Props> = (props) => {
     return (

@@ -6,20 +6,7 @@
     overflow-x: hidden !important;
     overflow-y: auto;
     max-width: 90vw !important;
-    padding-bottom: 5%;
-
-    tbody {
-
-        tr {
-
-            td {
-
-                &:hover {
-                    cursor: pointer;
-                }
-            }
-        }
-    }
+    padding-bottom: 10%;
 
     #materials_needed {
         word-wrap:normal;
@@ -29,6 +16,9 @@
         width: 90%;
         overflow-x: hidden !important;
         margin: 0; 
+        padding: 0;
+        font-size: 0.9em;
+        padding-bottom: 10%;
     }
 }
 
@@ -37,59 +27,14 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    :nth-child(1){
-        display: flex;
-        flex-direction: column;
-    }
+    
     @media screen and (max-width: 768px){
         width: 90%;
-    }
-}
-
-.view {
-    padding: 15px;
-   
-    div {
-        background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
-        width: 95%;
-        height: max-content;
-        border-radius: 12px;
-        text-wrap: wrap;
-        padding: 15px;
-        padding-bottom: -5px;
-        
-        h1{
-            font-family: 'Mr_Eaves_Small_Caps';
-            font-weight: 100;
-            color: #AA0505;
-            margin-left: 12px;
-        }
-
-        h2 {
-            font-family: 'Bookinsanity';
-            font-weight: 100;
-            color: #000;
-            margin-left: 12px;
-        }
-        
-        h4 {
-            font-family: 'Bookinsanity';
-            font-weight: 100;
-            color: #000;
-            margin-left: 12px;
-        }
-
-        span {
-            font-family: 'Bookinsanity';
-            font-weight: 100;
-            color: #000;
-        }
     }
 }
 .center {
     text-align: center;
     margin: 0 auto; 
-
 }
 .paginator {
     width: min-content;
@@ -106,19 +51,11 @@
 
     @media screen and (max-width: 768px) {
         margin: 0;
-        width: 100%;
+        margin-left: 0;
+        width: 90%;
         font-size: 0.9em;
     }
 }
-.header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 92%;
-    margin-bottom: 5%;
-    // text-align: center;
-}
-
 .spellChip {
     // background: white;
     color: white !important;
@@ -132,9 +69,27 @@
 }
 
 .clickyHeader {
-
+    span {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
     &:hover {
-
         cursor: pointer;
     }
+}
+
+.chipBar {
+    display: flex;
+    flex-direction: row;
+}
+
+.small {
+    width: min-content;
+    margin: 0;
+    padding: 0;
+}
+
+.mobalBar {
+    padding-bottom: 5%;
 }
