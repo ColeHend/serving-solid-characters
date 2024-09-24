@@ -185,6 +185,10 @@ $mobile: 768px;
 .tabBar {
 	width: 95%;
     
+    :nth-child(n) {
+        z-index: 2;
+        
+    }
 
     @media screen and (max-width: 756px) {
         margin: 0;

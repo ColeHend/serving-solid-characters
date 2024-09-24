@@ -22,12 +22,11 @@ const SpellModal: Component<props> = (props) => {
   return (
     <Modal
         title={currentSpell().name}
-        width={sharedHooks.isMobile() ? "100%" : "50%"} // fuck with it
-        height={sharedHooks.isMobile() ? "100%" : "50%"} // fuck with it
+        width={sharedHooks.isMobile() ? "98%" : "98%"} // fuck with it
+        height={sharedHooks.isMobile() ? "90%" : "87%"} // fuck with it
         backgroundClick={[showSpell,setShowSpell]}
     >
         <div class={`${style.view}`}>
-            <div>
             <h1>{currentSpell().name}</h1>
 
             <h2>
@@ -43,15 +42,16 @@ const SpellModal: Component<props> = (props) => {
             <h2>Duration: {currentSpell().duration}</h2>
 
             <h2>Classes: {currentSpell().classes.join(", ")}</h2>
-
-            <h2>SubClasses: {currentSpell().subClasses.join(", ")}</h2>
+            
+            <Show when={currentSpell().subClasses.length > 0}>
+              <h2>SubClasses: {currentSpell().subClasses.join(", ")}</h2>
+            </Show>
 
             <span>{currentSpell().desc}</span>
 
             <Show when={!!currentSpell().higherLevel}>
                 <h4>At Higher Levels: </h4> <span>{currentSpell().higherLevel}</span>
             </Show>
-            </div>
         </div>
     </Modal>
 
