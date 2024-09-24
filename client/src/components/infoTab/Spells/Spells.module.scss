@@ -28,9 +28,6 @@
     flex-direction: row;
     justify-content: space-between;
     
-    @media screen and (max-width: 768px){
-        width: 90%;
-    }
 }
 .center {
     text-align: center;
@@ -69,27 +66,32 @@
 }
 
 .clickyHeader {
-    span {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-    }
     &:hover {
         cursor: pointer;
     }
 }
 
-.chipBar {
+.flexRow {
     display: flex;
     flex-direction: row;
 }
 
-.small {
-    width: min-content;
-    margin: 0;
-    padding: 0;
-}
-
 .mobalBar {
     padding-bottom: 5%;
+}
+
+.spellMenuBtn {
+    padding: 0;
+    height: 40%;
+    background: inherit;
+
+
+    svg {
+        
+        path {
+
+            fill: white
+        }
+    }
+   
 }

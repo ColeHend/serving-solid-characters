@@ -98,7 +98,13 @@ const Spells: Component = () => {
 	const fillSpellInfo = (search?: boolean)=> {
 		const searchName = !!search ? searchParam.name : currentSpell.name;
 		const spell = HomebrewManager.spells().find((x)=>x.name === searchName);
-		
+		const srdSpell = allSpells().find((x)=>x.name === searchName)
+
+		if(!!srdSpell) {
+			setCurrentSpell(srdSpell);
+			setSpellDesc(srdSpell.desc);
+			setSpellHigherLevel(srdSpell.higherLevel);
+		}
 		if (!!spell) {
 			setCurrentSpell(spell);
 			setSpellDesc(spell.desc);

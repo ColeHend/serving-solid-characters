@@ -14,12 +14,12 @@ import Paginator from "../../../shared/components/paginator/paginator";
 import { Spell } from "../../../models/spell.model";
 import SearchBar from "./searchBar/searchBar";
 import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
 import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-import { Body } from "../../../shared/components";
+import { Body, Button } from "../../../shared/components";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import Table from "../../../shared/components/Table/table";
 import {Chip} from "../../../shared/components";
@@ -31,15 +31,19 @@ import {
   Row,
   SecondRow,
 } from "../../../shared/components/Table/innerTable";
-import { Clone } from "../../../shared";
+import { Clone, SkinnySnowman } from "../../../shared";
 import ChipType from "../../../shared/models/chip";
+import { DnDClass } from "../../../models";
 
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(() => useStyles(userSettings().theme));
   const dndSrdSpells = useGetSpells();
+  const navigate = useNavigate()
   let compArr: any[] = [];
+
+
 
   // search param stuff
 
@@ -67,35 +71,6 @@ const masterSpells: Component = () => {
   const paginateItems = createMemo(() =>
     searchResults().length > 0 ? searchResults() : dndSrdSpells()
   );
-
-  // helper functions 
-
-  const spellLevel = (spellLevel: string) => {
-    switch (spellLevel) {
-      case "0":
-        return "Cantrip";
-      case "1":
-        return "1st";
-      case "2":
-        return "2nd";
-      case "3":
-        return "3rd";
-      default:
-        return `${spellLevel}th`;
-    }
-  };
-
-  const spellComponents = (spell: Spell) => {
-    const components = [];
-    if (spell.isVerbal) components.push("V");
-    if (spell.isSomatic) components.push("S");
-    if (spell.isMaterial) components.push("M");
-    if (!!spell.materials_Needed) {
-      return [components.join(", "), spell.materials_Needed ?? null].join(", ");
-    }
-    return components.join(", ");
-  };
-
 						
   const dataSort = (sortBy: keyof Spell) => {
     setCurrentSort((old) => {
@@ -157,7 +132,17 @@ const masterSpells: Component = () => {
     return returnarr;
   }
 
-  // -----------------
+  const menuItems = (spell:Spell) => ([
+    {
+      name: "Clone and Edit",
+      action: () => {navigate(`/homebrew/create/spells?name=${spell.name}`)}
+    },
+    {
+      name: "Calculate Dmg",
+      action: () => {}
+    }
+  ])
+
 
   createEffect(() => {
     setSearchParam({ name: currentSpell()?.name ?? "" });
@@ -171,7 +156,6 @@ const masterSpells: Component = () => {
     const allSpells = dndSrdSpells();
 
     setTableData(allSpells);
-    console.log("allspell",allSpells)
   });
 
   return (
@@ -187,8 +171,9 @@ const masterSpells: Component = () => {
       <Table
         class={`${styles.SpellsBody}`}
         data={paginatedSpells}
-        columns={["name","school","level"]}
-        dropdown>
+        columns={["name","school","level","menu"]}
+        dropdown
+        dropdownArrow={{width:"3vw",height:"20%"}}>
         
         <Column name="name">
           <Header class={styles.clickyHeader}>
@@ -207,19 +192,21 @@ const masterSpells: Component = () => {
             )}
           </Cell>
         </Column>
-        <Column name="school">
-            <Header class={styles.clickyHeader}>
-              <span onClick={() => dataSort("school")}>
-                <strong>School</strong>
-                <Show when={currentSort().sortKey === "school"}>
-                  <span >{currentSort().isAsc ? "▲" : "▼"}</span>
-                </Show>
-              </span>
-            </Header>
-            <Cell<Spell> class={`${styles.center}`}>{ (spell, i) => <div>
-                <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
-            </div>}</Cell>
-        </Column>
+        <Show when={!sharedHooks.isMobile()}>
+          <Column name="school">
+              <Header class={styles.clickyHeader}>
+                <span onClick={() => dataSort("school")}>
+                  <strong>School</strong>
+                  <Show when={currentSort().sortKey === "school"}>
+                    <span >{currentSort().isAsc ? "▲" : "▼"}</span>
+                  </Show>
+                </span>
+              </Header>
+              <Cell<Spell> class={`${styles.center}`}>{ (spell, i) => <div>
+                  <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
+              </div>}</Cell>
+          </Column>
+        </Show>
         <Column name="level">
           <Header class={`${styles.clickyHeader}`}>
             <span onClick={() => dataSort("level")}>
@@ -233,10 +220,21 @@ const masterSpells: Component = () => {
             {(spell, i) => <span onClick={()=>setCurrentObj(spell)}>{spell.level}</span>}
           </Cell>
         </Column>
+        <Column name="menu">
+          <Header><span></span></Header>
+
+          <Cell<Spell>>
+            { (spell, i) => <span class={`${styles.flexRow}`}>
+              <Button enableBackgroundClick menuItems={menuItems(spell)} class={`${styles.spellMenuBtn}`}>
+                <SkinnySnowman />
+              </Button>
+            </span>}
+          </Cell>
+        </Column>
 
         <Row style={{width:"98%"}} />
         <SecondRow<Spell>>
-          {(spell, i) => <div class={`${!sharedHooks.isMobile()?styles.chipBar:styles.mobalBar}`}>
+          {(spell, i) => <div class={`${!sharedHooks.isMobile()?styles.flexRow:styles.mobalBar}`}>
                 {spell.ritual? <Chip key="ritual" value="yes" /> : ""}
                 {spell.concentration ? <Chip key="concentration" value="yes" /> : ""}
                 {spell.damageType ? <Chip key="dmg-type" value={spell.damageType} /> : ""}

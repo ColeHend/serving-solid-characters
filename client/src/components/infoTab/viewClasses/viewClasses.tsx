@@ -62,7 +62,7 @@ const viewClasses: Component = () => {
                 class={`${styles.searchBar}`}/>
             </div>
 
-            <Table data={paginatedClasses} columns={["name","menu","delete"]} class={`${styles.classesTable}`}>
+            <Table data={paginatedClasses} columns={["name","menu"]} class={`${styles.classesTable}`}>
 								<Column name="name">
 									<Header><span></span></Header>
 									<Cell<DnDClass>>{(x, i) => <span onClick={() => {
@@ -74,16 +74,9 @@ const viewClasses: Component = () => {
                 <Column name="menu">
                   <Header><span></span></Header>
                   <Cell<DnDClass>>
-                    {(dndClass, i) => <Button enableBackgroundClick={true} menuItems={menuButtons(dndClass)}>
+                    {(dndClass, i) => <Button enableBackgroundClick menuItems={menuButtons(dndClass)}>
                       <SkinnySnowman />  
                     </Button>}
-                  </Cell>
-                </Column>
-                <Column name="delete">
-                  <Header><span></span></Header>
-                  <Cell<DnDClass>>{(dndClass, i) => <Button>
-                        x
-                      </Button>}
                   </Cell>
                 </Column>
 						</Table>

@@ -31,7 +31,7 @@ const SearchBar = <T,>(props: Props<T>) => {
         };
     props.setResults(props.dataSource());
     return (
-        <div class={`${style.searchBar} ${local.wrapClass}`}>
+        <div class={`${style.searchBar}`}>
             <input
             type="text"
             onChange={(e) => setSearchValue(e.currentTarget.value)}
