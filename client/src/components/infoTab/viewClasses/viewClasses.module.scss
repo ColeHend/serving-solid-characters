@@ -4,23 +4,20 @@
 
     justify-content: center;
     align-items: center;
-    padding-bottom: 5%;
 }
 
 .paginator {
-    float: bottom;
-    position: fixed;
-    bottom: 0;
     margin: 10px;
 
 }
 
 .classesTable {
     overflow-y: scroll;
-    max-height: 30%;
-
-    tr {
-        max-height: 30%;
+    height: 49vh;
+    width: 32%;
+    
+    table {
+        margin: 0 auto;
     }
 
     span:hover {
@@ -35,4 +32,5 @@
 
 .searchBar {
     height: 8vh;
+    z-index: 2;
 }

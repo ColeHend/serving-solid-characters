@@ -74,7 +74,7 @@ const featsList: Component = () => {
                     <Table data={displayResults} columns={["name","options"]}>
                         
                         <Column name="name">
-                            <Header>Name</Header>
+                            <Header><></></Header>
                             <Cell<Feat>>
                                 { (feat, i) => <span onClick={()=>{
                                     setCurrentFeat(feat);

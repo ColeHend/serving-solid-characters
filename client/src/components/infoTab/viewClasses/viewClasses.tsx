@@ -64,24 +64,26 @@ const viewClasses: Component = () => {
                 class={`${styles.searchBar}`}/>
             </div>
 
-            <Table data={paginatedClasses} columns={["name","menu"]} class={`${styles.classesTable}`}>
-								<Column name="name">
-									<Header><span></span></Header>
-									<Cell<DnDClass>>{(x, i) => <span onClick={() => {
-										setCurrentClass(x);
-										setSearchParam({ name: x.name });
-										setShowClass(!showClass());
-									}}>{x.name}</span>}</Cell>
-								</Column>
-                <Column name="menu">
-                  <Header><span></span></Header>
-                  <Cell<DnDClass>>
-                    {(dndClass, i) => <Button enableBackgroundClick menuItems={menuButtons(dndClass)}>
-                      <SkinnySnowman />  
-                    </Button>}
-                  </Cell>
-                </Column>
-						</Table>
+            <div class={`${styles.classesTable}`}>
+              <Table data={paginatedClasses} columns={["name","menu"]}>
+                  <Column name="name">
+                    <Header><span></span></Header>
+                    <Cell<DnDClass>>{(x, i) => <span onClick={() => {
+                      setCurrentClass(x);
+                      setSearchParam({ name: x.name });
+                      setShowClass(!showClass());
+                    }}>{x.name}</span>}</Cell>
+                  </Column>
+                  <Column name="menu">
+                    <Header><span></span></Header>
+                    <Cell<DnDClass>>
+                      {(dndClass, i) => <Button enableBackgroundClick menuItems={menuButtons(dndClass)}>
+                        <SkinnySnowman />  
+                      </Button>}
+                    </Cell>
+                  </Column>
+              </Table>
+            </div>
 						<Show when={showClass()}>
 								<ClassModal boolean={showClass} booleanSetter={setShowClass} currentClass={currentClass} />
 						</Show>

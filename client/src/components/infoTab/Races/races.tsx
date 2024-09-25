@@ -1,18 +1,18 @@
 import { Accessor, Component, For, Match, Show, Switch, createMemo, createSignal, useContext } from "solid-js";
 import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
-import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./races.module.scss";
 import { effect } from "solid-js/web";
 import { Race } from "../../../models/race.model";
-import Subrace from "./subraces/subrace";
-import Banner from "../../../shared/components/Banner/banner";
-import Sidebar from "./sidebar";
-import ThePage from "./thePage";
 import { useSearchParams } from "@solidjs/router";
 import Button from "../../../shared/components/Button/Button";
 import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
+import { Body, Paginator, SkinnySnowman } from "../../../shared";
+import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import {Table} from "../../../shared/components/Table/table";
+import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
+import RaceView from "../../../shared/components/modals/raceView/raceView";
 
 const races: Component = () => {
   // import services ↓
@@ -20,58 +20,77 @@ const races: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
-
-  // signals ↓
-  const [RowShown, SetRowShown] = createSignal<number[]>([]);
-  const toggleRow = (index: number) =>
-    !hasIndex(index)
-      ? SetRowShown([...RowShown(), index])
-      : SetRowShown(RowShown().filter((i) => i !== index));
-  const hasIndex = (index: number) => RowShown().includes(index);
-
   const [searchParam,setSearchParam] = useSearchParams();
-  const selectedRace = dndSrdRaces()?.findIndex((val)=>val.name?.toLowerCase() === searchParam?.name?.toLowerCase())
-  const [currentRaceIndex,setCurrentRaceIndex] = createSignal<number>(selectedRace >= 0 ? selectedRace : 0) 
+  const selectedRace = dndSrdRaces()?.filter((val)=>val.name?.toLowerCase() === searchParam?.name?.toLowerCase());
+  const [currentRace,setCurrentRace] = createSignal<Race>({} as Race);
+  const [results,setResults] = createSignal<Race[]>([]);
+  const [paginatedRaces,setPaginatedRaces] = createSignal<Race[]>([]);
+  const [showRace,setShowRace] = createSignal<boolean>(false);
+
+  const displayResults = createMemo(()=>results().length > 0?results():dndSrdRaces())
+
+  if(!!!searchParam.name) setSearchParam({name: currentRace()?.name});
   
-  if(!!!searchParam.name) setSearchParam({name: dndSrdRaces().length > 0 ? dndSrdRaces()[currentRaceIndex()].name: "dragonborn" });
-  
-  const currentRace:Accessor<Race> = createMemo(()=>dndSrdRaces().length > 0 && currentRaceIndex() >= 0 && currentRaceIndex() < dndSrdRaces().length ? dndSrdRaces()[currentRaceIndex()] : ({} as Race))
+  const menuItems = (race:Race) => ([
+    {
+      name: "Edit",
+      action: ()=> {}
+    },
+    {
+      name: "Calulate dmg",
+      action: ()=> {}
+    }
+  ])
 
   effect(()=>{
     setSearchParam({name: dndSrdRaces().length > 0 ? currentRace()?.name : "Dragonborn"})
   })
-  return (
-    <>
-      <div class={`${stylin().primary} ${styles.outerStyles}`} id="racesComp">
-        <h1>Races</h1>
+  return <Body>
+      <h1 class={`${styles.header}`}>Races</h1>
 
-        <div class={`${styles.SelectorBar}`}>
-          <button 
-            onClick={
-              ()=>currentRaceIndex() === 0 ? setCurrentRaceIndex(old=> (dndSrdRaces().length - 1)) : setCurrentRaceIndex(old=>old - 1)
-              }>←</button>
-          <span>{currentRace().name}</span>
-          <button 
-            onClick={
-              ()=>currentRaceIndex() === (dndSrdRaces().length - 1) ? setCurrentRaceIndex(old=> 0) : setCurrentRaceIndex(old=>old + 1)
-              }>→</button>
-        </div>
-{/* 
-        <div>
-                <Button onClick={()=>currentClassIndex() === 0 ? setCurrentCharacterIndex(old=> (dndSrdClasses().length - 1)) : setCurrentCharacterIndex(old=>old - 1)}>←</Button>
-                <span>{currentClass().name}</span>
-                <Button onClick={()=>currentClassIndex() === (dndSrdClasses().length - 1) ? setCurrentCharacterIndex(old=> 0) : setCurrentCharacterIndex(old=>old + 1)}>→</Button>
-            </div> */}
-
-
-        <div class={`${styles.wrapper}`}>
-
-          <ThePage styles={styles} dndSrdRace={currentRace} />
-          
-        </div>
-
+      <div class={`${styles.searchBar}`}>
+        <SearchBar dataSource={dndSrdRaces} setResults={setResults}  />
       </div>
-    </>
-  );
+
+      <div class={`${styles.racesTable}`}>
+        <Table  data={displayResults} columns={["name","options"]}  >
+          
+          <Column name="name">
+            <Header><></></Header>
+
+            <Cell<Race>>
+              { (race, i) => <span onClick={()=>{
+                setCurrentRace(race);
+                setShowRace(!showRace());
+              }}>
+                {race.name}
+              </span>}
+            </Cell>
+          </Column>
+
+          <Column name="options">
+              <Header><></></Header>
+
+              <Cell<Race>>
+                { (race, i) => <span>
+                  <Button enableBackgroundClick menuItems={menuItems(race)} class={`${styles.menuBtn}`}>
+                    <SkinnySnowman />
+                  </Button>
+                </span>}
+              </Cell>
+          </Column>
+
+        </Table>
+      </div>
+
+      <Show when={showRace()}>
+        <RaceView currentRace={currentRace} backClick={[showRace,setShowRace]} />
+      </Show>
+
+      <div class={`${styles.paginator}`}>
+        <Paginator items={results} setPaginatedItems={setPaginatedRaces} />
+      </div>
+
+    </Body>
 };
 export default races;
