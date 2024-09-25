@@ -17,8 +17,10 @@ type Props = {
     translate?: {
         x?: string,
         y?: string
-    }
-    backgroundClick?: [ Accessor<boolean>, Setter<boolean>]
+    },
+    backgroundClick?: [ Accessor<boolean>, Setter<boolean>],
+		setClose?: Setter<boolean>,
+		ref?: Accessor<HTMLDivElement | undefined>
 }
 
 /**
@@ -41,12 +43,12 @@ const Modal:Component<Props> = (props)=>{
     const defaultX = props.translate?.x ?? "-50%";
     const defaultY = props.translate?.y ?? "-50%";
 		const [popupRef, setPopupRef] = createSignal<HTMLDivElement>();
-		useClickOutside(popupRef, ()=>{
+		useClickOutside(() => !!props.ref ? props.ref(): popupRef(), ()=>{
 			setBackClick(old => !old);
 		})
     return(
-        <Portal >
-            <div ref={setPopupRef} style={{
+        <Portal ref={(el) => setPopupRef(el)}>
+            <div style={{
                     width: !!props.width ? props.width : services.isMobile() ? "90vw":"45vw", 
                     height: !!props.height ? props.height : services.isMobile() ? "90vh":"60vh",
                     transform: `translate(${defaultX},${defaultY})`,
@@ -65,7 +67,7 @@ const Modal:Component<Props> = (props)=>{
                     <h2 style="margin-left: 5%">
                         {props.title ?? "Modal"}
                     </h2>
-                    <span><Button onClick={()=>setBackClick(old => !old)}><b>X</b></Button></span>
+                    <span><Button onClick={()=>props.setClose ? props.setClose(old => !old) : setBackClick(old => !old)}><b>X</b></Button></span>
                     
                 </div>
                 {props.children}

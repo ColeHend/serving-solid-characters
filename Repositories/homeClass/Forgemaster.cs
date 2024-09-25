@@ -42,11 +42,11 @@ namespace sharpAngleTemplate.models.repositories
                     },
                 },
                 Proficiencies = new List<string>(){
-                    "Light armor",
-                    "Medium armor",
+                    "Light",
+                    "Medium",
                     "Shields",
-                    "Simple weapons",
-                    "Martial weapons",
+                    "Simple",
+                    "Martial",
                 },
                 SavingThrows = new List<string>(){
                     "INT",
@@ -112,7 +112,10 @@ namespace sharpAngleTemplate.models.repositories
                 Spellcasting = new SpellCastingDto(){
                     Name = "Spellcasting",
                     Level = 1,
-                    SpellcastingAbility = "Intelligence",
+                    SpellcastingAbility = "INT",
+										CasterType = "half",
+										SpellsKnownRoundup = true,
+										SpellsKnownCalc = "INT",
                     Info = new List<InfoDto>(){
                         new InfoDto(){
                             Name = "Spell List",
@@ -140,6 +143,17 @@ namespace sharpAngleTemplate.models.repositories
                         }
                     }
                 },
+								ClassMetadata = new ClassMetadata(){
+									SubclassLevels = new List<int>(){
+										3,
+										7,
+										11,
+										15,
+										20
+									},
+									SubclassType = "Focus",
+									SubclassTypePosition = "after"
+								},
                 ClassLevels = new List<LevelEntity>(){
                     new LevelEntity(){
                         Info = new Info<string>(){
