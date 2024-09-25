@@ -49,6 +49,7 @@ const viewClasses: Component = () => {
         setSearchParam({ name: dndSrdClasses()?.length > 0 ? currentClass().name : "barbarian" })      
     })
 
+    
     return (
         <Body class={`${stylin()?.primary}  ${styles.classesView}`}>
             <h1>Classes</h1>

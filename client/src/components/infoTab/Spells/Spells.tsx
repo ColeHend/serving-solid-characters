@@ -20,9 +20,10 @@ import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body } from "../../../shared/components";
-import Chip from "../../../shared/components/Chip/Chip";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import Table from "../../../shared/components/Table/table";
+import {Chip} from "../../../shared/components";
+
 import {
   Column,
   Header,
@@ -31,7 +32,7 @@ import {
   SecondRow,
 } from "../../../shared/components/Table/innerTable";
 import { Clone } from "../../../shared";
-import Chipbar from "../../../shared/components/Chipbar/chipbar";
+import ChipType from "../../../shared/models/chip";
 
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
@@ -56,6 +57,7 @@ const masterSpells: Component = () => {
   const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
   const [searchResults, setSearchResults] = createSignal<any[]>([]);
   const [showSpell, setShowSpell] = createSignal(false);
+  const [spellChips, setSpellChips] = createSignal<ChipType[]>([])
   const [currentSort, setCurrentSort] = createSignal<{
     sortKey: string;
     isAsc: boolean;
@@ -65,6 +67,8 @@ const masterSpells: Component = () => {
   const paginateItems = createMemo(() =>
     searchResults().length > 0 ? searchResults() : dndSrdSpells()
   );
+
+  // helper functions 
 
   const spellLevel = (spellLevel: string) => {
     switch (spellLevel) {
@@ -130,16 +134,46 @@ const masterSpells: Component = () => {
     });
   };
 
+  const setCurrentObj = (spell: Spell) => {
+
+    setCurrentSpell(spell);
+    setShowSpell(true);
+
+  }
+
+  const checkForComponents = (spell: Spell) => {
+    const returnarr:string[] = [];
+    
+    if (spell.isSomatic) {
+      returnarr.push("S");
+    }
+    if (spell.isVerbal) {
+      returnarr.push("V");
+    }
+    if (spell.isMaterial) {
+      returnarr.push("M");
+    }
+
+    return returnarr;
+  }
+
+  // -----------------
+
   createEffect(() => {
     setSearchParam({ name: currentSpell()?.name ?? "" });
+
+    if(showSpell() === false) {
+      setSearchParam({name: ""})
+    }
   });
 
   createEffect(() => {
-    
     const allSpells = dndSrdSpells();
 
     setTableData(allSpells);
+    console.log("allspell",allSpells)
   });
+
   return (
     <Body>
       <h1 class={`${styles.center}`}>Spells</h1>
@@ -150,137 +184,74 @@ const masterSpells: Component = () => {
         spellsSrd={tableData}
       ></SearchBar>
 
-      <Show when={!sharedHooks.isMobile()}>
-        <Table
-          class={`${styles.SpellsBody}`}
-          data={paginatedSpells}
-          columns={["name", "level"]}
-          dropdown
-        >
-          <Column name="name">
-            <Header>
-              <span onClick={() => dataSort("name")}>
-                <strong>Name</strong>
-                <Show when={currentSort().sortKey === "name"}>
-                  <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
-                </Show>
-              </span>
-            </Header>
-            <Cell<Spell> class={`${styles.center}`}>
-              {(spell, i) => (
-                <div>
-                  <span>{spell.name}</span>
-                </div>
-              )}
-            </Cell>
-          </Column>
-          <Column name="level">
-            <Header>
-              <span onClick={() => dataSort("level")}>
-                <strong>Level</strong>
-                <Show when={currentSort().sortKey === "level"}>
-                  <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
-                </Show>
-              </span>
-            </Header>
-            <Cell<Spell> class={`${styles.center}`}>
-              {(spell, i) => (
-                <div>
-                  <span>{spell.level}</span>
-                </div>
-              )}
-            </Cell>
-          </Column>
-
-          <Row />
-          <SecondRow<Spell>>
+      <Table
+        class={`${styles.SpellsBody}`}
+        data={paginatedSpells}
+        columns={["name","school","level"]}
+        dropdown>
+        
+        <Column name="name">
+          <Header class={styles.clickyHeader}>
+            <span onClick={() => dataSort("name")}>
+              <strong>Name</strong>
+              <Show when={currentSort().sortKey === "name"}>
+                <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+              </Show>
+            </span>
+          </Header>
+          <Cell<Spell> class={`${styles.center}`}>
             {(spell, i) => (
-              <div class={`${styles.view}`}>
-                <div>
-                  <h1>{spell.name}</h1>
-
-                  <h2>
-                    {spellLevel(spell.level)} {spell.school}
-                  </h2>
-
-                  <h2>Casting time: {spell.castingTime} </h2>
-
-                  <h2>Range: {spell.range} </h2>
-
-                  <h2>Component: {spellComponents(spell)}</h2>
-
-                  <h2>Duration: {spell.duration}</h2>
-
-                  <h2>Classes: {spell.classes.join(", ")}</h2>
-
-                  <h2>SubClasses: {spell.subClasses.join(", ")}</h2>
-
-                  <Show when={spell.ritual}>
-                    <Chip class={`${styles.spellChip}`} key="ritual" value="yes" />
-                  </Show>
-
-                  <span>{spell.desc}</span>
-
-                  <Show when={!!spell.higherLevel}>
-                    <h4>At Higher Levels: </h4> <span>{spell.higherLevel}</span>
-                  </Show>
-                </div>
+              <div>
+                <span onClick={()=>setCurrentObj(spell)}>{spell.name}</span>
               </div>
             )}
-          </SecondRow>
-        </Table>
-      </Show>
-      <Show when={sharedHooks.isMobile()}>
-        <div class={`${styles.header}`}>
-          <span onClick={() => dataSort("name")}>
-            <strong>Name</strong>
-            <Show when={currentSort().sortKey === "name"}>
-              <span>{currentSort().isAsc ? "↑" : "↓"}</span>
-            </Show>
-          </span>
-          <span onClick={() => dataSort("level")}>
-            <strong>Level</strong>
-            <Show when={currentSort().sortKey === "level"}>
-              <span>{currentSort().isAsc ? "↑" : "↓"}</span>
-            </Show>
-          </span>
-        </div>
-        <For each={paginatedSpells()}>
-          {(spell, i) => (
-            <>
-              <div class={`${styles.headerBar}`}>
-                <span
-                  onClick={() => {
-                    setCurrentSpell(spell);
-                    setShowSpell((old) => !old);
-                  }}
-                >
-                  {spell.name}
-                </span>
+          </Cell>
+        </Column>
+        <Column name="school">
+            <Header class={styles.clickyHeader}>
+              <span onClick={() => dataSort("school")}>
+                <strong>School</strong>
+                <Show when={currentSort().sortKey === "school"}>
+                  <span >{currentSort().isAsc ? "▲" : "▼"}</span>
+                </Show>
+              </span>
+            </Header>
+            <Cell<Spell> class={`${styles.center}`}>{ (spell, i) => <div>
+                <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
+            </div>}</Cell>
+        </Column>
+        <Column name="level">
+          <Header class={`${styles.clickyHeader}`}>
+            <span onClick={() => dataSort("level")}>
+              <strong>Level</strong>
+              <Show when={currentSort().sortKey === "level"}>
+                <span class={`${styles.small}`} >{currentSort().isAsc ? "▲" : "▼"}</span>
+              </Show>
+            </span>
+          </Header>
+          <Cell<Spell> class={`${styles.center}`}>
+            {(spell, i) => <span onClick={()=>setCurrentObj(spell)}>{spell.level}</span>}
+          </Cell>
+        </Column>
 
-                <span
-                  onClick={() => {
-                    setCurrentSpell(spell);
-                    setShowSpell((old) => !old);
-                  }}
-                >
-                  {spellLevel(spell.level)}
-                </span>
+        <Row style={{width:"98%"}} />
+        <SecondRow<Spell>>
+          {(spell, i) => <div class={`${!sharedHooks.isMobile()?styles.chipBar:styles.mobalBar}`}>
+                {spell.ritual? <Chip key="ritual" value="yes" /> : ""}
+                {spell.concentration ? <Chip key="concentration" value="yes" /> : ""}
+                {spell.damageType ? <Chip key="dmg-type" value={spell.damageType} /> : ""}
+                <Chip key="Comps" value={`${checkForComponents(spell).join(", ")}`} />
               </div>
-              <hr />
-            </>
-          )}
-        </For>
+          }
+        </SecondRow>
+        
+      </Table>
 
-        <Show when={showSpell()}>
-          <SpellModal
-            spell={currentSpell}
-            backgroundClick={[showSpell, setShowSpell]}
-          />
-        </Show>
+      <Show when={showSpell()}>
+          <SpellModal spell={currentSpell} backgroundClick={[showSpell,setShowSpell]}   />
       </Show>
-
-      <div class={`${styles.center} ${styles.paginator}`}>
+    
+      <div class={`${styles.paginator}`}>
         <Paginator
           items={paginateItems}
           setPaginatedItems={setPaginatedSpells}
