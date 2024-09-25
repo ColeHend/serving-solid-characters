@@ -1,46 +1,33 @@
 
 .SpellsBody{
+    display: block;
+    height: 49vh;
+    width: 50%;
     margin: 0 auto;
-    padding: 0% 5%;
-    border-radius: 15px;
-    overflow-x: hidden !important;
-    overflow-y: auto;
-    max-width: 90vw !important;
-    padding-bottom: 10%;
+    overflow-y: scroll;
 
-    #materials_needed {
-        word-wrap:normal;
+    table {
+        margin: 0 auto;
+
+        tbody {
+
+            tr {
+
+                td {
+                    
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
     }
-
-    @media screen and (max-width: 768px){
-        width: 90%;
-        overflow-x: hidden !important;
-        margin: 0; 
-        padding: 0;
-        font-size: 0.9em;
-        padding-bottom: 10%;
-    }
-}
-
-.headerBar{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    
-}
-.center {
-    text-align: center;
-    margin: 0 auto; 
 }
 .paginator {
+    display: block;
     width: min-content;
     margin: 0 auto;
-    margin-left: 25%;
-    position: fixed;
-    bottom: 0;
     text-align: center;
-
 
     select {
         color: white
@@ -53,6 +40,7 @@
         font-size: 0.9em;
     }
 }
+
 .spellChip {
     // background: white;
     color: white !important;
@@ -65,20 +53,6 @@
     }
 }
 
-.clickyHeader {
-    &:hover {
-        cursor: pointer;
-    }
-}
-
-.flexRow {
-    display: flex;
-    flex-direction: row;
-}
-
-.mobalBar {
-    padding-bottom: 5%;
-}
 
 .spellMenuBtn {
     padding: 0;
@@ -94,4 +68,14 @@
         }
     }
    
+}
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.header {
+    margin: 0 auto;
+    text-align: center;
 }

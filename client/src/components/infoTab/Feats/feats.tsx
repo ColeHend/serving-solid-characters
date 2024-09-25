@@ -14,13 +14,14 @@ import Paginator from "../../../shared/components/paginator/paginator";
 import { effect } from "solid-js/web";
 import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
 import { Body, Button, SkinnySnowman } from "../../../shared";
+import FeatView from "../../../shared/components/modals/featModal/featView";
 
 const featsList: Component = () => {
     const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
@@ -29,13 +30,8 @@ const featsList: Component = () => {
         if (searchResult().length === 0) return paginatedFeats();
         return searchResult();
     });
-
     const sharedHooks = useContext(SharedHookContext);
-    const [userSettings, setUserSettings] = getUserSettings();
-    const stylin = createMemo(() => useStyles(userSettings().theme));
-
     const srdFeats = useGetFeats();
-
     const [searchParam, setSearchParam] = useSearchParams();
     if (!!!searchParam.name) setSearchParam({ name: srdFeats()[0]?.name });
     const selectedFeat = srdFeats().filter(
@@ -44,6 +40,20 @@ const featsList: Component = () => {
             (searchParam.name || srdFeats()[0]?.name).toLowerCase()
     )[0];
     const [currentFeat, setCurrentFeat] = createSignal<Feat>(selectedFeat);
+    const [showFeatModal,setShowFeatModal] = createSignal<boolean>(false)
+
+    const navigate = useNavigate()
+
+    const menuItems = (feat:Feat) => ([
+        {
+            name: "Clone and Edit",
+            action: () => {navigate(`/homebrew/create/feats?name=${feat.name}`)}
+        },
+        {
+        name: "Calculate Dmg",
+        action: () => {}
+        }
+    ]);
 
     effect(() => {
         setSearchParam({ name: currentFeat()?.name });
@@ -66,7 +76,10 @@ const featsList: Component = () => {
                         <Column name="name">
                             <Header>Name</Header>
                             <Cell<Feat>>
-                                { (feat, i) => <span>
+                                { (feat, i) => <span onClick={()=>{
+                                    setCurrentFeat(feat);
+                                    setShowFeatModal(!showFeatModal());
+                                }}>
                                     {feat.name} 
                                 </span>}
                             </Cell>
@@ -75,7 +88,7 @@ const featsList: Component = () => {
                             <Header><></></Header>
                             <Cell<Feat>>
                                 { (feat,i) => <span>
-                                    <Button class={`${styles.menuBtn}`}>
+                                    <Button menuItems={menuItems(feat)} enableBackgroundClick class={`${styles.menuBtn}`}>
                                         <SkinnySnowman />
                                     </Button>
                                 </span>}
@@ -85,6 +98,10 @@ const featsList: Component = () => {
                     </Table>
 
                 </div>
+
+                <Show when={showFeatModal()}>
+                    <FeatView feat={currentFeat} backgroundClick={[showFeatModal,setShowFeatModal]} width="40%" height="40%" />
+                </Show>
                
                 <div class={`${styles.paginator}`}>
                     <Paginator items={srdFeats} setPaginatedItems={setPaginatedFeats} />

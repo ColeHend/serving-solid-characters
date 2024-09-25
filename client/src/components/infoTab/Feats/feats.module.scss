@@ -3,6 +3,14 @@ $mobial-size:768px;
 .menuBtn {
     padding: 0;
     background: inherit;
+    margin-left: 2vw;
+
+    svg {
+
+        path {
+            fill: white;
+        }
+    }
 }
 
 .header {
@@ -15,7 +23,6 @@ $mobial-size:768px;
     width: 40%;
     margin: 0 auto;
     height: 20%;
-    margin-bottom: 2%;
 
     svg {
         height: 60%;
@@ -37,28 +44,31 @@ $mobial-size:768px;
    
     table {
         margin: 0 auto;
+    
+        tbody {
+
+            tr {
+
+                td {
+                    
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
     }
 
-    ::-webkit-scrollbar {
-        width: 20px;
-      }
-      
-    
-      ::-webkit-scrollbar-track {
-        box-shadow: inset 0 0 5px grey;
-        border-radius: 10px;
-      }
-      
 
-      ::-webkit-scrollbar-thumb {
-        background: red;
-        border-radius: 10px;
-      }
 }
 
 .paginator {
-    width: 40%;
+    width: min-content;
     margin: 0 auto;
+    
+    select {
+        color: white;
+    }
 
     @media screen and (max-width: $mobial-size) {
         width: 100%;

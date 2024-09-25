@@ -11,7 +11,7 @@ interface props {
   height:string;
 }
 
-const featView: Component<props> = (props) => {
+const FeatView: Component<props> = (props) => {
   const currentFeat = props.feat;
   const [backClick,setBackClick] = props.backgroundClick;
 
@@ -73,3 +73,4 @@ const featView: Component<props> = (props) => {
     </Modal>
   );
 };
+export default FeatView;

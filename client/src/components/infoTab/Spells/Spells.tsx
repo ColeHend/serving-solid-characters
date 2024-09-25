@@ -160,7 +160,7 @@ const masterSpells: Component = () => {
 
   return (
     <Body>
-      <h1 class={`${styles.center}`}>Spells</h1>
+      <h1 class={`${styles.header}`}>Spells</h1>
       <br />
       <SearchBar
         searchResults={searchResults}
@@ -168,82 +168,83 @@ const masterSpells: Component = () => {
         spellsSrd={tableData}
       ></SearchBar>
 
-      <Table
-        class={`${styles.SpellsBody}`}
-        data={paginatedSpells}
-        columns={["name","school","level","menu"]}
-        dropdown
-        dropdownArrow={{width:"3vw",height:"20%"}}>
-        
-        <Column name="name">
-          <Header class={styles.clickyHeader}>
-            <span onClick={() => dataSort("name")}>
-              <strong>Name</strong>
-              <Show when={currentSort().sortKey === "name"}>
-                <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
-              </Show>
-            </span>
-          </Header>
-          <Cell<Spell> class={`${styles.center}`}>
-            {(spell, i) => (
-              <div>
-                <span onClick={()=>setCurrentObj(spell)}>{spell.name}</span>
-              </div>
-            )}
-          </Cell>
-        </Column>
-        <Show when={!sharedHooks.isMobile()}>
-          <Column name="school">
-              <Header class={styles.clickyHeader}>
-                <span onClick={() => dataSort("school")}>
-                  <strong>School</strong>
-                  <Show when={currentSort().sortKey === "school"}>
-                    <span >{currentSort().isAsc ? "▲" : "▼"}</span>
-                  </Show>
-                </span>
-              </Header>
-              <Cell<Spell> class={`${styles.center}`}>{ (spell, i) => <div>
-                  <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
-              </div>}</Cell>
+      <div class={`${styles.SpellsBody}`}>
+        <Table
+          data={paginatedSpells}
+          columns={["name","school","level","menu"]}
+          dropdown
+          dropdownArrow={{width:"3vw",height:"20%"}}>
+          
+          <Column name="name">
+            <Header class={styles.clickyHeader}>
+              <span onClick={() => dataSort("name")}>
+                <strong>Name</strong>
+                <Show when={currentSort().sortKey === "name"}>
+                  <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+                </Show>
+              </span>
+            </Header>
+            <Cell<Spell> class={`${styles.center}`}>
+              {(spell, i) => (
+                <div>
+                  <span onClick={()=>setCurrentObj(spell)}>{spell.name}</span>
+                </div>
+              )}
+            </Cell>
           </Column>
-        </Show>
-        <Column name="level">
-          <Header class={`${styles.clickyHeader}`}>
-            <span onClick={() => dataSort("level")}>
-              <strong>Level</strong>
-              <Show when={currentSort().sortKey === "level"}>
-                <span class={`${styles.small}`} >{currentSort().isAsc ? "▲" : "▼"}</span>
-              </Show>
-            </span>
-          </Header>
-          <Cell<Spell> class={`${styles.center}`}>
-            {(spell, i) => <span onClick={()=>setCurrentObj(spell)}>{spell.level}</span>}
-          </Cell>
-        </Column>
-        <Column name="menu">
-          <Header><span></span></Header>
+          <Show when={!sharedHooks.isMobile()}>
+            <Column name="school">
+                <Header class={styles.clickyHeader}>
+                  <span onClick={() => dataSort("school")}>
+                    <strong>School</strong>
+                    <Show when={currentSort().sortKey === "school"}>
+                      <span >{currentSort().isAsc ? "▲" : "▼"}</span>
+                    </Show>
+                  </span>
+                </Header>
+                <Cell<Spell> class={`${styles.center}`}>{ (spell, i) => <div>
+                    <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
+                </div>}</Cell>
+            </Column>
+          </Show>
+          <Column name="level">
+            <Header class={`${styles.clickyHeader}`}>
+              <span onClick={() => dataSort("level")}>
+                <strong>Level</strong>
+                <Show when={currentSort().sortKey === "level"}>
+                  <span class={`${styles.small}`} >{currentSort().isAsc ? "▲" : "▼"}</span>
+                </Show>
+              </span>
+            </Header>
+            <Cell<Spell> class={`${styles.center}`}>
+              {(spell, i) => <span onClick={()=>setCurrentObj(spell)}>{spell.level}</span>}
+            </Cell>
+          </Column>
+          <Column name="menu">
+            <Header><span></span></Header>
 
-          <Cell<Spell>>
-            { (spell, i) => <span class={`${styles.flexRow}`}>
-              <Button enableBackgroundClick menuItems={menuItems(spell)} class={`${styles.spellMenuBtn}`}>
-                <SkinnySnowman />
-              </Button>
-            </span>}
-          </Cell>
-        </Column>
+            <Cell<Spell>>
+              { (spell, i) => <span class={`${styles.flexRow}`}>
+                <Button enableBackgroundClick menuItems={menuItems(spell)} class={`${styles.spellMenuBtn}`}>
+                  <SkinnySnowman />
+                </Button>
+              </span>}
+            </Cell>
+          </Column>
 
-        <Row style={{width:"98%"}} />
-        <SecondRow<Spell>>
-          {(spell, i) => <div class={`${!sharedHooks.isMobile()?styles.flexRow:styles.mobalBar}`}>
-                {spell.ritual? <Chip key="ritual" value="yes" /> : ""}
-                {spell.concentration ? <Chip key="concentration" value="yes" /> : ""}
-                {spell.damageType ? <Chip key="dmg-type" value={spell.damageType} /> : ""}
-                <Chip key="Comps" value={`${checkForComponents(spell).join(", ")}`} />
-              </div>
-          }
-        </SecondRow>
-        
-      </Table>
+          <Row style={{width:"98%"}} />
+          <SecondRow<Spell>>
+            {(spell, i) => <div class={`${!sharedHooks.isMobile()?styles.flexRow:''}`}>
+                  {spell.ritual? <Chip key="ritual" value="yes" /> : ""}
+                  {spell.concentration ? <Chip key="concentration" value="yes" /> : ""}
+                  {spell.damageType ? <Chip key="dmg-type" value={spell.damageType} /> : ""}
+                  <Chip key="Comps" value={`${checkForComponents(spell).join(", ")}`} />
+                </div>
+            }
+          </SecondRow>
+          
+        </Table>
+      </div>
 
       <Show when={showSpell()}>
           <SpellModal spell={currentSpell} backgroundClick={[showSpell,setShowSpell]}   />
@@ -259,3 +260,5 @@ const masterSpells: Component = () => {
   );
 };
 export default masterSpells;
+
+
