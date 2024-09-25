@@ -1,7 +1,7 @@
 import { Component, For, Show, Switch, Match, createSignal, createMemo, Accessor, useContext } from "solid-js";
 import useGetClasses from "../../../shared/customHooks/data/useGetClasses";
 import styles from "./viewClasses.module.scss"
-import { useSearchParams, useParams, action } from "@solidjs/router";
+import { useSearchParams, useParams, action, useNavigate } from "@solidjs/router";
 import { effect } from "solid-js/web";
 import type { DnDClass } from "../../../models";
 import { Subclass } from "../../../models/class.model";
@@ -31,11 +31,13 @@ const viewClasses: Component = () => {
   //   const searchResults = createMemo(() =>
   //   results().length > 0 ? results() : dndSrdClasses()
   // )
-
+		const navigate = useNavigate();
     const menuButtons = (dndClass:DnDClass) => ([
       {
         name: "Edit",
-        action: () => {}
+        action: () => {
+					navigate(`/homebrew/create/classes?name=${dndClass.name}`)
+				}
       },
       {
         name: "Calculate Dmg",

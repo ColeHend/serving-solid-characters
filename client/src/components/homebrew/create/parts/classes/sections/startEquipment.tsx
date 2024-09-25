@@ -68,10 +68,10 @@ const StartingEquipment: Component<Props> = (props) => {
 	const [currentChoiceNum, setCurrentChoiceNum] = createSignal(1);
 	const getChoice = (choiceNum: number) => {
 		const currentClass = props.currentClass;
-		if (choiceNum === 1) return currentClass.startingEquipment.choice1;
-		if (choiceNum === 2) return currentClass.startingEquipment.choice2;
-		if (choiceNum === 3) return currentClass.startingEquipment.choice3;
-		if (choiceNum === 4) return currentClass.startingEquipment.choice4;	
+		if (choiceNum === 1) return currentClass.startingEquipment?.choice1 ?? [];
+		if (choiceNum === 2) return currentClass.startingEquipment?.choice2 ?? [];
+		if (choiceNum === 3) return currentClass.startingEquipment?.choice3 ?? [];
+		if (choiceNum === 4) return currentClass.startingEquipment?.choice4 ?? [];	
 		return [];	
 	};
 
@@ -119,8 +119,6 @@ const StartingEquipment: Component<Props> = (props) => {
 			type: "weapon",
 			choices: selectedWeapons().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
 		}];
-		console.log('currentChoice:', currentChoiceNum());
-		console.log('newChoices: ', newChoices);
 		props.setStartEquipChoice(currentChoiceNum(), newChoices);
 		setShowChoices(false);
 		setSelectedWeapons([]);
@@ -150,9 +148,7 @@ const StartingEquipment: Component<Props> = (props) => {
 	}
 
 	const [selectedAmount, setSelectedAmount] = createSignal(1);
-	createEffect(()=>{
-		console.log("ClassItems:", getChoice(currentChoiceNum()), selectedItems(), selectedWeapons(), selectedArmor()); 
-	})
+
 	return (
 		<div class={`${styles.equipContain}`}>
 			<h2>Starting Equipment</h2>
@@ -179,7 +175,7 @@ const StartingEquipment: Component<Props> = (props) => {
 											<For each={getUniqueItems(item.choices)}>{(choice)=>(
 												<Chip 
 													key={`Choice`} 
-													value={`${choice.name} ${getItemAmntOnClass(choice, choiceNum, i()) > 1 ? `x${getItemAmntOnClass(choice, choiceNum, i())}`: ``}`}
+													value={`${(choice?.name ?? choice?.item)} ${getItemAmntOnClass(choice, choiceNum, i()) > 1 ? `x${getItemAmntOnClass(choice, choiceNum, i())}`: ``}`}
 													/>
 											)}</For>	
 										</span>
@@ -190,7 +186,7 @@ const StartingEquipment: Component<Props> = (props) => {
 								</>)}
 							</For>
 						</ul>
-					<Show when={getChoice(choiceNum).length === 0}>
+					<Show when={getChoice(choiceNum)?.length === 0}>
 						<i>Add Items to choose from.</i>
 					</Show>
 					</li>)}</For>
