@@ -15,7 +15,16 @@ namespace ClassesEntity
         public SpellCastingDto? Spellcasting { get; set; }
         public StartingEquipmentDto StartingEquipment { get; set; }
 
+				public ClassMetadata ClassMetadata { get; set; }
+
     }
+
+		public class ClassMetadata
+		{
+			public List<int> SubclassLevels { get; set; }
+			public string SubclassType { get; set; }
+			public string SubclassTypePosition { get; set; }
+		}
 
     public class Subclass
     {
@@ -73,6 +82,9 @@ namespace ClassesEntity
         public string Name { get; set; }
         public int Level { get; set; }
         public string SpellcastingAbility { get; set; }
+				public string CasterType { get; set; }
+				public bool SpellsKnownRoundup { get; set; }
+				public string SpellsKnownCalc { get; set; }
         public List<InfoDto> Info { get; set; }
 
     }

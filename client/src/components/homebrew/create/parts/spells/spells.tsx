@@ -77,6 +77,7 @@ const Spells: Component = () => {
 
 	const getSchools = () => {
 		const schools = new UniqueSet<string>();
+		
 		allSpells().forEach(spell => schools.add(spell.school));
 		return schools.value.sort()
 	};

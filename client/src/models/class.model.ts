@@ -12,10 +12,14 @@ export interface DnDClass {
     savingThrows: string[];
     startingEquipment: StartingEquipment;
     classLevels: LevelEntity[];
-    features: Feature<unknown, string>[];
     subclasses: Subclass[];
-    subclassLevels: number[];
-    spellcasting?: ClassCasting
+		spellcasting?: ClassCasting
+		classMetadata: ClassMetadata;
+	}
+export interface ClassMetadata {
+	subclassLevels: number[];
+	subclassType: string;
+	subclassTypePosition: 'before' | 'after' | string;
 }
 export interface LevelEntity {
     info: Info<string>;
@@ -28,7 +32,6 @@ export interface LevelEntity {
 export interface Subclass {
     id: number;
     name: string;
-    subclassFlavor: string;
     desc: string[];
     features: Feature<unknown, string>[];
     class: string;

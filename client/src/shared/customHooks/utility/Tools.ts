@@ -9,17 +9,21 @@ export class UniqueSet<T> {
 	public add(item: T) {
 		this.set.set(JSON.stringify(item), item);
 	}
+	
 	public delete(item: T) {
 		this.set.delete(JSON.stringify(item));
 	}
+	 
 	public get value() {
 		return Array.from(this.set.values()) as T[];
 	}
+
 	public set value(value: T[]) {
 		if (!!!value?.length) return ;
 		this.clear();
 		value.forEach((item) => this.add(item));
 	}
+
 	public clear() {
 		this.set.clear();
 	}

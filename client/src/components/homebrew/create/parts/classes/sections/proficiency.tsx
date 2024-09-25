@@ -25,13 +25,20 @@ const Proficiency: Component<Props> = (props) => {
 	const skills = getSkills();
 
 	const currentArmor = ()=>props.currentClass.proficiencies.filter((prof) => {
-		const armorGeneral = armorTypes.map(x=>x.toLowerCase()).includes(prof.toLowerCase());
-		const armorSpecific = allArmor().map(x=>x.name.toLowerCase()).includes(prof.toLowerCase());
+		const allArmorTypes = armorTypes.map(x=>x.toLowerCase().trim());
+		const allArmors = allArmor().map(x=>x.name.toLowerCase().trim());
+		const proficent = prof.replace("Armor", "").replace("armor", "").toLowerCase().trim();
+	
+		const armorGeneral = allArmorTypes.includes(proficent);
+		const armorSpecific = allArmors.includes(proficent);
+		
 		return armorGeneral || armorSpecific;
 	});
 	const currentWeapons = ()=>props.currentClass.proficiencies.filter((prof) => {
-		const weaponGeneral = weaponTypes.map(x=>x.toLowerCase()).includes(prof.toLowerCase());
-		const weaponSpecific = allWeapons().map(x=>x.name.toLowerCase()).includes(prof.toLowerCase());
+		let proficient = prof.replace("Weapons", "").replace("weapons", "").replace("weapon", "").replace("Weapon", "").toLowerCase().trim();
+		
+		const weaponGeneral = weaponTypes.map(x=>x.toLowerCase()).includes(proficient);
+		const weaponSpecific = allWeapons().map(x=>x.name.toLowerCase()).includes(proficient);
 		return weaponGeneral || weaponSpecific;
 	});
 	const currentTools = ()=>props.currentClass.proficiencies.filter((prof) => allTools().map(x=>x.name.toLowerCase()).includes(prof.toLowerCase()));
@@ -49,9 +56,7 @@ const Proficiency: Component<Props> = (props) => {
 	const [selectedStat, setSelectedStat] = createSignal("");
 	const [showSkill, setShowSkill] = createSignal(false);
 	const [selectedSkill, setSelectedSkill] = createSignal("");
-	createEffect(()=>{
-		console.log("Current Proficiencies", props.currentClass.proficiencies);
-	})
+
 	return (
 		<div class={styles.rowTwo}>
 			<h2>Proficiencies</h2>
