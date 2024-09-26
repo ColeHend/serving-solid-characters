@@ -86,7 +86,7 @@ const TabInternal: Component<Props> = (props) => {
 			const clientWidth = tabContainer?.clientWidth ?? 0;
 			const newWidth = scrollWidth - clientWidth;
 
-			const showRight = (Object.keys(tabs()).length > 3 && isMobile()) || scrollLeft !== newWidth;
+			const showRight = (Object.keys(tabs()).length >= 3 && isMobile()) || scrollLeft !== newWidth;
 			const showLeft = scrollLeft > 0;
 			
 			setShowRight(showRight);
