@@ -31,7 +31,7 @@ import {
   Row,
   SecondRow,
 } from "../../../shared/components/Table/innerTable";
-import { Clone, SkinnySnowman } from "../../../shared";
+import { Clone, homebrewManager, SkinnySnowman } from "../../../shared";
 import ChipType from "../../../shared/models/chip";
 import { DnDClass } from "../../../models";
 
@@ -132,9 +132,19 @@ const masterSpells: Component = () => {
     return returnarr;
   }
 
+  const checkForHomebrew = (spell:Spell):boolean => {
+    homebrewManager.spells().forEach(customSpell=>{
+      if (spell.name.toLowerCase() === customSpell.name.toLowerCase()) {
+        return true;
+      }
+    })
+
+    return false;
+  };
+
   const menuItems = (spell:Spell) => ([
     {
-      name: "Clone and Edit",
+      name:checkForHomebrew(spell)?"Edit":"Clone and Edit",
       action: () => {navigate(`/homebrew/create/spells?name=${spell.name}`)}
     },
     {

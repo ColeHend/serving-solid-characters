@@ -20,7 +20,7 @@ import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
-import { Body, Button, SkinnySnowman } from "../../../shared";
+import { Body, Button, homebrewManager, SkinnySnowman } from "../../../shared";
 import FeatView from "../../../shared/components/modals/featModal/featView";
 
 const featsList: Component = () => {
@@ -44,9 +44,19 @@ const featsList: Component = () => {
 
     const navigate = useNavigate()
 
+    const checkForHomebrew = (feat:Feat):boolean => {
+        homebrewManager.feats().forEach(customFeat => {
+            if (feat.name.toLowerCase() === customFeat.name.toLowerCase()) {
+                return true
+            }  
+        })
+
+        return false;
+    }
+
     const menuItems = (feat:Feat) => ([
         {
-            name: "Clone and Edit",
+            name:checkForHomebrew(feat)?"Edit":"Clone and Edit",
             action: () => {navigate(`/homebrew/create/feats?name=${feat.name}`)}
         },
         {
@@ -67,7 +77,10 @@ const featsList: Component = () => {
                 <SearchBar
                     placeholder="Search Feats..."
                     dataSource={srdFeats}
-                    setResults={setSearchResult}></SearchBar>
+                    setResults={setSearchResult}
+                    searchFunction={(data,search)=>{
+                        return data.name.toLowerCase() === search.toLowerCase();
+                    }}></SearchBar>
                </div>
                 
                 <div class={`${styles.featTable}`}>

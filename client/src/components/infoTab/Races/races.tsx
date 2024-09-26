@@ -3,12 +3,12 @@ import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
 import styles from "./races.module.scss";
 import { effect } from "solid-js/web";
 import { Race } from "../../../models/race.model";
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import Button from "../../../shared/components/Button/Button";
 import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-import { Body, Paginator, SkinnySnowman } from "../../../shared";
+import { Body, Paginator, SkinnySnowman,homebrewManager } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import {Table} from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
@@ -17,6 +17,7 @@ import RaceView from "../../../shared/components/modals/raceView/raceView";
 const races: Component = () => {
   // import services ↓
   const dndSrdRaces = useGetRaces();
+
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
@@ -26,15 +27,28 @@ const races: Component = () => {
   const [results,setResults] = createSignal<Race[]>([]);
   const [paginatedRaces,setPaginatedRaces] = createSignal<Race[]>([]);
   const [showRace,setShowRace] = createSignal<boolean>(false);
-
+  
   const displayResults = createMemo(()=>results().length > 0?results():dndSrdRaces())
+  
+  const navigate = useNavigate();
 
   if(!!!searchParam.name) setSearchParam({name: currentRace()?.name});
   
+  const checkForHomebrew = (race: Race):boolean => {
+
+    homebrewManager.races().forEach(customRace=> {
+      if (customRace.name.toLowerCase() === race.name.toLowerCase()) {
+        return true
+      }
+    })
+
+    return false
+  }
+
   const menuItems = (race:Race) => ([
     {
-      name: "Edit",
-      action: ()=> {}
+      name: checkForHomebrew(race) ? "Edit" : "Clone and Edit",
+      action: ()=> {navigate(`/homebrew/create/races?name=${race.name}`)}
     },
     {
       name: "Calulate dmg",
@@ -49,7 +63,12 @@ const races: Component = () => {
       <h1 class={`${styles.header}`}>Races</h1>
 
       <div class={`${styles.searchBar}`}>
-        <SearchBar dataSource={dndSrdRaces} setResults={setResults}  />
+        <SearchBar 
+          dataSource={dndSrdRaces} 
+          setResults={setResults}
+          searchFunction={(data,search)=>{
+            return data.name.toLowerCase() === search.toLowerCase();
+        }}/>
       </div>
 
       <div class={`${styles.racesTable}`}>
@@ -84,7 +103,7 @@ const races: Component = () => {
       </div>
 
       <Show when={showRace()}>
-        <RaceView currentRace={currentRace} backClick={[showRace,setShowRace]} />
+        <RaceView currentRace={currentRace} backClick={[showRace,setShowRace]} width="60%" />
       </Show>
 
       <div class={`${styles.paginator}`}>

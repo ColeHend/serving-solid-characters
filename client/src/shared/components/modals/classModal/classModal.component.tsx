@@ -274,9 +274,7 @@ const ClassModal: Component<props> = (props) => {
                     <div>
                       <h3>{subclass.name}</h3>
                       <span>{subclass.desc?.join(" \n")}</span>
-                      <br />
-                      <span>{subclass.subclassFlavor}</span>
-                      <br />
+        
                       <Show when={subclass.spells?.length >= 1}>
                         <h4>Spells Gained</h4>
                         <span>{subclass.spells?.join("\n")}</span>

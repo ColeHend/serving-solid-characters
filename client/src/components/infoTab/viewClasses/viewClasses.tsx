@@ -10,7 +10,7 @@ import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
-import { Body, Paginator, SkinnySnowman } from "../../../shared";
+import { Body, homebrewManager, Paginator, SkinnySnowman } from "../../../shared";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
@@ -32,9 +32,21 @@ const viewClasses: Component = () => {
   //   results().length > 0 ? results() : dndSrdClasses()
   // )
 		const navigate = useNavigate();
+
+    const checkForHomebrew = (dndClass:DnDClass):boolean => {
+      
+      homebrewManager.classes().forEach(customClass => {
+        if (dndClass.name.toLowerCase() === customClass.name.toLowerCase()) {
+          return true;
+        }
+      })
+
+      return false;
+    };
+
     const menuButtons = (dndClass:DnDClass) => ([
       {
-        name: "Edit",
+        name:checkForHomebrew(dndClass)?"Edit":"Clone and Edit",
         action: () => {
 					navigate(`/homebrew/create/classes?name=${dndClass.name}`)
 				}
@@ -77,7 +89,7 @@ const viewClasses: Component = () => {
                   <Column name="menu">
                     <Header><span></span></Header>
                     <Cell<DnDClass>>
-                      {(dndClass, i) => <Button enableBackgroundClick menuItems={menuButtons(dndClass)}>
+                      {(dndClass, i) => <Button enableBackgroundClick menuItems={menuButtons(dndClass)} class={`${styles.menuBtn}`}>
                         <SkinnySnowman />  
                       </Button>}
                     </Cell>

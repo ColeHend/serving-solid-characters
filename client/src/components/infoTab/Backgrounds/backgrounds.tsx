@@ -5,14 +5,14 @@ import ExpansionPanel from "../../../shared/components/expansion/expansion";
 import styles from "./backgrounds.module.scss";
 import { effect } from "solid-js/web";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models";
 import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
-import { Body, Button, Paginator, SkinnySnowman } from "../../../shared";
+import { Body, Button, homebrewManager, Paginator, SkinnySnowman } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
 
 const Viewbackgrounds: Component = () => {
@@ -32,10 +32,21 @@ const Viewbackgrounds: Component = () => {
     const [paginatedBackgrounds,setPaginatedBackgrounds] = createSignal<Background[]>([])
     const [showTheBackground,setShowTheBackground] = createSignal<boolean>(false);
 
+    const navigate = useNavigate();
+
+    const checkForHomebrew = (background: Background): boolean => {
+        homebrewManager.backgrounds().forEach(customBackground =>{
+            if (background.name.toLowerCase() === customBackground.name.toLowerCase()) {
+                return true
+            }
+        })
+
+        return false
+    }
     const menuItems = (background:Background) => ([
         {
-            name: "Edit",
-            action: () => {}
+            name: checkForHomebrew(background) ? "Edit" :"Clone and Edit",
+            action: () => {navigate(`/homebrew/create/backgrounds?name=${background.name}`)}
         },
         {
             name: "Calculate Dmg",
@@ -50,7 +61,13 @@ const Viewbackgrounds: Component = () => {
     return <Body>
         <h1 class={`${styles.header}`}>Backgrounds</h1>
         <div class={`${styles.searchBar}`}>
-            <SearchBar placeholder="Search Backgrounds..." dataSource={backgrounds} setResults={setSearchResult} />
+            <SearchBar 
+                placeholder="Search Backgrounds..." 
+                dataSource={backgrounds} 
+                setResults={setSearchResult}
+                searchFunction={(data,search)=>{
+                    return data.name.toLowerCase() === search.toLowerCase();
+            }}/>
         </div>
         <div class={`${styles.backgroundsDiv}`} >
             <Table data={displayResults} columns={["name","options"]}>

@@ -1,4 +1,4 @@
-
+$mobile: 768px;
 .SpellsBody{
     display: block;
     height: 49vh;
@@ -21,6 +21,10 @@
                 }
             }
         }
+    }
+
+    @media screen and (max-width: $mobile) {
+        width: 100%;
     }
 }
 .paginator {
