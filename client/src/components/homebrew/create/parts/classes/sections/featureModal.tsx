@@ -36,6 +36,8 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 	const allDisplayFeatures = createMemo(()=>{
 		if(classFilter() === '') {
 			return allFeatures();
+		} else if (classFilter() === 'Feature') {
+			return allFeatures().filter((f)=>f?.info?.type === 'Feature');
 		} else {
 			return allFeatures().filter((f)=>f?.info?.className === classFilter());
 		}
@@ -158,6 +160,7 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 								</Select>
 								<Select transparent disableUnselected onChange={(e)=>setClassFilter(e.currentTarget.value)}>
 									<Option value="">All</Option>
+									<Option value="Feature">Feats</Option>
 									<For each={allClasses()}>{(c)=><Option value={c}>{c}</Option>}</For>
 								</Select>
 								<Button onClick={()=>saveAndClose()} disabled={validate()}>Save</Button>
@@ -181,6 +184,7 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 								</Select>
 								<Select transparent disableUnselected onChange={(e)=>setClassFilter(e.currentTarget.value)}>
 									<Option value="">All</Option>
+									<Option value="Feature">Feats</Option>
 									<For each={allClasses()}>{(c)=><Option value={c}>{c}</Option>}</For>
 								</Select>
 								<Button onClick={(e)=>{
