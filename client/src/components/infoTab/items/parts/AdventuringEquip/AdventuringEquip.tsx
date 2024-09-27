@@ -1,6 +1,11 @@
-import { Component } from "solid-js";
+import { Accessor, Component } from "solid-js";
+import { Item } from "../../../../../models";
 
-const AdventEquipView:Component = () => {
+interface props {
+    Items:Accessor<Item[]>;
+}
+
+const AdventEquipView:Component<props> = (props) => {
 
     return <div>
 
