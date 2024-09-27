@@ -1,10 +1,11 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show, untrack } from "solid-js";
-import { Button, Input, Tabs, Tab, FormField, TextArea, Select, Option, Markdown } from "../../../../../../shared";
+import { Button, Input, Tabs, Tab, FormField, TextArea, Select, Option, Markdown, useGetClasses } from "../../../../../../shared";
 import { Feature } from "../../../../../../models/core.model";
 import styles from './featureModal.module.scss';
 import Modal from "../../../../../../shared/components/popup/popup.component";
-import { LevelEntity } from "../../../../../../models/class.model";
+import { LevelEntity, Subclass } from "../../../../../../models/class.model";
 import useGetFeatures from "../../../../../../shared/customHooks/useGetFeatures";
+import { useSearchParams } from "@solidjs/router";
 
 type FeatureTypes = 'new' | 'existing' | 'template' | '';
 
@@ -12,13 +13,16 @@ interface FeatureModalProps {
 	addFeature: (level: number, feature: Feature<unknown, string>) => void;
 	replaceFeature: (level: number, index: number, feature: Feature<unknown, string>) => void;
 	currentLevel: LevelEntity;
+	currentSubclass?: Subclass;
 	showFeature: Accessor<boolean>;
 	setShowFeature: Setter<boolean>;
 	editIndex: Accessor<number>;
 	setEditIndex: Setter<number>;
 }
 const FeatureModal:Component<FeatureModalProps> = (props) =>{
+	const allFullClasses = useGetClasses();
 	const allFeatures = useGetFeatures();
+	
 	const [featureType, setFeatureType] = createSignal<FeatureTypes>("");
 	const [selectedFeature, setSelectedFeature] = createSignal<Feature<unknown, string>>({} as Feature<unknown, string>);
 	const [newName, setNewName] = createSignal<string>("");
@@ -48,26 +52,40 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 		setNewDesc("");
 	}
 	const saveAndClose = () => {
+		let className = '';
+		let subclassName = '';
+		let level = 0;
+
+		if (!!props.currentSubclass) {
+			className = props.currentSubclass.class;
+			subclassName = props.currentSubclass.name;
+			level = props.currentLevel.level;
+		} else {
+			className = props.currentLevel.info.className;
+			subclassName = props.currentLevel.info.subclassName;
+			level = props.currentLevel.level;
+		}
+
 		if (isEdit()) {
-			props.replaceFeature(props.currentLevel.level, getEditIndex(), {
+			props.replaceFeature(level, getEditIndex(), {
 				name: untrack(newName),
 				value: untrack(newDesc),
 				info: {
-					className: props.currentLevel.info.className,
-					subclassName: props.currentLevel.info.subclassName,
-					level: props.currentLevel.info.level,
+					className,
+					subclassName,
+					level,
 					type: 'Feature',
 					other: ''
 				}
 			});
 		} else {
-			props.addFeature(props.currentLevel.info.level, {
+			props.addFeature(level, {
 				name: untrack(newName),
 				value: untrack(newDesc),
 				info: {
-					className: props.currentLevel.info.className,
-					subclassName: props.currentLevel.info.subclassName,
-					level: props.currentLevel.info.level,
+					className,
+					subclassName,
+					level,
 					type: 'Feature',
 					other: ''
 				}
@@ -76,7 +94,7 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 		props.setShowFeature(false);
 		props.setEditIndex(-1);
 	}
-	console.log(props.currentLevel);
+
 	const getUnknownToString = (value: unknown) => {
 		if (typeof value === 'string') {
 			return value;
@@ -101,11 +119,13 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 	};
 	createEffect(()=>{
 		if (isEdit()) {
-			const feature = props.currentLevel.features[getEditIndex()];
+			const feature = !!props.currentSubclass ? props.currentSubclass.features[getEditIndex()]: props.currentLevel.features[getEditIndex()];
 			setNewName(feature.name);
 			setNewDesc(getUnknownToString(feature.value));
 		}
 	})
+
+	
 	return (
 		<Modal title="Add Feature" setClose={(value:any)=>{
 			props.setEditIndex(-1);
