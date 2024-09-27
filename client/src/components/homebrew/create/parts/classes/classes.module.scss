@@ -22,6 +22,7 @@
 	display: flex;
 	flex-direction: row;
 	width: 100%;
+
 	@media screen and (max-width: 768px){
 		flex-direction: column;
 	}
@@ -74,6 +75,9 @@
 }
 .wholeTable {
 	width: 100%;
+}
+.scrollX {
+	overflow-x: auto;
 }
 .rowStyle {
 	:nth-child(3) {

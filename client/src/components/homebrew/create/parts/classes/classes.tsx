@@ -61,6 +61,7 @@ import FeatureModal from "./sections/featureModal";
 import { info } from "console";
 import { f } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
+import { delay, of } from "rxjs";
 
 const Classes: Component = () => {
 	// --- getter functions
@@ -326,8 +327,8 @@ const Classes: Component = () => {
 		}
 	}
 	// ---- effects
-	const getShouldDisplayColumns = (casterType: string) => {
-		const currentColumns = ["level", "proficiency", "features", ...getClassSpecificKeys(currentClass)].filter(x=>!!x);
+	const getShouldDisplayColumns = (casterType: string, currClass?: DnDClass) => {
+		const currentColumns = ["level", "proficiency", "features", ...getClassSpecificKeys(currClass ?? currentClass)].filter(x=>!!x);
 		const full = Array.from({length: 9}, (_, i)=>i+1);
 		const numToLevel = (nums: number[]) => ['cantrip', ...nums.map((x)=>`spell_slots_level_${x}`)];
 		switch (casterType.toLowerCase()) {
@@ -386,10 +387,10 @@ const Classes: Component = () => {
 		// 	addSnackbar({message: 'Please fill out the saving throws', severity: 'warning'});
 		// 	return true;
 		// }
-		// if (currentClass.name.trim().length === 0) {
-		// 	addSnackbar({message: 'Please fill out the class name', severity: 'warning'});
-		// 	return true;
-		// }
+		if (currentClass.name.trim().length === 0) {
+			addSnackbar({message: 'Please fill out the class name', severity: 'warning'});
+			return true;
+		}
 		return false; 
 	};
 	const getFeatureKey = (feature: Feature<unknown, string>) => {
@@ -424,15 +425,28 @@ const Classes: Component = () => {
 				type: newLevel.info?.type ?? '',
 				other: newLevel.info?.other ?? ''
 			};
+			if (!!newLevel.spellcasting) {
+				newLevel.spellcasting = {
+					...newLevel?.spellcasting,
+					level: i+1
+				};
+			}
+			newLevel.classSpecific = Object.fromEntries(Object.entries(newLevel?.classSpecific ?? {}));
 			newLevel.level = i+1;
 			return newLevel
 		});
+		if (!!foundClass.classLevels[0].spellcasting) {
+			Array.from({length: 20}, (_, i)=>i+1).forEach((level)=>{
+				setSpellCantrips(level, foundClass.classLevels[level-1].spellcasting?.cantrips_known ?? 0);
+			})
+		}
 
 		setCurrentClass(foundClass);
 		const casterType = (foundClass.spellcasting?.casterType ?? 'None') as keyof typeof SpellsKnown;
 		setCasterInternalType(casterType);
-		const currentColumns = getShouldDisplayColumns(casterType);
+		const currentColumns = getShouldDisplayColumns(casterType, foundClass);
 		setCurrentColumns(currentColumns);
+
 		
 		
 	};
@@ -441,7 +455,9 @@ const Classes: Component = () => {
 
 	onMount(()=>{
 		if (!!searchParam.name) {
-			findAndSetClass();
+			of(null).pipe(delay(50)).subscribe(()=>{
+				findAndSetClass();
+			})
 		}
 	})
 	
@@ -707,8 +723,8 @@ const Classes: Component = () => {
 						<div class={`${styles.divide}`} />
 						<StartEquipment  currentClass={currentClass}  setStartEquipChoice={setStartingEquipChoice}/>
 					</div>
-					<div class={`${styles.twoRowContainer}`}>
-						<Table class={`${styles.wholeTable}`} data={()=>currentClass.classLevels} columns={currentColumns()}>
+					<div class={`${styles.twoRowContainer} ${styles.scrollX}`}>
+						<Table class={`${styles.wholeTable} `} data={()=>currentClass.classLevels} columns={currentColumns()}>
 							<Column name="proficiency">
 								<Header class={`${styles.headerStyle}`}>P.B.</Header>
 								<Cell<LevelEntity> class={`${styles.cellStyle}`}>{(x)=>`+${x.profBonus}`}</Cell>
@@ -764,7 +780,7 @@ const Classes: Component = () => {
 													classLevels: old.classLevels
 														.map((level)=>level.level === x.level ? {...level, 
 															classSpecific: {...level.classSpecific, [key]: (e.currentTarget.value ?? '0')}
-												} : level)}));
+												} : {...level, classSpecific: {...level.classSpecific, [key]: (level.classSpecific[key] ?? '0')}})}));
 											}}
 											style={{
 												width: '50px',

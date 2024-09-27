@@ -71,6 +71,7 @@ const TabInternal: Component<Props> = (props) => {
     const [selectedTab, setSelectedTab] = createSignal(Object.keys(tabs())[0]);
     const currentElement = createMemo(() => tabs()[selectedTab()]);
     const currentChildren = children(()=> props.children);
+		const isMobile = createMemo(()=>window.innerWidth < 768);
 		const hasTranparent = createMemo(()=>Object.keys(props).includes("transparent"));
     effect(()=>{
         setSelectedTab(Object.keys(tabs())[0]);
@@ -79,11 +80,20 @@ const TabInternal: Component<Props> = (props) => {
 		const [showLeft, setShowLeft] = createSignal(false);
     const [showRight, setShowRight] = createSignal(false);
     const scrollFunction = (e: any) => {
-        setShowRight(tabContainer?.scrollLeft !== tabContainer?.scrollWidth - tabContainer?.clientWidth);
-        setShowLeft(tabContainer?.scrollLeft > 0);
-        if (tabContainer?.scrollLeft <= 0) {
-            setShowLeft(false);
-        }
+			const scrollLeft = tabContainer?.scrollLeft;
+			const scrollRight = tabContainer?.offsetWidth;
+			const scrollWidth = tabContainer?.scrollWidth ?? 0;
+			const clientWidth = tabContainer?.clientWidth ?? 0;
+			const newWidth = scrollWidth - clientWidth;
+
+			const showRight = (Object.keys(tabs()).length >= 3 && isMobile()) || scrollLeft !== newWidth;
+			const showLeft = scrollLeft > 0;
+			
+			setShowRight(showRight);
+			setShowLeft(showLeft);
+			if (scrollLeft <= 0) {
+					setShowLeft(false);
+			}
     }
 		let tabContainer: HTMLDivElement;
 		onMount(()=>{
@@ -108,14 +118,14 @@ const TabInternal: Component<Props> = (props) => {
 		}
     const styleType = props.styleType ?? "accent";
     return (
-        <div>
-            <div class={`${userStyle()[styleType]} ${style.tabs} ${hasTranparent() === true ? style.transparent : ""}`}>
+        <div class={`${style.tabs}`}>
+            <div  class={`${userStyle()[styleType]} ${style.singleTabs} ${hasTranparent() === true ? style.transparent : ""}`}>
 							<Show when={showLeft()}>
 									<span class={`${style.leftArrow}`}>
 											<Button onClick={scrollLeft}>←</Button>
 									</span>
 							</Show>
-							<div ref={tabContainer!}>
+							<div ref={tabContainer!} class={`${style.tabHeader}`}>
 								<For each={Object.keys(tabs())}>
 										{(tab, index) => (
 												<span class={`${useStyle().hover}`} onClick={() => setSelectedTab(tab)}>

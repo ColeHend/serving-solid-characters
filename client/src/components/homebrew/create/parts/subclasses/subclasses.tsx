@@ -1,14 +1,15 @@
 import { Component, For, Show, createMemo, createSignal, useContext } from "solid-js";
-import { useStyle, homebrewManager, useDnDSpells, Option, Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Carousel, Chip, Input, Select, useDnDClasses, getUserSettings, Body } from "../../../../../shared";
+import { useStyle, homebrewManager, useDnDSpells, Option, Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Carousel, Chip, Input, Select, useDnDClasses, getUserSettings, Body, FormField, TextArea, Markdown } from "../../../../../shared";
 import styles from './subclasses.module.scss'
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
 import { effect } from "solid-js/web";
-import { Subclass } from "../../../../../models/class.model";
+import { LevelEntity, Subclass } from "../../../../../models/class.model";
 import { Spell } from "../../../../../models/spell.model";
 import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../../../rootApp";
-
+import FeatureModal from "../classes/sections/featureModal";
+import { Feature } from "../../../../../models/core.model";
 export enum SpellsKnown {
     None = 0,
     Level = 1,
@@ -26,7 +27,7 @@ const Subclasses: Component = () => {
     const stylin = createMemo(()=>useStyle(userSettings().theme));
     const allClasses = useDnDClasses();
     const allClassNames = ()=> allClasses().map((c)=> c.name);
-    const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(1);
+    const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(0);
     // ------------ spellcasting ------------
     const allSpells = useDnDSpells();
     const [hasCasting, setHasCasting] = createSignal(false);
@@ -44,7 +45,6 @@ const Subclasses: Component = () => {
     const [currentSubclass, setCurrentSubclass] = createSignal<Subclass>({
         id: 0,
         name: "",
-        subclassFlavor: "",
         desc: [],
         features: [],
         class: "",
@@ -54,9 +54,10 @@ const Subclasses: Component = () => {
     const getSubclassLevels = createMemo(() => {
         const className = currentSubclass().class.toLowerCase();
         const [ currentClass ] = allClasses().filter((c)=> c.name?.toLowerCase() === className?.toLowerCase());
+				
         
-        if (!!currentClass && !!currentClass.subclassLevels && !!currentClass.subclassLevels.length) {
-            return currentClass.subclassLevels.map(x=>`${x}`);
+        if (!!currentClass && !!currentClass.classMetadata?.subclassLevels?.length) {
+            return currentClass.classMetadata.subclassLevels.map(x=>`${x}`);
         } else {
             switch (className) {
                 case 'cleric':
@@ -92,77 +93,12 @@ const Subclasses: Component = () => {
     const canAddSubclass = createMemo(()=>{
         const currentSubclassCheck = allClasses().filter((c)=> c.name.toLowerCase() === currentSubclass().class.toLowerCase());
         const theSubclass = currentSubclass();
-        return currentSubclassCheck.length === 1 && theSubclass.name.trim().length > 0 && theSubclass.subclassFlavor.trim().length > 0 && theSubclass.desc.length;
+        return currentSubclassCheck.length === 1 && theSubclass.name.trim().length > 0 && !!theSubclass.desc.length;
     });
-    
-    // ---------- functions ----------
-    const addFeature = ()=>{
-        setCurrentSubclass(old=>{
-            const newFeature = {
-                info: {
-                    className: old.class,
-                    subclassName: old.name,
-                    level: toAddFeatureLevel(),
-                    type: "subclass",
-                    other: ""
-                },
-                name: "",
-                value: [""] 
-            };
-            return {...old, features: [...old.features, newFeature]};
-        });
-    };
 
     const getLevelUpFeatures = (level: number)=>{
         return currentSubclass().features.filter((f)=> f.info.level === level);
     }
-    
-    const getLevelUpComponents = (level:number)=>({
-        name: `Level ${level}`,
-        element: <div>
-            <For each={getLevelUpFeatures(level)}>{(feature, i)=>(
-                <>
-                    <div>
-                        <Input placeholder="Enter a Feature name.." value={feature.name} onChange={(e)=>{
-                            setCurrentSubclass(old=>{
-                                const currentLevelFeatures = old.features.filter((f)=> f.info.level === level);
-                                const otherLevelFeatures = old.features.filter((f)=> f.info.level !== level);
-                                const currentFeature = currentLevelFeatures[i()];
-                                currentFeature.name = e.currentTarget.value;
-                                currentLevelFeatures.splice(i(), 1, currentFeature);
-                                old.features = [...otherLevelFeatures, ...currentLevelFeatures];
-                                return Clone(old);
-                            });
-                        }} />
-                    </div>
-                    <div>
-                        <textarea class={`${styles.textArea}`} placeholder="Enter a Feature description.." value={(currentSubclass().features.filter((f)=> f.info.level === level)[i()].value as Array<string>).join('\n')} onChange={(e)=> {
-                            setCurrentSubclass(old=>{
-                                const currentLevelFeatures = old.features.filter((f)=> f.info.level === level);
-                                const otherLevelFeatures = old.features.filter((f)=> f.info.level !== level);
-                                const currentFeature = currentLevelFeatures[i()];
-                                currentFeature.value = e.currentTarget.value.split('\n');
-                                currentLevelFeatures.splice(i(), 1, currentFeature);
-                                old.features = [...otherLevelFeatures, ...currentLevelFeatures];
-                                return Clone(old);
-                            });
-                        }} />
-                    </div>
-                    <div>
-                        <Button onClick={(e)=>{
-                            setCurrentSubclass(old=>{
-                                const currentLevelFeatures = old.features.filter((f)=> f.info.level === level);
-                                const otherLevelFeatures = old.features.filter((f)=> f.info.level !== level);
-                                currentLevelFeatures.splice(i(), 1);
-                                old.features = [...otherLevelFeatures, ...currentLevelFeatures];
-                                return Clone(old);
-                            });
-                        }}>Remove</Button>
-                    </div>
-                </>
-            )}</For>
-        </div>
-    });
 
     const clearValues = ()=>{
         setCurrentSubclass({
@@ -184,7 +120,7 @@ const Subclasses: Component = () => {
         setSelectedSpell({} as Spell);
     }
 
-    // ---- effects ----------
+    // ----  effects ---------- 
     effect(()=>{
         if (hasCasting()) {
            setCurrentSubclass(old=>{
@@ -261,36 +197,72 @@ const Subclasses: Component = () => {
             setSearchParam({name: currentSubclass().class, subclass: currentSubclass().name});
         }
     })
+
+		const [showFeatureModal, setShowFeatureModal] = createSignal(false);
+		const [editIndex, setEditIndex] = createSignal(-1);
+
+		const addFeature = (level: number, feature: Feature<unknown, string>) => {
+			const newSubclass = {...currentSubclass()};
+			const newFeatures = [...newSubclass.features];
+			newFeatures.push(feature);
+			newSubclass.features = newFeatures;
+			setCurrentSubclass(newSubclass);
+		}
+
+		const replaceFeature = (level: number, index: number, feature: Feature<unknown, string>) => {
+			const newSubclass = {...currentSubclass()};
+			const newFeatures = [...newSubclass.features];
+			newFeatures[index] = feature;
+			newSubclass.features = newFeatures;
+			setCurrentSubclass(newSubclass);
+		}
+
+		const getUnknownToString = (value: unknown) => {
+			if (typeof value === 'string') {
+				return value;
+			} else if (Array.isArray(value)) {
+				return value.join('\n');
+			} else {
+				return '';
+			}
+		}
+
     return (
         <>
             <Body>
-                <h1>subclasses</h1>
+                <h1>Subclass Homebrew</h1>
+								<div></div>
                 <div>
                     <h2>Choose a class</h2>
-                    <Select value={currentSubclass().class} onChange={(e)=>{
+                    <Select transparent value={currentSubclass().class} onChange={(e)=>{
                         setCurrentSubclass(old=>({...old, class: e.currentTarget.value}));
+												if (getSubclassLevels().length > 0) {
+													setToAddFeatureLevel(+getSubclassLevels()[0]);
+												}
                     }}>
                         <For each={allClassNames()}>{(className) => (
                             <Option value={`${className}`}>{className}</Option>
                         )}</For>
                     </Select>
                 </div>
-                <div>
-                    <Input placeholder="Enter a Subclass name.." 
-                        value={currentSubclass().name} 
+                <div style={{display:"flex","flex-direction":"column"}}>
+									<FormField name="Subclass Name">
+                    <Input transparent value={currentSubclass().name} 
                         onChange={(e)=> setCurrentSubclass(old=>({...old, name: e.currentTarget.value}))} />
-                    <Input placeholder="Enter a Subclass flavor.." 
-                        value={currentSubclass().subclassFlavor} 
-                        onChange={(e)=> setCurrentSubclass(old=>({...old, subclassFlavor: e.currentTarget.value}))} />
-                    <textarea 
-                        class={`${styles.textArea}`} 
-                        placeholder="Enter a Subclass description.." 
-                        value={currentSubclass().desc.join("\n")} 
-                        onChange={(e)=> setCurrentSubclass(old=>({...old, desc: e.currentTarget.value.split("\n")}))} />
+									</FormField>
+									<FormField class={`${styles.textArea}`}  name="Subclass Description">
+										<TextArea 
+												placeholder="Enter a Subclass description.." 
+												text={()=>currentSubclass().desc.join("\n")}
+												setText={(e: any)=>setCurrentSubclass(old=>({...old, desc: e.split("\n")}))}
+												value={currentSubclass().desc.join("\n")} 
+												transparent
+												onChange={(e)=> setCurrentSubclass(old=>({...old, desc: e.currentTarget.value.split("\n")}))} />
+									</FormField>
                 </div>
                 <div>
                     <h2>Level up features</h2>
-                    <Select value={toAddFeatureLevel()} onChange={(e)=>{
+                    <Select value={toAddFeatureLevel()} disableUnselected transparent onChange={(e)=>{
                         const newLevel = parseInt(e.currentTarget.value);
                         setToAddFeatureLevel(newLevel);
                     }}>
@@ -298,8 +270,24 @@ const Subclasses: Component = () => {
                             <Option value={`${level}`}>{level}</Option>
                         )}</For>
                     </Select>
-                    <Button onClick={addFeature}>Add Feature</Button>
-                    <Carousel elements={getSubclassLevels().map(x=>getLevelUpComponents(+x))} />
+										<Show when={toAddFeatureLevel() > 0}>
+                    	<Button onClick={()=>setShowFeatureModal(old=>!old)}>Add Feature</Button>
+										</Show>
+										<Show when={showFeatureModal()}>
+											<FeatureModal 
+												addFeature={addFeature} 
+												replaceFeature={replaceFeature}
+												currentSubclass={currentSubclass()} 
+												currentLevel={{level: toAddFeatureLevel()} as LevelEntity} 
+												showFeature={showFeatureModal} setShowFeature={setShowFeatureModal} 
+												editIndex={editIndex} setEditIndex={setEditIndex} />
+										</Show>
+                    <For each={getLevelUpFeatures(toAddFeatureLevel())}>{(feature)=>(
+											<Button onClick={(e)=>{
+												setEditIndex(currentSubclass().features.indexOf(feature));
+												setShowFeatureModal(true);
+											}}>{feature.name}</Button>
+										)}</For>
                 </div>
                 <div>
                     <h2>Spellcasting</h2>
