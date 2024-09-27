@@ -16,6 +16,7 @@
         margin: 0 auto;
         padding: 0;
     }
+
 }
 
 .paginator {
@@ -27,4 +28,15 @@
 .tagRow {
     display: flex;
     flex-direction: row;
+}
+
+.menuBtn {
+    background: inherit;
+
+    svg {
+
+        path {
+            fill: white;
+        }
+    }
 }

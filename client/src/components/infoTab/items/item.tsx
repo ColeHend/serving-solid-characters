@@ -5,7 +5,7 @@ import WeaponsView from "./parts/Weapons/Weapons";
 import ArmorsView from "./parts/Armors/Armors";
 import AdventEquipView from "./parts/AdventuringEquip/AdventuringEquip";
 
-enum ItemType {
+export enum ItemType {
     AdventuringGear,
     Weapon,
     Armor

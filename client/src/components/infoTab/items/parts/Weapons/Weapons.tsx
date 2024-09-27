@@ -1,10 +1,11 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For } from "solid-js";
-import { Button, Chip, Paginator, SkinnySnowman, Weapon } from "../../../../../shared";
+import { Button, Chip, homebrewManager, Paginator, SkinnySnowman, Weapon } from "../../../../../shared";
 import styles from "./weapons.module.scss";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { create } from "domain";
 import Table from "../../../../../shared/components/Table/table";
 import { Cell, Column, Header,Row, SecondRow } from "../../../../../shared/components/Table/innerTable";
+import { ItemType } from "../../item";
 
 interface props {
     weapons:Accessor<Weapon[]>;
@@ -18,6 +19,12 @@ const WeaponsView:Component<props> = (props) => {
 
     const displayResults = createMemo(()=>results().length > 0 ? results():SrdWeapons())
     
+    const checkForHomebrew = (weapon:Weapon) => {
+        const itemsHomebrew = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[1]);
+
+    }
+
+
     createEffect(()=>{
         console.log("weapons: ",SrdWeapons);
         
