@@ -30,7 +30,7 @@ export interface Character {
   stats: Stats;
   spells?: CharacterSpells;
   skills?: CharacterSkills;
-  Features: Feature<unknown, string>[];
+  Features: Feature<string, string>[];
 }
 const exampleCharacters: Character[] = [
   {

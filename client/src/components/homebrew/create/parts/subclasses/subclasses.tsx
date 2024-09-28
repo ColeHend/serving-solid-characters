@@ -201,7 +201,7 @@ const Subclasses: Component = () => {
 		const [showFeatureModal, setShowFeatureModal] = createSignal(false);
 		const [editIndex, setEditIndex] = createSignal(-1);
 
-		const addFeature = (level: number, feature: Feature<unknown, string>) => {
+		const addFeature = (level: number, feature: Feature<string, string>) => {
 			const newSubclass = {...currentSubclass()};
 			const newFeatures = [...newSubclass.features];
 			newFeatures.push(feature);
@@ -209,7 +209,7 @@ const Subclasses: Component = () => {
 			setCurrentSubclass(newSubclass);
 		}
 
-		const replaceFeature = (level: number, index: number, feature: Feature<unknown, string>) => {
+		const replaceFeature = (level: number, index: number, feature: Feature<string, string>) => {
 			const newSubclass = {...currentSubclass()};
 			const newFeatures = [...newSubclass.features];
 			newFeatures[index] = feature;

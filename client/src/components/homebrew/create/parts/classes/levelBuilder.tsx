@@ -15,7 +15,7 @@ import {
   Carousel,
   Chip,
 } from "../../../../../shared/components";
-import { Feature, Info } from "../../../../../models/core.model";
+import { Feature, FeatureTypes, Info } from "../../../../../models/core.model";
 import styles from "./classes.module.scss";
 import { DnDClass } from "../../../../../models";
 import { effect } from "solid-js/web";
@@ -23,8 +23,8 @@ import { LevelEntity } from "../../../../../models/class.model";
 
 interface Props {
   level: number;
-  features: Accessor<Feature<unknown, string>[]>;
-  setFeatures: Setter<Feature<unknown, string>[]>;
+  features: Accessor<Feature<string, string>[]>;
+  setFeatures: Setter<Feature<string, string>[]>;
   name: Accessor<string>;
   allClasses: Accessor<DnDClass[]>;
   hasSpellCasting: Accessor<boolean>;
@@ -156,7 +156,7 @@ const LevelBuilder: Component<Props> = (props) => {
                   className: name(),
                   subclassName: "",
                   level: level,
-                  type: "Class Feature",
+                  type: FeatureTypes.Class,
                   other: "",
                 },
               });

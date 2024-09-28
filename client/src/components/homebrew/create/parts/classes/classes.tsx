@@ -41,6 +41,7 @@ import {
   StartingEquipment,
   Feature,
 	Description,
+	FeatureTypes,
 } from "../../../../../models/core.model";
 import LevelBuilder from "./levelBuilder";
 import { SpellsKnown } from "../subclasses/subclasses";
@@ -91,7 +92,7 @@ const Classes: Component = () => {
 			profBonus: (Math.ceil((i+1)/4)+1), 
 			features: [], 
 			classSpecific: {}, 
-			info: { className:"", level: i+1, subclassName:"", type:"", other:""}
+			info: { className:"", level: i+1, subclassName:"", type: FeatureTypes.Class, other:""}
 		}),),
 		subclasses: [],
 		classMetadata: {
@@ -242,14 +243,14 @@ const Classes: Component = () => {
 		setCurrentColumns((old)=>old.filter((x)=>x !== feature));
 	};
 
-	const addFeature = (level: number, feature: Feature<unknown, string>) => {
+	const addFeature = (level: number, feature: Feature<string, string>) => {
 		setCurrentClass(old=> {
 			const newClass = Clone(old);
 			newClass.classLevels[(level - 1)].features.push(feature);
 			return newClass;
 		});
 	};
-	const replaceFeature = (level: number, index: number, feature: Feature<unknown, string>) => {
+	const replaceFeature = (level: number, index: number, feature: Feature<string, string>) => {
 		setCurrentClass((old)=>{
 			const newClass = Clone(old);
 			newClass.classLevels[(level - 1)].features[index] = feature;
@@ -355,6 +356,11 @@ const Classes: Component = () => {
 		return [...new Set<string>(currClass.classLevels.flatMap((x)=>Object.keys(x.classSpecific)))];
 	};
 	const newColumnInvalid = createMemo(()=> newColumnKeyname().trim() === '' || currentColumns().includes(newColumnKeyname()));
+
+	function GetFeatureTypeString(value: FeatureTypes) {
+		if (Number.isNaN(+value)) return `${value}`;
+		return FeatureTypes[value];
+	}
 // ----------------- JSX -----------------
 	const [toAddSubclassLevel, setToAddSubclassLevel] = createSignal<number>(1);
 	const [showSpellcasting, setShowSpellcasting] = createSignal<boolean>(false);
@@ -393,10 +399,11 @@ const Classes: Component = () => {
 		}
 		return false; 
 	};
-	const getFeatureKey = (feature: Feature<unknown, string>) => {
+	
+	const getFeatureKey = (feature: Feature<string, string>) => {
 		if (!!feature.info?.subclassName) return feature.info.subclassName;
 		if (!!feature.info?.className) return feature.info.className;
-		if (!!feature.info?.type) return feature.info.type;
+		if (!!feature.info?.type) return GetFeatureTypeString(feature.info.type);
 		if (!!feature.info?.other) return feature.info.other;
 		return 'Feature';
 	}

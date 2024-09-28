@@ -25,7 +25,7 @@ export interface LevelEntity {
     info: Info<string>;
     level: number;
     profBonus: number;
-    features: Feature<unknown, string>[];
+    features: Feature<string, string>[];
     classSpecific: {[key: string]: string;};
     spellcasting?: {[key: string]: number;};
 }
@@ -33,7 +33,7 @@ export interface Subclass {
     id: number;
     name: string;
     desc: string[];
-    features: Feature<unknown, string>[];
+    features: Feature<string, string>[];
     class: string;
     spells: Spell[];
     spellcasting?: SubclassCasting

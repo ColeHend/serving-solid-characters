@@ -8,6 +8,7 @@ using sharpAngleTemplate.tools;
 using FeatsEntity;
 using BackgroundsEntity;
 using CoreModels;
+using SRDSpellsjson;
 
 namespace sharpAngleTemplate.models.repositories
 {
@@ -25,7 +26,7 @@ namespace sharpAngleTemplate.models.repositories
         public DndInfoRepository(IDbJsonService jsonService)
         {
             this.jsonService = jsonService;
-            var classJson = jsonService.GetJson<ClassEntity[]>("srd/classes");
+            var classJson = jsonService.GetJson<List<ClassEntity>>("srd/classes");
             var spellJson = jsonService.GetJson<SpellEntity[]>("srd/spells");
             var raceJson = jsonService.GetJson<RaceEntity[]>("srd/races");
             var itemJson = jsonService.GetJson<Item[]>("srd/items");
@@ -34,7 +35,7 @@ namespace sharpAngleTemplate.models.repositories
             var featJson = jsonService.GetJson<FeatEntity[]>("srd/feats");
             var backgroundJson = jsonService.GetJson<BackgroundEntity[]>("srd/backgrounds");
 
-            classDTOs = classJson!.ToList();
+            classDTOs = classJson!;
             spellDTOs = spellJson!.ToList();
             raceDTOs = raceJson!.ToList();
             itemsDTOs = itemJson!.ToList();
@@ -44,9 +45,12 @@ namespace sharpAngleTemplate.models.repositories
             backgroundDTOs = backgroundJson!.ToList();
         }
 
-        public List<ClassEntity> GetClasses()
+        public List<ClassesEntity.ClassDTO> GetClasses()
         { 
-            return classDTOs.AddForgemaster();
+					Console.WriteLine($"\n\nClassCount: {classDTOs.Count}");
+					var classList = classDTOs.Select(x=>x.ToDTO()).ToList();
+					Console.WriteLine($"\n\nDTOClassCount: {classList.Count}");
+          return classList.AddForgemaster();
         }
         public List<SpellEntity> GetSpells()
         {
@@ -81,7 +85,7 @@ namespace sharpAngleTemplate.models.repositories
     }
     public interface IDndInfoRepository
     {
-        List<ClassEntity> GetClasses();
+        List<ClassesEntity.ClassDTO> GetClasses();
         List<SpellEntity> GetSpells();
         List<RaceEntity> GetRaces();
         List<Item> GetItems();

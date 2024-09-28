@@ -1,3 +1,5 @@
+import { Feature } from "./core.model";
+
 export interface Item {
     name: string;
     equipmentCategory: string;
@@ -9,6 +11,7 @@ export interface Item {
     tags: string[];
     desc: string[];
     item: string;
+		features?: Feature<string, string>[];
 }
 
 export interface Weapon extends Item {
