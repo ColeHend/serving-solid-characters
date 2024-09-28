@@ -27,9 +27,9 @@ using sharpAngleTemplate.Repositories;
         }
         
         [HttpPost()]
-        public ActionResult<List<ClassEntity>> Classes()
+        public ActionResult<List<ClassesEntity.ClassDTO>> Classes()
         {
-            var classes = dndInfoRepository.GetClasses().Where(x=> x.Id != 0).DistinctBy(x=>x.Id);
+            var classes = dndInfoRepository.GetClasses();
             return Ok(classes);
         }
 

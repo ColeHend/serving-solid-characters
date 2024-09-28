@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, For, useContext  } from "solid-js";
+import { Component, createMemo, createSignal, For, useContext } from "solid-js";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
 import ExpansionPanel from "../../../shared/components/expansion/expansion";
@@ -12,135 +12,135 @@ import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 
 const Viewbackgrounds: Component = () => {
-    const sharedContext = useContext(SharedHookContext);
-    const [userSettings, setUserSettings] = getUserSettings();
-    const stylin = createMemo(()=>useStyles(userSettings().theme));
-    const backgrounds = useGetBackgrounds();
-    const [searchResult, setSearchResult] = createSignal(backgrounds() || []);
-    const displayResults = createMemo(()=>{
-        if (searchResult().length === 0) return backgrounds();
-     
-    })
+	const sharedContext = useContext(SharedHookContext);
+	const [userSettings, setUserSettings] = getUserSettings();
+	const stylin = createMemo(() => useStyles(userSettings().theme));
+	const backgrounds = useGetBackgrounds();
+	const [searchResult, setSearchResult] = createSignal(backgrounds() || []);
+	const displayResults = createMemo(() => {
+		if (searchResult().length === 0) return backgrounds();
 
-    const [searchParam, setSearchParam] = useSearchParams();
-    if (!!!searchParam.name) setSearchParam({name: backgrounds()[0]?.name})
-    const selectedBackground = backgrounds().filter(x=>x.name?.toLowerCase() === (searchParam?.name || backgrounds()[0]?.name).toLowerCase())[0]
-    const [currentBackground,setCurrentBackground] = createSignal<Background>(selectedBackground); 
+	})
 
-    effect(()=>{    
-        setSearchParam({name: currentBackground()?.name})
-    });
+	const [searchParam, setSearchParam] = useSearchParams();
+	if (!!!searchParam.name) setSearchParam({ name: backgrounds()[0]?.name })
+	const selectedBackground = backgrounds().filter(x => x.name?.toLowerCase() === (searchParam?.name || backgrounds()[0]?.name).toLowerCase())[0]
+	const [currentBackground, setCurrentBackground] = createSignal<Background>(selectedBackground);
 
-    const setTheCurrentBackG = (item?: object )=> {
-        setCurrentBackground(item as Background);
-    }
+	effect(() => {
+		setSearchParam({ name: currentBackground()?.name })
+	});
 
-    return (
-        <div class={`${stylin()?.primary} ${styles.allBackgrounds}`}>
-            <h1>Backgrounds</h1>
-            <div style={{width: "35%", height: "5vh", margin: "0 auto"}}>
-                <SearchBar placeholder="Search Backgrounds..." dataSource={backgrounds} setResults={setSearchResult} />
-            </div>
-            <div class={`${styles.backgrounds}`} >
-                <For each={displayResults()}>
-                    {(background) =>
-                        
-                            <ExpansionPanel extraSetter={setTheCurrentBackG(background)} styles={styles}>
-                                <div>
-                                    {currentBackground().name}
-                                </div>
-                                <div class={`${styles.body}`}>
-                                    <h2>
-                                        {currentBackground().name}
-                                    </h2>
+	const setTheCurrentBackG = (item?: object) => {
+		setCurrentBackground(item as Background);
+	}
 
-                                    <div>
-                                        <For each={currentBackground().feature}>
-                                            {(feature) =>
-                                                <>
-                                                    <span>
-                                                        <h3>
-                                                            {feature.name}
-                                                        </h3>
-                                                        <br />
-                                                        <span class={`${styles.feature}`}>
-                                                            {feature.value}
-                                                        </span>
-                                                    </span>
-                                                    <br />
-                                                </>
-                                            }
-                                        </For>
-                                    </div>
+	return (
+		<div class={`${stylin()?.primary} ${styles.allBackgrounds}`}>
+			<h1>Backgrounds</h1>
+			<div style={{ width: "35%", height: "5vh", margin: "0 auto" }}>
+				<SearchBar placeholder="Search Backgrounds..." dataSource={backgrounds} setResults={setSearchResult} />
+			</div>
+			<div class={`${styles.backgrounds}`} >
+				<For each={displayResults()}>
+					{(background) =>
 
-                                    <h3>{currentBackground().languageChoice.type}</h3>
+						<ExpansionPanel extraSetter={setTheCurrentBackG(background)} styles={styles}>
+							<div>
+								{currentBackground().name}
+							</div>
+							<div class={`${styles.body}`}>
+								<h2>
+									{currentBackground().name}
+								</h2>
 
-                                    <h3>choose: {currentBackground().languageChoice.choose}</h3>
+								<div>
+									<For each={currentBackground().feature}>
+										{(feature) =>
+											<>
+												<span>
+													<h3>
+														{feature.name}
+													</h3>
+													<br />
+													<span class={`${styles.feature}`}>
+														{feature.value}
+													</span>
+												</span>
+												<br />
+											</>
+										}
+									</For>
+								</div>
 
-                                    <div>
-                                        <For each={currentBackground().languageChoice.choices}>
-                                            {(choice)=>
-                                                <>
-                                                    <span>{choice}</span>
-                                                    <br />
-                                                </>
-                                            }
-                                        </For>
-                                    </div>
+								<h3>{currentBackground().languageChoice.type}</h3>
 
-                                    <br />
-                                    
-                                    <h3>Starting Equipment</h3>
-                                    <div>
-                                        <For each={currentBackground().startingEquipment}>
-                                            {(item)=>
-                                                <>
-                                                    <span>{item.item}</span>
-                                                    <br />
-                                                </>
-                                            }
-                                        </For>
-                                    </div>
+								<h3>choose: {currentBackground().languageChoice.choose}</h3>
 
-                                    <br />
+								<div>
+									<For each={currentBackground().languageChoice.choices}>
+										{(choice) =>
+											<>
+												<span>{choice}</span>
+												<br />
+											</>
+										}
+									</For>
+								</div>
 
-                                    <div>
-                                        <For each={currentBackground().startingEquipmentChoices}>
-                                            {(choice)=>
-                                                <>
-                                                    <h3>Choose: {choice.choose}</h3>
-                                                    <For each={choice.choices}>
-                                                        {(item)=>
-                                                            <>
-                                                                <span>{item.quantity}  {item.item}</span>
-                                                                <br />
-                                                            </>
-                                                        }
-                                                    </For>
-                                                </>
-                                            }
-                                        </For>
-                                    </div>
-                                    
-                                    <h3>Skill Proficiencies</h3>
-                                    <div>
-                                        <For each={currentBackground().startingProficiencies}>
-                                            {(prof)=>
-                                                <>
-                                                    <span>{prof.value}</span>
-                                                    <br />
-                                                </>
-                                            }
-                                        </For>
-                                    </div>
+								<br />
 
-                                </div>
-                            </ExpansionPanel>
-                        
-                    }
-                </For>
-            </div>            
-        </div>
-    )
+								<h3>Starting Equipment</h3>
+								<div>
+									<For each={currentBackground().startingEquipment}>
+										{(item) =>
+											<>
+												<span>{item.item}</span>
+												<br />
+											</>
+										}
+									</For>
+								</div>
+
+								<br />
+
+								<div>
+									<For each={currentBackground().startingEquipmentChoices}>
+										{(choice) =>
+											<>
+												<h3>Choose: {choice.choose}</h3>
+												<For each={choice.choices}>
+													{(item) =>
+														<>
+															<span>{(item as any)?.quantity ?? ''}  {item.item}</span>
+															<br />
+														</>
+													}
+												</For>
+											</>
+										}
+									</For>
+								</div>
+
+								<h3>Skill Proficiencies</h3>
+								<div>
+									<For each={currentBackground().startingProficiencies}>
+										{(prof) =>
+											<>
+												<span>{prof.value}</span>
+												<br />
+											</>
+										}
+									</For>
+								</div>
+
+							</div>
+						</ExpansionPanel>
+
+					}
+				</For>
+			</div>
+		</div>
+	)
 };
 export default Viewbackgrounds;
