@@ -1,8 +1,52 @@
 import { Armor, Item, Weapon } from "../shared";
 
+export enum AbilityScores {
+	STR = 0,
+	DEX,
+	CON,
+	INT,
+	WIS,
+	CHA,
+	CHOICE,
+	ALL
+}
+
+export enum CharacterChangeTypes {
+	AbilityScore = 0,
+	HP,
+	Speed,
+	AC,
+	Initiative,
+	Save,
+	AttackRoll,
+	Spell,
+	SpellSlot,
+	UseNumber
+}
+
+export enum ChangeSubTypes {
+	Set,
+	Die,
+	Stat,
+	SetAndDie
+}
+
+export enum TypeRestrictions {
+	SpellOnly = 0,
+	MeleeOnly,
+	RangedOnly,
+	RangeReduced,
+}
+
+export enum FeatureUses {
+	Stat,
+	Proficiency,
+	"Half Proficiency Rounded Up",
+	NumPerRest
+}
 
 export enum FeatureTypes {
-	Class,
+	Class = 0,
 	Subclass,
 	Feat,
 	Race,
@@ -16,13 +60,34 @@ export enum FeatureTypes {
 	Armor,
 };
 
+export enum MovementTypes {
+	Walk = 0,
+	Swim,
+	Fly,
+	Climb,
+	Burrow
+}
+
+export enum WeaponTypes {}
+
 export interface Feature<T, K> {
     info:  Info<K>;
+		metadata: FeatureMetadata
     name:  string;
 		choices?: Choice<T>[];
     value: T;
 }
 
+export interface FeatureMetadata {
+		changes?: CharacterChange[];
+}
+export interface CharacterChange {
+	type: CharacterChangeTypes; 
+	subType: ChangeSubTypes;
+	restriction?: TypeRestrictions;
+	abilityScores?: AbilityScores[];
+	value: number;
+}
 export interface Info<T> {
     className:    string;
     subclassName: string;
