@@ -6,6 +6,7 @@ import { create } from "domain";
 import Table from "../../../../../shared/components/Table/table";
 import { Cell, Column, Header,Row, SecondRow } from "../../../../../shared/components/Table/innerTable";
 import { ItemType } from "../../item";
+import { useNavigate } from "@solidjs/router";
 
 interface props {
     weapons:Accessor<Weapon[]>;
@@ -19,16 +20,26 @@ const WeaponsView:Component<props> = (props) => {
 
     const displayResults = createMemo(()=>results().length > 0 ? results():SrdWeapons())
     
-    const checkForHomebrew = (weapon:Weapon) => {
+    const navigate = useNavigate();
+
+    const checkForHomebrew = (weapon:Weapon): boolean => {
         const itemsHomebrew = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[1]);
 
+        itemsHomebrew.forEach((customWeapon) => {
+            if (customWeapon.name.toLowerCase() === weapon.name.toLowerCase()) {
+                return true 
+            }
+        })
+
+        return false
     }
 
-
-    createEffect(()=>{
-        console.log("weapons: ",SrdWeapons);
-        
-    })
+    const menuItems = (weapon:Weapon) => ([
+        {
+            name: checkForHomebrew(weapon) ? "Edit" : "Clone & Edit",
+            action: ()=> navigate(`/homebrew/create/items?name=${weapon.name}`),
+        }
+    ])
 
     return <div>
 
@@ -53,7 +64,7 @@ const WeaponsView:Component<props> = (props) => {
                     <Header><></></Header>
                     <Cell<Weapon>>
                         { (weapon, i) => <span>
-                            <Button class={`${styles.menuBtn}`}>
+                            <Button enableBackgroundClick menuItems={menuItems(weapon)} class={`${styles.menuBtn}`}>
                                 <SkinnySnowman />
                             </Button>
                         </span>}
