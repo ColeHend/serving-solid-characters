@@ -1,146 +1,107 @@
-import { Component, createMemo, createSignal, For, useContext } from "solid-js";
+import { Component, createMemo, createSignal, For, Show, useContext } from "solid-js";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
 import ExpansionPanel from "../../../shared/components/expansion/expansion";
 import styles from "./backgrounds.module.scss";
 import { effect } from "solid-js/web";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models";
 import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
+import Table from "../../../shared/components/Table/table";
+import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
+import { Body, Button, homebrewManager, Paginator, SkinnySnowman } from "../../../shared";
+import BackgroundView from "../../../shared/components/modals/background/backgrondView";
 
 const Viewbackgrounds: Component = () => {
-	const sharedContext = useContext(SharedHookContext);
-	const [userSettings, setUserSettings] = getUserSettings();
-	const stylin = createMemo(() => useStyles(userSettings().theme));
-	const backgrounds = useGetBackgrounds();
-	const [searchResult, setSearchResult] = createSignal(backgrounds() || []);
-	const displayResults = createMemo(() => {
-		if (searchResult().length === 0) return backgrounds();
+    const sharedContext = useContext(SharedHookContext);
+    const [userSettings, setUserSettings] = getUserSettings();
+    const stylin = createMemo(()=>useStyles(userSettings().theme));
+    const backgrounds = useGetBackgrounds();
+    const [searchResult, setSearchResult] = createSignal(backgrounds() || []);
+    const displayResults = createMemo(()=>{
+        return searchResult().length <= 0 ? backgrounds() : searchResult()
+    })
 
-	})
+    const [searchParam, setSearchParam] = useSearchParams();
+    if (!!!searchParam.name) setSearchParam({name: backgrounds()[0]?.name})
+    const selectedBackground = backgrounds().filter(x=>x.name?.toLowerCase() === (searchParam?.name || backgrounds()[0]?.name).toLowerCase())[0]
+    const [currentBackground,setCurrentBackground] = createSignal<Background>(selectedBackground); 
+    const [paginatedBackgrounds,setPaginatedBackgrounds] = createSignal<Background[]>([])
+    const [showTheBackground,setShowTheBackground] = createSignal<boolean>(false);
 
-	const [searchParam, setSearchParam] = useSearchParams();
-	if (!!!searchParam.name) setSearchParam({ name: backgrounds()[0]?.name })
-	const selectedBackground = backgrounds().filter(x => x.name?.toLowerCase() === (searchParam?.name || backgrounds()[0]?.name).toLowerCase())[0]
-	const [currentBackground, setCurrentBackground] = createSignal<Background>(selectedBackground);
+    const navigate = useNavigate();
 
-	effect(() => {
-		setSearchParam({ name: currentBackground()?.name })
-	});
+    const checkForHomebrew = (background: Background): boolean => {
+        homebrewManager.backgrounds().forEach(customBackground =>{
+            if (background.name.toLowerCase() === customBackground.name.toLowerCase()) {
+                return true
+            }
+        })
 
-	const setTheCurrentBackG = (item?: object) => {
-		setCurrentBackground(item as Background);
-	}
+        return false
+    }
+    const menuItems = (background:Background) => ([
+        {
+            name: checkForHomebrew(background) ? "Edit" :"Clone and Edit",
+            action: () => {navigate(`/homebrew/create/backgrounds?name=${background.name}`)}
+        },
+        {
+            name: "Calculate Dmg",
+            action: () => {}
+        }
+    ])
 
-	return (
-		<div class={`${stylin()?.primary} ${styles.allBackgrounds}`}>
-			<h1>Backgrounds</h1>
-			<div style={{ width: "35%", height: "5vh", margin: "0 auto" }}>
-				<SearchBar placeholder="Search Backgrounds..." dataSource={backgrounds} setResults={setSearchResult} />
-			</div>
-			<div class={`${styles.backgrounds}`} >
-				<For each={displayResults()}>
-					{(background) =>
 
-						<ExpansionPanel extraSetter={setTheCurrentBackG(background)} styles={styles}>
-							<div>
-								{currentBackground().name}
-							</div>
-							<div class={`${styles.body}`}>
-								<h2>
-									{currentBackground().name}
-								</h2>
+    return <Body>
+        <h1 class={`${styles.header}`}>Backgrounds</h1>
+        <div class={`${styles.searchBar}`}>
+            <SearchBar 
+                placeholder="Search Backgrounds..." 
+                dataSource={backgrounds} 
+                setResults={setSearchResult}
+                searchFunction={(data,search)=>{
+                    return data.name.toLowerCase() === search.toLowerCase();
+            }}/>
+        </div>
+        <div class={`${styles.backgroundsDiv}`} >
+            <Table data={displayResults} columns={["name","options"]}>
+                <Column name="name">
+                    <Header><></></Header>
 
-								<div>
-									<For each={currentBackground().feature}>
-										{(feature) =>
-											<>
-												<span>
-													<h3>
-														{feature.name}
-													</h3>
-													<br />
-													<span class={`${styles.feature}`}>
-														{feature.value}
-													</span>
-												</span>
-												<br />
-											</>
-										}
-									</For>
-								</div>
+                    <Cell<Background>>
+                        { (background,i) => <span onClick={()=>{
+                            setCurrentBackground(background);
+                            setShowTheBackground(!showTheBackground());
+                        }}>
+                            {background.name}    
+                        </span>}
+                    </Cell>
+                </Column>
 
-								<h3>{currentBackground().languageChoice.type}</h3>
+                <Column name="options">
+                    <Header><></></Header>
 
-								<h3>choose: {currentBackground().languageChoice.choose}</h3>
+                    <Cell<Background>>
+                        { (background, i) => <span>
+                            <Button enableBackgroundClick menuItems={menuItems(background)} class={`${styles.menuBtn}`}>
+                                <SkinnySnowman />
+                            </Button>
+                        </span>}
+                    </Cell>
+                </Column>
+            </Table>
+        </div> 
 
-								<div>
-									<For each={currentBackground().languageChoice.choices}>
-										{(choice) =>
-											<>
-												<span>{choice}</span>
-												<br />
-											</>
-										}
-									</For>
-								</div>
+        <Show when={showTheBackground()}>
+            <BackgroundView background={currentBackground} backClick={[showTheBackground,setShowTheBackground]} />
+        </Show>
 
-								<br />
-
-								<h3>Starting Equipment</h3>
-								<div>
-									<For each={currentBackground().startingEquipment}>
-										{(item) =>
-											<>
-												<span>{item.item}</span>
-												<br />
-											</>
-										}
-									</For>
-								</div>
-
-								<br />
-
-								<div>
-									<For each={currentBackground().startingEquipmentChoices}>
-										{(choice) =>
-											<>
-												<h3>Choose: {choice.choose}</h3>
-												<For each={choice.choices}>
-													{(item) =>
-														<>
-															<span>{(item as any)?.quantity ?? ''}  {item.item}</span>
-															<br />
-														</>
-													}
-												</For>
-											</>
-										}
-									</For>
-								</div>
-
-								<h3>Skill Proficiencies</h3>
-								<div>
-									<For each={currentBackground().startingProficiencies}>
-										{(prof) =>
-											<>
-												<span>{prof.value}</span>
-												<br />
-											</>
-										}
-									</For>
-								</div>
-
-							</div>
-						</ExpansionPanel>
-
-					}
-				</For>
-			</div>
-		</div>
-	)
+        <div class={`${styles.paginator}`}>
+            <Paginator items={searchResult} setPaginatedItems={setPaginatedBackgrounds}  />
+        </div>           
+    </Body>
 };
 export default Viewbackgrounds;

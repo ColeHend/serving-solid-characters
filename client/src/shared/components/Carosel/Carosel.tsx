@@ -29,13 +29,13 @@ const Carousel: Component<CarouselProps> = ({startingIndex = 0, ...props}) => {
     })
     const slideName = createMemo(()=>{
         if (props.elements.length > 0) {
-            return props.elements[currentIndex()].name;
+            return props.elements[currentIndex()]?.name;
         }
         return !!props.notFoundName ? `No ${props.notFoundName} Found` : "No Elements Found";
     });
     const slideElement = createMemo(()=>{
         if (props.elements.length > 0) {
-            return props.elements[currentIndex()].element;
+            return props.elements[currentIndex()]?.element;
         }
         return !!props.notFoundName ? <div>No {props.notFoundName} Found</div> : <div>No Elements Found</div>;
     });

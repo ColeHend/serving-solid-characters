@@ -1,141 +1,128 @@
-import { Component, For, Match, Show, Switch, createMemo, createSignal, useContext } from "solid-js";
+import {
+    Component,
+    For,
+    Match,
+    Show,
+    Switch,
+    createMemo,
+    createSignal,
+    useContext,
+} from "solid-js";
 import useDnDFeats from "../../../shared/customHooks/dndInfo/srdinfo/useDnDFeats";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./feats.module.scss";
 import { Feat } from "../../../models/feat.model";
 import Paginator from "../../../shared/components/paginator/paginator";
-import FeatsSearch from "./searchBar/searchBar";
 import { effect } from "solid-js/web";
 import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
+import Table from "../../../shared/components/Table/table";
+import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
+import { Body, Button, homebrewManager, SkinnySnowman } from "../../../shared";
+import FeatView from "../../../shared/components/modals/featModal/featView";
 import { FeatureTypes as PreReqType } from "../../../models/core.model";
 
-
 const featsList: Component = () => {
-	const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
-	const [searchResult, setSearchResult] = createSignal<Feat[]>([]);
-	const displayResults = createMemo(() => {
-		if (searchResult().length === 0) return paginatedFeats();
-		return searchResult();
-	})
-	const [RowShown, SetRowShown] = createSignal<number[]>([]);
-	const hasIndex = (index: number) => RowShown().includes(index);
-	const toggleRow = (index: number) => !hasIndex(index) ? SetRowShown([...RowShown(), index]) : SetRowShown(RowShown().filter(i => i !== index));
+    const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
+    const [searchResult, setSearchResult] = createSignal<Feat[]>([]);
+    const displayResults = createMemo(() => {
+        if (searchResult().length === 0) return paginatedFeats();
+        return searchResult();
+    });
+    const sharedHooks = useContext(SharedHookContext);
+    const srdFeats = useGetFeats();
+    const [searchParam, setSearchParam] = useSearchParams();
+    if (!!!searchParam.name) setSearchParam({ name: srdFeats()[0]?.name });
+    const selectedFeat = srdFeats().filter(
+        (feat) =>
+            feat.name?.toLowerCase() ===
+            (searchParam.name || srdFeats()[0]?.name).toLowerCase()
+    )[0];
+    const [currentFeat, setCurrentFeat] = createSignal<Feat>(selectedFeat);
+    const [showFeatModal,setShowFeatModal] = createSignal<boolean>(false)
 
-	const sharedHooks = useContext(SharedHookContext);
-	const [userSettings, setUserSettings] = getUserSettings();
-	const stylin = createMemo(() => useStyles(userSettings().theme));
+    const navigate = useNavigate()
 
-	const srdFeats = useGetFeats();
+    const checkForHomebrew = (feat:Feat):boolean => {
+        homebrewManager.feats().forEach(customFeat => {
+            if (feat.name.toLowerCase() === customFeat.name.toLowerCase()) {
+                return true
+            }  
+        })
 
-	const [searchParam, setSearchParam] = useSearchParams();
-	if (!!!searchParam.name) setSearchParam({ name: srdFeats()[0]?.name });
-	const selectedFeat = srdFeats().filter(feat => feat.name?.toLowerCase() === (searchParam.name || srdFeats()[0]?.name).toLowerCase())[0];
-	const [currentFeat, setCurrentFeat] = createSignal<Feat>(selectedFeat);
+        return false;
+    }
 
-	effect(() => {
-		setSearchParam({ name: currentFeat()?.name })
-	})
+    const menuItems = (feat:Feat) => ([
+        {
+            name:checkForHomebrew(feat)?"Edit":"Clone and Edit",
+            action: () => {navigate(`/homebrew/create/feats?name=${feat.name}`)}
+        },
+        {
+        name: "Calculate Dmg",
+        action: () => {}
+        }
+    ]);
 
-	return (
-		<div class={`${stylin()?.primary} ${styles.featsList}`}>
-			<div class={`${styles.body}`}>
-				<h1>Feats</h1>
-				<div style={{ height: "5vh", width: "45%" }}>
-					<SearchBar placeholder="Search Feats..." dataSource={srdFeats} setResults={setSearchResult} />
-				</div>
-				<ol>
-					<For each={displayResults()}>
-						{(feat, i) =>
-							<>
-								<li>
-									{feat.name} <button
-										onClick={() => {
-											toggleRow(i());
-											setCurrentFeat(feat);
+    effect(() => {
+        setSearchParam({ name: currentFeat()?.name });
+    });
 
-										}}>{hasIndex(i()) ? "↑" : "↓"}</button>
-								</li>
-								<Show when={hasIndex(i())}>
-									<>
-										<div class={`${styles.PreReqsBar}`}>
-											<For each={currentFeat().preReqs}>{(preReq) =>
-												<div>
-													<Switch>
-														<Match when={preReq.info.type === PreReqType.AbilityScore}>
-															<div>
-																Ability Score Requirement:
-															</div>
-															<span>
-																{/* this might change  */}
+    return (
+        <Body class={`${styles.featWrapper}`}>
+            <h1 class={styles.header}>Feats</h1>
+                
+               <div class={`${styles.searchDiv}`}>
+                <SearchBar
+                    placeholder="Search Feats..."
+                    dataSource={srdFeats}
+                    setResults={setSearchResult}
+                    searchFunction={(data,search)=>{
+                        return data.name.toLowerCase() === search.toLowerCase();
+                    }}></SearchBar>
+               </div>
+                
+                <div class={`${styles.featTable}`}>
+                    <Table data={displayResults} columns={["name","options"]}>
+                        
+                        <Column name="name">
+                            <Header><></></Header>
+                            <Cell<Feat>>
+                                { (feat, i) => <span onClick={()=>{
+                                    setCurrentFeat(feat);
+                                    setShowFeatModal(!showFeatModal());
+                                }}>
+                                    {feat.name} 
+                                </span>}
+                            </Cell>
+                        </Column>
+                        <Column name="options">
+                            <Header><></></Header>
+                            <Cell<Feat>>
+                                { (feat,i) => <span>
+                                    <Button menuItems={menuItems(feat)} enableBackgroundClick class={`${styles.menuBtn}`}>
+                                        <SkinnySnowman />
+                                    </Button>
+                                </span>}
+                            </Cell>
+                        </Column>
 
-																{preReq.name} of {preReq.value}
-															</span>
-														</Match>
-														<Match when={preReq.info.type === PreReqType.Class}>
-															<div>
-																Class Requirement:
-															</div>
-															<span>
-																{/* this might change  */}
+                    </Table>
 
+                </div>
 
-																{preReq.value}
-															</span>
-														</Match>
-														<Match when={preReq.info.type === PreReqType.CharacterLevel}>
-															<div>
-																class level Requirement:
-															</div>
-															<span>
-																{/* this might change  */}
-
-																{preReq.name} {preReq.value}
-															</span>
-														</Match>
-														<Match when={preReq.info.type === PreReqType.Classes}>
-															<div>
-																classes Requirement:
-															</div>
-															<span>
-																{/* this might change  */}
-
-																{preReq.name}
-															</span>
-														</Match>
-
-													</Switch>
-												</div>
-											}</For>
-										</div>
-										<br />
-										<div>
-											Description:
-										</div>
-										<span>
-											<For each={currentFeat().desc}>
-												{(desc, i) =>
-													<>
-														{desc}
-														<br />
-													</>
-												}
-											</For>
-										</span>
-									</>
-								</Show>
-							</>
-						}
-					</For>
-				</ol>
-
-				<Paginator items={srdFeats} setPaginatedItems={setPaginatedFeats} />
-			</div>
-		</div>
-	)
-};
+                <Show when={showFeatModal()}>
+                    <FeatView feat={currentFeat} backgroundClick={[showFeatModal,setShowFeatModal]} width="40%" height="40%" />
+                </Show>
+               
+                <div class={`${styles.paginator}`}>
+                    <Paginator items={srdFeats} setPaginatedItems={setPaginatedFeats} />
+                </div>
+        </Body>
+    );
+}
 export default featsList;

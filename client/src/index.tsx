@@ -27,6 +27,7 @@ import Viewbackgrounds from "./components/infoTab/Backgrounds/backgrounds";
 import viewClasses from "./components/infoTab/viewClasses/viewClasses";
 import Subclasses from "./components/homebrew/create/parts/subclasses/subclasses";
 import RootApp from "./components/rootApp";
+import ItemsViewTab from "./components/infoTab/items/item";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -73,6 +74,7 @@ render(
         <Route path="/feats" component={featsList} />
         <Route path="/classes" component={viewClasses} />
         <Route path="/backgrounds" component={Viewbackgrounds} />
+        <Route path="/items" component={ItemsViewTab} />
         <Route path="/*any" component={masterSpells} />
       </Route>
       <Route path="/homebrew">

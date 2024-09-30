@@ -1,49 +1,37 @@
-
+$mobile: 768px;
 .SpellsBody{
+    display: block;
+    height: 49vh;
+    width: 50%;
     margin: 0 auto;
-    padding: 0% 5%;
-    border-radius: 15px;
-    overflow-x: hidden !important;
-    overflow-y: auto;
-    max-width: 90vw !important;
-    padding-bottom: 10%;
+    overflow-y: scroll;
 
-    #materials_needed {
-        word-wrap:normal;
+    table {
+        margin: 0 auto;
+
+        tbody {
+
+            tr {
+
+                td {
+                    
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
     }
 
-    @media screen and (max-width: 768px){
-        width: 90%;
-        overflow-x: hidden !important;
-        margin: 0; 
-        padding: 0;
-        font-size: 0.9em;
-        padding-bottom: 10%;
+    @media screen and (max-width: $mobile) {
+        width: 100%;
     }
-}
-
-.headerBar{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    
-    @media screen and (max-width: 768px){
-        width: 90%;
-    }
-}
-.center {
-    text-align: center;
-    margin: 0 auto; 
 }
 .paginator {
+    display: block;
     width: min-content;
     margin: 0 auto;
-    margin-left: 25%;
-    position: fixed;
-    bottom: 0;
     text-align: center;
-
 
     select {
         color: white
@@ -56,6 +44,7 @@
         font-size: 0.9em;
     }
 }
+
 .spellChip {
     // background: white;
     color: white !important;
@@ -68,28 +57,29 @@
     }
 }
 
-.clickyHeader {
-    span {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
+
+.spellMenuBtn {
+    padding: 0;
+    height: 40%;
+    background: inherit;
+
+
+    svg {
+        
+        path {
+
+            fill: white
+        }
     }
-    &:hover {
-        cursor: pointer;
-    }
+   
 }
 
-.chipBar {
+.flexRow {
     display: flex;
     flex-direction: row;
 }
 
-.small {
-    width: min-content;
-    margin: 0;
-    padding: 0;
-}
-
-.mobalBar {
-    padding-bottom: 5%;
+.header {
+    margin: 0 auto;
+    text-align: center;
 }

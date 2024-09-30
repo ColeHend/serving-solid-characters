@@ -32,7 +32,7 @@ const TableComponent = <T,>(props: TableProps<T>) => {
 	const [showDropdown, setShowDropdown] = createSignal<{[key:number]: boolean}>({});
 	const getColumnIndex = (name: string)=>state.tableState().currentColumns.findIndex(x=>x===name);
 	const getHeaderTransform = (name: string)=>state.tableState().headers[getColumnIndex(name)];
-	const isDropTable = ()=>!!state.tableState().dropTransform;
+	const isDropTable = ()=>Object.keys(props).includes("dropdown");
 
 	const dropCheck = (i: number)=>{
 		const hasTransform = !!state.tableState().dropTransform 
