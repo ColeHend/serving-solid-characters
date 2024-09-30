@@ -15,27 +15,94 @@ const BackgroundView: Component<props> = (props) => {
   return (
     <Modal title={currentBackground().name} backgroundClick={props.backClick}>
       <div class={`${styles.wrapper}`}>
-        <h2 class={`${styles.header}`}>{currentBackground().name}</h2>
+       
+        {currentBackground().name}
+      </div>
+      <div class={`${styles.body}`}>
+        <h2>
+          {currentBackground().name}
+        </h2>
 
-        <div class={`${styles.skillProfsBar}`}>
-          <strong>Skill Proficiencies :</strong> <For each={currentBackground().startingProficiencies}>
-            {(prof) =><Chip key="skill" value={prof.value.slice(6, prof.value.length)} />}
-          </For>
-        </div>
-
-        <h3>Languages: choose {currentBackground().languageChoice.choose} of your choice</h3>
-
-        <h3>Starting Equipment : {currentBackground().startingEquipment.map(x=>x.item).join(" & ")}, choose {currentBackground().startingEquipmentChoices.map(x=>x.choose)}: {currentBackground().startingEquipmentChoices.map(x=>x.choices.map(y=>y.item).join(", "))}</h3>
-
-        <div class={`${styles.backgroundFeature}`}>
+        <div>
           <For each={currentBackground().feature}>
-            {(feature) => <span>
-                  <h3>Feature: {feature.name}</h3>
-
-                  <span>{feature.value}</span>
-                </span>}
+            {(feature) =>
+              <>
+                <span>
+                  <h3>
+                    {feature.name}
+                  </h3>
+                  <br />
+                  <span class={`${styles.feature}`}>
+                    {feature.value}
+                  </span>
+                </span>
+                <br />
+              </>
+            }
           </For>
         </div>
+
+        <h3>{currentBackground().languageChoice.type}</h3>
+
+        <h3>choose: {currentBackground().languageChoice.choose}</h3>
+
+        <div>
+          <For each={currentBackground().languageChoice.choices}>
+            {(choice) =>
+              <>
+                <span>{choice}</span>
+                <br />
+              </>
+            }
+          </For>
+        </div>
+
+        <br />
+
+        <h3>Starting Equipment</h3>
+        <div>
+          <For each={currentBackground().startingEquipment}>
+            {(item) =>
+              <>
+                <span>{item.item}</span>
+                <br />
+              </>
+            }
+          </For>
+        </div>
+
+        <br />
+
+        <div>
+          <For each={currentBackground().startingEquipmentChoices}>
+            {(choice) =>
+              <>
+                <h3>Choose: {choice.choose}</h3>
+                <For each={choice.choices}>
+                  {(item) =>
+                    <>
+                      <span>{(item as any)?.quantity ?? ''}  {item.item}</span>
+                      <br />
+                    </>
+                  }
+                </For>
+              </>
+            }
+          </For>
+        </div>
+
+        <h3>Skill Proficiencies</h3>
+        <div>
+          <For each={currentBackground().startingProficiencies}>
+            {(prof) =>
+              <>
+                <span>{prof.value}</span>
+                <br />
+              </>
+            }
+          </For>
+        </div>
+
 
       </div>
     </Modal>
