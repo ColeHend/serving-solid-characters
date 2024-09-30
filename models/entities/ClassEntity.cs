@@ -2,7 +2,7 @@ using CoreModels;
 
 namespace ClassesEntity
 {
-    public class ClassEntity
+	public class ClassEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -11,7 +11,23 @@ namespace ClassesEntity
         public List<string> Proficiencies { get; set; }
         public List<string> SavingThrows { get; set; }
         public List<LevelEntity> ClassLevels { get; set; }
-        public List<Subclass> Subclasses { get; set; }
+        public List<SubclassEntity> Subclasses { get; set; }
+        public SpellCastingDto? Spellcasting { get; set; }
+        public StartingEquipmentDto StartingEquipment { get; set; }
+
+				public ClassMetadata ClassMetadata { get; set; }
+
+    }
+    public class ClassDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int HitDie { get; set; }
+        public List<ChoicesEntity<string>> ProficiencyChoices { get; set; }
+        public List<string> Proficiencies { get; set; }
+        public List<string> SavingThrows { get; set; }
+        public List<LevelDTO> ClassLevels { get; set; }
+        public List<SubclassDTO> Subclasses { get; set; }
         public SpellCastingDto? Spellcasting { get; set; }
         public StartingEquipmentDto StartingEquipment { get; set; }
 
@@ -26,7 +42,17 @@ namespace ClassesEntity
 			public string SubclassTypePosition { get; set; }
 		}
 
-    public class Subclass
+    public class SubclassDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string SubclassFlavor { get; set; }
+        public List<string> Desc { get; set; }
+        public List<Feature<string, string>> Features { get; set; }
+        public string Class { get; set; }
+        public List<SpellsDto> Spells { get; set; }
+    }
+		public class SubclassEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -46,6 +72,20 @@ namespace ClassesEntity
         public int ProfBonus { get; set; }
         public Dictionary<string, int> Spellcasting { get; set; } = new Dictionary<string, int>();
     }
+		public class LevelDTO
+    {
+        public Info<string> Info { get; set; } = new Info<string>();
+        public List<Feature<string, string>> Features { get; set; } = new List<Feature<string, string>>();
+        public Dictionary<string, string> ClassSpecific { get; set; } = new Dictionary<string, string>();
+        public int AbilityScoreBonus { get; set; }
+        public int ProfBonus { get; set; }
+        public Dictionary<string, int> Spellcasting { get; set; } = new Dictionary<string, int>();
+    }
+		public class ValueDTO
+		{
+			public string Name { get; set; }
+			public List<string> Desc { get; set; }
+		}
 
     public class SpellsDto
     {

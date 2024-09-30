@@ -1,6 +1,12 @@
 import { Spell } from "../../../models";
+import { FeatureTypes } from "../../../models/core.model";
 
+export function GetFeatureType(type?:FeatureTypes, normal?: FeatureTypes ): FeatureTypes {
+	if (isNullish(type)) return normal ?? FeatureTypes.Feat;
+	return type!;
+}
 
+export const isNullish = <T,>(value: T) => value === null || value === undefined;
 export class UniqueSet<T> {
 	private set: Map<string, T>;
 	constructor() {

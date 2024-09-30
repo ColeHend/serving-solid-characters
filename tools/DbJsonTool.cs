@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DndClassJson;
 using Newtonsoft.Json;
 using sharpAngleTemplate.models;
+using SRDSpellsjson;
 
 namespace sharpAngleTemplate.tools
 {
@@ -34,15 +35,14 @@ namespace sharpAngleTemplate.tools
             }
         }
 
-        public List<The5EClasses> GetThe5EClasses()
+        public List<The5ESrdClassesJson> GetThe5EClasses()
         {
-            using (StreamReader r = new StreamReader($"{path}/data/classes.json"))
-            {
-                string json = r.ReadToEnd();
-                var item = The5EClasses.FromJson(json);
-                return item;
-            }
-
+					using (StreamReader r = new StreamReader($"{path}/data/classes.json"))
+					{
+						string json = r.ReadToEnd();
+						var the5ESrdClassesJson = The5ESrdClassesJson.FromJson(json);
+						return the5ESrdClassesJson;
+					}
         }
         public void SaveJson(string name, object value, bool append = false){
             using (StreamWriter r = new StreamWriter($"{path}/data/{name}.json", append))
@@ -121,7 +121,7 @@ namespace sharpAngleTemplate.tools
         }
     }
     public interface IDbJsonService {
-        List<The5EClasses> GetThe5EClasses();
+        List<The5ESrdClassesJson> GetThe5EClasses();
         T? GetJson<T>(string name);
         void SaveJson(string name, object value, bool append = false);
         DBCollection GetDB();

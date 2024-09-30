@@ -3,7 +3,7 @@ import styles from "./feats.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
 import { useGetClasses, useGetFeats, ExpansionPanel, Input, Select, Option, Chip, homebrewManager, useStyle, getUserSettings, Body, Button, TextArea } from "../../../../../shared/";
-import { Feature } from "../../../../../models/core.model";
+import { Feature, FeatureTypes as PreReqType } from "../../../../../models/core.model";
 import { effect } from "solid-js/web";
 import { Feat } from "../../../../../models/feat.model";
 import { BehaviorSubject } from "rxjs";
@@ -12,11 +12,6 @@ import FormField from "../../../../../shared/components/FormField/formField";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
 
-export enum PreReqType {
-  AbilityScore,
-  Class,
-  CharacterLevel,
-}
 
 const Feats: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
@@ -43,7 +38,7 @@ const Feats: Component = () => {
   };
   const addPreReq = (e: Event) => {
     switch (selectedType()) {
-      case 0: // Ability Score
+      case 7: // Ability Score
         setPreReqs((old) => [
           ...old,
           {
@@ -51,7 +46,7 @@ const Feats: Component = () => {
               className: "",
               subclassName: "",
               level: 0,
-              type: PreReqType[0],
+              type: PreReqType.AbilityScore,
               other: "",
             },
             name: keyName(),
@@ -59,7 +54,7 @@ const Feats: Component = () => {
           },
         ]);
         break;
-      case 1: // Class
+      case 0: // Class
         setPreReqs((old) => [
           ...old,
           {
@@ -67,7 +62,7 @@ const Feats: Component = () => {
               className: "",
               subclassName: "",
               level: 0,
-              type: PreReqType[1],
+              type: PreReqType.Class,
               other: "",
             },
             name: keyName(),
@@ -75,7 +70,7 @@ const Feats: Component = () => {
           },
         ]);
         break;
-      case 2: // Class Level
+      case 8: // Class Level
         setPreReqs((old) => [
           ...old,
           {
@@ -83,7 +78,7 @@ const Feats: Component = () => {
               className: "",
               subclassName: "",
               level: 0,
-              type: PreReqType[2],
+              type: PreReqType.CharacterLevel,
               other: "",
             },
             name: keyName(),

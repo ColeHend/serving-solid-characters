@@ -32,7 +32,7 @@ import {
 } from "../../../../../../shared/";
 import FormField from "../../../../../../shared/components/FormField/formField";
 import { DnDClass } from "../../../../../../models";
-import { Choice } from "../../../../../../models/core.model";
+import { Choice, FeatureTypes } from "../../../../../../models/core.model";
 import Modal from "../../../../../../shared/components/popup/popup.component";
 import Tabs, { Tab } from "../../../../../../shared/components/Tabs/tabs";
 import { Table } from "../../../../../../shared/components/Table/table";
@@ -116,7 +116,7 @@ const StartingEquipment: Component<Props> = (props) => {
 		const choice = getChoice(currentChoiceNum());
 		const newChoices = [...choice, {
 			choose,
-			type: "weapon",
+			type: FeatureTypes.Weapon,
 			choices: selectedWeapons().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
 		}];
 		props.setStartEquipChoice(currentChoiceNum(), newChoices);
@@ -128,7 +128,7 @@ const StartingEquipment: Component<Props> = (props) => {
 		const choice = getChoice(currentChoiceNum());
 		props.setStartEquipChoice(currentChoiceNum(), [...choice, {
 			choose,
-			type: "armor",
+			type: FeatureTypes.Armor,
 			choices: selectedArmor().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
 		}]);
 		setShowChoices(false);
@@ -139,7 +139,7 @@ const StartingEquipment: Component<Props> = (props) => {
 		const choice = getChoice(currentChoiceNum());
 		props.setStartEquipChoice(currentChoiceNum(), [...choice, {
 			choose,
-			type: "item",
+			type: FeatureTypes.Item,
 			choices: selectedItems().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
 		}]);
 		setShowChoices(false);

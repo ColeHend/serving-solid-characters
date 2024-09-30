@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, For, Show, useContext  } from "solid-js";
+import { Component, createMemo, createSignal, For, Show, useContext } from "solid-js";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
 import ExpansionPanel from "../../../shared/components/expansion/expansion";
@@ -54,9 +54,6 @@ const Viewbackgrounds: Component = () => {
         }
     ])
 
-    effect(()=>{    
-        setSearchParam({name: currentBackground()?.name})
-    });
 
     return <Body>
         <h1 class={`${styles.header}`}>Backgrounds</h1>
@@ -106,6 +103,5 @@ const Viewbackgrounds: Component = () => {
             <Paginator items={searchResult} setPaginatedItems={setPaginatedBackgrounds}  />
         </div>           
     </Body>
-    
 };
 export default Viewbackgrounds;

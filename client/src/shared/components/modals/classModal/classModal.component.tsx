@@ -39,7 +39,7 @@ const ClassModal: Component<props> = (props) => {
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(() => useStyles(userSettings().theme));
   const [paginatedFeatures, setPaginatedFeatures] = createSignal<
-    Feature<unknown, string>[]
+    Feature<string, string>[]
   >([]);
 
   const currentSubclasses = createMemo(() =>
