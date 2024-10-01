@@ -7,7 +7,7 @@ import Button from "../Button/Button";
 
 interface Props {
     class?: string;
-    key: string;
+    key?: string;
     value: string;
     remove?: ()=> any;
 }
@@ -18,8 +18,10 @@ const Chip: Component<Props> = (props)=> {
     //  
     return (
         <span class={`${stylin().accent} ${style.Chip} ${props.class ?? ""}`}>
-            <span>{props.key}</span>
-            <span>:</span>
+            <Show when={!!props.key}>
+                <span>{props.key}</span>
+                <span>:</span>
+            </Show>
             <span>{'  '+props.value}</span>
             <Show when={!!props.remove}>
                 <Button class={`${stylin()?.hover} ${style.removeChipButton}`} onClick={props.remove}>

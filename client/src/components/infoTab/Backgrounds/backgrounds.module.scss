@@ -1,32 +1,42 @@
 $mobile: 768px;
 
-.allBackgrounds {
-  width: 90%;
+.header {
   margin: 0 auto;
-  padding: 10px;
-  border-radius: 10px;
-  margin-top: 3%;
+  text-align: center;
+}
 
-  h1 {
-    text-align: center;
+.backgroundsDiv {
+  margin: 0 auto;
+  height: 49vh;
+  width: 35%;
+  overflow-y: scroll;
+
+  table {
+    margin: 0 auto;
   }
 }
-.backgrounds {
+
+.searchBar {
   margin: 0 auto;
-  padding: 10px;
-  width: 50%;
+  width: 35%; 
+  height: 5vh;
 
-  @media screen and (max-width: $mobile){
-    width: 90%;
+  @media screen and (max-width: $mobile) {
+    width: 100%;
   }
+}
+.paginator {
+  width: min-content;
+  margin: 0 auto;
+}
 
-}
-.feature {
-    text-wrap: wrap;
-}
-.totalPanel {
-  padding: 10px;
-}
-.body {
-  padding: 10px;
+.menuBtn {
+  background: inherit;
+
+  svg {
+
+    path {
+      fill: white;
+    }
+  }
 }

@@ -2,6 +2,7 @@ import { Accessor, Component, createSignal, JSX, Setter, splitProps } from "soli
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./SearchBar.module.scss";
 import { Clone } from "../../customHooks";
+import addSnackbar from "../Snackbar/snackbar";
 interface Props<T> extends JSX.InputHTMLAttributes<HTMLInputElement> {
     dataSource: Accessor<T[]>,
     setResults: Setter<T[]>,
@@ -24,14 +25,24 @@ const SearchBar = <T,>(props: Props<T>) => {
             });
             
             if (results.length >= 1) {
+                addSnackbar({
+                    message:`Found: ${results.length}!`,
+                    severity:"success",
+                    closeTimeout:4000,
+                })
                 props.setResults(Clone(results));
             } else {
+                addSnackbar({
+                    message:`Found: ${results.length}`,
+                    severity:"error",
+                    closeTimeout:4000,
+                })
                 props.setResults(props.dataSource());
             }
         };
     props.setResults(props.dataSource());
     return (
-        <div class={`${style.searchBar} ${local.wrapClass}`}>
+        <div class={`${style.searchBar}`}>
             <input
             type="text"
             onChange={(e) => setSearchValue(e.currentTarget.value)}

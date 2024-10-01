@@ -1,133 +1,51 @@
 $mobile: 768px;
 
-@keyframes slidein {
-    from {
-        transform: translateX(0%);
-    }
-
-    to {
-        transform: translateX((100%));
-    }
-}
-
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-
-    span {
-
-        text-align: center;
-
-        &:hover {
-            cursor: pointer;
-        }
-
-        &:active {
-            font-size: 1.5em;
-        }
-    }
-
-    button {
-        width: min-content;
-        background-color: inherit;
-        color: white;
-        border: none;
-        font-size: 1em;
-
-        &:hover {
-            cursor: pointer;
-        }
-
-        &:active {
-            font-size: 1.2em;
-        }
-    }
-}
-.sidebar_shown {
-    display: flex;
-    flex-direction: column;
-    margin-left: 1%;
-    
-}
-.wrapper {
-    display: flex;
-    flex-direction: row;
-}
-.thePage {
-    margin-left: 15%;
-    margin-top: 2%;
-    width: 70%;
-    display: flex;
-    flex-direction: column;
-
-    h1 {
-        text-align: center;
-
-    }
-}
-.outerStyles {
- margin: 5%;
- padding: 15px;
- border-radius: 15px;
-
- h1 {
-    text-align: center;
- }
-
- .SelectorBar {
-    margin-left: 44%;
+.searchBar {
+    width: 35%; 
+    height: 5vh;
     margin: 0 auto;
-    width: 12%;
-    
-    @media screen and (max-width: $mobile) {
+
+    @media screen and (max-width:$mobile) {
         width: 100%;
-        margin-left: 12%;
-    }
- }
-
-}
-.fixed {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-    position: fixed;
-    
-    transform: translateY(50%);
-
-    padding: 15px;
-    border-radius: 10px;
-    margin-left: 30px;
-
-    @media screen and (max-width: $mobile) {
-        transform: translateY(-10vh);
-    }
-}
-.flexrow {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-.wrap {
-    text-wrap: wrap;
-}
-.abilityscore {
-    display: "flex"; 
-    flex-direction: "row"; 
-    justify-content: "space-between"; 
-    width: 10%; 
-}
-.sideBarBtn {
-    position: fixed;
-    transform: translateY(28vh) translateX(10.4vw);
-    padding: 10px;
-    border-radius: 9px;
-    border: none;
-    height: 6%;
-
-    @media screen and (max-width: $mobile) {
-        transform: translateX(-5%);
     }
 }
 
-.animate {  
-    animation: slidein 2s ease-in-out alternate
+.racesTable {
+    margin: 0 auto;
+    width: 35%;
+    overflow-y: scroll;
+    height: 49vh;
+
+    table {
+        margin: 0 auto;
+    }
+
+    span:hover {
+        cursor: pointer;
+    }
+
+    @media screen and (max-width:$mobile) {
+        width: 100%;
+    }
+}
+
+.paginator {
+    margin: 0 auto;
+    width: min-content;
+}
+
+.header {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.menuBtn {
+    background: inherit;
+
+    svg {
+
+        path {
+            fill: white;
+        }
+    }
 }
