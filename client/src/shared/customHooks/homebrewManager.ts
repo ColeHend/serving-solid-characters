@@ -114,6 +114,8 @@ class HomebrewManager {
     public addItem = (newItem: Item) => {
         if(this.items().findIndex((i) => i.name === newItem.name) !== -1){
             return;
+        } else {
+            // ask to update
         }
         this.setItems(old =>[...old, newItem]);
         this.addItemToDB(newItem).subscribe();
@@ -162,6 +164,8 @@ class HomebrewManager {
     public addFeat = (newFeat: Feat) => {
         if(this.feats().findIndex((f) => f.name === newFeat.name) !== -1){
             return;
+        } else {
+            // ask to update
         }
         this.setFeats(old =>[...old, newFeat]);
         this.addFeatToDB(newFeat).subscribe();
@@ -209,6 +213,8 @@ class HomebrewManager {
     public addSpell = (newSpell: Spell) => {
         if(this.spells().findIndex((s) => s.name === newSpell.name) !== -1){
             return;
+        } else {
+            // ask to update.
         }
         this.setSpells(old =>[...old, newSpell]);
         this.addSpellToDB(Clone(newSpell)).subscribe();
@@ -261,6 +267,8 @@ class HomebrewManager {
     public addBackground = (newBackground: Background) => {
         if(this.backgrounds().findIndex((b) => b.name === newBackground.name) !== -1){
             return;
+        } else {
+            // ask to update
         }
         this.setBackgrounds(old =>[...old, newBackground]);
         this.addBackgroundToDB(newBackground).subscribe();

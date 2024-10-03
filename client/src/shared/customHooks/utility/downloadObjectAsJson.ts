@@ -1,4 +1,6 @@
-export function downloadObjectAsJson(data: any, filename: string): void {
+import { Trade } from "../../../models/trade.model";
+
+export function downloadObjectAsJson(data: Trade, filename: string): void {
     const jsonString = JSON.stringify(data, null, 2); // Pretty-print with 2 spaces
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
