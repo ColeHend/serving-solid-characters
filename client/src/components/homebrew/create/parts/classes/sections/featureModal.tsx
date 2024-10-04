@@ -1,13 +1,14 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch, untrack } from "solid-js";
-import { Button, Input, Tabs, Tab, FormField, TextArea, Select, Option, Markdown, useGetClasses, ExpansionPanel } from "../../../../../../shared";
-import { AbilityScores, ChangeSubTypes, CharacterChangeTypes, Choice, Feature, FeatureTypes, MovementTypes, TypeRestrictions } from "../../../../../../models/core.model";
+import { Button, Input, Tabs, Tab, FormField, TextArea, Select, Option, Markdown, useGetClasses, ExpansionPanel, isNullish } from "../../../../../../shared";
+import { AbilityScores, ChangeSubTypes, CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes, Info, MovementTypes, TypeRestrictions } from "../../../../../../models/core.model";
 import styles from './featureModal.module.scss';
 import Modal from "../../../../../../shared/components/popup/popup.component";
 import { LevelEntity, Subclass } from "../../../../../../models/class.model";
 import useGetFeatures from "../../../../../../shared/customHooks/useGetFeatures";
 import { useSearchParams } from "@solidjs/router";
 import { Background } from "../../../../../../models";
-import { S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import { p, S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import CharacterChanges from "./characterChanges";
 
 type FeatureType = 'new' | 'existing' | 'template' | '';
 
@@ -25,23 +26,25 @@ interface FeatureModalProps {
 const FeatureModal: Component<FeatureModalProps> = (props) => {
 	const allFullClasses = useGetClasses();
 	const allFeatures = useGetFeatures();
-
+	// -------- Signals --------
 	const [featureType, setFeatureType] = createSignal<FeatureType>("");
 	const [selectedFeature, setSelectedFeature] = createSignal<Feature<string, string>>({} as Feature<string, string>);
 	const [newName, setNewName] = createSignal<string>("");
 	const [newDesc, setNewDesc] = createSignal<string>("");
-	const validate = createMemo(() => newName().trim().length === 0 || getUnknownToString(newDesc()).trim().length === 0);
 	const [classFilter, setClassFilter] = createSignal<string>('');
 	const [selectedChangeType, setSelectedChangeType] = createSignal<CharacterChangeTypes>();
 	const [selectedSubType, setSelectedSubType] = createSignal<ChangeSubTypes>();
 	const [selectedRestriction, setSelectedRestriction] = createSignal<TypeRestrictions>();
-	const [selectedAbilityScore, setSelectedAbilityScore] = createSignal<AbilityScores>();
 	const [selectedValue, setSelectedValue] = createSignal<number>();
 	const [selectedDieSize, setSelectedDieSize] = createSignal<number>();
 	const [selectedStat, setSelectedStat] = createSignal<AbilityScores>();
 	const [selectedSet, setSelectedSet] = createSignal<number>();
+	const [characterChanges, setCharacterChanges] = createSignal<CharacterChange[]>([]);
+
+	// ------- Memoized Values -------
 	const getEditIndex = createMemo(() => props.editIndex());
 	const isEdit = createMemo(() => getEditIndex() !== -1);
+	const validate = createMemo(() => newName().trim().length === 0 || getUnknownToString(newDesc()).trim().length === 0);
 	const allClasses = createMemo(() => {
 		const classes = allFeatures().filter((f) => !!f?.info?.className);
 		const uniqueClasses = new Set<string>();
@@ -61,59 +64,39 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 			return allFeatures().filter((f) => f?.info?.className === classFilter());
 		}
 	})
+
+	// -------- Functions --------
 	const back = () => {
 		setFeatureType("");
 		setNewName("");
 		setNewDesc("");
 	}
 	const saveAndClose = () => {
-		let className = '';
-		let subclassName = '';
 		let level = 0;
-		let type = FeatureTypes.Class;
-		if (!!props.currentSubclass) {
-			className = props.currentSubclass.class;
-			subclassName = props.currentSubclass.name;
+		if (!!props?.currentSubclass) {
 			level = props.currentLevel.level;
-			type = FeatureTypes.Subclass;
 		} else if (!!props.currentBackground) {
 			level = 0;
-			type = FeatureTypes.Background;
-
-		} else {
-			className = props.currentLevel.info?.className;
-			subclassName = props.currentLevel.info?.subclassName;
-			level = props.currentLevel?.level;
+		} else if (!isNullish(props.currentLevel?.level)) {
+			level = props.currentLevel.level;
 		}
 
 		if (isEdit()) {
 			props.replaceFeature(level, getEditIndex(), {
 				name: untrack(newName),
 				value: untrack(newDesc),
-				info: {
-					className,
-					subclassName,
-					level,
-					type,
-					other: ''
-				},
+				info: buildInfo(),
 				metadata: {
-					changes: []
+					changes: characterChanges()
 				}
 			});
 		} else {
 			props.addFeature(level, {
 				name: untrack(newName),
 				value: untrack(newDesc),
-				info: {
-					className,
-					subclassName,
-					level,
-					type,
-					other: ''
-				},
+				info: buildInfo(),
 				metadata: {
-					changes: []
+					changes: characterChanges()
 				}
 			});
 		}
@@ -143,6 +126,36 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 		};
 		return '';
 	};
+
+	const buildInfo = (): Info<string> => {
+		const currentInfo: Info<string> = {
+			className: "",
+			subclassName: "",
+			level: 0,
+			type: FeatureTypes.Class,
+			other: ""
+		};
+		if (!!props?.currentSubclass) {
+			currentInfo.className = props.currentSubclass.class;
+			currentInfo.subclassName = props.currentSubclass.name;
+			currentInfo.type = FeatureTypes.Subclass;
+		}
+		if (!!props?.currentLevel) {
+			currentInfo.className = props.currentLevel.info.className;
+			currentInfo.subclassName = props.currentLevel.info.subclassName;
+			currentInfo.level = props.currentLevel.level;
+		}
+		if (!!props?.currentBackground) {
+			currentInfo.type = FeatureTypes.Background;
+		}
+
+		return currentInfo;
+	};
+
+	const differentChangeTypes = [CharacterChangeTypes.UseNumber, CharacterChangeTypes.Spell, CharacterChangeTypes.SpellSlot, undefined];
+	const showOtherChangeType = () => !differentChangeTypes.includes(selectedChangeType()) && (selectedChangeType() ?? -1) > -1;
+
+	// ----------------- Effects -----------------
 	createEffect(() => {
 		if (isEdit()) {
 			// -----------------
@@ -156,7 +169,10 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 						...c,
 						choices: c.choices.map(ch => ch.join('\n'))
 					}))),
-					metadata: props.currentBackground.feature[getEditIndex()].metadata
+					metadata: {
+						...props.currentBackground.feature[getEditIndex()]?.metadata,
+						changes: props.currentBackground.feature[getEditIndex()]?.metadata?.changes ?? []
+					}   //props.currentBackground.feature[getEditIndex()].metadata
 				};
 			} else if (!!props.currentSubclass) {
 				feature = props.currentSubclass.features[getEditIndex()];
@@ -168,34 +184,7 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 			setNewDesc(getUnknownToString(feature.value));
 		}
 	})
-
-	const differentChangeTypes = [CharacterChangeTypes.UseNumber, CharacterChangeTypes.Spell, CharacterChangeTypes.SpellSlot, undefined];
-	const showOtherChangeType = () => !differentChangeTypes.includes(selectedChangeType()) && (selectedChangeType() ?? -1) > -1;
-
-	const disableAddCharacterChange = () => {
-		if (selectedChangeType() === undefined) return true;
-		switch (selectedChangeType()) {
-			case CharacterChangeTypes.Spell:
-				return false;
-			case CharacterChangeTypes.SpellSlot:
-				return false;
-			case CharacterChangeTypes.AbilityScore:
-				return selectedSubType() === undefined;
-			case CharacterChangeTypes.AC:
-				return selectedSubType() === undefined;
-			case CharacterChangeTypes.AttackRoll:
-				return selectedSubType() === undefined;
-			case CharacterChangeTypes.Initiative:
-				return selectedSubType() === undefined;
-			case CharacterChangeTypes.Save:
-				return selectedSubType() === undefined;
-			case CharacterChangeTypes.SpellSlot:
-				return selectedSubType() === undefined;
-			default:
-				return selectedSubType() === undefined;
-		}
-	}
-
+	// ----------------- Return -----------------
 	return (
 		<Modal title="Add Feature" setClose={(value: any) => {
 			props.setEditIndex(-1);
@@ -219,103 +208,25 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 					</Show>
 					<Show when={featureType() === "new" && !isEdit()}>
 						<div class={`${styles.new}`}>
-							<div style={{border: '1px solid', 'border-radius':'10px'}}>
-								<div >
-									<ExpansionPanel arrowSize={{width:'35px', height:'35px'}} style={{height:'min-content'}}>
-										<div>Character Changes</div>
-										<div>
-											<div>
-												<label>Change Type</label>
-												<Select transparent
-													onChange={(e) => setSelectedChangeType(Number(e.currentTarget.value) as CharacterChangeTypes)}
-													value={selectedChangeType()}
-												>
-													<For each={Object.keys(CharacterChangeTypes).filter((k) => !isNaN(Number(k)))}>{(changeType) => <>
-														<Option value={changeType}>{CharacterChangeTypes[Number(changeType)]}</Option>
-													</>}</For>
-												</Select>
-												<Show when={selectedChangeType() === CharacterChangeTypes.Speed}>
-													<Select transparent>
-														<For each={Object.keys(MovementTypes).filter((k) => !isNaN(Number(k)))}>{(changeType) => 
-															<Option value={changeType}>{MovementTypes[Number(changeType)]}</Option>
-														}</For>
-													</Select>
-												</Show>
-											</div>
-											<Show when={selectedChangeType() === CharacterChangeTypes.Spell}>
-												<span>
-
-												</span>
-											</Show>
-											<Show when={selectedChangeType() === CharacterChangeTypes.SpellSlot}>
-												<span>
-
-												</span>
-											</Show>
-											<Show when={showOtherChangeType()}>
-												<div>
-													<label>Sub Type</label>
-													<Select transparent
-														onChange={(e) => setSelectedSubType(Number(e.currentTarget.value) as ChangeSubTypes)}
-														value={selectedSubType()}
-													>
-														<For each={Object.keys(ChangeSubTypes).filter((k) => !isNaN(Number(k)))}>{(changeType) => <>
-															<Option value={changeType}>{ChangeSubTypes[Number(changeType)]}</Option>
-														</>}</For>
-													</Select>
-													<Show when={selectedSubType() === ChangeSubTypes.Die}>
-														<Select transparent disableUnselected>
-															<For each={[4, 6, 8, 10, 12, 20]}>{(dieSize) => <>
-																<Option value={dieSize}>d{dieSize}</Option>
-															</>}</For>
-														</Select>
-													</Show>
-													<Show when={selectedSubType() === ChangeSubTypes.Set}>
-														<Input type="number" transparent  style={{
-															width: '75px',
-															'border-bottom': '1px solid',
-														}}/>
-													</Show>
-													<Show when={selectedSubType() === ChangeSubTypes.Stat}>
-														<Select transparent>
-															<For each={Object.keys(AbilityScores).filter((k) => !isNaN(Number(k)))}>{(changeType) => <>
-																<Option value={changeType}>{AbilityScores[Number(changeType)]}</Option>
-															</>}</For>
-														</Select>
-													</Show>
-													<Show when={selectedSubType() === ChangeSubTypes.SetAndDie}>
-														<Input type="number" transparent style={{
-															width: '75px',
-															'border-bottom': '1px solid',
-														}}/>
-														<Select transparent disableUnselected>
-															<For each={[4, 6, 8, 10, 12, 20]}>{(dieSize) => <>
-																<Option value={dieSize}>d{dieSize}</Option>
-															</>}</For>
-														</Select>
-													</Show>
-												</div>
-												<div>
-													<label>Restriction</label>
-													<Select transparent>
-														<For each={Object.keys(TypeRestrictions).filter((k) => !isNaN(Number(k)))}>{(changeType) => <>
-															<Option value={changeType}>{TypeRestrictions[Number(changeType)]}</Option>
-														</>}</For>
-													</Select>
-												</div>
-											</Show>
-											<Button disabled={disableAddCharacterChange()}>Add</Button>
-										</div>
-									</ExpansionPanel>
-									<div>
-										<h4>Feature Changes</h4>
-										<div>
-
-										</div>
-									</div>
-								</div>
-								
-							</div>
+							<CharacterChanges
+								characterChanges={characterChanges}
+								setCharacterChanges={setCharacterChanges}
+								selectedChangeType={selectedChangeType}
+								setSelectedChangeType={setSelectedChangeType}
+								selectedSubType={selectedSubType}
+								setSelectedSubType={setSelectedSubType}
+								selectedRestriction={selectedRestriction}
+								setSelectedRestriction={setSelectedRestriction}
+								selectedValue={selectedValue}
+								setSelectedValue={setSelectedValue}
+								selectedDieSize={selectedDieSize}
+								setSelectedDieSize={setSelectedDieSize}
+								selectedStat={selectedStat}
+								setSelectedStat={setSelectedStat}
+								selectedSet={selectedSet}
+								setSelectedSet={setSelectedSet}
+								showOtherChangeType={showOtherChangeType}
+							/>
 							<FormField name="Feature Name">
 								<Input type="text" transparent
 									value={newName()}
@@ -390,6 +301,25 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 					</Show>
 					<Show when={isEdit()}>
 						<div class={`${styles.new}`}>
+						<CharacterChanges
+								characterChanges={characterChanges}
+								setCharacterChanges={setCharacterChanges}
+								selectedChangeType={selectedChangeType}
+								setSelectedChangeType={setSelectedChangeType}
+								selectedSubType={selectedSubType}
+								setSelectedSubType={setSelectedSubType}
+								selectedRestriction={selectedRestriction}
+								setSelectedRestriction={setSelectedRestriction}
+								selectedValue={selectedValue}
+								setSelectedValue={setSelectedValue}
+								selectedDieSize={selectedDieSize}
+								setSelectedDieSize={setSelectedDieSize}
+								selectedStat={selectedStat}
+								setSelectedStat={setSelectedStat}
+								selectedSet={selectedSet}
+								setSelectedSet={setSelectedSet}
+								showOtherChangeType={showOtherChangeType}
+							/>
 							<FormField name="Feature Name">
 								<Input type="text" transparent
 									value={newName()}

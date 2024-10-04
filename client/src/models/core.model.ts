@@ -87,6 +87,7 @@ export interface CharacterChange {
 	restriction?: TypeRestrictions;
 	abilityScores?: AbilityScores[];
 	value: number;
+	dieSize?: number;
 }
 export interface Info<T> {
     className:    string;

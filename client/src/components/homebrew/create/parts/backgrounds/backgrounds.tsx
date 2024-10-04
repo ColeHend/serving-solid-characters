@@ -1,5 +1,5 @@
 import { Component, For, createSignal, useContext, createMemo, Show } from "solid-js";
-import { useStyle, Body, Input, Select, Option, Button, TextArea } from "../../../../../shared/";
+import { useStyle, Body, Input, Select, Option, Button, TextArea, Chip } from "../../../../../shared/";
 import styles from './backgrounds.module.scss'
 import type { Tab } from "../../../../navbar/navbar";
 import { SharedHookContext } from "../../../../rootApp";
@@ -66,7 +66,7 @@ const Backgrounds: Component = () => {
             <Body>
                 <h1>backgrounds</h1>
                 <div>
-										<div>
+										<div class={`${styles.name}`}>
 											<FormField name="Background Name">
 												<Input 
 													min={1}
@@ -74,7 +74,7 @@ const Backgrounds: Component = () => {
 													onChange={(e)=>setCurrentBackground({name:e.currentTarget.value})} transparent/>
 											</FormField>
 										</div>
-										<div>
+										<div class={`${styles.description}`}>
 											<h4>Background Description</h4>
 											<FormField name="Description">
 												<TextArea
@@ -85,6 +85,14 @@ const Backgrounds: Component = () => {
 											</FormField>
 										</div>
 										<div>
+											<h4>Proficiencies</h4>
+											<div>
+												<For each={currentBackground.startingProficiencies}>{(prof)=><>
+													<Chip key={pr} value="" />
+												</>}</For>
+											</div>
+										</div>
+										<div class={`${styles.skills}`}>
 											<h4>Skill Proficiencies</h4>
 											<div>
 												<label>Choose </label>
@@ -125,15 +133,8 @@ const Backgrounds: Component = () => {
 													})
 												}}>Add Proficiency Choice</Button>
 											</div>
-											<div>
-												<For each={currentBackground.startingProficiencies}>{(prof, index)=>
-													<div>
-														{prof.name}: {prof.value}
-													</div>
-												}</For>
-											</div>
 										</div>
-										<div>
+										<div class={`${styles.features}`}>
 											<h4>Features</h4>
 											<Button onClick={(e)=>{
 												setShowFeatureModal(true);
@@ -158,12 +159,12 @@ const Backgrounds: Component = () => {
 												}}>{f.name}</Button>
 											}</For>
 										</div>
-										<div>
+										<div class={`${styles.languages}`}>
 											<div>
 												<h4>Languages</h4>
 											</div>
 											<div>
-												<Select transparent disableUnselected
+												<Select transparent
 													value={selectedLanguage()} 
 													onChange={(e)=>{
 														setSelectedLanguage(e.currentTarget.value);
@@ -180,18 +181,11 @@ const Backgrounds: Component = () => {
 													}});
 												}}>Add Language</Button>
 											</div>
-											<div>
-												<For each={currentBackground.languageChoice.choices}>{(lang)=>
-													<div>
-														{lang}
-													</div>
-												}</For>
-											</div>
 										</div>
-										<div>
+										<div class={`${styles.proficiencies}`}>
 											<h4>Starting Proficiencies</h4>
 											<div>
-												<Select transparent disableUnselected
+												<Select transparent
 													value={selectedProficiency()}
 													onChange={(e)=>{
 														setSelectedProficiency(e.currentTarget.value);
@@ -216,18 +210,11 @@ const Backgrounds: Component = () => {
 													}]});
 												}}>Add Proficiency</Button>
 											</div>
-											<div>
-												<For each={currentBackground.startingProficiencies.filter(x=>allSkills().includes(x.value))}>{(prof)=>
-													<div>
-														{prof.name}: {prof.value}
-													</div>
-												}</For>
-											</div>
 										</div>
-										<div>
+										<div class={`${styles.tools}`}>
 											<h4>Tool Proficiencies</h4>
 											<div>
-												<Select transparent disableUnselected
+												<Select transparent
 													value={selectedTool()}
 													onChange={(e)=>{
 														setSelectedTool(e.currentTarget.value);
@@ -251,13 +238,6 @@ const Backgrounds: Component = () => {
 														metadata: {}
 													}]});
 												}}>Add Proficiency</Button>
-											</div>
-											<div>
-												<For each={currentBackground.startingProficiencies.filter(x=>allTools().includes(x.value))}>{(prof)=>
-													<div>
-														{prof.name}: {prof.value}
-													</div>
-												}</For>
 											</div>
 										</div>
                 </div>
