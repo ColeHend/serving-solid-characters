@@ -1,26 +1,24 @@
+$mobile: 768px;
 .classesView {
     display: flex;
     flex-direction: column;
 
     justify-content: center;
     align-items: center;
-    padding-bottom: 5%;
 }
 
 .paginator {
-    float: bottom;
-    position: fixed;
-    bottom: 0;
     margin: 10px;
 
 }
 
 .classesTable {
     overflow-y: scroll;
-    max-height: 30%;
-
-    tr {
-        max-height: 30%;
+    height: 49vh;
+    width: 35%;
+    
+    table {
+        margin: 0 auto;
     }
 
     span:hover {
@@ -30,9 +28,26 @@
     svg {
         width: 55%;
         height: 22%;
+
+        path {
+            fill: white;
+        }
+    }
+
+    @media screen and (max-width: $mobile) {
+        width: 100%;
     }
 }
 
 .searchBar {
-    height: 8vh;
+    width: 35%; 
+    height: 5vh;
+    
+    @media screen and (max-width: $mobile) {
+        width: 100%;
+    }
+}
+
+.menuBtn {
+    background: inherit;
 }

@@ -1,0 +1,43 @@
+.raceWrapper {
+    margin-top: 1%;
+    background-color: none;
+    background: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+
+}
+
+.header {
+    font-family: 'Mr_Eaves_Small_Caps';
+    font-weight: 100;
+    color: #AA0505;
+}
+
+.info {
+    font-family: 'Bookinsanity';
+    font-weight: 100;
+    color: #000;
+    text-wrap: wrap;
+}
+
+.startingProfsRow {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 2%;
+    justify-content: center;
+    align-items: center;
+}
+
+.subclassesTabRow {
+    display: flex;
+    flex-direction: column;
+    
+    div {
+        font-family: 'Bookinsanity';
+        font-weight: 100;
+        color: #000;
+
+    }
+}
