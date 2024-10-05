@@ -1,7 +1,7 @@
 import { Accessor, Component, For, Match, Setter, Switch } from "solid-js";
 import Modal from "../../popup/popup.component";
 import { Feat } from "../../../../models";
-import { PreReqType } from "../../../../components/homebrew/create/parts/feats/feats";
+import { FeatureTypes as PreReqType } from "../../../../models/core.model";
 import style from "./featView.module.scss"
 
 interface props {
@@ -30,14 +30,14 @@ const FeatView: Component<props> = (props) => {
             {(preReq) => (
               <div>
                 <Switch>
-                  <Match when={preReq.info.type === PreReqType[0]}>
+                  <Match when={preReq.info.type === PreReqType.AbilityScore}>
                     <div>Ability Score Requirement:</div>
                     <span>
                       {/* this might change  */}
                       {preReq.name} of {preReq.value}
                     </span>
                   </Match>
-                  <Match when={preReq.info.type === PreReqType[1]}>
+                  <Match when={preReq.info.type === PreReqType.Class}>
                     <div>Class Requirement:</div>
                     <span>
                       {/* this might change  */}
@@ -45,14 +45,14 @@ const FeatView: Component<props> = (props) => {
                       {preReq.value}
                     </span>
                   </Match>
-                  <Match when={preReq.info.type === PreReqType[2]}>
+                  <Match when={preReq.info.type === PreReqType.CharacterLevel}>
                     <div>class level Requirement:</div>
                     <span>
                       {/* this might change  */}
                       {preReq.name} {preReq.value}
                     </span>
                   </Match>
-                  <Match when={preReq.info.type === PreReqType[3]}>
+                  <Match when={preReq.info.type === PreReqType.Classes}>
                     <div>classes Requirement:</div>
                     <span>
                       {/* this might change  */}

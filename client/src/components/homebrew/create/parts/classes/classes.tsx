@@ -540,7 +540,7 @@ const Classes: Component = () => {
 												<FormField name="Subclass Type">
 													<Input transparent type="text" 
 														placeholder="e.g.. __ bloodline, order of the __" 
-														value={currentClass.classMetadata.subclassType}
+														value={currentClass.classMetadata?.subclassType ?? ""}
 														onChange={(e)=>setCurrentClass(old => ({
 															classMetadata: {
 																...old.classMetadata,
@@ -549,7 +549,7 @@ const Classes: Component = () => {
 														}))}/>
 												</FormField>
 												<Select disableUnselected transparent 
-													value={currentClass.classMetadata.subclassTypePosition}
+													value={currentClass.classMetadata?.subclassTypePosition ?? "before"}
 													onChange={(e)=>setCurrentClass((old)=>({
 														classMetadata: {
 															...old.classMetadata,
@@ -560,7 +560,7 @@ const Classes: Component = () => {
 													<Option value={'after'}>After</Option>
 												</Select>
 											</div>
-											<Show when={!!currentClass.classMetadata.subclassType.trim().length}>
+											<Show when={!!currentClass.classMetadata?.subclassType.trim().length}>
 												<div>
 													<Input style={{width: '75px', border: '1px solid'}} 
 														transparent type="number" 

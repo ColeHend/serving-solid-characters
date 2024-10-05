@@ -12,7 +12,11 @@ type Props = {
     styles?: CSSModuleClasses,
     extraLogic?: () => void,
     startOpen?: boolean,
-    [key:string]: any
+    [key:string]: any,
+		arrowSize?: {
+			width: string;
+			height: string;
+		}
 }
 const ExpansionPanel: Component<Props> = (props)=>{
     const[open, setOpen] = createSignal(!!props.startOpen);
@@ -22,18 +26,30 @@ const ExpansionPanel: Component<Props> = (props)=>{
     return (
         <div class={`${styles.totalPanel} ${props.styles}`} {...props}>
             <div class={`${stylin()?.accent} ${styles.header}`}>
-                <span>
+                <span style={{
+									width: 'min-content',
+									height: 'min-content',
+								}}>
                     {props.children[0]}
                 </span>
-                <Button onClick={()=>{
-                    setOpen(old =>!old);
-                    !!props.extraLogic ? props.extraLogic() : null 
-                }} class={`${stylin()?.hover}`}>
+                <Button
+									style={{
+										width: 'min-content',
+										height:'min-content',
+										padding: '0px',
+										margin: '0px',
+									}} 
+									onClick={()=>{
+											setOpen(old =>!old);
+											!!props.extraLogic ? props.extraLogic() : null 
+									}} 
+									class={`${stylin()?.hover}`}
+								>
                     <Show when={!open()}>
-                        <DownArrow />
+                        <DownArrow style={{padding:'0px',margin:'0px'}} width={props.arrowSize?.width} height={props.arrowSize?.height} />
                     </Show>
                     <Show when={open()}>
-                        <UpArrow />
+                        <UpArrow style={{padding:'0px',margin:'0px'}} width={props.arrowSize?.width} height={props.arrowSize?.height} />
                     </Show>
                 </Button>
             </div>
