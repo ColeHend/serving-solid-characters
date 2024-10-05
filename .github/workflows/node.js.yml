@@ -1,32 +1,63 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node.js CI
+name: .NET and SolidJS CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        dotnet-version: ["6.0.x"] # Adjust according to your .NET versions
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm i
-    - run: npm run build --if-present
-    #- run: npm test
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      # Restore .NET dependencies
+      - name: Restore .NET dependencies
+        run: dotnet restore
+
+      # Build .NET project
+      - name: Build .NET project
+        run: dotnet build --configuration Release --no-restore
+
+      # Test .NET project
+      - name: Test .NET project
+        run: dotnet test --no-build --verbosity normal
+
+      # Setup Node.js
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # Install NPM dependencies
+      - name: Install NPM dependencies
+        working-directory: ./client
+        run: npm ci
+
+      # Build SolidJS project
+      - name: Build SolidJS project
+        working-directory: ./client
+        run: npm run build
+
+      # Test SolidJS project
+      #- name: Test SolidJS project
+      #  working-directory: ./client
+      #  run: npm test
