@@ -1,8 +1,6 @@
 import { Component, For, createSignal, useContext, createMemo, Show } from "solid-js";
 import { useStyle, Body, Input, Select, Option, Button, TextArea, Chip, useGetItems, Weapon, Armor } from "../../../../../shared/";
-import styles from './backgrounds.module.scss'
-import type { Tab } from "../../../../navbar/navbar";
-import { SharedHookContext } from "../../../../rootApp";
+import styles from './backgrounds.module.scss';
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { createStore } from "solid-js/store";
@@ -14,15 +12,12 @@ import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
 import { Feature, FeatureTypes } from "../../../../../models/core.model";
 import { useSearchParams } from "@solidjs/router";
-import { u } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 
 const Backgrounds: Component = () => {
-	const sharedHooks = useContext(SharedHookContext);
 	const [userSettings, setUserSettings] = getUserSettings();
 	const [searchParams, setSearchParams] = useSearchParams();
 	const allBackgrounds = useGetBackgrounds();
-	const brewBackgrounds = HomebrewManager.backgrounds;
 	const stylin = createMemo(() => useStyle(userSettings().theme));
 	const allItemsTypes = useGetItems();
 	const allOtherItems = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory !== "Weapon" && item.equipmentCategory !== "Armor"));
@@ -47,7 +42,6 @@ const Backgrounds: Component = () => {
 	const [selectedChoiceItem, setSelectedChoiceItem] = createSignal("");
 	const [selectedChoices, setSelectedChoices] = createSignal<string[]>([]);
 	const [selectedChoiceItemAmnt, setSelectedChoiceItemAmnt] = createSignal(1);
-	const [selectedChoicesItemAmount, setSelectedItemChoicesAmount] = createSignal(1);
 	const [selectedChoicesItemType, setSelectedChoiceItemType] = createSignal("Item");
 
 
