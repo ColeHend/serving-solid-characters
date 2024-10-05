@@ -10,14 +10,16 @@ interface Props {
     key?: string;
     value: string;
     remove?: ()=> any;
+		onClick?: (e: MouseEvent)=> any;
 }
 const Chip: Component<Props> = (props)=> {
     const [userSettings, setUserSettings] = getUserSettings();
     const stylin = createMemo(()=>useStyles(userSettings().theme));
     //  const stylin = createMemo(()=>useStyles(userSettings().theme));
     //  
+		const hoverChip = !!props.onClick ? stylin()?.hover : "";
     return (
-        <span class={`${stylin().accent} ${style.Chip} ${props.class ?? ""}`}>
+        <span onClick={props.onClick} class={`${stylin().accent} ${style.Chip} ${props.class ?? ""} ${hoverChip}`}>
             <Show when={!!props.key}>
                 <span>{props.key}</span>
                 <span>:</span>
