@@ -10,7 +10,7 @@ export function importJsonObject(data: Trade) {
             closeTimeout: 4000,
         })
         data.spells.forEach(spell => homebrewManager.addSpell(spell));
-    } 
+    }
     
     if (data.feats.length > 0) {
         addSnackbar({

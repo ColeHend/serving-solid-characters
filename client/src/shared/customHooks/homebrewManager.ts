@@ -66,7 +66,7 @@ class HomebrewManager {
 
     public addClass = (newClass: DnDClass) => {
         if(this.classes().findIndex((c) => c.name === newClass.name) !== -1){
-            return;
+            return null;
         }
         this.setClasses(old =>[...old, newClass]);
         this.addClassToDB(newClass).subscribe();
@@ -113,7 +113,7 @@ class HomebrewManager {
 
     public addItem = (newItem: Item) => {
         if(this.items().findIndex((i) => i.name === newItem.name) !== -1){
-            return;
+            return null;
         } else {
             // ask to update
         }
@@ -163,7 +163,7 @@ class HomebrewManager {
 
     public addFeat = (newFeat: Feat) => {
         if(this.feats().findIndex((f) => f.name === newFeat.name) !== -1){
-            return;
+            return null;
         } else {
             // ask to update
         }
@@ -212,7 +212,7 @@ class HomebrewManager {
 
     public addSpell = (newSpell: Spell) => {
         if(this.spells().findIndex((s) => s.name === newSpell.name) !== -1){
-            return;
+            return null;
         } else {
             // ask to update.
         }
@@ -316,8 +316,8 @@ class HomebrewManager {
 
     public addRace = (newRace: Race) => {
         if (this.races().findIndex((r) => r.name === newRace.name) !== -1) {
-            return;
-        }
+            return null;
+        } 
         this.setRaces(old => [...old, newRace]);
         this.addRaceToDB(newRace).subscribe();
     }
