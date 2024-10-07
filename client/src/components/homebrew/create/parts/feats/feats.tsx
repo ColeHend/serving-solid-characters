@@ -3,7 +3,7 @@ import styles from "./feats.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
 import { useGetClasses, useGetFeats, ExpansionPanel, Input, Select, Option, Chip, homebrewManager, useStyle, getUserSettings, Body, Button, TextArea } from "../../../../../shared/";
-import { Feature, FeatureTypes as PreReqType } from "../../../../../models/core.model";
+import { Feature, FeatureTypes } from "../../../../../models/core.model";
 import { effect } from "solid-js/web";
 import { Feat } from "../../../../../models/feat.model";
 import { BehaviorSubject } from "rxjs";
@@ -30,7 +30,7 @@ const Feats: Component = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 	const clearFields = () => {
     setPreReqs([]);
-    setSelectedType(PreReqType.AbilityScore);
+    setSelectedType(FeatureTypes.AbilityScore);
     setFeatName("");
     setKeyName("str");
     setKeyValue("0");
@@ -46,11 +46,12 @@ const Feats: Component = () => {
               className: "",
               subclassName: "",
               level: 0,
-              type: PreReqType.AbilityScore,
+              type: FeatureTypes.AbilityScore,
               other: "",
             },
             name: keyName(),
             value: keyValue(),
+						metadata: {}
           },
         ]);
         break;
@@ -62,11 +63,12 @@ const Feats: Component = () => {
               className: "",
               subclassName: "",
               level: 0,
-              type: PreReqType.Class,
+              type: FeatureTypes.Class,
               other: "",
             },
             name: keyName(),
             value: keyValue(),
+						metadata: {}
           },
         ]);
         break;
@@ -78,11 +80,12 @@ const Feats: Component = () => {
               className: "",
               subclassName: "",
               level: 0,
-              type: PreReqType.CharacterLevel,
+              type: FeatureTypes.CharacterLevel,
               other: "",
             },
             name: keyName(),
             value: keyValue(),
+						metadata: {}
           },
         ]);
         break;
@@ -173,12 +176,12 @@ const Feats: Component = () => {
                 disableUnselected={true}
 								transparent
               >
-                <Option value={PreReqType.AbilityScore}>Ability Score</Option>
-                <Option value={PreReqType.Class}>Class</Option>
-                <Option value={PreReqType.CharacterLevel}>Class Level</Option>
+                <Option value={FeatureTypes.AbilityScore}>Ability Score</Option>
+                <Option value={FeatureTypes.Class}>Class</Option>
+                <Option value={FeatureTypes.CharacterLevel}>Class Level</Option>
               </Select>
               <Switch>
-                <Match when={selectedType() === PreReqType["AbilityScore"]}>
+                <Match when={selectedType() === FeatureTypes["AbilityScore"]}>
                   <div>
                     <Select transparent disableUnselected={true} onChange={(e) => setKeyName(e.currentTarget.value)}>
                       <Option value={"STR"}>Strength</Option>
@@ -198,7 +201,7 @@ const Feats: Component = () => {
 										</FormField>
                   </div>
                 </Match>
-                <Match when={selectedType() === PreReqType["Class"]}>
+                <Match when={selectedType() === FeatureTypes["Class"]}>
                   <div>
                     <Select transparent 
 											value={keyName()}
@@ -215,7 +218,7 @@ const Feats: Component = () => {
                     </Select>
                   </div>
                 </Match>
-                <Match when={selectedType() === PreReqType["CharacterLevel"]}>
+                <Match when={selectedType() === FeatureTypes["CharacterLevel"]}>
                   <div>
                     <Select transparent
 											value={keyName()} 

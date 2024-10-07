@@ -1,7 +1,7 @@
 import { RouteSectionProps, A } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
-import { MenuButton, Button, Select, Clone, UpArrow, DownArrow, Eye, Gear, Pencil, SkinnySnowman, getUserSettings, useInjectServices  } from "../shared";
+import { MenuButton, Button, Select, Clone, UpArrow, DownArrow, Eye, Gear, Pencil, SkinnySnowman, getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDItems, useDnDRaces, useDnDSpells  } from "../shared";
 import { Component, createSignal, Show, For, Accessor, createContext, JSX, Setter, children, useContext, createMemo, onMount, onCleanup } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar, { Tab } from "./navbar/navbar";
@@ -51,6 +51,11 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
 		const mouseCapture = (e: MouseEvent) => setMouse({x: e.clientX, y: e.clientY});
 
 		onMount(()=>{
+			const dndSrdClasses = useDnDClasses();
+			const dndSrdSpells = useDnDSpells();
+			const dndSrdFeats = useDnDFeats();
+			const dndSrdRaces = useDnDRaces();
+			const dndSrdItems = useDnDItems();
 			window.addEventListener('mousemove', mouseCapture)
 		})
 

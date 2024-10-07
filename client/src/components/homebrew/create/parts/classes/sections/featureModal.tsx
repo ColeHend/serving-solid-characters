@@ -1,12 +1,14 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show, untrack } from "solid-js";
-import { Button, Input, Tabs, Tab, FormField, TextArea, Select, Option, Markdown, useGetClasses } from "../../../../../../shared";
-import { Choice, Feature, FeatureTypes } from "../../../../../../models/core.model";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch, untrack } from "solid-js";
+import { Button, Input, Tabs, Tab, FormField, TextArea, Select, Option, Markdown, useGetClasses, ExpansionPanel, isNullish } from "../../../../../../shared";
+import { AbilityScores, ChangeSubTypes, CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes, Info, MovementTypes, TypeRestrictions } from "../../../../../../models/core.model";
 import styles from './featureModal.module.scss';
 import Modal from "../../../../../../shared/components/popup/popup.component";
 import { LevelEntity, Subclass } from "../../../../../../models/class.model";
 import useGetFeatures from "../../../../../../shared/customHooks/useGetFeatures";
 import { useSearchParams } from "@solidjs/router";
 import { Background } from "../../../../../../models";
+import { p, S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import CharacterChanges from "./characterChanges";
 
 type FeatureType = 'new' | 'existing' | 'template' | '';
 
@@ -21,84 +23,80 @@ interface FeatureModalProps {
 	editIndex: Accessor<number>;
 	setEditIndex: Setter<number>;
 }
-const FeatureModal:Component<FeatureModalProps> = (props) =>{
+const FeatureModal: Component<FeatureModalProps> = (props) => {
 	const allFullClasses = useGetClasses();
 	const allFeatures = useGetFeatures();
-	
+	// -------- Signals --------
 	const [featureType, setFeatureType] = createSignal<FeatureType>("");
 	const [selectedFeature, setSelectedFeature] = createSignal<Feature<string, string>>({} as Feature<string, string>);
 	const [newName, setNewName] = createSignal<string>("");
 	const [newDesc, setNewDesc] = createSignal<string>("");
-	const validate = createMemo(()=> newName().trim().length === 0  || getUnknownToString(newDesc()).trim().length === 0);
 	const [classFilter, setClassFilter] = createSignal<string>('');
-	const getEditIndex = createMemo(()=>props.editIndex());
-	const isEdit = createMemo(()=>getEditIndex() !== -1);
-	const allClasses = createMemo(()=> {
-		const classes = allFeatures().filter((f)=>!!f?.info?.className);
+	const [selectedChangeType, setSelectedChangeType] = createSignal<CharacterChangeTypes>();
+	const [selectedSubType, setSelectedSubType] = createSignal<ChangeSubTypes>();
+	const [selectedRestriction, setSelectedRestriction] = createSignal<TypeRestrictions>();
+	const [selectedValue, setSelectedValue] = createSignal<number>();
+	const [selectedDieSize, setSelectedDieSize] = createSignal<number>();
+	const [selectedStat, setSelectedStat] = createSignal<AbilityScores>();
+	const [selectedSet, setSelectedSet] = createSignal<number>();
+	const [characterChanges, setCharacterChanges] = createSignal<CharacterChange[]>([]);
+
+	// ------- Memoized Values -------
+	const getEditIndex = createMemo(() => props.editIndex());
+	const isEdit = createMemo(() => getEditIndex() !== -1);
+	const validate = createMemo(() => newName().trim().length === 0 || getUnknownToString(newDesc()).trim().length === 0);
+	const allClasses = createMemo(() => {
+		const classes = allFeatures().filter((f) => !!f?.info?.className);
 		const uniqueClasses = new Set<string>();
-		classes.forEach((c)=>uniqueClasses.add(c.info.className));
+		classes.forEach((c) => uniqueClasses.add(c.info.className));
 		return Array.from(uniqueClasses);
 	});
-	const allDisplayFeatures = createMemo(()=>{
-		if(classFilter() === '') {
+	const allDisplayFeatures = createMemo(() => {
+		if (classFilter() === '') {
 			return allFeatures();
 		} else if (classFilter() === 'Background') {
-			return allFeatures().filter((f)=>f?.info?.type === FeatureTypes.Background);
+			return allFeatures().filter((f) => f?.info?.type === FeatureTypes.Background);
 		} else if (classFilter() === 'Item') {
-			return allFeatures().filter((f)=>f?.info?.type === FeatureTypes.Item);
+			return allFeatures().filter((f) => f?.info?.type === FeatureTypes.Item);
 		} else if (classFilter() === 'Feature') {
-			return allFeatures().filter((f)=>f?.info?.type === FeatureTypes.Feat);
+			return allFeatures().filter((f) => f?.info?.type === FeatureTypes.Feat);
 		} else {
-			return allFeatures().filter((f)=>f?.info?.className === classFilter());
+			return allFeatures().filter((f) => f?.info?.className === classFilter());
 		}
 	})
+
+	// -------- Functions --------
 	const back = () => {
 		setFeatureType("");
 		setNewName("");
 		setNewDesc("");
 	}
 	const saveAndClose = () => {
-		let className = '';
-		let subclassName = '';
 		let level = 0;
-		let type = FeatureTypes.Class;
-		if (!!props.currentSubclass) {
-			className = props.currentSubclass.class;
-			subclassName = props.currentSubclass.name;
+		if (!!props?.currentSubclass) {
 			level = props.currentLevel.level;
-			type = FeatureTypes.Subclass;
 		} else if (!!props.currentBackground) {
 			level = 0;
-			type = FeatureTypes.Background;
-			
-		} else {
-			className = props.currentLevel.info?.className;
-			subclassName = props.currentLevel.info?.subclassName;
-			level = props.currentLevel?.level;
+		} else if (!isNullish(props.currentLevel?.level)) {
+			level = props.currentLevel.level;
 		}
 
 		if (isEdit()) {
 			props.replaceFeature(level, getEditIndex(), {
 				name: untrack(newName),
 				value: untrack(newDesc),
-				info: {
-					className,
-					subclassName,
-					level,
-					type,
-					other: ''
+				info: buildInfo(),
+				metadata: {
+					changes: characterChanges()
 				}
 			});
 		} else {
 			props.addFeature(level, {
 				name: untrack(newName),
 				value: untrack(newDesc),
-				info: {
-					className,
-					subclassName,
-					level,
-					type,
-					other: ''
+				info: buildInfo(),
+				metadata: {
+					changes: characterChanges()
 				}
 			});
 		}
@@ -128,7 +126,37 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 		};
 		return '';
 	};
-	createEffect(()=>{
+
+	const buildInfo = (): Info<string> => {
+		const currentInfo: Info<string> = {
+			className: "",
+			subclassName: "",
+			level: 0,
+			type: FeatureTypes.Class,
+			other: ""
+		};
+		if (!!props?.currentSubclass) {
+			currentInfo.className = props.currentSubclass.class;
+			currentInfo.subclassName = props.currentSubclass.name;
+			currentInfo.type = FeatureTypes.Subclass;
+		}
+		if (!!props?.currentLevel) {
+			currentInfo.className = props.currentLevel.info.className;
+			currentInfo.subclassName = props.currentLevel.info.subclassName;
+			currentInfo.level = props.currentLevel.level;
+		}
+		if (!!props?.currentBackground) {
+			currentInfo.type = FeatureTypes.Background;
+		}
+
+		return currentInfo;
+	};
+
+	const differentChangeTypes = [CharacterChangeTypes.UseNumber, CharacterChangeTypes.Spell, CharacterChangeTypes.SpellSlot, undefined];
+	const showOtherChangeType = () => !differentChangeTypes.includes(selectedChangeType()) && (selectedChangeType() ?? -1) > -1;
+
+	// ----------------- Effects -----------------
+	createEffect(() => {
 		if (isEdit()) {
 			// -----------------
 			let feature: Feature<string, string>;
@@ -137,24 +165,28 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 					name: props.currentBackground.feature[getEditIndex()].name,
 					value: props.currentBackground.feature[getEditIndex()].value.join('\n'),
 					info: props.currentBackground.feature[getEditIndex()].info,
-					choices: (props.currentBackground.feature[getEditIndex()]?.choices?.map((c)=>({...c, 
-						choices: c.choices.map(ch=>ch.join('\n'))
-					})))
+					choices: (props.currentBackground.feature[getEditIndex()]?.choices?.map((c) => ({
+						...c,
+						choices: c.choices.map(ch => ch.join('\n'))
+					}))),
+					metadata: {
+						...props.currentBackground.feature[getEditIndex()]?.metadata,
+						changes: props.currentBackground.feature[getEditIndex()]?.metadata?.changes ?? []
+					}   //props.currentBackground.feature[getEditIndex()].metadata
 				};
 			} else if (!!props.currentSubclass) {
 				feature = props.currentSubclass.features[getEditIndex()];
 			} else {
 				feature = props.currentLevel.features[getEditIndex()];
 			}
-			
+
 			setNewName(feature.name);
 			setNewDesc(getUnknownToString(feature.value));
 		}
 	})
-
-	
+	// ----------------- Return -----------------
 	return (
-		<Modal title="Add Feature" setClose={(value:any)=>{
+		<Modal title="Add Feature" setClose={(value: any) => {
 			props.setEditIndex(-1);
 			return props.setShowFeature(value);
 		}}>
@@ -176,94 +208,127 @@ const FeatureModal:Component<FeatureModalProps> = (props) =>{
 					</Show>
 					<Show when={featureType() === "new" && !isEdit()}>
 						<div class={`${styles.new}`}>
+							<CharacterChanges
+								characterChanges={characterChanges}
+								setCharacterChanges={setCharacterChanges}
+								selectedChangeType={selectedChangeType}
+								setSelectedChangeType={setSelectedChangeType}
+								selectedSubType={selectedSubType}
+								setSelectedSubType={setSelectedSubType}
+								selectedRestriction={selectedRestriction}
+								setSelectedRestriction={setSelectedRestriction}
+								selectedValue={selectedValue}
+								setSelectedValue={setSelectedValue}
+								selectedDieSize={selectedDieSize}
+								setSelectedDieSize={setSelectedDieSize}
+								selectedStat={selectedStat}
+								setSelectedStat={setSelectedStat}
+								selectedSet={selectedSet}
+								setSelectedSet={setSelectedSet}
+								showOtherChangeType={showOtherChangeType}
+							/>
 							<FormField name="Feature Name">
-								<Input type="text" transparent 
-									value={newName()} 
-									onInput={(e)=>setNewName(e.currentTarget.value)} />
+								<Input type="text" transparent
+									value={newName()}
+									onInput={(e) => setNewName(e.currentTarget.value)} />
 							</FormField>
 							<FormField name="Feature Description">
 								<TextArea transparent text={newDesc} setText={setNewDesc} />
 							</FormField>
-							<Button onClick={()=>saveAndClose()} disabled={validate()}>Save</Button>
+							<Button onClick={() => saveAndClose()} disabled={validate()}>Save</Button>
 						</div>
 					</Show>
 					<Show when={featureType() === "existing" && !isEdit()}>
-					<div class={`${styles.new}`}>
+						<div class={`${styles.new}`}>
 							<span>
-								<Select transparent onChange={(e)=>{
+								<Select transparent onChange={(e) => {
 									setSelectedFeature(JSON.parse(e.currentTarget.value) as Feature<string, string>)
-									const name = selectedFeature().name;
-									const desc = selectedFeature().value;
-									console.log(name, desc, typeof desc);
-									
 									setNewName(selectedFeature().name);
 									setNewDesc(getUnknownToString(selectedFeature().value));
-
 								}}>
-									<For each={allDisplayFeatures()}>{(feature)=>
+									<For each={allDisplayFeatures()}>{(feature) =>
 										<Option value={JSON.stringify(feature)}>
 											{feature.name} <i>{getAdditionFeatureText(feature)}</i>
-									</Option>}</For>
+										</Option>}</For>
 								</Select>
-								<Select transparent disableUnselected onChange={(e)=>setClassFilter(e.currentTarget.value)}>
+								<Select transparent disableUnselected onChange={(e) => setClassFilter(e.currentTarget.value)}>
 									<Option value="">All</Option>
 									<Option value="Feature">Feats</Option>
 									<Option value="Item">Items</Option>
 									<Option value="Background">Backgrounds</Option>
-									<For each={allClasses()}>{(c)=><Option value={c}>{c}</Option>}</For>
+									<For each={allClasses()}>{(c) => <Option value={c}>{c}</Option>}</For>
 								</Select>
-								<Button onClick={()=>saveAndClose()} disabled={validate()}>Save</Button>
+								<Button onClick={() => saveAndClose()} disabled={validate()}>Save</Button>
 							</span>
 							<FormField name="Feature Name">
-								<Input disabled readOnly type="text" transparent 
-									value={newName()} 
-									onInput={(e)=>setNewName(e.currentTarget.value)} />
+								<Input disabled readOnly type="text" transparent
+									value={newName()}
+									onInput={(e) => setNewName(e.currentTarget.value)} />
 							</FormField>
-							<Markdown text={newDesc}/>
+							<Markdown text={newDesc} />
 						</div>
 					</Show>
 					<Show when={featureType() === "template" && !isEdit()}>
-					<div class={`${styles.new}`}>
+						<div class={`${styles.new}`}>
 							<span>
-								<Select transparent disableUnselected onChange={(e)=>{setSelectedFeature(JSON.parse(e.currentTarget.value) as Feature<string, string>)}}>
-									<For each={allDisplayFeatures()}>{(feature)=>
+								<Select transparent disableUnselected onChange={(e) => { setSelectedFeature(JSON.parse(e.currentTarget.value) as Feature<string, string>) }}>
+									<For each={allDisplayFeatures()}>{(feature) =>
 										<Option value={JSON.stringify(feature)}>
 											{feature.name} <i>{getAdditionFeatureText(feature)}</i>
-									</Option>}</For>
+										</Option>}</For>
 								</Select>
-								<Select transparent disableUnselected onChange={(e)=>setClassFilter(e.currentTarget.value)}>
+								<Select transparent disableUnselected onChange={(e) => setClassFilter(e.currentTarget.value)}>
 									<Option value="">All</Option>
 									<Option value="Feature">Feats</Option>
-									<For each={allClasses()}>{(c)=><Option value={c}>{c}</Option>}</For>
+									<For each={allClasses()}>{(c) => <Option value={c}>{c}</Option>}</For>
 								</Select>
-								<Button onClick={(e)=>{
+								<Button onClick={(e) => {
 									setNewName(selectedFeature().name);
 									setNewDesc(getUnknownToString(selectedFeature().value));
 								}}>Fill Feature</Button>
-								<Button onClick={()=>saveAndClose()} disabled={validate()}>Save</Button>
+								<Button onClick={() => saveAndClose()} disabled={validate()}>Save</Button>
 							</span>
 							<FormField name="Feature Name">
-								<Input type="text" transparent 
-									value={newName()} 
-									onInput={(e)=>setNewName(e.currentTarget.value)} />
+								<Input type="text" transparent
+									value={newName()}
+									onInput={(e) => setNewName(e.currentTarget.value)} />
 							</FormField>
 							<FormField name="Feature Description">
 								<TextArea transparent text={newDesc} setText={setNewDesc} />
 							</FormField>
-							<Button onClick={()=>saveAndClose()} disabled={validate()}>Save</Button>
+							<Button onClick={() => saveAndClose()} disabled={validate()}>Save</Button>
 						</div>
 					</Show>
 					<Show when={isEdit()}>
 						<div class={`${styles.new}`}>
+						<CharacterChanges
+								characterChanges={characterChanges}
+								setCharacterChanges={setCharacterChanges}
+								selectedChangeType={selectedChangeType}
+								setSelectedChangeType={setSelectedChangeType}
+								selectedSubType={selectedSubType}
+								setSelectedSubType={setSelectedSubType}
+								selectedRestriction={selectedRestriction}
+								setSelectedRestriction={setSelectedRestriction}
+								selectedValue={selectedValue}
+								setSelectedValue={setSelectedValue}
+								selectedDieSize={selectedDieSize}
+								setSelectedDieSize={setSelectedDieSize}
+								selectedStat={selectedStat}
+								setSelectedStat={setSelectedStat}
+								selectedSet={selectedSet}
+								setSelectedSet={setSelectedSet}
+								showOtherChangeType={showOtherChangeType}
+							/>
 							<FormField name="Feature Name">
-								<Input type="text" transparent 
-									value={newName()} 
-									onInput={(e)=>setNewName(e.currentTarget.value)} />
+								<Input type="text" transparent
+									value={newName()}
+									onInput={(e) => setNewName(e.currentTarget.value)} />
 							</FormField>
 							<FormField name="Feature Description">
 								<TextArea transparent text={newDesc} setText={setNewDesc} />
 							</FormField>
-							<Button onClick={()=>saveAndClose()} disabled={validate()}>Save</Button>
+							<Button onClick={() => saveAndClose()} disabled={validate()}>Save</Button>
 						</div>
 					</Show>
 				</div>
