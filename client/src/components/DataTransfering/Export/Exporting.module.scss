@@ -23,6 +23,7 @@
 .innerRow {
     display: flex;
     flex-direction: row;
+    height: 20vh;
 }
 .switchBtns {
     display: flex;
@@ -38,11 +39,13 @@
 }
 .ExportBtn {
     height: min-content;
+    width: min-content;
     padding: 6px;
+    margin-left: 60%;
 }
 .list {
     display: block;
     width: 80%;
-    height: 50vh;
+    height: 100%;
     overflow-y: scroll;
 }

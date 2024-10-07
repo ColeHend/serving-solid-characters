@@ -38,9 +38,10 @@ const Exporting:Component = () => {
 
                 </ul> 
 
-                <Button class={`${styles.ExportBtn}`}>Export!</Button>
 
             </div> 
+            
+            <Button class={`${styles.ExportBtn}`}>Export!</Button>
         </div>
 
     </div>

@@ -9,7 +9,6 @@ export function downloadObjectAsJson(data: Trade, filename: string): void {
 
     console.log("blob",blob);
     
-
     const url = URL.createObjectURL(blob);
   
     const link = document.createElement('a');
