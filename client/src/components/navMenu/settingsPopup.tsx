@@ -45,6 +45,7 @@ const SettingsPopup: Component<Props> = (props) => {
                                 <option value="dark">Dark</option>
                                 <option value="light">Light</option>
                             </Select>
+
                         </div>
                     </Match>
                     <Match when={currentTab() === "Account"}>
