@@ -4,12 +4,12 @@ import { Button } from "../../../shared";
 
 const Exporting:Component = () => {
 
-
+		let x:any;
 
     return <div class={`${styles.wrapper}`}>
         
         <div class={`${styles.leftList}`}>
-            <h2>avalable Options</h2>
+            <h2>Avalable Options</h2>
             
             <div class={`${styles.innerRow}`}>
                 <ul class={`${styles.list}`}>
@@ -30,7 +30,7 @@ const Exporting:Component = () => {
         </div>
 
         <div class={`${styles.rightList}`}>
-            <h2>active Options</h2>
+            <h2>Active Options</h2>
             
             <div class={`${styles.innerRow}`}>
                 
