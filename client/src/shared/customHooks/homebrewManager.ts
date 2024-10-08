@@ -5,7 +5,6 @@ import homebrewDB from "./utility/localDB/homebrewDBFile";
 import httpClient$ from "./utility/httpClientObs";
 import { Clone } from "./utility/Tools";
 import addSnackbar from "../components/Snackbar/snackbar";
-import { f } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 class HomebrewManager {
     public classes: Accessor<DnDClass[]>;
     private setClasses: Setter<DnDClass[]>;

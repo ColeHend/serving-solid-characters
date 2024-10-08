@@ -57,7 +57,7 @@ jobs:
       # Test SolidJS project
       - name: Test SolidJS project
         working-directory: ./client
-        run: npm test
+        run: npm run test
 
       # Build Docker Image
       #- name: Build Docker Image

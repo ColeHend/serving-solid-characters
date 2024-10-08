@@ -66,7 +66,7 @@ interface Props {
 }
 const TabInternal: Component<Props> = (props) => {
     const [defaultUserSettings, setDefaultUserSettings] = getUserSettings();
-    const userStyle = createMemo(()=>useStyle(defaultUserSettings().theme));
+    const userStyle = createMemo(()=>useStyle(defaultUserSettings()?.theme));
     const {tabs, setTabs} = useContext<{tabs: Accessor<ITabStore>, setTabs: Setter<ITabStore>}>(tabContext);
     const [selectedTab, setSelectedTab] = createSignal(Object.keys(tabs())[0]);
     const currentElement = createMemo(() => tabs()[selectedTab()]);

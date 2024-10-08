@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build --emptyOutDir",
     "serve": "vite preview",
-    "generate-pwa-assets": "pwa-assets-generator"
+    "generate-pwa-assets": "pwa-assets-generator",
+    "test": "vitest"
   },
   "type": "module",
   "license": "MIT",
@@ -30,6 +31,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/node": "^20.12.11",
     "@vite-pwa/assets-generator": "^0.2.4",
+    "fake-indexeddb": "^6.0.0",
     "jsdom": "^25.0.1",
     "solid-devtools": "^0.30.0",
     "typescript": "^5.3.3",
