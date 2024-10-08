@@ -6,7 +6,7 @@ const Exporting:Component = () => {
 
 		let x:any;
 
-    return <div class={`${styles.wrapper}`}>
+    return <div class={`${styles?.wrapper}`}>
         
         <div class={`${styles.leftList}`}>
             <h2>Avalable Options</h2>
