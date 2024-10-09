@@ -37,9 +37,9 @@ export default defineConfig({
         solidPlugin(),
         // VitePWA(pwaOptions)
     ],
-    resolve: {
-        conditions: ["development", "browser"],
-    },
+    // resolve: {
+    //     conditions: ["development", "browser"],
+    // },
     test: {
         "setupFiles": [
             "fake-indexeddb/auto",
