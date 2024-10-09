@@ -23,7 +23,7 @@
 .innerRow {
     display: flex;
     flex-direction: row;
-    height: 20vh;
+    height: 35vh;
 }
 .switchBtns {
     display: flex;
@@ -48,4 +48,31 @@
     width: 80%;
     height: 100%;
     overflow-y: scroll;
+}
+.optionHeader {
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0;
+    margin: 0px auto;
+    float: left;
+
+    label {
+        float: right;
+    }
+}
+.innerList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    float: left;
+    input {
+        margin: 0;
+        padding: 0;
+        float: left;
+    }
+    li {
+        width: 100%;
+    }
+
 }
