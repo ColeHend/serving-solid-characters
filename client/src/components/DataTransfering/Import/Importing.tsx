@@ -17,60 +17,42 @@ const Importing:Component = () => {
         return JSON.parse(jsonString);
     }
 
-    createEffect(()=>{
-        if (upload()) {
-            upload()?.addEventListener("change", async(e)=>{
-                const target = e.target as HTMLInputElement;
-                const file = target.files ? target.files[0] : null
-                
-                console.log("file: ",file);
+    const handleFileChange = (event:Event) => {
+        const input = event.target as HTMLInputElement;
+        const file = input.files ? input.files[0] : null;
 
-                const reader = new FileReader();
+        if (file) {
+            const reader = new FileReader();
 
-                if (!!file) {
-                    console.log('yes');
-                    
-                    reader.onload = (e: ProgressEvent<FileReader>) => {
-                        console.log("tryed");
-                        try {
-                            
-                            if (typeof e.target?.result === "string") {
-                                const arrayBuffer = e.target?.result as unknown as ArrayBuffer;
-
-                                const jsonData = arrayBufferToJson(arrayBuffer)
-                                const checkKeys = ["spells","feats","srdclasses","backgrounds","items","races","characters"]
-                                if (!checkKeys.map(x=>Object.keys(jsonData).includes(x)).includes(false)) {
-                                    console.log("Json data",jsonData);
-                                    
-                                    importJsonObject(jsonData)
-                                } else {
-                                    addSnackbar({
-                                        severity:"error",
-                                        message:"Invalid keys while parsing",
-                                        closeTimeout: 4000,
-                                    })
-                                }
-                            }
-                        } catch (err) {
-                            console.error("Error parsing JSON: ", err); // remove in prod
-                            addSnackbar({
-                                severity:"error",
-                                message:"Error parsing JSON: " + err, // remove in prod
-                                closeTimeout: 4000,
-                            })
-                        }
-                    }
+            reader.onload = (e:ProgressEvent<FileReader>) => {
+                const arrayBuffer = e.target?.result as ArrayBuffer;
+                try {
+                    const parsedJson = arrayBufferToJson(arrayBuffer);
+                    importJsonObject(parsedJson as Trade)
+                } catch (err) {
+                    addSnackbar({
+                        severity:'error',
+                        message: "Error parsing JSON file" + err,
+                        closeTimeout: 4000
+                    })
                 }
-    
-              })
+            }
+            
+            
+            
+            reader.readAsArrayBuffer(file);
         }
-    })
+
+        
+
+    
+    }
+
     return <div>
         <input
           type="file"
-          ref={setUpload}
+          onChange={(e)=>handleFileChange(e)}
         />
-        <Button onClick={()=>upload()} type="submit" >Submit</Button>
     </div>
 }
 
