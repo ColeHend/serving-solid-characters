@@ -38,14 +38,9 @@ const Importing:Component = () => {
                 }
             }
             
-            
-            
             reader.readAsArrayBuffer(file);
         }
 
-        
-
-    
     }
 
     return <div>
