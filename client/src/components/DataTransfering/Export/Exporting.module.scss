@@ -1,0 +1,98 @@
+.wrapper {
+    display: flex;
+    flex-direction:  row;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+}
+.leftList {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+    justify-self: left;
+
+}
+.rightList {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+    justify-self: right;
+}
+.innerRow {
+    display: flex;
+    flex-direction: row;
+    height: 35vh;
+}
+.switchBtns {
+    display: flex;
+    flex-direction: column;
+    width: min-content;
+}
+.divider {
+    height: 54vh;
+    width: 1%;
+    background-color: white;
+    z-index: 1;
+    border-radius: 10px;
+}
+.ExportBtn {
+    height: min-content;
+    width: min-content;
+    padding: 6px;
+    margin-left: 60%;
+    margin-top: 10%;
+    z-index: 1;
+}
+.list {
+    display: block;
+    width: 80%;
+    height: 100%;
+    overflow-y: scroll;
+}
+.optionHeader {
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0;
+    margin: 0px auto;
+    float: left;
+
+    label {
+        float: right;
+    }
+}
+.innerList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    float: left;
+    input {
+        margin: 0;
+        padding: 0;
+        float: left;
+    }
+    li {
+        width: 100%;
+    }
+
+}
+.confirmContent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 8%;
+
+    input {
+        width: 75;
+
+    }
+
+    button {
+        width: 25%;
+        padding: 2%;
+        background: none;
+        border: 1px solid white;
+    }
+} 

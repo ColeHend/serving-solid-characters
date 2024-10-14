@@ -13,12 +13,9 @@ import {
   Show,
   useContext,
 } from "solid-js";
-import { createStore, SetStoreFunction } from "solid-js/store";
 import { Dynamic, effect } from "solid-js/web";
-import exp from "constants";
-import { ProviderProps } from "../../../models/hookContext";
 import { Tab } from "./tab";
-import { Button, getUserSettings, useStyle } from "../..";
+import { Button, getUserSettings, Style, useStyle } from "../..";
 import style from "./tabs.module.scss";
 
 interface ITabStore {
@@ -66,7 +63,10 @@ interface Props {
 }
 const TabInternal: Component<Props> = (props) => {
     const [defaultUserSettings, setDefaultUserSettings] = getUserSettings();
-    const userStyle = createMemo(()=>useStyle(defaultUserSettings().theme));
+	let userStyle: Accessor<Style> = ()=>({} as Style);
+	if (typeof useStyle === 'function') {
+		userStyle = createMemo(()=>useStyle(defaultUserSettings()?.theme));
+	}
     const {tabs, setTabs} = useContext<{tabs: Accessor<ITabStore>, setTabs: Setter<ITabStore>}>(tabContext);
     const [selectedTab, setSelectedTab] = createSignal(Object.keys(tabs())[0]);
     const currentElement = createMemo(() => tabs()[selectedTab()]);

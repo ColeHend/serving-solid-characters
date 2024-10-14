@@ -5,7 +5,6 @@ import homebrewDB from "./utility/localDB/homebrewDBFile";
 import httpClient$ from "./utility/httpClientObs";
 import { Clone } from "./utility/Tools";
 import addSnackbar from "../components/Snackbar/snackbar";
-import { f } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 class HomebrewManager {
     public classes: Accessor<DnDClass[]>;
     private setClasses: Setter<DnDClass[]>;
@@ -68,7 +67,7 @@ class HomebrewManager {
 
     public addClass = (newClass: DnDClass) => {
         if(this.classes().findIndex((c) => c.name === newClass.name) !== -1){
-            return;
+            return null;
         }
         this.addClassToDB(newClass).subscribe();
     }
@@ -168,7 +167,9 @@ class HomebrewManager {
 
     public addItem = (newItem: Item) => {
         if(this.items().findIndex((i) => i.name === newItem.name) !== -1){
-            return;
+            return null;
+        } else {
+            // ask to update
         }
         this.addItemToDB(newItem).subscribe();
     }
@@ -267,7 +268,9 @@ class HomebrewManager {
 
     public addFeat = (newFeat: Feat) => {
         if(this.feats().findIndex((f) => f.name === newFeat.name) !== -1){
-            return;
+            return null;
+        } else {
+            // ask to update
         }
         this.addFeatToDB(newFeat).subscribe();
     }
@@ -367,7 +370,9 @@ class HomebrewManager {
 
     public addSpell = (newSpell: Spell) => {
         if(this.spells().findIndex((s) => s.name === newSpell.name) !== -1){
-            return;
+            return null;
+        } else {
+            // ask to update.
         }
         this.addSpellToDB(Clone(newSpell)).subscribe();
     }
@@ -459,6 +464,8 @@ class HomebrewManager {
     public addBackground = (newBackground: Background) => {
         if(this.backgrounds().findIndex((b) => b.name === newBackground.name) !== -1){
             return;
+        } else {
+            // ask to update
         }
         this.addBackgroundToDB(Clone(newBackground)).subscribe();
 				return true
