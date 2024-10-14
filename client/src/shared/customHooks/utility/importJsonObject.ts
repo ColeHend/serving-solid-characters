@@ -3,6 +3,10 @@ import addSnackbar from "../../components/Snackbar/snackbar";
 import homebrewManager from "../homebrewManager";
 
 export function importJsonObject(data: Trade) {
+    addSnackbar({
+        severity:"info",
+        message:"running"
+    })
     if (data.spells.length > 0) {
         addSnackbar({
             severity:"info",

@@ -78,3 +78,21 @@
     }
 
 }
+.confirmContent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 8%;
+
+    input {
+        width: 75;
+
+    }
+
+    button {
+        width: 25%;
+        padding: 2%;
+        background: none;
+        border: 1px solid white;
+    }
+} 

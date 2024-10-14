@@ -1,10 +1,12 @@
-import { Component, createEffect, createMemo, For, Show } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import styles from "./Exporting.module.scss";
-import { Button, ExpansionPanel, homebrewManager, Input } from "../../../shared";
-import { BehaviorSubject } from "rxjs";
+import { Button, ExpansionPanel, homebrewManager, Input, isNullish } from "../../../shared";
+import { BehaviorSubject, race } from "rxjs";
 import { Trade } from "../../../models/trade.model";
 import { createStore } from "solid-js/store";
 import { Spell } from "../../../models";
+import Modal from "../../../shared/components/popup/popup.component";
+import { downloadObjectAsJson } from "../../../shared/customHooks/utility/downloadObjectAsJson";
 
 const Exporting:Component = () => {
 
@@ -26,6 +28,15 @@ const Exporting:Component = () => {
         races: [],
         characters: [],
     });
+    const [toRemove,setToRemove] = createStore<Trade>({
+        spells: [],
+        feats: [],
+        srdclasses: [],
+        backgrounds: [],
+        items: [],
+        races: [],
+        characters: [],
+    })
 
     const addOptionObject = ():void => {
 
@@ -51,8 +62,41 @@ const Exporting:Component = () => {
         console.log("cleared to add list");
     }
 
+    const removeOptionObject = ():void => {
+        setExportObject(old=>({
+            spells: [...old.spells.filter(spell=>!isInRemoveObj("spells",spell))],
+            feats: [...old.feats.filter(feat=>!isInRemoveObj("feats",feat))],
+            srdclasses: [...old.srdclasses.filter(dndClass=>!isInRemoveObj("srdclasses",dndClass))],
+            backgrounds: [...old.backgrounds.filter(background=>!isInRemoveObj("backgrounds",background))],
+            items: [...old.items.filter(item=>!isInRemoveObj("items",item))],
+            races: [...old.races.filter(race=>!isInRemoveObj("races",race))],
+            characters: [...old.characters.filter(char=>!isInRemoveObj("characters",char))]
+        }));
+        setToRemove({
+            spells: [],
+            feats: [],
+            srdclasses: [],
+            backgrounds: [],
+            items: [],
+            races: [],
+            characters: [],
+        })
+    }
+
     const isInExport = <T extends keyof Trade,>(key: T, data: Trade[T][number])=>{
         return !!exportObject[key].find((d)=>d.name === data.name)
+    }
+
+    const isInRemoveObj = <T extends keyof Trade,>(key: T, data: Trade[T][number])=>{
+        return !!toRemove[key].find((d)=>d.name === data.name)
+    }
+
+    const exportToObject = ()=> {
+        const userInput = document.getElementById("confirm-name") as HTMLInputElement;
+
+        if (!isNullish(userInput)) {
+            downloadObjectAsJson(exportObject,userInput.value)
+        }
     }
 
     const AvalableSpells = createMemo(()=>homebrewManager.spells().filter(s=>!isInExport("spells",s)));
@@ -61,6 +105,8 @@ const Exporting:Component = () => {
     const AvalableBackground = createMemo(()=>homebrewManager.backgrounds().filter(b=>!isInExport("backgrounds",b)));
     const AvalableItems = createMemo(()=>homebrewManager.items().filter(i=>!isInExport("items",i)));
     const AvalableRaces = createMemo(()=>homebrewManager.races().filter(r=>!isInExport("races",r)));
+
+    const [showConfirm,setShowConfirm] = createSignal<boolean>(false);
 
     return <div class={`${styles?.wrapper}`}>
         
@@ -94,7 +140,7 @@ const Exporting:Component = () => {
 
                             <div class={`${styles.innerList}`}>
                                 <For each={AvalableSpells()}>
-                                    { (spell,i) => <li>
+                                    { (spell,i) =><Show when={!exportObject.spells.includes(spell)}><li>
                                         <Input 
                                             type="checkbox" 
                                             name={spell.name}
@@ -107,7 +153,7 @@ const Exporting:Component = () => {
                                                 }
                                             }}/> 
                                         <label for={spell.name}>{spell.name}</label>    
-                                    </li>}
+                                    </li></Show>}
                                 </For>
                             </div>
 
@@ -135,7 +181,7 @@ const Exporting:Component = () => {
 
                             <div class={`${styles.innerList}`}>
                                 <For each={AvalableFeats()}>
-                                    { (feat,i) => <li>
+                                    { (feat,i) => <Show when={!exportObject.feats.includes(feat)}><li>
                                         <Input 
                                         name={feat.name} 
                                         type="checkbox" 
@@ -148,7 +194,7 @@ const Exporting:Component = () => {
                                         }}
                                         checked={!!toAddLists.feats.find(s=>s.name === feat.name)}
                                         /> <label for={feat.name}>{feat.name}</label>    
-                                    </li>}
+                                    </li></Show>}
                                 </For>
                             </div>
 
@@ -174,7 +220,7 @@ const Exporting:Component = () => {
                             </div>
                             <div class={`${styles.innerList}`}>
                                 <For each={AvalableClasses()}>
-                                    { (dndClass, i) => <li>
+                                    { (dndClass, i) => <Show when={!exportObject.srdclasses.includes(dndClass)}><li>
                                         <Input 
                                         name={dndClass.name} 
                                         type="checkbox"
@@ -188,7 +234,7 @@ const Exporting:Component = () => {
                                         checked={!!toAddLists.srdclasses.find(s=>s.name === dndClass.name)}
                                         /> 
                                         <label for={dndClass.name}>{dndClass.name}</label>
-                                    </li>}
+                                    </li></Show>}
                                 </For>
                             </div>
                         </ExpansionPanel>
@@ -213,7 +259,7 @@ const Exporting:Component = () => {
                             </div>
                             <div class={`${styles.innerList}`}>
                                 <For each={AvalableBackground()}>
-                                    { (background, i) => <li>
+                                    { (background, i) => <Show when={!exportObject.backgrounds.includes(background)}><li>
                                         <Input 
                                         name={background.name} 
                                         type="checkbox" 
@@ -226,7 +272,7 @@ const Exporting:Component = () => {
                                         }}
                                         checked={!!toAddLists.backgrounds.find(s=>s.name === background.name)}
                                         /> <label for={background.name}>{background.name}</label>    
-                                    </li>}
+                                    </li></Show>}
                                 </For>
                             </div>
                         </ExpansionPanel>
@@ -252,7 +298,7 @@ const Exporting:Component = () => {
                             </div>
                             <div class={`${styles.innerList}`}>
                                 <For each={AvalableItems()}>
-                                    { (item,i) => <li>
+                                    { (item,i) => <Show when={!exportObject.items.includes(item)}><li>
                                         <Input 
                                         name={item.item} 
                                         type="checkbox" 
@@ -265,7 +311,7 @@ const Exporting:Component = () => {
                                         }}
                                         checked={!!toAddLists.items.find(s=>s.item === item.item)}
                                         /> <label for={item.item}>{item.item}</label>
-                                    </li>}
+                                    </li></Show>}
                                 </For>
                             </div>
                         </ExpansionPanel>
@@ -291,7 +337,7 @@ const Exporting:Component = () => {
                             </div>
                             <div class={`${styles.innerList}`}>
                                 <For each={AvalableRaces()}>
-                                    { (race,i) => <li>
+                                    { (race,i) => <Show when={!exportObject.races.includes(race)}><li>
                                         <Input 
                                         name={race.name}  
                                         type="checkbox" 
@@ -303,7 +349,7 @@ const Exporting:Component = () => {
                                             }
                                         }}
                                         /> <label for={race.name}>{race.name}</label>
-                                    </li>}
+                                    </li></Show>}
                                 </For>
                             </div>
                         </ExpansionPanel>
@@ -317,7 +363,7 @@ const Exporting:Component = () => {
 
                 <div class={`${styles.switchBtns}`}>
                     <Button onClick={addOptionObject} title="Add To List">→</Button>
-                    <Button  title="Remove From List">←</Button>
+                    <Button onClick={removeOptionObject} title="Remove From List">←</Button>
                 </div>
             </div>
 
@@ -345,7 +391,15 @@ const Exporting:Component = () => {
                             <div class={`${styles.optionHeader}`}>
                                 <Input 
                                   name="allAddedSpells"
-                                  type="checkbox" 
+                                  type="checkbox"
+                                  onChange={(e)=>{
+                                    if (e.currentTarget.checked) {
+                                        setToRemove({spells:[...exportObject.spells]})
+                                    } else {
+                                        setToRemove({spells:[]})
+                                    }
+                                  }} 
+                                  checked={toRemove.spells.length === exportObject.spells.length}
                                 /> <label>Spells</label>
                             </div>
 
@@ -355,6 +409,14 @@ const Exporting:Component = () => {
                                         <Input
                                           name={spell.name} 
                                           type="checkbox"
+                                          onChange={(e)=>{
+                                            if (e.currentTarget.checked) {
+                                                setToRemove(old=>({spells:[...old.spells,spell]}))
+                                            } else {
+                                                setToRemove(old=>({spells:[...old.spells.filter(s=>s.name !== spell.name)]}))
+                                            }
+                                          }}
+                                          checked={!!toRemove.spells.find(s=>s.name === spell.name)}
                                         /> <label>{spell.name}</label>
                                     </li>}
                                 </For>
@@ -368,6 +430,14 @@ const Exporting:Component = () => {
                                 <Input
                                   name="allAddedFeats"
                                   type="checkbox" 
+                                  onChange={(e)=>{
+                                    if (e.currentTarget.checked) {
+                                        setToRemove({feats:[...exportObject.feats]})
+                                    } else {
+                                        setToRemove({feats:[]})
+                                    }
+                                  }}
+                                  checked={toRemove.feats.length === exportObject.feats.length}
                                 /> <label>Feats</label>
                             </div>
 
@@ -377,6 +447,14 @@ const Exporting:Component = () => {
                                         <Input 
                                           name={feat.name}
                                           type="checkbox"
+                                          onChange={(e)=>{
+                                            if (e.currentTarget.checked) {
+                                                setToRemove(old=>({feats:[...old.feats,feat]}));
+                                            } else {
+                                                setToRemove(old=>({feats:[...old.feats.filter(f=>f.name !== feat.name)]}));
+                                            }
+                                          }}
+                                          checked={!!toRemove.feats.find(f=>f.name === feat.name)}
                                         /> <label>{feat.name}</label>
                                     </li>}
                                 </For>
@@ -390,6 +468,13 @@ const Exporting:Component = () => {
                                 <Input 
                                   name="allAddedClasses"
                                   type="checkbox"
+                                  onChange={(e)=>{
+                                    if (e.currentTarget.checked) {
+                                        setToRemove({srdclasses:[...exportObject.srdclasses]})
+                                    } else {
+                                        setToRemove({srdclasses:[]})
+                                    }
+                                  }}
                                 /> <label>Classes</label>
                             </div>
                             <div class={`${styles.innerList}`}>
@@ -398,6 +483,14 @@ const Exporting:Component = () => {
                                         <Input 
                                           name={dndclass.name}
                                           type="checkbox"
+                                          onChange={(e)=>{
+                                            if (e.currentTarget.checked) {
+                                                setToRemove(old=>({srdclasses:[...old.srdclasses,dndclass]}))
+                                            } else {
+                                                setToRemove(old=>({srdclasses:[...old.srdclasses.filter(c=>c.name !== dndclass.name)]}))
+                                            }
+                                          }}
+                                          checked={!!toRemove.srdclasses.find(c=>c.name === dndclass.name)}
                                         /> <label>{dndclass.name}</label>
                                     </li>}
                                 </For>
@@ -411,6 +504,14 @@ const Exporting:Component = () => {
                                 <Input 
                                   name="allAddedClasses"
                                   type="checkbox"
+                                  onChange={(e)=>{
+                                    if (e.currentTarget.checked) {
+                                        setToRemove({backgrounds:[...exportObject.backgrounds]})
+                                    } else {
+                                        setToRemove({backgrounds:[]})
+                                    }
+                                  }}
+                                  checked={toRemove.backgrounds.length === exportObject.backgrounds.length}
                                 /> <label>Classes</label>
                             </div>
 
@@ -420,6 +521,14 @@ const Exporting:Component = () => {
                                         <Input 
                                           name={background.name}
                                           type="checkbox"
+                                          onChange={(e)=>{
+                                            if (e.currentTarget.checked) {
+                                                setToRemove(old=>({backgrounds:[...old.backgrounds,background]}))
+                                            } else {
+                                                setToRemove(old=>({backgrounds:[...old.backgrounds.filter(b=>b.name !== background.name)]}))
+                                            }
+                                          }}
+                                          checked={!!toRemove.backgrounds.find(b=>b.name === background.name)}
                                         /> <label>{background.name}</label>
                                     </li>}
                                 </For>
@@ -433,6 +542,14 @@ const Exporting:Component = () => {
                                 <Input 
                                   name="allAddedItems"
                                   type="checkbox"
+                                  onChange={(e)=>{
+                                    if (e.currentTarget.checked) {
+                                        setToRemove({items:[...exportObject.items]})
+                                    } else {
+                                        setToRemove({items:[]})
+                                    }
+                                  }}
+                                  checked={toRemove.items.length === exportObject.items.length}
                                 /> <label>Items</label>
                             </div>
 
@@ -442,6 +559,14 @@ const Exporting:Component = () => {
                                         <Input 
                                           name={item.item}
                                           type="checkbox"
+                                          onChange={(e)=>{
+                                            if (e.currentTarget.checked) {
+                                                setToRemove(old=>({items:[...old.items,item]}))
+                                            } else {
+                                                setToRemove(old=>({items:[...old.items.filter(i=>i.item !== item.item)]}))
+                                            }
+                                          }}
+                                          checked={!!toRemove.items.find(i=>i.item === item.item)}
                                         /> <label>{item.item}</label>
                                     </li>}
                                 </For>
@@ -455,6 +580,14 @@ const Exporting:Component = () => {
                                 <Input  
                                   name="allAddedRaces"
                                   type="checkbox"
+                                  onChange={(e)=>{
+                                    if (e.currentTarget.checked) {
+                                        setToRemove({races:[...exportObject.races]})
+                                    } else {
+                                        setToRemove({races:[]})
+                                    }
+                                  }}
+                                  checked={toRemove.races.length === exportObject.races.length}
                                 /> <label>Races</label>
                             </div>
 
@@ -464,6 +597,14 @@ const Exporting:Component = () => {
                                         <Input 
                                           name={race.name}
                                           type="checkbox"
+                                          onChange={(e)=>{
+                                            if (e.currentTarget.checked) {
+                                                setToRemove(old=>({races:[...old.races,race]}))
+                                            } else {
+                                                setToRemove(old=>({races:[...old.races.filter(r=>r.name !== race.name)]}))
+                                            }
+                                          }}
+                                          checked={!!toRemove.races.find(r=>r.name === race.name)}
                                         /> <label>{race.name}</label>
                                     </li>}
                                 </For>
@@ -481,8 +622,16 @@ const Exporting:Component = () => {
 
             </div> 
             
-            <Button class={`${styles.ExportBtn}`}>Export!</Button>
+            <Button onClick={()=>setShowConfirm(!showConfirm())} class={`${styles.ExportBtn}`}>Export!</Button>
         </div>
+
+        <Show when={showConfirm()}>
+            <Modal title="Confirm & Name" setClose={setShowConfirm} height="15%" width="25%">
+                <div class={`${styles.confirmContent}`}>
+                    <Input id="confirm-name" type="text" /> <Button onClick={exportToObject} type="submit">Confirm</Button>   
+                </div>
+            </Modal>
+        </Show>
 
     </div>
 }
