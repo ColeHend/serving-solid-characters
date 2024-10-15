@@ -160,10 +160,15 @@ const Feats: Component = () => {
 						<Show when={featExists()}>
 							<Button onClick={()=>{
 								const feat = HomebrewManager.feats().find((x) => x.name === featName());
+                const srdFeat = feats().find((x) => x.name === featName());
 								if (!!feat) {
 									setPreReqs(feat.preReqs);
 									setFeatDescription(feat.desc[0]);
 								}
+                if (!!srdFeat) {
+                  setPreReqs(srdFeat.preReqs);
+									setFeatDescription(srdFeat.desc[0]);
+                }
 							}}>Fill</Button>
 						</Show>
           </div>
