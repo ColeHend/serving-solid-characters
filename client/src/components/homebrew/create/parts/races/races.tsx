@@ -52,29 +52,29 @@ const Races: Component = () => {
   const [newSizes, setNewSizes] = createSignal<string>("Tiny");
   // ------- Store
   const [currentRace, setCurrentRace] = createStore<Race>({
-    name: "",
-    speed: 30,
-    age: "",
-    alignment: "",
-    size: "",
-    sizeDescription: "",
-    languages: [],
-    languageChoice: { choose: 0, choices: [], type: FeatureTypes.Language },
-    languageDesc: "",
-    traits: [],
-    traitChoice: { choose: 0, choices: [], type: FeatureTypes.Race },
-    startingProficencies: [],
+    name: "", // done
+    speed: 30, // done 
+    age: "", // needs adding
+    alignment: "", // needs adding
+    size: "", // done 
+    sizeDescription: "", // done
+    languages: [], // needs adding
+    languageChoice: { choose: 0, choices: [], type: FeatureTypes.Language }, // cole will addd
+    languageDesc: "", // needs adding
+    traits: [], // done // maybe needs some work
+    traitChoice: { choose: 0, choices: [], type: FeatureTypes.Race },  // cole will addd
+    startingProficencies: [], // needs adding
     startingProficiencyChoices: {
       choose: 0,
       choices: [],
       type: FeatureTypes.Race,
-    },
-    abilityBonuses: [],
+    },  // cole will addd
+    abilityBonuses: [], // needs adding
     abilityBonusChoice: {
       choose: 0,
       choices: [],
       type: FeatureTypes.AbilityScore,
-    },
+    },  // cole will addd
     subRaces: [],
   });
   // -------------------- Functions
@@ -152,6 +152,7 @@ const Races: Component = () => {
               />
             </FormField>
           </div>
+
           <div>
             <h2>Size</h2>
             <div>
@@ -185,6 +186,7 @@ const Races: Component = () => {
                 Add Size Option
               </Button>
             </div>
+            
             <div style={{ display: "flex" }}>
               <Show when={!!currentRace.size}>
                 <For each={currentRace.size.split(", ")}>
@@ -204,6 +206,7 @@ const Races: Component = () => {
                 <Chip value="None" />
               </Show>
             </div>
+            
             <div>
               <FormField name="Size Description">
                 <Input
@@ -217,6 +220,7 @@ const Races: Component = () => {
               </FormField>
             </div>
           </div>
+          
           <div>
             <h2>Speed</h2>
             <FormField name="Speed">
@@ -230,8 +234,10 @@ const Races: Component = () => {
               />
             </FormField>
           </div>
+
+          {/* needs work */}
           <div>
-            <h2>Ability Scores</h2>
+            <h2>Ability Scores</h2> 
             <Select
               transparent
               value={selectedAbility()}
@@ -246,6 +252,7 @@ const Races: Component = () => {
               </For>
             </Select>
           </div>
+
           <div>
             <h2>Age Range</h2>
             <FormField name="Low Age">
@@ -265,6 +272,8 @@ const Races: Component = () => {
               />
             </FormField>
           </div>
+
+          {/* more than likely needs more work */}
           <div>
             <h2>Features</h2>
             <div style={{ display: "flex" }}>
