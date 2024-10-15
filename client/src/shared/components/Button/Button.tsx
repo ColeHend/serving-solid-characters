@@ -38,7 +38,7 @@ const Button: Component<Props> = (props)=> {
     const [userSettings, setUserSettings] = getUserSettings();
     const styleTypeConst = props.styleType ?? "accent";
     const stylin = createMemo(()=>useStyles(userSettings().theme));
-    const stylinType = createMemo(()=>stylin()[styleTypeConst]);
+    const stylinType = createMemo(()=>stylin()?.[styleTypeConst]);
 
 		const [menuRef, setMenuRefer] = createSignal<HTMLDivElement>();
     const menuStyle: Accessor<JSX.CSSProperties> = createMemo(()=>({

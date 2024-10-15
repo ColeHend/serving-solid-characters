@@ -1,5 +1,5 @@
-import { type Component, For, createResource, JSX, useContext, createMemo, createSignal } from 'solid-js';
-import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel, Markdown, Input, Select, Option } from './shared';
+import { type Component, For, createResource, JSX, useContext, createMemo, createSignal, Show } from 'solid-js';
+import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel, Markdown, Input, Select, Option, Button } from './shared';
 import { effect } from 'solid-js/web';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
@@ -9,6 +9,7 @@ import { Tabs, Tab } from './shared/components/Tabs/tabs';
 import Table from './shared/components/Table/table';
 import { SecondRow, Cell, Column, Header, Row } from './shared/components/Table/innerTable';
 import FormField from './shared/components/FormField/formField';
+import DataTransferModal from './components/DataTransfering/dataTransferModal';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const sharedHooks = useInjectServices();
@@ -21,12 +22,18 @@ const App: Component = () => {
   const dndSrdBackgrounds = useDnDBackgrounds();
   const [testText, setTestText] = createSignal("This **is** _a_ \n# test");
   const [bannerText, setBannerText] = createSignal("It'll be great eventually.");
-	const [testFieldText, setTestFieldText] = createSignal("");
-	const [testCheckbox, setTestCheckbox] = createSignal(false);
+  const [testFieldText, setTestFieldText] = createSignal("");
+  const [testCheckbox, setTestCheckbox] = createSignal(false);
+  const [showDataTransfer,setShowDataTransfer] = createSignal(false);
 
   return (
       <Body>
-        <h1>Home</h1>
+		<div class={`${styles.topRow}`}>
+			<h1>Home</h1>
+			
+			<Button title='Import & Export' class={`${styles.fabBtn}`} onClick={()=>setShowDataTransfer(!showDataTransfer())}>+</Button>
+
+		</div>
         <Tabs>
 					<Tab name="Welcome">
 						<ExpansionPanel>
@@ -86,7 +93,12 @@ const App: Component = () => {
               </FormField>
             </div>
           </Tab>
-          </Tabs>
+        </Tabs>
+
+		<Show when={showDataTransfer()}>
+			<DataTransferModal setBackClick={setShowDataTransfer} />
+		</Show>
+
         <ReloadPrompt />
       </Body>
   );
