@@ -1,28 +1,373 @@
-import { Component, For, createSignal, useContext, createMemo } from "solid-js";
-import { useStyle, getUserSettings, Body } from "../../../../../shared/";
-import styles from './races.module.scss'
+import {
+  Component,
+  For,
+  createSignal,
+  useContext,
+  createMemo,
+  createEffect,
+  Show,
+  onMount,
+} from "solid-js";
+import {
+  useStyle,
+  getUserSettings,
+  Body,
+  homebrewManager,
+  FormField,
+  Input,
+  Select,
+  Option,
+  Button,
+  Chip,
+  Clone,
+  UniqueSet,
+} from "../../../../../shared/";
+import styles from "./races.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
 import HomebrewSidebar from "../../sidebar";
 import { SharedHookContext } from "../../../../rootApp";
+import { Race } from "../../../../../models";
+import { createStore } from "solid-js/store";
+import {
+  FeatureTypes,
+  AbilityScores,
+  Feature,
+} from "../../../../../models/core.model";
+import FeatureModal from "../classes/sections/featureModal";
+import { LevelEntity } from "../../../../../models/class.model";
+import {
+  f,
+  n,
+  S,
+} from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
+import { useSearchParams } from "@solidjs/router";
 
 const Races: Component = () => {
-    const sharedHooks = useContext(SharedHookContext);
-    const [userSettings, setUserSettings] = getUserSettings();
-    const stylin = createMemo(()=>useStyle(userSettings().theme));
-    return (
-        <>
-            <Body>
-                <h1>races</h1>
-                <div>
-                    <p>name</p>
-                    <p>size</p>
-                    <p>speed</p>
-                    <p>ability score increase</p>
-                    <p>age range</p>
-                    <p>features</p>
-                </div>
-            </Body>
-        </>
-    );
-}
+  const sharedHooks = useContext(SharedHookContext);
+  const [userSettings, setUserSettings] = getUserSettings();
+  const stylin = createMemo(() => useStyle(userSettings().theme));
+  const allRaces = useGetRaces();
+  const hombrewRaces = createMemo(() => homebrewManager.races());
+  const [searchParam, setSearchParam] = useSearchParams();
+  // -------------------- Signals/State
+  const [selectedAbility, setSelectedAbility] = createSignal<AbilityScores>(0);
+  const [newSizes, setNewSizes] = createSignal<string>("Tiny");
+  // ------- Store
+  const [currentRace, setCurrentRace] = createStore<Race>({
+    name: "", // done
+    speed: 30, // done 
+    age: "", // needs adding
+    alignment: "", // needs adding
+    size: "", // done 
+    sizeDescription: "", // done
+    languages: [], // needs adding
+    languageChoice: { choose: 0, choices: [], type: FeatureTypes.Language }, // cole will addd
+    languageDesc: "", // needs adding
+    traits: [], // done // maybe needs some work
+    traitChoice: { choose: 0, choices: [], type: FeatureTypes.Race },  // cole will addd
+    startingProficencies: [], // needs adding
+    startingProficiencyChoices: {
+      choose: 0,
+      choices: [],
+      type: FeatureTypes.Race,
+    },  // cole will addd
+    abilityBonuses: [], // needs adding
+    abilityBonusChoice: {
+      choose: 0,
+      choices: [],
+      type: FeatureTypes.AbilityScore,
+    },  // cole will addd
+    subRaces: [],
+  });
+  // -------------------- Functions
+  const getAge = (type: "low" | "high") => {
+    const ages = currentRace.age.split(" - ");
+    if (type === "low") {
+      return ages[0] ?? "0";
+    } else {
+      return ages[1] ?? "0";
+    }
+  };
+  const setAge = (low: string, high: string) => {
+    setCurrentRace("age", `${low} - ${high}`);
+  };
+  // --------- Feature Modal
+  const [editIndex, setEditIndex] = createSignal<number>(-1);
+  const [showFeatureModal, setShowFeatureModal] = createSignal<boolean>(false);
+  const addFeature = (level: number, feature: Feature<string, string>) => {
+    const newFeature: Feature<string[], string> = {
+      name: feature.name,
+      value: [feature.value],
+      info: {
+        className: feature.info.className,
+        subclassName: feature.info.subclassName,
+        level: feature.info.level,
+        type: feature.info.type,
+        other: feature.info.other,
+      },
+      metadata: feature.metadata,
+    };
+    const newTraits = Clone(currentRace.traits);
+    newTraits.push(newFeature);
+    setCurrentRace("traits", newTraits);
+    setShowFeatureModal(false);
+  };
+  const replaceFeature = (
+    level: number,
+    index: number,
+    feature: Feature<string, string>
+  ) => {
+    const newFeature: Feature<string[], string> = {
+      name: feature.name,
+      value: [feature.value],
+      info: {
+        className: feature.info.className,
+        subclassName: feature.info.subclassName,
+        level: feature.info.level,
+        type: feature.info.type,
+        other: feature.info.other,
+      },
+      metadata: feature.metadata,
+    };
+    const newTraits = Clone(currentRace.traits);
+    newTraits[index] = newFeature;
+    setCurrentRace("traits", newTraits);
+    setShowFeatureModal(false);
+  };
+
+  const fillRacesInfo = (search?:boolean) => {
+    const searchName = !!search ? searchParam.name: currentRace.name;
+    const race = homebrewManager.races().find((x)=>x.name === searchName);
+    const srdRace = allRaces().find((x)=>x.name === searchName);
+
+    if (!!srdRace) {
+      setCurrentRace(srdRace);
+      
+    }
+    if (!!race) {
+      setCurrentRace(race);
+
+    }
+  }
+
+  onMount(() => {
+    if (!!searchParam.name) fillRacesInfo(true)
+  })
+
+  createEffect(() => {
+    console.log(allRaces());
+  });
+
+  return (
+    <>
+      <Body>
+        <h1>Races</h1>
+        <div>
+
+          <div>
+            <FormField name="Name">
+              <Input
+                type="text"
+                transparent
+                value={currentRace.name}
+                onInput={(e) => setCurrentRace("name", e.currentTarget.value)}
+              />
+            </FormField>
+          
+            {/* add fill btn here */}
+          </div>
+
+          <div>
+            <h2>Size</h2>
+            <div>
+              <Select
+                transparent
+                value={newSizes()}
+                onChange={(e) => setNewSizes(e.currentTarget.value)}
+              >
+                <For
+                  each={[
+                    "Tiny",
+                    "Small",
+                    "Medium",
+                    "Large",
+                    "Huge",
+                    "Gargantuan",
+                  ]}
+                >
+                  {(size) => <Option value={size}>{size}</Option>}
+                </For>
+              </Select>
+              <Button
+                onClick={(e) => {
+                  const selSize = currentRace.size.split(",");
+                  const newArray = [...selSize, newSizes().trim()]
+                    .map((s) => s.trim())
+                    .filter((s) => !!s.length);
+                  setCurrentRace("size", newArray.join(", "));
+                }}
+              >
+                Add Size Option
+              </Button>
+            </div>
+            
+            <div style={{ display: "flex" }}>
+              <Show when={!!currentRace.size}>
+                <For each={currentRace.size.split(", ")}>
+                  {(size, i) => (
+                    <Chip
+                      value={size}
+                      remove={() => {
+                        const newSizes = currentRace.size.split(", ");
+                        newSizes.splice(i(), 1);
+                        setCurrentRace("size", newSizes.join(", "));
+                      }}
+                    />
+                  )}
+                </For>
+              </Show>
+              <Show when={!currentRace.size}>
+                <Chip value="None" />
+              </Show>
+            </div>
+            
+            <div>
+              <FormField name="Size Description">
+                <Input
+                  type="text"
+                  transparent
+                  value={currentRace.sizeDescription}
+                  onInput={(e) =>
+                    setCurrentRace("sizeDescription", e.currentTarget.value)
+                  }
+                />
+              </FormField>
+            </div>
+          </div>
+          
+          <div>
+            <h2>Speed</h2>
+            <FormField name="Speed">
+              <Input
+                type="number"
+                transparent
+                value={currentRace.speed}
+                onInput={(e) =>
+                  setCurrentRace("speed", parseInt(e.currentTarget.value))
+                }
+              />
+            </FormField>
+          </div>
+
+          {/* needs work */}
+          <div>
+            <h2>Ability Scores</h2> 
+            <Select
+              transparent
+              value={selectedAbility()}
+              onChange={(e) =>
+                setSelectedAbility(parseInt(e.currentTarget.value))
+              }
+            >
+              <For each={[0, 1, 2, 3, 4, 5, 6]}>
+                {(ability) => (
+                  <Option value={ability}>{AbilityScores[ability]}</Option>
+                )}
+              </For>
+            </Select>
+          </div>
+
+
+          {/* add a text box for more descrbing text maybe a way to set if they want to use the age range  */}
+          <div>
+            <h2>Age</h2>
+
+            <FormField name="age">
+                <Input  
+                  type="text"
+                  transparent
+                  value={currentRace.age}
+                  onInput={(e) => setCurrentRace("age", e.currentTarget.value)}
+                />
+            </FormField>
+
+            {/* <h2>Age Range</h2>  how are the user supoosed to enter an age. 
+              thats more than: [race name]'s tend to live [low to high]. not all races describe the age as such so wouldn't it be easer for it just to be a normal text input.
+            
+              <FormField name="Low Age">
+              <Input
+                type="text"
+                transparent
+                value={getAge("low")}
+                onInput={(e) => setAge(e.currentTarget.value, getAge("high"))}
+              />
+            </FormField>
+            <FormField name="High Age">
+              <Input
+                type="text"
+                transparent
+                value={getAge("high")}
+                onInput={(e) => setAge(getAge("low"), e.currentTarget.value)}
+              />
+            </FormField> */}
+          </div>
+
+          {/* more than likely needs more work */}
+          <div>
+            <h2>Features</h2>
+
+            <div style={{ display: "flex" }}>
+
+              <Button onClick={() => setShowFeatureModal(true)}>
+                Add Feature
+              </Button>
+
+              <span>
+
+                <For each={currentRace.traits}>
+                  {(trait, i) => (
+                    <Chip
+                      value={trait.name}
+                      onClick={() => {
+                        setEditIndex(i);
+                        setShowFeatureModal(true);
+                      }}
+                      remove={() => {
+                        const newTraits = Clone(currentRace.traits);
+                        newTraits.splice(i(), 1);
+                        setCurrentRace("traits", newTraits);
+                        setShowFeatureModal(false);
+                      }}
+                    />
+                  )}
+                </For>
+
+                <Show when={currentRace.traits.length === 0}>
+                  <Chip value="None" />
+                </Show>
+
+              </span>
+
+              <Show when={showFeatureModal()}>
+                <FeatureModal
+                  addFeature={addFeature}
+                  replaceFeature={replaceFeature}
+                  currentLevel={{} as LevelEntity}
+                  showFeature={showFeatureModal}
+                  setShowFeature={setShowFeatureModal}
+                  editIndex={editIndex}
+                  setEditIndex={setEditIndex}
+                  currentRace={currentRace}
+                />
+              </Show>
+            </div>
+
+          </div>
+
+        </div>
+      </Body>
+    </>
+  );
+};
 export default Races;

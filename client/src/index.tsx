@@ -12,7 +12,6 @@ const CharacterCreate = lazy(
 const CharacterView = lazy(() => import("./components/characters/view/view"));
 import { useRegisterSW } from "virtual:pwa-register/solid";
 import Homebrew from "./components/homebrew/homebrew";
-import Create from "./components/homebrew/create/create";
 import View from "./components/homebrew/view/view";
 import Classes from "./components/homebrew/create/parts/classes/classes";
 import Items from "./components/homebrew/create/parts/items/items";
@@ -81,7 +80,6 @@ render(
         <Route path="/" component={Homebrew} />
         <Route path="/view" component={View} />
         <Route path="/create" >
-          <Route path="/" component={Create} />
           <Route path="/classes" component={Classes} />
           <Route path={"/subclasses"} component={Subclasses} />
           <Route path="/items" component={Items} />
