@@ -6,6 +6,7 @@ import {
   createMemo,
   createEffect,
   Show,
+  onMount,
 } from "solid-js";
 import {
   useStyle,
@@ -40,6 +41,7 @@ import {
   S,
 } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
+import { useSearchParams } from "@solidjs/router";
 
 const Races: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
@@ -47,6 +49,7 @@ const Races: Component = () => {
   const stylin = createMemo(() => useStyle(userSettings().theme));
   const allRaces = useGetRaces();
   const hombrewRaces = createMemo(() => homebrewManager.races());
+  const [searchParam, setSearchParam] = useSearchParams();
   // -------------------- Signals/State
   const [selectedAbility, setSelectedAbility] = createSignal<AbilityScores>(0);
   const [newSizes, setNewSizes] = createSignal<string>("Tiny");
@@ -133,6 +136,25 @@ const Races: Component = () => {
     setShowFeatureModal(false);
   };
 
+  const fillRacesInfo = (search?:boolean) => {
+    const searchName = !!search ? searchParam.name: currentRace.name;
+    const race = homebrewManager.races().find((x)=>x.name === searchName);
+    const srdRace = allRaces().find((x)=>x.name === searchName);
+
+    if (!!srdRace) {
+      setCurrentRace(srdRace);
+      
+    }
+    if (!!race) {
+      setCurrentRace(race);
+
+    }
+  }
+
+  onMount(() => {
+    if (!!searchParam.name) fillRacesInfo(true)
+  })
+
   createEffect(() => {
     console.log(allRaces());
   });
@@ -142,6 +164,7 @@ const Races: Component = () => {
       <Body>
         <h1>Races</h1>
         <div>
+
           <div>
             <FormField name="Name">
               <Input
@@ -151,6 +174,8 @@ const Races: Component = () => {
                 onInput={(e) => setCurrentRace("name", e.currentTarget.value)}
               />
             </FormField>
+          
+            {/* add fill btn here */}
           </div>
 
           <div>
@@ -253,9 +278,24 @@ const Races: Component = () => {
             </Select>
           </div>
 
+
+          {/* add a text box for more descrbing text maybe a way to set if they want to use the age range  */}
           <div>
-            <h2>Age Range</h2>
-            <FormField name="Low Age">
+            <h2>Age</h2>
+
+            <FormField name="age">
+                <Input  
+                  type="text"
+                  transparent
+                  value={currentRace.age}
+                  onInput={(e) => setCurrentRace("age", e.currentTarget.value)}
+                />
+            </FormField>
+
+            {/* <h2>Age Range</h2>  how are the user supoosed to enter an age. 
+              thats more than: [race name]'s tend to live [low to high]. not all races describe the age as such so wouldn't it be easer for it just to be a normal text input.
+            
+              <FormField name="Low Age">
               <Input
                 type="text"
                 transparent
@@ -270,17 +310,21 @@ const Races: Component = () => {
                 value={getAge("high")}
                 onInput={(e) => setAge(getAge("low"), e.currentTarget.value)}
               />
-            </FormField>
+            </FormField> */}
           </div>
 
           {/* more than likely needs more work */}
           <div>
             <h2>Features</h2>
+
             <div style={{ display: "flex" }}>
+
               <Button onClick={() => setShowFeatureModal(true)}>
                 Add Feature
               </Button>
+
               <span>
+
                 <For each={currentRace.traits}>
                   {(trait, i) => (
                     <Chip
@@ -298,10 +342,13 @@ const Races: Component = () => {
                     />
                   )}
                 </For>
+
                 <Show when={currentRace.traits.length === 0}>
                   <Chip value="None" />
                 </Show>
+
               </span>
+
               <Show when={showFeatureModal()}>
                 <FeatureModal
                   addFeature={addFeature}
@@ -315,7 +362,9 @@ const Races: Component = () => {
                 />
               </Show>
             </div>
+
           </div>
+
         </div>
       </Body>
     </>
