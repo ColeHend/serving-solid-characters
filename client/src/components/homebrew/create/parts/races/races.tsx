@@ -21,6 +21,7 @@ import {
   Chip,
   Clone,
   UniqueSet,
+  UniqueStringArray,
 } from "../../../../../shared/";
 import styles from "./races.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
@@ -42,6 +43,7 @@ import {
 } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
+import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 
 const Races: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
@@ -53,31 +55,41 @@ const Races: Component = () => {
   // -------------------- Signals/State
   const [selectedAbility, setSelectedAbility] = createSignal<AbilityScores>(0);
   const [newSizes, setNewSizes] = createSignal<string>("Tiny");
+  const [newLanguages,setNewLanguages] = createSignal<string>("common");
+  const [abilityIncrease,setAbilityIncrease] = createSignal<number>(0);
   // ------- Store
   const [currentRace, setCurrentRace] = createStore<Race>({
-    name: "", // done
-    speed: 30, // done 
-    age: "", // needs adding
-    alignment: "", // needs adding
-    size: "", // done 
-    sizeDescription: "", // done
-    languages: [], // needs adding
-    languageChoice: { choose: 0, choices: [], type: FeatureTypes.Language }, // cole will addd
-    languageDesc: "", // needs adding
-    traits: [], // done // maybe needs some work
-    traitChoice: { choose: 0, choices: [], type: FeatureTypes.Race },  // cole will addd
-    startingProficencies: [], // needs adding
+    name: "",
+    speed: 30, 
+    age: "", 
+    alignment: "", 
+    size: "", 
+    sizeDescription: "", 
+    languages: [], 
+    languageChoice: { 
+      choose: 0, 
+      choices: [], 
+      type: FeatureTypes.Language 
+    },
+    languageDesc: "", 
+    traits: [], 
+    traitChoice: { 
+      choose: 0, 
+      choices: [], 
+      type: FeatureTypes.Race 
+    }, 
+    startingProficencies: [], 
     startingProficiencyChoices: {
       choose: 0,
       choices: [],
       type: FeatureTypes.Race,
-    },  // cole will addd
-    abilityBonuses: [], // needs adding
+    },
+    abilityBonuses: [],
     abilityBonusChoice: {
       choose: 0,
       choices: [],
       type: FeatureTypes.AbilityScore,
-    },  // cole will addd
+    },
     subRaces: [],
   });
   // -------------------- Functions
@@ -142,14 +154,72 @@ const Races: Component = () => {
     const srdRace = allRaces().find((x)=>x.name === searchName);
 
     if (!!srdRace) {
-      setCurrentRace(srdRace);
-      
+      setCurrentRace("name",srdRace.name);
+      setCurrentRace("size",srdRace.size);
+      setCurrentRace("sizeDescription",srdRace.sizeDescription);
+      setCurrentRace("speed",srdRace.speed);
+      setCurrentRace("abilityBonuses",srdRace.abilityBonuses);
+      setCurrentRace("abilityBonusChoice",srdRace.abilityBonusChoice);
+      setCurrentRace("alignment",srdRace.alignment);
+      setCurrentRace("languages",srdRace.languages);
+      setCurrentRace("languageDesc",srdRace.languageDesc);
+      setCurrentRace("languageChoice",srdRace.languageChoice); 
+      setCurrentRace("age",srdRace.age);
+      setCurrentRace("startingProficencies",srdRace.startingProficencies);
+      setCurrentRace("startingProficiencyChoices",srdRace.startingProficiencyChoices);
+      setCurrentRace("traitChoice",srdRace.traitChoice);
+      setCurrentRace("traits",srdRace.traits);
+      setCurrentRace("subRaces",srdRace.subRaces);
     }
     if (!!race) {
-      setCurrentRace(race);
-
+      setCurrentRace("name",race.name);
+      setCurrentRace("size",race.size);
+      setCurrentRace("sizeDescription",race.sizeDescription);
+      setCurrentRace("speed",race.speed);
+      setCurrentRace("abilityBonuses",race.abilityBonuses);
+      setCurrentRace("abilityBonusChoice",race.abilityBonusChoice);
+      setCurrentRace("alignment",race.alignment);
+      setCurrentRace("languages",race.languages);
+      setCurrentRace("languageDesc",race.languageDesc);
+      setCurrentRace("languageChoice",race.languageChoice); 
+      setCurrentRace("age",race.age);
+      setCurrentRace("startingProficencies",race.startingProficencies);
+      setCurrentRace("startingProficiencyChoices",race.startingProficiencyChoices);
+      setCurrentRace("traitChoice",race.traitChoice);
+      setCurrentRace("traits",race.traits);
+      setCurrentRace("subRaces",race.subRaces);
     }
   }
+
+  const addAbiliyScore = () => {
+    let abilityScore:Feature<number, string> = {} as Feature<number,string>;
+
+    // set ability score information
+    abilityScore.name = AbilityScores[selectedAbility()];
+    abilityScore.value = abilityIncrease();
+
+    // add new ability score to race
+    setCurrentRace("abilityBonuses",(old)=>([...old,abilityScore]))
+  }
+
+  const removeAbilityScore = (abilityScore: Feature<number,string>) => {
+    const searchAbility = createMemo(()=>currentRace.abilityBonuses.find(x=>x.name === abilityScore.name))
+
+    if(!!searchAbility()) {
+      setCurrentRace("abilityBonuses",currentRace.abilityBonuses.filter(x=>x.name !== searchAbility()?.name))
+
+      addSnackbar({
+        message:"removed Ability",
+        severity:"success",
+        closeTimeout:4000
+      })
+    }
+  }
+  
+  const allLanguages = ():string[] => {
+    return UniqueStringArray(allRaces().flatMap(x=>x.languages))
+  }
+
 
   onMount(() => {
     if (!!searchParam.name) fillRacesInfo(true)
@@ -163,208 +233,247 @@ const Races: Component = () => {
     <>
       <Body>
         <h1>Races</h1>
-        <div>
-
+        <div class={`${styles.wrapper}`}>
+          {/* first colunm */}
           <div>
-            <FormField name="Name">
-              <Input
-                type="text"
-                transparent
-                value={currentRace.name}
-                onInput={(e) => setCurrentRace("name", e.currentTarget.value)}
-              />
-            </FormField>
-          
-            {/* add fill btn here */}
-          </div>
 
-          <div>
-            <h2>Size</h2>
             <div>
-              <Select
-                transparent
-                value={newSizes()}
-                onChange={(e) => setNewSizes(e.currentTarget.value)}
-              >
-                <For
-                  each={[
-                    "Tiny",
-                    "Small",
-                    "Medium",
-                    "Large",
-                    "Huge",
-                    "Gargantuan",
-                  ]}
-                >
-                  {(size) => <Option value={size}>{size}</Option>}
-                </For>
-              </Select>
-              <Button
-                onClick={(e) => {
-                  const selSize = currentRace.size.split(",");
-                  const newArray = [...selSize, newSizes().trim()]
-                    .map((s) => s.trim())
-                    .filter((s) => !!s.length);
-                  setCurrentRace("size", newArray.join(", "));
-                }}
-              >
-                Add Size Option
-              </Button>
-            </div>
-            
-            <div style={{ display: "flex" }}>
-              <Show when={!!currentRace.size}>
-                <For each={currentRace.size.split(", ")}>
-                  {(size, i) => (
-                    <Chip
-                      value={size}
-                      remove={() => {
-                        const newSizes = currentRace.size.split(", ");
-                        newSizes.splice(i(), 1);
-                        setCurrentRace("size", newSizes.join(", "));
-                      }}
-                    />
-                  )}
-                </For>
-              </Show>
-              <Show when={!currentRace.size}>
-                <Chip value="None" />
-              </Show>
-            </div>
-            
-            <div>
-              <FormField name="Size Description">
+              <FormField name="Name">
                 <Input
                   type="text"
                   transparent
-                  value={currentRace.sizeDescription}
+                  value={currentRace.name}
+                  onInput={(e) => setCurrentRace("name", e.currentTarget.value)}
+                />
+              </FormField>
+            
+              {/* add fill btn here */}
+            </div>
+
+            <div>
+              <h2>Size</h2>
+              <div>
+                <Select
+                  transparent
+                  value={newSizes()}
+                  onChange={(e) => setNewSizes(e.currentTarget.value)}
+                >
+                  <For
+                    each={[
+                      "Tiny",
+                      "Small",
+                      "Medium",
+                      "Large",
+                      "Huge",
+                      "Gargantuan",
+                    ]}
+                  >
+                    {(size) => <Option value={size}>{size}</Option>}
+                  </For>
+                </Select>
+                <Button
+                  onClick={(e) => {
+                    const selSize = currentRace.size.split(",");
+                    const newArray = [...selSize, newSizes().trim()]
+                      .map((s) => s.trim())
+                      .filter((s) => !!s.length);
+                    setCurrentRace("size", newArray.join(", "));
+                  }}
+                >
+                  Add Size Option
+                </Button>
+              </div>
+              
+              <div style={{ display: "flex" }}>
+                <Show when={!!currentRace.size}>
+                  <For each={currentRace.size.split(", ")}>
+                    {(size, i) => (
+                      <Chip
+                        value={size}
+                        remove={() => {
+                          const newSizes = currentRace.size.split(", ");
+                          newSizes.splice(i(), 1);
+                          setCurrentRace("size", newSizes.join(", "));
+                        }}
+                      />
+                    )}
+                  </For>
+                </Show>
+                <Show when={!currentRace.size}>
+                  <Chip value="None" />
+                </Show>
+              </div>
+              
+              <div>
+                <FormField name="Size Description">
+                  <Input
+                    type="text"
+                    transparent
+                    value={currentRace.sizeDescription}
+                    onInput={(e) =>
+                      setCurrentRace("sizeDescription", e.currentTarget.value)
+                    }
+                  />
+                </FormField>
+              </div>
+            </div>
+            
+            <div>
+              <h2>Speed</h2>
+              <FormField name="Speed">
+                <Input
+                  type="number"
+                  transparent
+                  value={currentRace.speed}
                   onInput={(e) =>
-                    setCurrentRace("sizeDescription", e.currentTarget.value)
+                    setCurrentRace("speed", parseInt(e.currentTarget.value))
                   }
                 />
               </FormField>
             </div>
-          </div>
-          
-          <div>
-            <h2>Speed</h2>
-            <FormField name="Speed">
-              <Input
-                type="number"
-                transparent
-                value={currentRace.speed}
-                onInput={(e) =>
-                  setCurrentRace("speed", parseInt(e.currentTarget.value))
-                }
-              />
-            </FormField>
-          </div>
 
-          {/* needs work */}
-          <div>
-            <h2>Ability Scores</h2> 
-            <Select
-              transparent
-              value={selectedAbility()}
-              onChange={(e) =>
-                setSelectedAbility(parseInt(e.currentTarget.value))
-              }
-            >
-              <For each={[0, 1, 2, 3, 4, 5, 6]}>
-                {(ability) => (
-                  <Option value={ability}>{AbilityScores[ability]}</Option>
-                )}
-              </For>
-            </Select>
-          </div>
-
-
-          {/* add a text box for more descrbing text maybe a way to set if they want to use the age range  */}
-          <div>
-            <h2>Age</h2>
-
-            <FormField name="age">
-                <Input  
-                  type="text"
+            <div>
+              <h2>Ability Scores</h2> 
+              <div class={styles.abilityScoreInput}>
+                <Select
                   transparent
-                  value={currentRace.age}
-                  onInput={(e) => setCurrentRace("age", e.currentTarget.value)}
+                  value={selectedAbility()}
+                  onChange={(e) =>
+                    setSelectedAbility(parseInt(e.currentTarget.value))
+                  }
+                >
+                  <For each={[0, 1, 2, 3, 4, 5, 6]}>
+                    {(ability) => (
+                      <Option value={ability}>{AbilityScores[ability]}</Option>
+                    )}
+                  </For>
+                </Select>
+                <Input type="number"
+                  transparent
+                  min={0}
+                  max={999}
+                  value={abilityIncrease()}
+                  onInput={(e)=>setAbilityIncrease(parseInt(e.currentTarget.value))}
                 />
-            </FormField>
+                <Button onClick={addAbiliyScore}>Add Ability Score</Button>
+              </div>
 
-            {/* <h2>Age Range</h2>  how are the user supoosed to enter an age. 
-              thats more than: [race name]'s tend to live [low to high]. not all races describe the age as such so wouldn't it be easer for it just to be a normal text input.
-            
-              <FormField name="Low Age">
-              <Input
-                type="text"
-                transparent
-                value={getAge("low")}
-                onInput={(e) => setAge(e.currentTarget.value, getAge("high"))}
-              />
-            </FormField>
-            <FormField name="High Age">
-              <Input
-                type="text"
-                transparent
-                value={getAge("high")}
-                onInput={(e) => setAge(getAge("low"), e.currentTarget.value)}
-              />
-            </FormField> */}
-          </div>
-
-          {/* more than likely needs more work */}
-          <div>
-            <h2>Features</h2>
-
-            <div style={{ display: "flex" }}>
-
-              <Button onClick={() => setShowFeatureModal(true)}>
-                Add Feature
-              </Button>
-
-              <span>
-
-                <For each={currentRace.traits}>
-                  {(trait, i) => (
-                    <Chip
-                      value={trait.name}
-                      onClick={() => {
-                        setEditIndex(i);
-                        setShowFeatureModal(true);
-                      }}
-                      remove={() => {
-                        const newTraits = Clone(currentRace.traits);
-                        newTraits.splice(i(), 1);
-                        setCurrentRace("traits", newTraits);
-                        setShowFeatureModal(false);
-                      }}
-                    />
-                  )}
-                </For>
-
-                <Show when={currentRace.traits.length === 0}>
-                  <Chip value="None" />
-                </Show>
-
-              </span>
-
-              <Show when={showFeatureModal()}>
-                <FeatureModal
-                  addFeature={addFeature}
-                  replaceFeature={replaceFeature}
-                  currentLevel={{} as LevelEntity}
-                  showFeature={showFeatureModal}
-                  setShowFeature={setShowFeatureModal}
-                  editIndex={editIndex}
-                  setEditIndex={setEditIndex}
-                  currentRace={currentRace}
-                />
+              <Show when={currentRace.abilityBonuses.length > 0}>
+                <div class={`${styles.abilityScoreRow}`}>
+                  <For each={currentRace.abilityBonuses}>
+                    { (abilityScore) => 
+                      <Chip remove={()=>removeAbilityScore(abilityScore)} key={abilityScore.name} value={`${abilityScore.value}`} /> 
+                    }
+                  </For>
+                </div>
               </Show>
             </div>
 
-          </div>
+            <div>
+              <h2>Age</h2>
 
+              <FormField name="age">
+                  <Input  
+                    type="text"
+                    transparent
+                    value={currentRace.age}
+                    onInput={(e) => setCurrentRace("age", e.currentTarget.value)}
+                  />
+              </FormField>
+            </div>
+
+            <div>
+              <h2>Features</h2>
+
+              <div style={{ display: "flex" }}>
+
+                <Button onClick={() => setShowFeatureModal(true)}>
+                  Add Feature
+                </Button>
+
+                <span>
+
+                  <For each={currentRace.traits}>
+                    {(trait, i) => (
+                      <Chip
+                        value={trait.name}
+                        onClick={() => {
+                          setEditIndex(i);
+                          setShowFeatureModal(true);
+                        }}
+                        remove={() => {
+                          const newTraits = Clone(currentRace.traits);
+                          newTraits.splice(i(), 1);
+                          setCurrentRace("traits", newTraits);
+                          setShowFeatureModal(false);
+                        }}
+                      />
+                    )}
+                  </For>
+
+                  <Show when={currentRace.traits.length === 0}>
+                    <Chip value="None" />
+                  </Show>
+
+                </span>
+
+                <Show when={showFeatureModal()}>
+                  <FeatureModal
+                    addFeature={addFeature}
+                    replaceFeature={replaceFeature}
+                    currentLevel={{} as LevelEntity}
+                    showFeature={showFeatureModal}
+                    setShowFeature={setShowFeatureModal}
+                    editIndex={editIndex}
+                    setEditIndex={setEditIndex}
+                    currentRace={currentRace}
+                  />
+                </Show>
+              </div>
+
+            </div>
+
+          </div> 
+          
+          {/* second column */}
+          <div>
+            <div>
+              <FormField name="alignment">
+                  <Input 
+                    type="text"
+                    transparent
+                    value={currentRace.alignment}
+                    onInput={(e)=>setCurrentRace("alignment",e.currentTarget.value)}
+                  />
+              </FormField>
+            </div>
+
+            <div>
+                <h2>languages</h2>
+                <div>
+                    <Select
+                      transparent
+                      value={newLanguages()}
+                      onChange={(e)=>setNewLanguages(e.currentTarget.value)}
+                    >
+                      <For each={allLanguages()}>
+                        { (language) => <Option>{language}</Option> }
+                      </For>
+                    </Select>
+                </div>
+                <div>
+
+                </div>
+                <div>
+
+                </div>
+            </div>
+
+            <div> // starting proficiencies
+              
+            </div>
+
+          </div>
         </div>
       </Body>
     </>
