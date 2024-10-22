@@ -22,6 +22,7 @@ import {
   Clone,
   UniqueSet,
   UniqueStringArray,
+  useGetItems,
 } from "../../../../../shared/";
 import styles from "./races.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
@@ -44,18 +45,21 @@ import {
 import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
+import { Observable } from "rxjs";
+import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
 
 const Races: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(() => useStyle(userSettings().theme));
   const allRaces = useGetRaces();
+  const allItems = useGetItems();
   const hombrewRaces = createMemo(() => homebrewManager.races());
   const [searchParam, setSearchParam] = useSearchParams();
   // -------------------- Signals/State
   const [selectedAbility, setSelectedAbility] = createSignal<AbilityScores>(0);
   const [newSizes, setNewSizes] = createSignal<string>("Tiny");
-  const [newLanguages,setNewLanguages] = createSignal<string>("common");
+  const [newLanguage,setNewLanguage] = createSignal<string>("common");
   const [abilityIncrease,setAbilityIncrease] = createSignal<number>(0);
   // ------- Store
   const [currentRace, setCurrentRace] = createStore<Race>({
@@ -148,6 +152,8 @@ const Races: Component = () => {
     setShowFeatureModal(false);
   };
 
+  // --------- Other Functions 
+
   const fillRacesInfo = (search?:boolean) => {
     const searchName = !!search ? searchParam.name: currentRace.name;
     const race = homebrewManager.races().find((x)=>x.name === searchName);
@@ -220,6 +226,122 @@ const Races: Component = () => {
     return UniqueStringArray(allRaces().flatMap(x=>x.languages))
   }
 
+  const allWeapons = ():string[] => {
+    const weapons:string[] = [];
+    const foundWeapons = allItems().filter(item=>item.equipmentCategory === ItemType[1]).map(x=>x.name);
+
+    if (foundWeapons.length > 0) {
+      foundWeapons.forEach(weapon=>weapons.push(weapon));
+      addSnackbar({
+        message:`Found: ${foundWeapons.length}\nAdding: ${weapons.length}`,
+        severity:"success",
+        closeTimeout:4000
+      })
+      console.log("weapons: ",weapons);
+    }
+
+    if (weapons.length < 0 || foundWeapons.length < 0) {
+      addSnackbar({
+        message:`No Weapons: ${weapons.length}\n Found: ${foundWeapons.length}`
+      })
+    }
+
+    return weapons
+  }
+
+  const allArmors = ():string[] => {
+    const armors:string[] = []
+    const foundArmors = allItems().filter(item=>item.equipmentCategory === ItemType[2]).map(x=>x.name);
+
+    if (foundArmors.length > 0) {
+      foundArmors.forEach(armor=>armors.push(armor));
+      addSnackbar({
+        message:`Found: ${foundArmors.length}\nAdding: ${armors.length}`,
+        severity:"success",
+        closeTimeout:4000,
+      })
+      console.log("armors: ",armors);
+    }
+
+    if (armors.length < 0 || foundArmors.length < 0 ) {
+      addSnackbar({
+        message:`No Armors: ${armors.length}\n Found: ${foundArmors.length}`
+      })
+    }
+
+    return armors
+  }
+
+  const allTools = ():string[] => ([
+    "Alchemist's Supplies",
+    "Brewer's Supplies",
+    "Calligrapher's Supplies",
+    "Carpenter's Tools",
+    "Cartographer's Tools",
+    "Cobbler's Tools",
+    "Cook's Utensils",
+    "Glassblower's Tools",
+    "Jeweler's Tools",
+    "Leatherworker's Tools",
+    "Mason's Tools",
+    "Painter's Supplies",
+    "Potter's Tools",
+    "Smith's Tools",
+    "Tinker's Tools",
+    "Weaver's Tools",
+    "Woodcarver's Tools",
+    "Disguise Kit",
+    "------------",
+    "Forgery Kit",
+    "Herbalism Kit",
+    "Navigator's Tools",
+    "Poisoner's Kit",
+    "Thieves' Tools",
+    "------------",
+    "Dice Set",
+    "Dragonchess Set",
+    "Playing Card Set",
+    "Three-Dragon Ante Set",
+    "------------",
+    "Bagpipes",
+    "Drum",
+    "Dulcimer",
+    "Flute",
+    "Lute",
+    "Lyre",
+    "Horn",
+    "Pan Flute",
+    "Shawm",
+    "Viol",
+    "------------",
+    "other",
+  ])
+
+  const allSkills = ():string[] => ([
+    "Athletics",
+    "Acrobatics",
+    "Sleight of Hand",
+    "Stealth",
+    "Arcana",
+    "History",
+    "Investigation",
+    "Nature",
+    "Religion",
+    "Animal Handling",
+    "Insight",
+    "Medicine",
+    "Perception",
+    "Survival",
+    "Deception",
+    "Intimidation",
+    "Performance",
+    "Persuasion",
+    "other"
+  ])
+
+
+
+  // when the component first loads ▼
 
   onMount(() => {
     if (!!searchParam.name) fillRacesInfo(true)
@@ -449,28 +571,64 @@ const Races: Component = () => {
             </div>
 
             <div>
-                <h2>languages</h2>
-                <div>
-                    <Select
+              <h2>languages</h2>
+              <div>
+                  <Select
+                    transparent
+                    value={newLanguage()}
+                    onChange={(e)=>setNewLanguage(e.currentTarget.value)}
+                  >
+                    <For each={allLanguages()}>
+                      { (language) => <Option value={language}>{language}</Option> }
+                    </For>
+                  </Select>
+
+                  <Button
+                    onClick={(e)=>{
+                      setCurrentRace("languages",(old)=>([...old,newLanguage()]))
+                    }}
+                  >
+                    Add Language
+                  </Button>
+              </div>
+              <div>
+                <Show when={currentRace.languages.length > 0}>
+                    <For each={currentRace.languages}>
+                      { (language, i) => <Chip value={language} remove={()=>setCurrentRace("languages",(old)=>([...old.filter((l)=>l !== language)]))} /> }
+                    </For>
+                </Show>
+                <Show when={currentRace.languages.length === 0}>
+                  <Chip key="" value="None" />
+                </Show>
+              </div>
+              <div>
+                <FormField name="Language Description">
+                    <Input 
+                      type="text"
                       transparent
-                      value={newLanguages()}
-                      onChange={(e)=>setNewLanguages(e.currentTarget.value)}
-                    >
-                      <For each={allLanguages()}>
-                        { (language) => <Option>{language}</Option> }
-                      </For>
-                    </Select>
-                </div>
-                <div>
-
-                </div>
-                <div>
-
-                </div>
+                      value={currentRace.languageDesc}
+                      onInput={(e)=>setCurrentRace("languageDesc",e.currentTarget.value)}
+                    />
+                </FormField>
+              </div>
             </div>
 
-            <div> // starting proficiencies
+            <div>
+              <h2>Starting Proficencies</h2>
               
+              <div class={styles.startingProficencies}>
+                <div>
+                  <Show when={currentRace.startingProficencies.length > 0}>
+                    <For each={currentRace.startingProficencies}>
+                        { (startingProf) => <Chip value={startingProf.value} /> }
+                    </For>
+                  </Show>
+                </div>
+
+                <Button onClick={(e)=>{}}>
+                  Add Proficency
+                </Button>
+              </div>
             </div>
 
           </div>
