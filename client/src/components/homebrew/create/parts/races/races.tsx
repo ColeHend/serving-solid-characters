@@ -23,6 +23,7 @@ import {
   UniqueSet,
   UniqueStringArray,
   useGetItems,
+  TextArea,
 } from "../../../../../shared/";
 import styles from "./races.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
@@ -47,13 +48,13 @@ import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Observable } from "rxjs";
 import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
+import StartingProf from "./startingProfs/startingProfs";
 
 const Races: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(() => useStyle(userSettings().theme));
   const allRaces = useGetRaces();
-  const allItems = useGetItems();
   const hombrewRaces = createMemo(() => homebrewManager.races());
   const [searchParam, setSearchParam] = useSearchParams();
   // -------------------- Signals/State
@@ -61,6 +62,8 @@ const Races: Component = () => {
   const [newSizes, setNewSizes] = createSignal<string>("Tiny");
   const [newLanguage,setNewLanguage] = createSignal<string>("common");
   const [abilityIncrease,setAbilityIncrease] = createSignal<number>(0);
+  const [startProfPopup,setStartProfPopup] = createSignal<boolean>(false);
+  
   // ------- Store
   const [currentRace, setCurrentRace] = createStore<Race>({
     name: "",
@@ -96,18 +99,7 @@ const Races: Component = () => {
     },
     subRaces: [],
   });
-  // -------------------- Functions
-  const getAge = (type: "low" | "high") => {
-    const ages = currentRace.age.split(" - ");
-    if (type === "low") {
-      return ages[0] ?? "0";
-    } else {
-      return ages[1] ?? "0";
-    }
-  };
-  const setAge = (low: string, high: string) => {
-    setCurrentRace("age", `${low} - ${high}`);
-  };
+
   // --------- Feature Modal
   const [editIndex, setEditIndex] = createSignal<number>(-1);
   const [showFeatureModal, setShowFeatureModal] = createSignal<boolean>(false);
@@ -152,7 +144,7 @@ const Races: Component = () => {
     setShowFeatureModal(false);
   };
 
-  // --------- Other Functions 
+  // --------- Functions 
 
   const fillRacesInfo = (search?:boolean) => {
     const searchName = !!search ? searchParam.name: currentRace.name;
@@ -163,14 +155,18 @@ const Races: Component = () => {
       setCurrentRace("name",srdRace.name);
       setCurrentRace("size",srdRace.size);
       setCurrentRace("sizeDescription",srdRace.sizeDescription);
+      setSizeDesc(srdRace.sizeDescription);
       setCurrentRace("speed",srdRace.speed);
       setCurrentRace("abilityBonuses",srdRace.abilityBonuses);
       setCurrentRace("abilityBonusChoice",srdRace.abilityBonusChoice);
       setCurrentRace("alignment",srdRace.alignment);
+      setAlignTextarea(srdRace.alignment);
       setCurrentRace("languages",srdRace.languages);
       setCurrentRace("languageDesc",srdRace.languageDesc);
+      setLanguageDesc(srdRace.languageDesc);
       setCurrentRace("languageChoice",srdRace.languageChoice); 
       setCurrentRace("age",srdRace.age);
+      setAgeDesc(srdRace.age);
       setCurrentRace("startingProficencies",srdRace.startingProficencies);
       setCurrentRace("startingProficiencyChoices",srdRace.startingProficiencyChoices);
       setCurrentRace("traitChoice",srdRace.traitChoice);
@@ -181,14 +177,18 @@ const Races: Component = () => {
       setCurrentRace("name",race.name);
       setCurrentRace("size",race.size);
       setCurrentRace("sizeDescription",race.sizeDescription);
+      setSizeDesc(race.sizeDescription);
       setCurrentRace("speed",race.speed);
       setCurrentRace("abilityBonuses",race.abilityBonuses);
       setCurrentRace("abilityBonusChoice",race.abilityBonusChoice);
       setCurrentRace("alignment",race.alignment);
+      setAlignTextarea(race.alignment);
       setCurrentRace("languages",race.languages);
       setCurrentRace("languageDesc",race.languageDesc);
+      setLanguageDesc(race.languageDesc);
       setCurrentRace("languageChoice",race.languageChoice); 
       setCurrentRace("age",race.age);
+      setAgeDesc(race.age)
       setCurrentRace("startingProficencies",race.startingProficencies);
       setCurrentRace("startingProficiencyChoices",race.startingProficiencyChoices);
       setCurrentRace("traitChoice",race.traitChoice);
@@ -226,120 +226,24 @@ const Races: Component = () => {
     return UniqueStringArray(allRaces().flatMap(x=>x.languages))
   }
 
-  const allWeapons = ():string[] => {
-    const weapons:string[] = [];
-    const foundWeapons = allItems().filter(item=>item.equipmentCategory === ItemType[1]).map(x=>x.name);
-
-    if (foundWeapons.length > 0) {
-      foundWeapons.forEach(weapon=>weapons.push(weapon));
-      addSnackbar({
-        message:`Found: ${foundWeapons.length}\nAdding: ${weapons.length}`,
-        severity:"success",
-        closeTimeout:4000
-      })
-      console.log("weapons: ",weapons);
-    }
-
-    if (weapons.length < 0 || foundWeapons.length < 0) {
-      addSnackbar({
-        message:`No Weapons: ${weapons.length}\n Found: ${foundWeapons.length}`
-      })
-    }
-
-    return weapons
+  const doesExist = () => {
+    return homebrewManager.races().findIndex((x)=> x.name === currentRace.name) > -1
   }
 
-  const allArmors = ():string[] => {
-    const armors:string[] = []
-    const foundArmors = allItems().filter(item=>item.equipmentCategory === ItemType[2]).map(x=>x.name);
-
-    if (foundArmors.length > 0) {
-      foundArmors.forEach(armor=>armors.push(armor));
-      addSnackbar({
-        message:`Found: ${foundArmors.length}\nAdding: ${armors.length}`,
-        severity:"success",
-        closeTimeout:4000,
-      })
-      console.log("armors: ",armors);
-    }
-
-    if (armors.length < 0 || foundArmors.length < 0 ) {
-      addSnackbar({
-        message:`No Armors: ${armors.length}\n Found: ${foundArmors.length}`
-      })
-    }
-
-    return armors
+  const createRace = () => {
+    homebrewManager.addRace(currentRace);
   }
 
-  const allTools = ():string[] => ([
-    "Alchemist's Supplies",
-    "Brewer's Supplies",
-    "Calligrapher's Supplies",
-    "Carpenter's Tools",
-    "Cartographer's Tools",
-    "Cobbler's Tools",
-    "Cook's Utensils",
-    "Glassblower's Tools",
-    "Jeweler's Tools",
-    "Leatherworker's Tools",
-    "Mason's Tools",
-    "Painter's Supplies",
-    "Potter's Tools",
-    "Smith's Tools",
-    "Tinker's Tools",
-    "Weaver's Tools",
-    "Woodcarver's Tools",
-    "Disguise Kit",
-    "------------",
-    "Forgery Kit",
-    "Herbalism Kit",
-    "Navigator's Tools",
-    "Poisoner's Kit",
-    "Thieves' Tools",
-    "------------",
-    "Dice Set",
-    "Dragonchess Set",
-    "Playing Card Set",
-    "Three-Dragon Ante Set",
-    "------------",
-    "Bagpipes",
-    "Drum",
-    "Dulcimer",
-    "Flute",
-    "Lute",
-    "Lyre",
-    "Horn",
-    "Pan Flute",
-    "Shawm",
-    "Viol",
-    "------------",
-    "other",
-  ])
+  const updateRace = () => {
+    homebrewManager.updateRace(currentRace);
+  }
 
-  const allSkills = ():string[] => ([
-    "Athletics",
-    "Acrobatics",
-    "Sleight of Hand",
-    "Stealth",
-    "Arcana",
-    "History",
-    "Investigation",
-    "Nature",
-    "Religion",
-    "Animal Handling",
-    "Insight",
-    "Medicine",
-    "Perception",
-    "Survival",
-    "Deception",
-    "Intimidation",
-    "Performance",
-    "Persuasion",
-    "other"
-  ])
+  // other state for text areas
 
-
+  const [alignTextarea,setAlignTextarea] = createSignal<string>("");
+  const [languageDesc,setLanguageDesc] = createSignal<string>("");
+  const [sizeDesc,setSizeDesc] = createSignal<string>("");
+  const [ageDesc,setAgeDesc] = createSignal<string>("");
 
   // when the component first loads ▼
 
@@ -347,9 +251,14 @@ const Races: Component = () => {
     if (!!searchParam.name) fillRacesInfo(true)
   })
 
-  createEffect(() => {
-    console.log(allRaces());
-  });
+  // setting values for textareas
+
+  createEffect(()=>{
+    setCurrentRace("alignment",alignTextarea());
+    setCurrentRace("sizeDescription",sizeDesc());
+    setCurrentRace("languageDesc",languageDesc());
+    setCurrentRace("age",ageDesc())
+  })
 
   return (
     <>
@@ -428,14 +337,7 @@ const Races: Component = () => {
               
               <div>
                 <FormField name="Size Description">
-                  <Input
-                    type="text"
-                    transparent
-                    value={currentRace.sizeDescription}
-                    onInput={(e) =>
-                      setCurrentRace("sizeDescription", e.currentTarget.value)
-                    }
-                  />
+                  <TextArea transparent text={sizeDesc} setText={setSizeDesc} />
                 </FormField>
               </div>
             </div>
@@ -494,12 +396,11 @@ const Races: Component = () => {
             <div>
               <h2>Age</h2>
 
-              <FormField name="age">
-                  <Input  
-                    type="text"
-                    transparent
-                    value={currentRace.age}
-                    onInput={(e) => setCurrentRace("age", e.currentTarget.value)}
+              <FormField name="age desc">
+                  <TextArea 
+                  transparent 
+                  text={ageDesc}
+                  setText={setAgeDesc}
                   />
               </FormField>
             </div>
@@ -560,13 +461,21 @@ const Races: Component = () => {
           {/* second column */}
           <div>
             <div>
-              <FormField name="alignment">
-                  <Input 
+              <FormField name="alignment desc">
+                  {/* <Input 
                     type="text"
                     transparent
-                    value={currentRace.alignment}
+                    value={}
                     onInput={(e)=>setCurrentRace("alignment",e.currentTarget.value)}
-                  />
+                  /> */}
+                  <TextArea 
+                  text={alignTextarea} 
+                  setText={setAlignTextarea}
+                  transparent
+                  
+                  >
+
+                  </TextArea>
               </FormField>
             </div>
 
@@ -603,11 +512,10 @@ const Races: Component = () => {
               </div>
               <div>
                 <FormField name="Language Description">
-                    <Input 
-                      type="text"
-                      transparent
-                      value={currentRace.languageDesc}
-                      onInput={(e)=>setCurrentRace("languageDesc",e.currentTarget.value)}
+                    <TextArea 
+                    transparent
+                    text={languageDesc}
+                    setText={setLanguageDesc}
                     />
                 </FormField>
               </div>
@@ -620,19 +528,33 @@ const Races: Component = () => {
                 <div>
                   <Show when={currentRace.startingProficencies.length > 0}>
                     <For each={currentRace.startingProficencies}>
-                        { (startingProf) => <Chip value={startingProf.value} /> }
+                        { (startingProf) => <Chip key={startingProf.name} value={startingProf.value} /> }
                     </For>
+                  </Show>
+                  <Show when={currentRace.startingProficencies.length === 0}>
+                    <Chip value="None"></Chip>
                   </Show>
                 </div>
 
-                <Button onClick={(e)=>{}}>
+                <Button onClick={(e)=>setStartProfPopup(!startProfPopup())}>
                   Add Proficency
                 </Button>
               </div>
+          
+              <Show when={startProfPopup()}>
+                <StartingProf setClose={setStartProfPopup} setRaceStore={setCurrentRace} currentRace={currentRace} />
+              </Show>
             </div>
 
           </div>
         </div>
+
+        <Show when={!doesExist()}>
+          <Button onClick={createRace}>Create</Button>
+        </Show>
+        <Show when={doesExist()}>
+          <Button onClick={updateRace}>Update</Button>
+        </Show>
       </Body>
     </>
   );

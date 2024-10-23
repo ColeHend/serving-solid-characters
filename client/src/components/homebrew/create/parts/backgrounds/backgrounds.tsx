@@ -98,6 +98,7 @@ const Backgrounds: Component = () => {
 								value={currentBackground.name}
 								onChange={(e) => setCurrentBackground({ name: e.currentTarget.value })} transparent />
 						</FormField>
+
 					</div>
 					<div class={`${styles.description}`}>
 						<h4>Background Description</h4>
