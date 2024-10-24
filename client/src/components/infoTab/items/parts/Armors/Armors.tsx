@@ -4,8 +4,8 @@ import styles from "./Armors.module.scss";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import Table from "../../../../../shared/components/Table/table";
 import { Cell, Column, Header, Row, SecondRow } from "../../../../../shared/components/Table/innerTable";
-import { ItemType } from "../../item";
 import { useNavigate } from "@solidjs/router";
+import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
 interface props {
     SrdArmors:Accessor<Armor[]>;
 }

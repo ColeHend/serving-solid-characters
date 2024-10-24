@@ -6,7 +6,7 @@ import Modal from "../../../../../../shared/components/popup/popup.component";
 import { LevelEntity, Subclass } from "../../../../../../models/class.model";
 import useGetFeatures from "../../../../../../shared/customHooks/useGetFeatures";
 import { useSearchParams } from "@solidjs/router";
-import { Background } from "../../../../../../models";
+import { Background, Race } from "../../../../../../models";
 import { p, S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import CharacterChanges from "./characterChanges";
 
@@ -18,6 +18,7 @@ interface FeatureModalProps {
 	currentLevel: LevelEntity;
 	currentSubclass?: Subclass;
 	currentBackground?: Background;
+	currentRace?: Race;
 	showFeature: Accessor<boolean>;
 	setShowFeature: Setter<boolean>;
 	editIndex: Accessor<number>;
@@ -73,12 +74,21 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 	}
 	const saveAndClose = () => {
 		let level = 0;
-		if (!!props?.currentSubclass) {
-			level = props.currentLevel.level;
-		} else if (!!props.currentBackground) {
-			level = 0;
-		} else if (!isNullish(props.currentLevel?.level)) {
-			level = props.currentLevel.level;
+		switch (true) {
+			case !!props?.currentSubclass:
+				level = props.currentLevel.level;
+				break;
+			case !!props?.currentBackground:
+				level = 0;
+				break;
+			case !isNullish(props.currentLevel?.level):
+				level = props.currentLevel.level;
+				break;
+			case !isNullish(props.currentRace):
+				level = 0;
+				break;
+			default:
+				break;
 		}
 
 		if (isEdit()) {
@@ -135,18 +145,26 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 			type: FeatureTypes.Class,
 			other: ""
 		};
-		if (!!props?.currentSubclass) {
-			currentInfo.className = props.currentSubclass.class;
-			currentInfo.subclassName = props.currentSubclass.name;
-			currentInfo.type = FeatureTypes.Subclass;
-		}
-		if (!!props?.currentLevel) {
-			currentInfo.className = props.currentLevel.info.className;
-			currentInfo.subclassName = props.currentLevel.info.subclassName;
-			currentInfo.level = props.currentLevel.level;
-		}
-		if (!!props?.currentBackground) {
-			currentInfo.type = FeatureTypes.Background;
+		switch (true) {
+			case !!props?.currentSubclass:
+				currentInfo.className = props.currentSubclass.class;
+				currentInfo.subclassName = props.currentSubclass.name;
+				currentInfo.type = FeatureTypes.Subclass;
+				break;
+			case !!props?.currentBackground:
+				currentInfo.type = FeatureTypes.Background;
+				break;
+			case !isNullish(props.currentLevel) && !!props.currentLevel?.info?.className:
+				currentInfo.className = props.currentLevel.info.className;
+				currentInfo.subclassName = props.currentLevel.info.subclassName;
+				currentInfo.level = props.currentLevel.level;
+				break;
+			case !isNullish(props.currentRace):
+				currentInfo.type = FeatureTypes.Race;
+				break;
+
+			default:
+				break;
 		}
 
 		return currentInfo;
@@ -160,24 +178,43 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 		if (isEdit()) {
 			// -----------------
 			let feature: Feature<string, string>;
-			if (!!props.currentBackground) {
-				feature = {
-					name: props.currentBackground.feature[getEditIndex()].name,
-					value: props.currentBackground.feature[getEditIndex()].value.join('\n'),
-					info: props.currentBackground.feature[getEditIndex()].info,
-					choices: (props.currentBackground.feature[getEditIndex()]?.choices?.map((c) => ({
-						...c,
-						choices: c.choices.map(ch => ch.join('\n'))
-					}))),
-					metadata: {
-						...props.currentBackground.feature[getEditIndex()]?.metadata,
-						changes: props.currentBackground.feature[getEditIndex()]?.metadata?.changes ?? []
-					}   //props.currentBackground.feature[getEditIndex()].metadata
-				};
-			} else if (!!props.currentSubclass) {
-				feature = props.currentSubclass.features[getEditIndex()];
-			} else {
-				feature = props.currentLevel.features[getEditIndex()];
+			switch (true) {
+				case !!props?.currentSubclass:
+					feature = props.currentSubclass.features[getEditIndex()];
+					break;
+				case !!props?.currentBackground:
+					feature = {
+						name: props.currentBackground.feature[getEditIndex()].name,
+						value: props.currentBackground.feature[getEditIndex()].value.join('\n'),
+						info: props.currentBackground.feature[getEditIndex()].info,
+						choices: (props.currentBackground.feature[getEditIndex()]?.choices?.map((c) => ({
+							...c,
+							choices: c.choices.map(ch => ch.join('\n'))
+						}))),
+						metadata: {
+							...props.currentBackground.feature[getEditIndex()]?.metadata,
+							changes: props.currentBackground.feature[getEditIndex()]?.metadata?.changes ?? []
+						} 
+					};
+					break;
+				case !!props.currentRace:
+					feature = {
+						name: props.currentRace.traits[getEditIndex()]?.name ?? '',
+						value: props.currentRace.traits[getEditIndex()].value.join('\n'),
+						info: props.currentRace.traits[getEditIndex()].info,
+						choices: (props.currentRace.traits[getEditIndex()]?.choices?.map((c) => ({
+							...c,
+							choices: c.choices.map(ch => ch.join('\n'))
+						}))),
+						metadata: {
+							...props.currentRace.traits[getEditIndex()]?.metadata,
+							changes: props.currentRace.traits[getEditIndex()]?.metadata?.changes ?? []
+						}   
+					}
+					break;
+				default:
+					feature = props.currentLevel.features[getEditIndex()];
+					break;
 			}
 
 			setNewName(feature.name);

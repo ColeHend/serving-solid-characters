@@ -1,8 +1,8 @@
-import { Component, For, createSignal, useContext, createMemo, Show } from "solid-js";
+import { Component, For, createSignal, useContext, createMemo, Show, createEffect, onMount } from "solid-js";
 import { useStyle, Body, Input, Select, Option, Button, TextArea, Chip, useGetItems, Weapon, Armor } from "../../../../../shared/";
 import styles from './backgrounds.module.scss';
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
-import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
+import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { createStore } from "solid-js/store";
 import { Background } from "../../../../../models";
 import useGetBackgrounds from "../../../../../shared/customHooks/data/useGetBackgrounds";
@@ -54,13 +54,6 @@ const Backgrounds: Component = () => {
 		startingEquipmentChoices: [],
 		feature: []
 	});
-	if (!!searchParams?.name) {
-		const background = allBackgrounds().find((b) => b.name === searchParams.name);
-		if (!!background) {
-			console.log('\nLoaded Background: ', background);
-			setCurrentBackground(background);
-		}
-	}
 	const addFeature = (level: number, feature: Feature<string, string>) => {
 		const newFeature: Feature<string[], string> = {
 			name: feature.name,
@@ -82,10 +75,29 @@ const Backgrounds: Component = () => {
 		setCurrentBackground({ feature: newFeatures });
 	};
 
-	effect(() => {
-		console.log('Backgrounds: ', allBackgrounds());
+	const fillBackground = (search?:boolean) => {
+		const searchName = !!search ? searchParams.name : currentBackground.name
+		const background = homebrewManager.backgrounds().find((x)=>x.name === searchName);
+		const srdBackground = allBackgrounds().find((x)=>x.name === searchName);
 
+		 if (!!background) {
+			setCurrentBackground(background);
+		 }
+
+		 if (!!srdBackground) {
+			setCurrentBackground(srdBackground);
+		 }
+
+	}
+
+	const doesExist = ()=> {
+		return homebrewManager.backgrounds().findIndex(x=>x.name === currentBackground.name) > -1
+	}
+
+	onMount(()=>{
+		if (!!searchParams.name) fillBackground(true)
 	})
+
 	return (
 		<>
 			<Body>
@@ -98,6 +110,15 @@ const Backgrounds: Component = () => {
 								value={currentBackground.name}
 								onChange={(e) => setCurrentBackground({ name: e.currentTarget.value })} transparent />
 						</FormField>
+						
+						<Show when={doesExist()}>
+							<Button onClick={()=>fillBackground()}>Fill Info</Button>
+							<Button onClick={()=>{
+								const areSure = confirm("are you sure");
+
+								if (areSure) homebrewManager.removeBackground(currentBackground.name)
+							}}>Delete</Button>
+						</Show>
 					</div>
 					<div class={`${styles.description}`}>
 						<h4>Background Description</h4>
@@ -491,7 +512,7 @@ const Backgrounds: Component = () => {
 						}</For>
 					</div>
 					<div>
-						<Show when={!!HomebrewManager.backgrounds().find((b) => b.name === currentBackground.name)}>
+						<Show when={!!doesExist()}>
 							<Button onClick={(e)=>{
 								const result = HomebrewManager.updateBackground(currentBackground);
 								if (result) {
@@ -507,10 +528,10 @@ const Backgrounds: Component = () => {
 								}
 							}} >Edit</Button>
 						</Show>
-						<Show when={!HomebrewManager.backgrounds().find((b) => b.name === currentBackground.name)}>
+						<Show when={!doesExist()}>
 							<Button onClick={(e)=>{
 								HomebrewManager.addBackground(currentBackground);
-							}} >Save</Button>
+							}}>Save</Button>
 						</Show>
 					</div>
 				</div>

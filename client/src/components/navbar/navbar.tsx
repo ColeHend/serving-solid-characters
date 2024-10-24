@@ -53,6 +53,7 @@ const Navbar: Component<Props> = (props) => {
                         MySite
                     </A>
                 </span>
+
                 <ul style={other.isMobile ? {margin: "0 auto", width: "min-content"} :{}}>
                         <Show when={other.isMobile}>
                             <li >
@@ -63,15 +64,6 @@ const Navbar: Component<Props> = (props) => {
                                 </div>
                             </li> 
                         </Show>
-                    <For each={Buttons}>
-                        {(button, i) => (
-                                <Show when={!other.isMobile || i() === 0 || showList()}>
-                                    <li class={`${stylin()?.accent} ${stylin()?.hover} ${isActiveNav(button)}`}>
-                                        <A onClick={()=>setPageName(button.Link)} href={button.Link}>{button.Name}</A>
-                                    </li>
-                                </Show>
-                        )}
-                    </For>
                 </ul>
 
                 <div class={`${navStyles.toolBar}`}> 
@@ -79,7 +71,7 @@ const Navbar: Component<Props> = (props) => {
                         <Calculator />
                     </Button>
                 </div>
-
+                
                 <Button onClick={()=>setShowList(old => !old)} >
                     <BarMenu />
                 </Button>

@@ -6,12 +6,8 @@ import ArmorsView from "./parts/Armors/Armors";
 import AdventEquipView from "./parts/AdventuringEquip/AdventuringEquip";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
+import { ItemType } from "../../../shared/customHooks/utility/itemType";
 
-export enum ItemType {
-    AdventuringGear,
-    Weapon,
-    Armor
-}
 
 const ItemsViewTab:Component = () => {
     // all off the items

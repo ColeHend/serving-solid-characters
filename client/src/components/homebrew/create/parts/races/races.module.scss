@@ -14,3 +14,33 @@
         
     }
 }
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 2%
+}
+
+.abilityScoreRow {
+    display: flex;
+    flex-direction: row;
+    width: 20vw;
+}
+
+.abilityScoreInput {
+    display: flex;
+    flex-direction: row;
+
+    input {
+        width: 12%;
+    }
+}
+
+.startingProficencies {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+}

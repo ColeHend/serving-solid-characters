@@ -35,6 +35,10 @@ export class UniqueSet<T> {
 	}
 }
 
+export const UniqueStringArray = (strings: string[]) => {
+    return [...new Set(strings)]
+}
+
 export const SortArrayByKey = <T,>(arr: T[], key: keyof T, isAsc: boolean) => {
 	return arr.sort((a, b) => {
 				switch (key) {
