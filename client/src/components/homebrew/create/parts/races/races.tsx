@@ -232,10 +232,58 @@ const Races: Component = () => {
 
   const createRace = () => {
     homebrewManager.addRace(currentRace);
+    clearFields()
   }
 
   const updateRace = () => {
     homebrewManager.updateRace(currentRace);
+    clearFields()
+  }
+
+  const clearFields = () => {
+    setCurrentRace({
+      name: "",
+      speed: 30, 
+      age: "", 
+      alignment: "", 
+      size: "", 
+      sizeDescription: "", 
+      languages: [], 
+      languageChoice: { 
+        choose: 0, 
+        choices: [], 
+        type: FeatureTypes.Language 
+      },
+      languageDesc: "", 
+      traits: [], 
+      traitChoice: { 
+        choose: 0, 
+        choices: [], 
+        type: FeatureTypes.Race 
+      }, 
+      startingProficencies: [], 
+      startingProficiencyChoices: {
+        choose: 0,
+        choices: [],
+        type: FeatureTypes.Race,
+      },
+      abilityBonuses: [],
+      abilityBonusChoice: {
+        choose: 0,
+        choices: [],
+        type: FeatureTypes.AbilityScore,
+      },
+      subRaces: [],
+    })
+    setSelectedAbility(0);
+    setNewSizes("");
+    setNewLanguage("");
+    setAbilityIncrease(0);
+    setAlignTextarea("");
+    setLanguageDesc("");
+    setSizeDesc("");
+    setAgeDesc("")
+
   }
 
   // other state for text areas
@@ -277,8 +325,20 @@ const Races: Component = () => {
                   onInput={(e) => setCurrentRace("name", e.currentTarget.value)}
                 />
               </FormField>
-            
-              {/* add fill btn here */}
+            </div>
+
+            <div>
+              <Show when={doesExist()}>
+                <Button onClick={()=>fillRacesInfo()}>Fill Info</Button>
+                <Button onClick={()=>{
+                  const areSure = confirm("are you sure");
+
+                  if (areSure) {
+                    homebrewManager.removeRace(currentRace.name)
+                  }
+
+                }}>Delete</Button>
+              </Show>
             </div>
 
             <div>
@@ -462,20 +522,11 @@ const Races: Component = () => {
           <div>
             <div>
               <FormField name="alignment desc">
-                  {/* <Input 
-                    type="text"
-                    transparent
-                    value={}
-                    onInput={(e)=>setCurrentRace("alignment",e.currentTarget.value)}
-                  /> */}
                   <TextArea 
                   text={alignTextarea} 
                   setText={setAlignTextarea}
                   transparent
-                  
-                  >
-
-                  </TextArea>
+                  />
               </FormField>
             </div>
 

@@ -125,7 +125,19 @@ const StartingProf:Component<props> = (props) => {
     "Persuasion",
     "other"
     ])
-    
+
+    function addProfiencey() {
+
+        // could set more profiencey info here
+        props.setRaceStore("startingProficencies",(old)=>([...old,newProficeny]))
+
+        // ------ clear and close ------ \\
+        setNewProficeny({})
+
+        props.setClose(false)
+        
+    }
+
     return (
         <Modal title="Add A Profiencey" setClose={props.setClose} >
             <div>
@@ -152,7 +164,7 @@ const StartingProf:Component<props> = (props) => {
 
                     <hr />
 
-                    <h2>Speific</h2>
+                    <h2>Specific</h2>
                     <Select
                     transparent
                     value={newProficeny.value}
@@ -163,17 +175,13 @@ const StartingProf:Component<props> = (props) => {
                     </Select>
                     
                     <div>
-                        <Button onClick={()=>{
+                        <Button onClick={(e)=>{
+                            // set info depending on the tab
                             setNewProficeny("name","armors")
+                            // then add 
+                            addProfiencey()
 
-                            // might add set basic info function so that can be done without it being writting 4, 5 times
-
-                            props.setRaceStore("startingProficencies",(old)=>([...old,newProficeny]))
-
-                            setNewProficeny({})
-
-                            props.setClose(false)
-
+                            e.stopPropagation()
                         }}>Add Proficencey</Button>
                     </div>
                   </Tab>  
@@ -208,16 +216,12 @@ const StartingProf:Component<props> = (props) => {
                     </Select>
 
                     <div>
-                        <Button onClick={()=>{
+                        <Button onClick={(e)=>{
                             setNewProficeny("name","weapons")
 
-                             // might add set basic info function so that can be done without it being writting 4, 5 times
+                            addProfiencey()
 
-                            props.setRaceStore("startingProficencies",(old)=>([...old,newProficeny]))
-
-                            setNewProficeny({})
-
-                            props.setClose(false)
+                            e.stopPropagation()
                         }}>Add Proficencey</Button>
                     </div>
 
@@ -246,18 +250,14 @@ const StartingProf:Component<props> = (props) => {
                   </Show>
 
                   <div>
-                        <Button onClick={()=>{
+                        <Button onClick={(e)=>{
                             setNewProficeny("name","tools")
 
                             if (newProficeny.value === "other") setNewProficeny("value",otherValue())
 
-                            // might add set basic info function so that can be done with it being writting 4, 5 times
+                            addProfiencey()
 
-                            props.setRaceStore("startingProficencies",(old)=>([...old,newProficeny]))
-
-                            setNewProficeny({})
-
-                            props.setClose(false)
+                            e.stopPropagation()
                         }}>Add Proficencey</Button>
                     </div>
                   </Tab>
@@ -285,18 +285,14 @@ const StartingProf:Component<props> = (props) => {
                   </Show>
 
                   <div>
-                        <Button onClick={()=>{
+                        <Button onClick={(e)=>{
                             setNewProficeny("name","Skills")
 
                             if (newProficeny.value === "other") setNewProficeny("value",otherValue())
 
-                             // might add set basic info function so that can be done without it being writting 4, 5 times
-                                
-                            props.setRaceStore("startingProficencies",(old)=>([...old,newProficeny]))
+                            addProfiencey()
 
-                            setNewProficeny({})
-
-                            props.setClose(false)
+                            e.stopPropagation()
                         }}>Add Proficencey</Button>
                     </div>
                   </Tab>

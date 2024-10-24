@@ -542,7 +542,7 @@ class HomebrewManager {
         if (this.races().findIndex((r) => r.name === newRace.name) !== -1) {
             return;
         }
-        this.addRaceToDB(newRace).subscribe();
+        this.addRaceToDB(Clone(newRace)).subscribe();
     }
 
     private addRaceToDB = (newRace: Race) => {
