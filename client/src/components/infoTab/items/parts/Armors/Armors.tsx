@@ -38,11 +38,6 @@ const ArmorsView:Component<props> = (props) => {
         }
     ])
 
-    createEffect(()=>{
-        console.log("armors: ",SrdArmors());
-        
-    })
-
     return <div>
 
         <div class={`${styles.searchBar}`}>
