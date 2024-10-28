@@ -37,9 +37,11 @@ const WeaponsView:Component<props> = (props) => {
     const menuItems = (weapon:Weapon) => ([
         {
             name: checkForHomebrew(weapon) ? "Edit" : "Clone & Edit",
-            action: ()=> navigate(`/homebrew/create/items?name=${weapon.name}`),
+            action: ()=> navigate(`/homebrew/create/items?itemType=${weapon.equipmentCategory}&name=${weapon.name}`),
         }
     ])
+
+    createEffect(()=>console.log("weapons",props.weapons()));
 
     return <div>
 

@@ -34,7 +34,7 @@ const ArmorsView:Component<props> = (props) => {
     const menuButtons = (armor:Armor) => ([
         {
             name:checkForHomebrew(armor)?"Edit":"Clone & Edit",
-            action: () => navigate(`/homebrew/create/items?name=${armor.name}`)
+            action: () => navigate(`/homebrew/create/items?itemType=${armor.equipmentCategory}&name=${armor.name}`)
         }
     ])
 

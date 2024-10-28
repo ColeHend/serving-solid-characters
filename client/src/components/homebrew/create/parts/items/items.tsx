@@ -6,6 +6,7 @@ import {
   createMemo,
   createEffect,
   Show,
+  onMount,
 } from "solid-js";
 import {
   useStyle,
@@ -23,6 +24,7 @@ import {
   Button,
   UniqueStringArray,
   Clone,
+  homebrewManager,
 } from "../../../../../shared/";
 import styles from "./items.module.scss";
 import type { Tab } from "../../../../navbar/navbar";
@@ -35,6 +37,10 @@ import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Feature } from "../../../../../models/core.model";
 import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
+import HomebrewManager from "../../homebrewManager";
+import {useGetItems} from "../../../../../shared/";
+import useGetSpells from "../../../../../shared/customHooks/data/useGetSpells";
+import { c } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 
 const Items: Component = () => {
   // state part 1
@@ -42,7 +48,9 @@ const Items: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(() => useStyle(userSettings().theme));
   const [searchParams, setSearchParams] = useSearchParams();
+  const allItems = useGetItems()
 
+  // shared info on the items
   const [itemName, setItemName] = createSignal<string>("");
   const [itemType, setItemType] = createSignal<string>("Item");
   const [itemCost, setItemCost] = createSignal<number>(0);
@@ -50,11 +58,25 @@ const Items: Component = () => {
   const [otherUnit, setOtherUnit] = createSignal<string>("");
   const [itemTag, setItemTag] = createSignal<string>("Versatile");
   const [otherTag, setOtherTag] = createSignal<string>("");
-
+  
+  // feature modal
   const [showFeatureModal,setShowFeatureModal] = createSignal<boolean>(false);
   const [editIndex,setEditIndex] = createSignal<number>(-1);
 
+  // weapon
+  const [dmgDice,setDmgDice] = createSignal<string>("");
+  const [dmgType,setDmgType] = createSignal<string>("");
+  const [dmgBonus,setDmgBonus] = createSignal<number>(0);
+  const [diceNumber,setDiceNumber] = createSignal<number>(0);
+
+  // armor
+  const [armorCategory,setArmorCategory] = createSignal<string>("")
+  const [otherCategory,setOtherCategory] = createSignal<string>("");
+
+  // search paramaters 
   if (!!!searchParams.Name) setSearchParams({ Name: itemName() });
+
+  // stores & base info 
 
   const builtInTags = () => [
     "Versatile",
@@ -72,7 +94,19 @@ const Items: Component = () => {
     "Other",
   ];
 
-  // stores
+  const damageTypes = () => {
+    const allSpells = useGetSpells()
+
+    const dmgTypes:string[] = []
+
+    const weapons = allItems().filter(x=>x.equipmentCategory === ItemType[1]) as Weapon[]
+
+    weapons.forEach(y=>y.damage.forEach(z=>dmgTypes.push(z.damageType)));
+
+    allSpells().forEach(s=>dmgTypes.push(s.damageType));
+    
+    return UniqueStringArray(dmgTypes)
+  }
 
   const [currentItem, setCurrentItem] = createStore<Item>({
     name: "",
@@ -89,17 +123,17 @@ const Items: Component = () => {
   });
 
   const [currentWeapon, setCurrentWeapon] = createStore<Weapon>({
-    name: "", // done
-    equipmentCategory: "", // done
+    name: "",
+    equipmentCategory: "",
     cost: {
       quantity: 0,
       unit: "",
-    }, // done
-    weight: 0, // done
-    tags: [], // done
-    desc: [], // done
+    },
+    weight: 0,
+    tags: [], 
+    desc: [], 
     item: "", // depricated
-    features: [], // done
+    features: [],
     weaponCategory: "",
     weaponRange: "",
     categoryRange: "",
@@ -156,6 +190,7 @@ const Items: Component = () => {
           quantity: itemCost(),
           unit: costUnit() !== "other" ? costUnit() : otherUnit(),
         });
+        setCurrentWeapon("categoryRange",`${currentWeapon.weaponCategory}${currentWeapon.weaponRange}`)
 
         break;
 
@@ -166,7 +201,12 @@ const Items: Component = () => {
           quantity: itemCost(),
           unit: costUnit() !== "other" ? costUnit() : otherUnit(),
         });
-
+        
+        if (armorCategory() === "Other") {
+          setCurrentArmor("armorCategory",otherCategory());
+        } else {
+          setCurrentArmor("armorCategory",armorCategory());
+        }
         break;
 
       case "Item":
@@ -239,8 +279,14 @@ const Items: Component = () => {
     });
     setItemName("");
     setItemCost(0);
-    setCostUnit("");
+    setCostUnit("PP");
     setOtherUnit("");
+    setItemTag("Versatile");
+    setOtherTag("");
+    setDmgDice("");
+    setDmgType("");
+    setDmgBonus(0);
+    setDiceNumber(0);
     if (isSaving) setItemType("Item");
   };
 
@@ -306,23 +352,136 @@ const Items: Component = () => {
     setShowFeatureModal(false);
   }
 
-  // ▼ when things change ▼
-  createEffect(() => {
-    setSearchParams({ ItemType: itemType(), Name: itemName() });
-    saveToObject();
+  const doesExist = () => {
+    const homebrewItems = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[0])
+    const homewbrewWeapons = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[1]) as Weapon[];
+    const homebrewArmor = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[2]) as Armor[];
 
     switch (itemType()) {
-      case "Weapon":
-        console.log("currentWeapon", currentWeapon);
-        break;
       case "Armor":
-        console.log("currentArmor", currentArmor);
-        break;
+        return homebrewArmor.findIndex((x)=>x.name === currentArmor.name) > -1;
+
+      case "Weapon":
+        return homewbrewWeapons.findIndex((x)=>x.name === currentWeapon.name) > -1;
+
       case "Item":
-        console.log("currentItem", currentItem);
+        return homebrewItems.findIndex((x)=>x.name === currentItem.name) > -1;
+    }
+  }
+
+  const saveItem = () => {
+    saveToObject()
+    switch (itemType()) {
+      case "Weapon":
+        homebrewManager.addItem(currentWeapon)
+        clearInputs(true);
+        break;
+
+      case "Armor":
+        homebrewManager.addItem(currentArmor)
+        clearInputs(true);
+        break;
+
+      case "Item":
+        homebrewManager.addItem(currentItem);
+        clearInputs(true);
         break;
     }
+  }
+
+  const editItem = () => {
+    saveToObject()
+    switch (itemType()) {
+      case "Weapon":
+        homebrewManager.updateItem(currentWeapon);
+        clearInputs();
+        break;
+
+      case "Armor":
+        homebrewManager.updateItem(currentArmor);
+        clearInputs();
+        break;
+
+      case "Item":
+        homebrewManager.updateItem(currentItem);
+        clearInputs();
+        break;
+    }
+
+  }
+
+  const fillInfo = (search?:boolean) => {
+    const searchName = !!search ? searchParams.name : getItemObj().name;
+    const item = homebrewManager.items().find(x=>x.name === searchName);
+    const allItem = allItems().find(x=>x.name === searchName);
+
+    if (!!item) {
+      switch (item.equipmentCategory) {
+        case "Item":
+          setItemType(item.equipmentCategory);
+          setItemName(item.name);
+          setItemCost(item.cost.quantity);
+          setCostUnit(item.cost.unit);
+          setCurrentItem(item);
+          break;
+        
+        case "Armor":
+          setItemType(item.equipmentCategory);
+          setItemName(item.name);
+          setItemCost(item.cost.quantity);
+          setCostUnit(item.cost.unit);
+          setCurrentArmor(item);
+          break;
+
+        case "Weapon":
+          setItemType(item.equipmentCategory);
+          setItemName(item.name);
+          setItemCost(item.cost.quantity);
+          setCostUnit(item.cost.unit);
+          setCurrentWeapon(item);
+          break;
+      }
+    }
+
+    if (!!allItem) {
+      switch (allItem.equipmentCategory) {
+        case "Item":
+          setItemType(allItem.equipmentCategory);
+          setItemName(allItem.name);
+          setItemCost(allItem.cost.quantity);
+          setCostUnit(allItem.cost.unit);
+          setCurrentItem(allItem);
+          break;
+        
+        case "Armor":
+          setItemType(allItem.equipmentCategory);
+          setItemName(allItem.name);
+          setItemCost(allItem.cost.quantity);
+          setCostUnit(allItem.cost.unit);
+          setCurrentArmor(allItem);
+          break;
+
+        case "Weapon":
+          setItemType(allItem.equipmentCategory);
+          setItemName(allItem.name);
+          setItemCost(allItem.cost.quantity);
+          setCostUnit(allItem.cost.unit);
+          setCurrentWeapon(allItem);
+          break;
+      }
+    }
+
+  }
+
+  // ▼ when things change ▼
+  createEffect(() => {
+    setSearchParams({ itemType: itemType(), name: itemName() });
+    saveToObject();
   });
+
+  onMount(()=>{
+    if (!!searchParams.name && !!searchParams.itemType) fillInfo(true)
+  })
 
   return (
     <>
@@ -359,22 +518,24 @@ const Items: Component = () => {
 
         <h2>Cost</h2>
         <div>
-          <Input
-            type="number"
-            transparent
-            value={getItemObj().cost.quantity}
-            onInput={(e) => setItemCost(parseInt(e.currentTarget.value))}
-          />
-          <Select
-            transparent
-            value={getItemObj().cost.unit}
-            onChange={(e) => setCostUnit(e.currentTarget.value)}
-            disableUnselected
-          >
-            <For each={["PP", "GP", "SP", "CP", "other"]}>
-              {(unitOption) => <Option value={unitOption}>{unitOption}</Option>}
-            </For>
-          </Select>
+          <FormField class={`${styles.cost}`} name="cost">
+            <Input
+              type="number"
+              transparent
+              value={getItemObj().cost.quantity}
+              onInput={(e) => setItemCost(parseInt(e.currentTarget.value))}
+            />
+            <Select
+              transparent
+              value={getItemObj().cost.unit}
+              onChange={(e) => setCostUnit(e.currentTarget.value)}
+              disableUnselected
+            >
+              <For each={["PP", "GP", "SP", "CP", "other"]}>
+                {(unitOption) => <Option value={unitOption}>{unitOption}</Option>}
+              </For>
+            </Select>
+          </FormField>
         </div>
 
         <Show when={costUnit() === "other"}>
@@ -401,21 +562,129 @@ const Items: Component = () => {
         <div>
           <Show when={itemType() === "Weapon"}>
             <div>
-              <p>damage</p>
-              <p>properties</p>
+              <h2>Weapon Category</h2>
+              <Select
+                transparent
+                value={currentWeapon.weaponCategory}
+                onChange={(e)=>setCurrentWeapon("weaponCategory",e.currentTarget.value)}
+                disableUnselected
+              >
+                <For each={["Martial","Simple"]}>
+                  { (weaponType) => <Option value={weaponType}>{weaponType}</Option> }
+                </For>
+              </Select>
 
-              <h2>description</h2>
-              <FormField name="Item desc">
+              <h2>Weapon Range</h2>
+              <Select
+                transparent
+                value={currentWeapon.weaponRange}
+                onChange={(e)=>setCurrentWeapon("weaponRange",e.currentTarget.value)}
+                disableUnselected
+              >
+                <For each={["Melee","Ranged"]}>
+                  { (weaponRange) => <Option value={weaponRange}>{weaponRange}</Option> }
+                </For>
+              </Select>
+
+              <h2>Damage</h2>
+              <div style={`${styles.damage}`}>
+                <h3>Dmg Dice</h3>
+                <FormField class={`${styles.dmgDice}`} name="Dmg Dice">
+                  <Input 
+                    type="number"
+                    transparent
+                    min={0}
+                    placeholder="how many"
+                    value={diceNumber()}
+                    onChange={(e)=>setDiceNumber(parseInt(e.currentTarget.value))}
+                  />
+                  <Select
+                    transparent
+                    onChange={(e)=>setDmgDice(`${diceNumber()}${e.currentTarget.value}`)}
+                  >
+                    <For each={["d4","d6","d8","d10","d12","d20"]}>
+                      { (dice)=> <Option value={dice}>{dice}</Option> }
+                    </For>
+                  </Select>
+                </FormField>
+                
+                <h3>Dmg Type</h3>
+
+                <Select 
+                  transparent
+                  value={dmgType()}
+                  onChange={(e)=>setDmgType(e.currentTarget.value)}
+                >
+                  <For each={damageTypes().filter(x=>x !== "")}>
+                    { (damageType) => <Option value={damageType}>{damageType}</Option> }
+                  </For>
+                </Select>
+
+                <h3>Damage Bonus</h3>
+                <FormField name="Dmg Bonus">
+                  <Input 
+                    type="number"
+                    transparent
+                    value={dmgBonus()}
+                    onInput={(e)=>setDmgBonus(parseInt(e.currentTarget.value))}
+                  />
+                </FormField>
+
+                <Button onClick={()=>setCurrentWeapon("damage",old=>([...old,{
+                    damageDice: dmgDice(),
+                    damageType: dmgType(),
+                    damageBonus: dmgBonus()
+                }]))}>Add Damage</Button>
+
+              </div>
+
+              <Show when={currentWeapon.damage.length > 0}>
+                <For each={currentWeapon.damage}>
+                  { (damageObj) => <Chip key={`${damageObj.damageDice} + ${damageObj.damageBonus}`} value={damageObj.damageType} /> }
+                </For>
+              </Show>
+
+              <h2>Range</h2>
+
+              <div style={{display:"flex","flex-direction":"column"}}>
+                <h3>Normal</h3>
+                <FormField name="Normal">
+                  <Input 
+                    type="text"
+                    transparent
+                    value={currentWeapon.range.normal}
+                    onInput={(e)=>setCurrentWeapon("range",old=>({
+                      normal: parseInt(e.currentTarget.value),
+                      long: old.long
+                    }))}
+                  />
+                </FormField>
+                <h3>Long</h3>
+                <FormField name="Long" >
+                  <Input 
+                    type="text"
+                    transparent
+                    value={currentWeapon.range.long}
+                    onInput={(e)=>setCurrentWeapon("range",old=>({
+                      normal: old.normal,
+                      long: parseInt(e.currentTarget.value)
+                    }))}
+                  />
+                </FormField>
+              </div>
+
+              <h2>Description</h2>
+              <FormField name="Desc">
                 <Input 
-                  type="number"
+                  type="text"
                   transparent
                   value={currentWeapon.desc}
-                  onInput={(e)=>setCurrentWeapon("desc",e.currentTarget.value)}
+                  onInput={(e)=>setCurrentWeapon("desc",[e.currentTarget.value])}
                 />
               </FormField>
 
-              <h2>weight</h2>
-              <FormField name="Item weight">
+              <h2>Weight</h2>
+              <FormField name="Weight">
                 <Input 
                   type="number"
                   transparent
@@ -424,35 +693,151 @@ const Items: Component = () => {
                 />
               </FormField>
 
-              <h2>Weapon Type</h2>
-
-              <FormField name="Weapon Type">
-                as
-              </FormField>
-
-              <h2></h2>
             </div>
           </Show>
 
           <Show when={itemType() === "Armor"}>
             <div>
-              <p>armor class</p>
-              <p>strength requirement</p>
-              <p>stealth disadvantage</p>
-              <p>description</p>
-              <p>weight</p>
+              <h2>Armor Category</h2>
+              <div>
+                <Select
+                  transparent
+                  value={armorCategory()}
+                  onChange={(e)=>setArmorCategory(e.currentTarget.value)}
+                >
+                  <For each={["Light","Medium","Heavy","Shield","Other"]}>
+                    { (armorType) => <Option value={armorType}>{armorType}</Option>}
+                  </For>
+                </Select>
+
+                <Show when={armorCategory() === "Other"}>
+                  <div>
+                    <FormField name="Other Category">
+                    <Input 
+                      type="text"
+                      transparent
+                      value={otherCategory()}
+                      onInput={(e)=>{
+                        setOtherCategory(e.currentTarget.value)
+                      }}
+                    />
+                    </FormField>
+                  </div>
+                </Show>
+              </div>
+
+              <h2>Armor class</h2>
+              <div>
+                  <div>
+                    <Input
+                      type="checkbox"
+                      checked={currentArmor.armorClass.dexBonus}
+                      name="dexBonus"
+                      onChange={(e)=>{
+                        if (e.currentTarget.checked) {
+                          setCurrentArmor("armorClass",old=>({
+                            base: old.base,
+                            dexBonus: true,
+                            maxBonus: old.maxBonus
+                          }))
+                        } else {
+                          setCurrentArmor("armorClass",old=>({
+                            base: old.base,
+                            dexBonus: false,
+                            maxBonus: old.maxBonus
+                          }))
+                        }
+                      }}
+                    /> <label for="dexBonus">dexterity Bonus</label>
+                  </div>
+
+                  <FormField name="base">
+                    <Input
+                      type="number"
+                      transparent
+                      value={currentArmor.armorClass.base}
+                      onInput={(e)=>setCurrentArmor("armorClass",old=>({
+                        base: parseInt(e.currentTarget.value),
+                        dexBonus: old.dexBonus,
+                        maxBonus: old.maxBonus,
+                      }))}
+                    />
+                  </FormField>
+
+                  <FormField name="Max Bonus">
+                    <Input 
+                      type="number"
+                      transparent
+                      value={currentArmor.armorClass.maxBonus}
+                      onInput={(e)=>setCurrentArmor("armorClass",old=>({
+                        base: old.base,
+                        dexBonus: old.dexBonus,
+                        maxBonus: parseInt(e.currentTarget.value),
+                      }))}
+                    />
+                  </FormField>
+
+              </div>
+
+              <h2>Strength Req</h2>
+              <div>
+                <FormField name="Strength Min">
+                  <Input 
+                    type="number"
+                    transparent
+                    value={currentArmor.strMin}
+                    onInput={(e)=>setCurrentArmor("strMin",parseInt(e.currentTarget.value))}
+                  />
+                </FormField>
+              </div>
+
+              <div>
+                <Input
+                  type="checkbox"
+                  checked={currentArmor.stealthDisadvantage}
+                  name="stealthDisavantage"
+                  onChange={(e)=>{
+                    if (e.currentTarget.checked) {
+                      setCurrentArmor("stealthDisadvantage",true)
+                    } else {
+                      setCurrentArmor("stealthDisadvantage",false)
+                    }
+                  }}
+                /> <label for="stealthDisavantage">Stealth Disavantage</label>
+              </div>
+              
+              <h2>Description</h2>
+              <FormField name="Desc">
+                <Input
+                  type="text"
+                  transparent
+                  value={currentArmor.desc}
+                  onInput={(e)=>setCurrentArmor("desc",[e.currentTarget.value])}
+                />
+              </FormField>
+
+              <h2>Weight</h2>
+              <FormField name="Weight">
+                <Input
+                  type="number"
+                  transparent
+                  value={currentArmor.weight}
+                  onInput={(e)=>setCurrentArmor("weight",parseInt(e.currentTarget.value))}
+                />
+              </FormField>
+              
             </div>
           </Show>
 
           <Show when={itemType() === "Item"}>
             <div>
-              <h2>description</h2>
+              <h2>Description</h2>
               <FormField name="Item desc">
                 <Input
                   type="text"
                   transparent
                   value={currentItem.desc}
-                  onInput={(e) => setCurrentItem("desc", e.currentTarget.value)}
+                  onInput={(e) => setCurrentItem("desc", [e.currentTarget.value])}
                 />
               </FormField>
 
@@ -479,7 +864,6 @@ const Items: Component = () => {
               transparent
               value={getItemObj().tags}
               onChange={(e) => setItemTag(e.currentTarget.value)}
-              disableUnselected
             >
               <For each={builtInTags()}>
                 {(tag) => <Option value={tag}>{tag}</Option>}
@@ -529,8 +913,8 @@ const Items: Component = () => {
           </div>
 
           <div>
-            <Show when={getItemObj().tags.length > 0}>
-              <For each={UniqueStringArray(getItemObj().tags)}>
+            <Show when={getItemObj()?.tags?.length > 0}>
+              <For each={UniqueStringArray(getItemObj()?.tags)}>
                 {(tag) => (
                   <Chip
                     value={tag}
@@ -604,6 +988,15 @@ const Items: Component = () => {
               currentItem={getItemObj()}
               />
             </Show>
+        </div>
+
+        <div>
+          <Show when={doesExist()}>
+            <Button onClick={editItem}>Edit</Button>
+          </Show>
+          <Show when={!doesExist()}>
+            <Button onClick={saveItem}>Save</Button>
+          </Show>
         </div>
       </Body>
     </>

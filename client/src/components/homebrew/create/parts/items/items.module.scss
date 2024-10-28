@@ -14,3 +14,25 @@
         
     }
 }
+
+.cost {
+    width: 19vw;
+
+    input {
+        width: 75%;
+    }
+}
+
+.dmgDice {
+    display: flex;
+    flex-direction: row;
+    width:  20vw;
+
+    input {
+        width: 75%;
+    }
+
+    select {
+        width: 25%;
+    }
+}

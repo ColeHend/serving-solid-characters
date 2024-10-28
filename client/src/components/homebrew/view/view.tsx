@@ -59,7 +59,7 @@ const View: Component = () => {
         button={{
             backgroundClick: true,
             generateMenuButtons: (data) => ([
-                { name: "Edit", condition: ()=>true, action: () => { navigate(`/homebrew/create/items?name=${data.name}`) } },
+                { name: "Edit", condition: ()=>true, action: () => { navigate(`/homebrew/create/itemsitems?itemType=${data.equipmentCategory}&name=${data.name}`) } },
                 { name: "Delete", condition: ()=>true, action: () => { console.log("Delete", data); } }
             ] as MenuButton[])
         }}
