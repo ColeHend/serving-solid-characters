@@ -16,6 +16,8 @@
 }
 
 .cost {
+    display: flex;
+    flex-direction: row;
     width: 19vw;
 
     input {
@@ -35,4 +37,10 @@
     select {
         width: 25%;
     }
+}
+
+.checkbox {
+    display: flex;
+    gap: 5px;
+    align-items: center;
 }
