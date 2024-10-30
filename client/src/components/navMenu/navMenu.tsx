@@ -63,7 +63,8 @@ const NavMenu: Component<Props> = (props) => {
           { Name: "Subclasses", Link: "/homebrew/view?name=subclasses", isOpen: false },
           { Name: "Backgrounds", Link: "/homebrew/view?name=backgrounds", isOpen: false },
           { Name: "Items", Link: "/homebrew/view?name=items", isOpen: false },
-          { Name: "Races", Link: "/homebrew/view?name=races", isOpen: false }
+          { Name: "Races", Link: "/homebrew/view?name=races", isOpen: false },
+          { Name: "Subraces", Link: "/homebrew/view?name=subraces",isOpen: false}
         ]
       }
     ].sort((a, b) => a.Name > b.Name ? 1 : -1));

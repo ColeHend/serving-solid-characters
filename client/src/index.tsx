@@ -27,6 +27,7 @@ import viewClasses from "./components/infoTab/viewClasses/viewClasses";
 import Subclasses from "./components/homebrew/create/parts/subclasses/subclasses";
 import RootApp from "./components/rootApp";
 import ItemsViewTab from "./components/infoTab/items/item";
+import Subraces from "./components/homebrew/create/parts/subraces/subraces";
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -87,6 +88,7 @@ render(
           <Route path="/backgrounds" component={Backgrounds} />
           <Route path="/spells" component={Spells} />
           <Route path="/races" component={Races} />
+          <Route path="/subraces" component={Subraces} />
         </Route>
         <Route path="/*any" component={View} />
       </Route>

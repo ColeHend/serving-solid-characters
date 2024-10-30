@@ -81,7 +81,16 @@ const View: Component = () => {
                 { name: "Delete", condition: ()=>true, action: () => { console.log("Delete", data); } }
             ] as MenuButton[])
         }}
-    /> }
+    /> },
+        {name: "Subraces", element: <Table data={homebrewManager.races().flatMap(x=>x.subRaces)} keys={["name"]}  
+        button={{
+            backgroundClick: true,
+            generateMenuButtons: (data) => ([
+                { name: "Edit", condition: ()=>true,action: () => { navigate(`/homebrew/create/races?name="${data.name}`) }},
+                { name: "Delete", condition: ()=>true, action: () => { console.log("delete", data) }}
+            ] as MenuButton[])
+        }}
+    /> },
     ]);  
     const [searchParam, setSearchParam] = useSearchParams();
     if (!!!searchParam.name) setSearchParam({name: elementMemo()[0].name});

@@ -58,6 +58,7 @@ export enum FeatureTypes {
 	Item,
 	Weapon,
 	Armor,
+	Subrace
 };
 
 export enum MovementTypes {

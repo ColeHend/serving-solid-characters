@@ -69,7 +69,7 @@ class HomebrewManager {
         if(this.classes().findIndex((c) => c.name === newClass.name) !== -1){
             return null;
         }
-        this.addClassToDB(newClass).subscribe();
+        this.addClassToDB(Clone(newClass)).subscribe();
     }
 
     private addClassToDB = (newClass: DnDClass) => {
