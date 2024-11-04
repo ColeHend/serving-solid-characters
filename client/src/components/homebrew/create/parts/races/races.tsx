@@ -107,13 +107,7 @@ const Races: Component = () => {
     const newFeature: Feature<string[], string> = {
       name: feature.name,
       value: [feature.value],
-      info: {
-        className: feature.info.className,
-        subclassName: feature.info.subclassName,
-        level: feature.info.level,
-        type: feature.info.type,
-        other: feature.info.other,
-      },
+      info: feature.info,
       metadata: feature.metadata,
     };
     const newTraits = Clone(currentRace.traits);
@@ -435,7 +429,6 @@ const Races: Component = () => {
                 <Input type="number"
                   transparent
                   min={0}
-                  max={999}
                   value={abilityIncrease()}
                   onInput={(e)=>setAbilityIncrease(parseInt(e.currentTarget.value))}
                 />
@@ -475,29 +468,26 @@ const Races: Component = () => {
                 </Button>
 
                 <span>
-
-                  <For each={currentRace.traits}>
-                    {(trait, i) => (
-                      <Chip
-                        value={trait.name}
-                        onClick={() => {
-                          setEditIndex(i);
-                          setShowFeatureModal(true);
-                        }}
-                        remove={() => {
-                          const newTraits = Clone(currentRace.traits);
-                          newTraits.splice(i(), 1);
-                          setCurrentRace("traits", newTraits);
-                          setShowFeatureModal(false);
-                        }}
-                      />
-                    )}
-                  </For>
-
-                  <Show when={currentRace.traits.length === 0}>
-                    <Chip value="None" />
+                  
+                  <Show when={currentRace.traits.length > 0} fallback={<Chip value="None" />}>
+                    <For each={currentRace.traits}>
+                      {(trait, i) => (
+                        <Chip
+                          value={trait.name}
+                          onClick={() => {
+                            setEditIndex(i);
+                            setShowFeatureModal(true);
+                          }}
+                          remove={() => {
+                            const newTraits = Clone(currentRace.traits);
+                            newTraits.splice(i(), 1);
+                            setCurrentRace("traits", newTraits);
+                            setShowFeatureModal(false);
+                          }}
+                        />
+                      )}
+                    </For>                  
                   </Show>
-
                 </span>
 
                 <Show when={showFeatureModal()}>
