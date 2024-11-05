@@ -9,13 +9,29 @@ import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
-import StartingProf from "./startingProfs/startingProfs";
+import StartingProf from "../races/startingProfs/startingProfs";
 
 const Subraces:Component = () => {
 
     const allRaces = useGetRaces();
 
     const allRaceNames = () => homebrewManager.races().map(x=>x.name)
+
+    const [showProfPopup,setShowProfPopup] = createSignal<boolean>(false);
+
+    const [newProficeny,setNewProficeny] = createStore<Feature<string,string>>({
+        info: {
+            className: "",
+            subclassName: "",
+            level: 0,
+            type: FeatureTypes.Subclass,
+            other: ""
+        },
+        metadata: {},
+        choices: [],
+        name: "",
+        value: "",
+    })
 
     const [currentSubrace,setCurrentSubrace] = createStore<Subrace>({
         name: "",
@@ -162,8 +178,121 @@ const Subraces:Component = () => {
         setShowTraitPopup(!showTraitPopup());
     }
 
+    const addProfiencey = ():void => {
 
+        setCurrentSubrace("startingProficencies",old=>([...old ?? [],Clone(newProficeny)]))
 
+        setNewProficeny({
+            info: {
+                className: "",
+                subclassName: "",
+                level: 0,
+                type: FeatureTypes.Subclass,
+                other: ""
+            },
+            metadata: {},
+            choices: [],
+            name: "",
+            value: "",
+        })
+    }
+
+    const doesExist = () => {
+        return currentRace.subRaces.findIndex(x=> x.name === currentSubrace.name) > -1
+    }
+
+    const saveSubrace = () => {
+        // set the subraces
+        setCurrentRace("subRaces",old=>([...old,Clone(currentSubrace)]))
+        
+        setTimeout(()=>{
+            // update the race
+            homebrewManager.updateRace(Clone(currentRace));
+        },100)
+
+        setCurrentSubrace({
+            name: "",
+            desc: "",
+            traits: [],
+            traitChoice: {
+                choose: 0,
+                choices: [
+    
+                ],
+                type: FeatureTypes.Subrace
+            },
+            abilityBonuses: [],
+            abilityBonusChoice: {
+                choose: 0,
+                choices: [],
+                type: FeatureTypes.AbilityScore,
+            },
+            age: "",
+            alignment: "",
+            size: "",
+            sizeDescription: "",
+            languages: [],
+            languageChoice: {
+                choose: 0,
+                choices: [],
+                type: FeatureTypes.Language
+            },
+            startingProficencies: [],
+            startingProficiencyChoices: {
+                choose: 0,
+                choices: [],
+                type: FeatureTypes.Subrace
+            }
+        })
+    }
+
+    const updateSubrace = () => {
+        // find the subraces index
+        const index = currentRace.subRaces.findIndex(x=>x.name === currentSubrace.name)
+
+        // update the subrace 
+        currentRace.subRaces[index] = Clone(currentSubrace);
+
+        setTimeout(()=>{
+            // update the race
+            homebrewManager.updateRace(currentRace)
+        },100)
+
+        setCurrentSubrace({
+            name: "",
+            desc: "",
+            traits: [],
+            traitChoice: {
+                choose: 0,
+                choices: [
+    
+                ],
+                type: FeatureTypes.Subrace
+            },
+            abilityBonuses: [],
+            abilityBonusChoice: {
+                choose: 0,
+                choices: [],
+                type: FeatureTypes.AbilityScore,
+            },
+            age: "",
+            alignment: "",
+            size: "",
+            sizeDescription: "",
+            languages: [],
+            languageChoice: {
+                choose: 0,
+                choices: [],
+                type: FeatureTypes.Language
+            },
+            startingProficencies: [],
+            startingProficiencyChoices: {
+                choose: 0,
+                choices: [],
+                type: FeatureTypes.Subrace
+            }
+        })
+    }
 
     // ▼ when things change ▼ \\
 
@@ -371,12 +500,12 @@ const Subraces:Component = () => {
 
 
                 <h3>startingProficencies</h3>
-                <div style={{display:"flex","flex-direction":"row"}}>
+                <div style={{display:"flex","flex-direction":"row","align-items":"flex-start"}}>
                     
                     <div style={{display:"flex","flex-direction":"column"}}>
                         <Show when={currentSubrace.startingProficencies?.length} fallback={<Chip value="None" />}>
                             <For each={currentSubrace.startingProficencies}>
-                                { (prof,i) => <Chip value={prof.name} /> }
+                                { (prof,i) => <Chip value={prof.value} /> }
                             </For>
                         </Show>
                     </div>
@@ -387,7 +516,7 @@ const Subraces:Component = () => {
 
 
                 <h3>Traits</h3>
-                <div style={{display:"flex","flex-direction":"row"}}>
+                <div style={{display:"flex","flex-direction":"row","align-items":"flex-start"}}>
 
                         <div>
                             <Show when={currentSubrace.traits.length > 0} fallback={<Chip value="None" />}>
@@ -399,72 +528,15 @@ const Subraces:Component = () => {
 
                         <Button onClick={(e)=>setShowTraitPopup(!showTraitPopup())}>Add Trait</Button>
                 </div>
-
-                <div>
-                    <Button onClick={(e)=>{
-                        setCurrentRace("subRaces",old=>([...old,currentSubrace]))
-                        console.log("added Subrace");
-                        addSnackbar({
-                            severity:"info",
-                            message:`Added ${currentSubrace.name}`,
-                            closeTimeout: 3000
-                        })
-                        setCurrentSubrace({
-                            name: "",
-                            desc: "",
-                            traits: [],
-                            traitChoice: {
-                                choose: 0,
-                                choices: [
-                    
-                                ],
-                                type: FeatureTypes.Subrace
-                            },
-                            abilityBonuses: [],
-                            abilityBonusChoice: {
-                                choose: 0,
-                                choices: [],
-                                type: FeatureTypes.AbilityScore,
-                            },
-                            age: "",
-                            alignment: "",
-                            size: "",
-                            sizeDescription: "",
-                            languages: [],
-                            languageChoice: {
-                                choose: 0,
-                                choices: [],
-                                type: FeatureTypes.Language
-                            },
-                            startingProficencies: [],
-                            startingProficiencyChoices: {
-                                choose: 0,
-                                choices: [],
-                                type: FeatureTypes.Subrace
-                            }
-                        })
-                        console.log("cleared: ",currentSubrace);                    
-
-                    }}>Add Subrace</Button>
-                </div>
             </div>
         </Show>
-
-        <hr />
-
-        <div>
-            <Show when={currentRace.subRaces.length > 0}>
-                <For each={currentRace.subRaces}>
-                    { (subrace) => <Chip value={subrace.name} remove={()=>currentRace.subRaces.filter(x=>x.name !== subrace.name)} /> }
-                </For>
-            </Show>
-        </div>
 
         <Show when={showStartProf()}>
             <StartingProf 
             setClose={setShowStartProf}
-            setCurrentStore={setCurrentSubrace}
-            currentStore={currentSubrace}
+            addProfiencey={addProfiencey}
+            setNewProficeny={setNewProficeny}
+            newProficeny={newProficeny}
             />
         </Show>
 
@@ -479,6 +551,14 @@ const Subraces:Component = () => {
             setEditIndex={setEditIndex}
             currentSubrace={currentSubrace}
             />
+        </Show>
+
+        <Show when={!!doesExist()}>
+            <Button onClick={updateSubrace}>Update</Button>
+        </Show>
+        
+        <Show when={!doesExist()}>
+            <Button onClick={saveSubrace}>Save</Button>
         </Show>
         
     </Body>

@@ -49,6 +49,7 @@ import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Observable } from "rxjs";
 import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
 import StartingProf from "./startingProfs/startingProfs";
+import { className } from "solid-js/web";
 
 const Races: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
@@ -137,6 +138,20 @@ const Races: Component = () => {
     setCurrentRace("traits", newTraits);
     setShowFeatureModal(false);
   };
+
+  const [newProficeny,setNewProficeny] = createStore<Feature<string,string>>({
+    info: {
+      className: "",
+      subclassName: "",
+      level:0,
+      type: FeatureTypes.Race,
+      other: ""
+    },
+    metadata: {},
+    name: "",
+    choices: [],
+    value: ""
+  });
 
   // --------- Functions 
 
@@ -279,6 +294,25 @@ const Races: Component = () => {
     setAgeDesc("")
 
   }
+
+  function addProfiencey() {
+
+      setCurrentRace("startingProficencies",(old)=>([...old,Clone(newProficeny)]))
+
+      setNewProficeny({
+        info: {
+          className: "",
+          subclassName: "",
+          level:0,
+          type: FeatureTypes.Race,
+          other: ""
+        },
+        metadata: {},
+        name: "",
+        choices: [],
+        value: ""
+      })
+    }
 
   // other state for text areas
 
@@ -583,7 +617,7 @@ const Races: Component = () => {
               </div>
           
               <Show when={startProfPopup()}>
-                <StartingProf setClose={setStartProfPopup} setRaceStore={setCurrentRace} currentRace={currentRace} />
+                <StartingProf setClose={setStartProfPopup} addProfiencey={addProfiencey} newProficeny={newProficeny} setNewProficeny={setNewProficeny} />
               </Show>
             </div>
 
