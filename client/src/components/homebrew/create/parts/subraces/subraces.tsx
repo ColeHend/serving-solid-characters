@@ -15,8 +15,6 @@ const Subraces:Component = () => {
 
     const allRaces = useGetRaces();
 
-    const srdRaces = useGetRaces();
-
     const allRaceNames = () => homebrewManager.races().map(x=>x.name)
 
     const [showProfPopup,setShowProfPopup] = createSignal<boolean>(false);
