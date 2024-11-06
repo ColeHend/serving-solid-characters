@@ -1,6 +1,6 @@
 import { Component, createEffect, createMemo, createSignal, For, onMount, Show } from "solid-js";
 import Style from "./subraces.module.scss";
-import { Body, homebrewManager, Select,Option, Chip, FormField, Input, Button, UniqueStringArray, Clone } from "../../../../../shared";
+import { Body, homebrewManager, Select,Option, Chip, FormField, Input, Button, UniqueStringArray, Clone, TextArea } from "../../../../../shared";
 import { createStore } from "solid-js/store";
 import { Race, Subrace } from "../../../../../models/race.model";
 import { AbilityScores, Feature, FeatureTypes } from "../../../../../models/core.model";
@@ -119,6 +119,11 @@ const Subraces:Component = () => {
     
     const [editIndex, setEditIndex] = createSignal<number>(-1);
 
+    const [desc,setDesc] = createSignal<string>("");
+    const [age,setAge] = createSignal<string>("");
+    const [alignment,setAlignment] = createSignal<string>("");
+    const [sizeDesc,setSizeDesc] = createSignal<string>("");
+    const [newSizes,setNewSizes] = createSignal<string>("Tiny");
     
     if (!!!searchParams.race && !!!searchParams.subrace) setSearchParams({race:currentRace.name,subrace: currentSubrace.name})
 
@@ -319,10 +324,19 @@ const Subraces:Component = () => {
     createEffect(()=>{
         setSearchParams({race: currentRace.name ?? "",subrace: currentSubrace.name ?? ""})
     })
+
+    createEffect(()=>{
+        setCurrentSubrace("desc",desc());
+        setCurrentSubrace("age",age());
+        setCurrentSubrace("alignment",alignment());
+        setCurrentSubrace("sizeDescription",sizeDesc());
+
+    })
     
     onMount(()=>{
         if(!!searchParams.race && !!searchParams.subrace) fillInfo(true)
     })
+
     return <Body>
         <h1>Subraces</h1>
 
@@ -418,37 +432,34 @@ const Subraces:Component = () => {
                 <h3>Desc</h3>
                 <div>
                     <FormField name="Subrace Desc">
-                        <Input 
-                        type="text"
-                        transparent
-                        value={currentSubrace.desc}
-                        onInput={(e)=>setCurrentSubrace("desc",e.currentTarget.value)}
+                        <TextArea 
+                            text={desc}
+                            setText={setDesc}
+                            transparent
                         />
                     </FormField>
                 </div>
 
 
-                <h3>age</h3>
+                <h3>Age Desc</h3>
                 <div>
-                    <FormField name="Subrace Age">
-                        <Input 
-                        type="text"
-                        transparent
-                        value={currentSubrace.age}
-                        onInput={(e)=>setCurrentSubrace("age",e.currentTarget.value)}
+                    <FormField name="Subrace Age Desc">
+                        <TextArea 
+                            text={age}
+                            setText={setAge}
+                            transparent
                         />
                     </FormField>
                 </div>
 
 
-                <h3>alignment</h3>
+                <h3>Alignment Desc</h3>
                 <div>
-                    <FormField name="Subrace Alignment">
-                        <Input 
-                        type="text"
-                        transparent
-                        value={currentSubrace.alignment}
-                        onInput={(e)=>setCurrentSubrace("alignment",e.currentTarget.value)}
+                    <FormField name="Subrace Alignment Desc">
+                        <TextArea 
+                            text={alignment}
+                            setText={setAlignment}
+                            transparent
                         />
                     </FormField>
                 </div>
@@ -456,7 +467,7 @@ const Subraces:Component = () => {
 
                 <h3>size</h3>
                 <div>
-                    <FormField name="Subrace Size">
+                    {/* <FormField name="Subrace Size">
                         <Input 
                         type="text"
                         transparent
@@ -464,17 +475,58 @@ const Subraces:Component = () => {
                         onInput={(e)=>setCurrentSubrace("size",e.currentTarget.value)}
                         />
                     </FormField>
+
+                     */}
+                    <Select
+                        transparent
+                        value={newSizes()}
+                        onChange={((e)=>setNewSizes(e.currentTarget.value))}
+                    >
+                        <For each={[
+                      "Tiny",
+                      "Small",
+                      "Medium",
+                      "Large",
+                      "Huge",
+                      "Gargantuan",
+                    ]}>
+                        { (sizeOption)=><Option value={sizeOption} >{sizeOption}</Option> }
+                    </For>
+                    </Select>
+
+                    <Button onClick={(e)=>{
+                        const selSize = currentSubrace.size.split(",");
+                        const newArray = [...selSize,newSizes().trim()]
+                            .map((s)=> s.trim())
+                            .filter((s)=> !!s.length);
+                        setCurrentSubrace("size",newArray.join(","))
+                    }}>Add Size Option</Button>
+
+                </div>
+
+                <div>
+                    <Show when={!!currentSubrace.size}>
+                        <For each={currentSubrace.size.split(", ")}>
+                            { (size,i) => <Chip value={size} remove={()=>{
+                                const newSizes = currentSubrace.size.split(", ");
+                                newSizes.splice(i(), 1);
+                                setCurrentSubrace("size",newSizes.join(", "))
+                            }} /> }
+                        </For>
+                    </Show>
+                    <Show when={!currentSubrace.size}>
+                        <Chip value="None"/>
+                    </Show>
                 </div>
 
 
                 <h3>size desc</h3>
                 <div>
                     <FormField name="Subrace SizeDesc">
-                        <Input 
-                        type="text"
-                        transparent
-                        value={currentSubrace.sizeDescription}
-                        onInput={(e)=>setCurrentSubrace("sizeDescription",e.currentTarget.value)}
+                        <TextArea 
+                            text={sizeDesc}
+                            setText={setSizeDesc}
+                            transparent
                         />
                     </FormField>
                 </div>
