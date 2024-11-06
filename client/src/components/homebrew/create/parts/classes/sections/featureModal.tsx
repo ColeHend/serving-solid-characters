@@ -6,7 +6,7 @@ import Modal from "../../../../../../shared/components/popup/popup.component";
 import { LevelEntity, Subclass } from "../../../../../../models/class.model";
 import useGetFeatures from "../../../../../../shared/customHooks/useGetFeatures";
 import { useSearchParams } from "@solidjs/router";
-import { Background, Race } from "../../../../../../models";
+import { Background, Item, Race } from "../../../../../../models";
 import { p, S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import CharacterChanges from "./characterChanges";
 
@@ -19,6 +19,7 @@ interface FeatureModalProps {
 	currentSubclass?: Subclass;
 	currentBackground?: Background;
 	currentRace?: Race;
+	currentItem?: Item;
 	showFeature: Accessor<boolean>;
 	setShowFeature: Setter<boolean>;
 	editIndex: Accessor<number>;
@@ -85,6 +86,9 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 				level = props.currentLevel.level;
 				break;
 			case !isNullish(props.currentRace):
+				level = 0;
+				break;
+			case !isNullish(props.currentItem):
 				level = 0;
 				break;
 			default:
@@ -163,6 +167,9 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 				currentInfo.type = FeatureTypes.Race;
 				break;
 
+			case !isNullish(props.currentItem):
+				currentInfo.type = FeatureTypes.Item
+
 			default:
 				break;
 		}
@@ -210,6 +217,22 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 							...props.currentRace.traits[getEditIndex()]?.metadata,
 							changes: props.currentRace.traits[getEditIndex()]?.metadata?.changes ?? []
 						}   
+					}
+					break;
+
+				case !!props.currentItem:
+					feature = {
+						name: (props.currentItem.features ?? [])[getEditIndex()]?.name ?? '',
+						value: (props.currentItem.features ?? [])[getEditIndex()]?.value,
+						info: (props.currentItem.features ?? [])[getEditIndex()]?.info,
+						choices: ((props.currentItem.features ?? [])[getEditIndex()]?.choices?.map((c) => ({
+							...c,
+							choices: c.choices.map(ch => ch)
+						}))),
+						metadata: {
+							...(props.currentItem.features ?? [])[getEditIndex()]?.metadata,
+							changes: (props.currentItem.features ?? [])[getEditIndex()]?.metadata.changes ?? []
+						}
 					}
 					break;
 				default:

@@ -171,7 +171,7 @@ class HomebrewManager {
         } else {
             // ask to update
         }
-        this.addItemToDB(newItem).subscribe();
+        this.addItemToDB(Clone(newItem)).subscribe();
     }
 
     public addItemToDB = (newItem: Item) => {
@@ -198,7 +198,7 @@ class HomebrewManager {
 			if(index === -1){
 					return;
 			}
-			this.updateItemInDB(updatedItem).subscribe();
+			this.updateItemInDB(Clone(updatedItem)).subscribe();
     }
 
 		public updateItemInDB = (updatedItem: Item) => {
