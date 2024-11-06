@@ -49,6 +49,7 @@ import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Observable } from "rxjs";
 import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
 import StartingProf from "./startingProfs/startingProfs";
+import { className } from "solid-js/web";
 
 const Races: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
@@ -107,13 +108,7 @@ const Races: Component = () => {
     const newFeature: Feature<string[], string> = {
       name: feature.name,
       value: [feature.value],
-      info: {
-        className: feature.info.className,
-        subclassName: feature.info.subclassName,
-        level: feature.info.level,
-        type: feature.info.type,
-        other: feature.info.other,
-      },
+      info: feature.info,
       metadata: feature.metadata,
     };
     const newTraits = Clone(currentRace.traits);
@@ -143,6 +138,20 @@ const Races: Component = () => {
     setCurrentRace("traits", newTraits);
     setShowFeatureModal(false);
   };
+
+  const [newProficeny,setNewProficeny] = createStore<Feature<string,string>>({
+    info: {
+      className: "",
+      subclassName: "",
+      level:0,
+      type: FeatureTypes.Race,
+      other: ""
+    },
+    metadata: {},
+    name: "",
+    choices: [],
+    value: ""
+  });
 
   // --------- Functions 
 
@@ -285,6 +294,25 @@ const Races: Component = () => {
     setAgeDesc("")
 
   }
+
+  function addProfiencey() {
+
+      setCurrentRace("startingProficencies",(old)=>([...old,Clone(newProficeny)]))
+
+      setNewProficeny({
+        info: {
+          className: "",
+          subclassName: "",
+          level:0,
+          type: FeatureTypes.Race,
+          other: ""
+        },
+        metadata: {},
+        name: "",
+        choices: [],
+        value: ""
+      })
+    }
 
   // other state for text areas
 
@@ -435,7 +463,6 @@ const Races: Component = () => {
                 <Input type="number"
                   transparent
                   min={0}
-                  max={999}
                   value={abilityIncrease()}
                   onInput={(e)=>setAbilityIncrease(parseInt(e.currentTarget.value))}
                 />
@@ -475,29 +502,26 @@ const Races: Component = () => {
                 </Button>
 
                 <span>
-
-                  <For each={currentRace.traits}>
-                    {(trait, i) => (
-                      <Chip
-                        value={trait.name}
-                        onClick={() => {
-                          setEditIndex(i);
-                          setShowFeatureModal(true);
-                        }}
-                        remove={() => {
-                          const newTraits = Clone(currentRace.traits);
-                          newTraits.splice(i(), 1);
-                          setCurrentRace("traits", newTraits);
-                          setShowFeatureModal(false);
-                        }}
-                      />
-                    )}
-                  </For>
-
-                  <Show when={currentRace.traits.length === 0}>
-                    <Chip value="None" />
+                  
+                  <Show when={currentRace.traits.length > 0} fallback={<Chip value="None" />}>
+                    <For each={currentRace.traits}>
+                      {(trait, i) => (
+                        <Chip
+                          value={trait.name}
+                          onClick={() => {
+                            setEditIndex(i);
+                            setShowFeatureModal(true);
+                          }}
+                          remove={() => {
+                            const newTraits = Clone(currentRace.traits);
+                            newTraits.splice(i(), 1);
+                            setCurrentRace("traits", newTraits);
+                            setShowFeatureModal(false);
+                          }}
+                        />
+                      )}
+                    </For>                  
                   </Show>
-
                 </span>
 
                 <Show when={showFeatureModal()}>
@@ -593,7 +617,7 @@ const Races: Component = () => {
               </div>
           
               <Show when={startProfPopup()}>
-                <StartingProf setClose={setStartProfPopup} setRaceStore={setCurrentRace} currentRace={currentRace} />
+                <StartingProf setClose={setStartProfPopup} addProfiencey={addProfiencey} newProficeny={newProficeny} setNewProficeny={setNewProficeny} />
               </Show>
             </div>
 

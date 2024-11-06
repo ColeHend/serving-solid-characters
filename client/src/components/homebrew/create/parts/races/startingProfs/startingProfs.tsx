@@ -23,17 +23,19 @@ import { ItemType } from "../../../../../../shared/customHooks/utility/itemType"
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { Race } from "../../../../../../models";
 import { Feature, FeatureTypes } from "../../../../../../models/core.model";
+import { Subrace } from "../../../../../../models/race.model";
+import { p } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 
 interface props {
     setClose: Setter<boolean>;
-    setRaceStore: SetStoreFunction<Race>;
-    currentRace: Race;
+    addProfiencey: ()=>void;
+    newProficeny: Feature<string, string>;
+    setNewProficeny: SetStoreFunction<Feature<string, string>>;
 }
 
 const StartingProf:Component<props> = (props) => {
     const allItems = useGetItems();
     const [showConfirm,setShowConfirm] = createSignal<boolean>(false);
-    const [newProficeny,setNewProficeny] = createStore<Feature<string,string>>({} as Feature<string,string>);
     const [otherValue,setOtherValue] = createSignal<string>("")
 
     // functions
@@ -126,18 +128,6 @@ const StartingProf:Component<props> = (props) => {
     "other"
     ])
 
-    function addProfiencey() {
-
-        // could set more profiencey info here
-        props.setRaceStore("startingProficencies",(old)=>([...old,newProficeny]))
-
-        // ------ clear and close ------ \\
-        setNewProficeny({})
-
-        props.setClose(false)
-        
-    }
-
     return (
         <Modal title="Add A Profiencey" setClose={props.setClose} >
             <div>
@@ -148,8 +138,14 @@ const StartingProf:Component<props> = (props) => {
                     
                     <Select
                     transparent
-                    value={newProficeny.value}
-                    onChange={e=>setNewProficeny("value",e.currentTarget.value)}
+                    value={props.newProficeny.value}
+                    onChange={e=>props.setNewProficeny(old=>({
+                        info: old.info,
+                        metadata: old.metadata,
+                        name: old.name,
+                        choices: old.choices,
+                        value: e.currentTarget.value,
+                    }))}
                     >
                         <For each={[
                             "All Armor",
@@ -167,8 +163,14 @@ const StartingProf:Component<props> = (props) => {
                     <h2>Specific</h2>
                     <Select
                     transparent
-                    value={newProficeny.value}
-                    onChange={(e)=>setNewProficeny("value",e.currentTarget.value)}>
+                    value={props.newProficeny.value}
+                    onChange={(e)=>props.setNewProficeny(old=>({
+                        info: old.info,
+                        metadata: old.metadata,
+                        name: old.name,
+                        choices: old.choices,
+                        value: e.currentTarget.value,
+                    }))}>
                         <For each={allArmors()}>
                             { (armor, i) => <Option value={armor}>{armor}</Option> }
                         </For>
@@ -177,9 +179,18 @@ const StartingProf:Component<props> = (props) => {
                     <div>
                         <Button onClick={(e)=>{
                             // set info depending on the tab
-                            setNewProficeny("name","armors")
+                            props.setNewProficeny(old=>({
+                                info: old.info,
+                                metadata: old.metadata,
+                                name: "armors",
+                                choices: old.choices,
+                                value: old.value
+                            }))
+
                             // then add 
-                            addProfiencey()
+                            props.addProfiencey()
+
+                            props.setClose(false)
 
                             e.stopPropagation()
                         }}>Add Proficencey</Button>
@@ -190,8 +201,14 @@ const StartingProf:Component<props> = (props) => {
 
                     <Select
                     transparent
-                    value={newProficeny.value}
-                    onChange={(e)=>setNewProficeny("value",e.currentTarget.value)}
+                    value={props.newProficeny.value}
+                    onChange={(e)=>props.setNewProficeny(old=>({
+                        info: old.info,
+                        metadata: old.metadata,
+                        name: old.name,
+                        choices: old.choices,
+                        value: e.currentTarget.value
+                    }))}
                     >
                         <For each={[
                             "Simple",
@@ -207,8 +224,14 @@ const StartingProf:Component<props> = (props) => {
 
                     <Select
                     transparent
-                    value={newProficeny.value}
-                    onChange={(e)=>setNewProficeny("value",e.currentTarget.value)}
+                    value={props.newProficeny.value}
+                    onChange={(e)=>props.setNewProficeny(old=>({
+                        info: old.info,
+                        metadata: old.metadata,
+                        name: old.name,
+                        choices: old.choices,
+                        value: e.currentTarget.value
+                    }))}
                     >
                         <For each={allWeapons()}>
                             { (weapon, i) => <Option value={weapon}>{weapon}</Option> }
@@ -217,9 +240,17 @@ const StartingProf:Component<props> = (props) => {
 
                     <div>
                         <Button onClick={(e)=>{
-                            setNewProficeny("name","weapons")
+                            props.setNewProficeny(old=>({
+                                info: old.info,
+                                metadata: old.metadata,
+                                name: "weapons",
+                                choices: old.choices,
+                                value: old.value
+                            }))
 
-                            addProfiencey()
+                            props.addProfiencey()
+
+                            props.setClose(false)
 
                             e.stopPropagation()
                         }}>Add Proficencey</Button>
@@ -230,15 +261,21 @@ const StartingProf:Component<props> = (props) => {
             
                   <Select
                     transparent
-                    value={newProficeny.value}
-                    onChange={(e)=>setNewProficeny("value",e.currentTarget.value)}
+                    value={props.newProficeny.value}
+                    onChange={(e)=>props.setNewProficeny(old=>({
+                        info: old.info,
+                        metadata: old.metadata,
+                        name: old.name,
+                        choices: old.choices,
+                        value: e.currentTarget.value
+                    }))}
                     >
                         <For each={allTools()}>
                             { (tool, i) => <Option value={!tool.includes("------------")? tool :"" }>{tool}</Option> }
                         </For>
                   </Select>
 
-                  <Show when={newProficeny.value === "other"}>
+                  <Show when={props.newProficeny.value === "other"}>
                     <FormField name="other">
                         <Input 
                         type="text"
@@ -251,11 +288,19 @@ const StartingProf:Component<props> = (props) => {
 
                   <div>
                         <Button onClick={(e)=>{
-                            setNewProficeny("name","tools")
+                            props.setNewProficeny(old=>({
+                                info: old.info,
+                                metadata: old.metadata,
+                                name: "tools",
+                                choices: old.choices,
+                                value: old.value,
+                            }))
 
-                            if (newProficeny.value === "other") setNewProficeny("value",otherValue())
+                            if (props.newProficeny.value === "other") props.setNewProficeny("value",otherValue())
 
-                            addProfiencey()
+                            props.addProfiencey()
+
+                            props.setClose(false)
 
                             e.stopPropagation()
                         }}>Add Proficencey</Button>
@@ -265,15 +310,21 @@ const StartingProf:Component<props> = (props) => {
                     
                   <Select
                     transparent
-                    value={newProficeny.value}
-                    onChange={(e)=>setNewProficeny("value",e.currentTarget.value)}
+                    value={props.newProficeny.value}
+                    onChange={(e)=>props.setNewProficeny(old=>({
+                        info: old.info,
+                        metadata: old.metadata,
+                        name: old.name,
+                        choices: old.choices,
+                        value: e.currentTarget.value
+                    }))}
                     >
                         <For each={allSkills()}>
                             { (skill, i) => <Option value={skill}>{skill}</Option> }
                         </For>
                   </Select>
 
-                  <Show when={newProficeny.value === "other"}>
+                  <Show when={props.newProficeny.value === "other"}>
                     <FormField name="other">
                         <Input 
                         type="text"
@@ -286,11 +337,19 @@ const StartingProf:Component<props> = (props) => {
 
                   <div>
                         <Button onClick={(e)=>{
-                            setNewProficeny("name","Skills")
+                            props.setNewProficeny(old=>({
+                                info: old.info,
+                                metadata: old.metadata,
+                                name: "Skills",
+                                choices: old.choices,
+                                value: old.value
+                            }))
 
-                            if (newProficeny.value === "other") setNewProficeny("value",otherValue())
+                            if (props.newProficeny.value === "other") props.setNewProficeny("value",otherValue())
 
-                            addProfiencey()
+                            props.addProfiencey()
+
+                            props.setClose(false)
 
                             e.stopPropagation()
                         }}>Add Proficencey</Button>

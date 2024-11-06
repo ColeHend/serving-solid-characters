@@ -9,6 +9,7 @@ import { useSearchParams } from "@solidjs/router";
 import { Background, Item, Race } from "../../../../../../models";
 import { p, S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import CharacterChanges from "./characterChanges";
+import { Subrace } from "../../../../../../models/race.model";
 
 type FeatureType = 'new' | 'existing' | 'template' | '';
 
@@ -20,6 +21,7 @@ interface FeatureModalProps {
 	currentBackground?: Background;
 	currentRace?: Race;
 	currentItem?: Item;
+	currentSubrace?: Subrace;
 	showFeature: Accessor<boolean>;
 	setShowFeature: Setter<boolean>;
 	editIndex: Accessor<number>;
@@ -90,6 +92,9 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 				break;
 			case !isNullish(props.currentItem):
 				level = 0;
+				break;
+			case !isNullish(props.currentSubclass):
+				level = props.currentLevel.level;
 				break;
 			default:
 				break;
@@ -170,6 +175,8 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 			case !isNullish(props.currentItem):
 				currentInfo.type = FeatureTypes.Item
 
+			case !isNullish(props.currentSubclass):
+				currentInfo.type = FeatureTypes.Subrace
 			default:
 				break;
 		}
@@ -235,6 +242,20 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 						}
 					}
 					break;
+				case !!props.currentSubclass:
+					feature = {
+						name: (props.currentSubrace?.traits ?? [])[getEditIndex()]?.name ??'',
+						value: (props.currentSubrace?.traits ?? [])[getEditIndex()]?.value.join(`\n`) ?? '',
+						info: (props.currentSubrace?.traits ?? [])[getEditIndex()]?.info,
+						choices: (props.currentSubrace?.traits ?? [])[getEditIndex()]?.choices?.map((c) => ({
+							...c,
+							choices: c.choices.map(ch=> ch.join(`\n`))
+						})),
+						metadata: {
+							...(props.currentSubrace?.traits ?? [])[getEditIndex()]?.metadata,
+							changes: (props.currentSubrace?.traits ?? [])[getEditIndex()]?.metadata.changes
+						}
+					}
 				default:
 					feature = props.currentLevel.features[getEditIndex()];
 					break;
