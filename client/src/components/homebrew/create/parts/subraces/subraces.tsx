@@ -314,6 +314,10 @@ const Subraces:Component = () => {
 
             if (!!subrace) { // fill subrace info
                 setCurrentSubrace(subrace);
+                setDesc(subrace.desc);
+                setAge(subrace.age);
+                setAlignment(subrace.alignment);
+                setSizeDesc(subrace.sizeDescription);
             }
         }
         
@@ -467,20 +471,11 @@ const Subraces:Component = () => {
 
                 <h3>size</h3>
                 <div>
-                    {/* <FormField name="Subrace Size">
-                        <Input 
-                        type="text"
-                        transparent
-                        value={currentSubrace.size}
-                        onInput={(e)=>setCurrentSubrace("size",e.currentTarget.value)}
-                        />
-                    </FormField>
-
-                     */}
                     <Select
                         transparent
                         value={newSizes()}
                         onChange={((e)=>setNewSizes(e.currentTarget.value))}
+                        disableUnselected
                     >
                         <For each={[
                       "Tiny",
