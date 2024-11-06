@@ -65,6 +65,7 @@ const Races: Component = () => {
   const [abilityIncrease,setAbilityIncrease] = createSignal<number>(0);
   const [startProfPopup,setStartProfPopup] = createSignal<boolean>(false);
   
+
   // ------- Store
   const [currentRace, setCurrentRace] = createStore<Race>({
     name: "",
@@ -100,6 +101,8 @@ const Races: Component = () => {
     },
     subRaces: [],
   });
+
+  if (!!!searchParam.name) setSearchParam({name: currentRace.name ?? ""})
 
   // --------- Feature Modal
   const [editIndex, setEditIndex] = createSignal<number>(-1);
@@ -322,6 +325,8 @@ const Races: Component = () => {
   const [ageDesc,setAgeDesc] = createSignal<string>("");
 
   // when the component first loads ▼
+    
+  createEffect(()=>setSearchParam({name: currentRace.name ?? ""}))
 
   onMount(() => {
     if (!!searchParam.name) fillRacesInfo(true)

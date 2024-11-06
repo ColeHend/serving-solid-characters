@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, For, onMount, Show } from "solid-js";
 import Style from "./subraces.module.scss";
 import { Body, homebrewManager, Select,Option, Chip, FormField, Input, Button, UniqueStringArray, Clone } from "../../../../../shared";
 import { createStore } from "solid-js/store";
@@ -14,6 +14,8 @@ import StartingProf from "../races/startingProfs/startingProfs";
 const Subraces:Component = () => {
 
     const allRaces = useGetRaces();
+
+    const srdRaces = useGetRaces();
 
     const allRaceNames = () => homebrewManager.races().map(x=>x.name)
 
@@ -118,7 +120,7 @@ const Subraces:Component = () => {
     const [editIndex, setEditIndex] = createSignal<number>(-1);
 
     
-
+    if (!!!searchParams.race && !!!searchParams.subrace) setSearchParams({race:currentRace.name,subrace: currentSubrace.name})
 
     // functions
 
@@ -199,6 +201,10 @@ const Subraces:Component = () => {
 
     const doesExist = () => {
         return currentRace.subRaces.findIndex(x=> x.name === currentSubrace.name) > -1
+    }
+
+    const isSrd = () => {
+        return srdRaces().find(x=>x.name === currentRace.name)
     }
 
     const saveSubrace = () => {
@@ -294,12 +300,42 @@ const Subraces:Component = () => {
         })
     }
 
+    const fillInfo = (search?:boolean) => {
+        const searchRace = search? searchParams.race : currentRace.name;
+        const searchSubrace = search? searchParams.subrace : currentSubrace.name;
+
+        const race = allRaces().find((x)=>x.name === searchRace);
+        
+        if (!!race) { // get subrace and set the current race !important
+            const subrace = race.subRaces.find(x=>x.name === searchSubrace);
+            
+            setCurrentRace(race);
+
+            if (!!subrace) { // fill subrace info
+                setCurrentSubrace(subrace);
+                
+                if (isSrd()) {
+                    if (doesExist()) setCurrentSubrace("name",old=>(`${old}(${race.subRaces.length})`))
+                }
+            }
+        }
+        
+    }
+
+
+
+
+
+
     // ▼ when things change ▼ \\
 
     createEffect(()=>{
         setSearchParams({race: currentRace.name ?? "",subrace: currentSubrace.name ?? ""})
     })
     
+    onMount(()=>{
+        if(!!searchParams.race && !!searchParams.subrace) fillInfo(true)
+    })
     return <Body>
         <h1>Subraces</h1>
 
@@ -347,7 +383,6 @@ const Subraces:Component = () => {
                         subRaces: [],
                     });
                 }
-                console.log("set: ", currentRace);
                 
             }}
             
@@ -370,7 +405,27 @@ const Subraces:Component = () => {
                         onInput={(e)=>setCurrentSubrace("name",e.currentTarget.value)}
                         />
                     </FormField>
+                
+                    <Show when={doesExist()}>
+                        <Button onClick={()=>fillInfo()}>Fill Info</Button>
+                        <Button onClick={()=>{
+                            let areSure = confirm("Are you sure? this action will cause you to lose progress.");
+
+                            if (areSure) {
+                                currentRace.subRaces.filter(x=>x.name !== currentSubrace.name)
+                                
+                                homebrewManager.updateRace(Clone(currentRace));
+
+                                addSnackbar({
+                                    severity:"success",
+                                    message:"Deleted Subrace",
+                                    closeTimeout: 4000
+                                })
+                            }
+                        }}>Delete</Button>
+                    </Show>
                 </div>
+
 
 
                 <h3>Desc</h3>
@@ -558,7 +613,7 @@ const Subraces:Component = () => {
         </Show>
         
         <Show when={!doesExist()}>
-            <Button onClick={saveSubrace}>Save</Button>
+            <Button disabled={currentRace.name === ""} onClick={saveSubrace}>Save</Button>
         </Show>
         
     </Body>
