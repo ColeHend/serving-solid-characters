@@ -203,10 +203,6 @@ const Subraces:Component = () => {
         return currentRace.subRaces.findIndex(x=> x.name === currentSubrace.name) > -1
     }
 
-    const isSrd = () => {
-        return srdRaces().find(x=>x.name === currentRace.name)
-    }
-
     const saveSubrace = () => {
         // set the subraces
         setCurrentRace("subRaces",old=>([...old,Clone(currentSubrace)]))
@@ -313,19 +309,10 @@ const Subraces:Component = () => {
 
             if (!!subrace) { // fill subrace info
                 setCurrentSubrace(subrace);
-                
-                if (isSrd()) {
-                    if (doesExist()) setCurrentSubrace("name",old=>(`${old}(${race.subRaces.length})`))
-                }
             }
         }
         
     }
-
-
-
-
-
 
     // ▼ when things change ▼ \\
 
