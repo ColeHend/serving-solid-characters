@@ -4,7 +4,7 @@ namespace RacesEntity
 {
     public class RaceEntity
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Speed { get; set; } = string.Empty;
         public List<Feature<int, string>> AbilityBonuses { get; set; } = new List<Feature<int, string>>();
@@ -27,7 +27,7 @@ namespace RacesEntity
 
     public class SubRaceEntity
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Desc { get; set; } = string.Empty;
         public List<Feature<int, string>> AbilityBonuses { get; set; } = new List<Feature<int, string>>();
@@ -46,7 +46,7 @@ namespace RacesEntity
 
     public class RaceDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Speed { get; set; } = string.Empty;
         public List<Feature<int, string>> AbilityBonuses { get; set; } = new List<Feature<int, string>>();

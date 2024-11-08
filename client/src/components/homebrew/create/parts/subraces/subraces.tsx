@@ -34,6 +34,7 @@ const Subraces:Component = () => {
     })
 
     const [currentSubrace,setCurrentSubrace] = createStore<Subrace>({
+        id: crypto.randomUUID(),
         name: "",
         desc: "",
         traits: [],
@@ -69,6 +70,7 @@ const Subraces:Component = () => {
     });
 
     const [currentRace,setCurrentRace] = createStore<Race>({
+        id: crypto.randomUUID(),
         name: "",
         speed: 30, 
         age: "", 
