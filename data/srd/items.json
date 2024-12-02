@@ -1,5 +1,6 @@
 [
   {
+    "Id":0,
     "Name": "Abacus",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -11,6 +12,7 @@
     "Desc": null
   },
   {
+    "Id":1,
     "Name": "Acid (vial)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -25,6 +27,7 @@
     ]
   },
   {
+    "Id":2,
     "Name": "Alchemist's fire (flask)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -40,6 +43,7 @@
     ]
   },
   {
+    "Id":3,
     "Name": "Arrow",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -51,6 +55,7 @@
     "Desc": null
   },
   {
+    "Id":4,
     "Name": "Blowgun needle",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -62,6 +67,7 @@
     "Desc": null
   },
   {
+    "Id":5,
     "Name": "Crossbow bolt",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -73,6 +79,7 @@
     "Desc": null
   },
   {
+    "Id":6,
     "Name": "Sling bullet",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -84,6 +91,7 @@
     "Desc": null
   },
   {
+    "Id":7,
     "Name": "Amulet",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -98,6 +106,7 @@
     ]
   },
   {
+    "Id":8,
     "Name": "Antitoxin (vial)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -111,6 +120,7 @@
     ]
   },
   {
+    "Id":9,
     "Name": "Crystal",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -124,6 +134,7 @@
     ]
   },
   {
+    "Id":10,
     "Name": "Orb",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -137,6 +148,7 @@
     ]
   },
   {
+    "Id":11,
     "Name": "Rod",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -150,6 +162,7 @@
     ]
   },
   {
+    "Id":12,
     "Name": "Staff",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -163,6 +176,7 @@
     ]
   },
   {
+    "Id":13,
     "Name": "Wand",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -176,6 +190,7 @@
     ]
   },
   {
+    "Id":14,
     "Name": "Backpack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -187,6 +202,7 @@
     "Desc": null
   },
   {
+    "Id":15,
     "Name": "Ball bearings (bag of 1,000)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -202,6 +218,7 @@
     ]
   },
   {
+    "Id":16,
     "Name": "Barrel",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -213,6 +230,7 @@
     "Desc": null
   },
   {
+    "Id":18,
     "Name": "Basket",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -224,6 +242,7 @@
     "Desc": null
   },
   {
+    "Id":20,
     "Name": "Bedroll",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -235,6 +254,7 @@
     "Desc": null
   },
   {
+    "Id":21,
     "Name": "Bell",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -246,6 +266,7 @@
     "Desc": null
   },
   {
+    "Id":22,
     "Name": "Blanket",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -257,6 +278,7 @@
     "Desc": null
   },
   {
+    "Id":23,
     "Name": "Block and tackle",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -270,6 +292,7 @@
     ]
   },
   {
+    "Id":24,
     "Name": "Book",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -283,6 +306,7 @@
     ]
   },
   {
+    "Id":25,
     "Name": "Bottle, glass",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -294,6 +318,7 @@
     "Desc": null
   },
   {
+    "Id":26,
     "Name": "Bucket",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -305,6 +330,7 @@
     "Desc": null
   },
   {
+    "Id":27,
     "Name": "Caltrops",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -321,6 +347,7 @@
     ]
   },
   {
+    "Id":28,
     "Name": "Candle",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -334,6 +361,7 @@
     ]
   },
   {
+    "Id":29,
     "Name": "Case, crossbow bolt",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -347,6 +375,7 @@
     ]
   },
   {
+    "Id":30,
     "Name": "Case, map or scroll",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -360,6 +389,7 @@
     ]
   },
   {
+    "Id":31,
     "Name": "Chain (10 feet)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -373,6 +403,7 @@
     ]
   },
   {
+    "Id":32,
     "Name": "Chalk (1 piece)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -384,6 +415,7 @@
     "Desc": null
   },
   {
+    "Id":33,
     "Name": "Chest",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -395,6 +427,7 @@
     "Desc": null
   },
   {
+    "Id":34,
     "Name": "Clothes, common",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -406,6 +439,7 @@
     "Desc": null
   },
   {
+    "Id":35,
     "Name": "Clothes, costume",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -417,6 +451,7 @@
     "Desc": null
   },
   {
+    "Id":36,
     "Name": "Clothes, fine",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -428,6 +463,7 @@
     "Desc": null
   },
   {
+    "Id":37,
     "Name": "Clothes, traveler's",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -439,6 +475,7 @@
     "Desc": null
   },
   {
+    "Id":38,
     "Name": "Component pouch",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -452,6 +489,7 @@
     ]
   },
   {
+    "Id":39,
     "Name": "Crowbar",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -465,6 +503,7 @@
     ]
   },
   {
+    "Id":40,
     "Name": "Sprig of mistletoe",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -478,6 +517,7 @@
     ]
   },
   {
+    "Id":41,
     "Name": "Totem",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -491,6 +531,7 @@
     ]
   },
   {
+    "Id":42,
     "Name": "Wooden staff",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -504,6 +545,7 @@
     ]
   },
   {
+    "Id":43,
     "Name": "Yew wand",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -517,6 +559,7 @@
     ]
   },
   {
+    "Id":44,
     "Name": "Emblem",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -531,6 +574,7 @@
     ]
   },
   {
+    "Id":45,
     "Name": "Fishing tackle",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -544,6 +588,7 @@
     ]
   },
   {
+    "Id":46,
     "Name": "Flask or tankard",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -555,6 +600,7 @@
     "Desc": null
   },
   {
+    "Id":47,
     "Name": "Grappling hook",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -566,6 +612,7 @@
     "Desc": null
   },
   {
+    "Id":48,
     "Name": "Hammer",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -577,6 +624,7 @@
     "Desc": null
   },
   {
+    "Id":49,
     "Name": "Hammer, sledge",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -588,6 +636,7 @@
     "Desc": null
   },
   {
+    "Id":50,
     "Name": "Holy water (flask)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -604,6 +653,7 @@
     ]
   },
   {
+    "Id":51,
     "Name": "Hourglass",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -615,6 +665,7 @@
     "Desc": null
   },
   {
+    "Id":52,
     "Name": "Hunting trap",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -630,6 +681,7 @@
     ]
   },
   {
+    "Id":53,
     "Name": "Ink (1 ounce bottle)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -641,6 +693,7 @@
     "Desc": null
   },
   {
+    "Id":54,
     "Name": "Ink pen",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -652,6 +705,7 @@
     "Desc": null
   },
   {
+    "Id":55,
     "Name": "Jug or pitcher",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -663,6 +717,7 @@
     "Desc": null
   },
   {
+    "Id":56,
     "Name": "Climber's Kit",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -676,6 +731,7 @@
     ]
   },
   {
+    "Id":57,
     "Name": "Disguise Kit",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -689,6 +745,7 @@
     ]
   },
   {
+    "Id":58,
     "Name": "Forgery Kit",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -702,6 +759,7 @@
     ]
   },
   {
+    "Id":59,
     "Name": "Herbalism Kit",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -715,6 +773,7 @@
     ]
   },
   {
+    "Id":60,
     "Name": "Healer's Kit",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -728,6 +787,7 @@
     ]
   },
   {
+    "Id":61,
     "Name": "Mess Kit",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -741,6 +801,7 @@
     ]
   },
   {
+    "Id":62,
     "Name": "Poisoner's Kit",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -754,6 +815,7 @@
     ]
   },
   {
+    "Id":63,
     "Name": "Ladder (10-foot)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -765,6 +827,7 @@
     "Desc": null
   },
   {
+    "Id":64,
     "Name": "Lamp",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -778,6 +841,7 @@
     ]
   },
   {
+    "Id":65,
     "Name": "Lantern, bullseye",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -791,6 +855,7 @@
     ]
   },
   {
+    "Id":66,
     "Name": "Lantern, hooded",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -804,6 +869,7 @@
     ]
   },
   {
+    "Id":67,
     "Name": "Lock",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -817,6 +883,7 @@
     ]
   },
   {
+    "Id":68,
     "Name": "Magnifying glass",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -831,6 +898,7 @@
     ]
   },
   {
+    "Id":69,
     "Name": "Manacles",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -845,6 +913,7 @@
     ]
   },
   {
+    "Id":70,
     "Name": "Mirror, steel",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -856,6 +925,7 @@
     "Desc": null
   },
   {
+    "Id":71,
     "Name": "Oil (flask)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -873,6 +943,7 @@
     ]
   },
   {
+    "Id":72,
     "Name": "Paper (one sheet)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -884,6 +955,7 @@
     "Desc": null
   },
   {
+    "Id":73,
     "Name": "Parchment (one sheet)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -895,6 +967,7 @@
     "Desc": null
   },
   {
+    "Id":74,
     "Name": "Perfume (vial)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -906,6 +979,7 @@
     "Desc": null
   },
   {
+    "Id":75,
     "Name": "Pick, miner's",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -917,6 +991,7 @@
     "Desc": null
   },
   {
+    "Id":76,
     "Name": "Piton",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -928,6 +1003,7 @@
     "Desc": null
   },
   {
+    "Id":77,
     "Name": "Poison, basic (vial)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -941,6 +1017,7 @@
     ]
   },
   {
+    "Id":78,
     "Name": "Pole (10-foot)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -952,6 +1029,7 @@
     "Desc": null
   },
   {
+    "Id":79,
     "Name": "Pot, iron",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -963,6 +1041,7 @@
     "Desc": null
   },
   {
+    "Id":80,
     "Name": "Potion of healing",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -976,6 +1055,7 @@
     ]
   },
   {
+    "Id":81,
     "Name": "Pouch",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -989,6 +1069,7 @@
     ]
   },
   {
+    "Id":82,
     "Name": "Quiver",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1002,6 +1083,7 @@
     ]
   },
   {
+    "Id":83,
     "Name": "Ram, portable",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1015,6 +1097,7 @@
     ]
   },
   {
+    "Id":84,
     "Name": "Rations (1 day)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1028,6 +1111,7 @@
     ]
   },
   {
+    "Id":85,
     "Name": "Reliquary",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1042,6 +1126,7 @@
     ]
   },
   {
+    "Id":86,
     "Name": "Robes",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1053,6 +1138,7 @@
     "Desc": null
   },
   {
+    "Id":87,
     "Name": "Rope, hempen (50 feet)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1066,6 +1152,7 @@
     ]
   },
   {
+    "Id":88,
     "Name": "Rope, silk (50 feet)",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1079,6 +1166,7 @@
     ]
   },
   {
+    "Id":89,
     "Name": "Sack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1090,6 +1178,7 @@
     "Desc": null
   },
   {
+    "Id":90,
     "Name": "Scale, merchant's",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1103,6 +1192,7 @@
     ]
   },
   {
+    "Id":91,
     "Name": "Sealing wax",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1114,6 +1204,7 @@
     "Desc": null
   },
   {
+    "Id":92,
     "Name": "Shovel",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1125,6 +1216,7 @@
     "Desc": null
   },
   {
+    "Id":93,
     "Name": "Signal whistle",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1136,6 +1228,7 @@
     "Desc": null
   },
   {
+    "Id":94,
     "Name": "Signet ring",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1147,6 +1240,7 @@
     "Desc": null
   },
   {
+    "Id":95,
     "Name": "Soap",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1158,6 +1252,7 @@
     "Desc": null
   },
   {
+    "Id":96,
     "Name": "Spellbook",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1171,6 +1266,7 @@
     ]
   },
   {
+    "Id":97,
     "Name": "Spike, iron",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1182,6 +1278,7 @@
     "Desc": null
   },
   {
+    "Id":98,
     "Name": "Spyglass",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1195,6 +1292,7 @@
     ]
   },
   {
+    "Id":99,
     "Name": "Tent, two-person",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1208,6 +1306,7 @@
     ]
   },
   {
+    "Id":100,
     "Name": "Tinderbox",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1222,6 +1321,7 @@
     ]
   },
   {
+    "Id":101,
     "Name": "Torch",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1235,6 +1335,7 @@
     ]
   },
   {
+    "Id":102,
     "Name": "Vial",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1246,6 +1347,7 @@
     "Desc": null
   },
   {
+    "Id":103,
     "Name": "Waterskin",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1257,6 +1359,7 @@
     "Desc": null
   },
   {
+    "Id":104,
     "Name": "Whetstone",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1268,6 +1371,7 @@
     "Desc": null
   },
   {
+    "Id":105,
     "Name": "Burglar's Pack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1279,6 +1383,7 @@
     "Desc": null
   },
   {
+    "Id":106,
     "Name": "Diplomat's Pack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1290,6 +1395,7 @@
     "Desc": null
   },
   {
+    "Id":107,
     "Name": "Dungeoneer's Pack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1301,6 +1407,7 @@
     "Desc": null
   },
   {
+    "Id":108,
     "Name": "Entertainer's Pack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1312,6 +1419,7 @@
     "Desc": null
   },
   {
+    "Id":109,
     "Name": "Explorer's Pack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1323,6 +1431,7 @@
     "Desc": null
   },
   {
+    "Id":110,
     "Name": "Priest's Pack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1334,6 +1443,7 @@
     "Desc": null
   },
   {
+    "Id":111,
     "Name": "Scholar's Pack",
     "EquipmentCategory": "AdventuringGear",
     "Cost": {
@@ -1345,6 +1455,7 @@
     "Desc": null
   },
   {
+    "Id":112,
     "Name": "Alchemist's supplies",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1358,6 +1469,7 @@
     ]
   },
   {
+    "Id":113,
     "Name": "Brewer's supplies",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1371,6 +1483,7 @@
     ]
   },
   {
+    "Id":114,
     "Name": "Calligrapher's supplies",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1384,6 +1497,7 @@
     ]
   },
   {
+    "Id":115,
     "Name": "Carpenter's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1397,6 +1511,7 @@
     ]
   },
   {
+    "Id":116,
     "Name": "Cartographer's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1410,6 +1525,7 @@
     ]
   },
   {
+    "Id":117,
     "Name": "Cobbler's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1423,6 +1539,7 @@
     ]
   },
   {
+    "Id":118,
     "Name": "Cook's utensils",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1436,6 +1553,7 @@
     ]
   },
   {
+    "Id":119,
     "Name": "Glassblower's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1449,6 +1567,7 @@
     ]
   },
   {
+    "Id":120,
     "Name": "Jeweler's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1462,6 +1581,7 @@
     ]
   },
   {
+    "Id":121,
     "Name": "Leatherworker's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1475,6 +1595,7 @@
     ]
   },
   {
+    "Id":122,
     "Name": "Mason's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1488,6 +1609,7 @@
     ]
   },
   {
+    "Id":123,
     "Name": "Painter's supplies",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1501,6 +1623,7 @@
     ]
   },
   {
+    "Id":124,
     "Name": "Potter's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1514,6 +1637,7 @@
     ]
   },
   {
+    "Id":125,
     "Name": "Smith's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1527,6 +1651,7 @@
     ]
   },
   {
+    "Id":126,
     "Name": "Tinker's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1540,6 +1665,7 @@
     ]
   },
   {
+    "Id":127,
     "Name": "Weaver's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1553,6 +1679,7 @@
     ]
   },
   {
+    "Id":128,
     "Name": "Woodcarver's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1566,6 +1693,7 @@
     ]
   },
   {
+    "Id":129,
     "Name": "Dice set",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1579,6 +1707,7 @@
     ]
   },
   {
+    "Id":130,
     "Name": "Playing card set",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1592,6 +1721,7 @@
     ]
   },
   {
+    "Id":131,
     "Name": "Bagpipes",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1605,6 +1735,7 @@
     ]
   },
   {
+    "Id":132,
     "Name": "Drum",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1618,6 +1749,7 @@
     ]
   },
   {
+    "Id":133,
     "Name": "Dulcimer",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1631,6 +1763,7 @@
     ]
   },
   {
+    "Id":134,
     "Name": "Flute",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1644,6 +1777,7 @@
     ]
   },
   {
+    "Id":135,
     "Name": "Lute",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1657,6 +1791,7 @@
     ]
   },
   {
+    "Id":136,
     "Name": "Lyre",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1670,6 +1805,7 @@
     ]
   },
   {
+    "Id":137,
     "Name": "Horn",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1683,6 +1819,7 @@
     ]
   },
   {
+    "Id":138,
     "Name": "Pan flute",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1696,6 +1833,7 @@
     ]
   },
   {
+    "Id":139,
     "Name": "Shawm",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1709,6 +1847,7 @@
     ]
   },
   {
+    "Id":140,
     "Name": "Viol",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1722,6 +1861,7 @@
     ]
   },
   {
+    "Id":141,
     "Name": "Navigator's tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1735,6 +1875,7 @@
     ]
   },
   {
+    "Id":142,
     "Name": "Thieves' tools",
     "EquipmentCategory": "Tools",
     "Cost": {
@@ -1748,6 +1889,7 @@
     ]
   },
   {
+    "Id":143,
     "Name": "Camel",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1759,6 +1901,7 @@
     "Desc": null
   },
   {
+    "Id":144,
     "Name": "Donkey",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1770,6 +1913,7 @@
     "Desc": null
   },
   {
+    "Id":145,
     "Name": "Mule",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1781,6 +1925,7 @@
     "Desc": null
   },
   {
+    "Id":146,
     "Name": "Elephant",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1792,6 +1937,7 @@
     "Desc": null
   },
   {
+    "Id":147,
     "Name": "Horse, draft",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1803,6 +1949,7 @@
     "Desc": null
   },
   {
+    "Id":148,
     "Name": "Horse, riding",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1814,6 +1961,7 @@
     "Desc": null
   },
   {
+    "Id":149,
     "Name": "Mastiff",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1825,6 +1973,7 @@
     "Desc": null
   },
   {
+    "Id":150,
     "Name": "Pony",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1836,6 +1985,7 @@
     "Desc": null
   },
   {
+    "Id":151,
     "Name": "Warhorse",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1847,6 +1997,7 @@
     "Desc": null
   },
   {
+    "Id":152,
     "Name": "Barding: Padded",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1860,6 +2011,7 @@
     ]
   },
   {
+    "Id":153,
     "Name": "Barding: Leather",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1873,6 +2025,7 @@
     ]
   },
   {
+    "Id":154,
     "Name": "Barding: Studded Leather",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1886,6 +2039,7 @@
     ]
   },
   {
+    "Id":155,
     "Name": "Barding: Hide",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1899,6 +2053,7 @@
     ]
   },
   {
+    "Id":156,
     "Name": "Barding: Chain shirt",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1912,6 +2067,7 @@
     ]
   },
   {
+    "Id":157,
     "Name": "Barding: Scale mail",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1925,6 +2081,7 @@
     ]
   },
   {
+    "Id":158,
     "Name": "Barding: Breastplate",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1938,6 +2095,7 @@
     ]
   },
   {
+    "Id":159,
     "Name": "Barding: Half plate",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1951,6 +2109,7 @@
     ]
   },
   {
+    "Id":160,
     "Name": "Barding: Ring mail",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1964,6 +2123,7 @@
     ]
   },
   {
+    "Id":161,
     "Name": "Barding: Chain mail",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1977,6 +2137,7 @@
     ]
   },
   {
+    "Id":162,
     "Name": "Barding: Splint",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -1990,6 +2151,7 @@
     ]
   },
   {
+    "Id":163,
     "Name": "Barding: Plate",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2003,6 +2165,7 @@
     ]
   },
   {
+    "Id":164,
     "Name": "Bit and bridle",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2014,6 +2177,7 @@
     "Desc": null
   },
   {
+    "Id":165,
     "Name": "Carriage",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2025,6 +2189,7 @@
     "Desc": null
   },
   {
+    "Id":166,
     "Name": "Cart",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2036,6 +2201,7 @@
     "Desc": null
   },
   {
+    "Id":167,
     "Name": "Chariot",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2047,6 +2213,7 @@
     "Desc": null
   },
   {
+    "Id":168,
     "Name": "Animal Feed (1 day)",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2058,6 +2225,7 @@
     "Desc": null
   },
   {
+    "Id":169,
     "Name": "Saddle, Exotic",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2071,6 +2239,7 @@
     ]
   },
   {
+    "Id":170,
     "Name": "Saddle, Military",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2084,6 +2253,7 @@
     ]
   },
   {
+    "Id":171,
     "Name": "Saddle, Pack",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2097,6 +2267,7 @@
     ]
   },
   {
+    "Id":172,
     "Name": "Riding",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2108,6 +2279,7 @@
     "Desc": null
   },
   {
+    "Id":173,
     "Name": "Saddlebags",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2119,6 +2291,7 @@
     "Desc": null
   },
   {
+    "Id":174,
     "Name": "Sled",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2130,6 +2303,7 @@
     "Desc": null
   },
   {
+    "Id":175,
     "Name": "Stabling (1 day)",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2141,6 +2315,7 @@
     "Desc": null
   },
   {
+    "Id":176,
     "Name": "Wagon",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2152,6 +2327,7 @@
     "Desc": null
   },
   {
+    "Id":177,
     "Name": "Galley",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2163,6 +2339,7 @@
     "Desc": null
   },
   {
+    "Id":178,
     "Name": "Keelboat",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2176,6 +2353,7 @@
     ]
   },
   {
+    "Id":179,
     "Name": "Longship",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2187,6 +2365,7 @@
     "Desc": null
   },
   {
+    "Id":180,
     "Name": "Rowboat",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2200,6 +2379,7 @@
     ]
   },
   {
+    "Id":181,
     "Name": "Sailing ship",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {
@@ -2211,6 +2391,7 @@
     "Desc": null
   },
   {
+    "Id":182,
     "Name": "Warship",
     "EquipmentCategory": "MountsAndVehicles",
     "Cost": {

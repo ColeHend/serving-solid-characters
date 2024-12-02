@@ -1,6 +1,7 @@
 import { Choice, Feature } from "./core.model";
 
 export interface Race {
+    id: string;
     name: string;
     speed: number;
     age: string;
@@ -20,6 +21,7 @@ export interface Race {
 }
 
 export interface Subrace {
+    id: string;
     name: string;
     desc: string;
     traits: Feature<string[], string>[];

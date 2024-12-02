@@ -58,6 +58,9 @@ const races: Component = () => {
 
   effect(()=>{
     setSearchParam({name: dndSrdRaces().length > 0 ? currentRace()?.name : "Dragonborn"})
+
+    console.log("races",dndSrdRaces());
+    
   })
   return <Body>
       <h1 class={`${styles.header}`}>Races</h1>

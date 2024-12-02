@@ -1,6 +1,6 @@
 [
   {
-    "Id": 1,
+    "Id": "1",
     "Name": "Dwarf",
     "Speed": "30",
     "AbilityBonuses": [
@@ -98,7 +98,7 @@
     "TraitChoice": null,
     "SubRaces": [
       {
-        "Id": 1,
+        "Id": "1",
         "Name": "Hill Dwarf",
         "Desc": "As a hill dwarf, you have keen senses, deep intuition, and remarkable resilience.",
         "AbilityBonuses": [
@@ -147,7 +147,7 @@
     ]
   },
   {
-    "Id": 2,
+    "Id": "2",
     "Name": "Elf",
     "Speed": "30",
     "AbilityBonuses": [
@@ -214,7 +214,7 @@
     "TraitChoice": null,
     "SubRaces": [
       {
-        "Id": 2,
+        "Id": "2",
         "Name": "High Elf",
         "Desc": "As a high elf, you have a keen mind and a mastery of at least the basics of magic. In many fantasy gaming worlds, there are two kinds of high elves. One type is haughty and reclusive, believing themselves to be superior to non-elves and even other elves. The other type is more common and more friendly, and often encountered among humans and other races.",
         "AbilityBonuses": [
@@ -291,7 +291,7 @@
     ]
   },
   {
-    "Id": 3,
+    "Id": "3",
     "Name": "Halfling",
     "Speed": "25",
     "AbilityBonuses": [
@@ -352,7 +352,7 @@
     "TraitChoice": null,
     "SubRaces": [
       {
-        "Id": 3,
+        "Id": "3",
         "Name": "Lightfoot Halfling",
         "Desc": "As a lightfoot halfling, you can easily hide from notice, even using other people as cover. You're inclined to be affable and get along well with others. Lightfoots are more prone to wanderlust than other halflings, and often dwell alongside other races or take up a nomadic life.",
         "AbilityBonuses": [
@@ -401,7 +401,7 @@
     ]
   },
   {
-    "Id": 4,
+    "Id": "4",
     "Name": "Human",
     "Speed": "30",
     "AbilityBonuses": [
@@ -481,7 +481,7 @@
     "SubRaces": []
   },
   {
-    "Id": 5,
+    "Id": "5",
     "Name": "Dragonborn",
     "Speed": "30",
     "AbilityBonuses": [
@@ -554,7 +554,7 @@
     "SubRaces": []
   },
   {
-    "Id": 6,
+    "Id": "6",
     "Name": "Gnome",
     "Speed": "25",
     "AbilityBonuses": [
@@ -612,7 +612,7 @@
     },
     "SubRaces": [
       {
-        "Id": 4,
+        "Id": "4",
         "Name": "Rock Gnome",
         "Desc": "As a rock gnome, you have a natural inventiveness and hardiness beyond that of other gnomes.",
         "AbilityBonuses": [
@@ -685,7 +685,7 @@
     ]
   },
   {
-    "Id": 7,
+    "Id": "7",
     "Name": "Half-Elf",
     "Speed": "30",
     "AbilityBonuses": [
@@ -792,7 +792,7 @@
     "SubRaces": []
   },
   {
-    "Id": 8,
+    "Id": "8",
     "Name": "Half-Orc",
     "Speed": "30",
     "AbilityBonuses": [
@@ -862,7 +862,7 @@
     "SubRaces": []
   },
   {
-    "Id": 9,
+    "Id": "9",
     "Name": "Tiefling",
     "Speed": "30",
     "AbilityBonuses": [

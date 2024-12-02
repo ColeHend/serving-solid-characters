@@ -4,8 +4,9 @@ import homebrewManager from "../homebrewManager";
 
 const useGetRaces = () => {
     const dndSrdRaces = useDnDRaces();
-    
-    const allRaces = createMemo(()=>[...dndSrdRaces(), ...homebrewManager.races()]);
+    const homebrewRaces = createMemo(()=>homebrewManager.races())
+
+    const allRaces = createMemo(()=>[...dndSrdRaces(), ...homebrewRaces()]);
     return allRaces;
 }
 export default useGetRaces;
