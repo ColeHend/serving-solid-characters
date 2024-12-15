@@ -1,5 +1,6 @@
 [
   {
+    "Id":0,
     "ArmorCategory": "Light",
     "StealthDisadvantage": true,
     "StrMin": 0,
@@ -19,6 +20,7 @@
     "Desc": null
   },
   {
+    "Id":1,
     "ArmorCategory": "Light",
     "StealthDisadvantage": false,
     "StrMin": 0,
@@ -38,6 +40,7 @@
     "Desc": null
   },
   {
+    "Id":2,
     "ArmorCategory": "Light",
     "StealthDisadvantage": false,
     "StrMin": 0,
@@ -57,6 +60,7 @@
     "Desc": null
   },
   {
+    "Id":3,
     "ArmorCategory": "Medium",
     "StealthDisadvantage": false,
     "StrMin": 0,
@@ -76,6 +80,7 @@
     "Desc": null
   },
   {
+    "Id":4,
     "ArmorCategory": "Medium",
     "StealthDisadvantage": false,
     "StrMin": 0,
@@ -95,6 +100,7 @@
     "Desc": null
   },
   {
+    "Id":5,
     "ArmorCategory": "Medium",
     "StealthDisadvantage": true,
     "StrMin": 0,
@@ -114,6 +120,7 @@
     "Desc": null
   },
   {
+    "Id":6,
     "ArmorCategory": "Medium",
     "StealthDisadvantage": false,
     "StrMin": 0,
@@ -133,6 +140,7 @@
     "Desc": null
   },
   {
+    "Id":7,
     "ArmorCategory": "Medium",
     "StealthDisadvantage": true,
     "StrMin": 0,
@@ -152,6 +160,7 @@
     "Desc": null
   },
   {
+    "Id":8,
     "ArmorCategory": "Heavy",
     "StealthDisadvantage": true,
     "StrMin": 0,
@@ -171,6 +180,7 @@
     "Desc": null
   },
   {
+    "Id":9,
     "ArmorCategory": "Heavy",
     "StealthDisadvantage": true,
     "StrMin": 13,
@@ -190,6 +200,7 @@
     "Desc": null
   },
   {
+    "Id":10,
     "ArmorCategory": "Heavy",
     "StealthDisadvantage": true,
     "StrMin": 15,
@@ -209,6 +220,7 @@
     "Desc": null
   },
   {
+    "Id":11,
     "ArmorCategory": "Heavy",
     "StealthDisadvantage": true,
     "StrMin": 15,
@@ -228,6 +240,7 @@
     "Desc": null
   },
   {
+    "Id":12,
     "ArmorCategory": "Shield",
     "StealthDisadvantage": false,
     "StrMin": 0,

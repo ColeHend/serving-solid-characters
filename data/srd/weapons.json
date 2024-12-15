@@ -1,5 +1,6 @@
 [
   {
+    "Id":0,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -28,6 +29,7 @@
     "Desc": null
   },
   {
+    "Id":1,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -58,6 +60,7 @@
     "Desc": null
   },
   {
+    "Id":2,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -85,6 +88,7 @@
     "Desc": null
   },
   {
+    "Id":3,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -114,6 +118,7 @@
     "Desc": null
   },
   {
+    "Id":4,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -142,6 +147,7 @@
     "Desc": null
   },
   {
+    "Id":5,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -171,6 +177,7 @@
     "Desc": null
   },
   {
+    "Id":6,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -198,6 +205,7 @@
     "Desc": null
   },
   {
+    "Id":7,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -226,6 +234,7 @@
     "Desc": null
   },
   {
+    "Id":8,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -254,6 +263,7 @@
     "Desc": null
   },
   {
+    "Id":9,
     "WeaponCategory": "Simple",
     "WeaponRange": "Melee",
     "CategoryRange": "SimpleMelee",
@@ -283,6 +293,7 @@
     "Desc": null
   },
   {
+    "Id":10,
     "WeaponCategory": "Simple",
     "WeaponRange": "Ranged",
     "CategoryRange": "SimpleRanged",
@@ -312,6 +323,7 @@
     "Desc": null
   },
   {
+    "Id":11,
     "WeaponCategory": "Simple",
     "WeaponRange": "Ranged",
     "CategoryRange": "SimpleRanged",
@@ -340,6 +352,7 @@
     "Desc": null
   },
   {
+    "Id":12,
     "WeaponCategory": "Simple",
     "WeaponRange": "Ranged",
     "CategoryRange": "SimpleRanged",
@@ -368,6 +381,7 @@
     "Desc": null
   },
   {
+    "Id":13,
     "WeaponCategory": "Simple",
     "WeaponRange": "Ranged",
     "CategoryRange": "SimpleRanged",
@@ -395,6 +409,7 @@
     "Desc": null
   },
   {
+    "Id":14,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -422,6 +437,7 @@
     "Desc": null
   },
   {
+    "Id":15,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -447,6 +463,7 @@
     "Desc": null
   },
   {
+    "Id":16,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -476,6 +493,7 @@
     "Desc": null
   },
   {
+    "Id":17,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -504,6 +522,7 @@
     "Desc": null
   },
   {
+    "Id":18,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -532,6 +551,7 @@
     "Desc": null
   },
   {
+    "Id":19,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -561,6 +581,7 @@
     "Desc": null
   },
   {
+    "Id":20,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -589,6 +610,7 @@
     "Desc": null
   },
   {
+    "Id":21,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -616,6 +638,7 @@
     "Desc": null
   },
   {
+    "Id":22,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -644,6 +667,7 @@
     "Desc": null
   },
   {
+    "Id":23,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -669,6 +693,7 @@
     "Desc": null
   },
   {
+    "Id":24,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -698,6 +723,7 @@
     "Desc": null
   },
   {
+    "Id":25,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -725,6 +751,7 @@
     "Desc": null
   },
   {
+    "Id":26,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -753,6 +780,7 @@
     "Desc": null
   },
   {
+    "Id":27,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -782,6 +810,7 @@
     "Desc": null
   },
   {
+    "Id":28,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -810,6 +839,7 @@
     "Desc": null
   },
   {
+    "Id":29,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -835,6 +865,7 @@
     "Desc": null
   },
   {
+    "Id":30,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -862,6 +893,7 @@
     "Desc": null
   },
   {
+    "Id":31,
     "WeaponCategory": "Martial",
     "WeaponRange": "Melee",
     "CategoryRange": "MartialMelee",
@@ -890,6 +922,7 @@
     "Desc": null
   },
   {
+    "Id":32,
     "WeaponCategory": "Martial",
     "WeaponRange": "Ranged",
     "CategoryRange": "MartialRanged",
@@ -918,6 +951,7 @@
     "Desc": null
   },
   {
+    "Id":33,
     "WeaponCategory": "Martial",
     "WeaponRange": "Ranged",
     "CategoryRange": "MartialRanged",
@@ -947,6 +981,7 @@
     "Desc": null
   },
   {
+    "Id":34,
     "WeaponCategory": "Martial",
     "WeaponRange": "Ranged",
     "CategoryRange": "MartialRanged",
@@ -977,6 +1012,7 @@
     "Desc": null
   },
   {
+    "Id":35,
     "WeaponCategory": "Martial",
     "WeaponRange": "Ranged",
     "CategoryRange": "MartialRanged",
@@ -1006,6 +1042,7 @@
     "Desc": null
   },
   {
+    "Id":36,
     "WeaponCategory": "Martial",
     "WeaponRange": "Ranged",
     "CategoryRange": "MartialRanged",

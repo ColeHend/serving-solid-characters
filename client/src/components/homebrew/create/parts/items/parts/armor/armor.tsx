@@ -127,12 +127,6 @@ const ArmorCreate:Component<props> = (props) => {
     
     <h2>Description</h2>
     <FormField name="Desc">
-      {/* <Input
-        type="text"
-        transparent
-        value={props.currentArmor.desc}
-        onInput={(e)=>props.setCurrentArmor("desc",[e.currentTarget.value])}
-      /> */}
       <TextArea
         text={props.desc}
         setText={props.setDesc}

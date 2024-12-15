@@ -145,12 +145,6 @@ const WeaponCreate:Component<props> = (props) => {
 
     <h2>Description</h2>
     <FormField name="Desc">
-      {/* <Input 
-        type="text"
-        transparent
-        value={props.currentWeapon.desc}
-        onInput={(e)=>props.setCurrentWeapon("desc",[e.currentTarget.value])}
-      /> */}
       <TextArea
         text={props.desc}
         setText={props.setDesc}
