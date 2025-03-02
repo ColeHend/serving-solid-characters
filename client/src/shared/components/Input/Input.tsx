@@ -1,4 +1,4 @@
-import { Component, JSX, splitProps, createMemo, Show, useContext, onMount } from "solid-js";
+import { Component, JSX, splitProps, createMemo, Show, useContext, onMount, createEffect } from "solid-js";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./input.module.scss";
 import { effect } from "solid-js/web";
@@ -17,13 +17,16 @@ const Input: Component<InputProps> = (props)=> {
 		const inputValue = createMemo(()=> props.value);
 		const hasTrasparent = createMemo(() => {
 			return Object.keys(customProps).includes("transparent");
-		})
+		});
+
 		onMount(()=>{
 			if (!!context.getName) {
 				context.setFieldType(props.type ?? "text"); 
-				
+				if (Object.keys(props).includes("required") && props.required !== false) {
+					context.setName(`${context.getName()} *`);
+				}
 			}
-		})
+		});
     return (
 			<input
 			{...normalProps}
