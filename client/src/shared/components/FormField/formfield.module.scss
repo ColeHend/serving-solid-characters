@@ -23,6 +23,10 @@
 			// margin-left: var(--spacing-1);
 			padding-right: var(--spacing-3);
 			padding-bottom: var(--spacing-1);
+			border: none;
+			&:focus {
+				outline: none;
+			}
 		}
 		legend {
 			height: var(--spacing-3);

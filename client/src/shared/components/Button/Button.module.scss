@@ -38,11 +38,6 @@
         box-shadow: var((--shadow-elevation-2));
     }
 
-    &:focus {
-        outline: none;
-        box-shadow: var(--shadow-elevation-1);
-    }
-
     &:not(:disabled) {
         &:hover {
             cursor: pointer;
@@ -65,12 +60,6 @@
     &:active {
         background-color: var(--primary-color-active);
     }
-    &:focus {
-        background-color: var(--primary-color-focus);
-    }
-    &:focus:not(:hover) {
-        background-color: var(--primary-color);
-    }
 }
 .accent {
     background-color: var(--secondary-color);
@@ -81,12 +70,6 @@
     &:active {
         background-color: var(--secondary-color-active);
     }
-    &:focus {
-        background-color: var(--secondary-color-focus);
-    }
-    &:focus:not(:hover) {
-        background-color: var(--secondary-color);
-    }
 }
 .tertiary {
     background-color: var(--tertiary-color);
@@ -96,12 +79,6 @@
     }
     &:active {
         background-color: var(--tertiary-color-active);
-    }
-    &:focus {
-        background-color: var(--tertiary-color-focus);
-    }
-    &:focus:not(:hover) {
-        background-color: var(--tertiary-color);
     }
 }
 .transparent {
