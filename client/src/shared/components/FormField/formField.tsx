@@ -44,7 +44,7 @@ const FormField2: Component<Props> = (props) => {
     <fieldset {...others}
       ref={setFieldRef}
       onClick={()=>context.setFocused(true)}
-      class={`${themeStyle()[local.styleType ?? "accent"]} ${style.formField} ${local.class ?? ''}`}>
+      class={`${style[local.styleType ?? "accent"]} ${style.formField} ${local.class ?? ''}`}>
       <legend class={`${themeStyle()[local.styleType ?? "accent"]} ${hasInsideText() ? `${style.moveLegendInside}` : ``}`}>
         {context.getName() ? context.getName() : ``}
       </legend>
