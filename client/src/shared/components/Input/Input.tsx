@@ -1,9 +1,6 @@
-import { Component, JSX, splitProps, createMemo, Show, useContext, onMount, createEffect } from "solid-js";
-import useStyles from "../../../shared/customHooks/utility/style/styleHook";
-import style from "./input.module.scss";
-import { effect } from "solid-js/web";
+import { Component, JSX, splitProps, createMemo, onMount } from "solid-js";
 import { useFormProvider } from "../FormField/formProvider";
-import { c } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import style from "./input.module.scss";
 
 interface InputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
     tooltip?: string;
