@@ -292,9 +292,9 @@ const Classes: Component = () => {
             </span>
             <span class={`${styles.selectSpan}`}>
               <label for="hitDie">Hit Die</label>
-              <Select id="hitDie" transparent value={currentClass.hitDie} onChange={(e)=>{
-                setHitDie(+e.currentTarget.value);
-              }} disableUnselected>
+              <Select id="hitDie" value={currentClass.hitDie} onChange={(e)=>{
+                setHitDie(+e);
+              }}>
                 <For each={[4,6,8,10,12]}>{(die)=>(
                   <Option value={die}>{die}</Option>
                 )}</For>
@@ -302,14 +302,14 @@ const Classes: Component = () => {
             </span>
             <span  class={`${styles.selectSpan}`}>
               <label for="casterType">Caster Type</label>
-              <Select tooltip="Caster Type" disableUnselected transparent  
+              <Select tooltip="Caster Type"  
                 value={casterType().trim()} 
                 onChange={(e)=>{
-                  setCasterType(e.currentTarget.value);
-                  setCasterInternalType(e.currentTarget.value);
-                  const currentColumns = getShouldDisplayColumns(e.currentTarget.value);
+                  setCasterType(e);
+                  setCasterInternalType(e);
+                  const currentColumns = getShouldDisplayColumns(e);
                   setCurrentColumns(currentColumns);
-                  setSpellSlots(e.currentTarget.value);
+                  setSpellSlots(e);
                 }} >
                 <Option value="none">None</Option>
                 <For each={["full", "half", "third", "other"]}>{(x)=>(
@@ -340,12 +340,12 @@ const Classes: Component = () => {
                               }
                             }))}/>
                         </FormField>
-                        <Select disableUnselected transparent 
+                        <Select 
                           value={currentClass.classMetadata?.subclassTypePosition ?? "before"}
                           onChange={(e)=>setCurrentClass((old)=>({
                             classMetadata: {
                               ...old.classMetadata,
-                              subclassTypePosition: e.currentTarget.value
+                              subclassTypePosition: e
                             }
                           }))}>
                           <Option value={'before'}>Before</Option>
@@ -413,7 +413,7 @@ const Classes: Component = () => {
                     <div class={`${styles.spellcasting}`}>
                       <span class={`${styles.selectSpan}`}>
                         <label>Casting Stat</label>
-                        <Select disableUnselected transparent 
+                        <Select 
                           value={(()=>{
                             const classCast = currentClass.spellcasting;
                             if (classCast) {
@@ -442,10 +442,10 @@ const Classes: Component = () => {
                               setSpellKnown(num, e.currentTarget.checked);
                             }
                           }}/>
-                        <Select disableUnselected transparent
+                        <Select
                           value={Clone<any>(SpellsKnown)[(currentClass.spellcasting?.spellsKnownCalc ?? 'Level')] as number}
                           onChange={(e)=>{
-                            setSpellKnown(+e.currentTarget.value);
+                            setSpellKnown(e);
                             setCurrentColumns(getShouldDisplayColumns(casterType()));
                           }}>
                           <For each={[1,2,3,4,5,6]}>{(x)=><>

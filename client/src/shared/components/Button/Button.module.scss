@@ -27,7 +27,7 @@
 .customButtonStyle {
     border-radius: var(--border-radius-lg);
     $paddingSize: calc(var(--spacing-1) / 2);
-    padding: $paddingSize calc(var(--spacing-1) + $paddingSize);
+    padding: $paddingSize calc(var(--spacing-1));
     border: none;
 
     // transform-origin: top left;

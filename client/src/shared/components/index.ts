@@ -11,7 +11,7 @@ export * from "./multiSelect/MultiSelect";
 export * from "./paginator/paginator";
 export * from "./popup/popup.component";
 export * from "./SearchBar/SearchBar";
-export * from "./Select/Select";
 export * from "./TextArea/TextArea";
 export * from "./MarkDown/Markdown.component";
-
+export * from "./Select/select.component";
+export * from "./Select/option.component";

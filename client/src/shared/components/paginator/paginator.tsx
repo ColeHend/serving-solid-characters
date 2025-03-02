@@ -4,9 +4,8 @@ import { effect } from "solid-js/web";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./paginator.module.scss";
 import Button from "../Button/Button";
-import Select from "../Select/Select";
 import { SharedHookContext } from "../../../components/rootApp";
-import { getUserSettings } from "../..";
+import { getUserSettings, Select } from "../..";
 
 type Props<T> = {
     items: Accessor<T>;
@@ -46,7 +45,7 @@ const Paginator = <T,>(props: Props<T[]>) => {
     <div class={`${stylin()?.accent} ${style.paginator} `}>
       <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</Button>
       <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</Button>
-      <Select disableUnselected={true} transparent={true} onChange={(x)=>setItemsPerPage(+x.currentTarget.value)}>
+      <Select transparent value={itemsPerPage()} onChange={(x)=>setItemsPerPage(x)}>
         <For each={ItemsPerPageArr}>
           {(item) => 
             <option value={item}>
