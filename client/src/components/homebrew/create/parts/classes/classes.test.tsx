@@ -5,7 +5,7 @@ import Classes from "./classes";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/homebrew/classes' component={Classes} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/homebrew/classes' component={Classes} />
+  </Router>)
 })

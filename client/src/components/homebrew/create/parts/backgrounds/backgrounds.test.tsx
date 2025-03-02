@@ -5,7 +5,7 @@ import Backgrounds from "./backgrounds";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/homebrew/backgrounds' component={Backgrounds} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/homebrew/backgrounds' component={Backgrounds} />
+  </Router>)
 });

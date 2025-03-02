@@ -8,12 +8,12 @@ interface Props extends JSX.HTMLAttributes<HTMLDivElement> {
     tooltip?: string;
 }
 const Markdown:Component<Props> = (props) => {
-    const [customProps, normalProps] = splitProps(props, ["text", "tooltip", "class"]);
-    const [markElement, setMarkElement] = createSignal<JSX.Element>();
+  const [customProps, normalProps] = splitProps(props, ["text", "tooltip", "class"]);
+  const [markElement, setMarkElement] = createSignal<JSX.Element>();
 
-    return (
-        <div class={`${style.markStyle} ${customProps.class ?? ""}`} ref={setMarkElement} innerHTML={DOMPurify.sanitize(marked.parse(customProps.text(), { async: false, gfm: true }))} title={customProps.tooltip} {...normalProps} />
-    )
+  return (
+    <div class={`${style.markStyle} ${customProps.class ?? ""}`} ref={setMarkElement} innerHTML={DOMPurify.sanitize(marked.parse(customProps.text(), { async: false, gfm: true }))} title={customProps.tooltip} {...normalProps} />
+  )
 }
 export { Markdown };
 export default Markdown;

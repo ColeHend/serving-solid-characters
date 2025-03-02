@@ -18,47 +18,47 @@ import getUserSettings from "../../../shared/customHooks/userSettings";
 
 
 const CharacterView: Component = () => {
-    const [userSettings, setUserSettings] = getUserSettings();
+  const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
-    const routedSelected = useParams()
-    const [searchParam, setSearchParam] = useSearchParams();
-    const [characters, setCharacters] = useCharacters();
-    if(!!!searchParam.name) setSearchParam({name: characters()[0].name});
-    const selectedCharacter = characters().filter(x=>x.name.toLowerCase() === (searchParam.name || characters()[0].name).toLowerCase())[0];
-    const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
-    const fullStats = useGetFullStats(currentCharacter);
-    const getStatMod = (stat: number) => Math.floor((stat - 10)/2);
-    const getProficiencyBonus = (level: number) => Math.ceil(level/4) + 1;
-    const dndSrdClasses = useGetClasses();
-    const dndSrdSpells = useGetSpells();
-    const dndSrdFeats = useGetFeats();
-    const dndSrdRaces = useGetRaces();
-    const dndSrdItems = useGetItems();
-    const dndSrdBackgrounds = useGetBackgrounds();
-    effect(()=>{
-        setSearchParam({name: currentCharacter().name})
-    })
-    return (
-        <div class={`${stylin().accent} ${styles.mainBody}`}>
-            <h1>Characters View</h1>
-            <div>
-                <div>
-                    <select value={JSON.stringify(currentCharacter())} onChange={(e)=>setCurrentCharacter(()=>JSON.parse(e.target.value))}>
-                        <For each={characters()}>{(character) => (
-                            <option value={JSON.stringify(character)}>{character.name}</option>
-                        )}</For>
-                    </select>
-                </div>
-                <div>
-                    <div>
-                        <h2>Stats</h2>
-                        <StatBar fullStats={fullStats} currentCharacter={currentCharacter}/>
-                    </div>
-                </div>
-            </div>
+  const routedSelected = useParams()
+  const [searchParam, setSearchParam] = useSearchParams();
+  const [characters, setCharacters] = useCharacters();
+  if(!searchParam.name) setSearchParam({name: characters()[0].name});
+  const selectedCharacter = characters().filter(x=>x.name.toLowerCase() === (searchParam.name || characters()[0].name).toLowerCase())[0];
+  const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
+  const fullStats = useGetFullStats(currentCharacter);
+  const getStatMod = (stat: number) => Math.floor((stat - 10)/2);
+  const getProficiencyBonus = (level: number) => Math.ceil(level/4) + 1;
+  const dndSrdClasses = useGetClasses();
+  const dndSrdSpells = useGetSpells();
+  const dndSrdFeats = useGetFeats();
+  const dndSrdRaces = useGetRaces();
+  const dndSrdItems = useGetItems();
+  const dndSrdBackgrounds = useGetBackgrounds();
+  effect(()=>{
+    setSearchParam({name: currentCharacter().name})
+  })
+  return (
+    <div class={`${stylin().accent} ${styles.mainBody}`}>
+      <h1>Characters View</h1>
+      <div>
+        <div>
+          <select value={JSON.stringify(currentCharacter())} onChange={(e)=>setCurrentCharacter(()=>JSON.parse(e.target.value))}>
+            <For each={characters()}>{(character) => (
+              <option value={JSON.stringify(character)}>{character.name}</option>
+            )}</For>
+          </select>
         </div>
-    )
+        <div>
+          <div>
+            <h2>Stats</h2>
+            <StatBar fullStats={fullStats} currentCharacter={currentCharacter}/>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 };
 
 export default CharacterView;

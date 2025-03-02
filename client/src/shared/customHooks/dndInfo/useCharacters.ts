@@ -42,21 +42,21 @@ const exampleCharacters: Character[] = [
     background: "Noble",
     subclass: "Evocation",
     stats: {
-        str: 8,
-        dex: 14,
-        con: 12,
-        int: 15,
-        wis: 13,
-        cha: 10,
+      str: 8,
+      dex: 14,
+      con: 12,
+      int: 15,
+      wis: 13,
+      cha: 10,
     },
     spells: {
-        spellsKnown: ["Fireball", "Mage Armor", "Magic Missile", "Shield"],
-        spellsPrepared: ["Fireball", "Shield", "Magic Missile"],
-        alwaysPrepared: [],
+      spellsKnown: ["Fireball", "Mage Armor", "Magic Missile", "Shield"],
+      spellsPrepared: ["Fireball", "Shield", "Magic Missile"],
+      alwaysPrepared: [],
     },
     skills: {
-        proficient: ["Arcana", "History"],
-        expertise: ["Arcana"],
+      proficient: ["Arcana", "History"],
+      expertise: ["Arcana"],
     },
     Features: [],
   },
@@ -69,16 +69,16 @@ const exampleCharacters: Character[] = [
     background: "Soldier",
     subclass: "Champion",
     stats: {
-        str: 12,
-        dex: 15,
-        con: 14,
-        int: 10,
-        wis: 13,
-        cha: 8,
+      str: 12,
+      dex: 15,
+      con: 14,
+      int: 10,
+      wis: 13,
+      cha: 8,
     },
     skills: {
-        proficient: ["Athletics", "Survival"],
-        expertise: ["Athletics"],
+      proficient: ["Athletics", "Survival"],
+      expertise: ["Athletics"],
     },
     Features: [],
   },
@@ -89,6 +89,6 @@ const [characters, setCharacters] =
 export default function useCharacters(): [
   Accessor<Character[]>,
   Setter<Character[]>
-] {
+  ] {
   return [characters, setCharacters];
 }

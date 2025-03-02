@@ -20,11 +20,11 @@ const MultiSelect: Component<MultiSelectProps> = (props) => {
     <select multiple onChange={handleSelectChange}>
       <For each={props.options()}>
         {(option) => (
-            <option value={option}>
-                {option}
-            </option>
+          <option value={option}>
+            {option}
+          </option>
         )}
-        </For>
+      </For>
     </select>
   );
 };

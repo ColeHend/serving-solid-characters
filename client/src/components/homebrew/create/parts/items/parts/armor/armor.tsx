@@ -16,7 +16,7 @@ interface props {
 
 const ArmorCreate:Component<props> = (props) => {
 
-    return <div>
+  return <div>
     <h2>Armor Category</h2>
     <div>
       <Select
@@ -32,14 +32,14 @@ const ArmorCreate:Component<props> = (props) => {
       <Show when={props.armorCategory() === "Other"}>
         <div>
           <FormField name="Other Category">
-          <Input 
-            type="text"
-            transparent
-            value={props.otherCategory()}
-            onInput={(e)=>{
-              props.setOtherCategory(e.currentTarget.value)
-            }}
-          />
+            <Input 
+              type="text"
+              transparent
+              value={props.otherCategory()}
+              onInput={(e)=>{
+                props.setOtherCategory(e.currentTarget.value)
+              }}
+            />
           </FormField>
         </div>
       </Show>
@@ -47,54 +47,54 @@ const ArmorCreate:Component<props> = (props) => {
 
     <h2>Armor class</h2>
     <div>
-        <div class={`${props.styles.checkbox}`}>
-          <Input
-            type="checkbox"
-            checked={props.currentArmor.armorClass.dexBonus}
-            name="dexBonus"
-            onChange={(e)=>{
-              if (e.currentTarget.checked) {
-                props.setCurrentArmor("armorClass",old=>({
-                  base: old.base,
-                  dexBonus: true,
-                  maxBonus: old.maxBonus
-                }))
-              } else {
-                props.setCurrentArmor("armorClass",old=>({
-                  base: old.base,
-                  dexBonus: false,
-                  maxBonus: old.maxBonus
-                }))
-              }
-            }}
-          /> <label for="dexBonus">dexterity Bonus</label>
-        </div>
+      <div class={`${props.styles.checkbox}`}>
+        <Input
+          type="checkbox"
+          checked={props.currentArmor.armorClass.dexBonus}
+          name="dexBonus"
+          onChange={(e)=>{
+            if (e.currentTarget.checked) {
+              props.setCurrentArmor("armorClass",old=>({
+                base: old.base,
+                dexBonus: true,
+                maxBonus: old.maxBonus
+              }))
+            } else {
+              props.setCurrentArmor("armorClass",old=>({
+                base: old.base,
+                dexBonus: false,
+                maxBonus: old.maxBonus
+              }))
+            }
+          }}
+        /> <label for="dexBonus">dexterity Bonus</label>
+      </div>
 
-        <FormField name="base">
-          <Input
-            type="number"
-            transparent
-            value={props.currentArmor.armorClass.base}
-            onInput={(e)=>props.setCurrentArmor("armorClass",old=>({
-              base: parseInt(e.currentTarget.value),
-              dexBonus: old.dexBonus,
-              maxBonus: old.maxBonus,
-            }))}
-          />
-        </FormField>
+      <FormField name="base">
+        <Input
+          type="number"
+          transparent
+          value={props.currentArmor.armorClass.base}
+          onInput={(e)=>props.setCurrentArmor("armorClass",old=>({
+            base: parseInt(e.currentTarget.value),
+            dexBonus: old.dexBonus,
+            maxBonus: old.maxBonus,
+          }))}
+        />
+      </FormField>
 
-        <FormField name="Max Bonus">
-          <Input 
-            type="number"
-            transparent
-            value={props.currentArmor.armorClass.maxBonus}
-            onInput={(e)=>props.setCurrentArmor("armorClass",old=>({
-              base: old.base,
-              dexBonus: old.dexBonus,
-              maxBonus: parseInt(e.currentTarget.value),
-            }))}
-          />
-        </FormField>
+      <FormField name="Max Bonus">
+        <Input 
+          type="number"
+          transparent
+          value={props.currentArmor.armorClass.maxBonus}
+          onInput={(e)=>props.setCurrentArmor("armorClass",old=>({
+            base: old.base,
+            dexBonus: old.dexBonus,
+            maxBonus: parseInt(e.currentTarget.value),
+          }))}
+        />
+      </FormField>
 
     </div>
 

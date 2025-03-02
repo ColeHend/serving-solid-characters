@@ -10,47 +10,47 @@ import { FixClasses } from "./fixClasses";
 const [classes, setClasses] = createSignal<DnDClass[]>([]);
 
 export function useDnDClasses(): Accessor<DnDClass[]> {
-    const LocalClasses = HttpClient$.toObservable(LocalSrdDB.classes.toArray());
+  const LocalClasses = HttpClient$.toObservable(LocalSrdDB.classes.toArray());
     
-    if (classes().length === 0){
-        LocalClasses.pipe(
+  if (classes().length === 0){
+    LocalClasses.pipe(
+      take(1),
+      concatMap((classes)=>{
+        if (classes.length > 0) {
+          return of(classes);
+        } else {
+          return of([])
+        }
+      }),
+      concatMap((classes)=>{
+        if (classes.length === 0) {
+          return HttpClient$.post<DnDClass[]>("/api/DnDInfo/Classes",{}).pipe(
             take(1),
-            concatMap((classes)=>{
-                if (classes.length > 0) {
-                    return of(classes);
-                } else {
-                    return of([])
-                }
+            map((classes)=>FixClasses(classes)),
+            catchError((err)=> {
+              console.error("Error: ", err);
+              return of(null);
             }),
-            concatMap((classes)=>{
-                if (classes.length === 0) {
-                    return HttpClient$.post<DnDClass[]>("/api/DnDInfo/Classes",{}).pipe(
-                        take(1),
-												map((classes)=>FixClasses(classes)),
-                        catchError((err)=> {
-													console.error("Error: ", err);
-													return of(null);
-                        }),
-                        tap((classes)=> {
-                            if (!!classes) {
-                                LocalSrdDB.classes.bulkAdd(classes);
-                            }
-                        })
-                    );
-                } else {
-                    return of(classes);
-                }
-            }),
-            concatMap((classes)=>{
-                if (!!classes) {
-                    return of(classes.concat(HomebrewManager.classes()));
-                }
-                return of(classes);
-            }),
-            tap((classes) => !!classes && classes.length > 0 ? setClasses(classes) : null),
-        ).subscribe();
-    }
+            tap((classes)=> {
+              if (classes) {
+                LocalSrdDB.classes.bulkAdd(classes);
+              }
+            })
+          );
+        } else {
+          return of(classes);
+        }
+      }),
+      concatMap((classes)=>{
+        if (classes) {
+          return of(classes.concat(HomebrewManager.classes()));
+        }
+        return of(classes);
+      }),
+      tap((classes) => !!classes && classes.length > 0 ? setClasses(classes) : null),
+    ).subscribe();
+  }
 
-    return classes;
+  return classes;
 }
 export default useDnDClasses;

@@ -5,7 +5,7 @@ import Races from "./races";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='homebrew/race' component={Races} />
-    </Router>)
+  render(()=><Router>
+    <Route path='homebrew/race' component={Races} />
+  </Router>)
 })

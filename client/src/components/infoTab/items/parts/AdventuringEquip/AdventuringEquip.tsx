@@ -7,9 +7,9 @@ interface props {
 
 const AdventEquipView:Component<props> = (props) => {
 
-    return <div>
+  return <div>
 
-    </div>
+  </div>
 }
 
 export default AdventEquipView;

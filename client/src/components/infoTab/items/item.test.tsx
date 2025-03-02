@@ -5,7 +5,7 @@ import ItemsViewTab from "./item";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/info/items' component={ItemsViewTab} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/info/items' component={ItemsViewTab} />
+  </Router>)
 })

@@ -13,21 +13,21 @@ interface props {
 }
 
 const DataTransferModal:Component<props> = (props) => {
-    const sharedContext = useContext(SharedHookContext);
+  const sharedContext = useContext(SharedHookContext);
 
-    return <Modal title="File Exchange" setClose={props.setBackClick} width={sharedContext.isMobile()?`99%`:""} height={sharedContext.isMobile()?"95%":""}>
-        <div class={`${styles.Wrapper}`}>
-            <Tabs transparent>
-                <Tab name="Import">
-                    <Importing />
-                </Tab>
-                <Tab name="Export">
-                    <Exporting />
-                </Tab>
-            </Tabs>
+  return <Modal title="File Exchange" setClose={props.setBackClick} width={sharedContext.isMobile()?`99%`:""} height={sharedContext.isMobile()?"95%":""}>
+    <div class={`${styles.Wrapper}`}>
+      <Tabs transparent>
+        <Tab name="Import">
+          <Importing />
+        </Tab>
+        <Tab name="Export">
+          <Exporting />
+        </Tab>
+      </Tabs>
 
-        </div>
-    </Modal>
+    </div>
+  </Modal>
 }
 
 export default DataTransferModal;

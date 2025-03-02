@@ -20,7 +20,7 @@ const useExportFullStats = (currentCharacter: Accessor<Character>) => {
     const race = dndSrdRaces().filter(
       (x) => x.name.toLowerCase() === currentCharacter()?.race.toLowerCase()
     )[0];
-    let fullStats: Stats = {
+    const fullStats: Stats = {
       str: currentCharacter()?.stats.str,
       dex: currentCharacter()?.stats.dex,
       con: currentCharacter()?.stats.con,
@@ -42,7 +42,7 @@ const useExportFullStats = (currentCharacter: Accessor<Character>) => {
         (x) => x.name.toLowerCase() === currentCharacter()?.subrace?.toLowerCase()
       )[0];
   
-      if (!!subrace) {
+      if (subrace) {
         subrace.abilityBonuses.forEach((bonus) => {
           Object.keys(fullStats).forEach((key) => {
             if (bonus.name.toLowerCase() === key) {

@@ -78,7 +78,7 @@ const Items: Component = () => {
   const [otherCategory,setOtherCategory] = createSignal<string>("");
 
   // search paramaters 
-  if (!!!searchParams.Name) setSearchParams({ Name: itemName() });
+  if (!searchParams.Name) setSearchParams({ Name: itemName() });
 
   // stores & base info 
 
@@ -172,14 +172,14 @@ const Items: Component = () => {
 
   const getItemObj = createMemo(() => {
     switch (itemType()) {
-      case "Item":
-        return currentItem;
-      case "Weapon":
-        return currentWeapon;
-      case "Armor":
-        return currentArmor;
-      default:
-        return currentItem;
+    case "Item":
+      return currentItem;
+    case "Weapon":
+      return currentWeapon;
+    case "Armor":
+      return currentArmor;
+    default:
+      return currentItem;
     }
   });
 
@@ -187,44 +187,44 @@ const Items: Component = () => {
 
   const saveToObject = () => {
     switch (itemType()) {
-      case "Weapon":
-        setCurrentWeapon("name", itemName());
-        setCurrentWeapon("equipmentCategory", itemType());
-        setCurrentWeapon("cost", {
-          quantity: itemCost(),
-          unit: costUnit() !== "other" ? costUnit() : otherUnit(),
-        });
-        setCurrentWeapon("categoryRange",`${currentWeapon.weaponCategory}${currentWeapon.weaponRange}`)
-        setCurrentWeapon("desc",itemDesc())
+    case "Weapon":
+      setCurrentWeapon("name", itemName());
+      setCurrentWeapon("equipmentCategory", itemType());
+      setCurrentWeapon("cost", {
+        quantity: itemCost(),
+        unit: costUnit() !== "other" ? costUnit() : otherUnit(),
+      });
+      setCurrentWeapon("categoryRange",`${currentWeapon.weaponCategory}${currentWeapon.weaponRange}`)
+      setCurrentWeapon("desc",itemDesc())
 
-        break;
+      break;
 
-      case "Armor":
-        setCurrentArmor("name", itemName());
-        setCurrentArmor("equipmentCategory", itemType());
-        setCurrentArmor("cost", {
-          quantity: itemCost(),
-          unit: costUnit() !== "other" ? costUnit() : otherUnit(),
-        });
-        setCurrentArmor("desc",itemDesc())
+    case "Armor":
+      setCurrentArmor("name", itemName());
+      setCurrentArmor("equipmentCategory", itemType());
+      setCurrentArmor("cost", {
+        quantity: itemCost(),
+        unit: costUnit() !== "other" ? costUnit() : otherUnit(),
+      });
+      setCurrentArmor("desc",itemDesc())
         
-        if (armorCategory() === "Other") {
-          setCurrentArmor("armorCategory",otherCategory());
-        } else {
-          setCurrentArmor("armorCategory",armorCategory());
-        }
-        break;
+      if (armorCategory() === "Other") {
+        setCurrentArmor("armorCategory",otherCategory());
+      } else {
+        setCurrentArmor("armorCategory",armorCategory());
+      }
+      break;
 
-      case "Item":
-        setCurrentItem("name", itemName());
-        setCurrentItem("equipmentCategory", itemType());
-        setCurrentItem("cost", {
-          quantity: itemCost(),
-          unit: costUnit() !== "other" ? costUnit() : otherUnit(),
-        });
-        setCurrentItem("desc",itemDesc())
+    case "Item":
+      setCurrentItem("name", itemName());
+      setCurrentItem("equipmentCategory", itemType());
+      setCurrentItem("cost", {
+        quantity: itemCost(),
+        unit: costUnit() !== "other" ? costUnit() : otherUnit(),
+      });
+      setCurrentItem("desc",itemDesc())
 
-        break;
+      break;
     }
   };
 
@@ -316,15 +316,15 @@ const Items: Component = () => {
     newFeatures?.push(newFeature);
 
     switch(itemType()){
-      case "Item":
-        setCurrentItem("features",newFeatures);
-        break;
-      case "Armor":
-        setCurrentArmor("features",newFeatures);
-        break;
-      case "Weapon":
-        setCurrentWeapon("features",newFeatures);
-        break
+    case "Item":
+      setCurrentItem("features",newFeatures);
+      break;
+    case "Armor":
+      setCurrentArmor("features",newFeatures);
+      break;
+    case "Weapon":
+      setCurrentWeapon("features",newFeatures);
+      break
     }
 
     setShowFeatureModal(false);
@@ -347,15 +347,15 @@ const Items: Component = () => {
     if (newFeatures) newFeatures[index] = newFeature;
 
     switch(itemType()){
-      case "Item":
-        setCurrentItem("features",newFeatures);
-        break;
-      case "Armor":
-        setCurrentArmor("features",newFeatures);
-        break;
-      case "Weapon":
-        setCurrentWeapon("features",newFeatures);
-        break
+    case "Item":
+      setCurrentItem("features",newFeatures);
+      break;
+    case "Armor":
+      setCurrentArmor("features",newFeatures);
+      break;
+    case "Weapon":
+      setCurrentWeapon("features",newFeatures);
+      break
     }
 
     setShowFeatureModal(false);
@@ -369,122 +369,122 @@ const Items: Component = () => {
     const homebrewArmor = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[2]) as Armor[];
 
     switch (itemType()) {
-      case "Armor":
-        return homebrewArmor.findIndex((x)=>x.name === currentArmor.name) > -1;
+    case "Armor":
+      return homebrewArmor.findIndex((x)=>x.name === currentArmor.name) > -1;
 
-      case "Weapon":
-        return homewbrewWeapons.findIndex((x)=>x.name === currentWeapon.name) > -1;
+    case "Weapon":
+      return homewbrewWeapons.findIndex((x)=>x.name === currentWeapon.name) > -1;
 
-      case "Item":
-        return homebrewItems.findIndex((x)=>x.name === currentItem.name) > -1;
+    case "Item":
+      return homebrewItems.findIndex((x)=>x.name === currentItem.name) > -1;
     }
   }
 
   const saveItem = () => {
     saveToObject()
     switch (itemType()) {
-      case "Weapon":
-        homebrewManager.addItem(currentWeapon)
-        clearInputs(true);
-        break;
+    case "Weapon":
+      homebrewManager.addItem(currentWeapon)
+      clearInputs(true);
+      break;
 
-      case "Armor":
-        homebrewManager.addItem(currentArmor)
-        clearInputs(true);
-        break;
+    case "Armor":
+      homebrewManager.addItem(currentArmor)
+      clearInputs(true);
+      break;
 
-      case "Item":
-        homebrewManager.addItem(currentItem);
-        clearInputs(true);
-        break;
+    case "Item":
+      homebrewManager.addItem(currentItem);
+      clearInputs(true);
+      break;
     }
   }
 
   const editItem = () => {
     saveToObject()
     switch (itemType()) {
-      case "Weapon":
-        homebrewManager.updateItem(currentWeapon);
-        clearInputs();
-        break;
+    case "Weapon":
+      homebrewManager.updateItem(currentWeapon);
+      clearInputs();
+      break;
 
-      case "Armor":
-        homebrewManager.updateItem(currentArmor);
-        clearInputs();
-        break;
+    case "Armor":
+      homebrewManager.updateItem(currentArmor);
+      clearInputs();
+      break;
 
-      case "Item":
-        homebrewManager.updateItem(currentItem);
-        clearInputs();
-        break;
+    case "Item":
+      homebrewManager.updateItem(currentItem);
+      clearInputs();
+      break;
     }
 
   }
 
   const fillInfo = (search?:boolean) => {
-    const searchName = !!search ? searchParams.name : getItemObj().name;
+    const searchName = search ? searchParams.name : getItemObj().name;
     const item = homebrewManager.items().find(x=>x.name === searchName);
     const allItem = allItems().find(x=>x.name === searchName);
 
-    if (!!item) {
+    if (item) {
       switch (item.equipmentCategory) {
-        case "Item":
-          setItemType(item.equipmentCategory);
-          setItemName(item.name);
-          setItemCost(item.cost.quantity);
-          setCostUnit(item.cost.unit);
-          setItemDesc(item.desc.join(""));
-          setCurrentItem(item);
-          break;
+      case "Item":
+        setItemType(item.equipmentCategory);
+        setItemName(item.name);
+        setItemCost(item.cost.quantity);
+        setCostUnit(item.cost.unit);
+        setItemDesc(item.desc.join(""));
+        setCurrentItem(item);
+        break;
         
-        case "Armor":
-          setItemType(item.equipmentCategory);
-          setItemName(item.name);
-          setItemCost(item.cost.quantity);
-          setCostUnit(item.cost.unit);
-          setItemDesc(item.desc.join(""));
-          setCurrentArmor(item);
-          break;
+      case "Armor":
+        setItemType(item.equipmentCategory);
+        setItemName(item.name);
+        setItemCost(item.cost.quantity);
+        setCostUnit(item.cost.unit);
+        setItemDesc(item.desc.join(""));
+        setCurrentArmor(item);
+        break;
 
-        case "Weapon":
-          setItemType(item.equipmentCategory);
-          setItemName(item.name);
-          setItemCost(item.cost.quantity);
-          setCostUnit(item.cost.unit);
-          setItemDesc(item.desc.join(""));
-          setCurrentWeapon(item);
-          break;
+      case "Weapon":
+        setItemType(item.equipmentCategory);
+        setItemName(item.name);
+        setItemCost(item.cost.quantity);
+        setCostUnit(item.cost.unit);
+        setItemDesc(item.desc.join(""));
+        setCurrentWeapon(item);
+        break;
       }
     }
 
-    if (!!allItem) {
+    if (allItem) {
       switch (allItem.equipmentCategory) {
-        case "Item":
-          setItemType(allItem.equipmentCategory);
-          setItemName(allItem.name);
-          setItemCost(allItem.cost.quantity);
-          setCostUnit(allItem.cost.unit);
-          setItemDesc(allItem.desc.join(""));
-          setCurrentItem(allItem);
-          break;
+      case "Item":
+        setItemType(allItem.equipmentCategory);
+        setItemName(allItem.name);
+        setItemCost(allItem.cost.quantity);
+        setCostUnit(allItem.cost.unit);
+        setItemDesc(allItem.desc.join(""));
+        setCurrentItem(allItem);
+        break;
         
-        case "Armor":
-          setItemType(allItem.equipmentCategory);
-          setItemName(allItem.name);
-          setItemCost(allItem.cost.quantity);
-          setCostUnit(allItem.cost.unit);
-          setItemDesc(allItem.desc.join(""));
-          setCurrentArmor(allItem);
-          break;
+      case "Armor":
+        setItemType(allItem.equipmentCategory);
+        setItemName(allItem.name);
+        setItemCost(allItem.cost.quantity);
+        setCostUnit(allItem.cost.unit);
+        setItemDesc(allItem.desc.join(""));
+        setCurrentArmor(allItem);
+        break;
 
-        case "Weapon":
-          setItemType(allItem.equipmentCategory);
-          setItemName(allItem.name);
-          setItemCost(allItem.cost.quantity);
-          setCostUnit(allItem.cost.unit);
-          setItemDesc(allItem.desc.join(""));
-          setCurrentWeapon(allItem);
-          break;
+      case "Weapon":
+        setItemType(allItem.equipmentCategory);
+        setItemName(allItem.name);
+        setItemCost(allItem.cost.quantity);
+        setCostUnit(allItem.cost.unit);
+        setItemDesc(allItem.desc.join(""));
+        setCurrentWeapon(allItem);
+        break;
       }
     }
 
@@ -646,29 +646,29 @@ const Items: Component = () => {
             <Button
               onClick={(e) => {
                 switch (getItemObj().equipmentCategory) {
-                  case "Item":
-                    if (itemTag() === "Other") {
-                      setCurrentItem("tags", (old) => [...old, otherTag()]);
-                    } else {
-                      setCurrentItem("tags", (old) => [...old, itemTag()]);
-                    }
-                    break;
+                case "Item":
+                  if (itemTag() === "Other") {
+                    setCurrentItem("tags", (old) => [...old, otherTag()]);
+                  } else {
+                    setCurrentItem("tags", (old) => [...old, itemTag()]);
+                  }
+                  break;
 
-                  case "Weapon":
-                    if (itemTag() === "Other") {
-                      setCurrentWeapon("tags", (old) => [...old, otherTag()]);
-                    } else {
-                      setCurrentWeapon("tags", (old) => [...old, itemTag()]);
-                    }
-                    break;
+                case "Weapon":
+                  if (itemTag() === "Other") {
+                    setCurrentWeapon("tags", (old) => [...old, otherTag()]);
+                  } else {
+                    setCurrentWeapon("tags", (old) => [...old, itemTag()]);
+                  }
+                  break;
 
-                  case "Armor":
-                    if (itemTag() === "Other") {
-                      setCurrentArmor("tags", (old) => [...old, otherTag()]);
-                    } else {
-                      setCurrentArmor("tags", (old) => [...old, itemTag()]);
-                    }
-                    break;
+                case "Armor":
+                  if (itemTag() === "Other") {
+                    setCurrentArmor("tags", (old) => [...old, otherTag()]);
+                  } else {
+                    setCurrentArmor("tags", (old) => [...old, itemTag()]);
+                  }
+                  break;
                 }
               }}
             >
@@ -684,21 +684,21 @@ const Items: Component = () => {
                     value={tag}
                     remove={() => {
                       switch (getItemObj().equipmentCategory) {
-                        case "Item":
-                          setCurrentItem("tags", (old) => [
-                            ...old.filter((x) => x !== tag),
-                          ]);
-                          break;
-                        case "Weapon":
-                          setCurrentWeapon("tags", (old) => [
-                            ...old.filter((x) => x !== tag),
-                          ]);
-                          break;
-                        case "Armor":
-                          setCurrentArmor("tags", (old) => [
-                            ...old.filter((x) => x !== tag),
-                          ]);
-                          break;
+                      case "Item":
+                        setCurrentItem("tags", (old) => [
+                          ...old.filter((x) => x !== tag),
+                        ]);
+                        break;
+                      case "Weapon":
+                        setCurrentWeapon("tags", (old) => [
+                          ...old.filter((x) => x !== tag),
+                        ]);
+                        break;
+                      case "Armor":
+                        setCurrentArmor("tags", (old) => [
+                          ...old.filter((x) => x !== tag),
+                        ]);
+                        break;
                       }
                     }}
                   />
@@ -710,37 +710,37 @@ const Items: Component = () => {
 
         <h2>Features</h2>
         <div>
-            <Button onClick={()=>setShowFeatureModal(!showFeatureModal())}>
+          <Button onClick={()=>setShowFeatureModal(!showFeatureModal())}>
               Add A Feature
-            </Button>
+          </Button>
 
-            <span>
-                <Show when={(getItemObj().features ?? []).length > 0} >
-                  <For each={getItemObj().features}>
-                    { (feature, i) => <Chip value={feature.name} remove={()=>{
-                      switch(getItemObj().equipmentCategory){
-                        case "Item":
-                          setCurrentItem("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
-                          break
+          <span>
+            <Show when={(getItemObj().features ?? []).length > 0} >
+              <For each={getItemObj().features}>
+                { (feature, i) => <Chip value={feature.name} remove={()=>{
+                  switch(getItemObj().equipmentCategory){
+                  case "Item":
+                    setCurrentItem("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
+                    break
 
-                        case "Weapon":
-                          setCurrentWeapon("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
-                          break;
+                  case "Weapon":
+                    setCurrentWeapon("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
+                    break;
 
-                        case "Armor":
-                          setCurrentArmor("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
-                          break;
-                      }
-                    }} /> }
-                  </For>
-                </Show>
-                <Show when={getItemObj().features?.length === 0}>
-                    <Chip value="None" />
-                </Show>
-            </span>
+                  case "Armor":
+                    setCurrentArmor("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
+                    break;
+                  }
+                }} /> }
+              </For>
+            </Show>
+            <Show when={getItemObj().features?.length === 0}>
+              <Chip value="None" />
+            </Show>
+          </span>
 
-            <Show when={showFeatureModal()}>
-              <FeatureModal 
+          <Show when={showFeatureModal()}>
+            <FeatureModal 
               addFeature={addFeature}
               replaceFeature={replaceFeature}
               currentLevel={{} as LevelEntity}
@@ -749,8 +749,8 @@ const Items: Component = () => {
               editIndex={editIndex}
               setEditIndex={setEditIndex}
               currentItem={getItemObj()}
-              />
-            </Show>
+            />
+          </Show>
         </div>
 
         

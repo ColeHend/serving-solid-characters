@@ -14,16 +14,16 @@ interface formFieldContext {
 }
 
 const FormFieldContext = createContext<formFieldContext>({
-	getName: () => "",
-	setName: () => {},
-	getTextInside: () => true,
-	setTextInside: () => {},
-	getFocused: () => false,
-	setFocused: () => {},
-	getValue: () => "",
-	setValue: () => {},
-	getFieldType: () => "",
-	setFieldType: () => {}
+  getName: () => "",
+  setName: () => {},
+  getTextInside: () => true,
+  setTextInside: () => {},
+  getFocused: () => false,
+  setFocused: () => {},
+  getValue: () => "",
+  setValue: () => {},
+  getFieldType: () => "",
+  setFieldType: () => {}
 });
 interface ProviderProps {
 	children: JSX.Element;
@@ -32,31 +32,31 @@ interface ProviderProps {
 	type?: string;
 }
 export const Provider: Component<ProviderProps> = (props) => {
-	const [getName, setName] = createSignal(props.name ?? "");
-	const [getTextInside, setTextInside] = createSignal(false);
-	const [getFocused, setFocused] = createSignal(false);
-	const [getValue, setValue] = createSignal(props.value ?? "");
-	const [getFieldType, setFieldType] = createSignal(props.type ?? "text");
-	return (
-		<FormFieldContext.Provider 
-			value={{
-				getName,
-				setName,
-				getTextInside,
-				setTextInside,
-				getFocused,
-				setFocused,
-				getValue,
-				setValue,
-				getFieldType,
-				setFieldType
-			}}
-			>
-			{props.children}
-		</FormFieldContext.Provider>
-	);
+  const [getName, setName] = createSignal(props.name ?? "");
+  const [getTextInside, setTextInside] = createSignal(false);
+  const [getFocused, setFocused] = createSignal(false);
+  const [getValue, setValue] = createSignal(props.value ?? "");
+  const [getFieldType, setFieldType] = createSignal(props.type ?? "text");
+  return (
+    <FormFieldContext.Provider 
+      value={{
+        getName,
+        setName,
+        getTextInside,
+        setTextInside,
+        getFocused,
+        setFocused,
+        getValue,
+        setValue,
+        getFieldType,
+        setFieldType
+      }}
+    >
+      {props.children}
+    </FormFieldContext.Provider>
+  );
 }
 export function useFormProvider() {
-	const context = useContext(FormFieldContext)
-	return context;
+  const context = useContext(FormFieldContext)
+  return context;
 };

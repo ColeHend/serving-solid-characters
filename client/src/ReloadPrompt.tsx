@@ -10,7 +10,7 @@ const ReloadPrompt: Component = () => {
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(r) {
-      // eslint-disable-next-line prefer-template
+       
       console.log('SW Registered: ' , r)
     },
     onRegisterError(error) {

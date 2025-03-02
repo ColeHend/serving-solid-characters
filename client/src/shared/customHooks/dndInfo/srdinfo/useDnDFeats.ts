@@ -20,24 +20,24 @@ export function useDnDFeats(): Accessor<Feat[]> {
           return of([]);
         }
       }),
-        concatMap((feats) => {
-            if (feats.length === 0) {
-            return HttpClient$.post<Feat[]>("/api/DnDInfo/Feats", {}).pipe(
-                take(1),
-                catchError((err) => {
-                console.error("Error: ", err);
-                return of(null);
-                }),
-                tap((feats) => {
-                if (!!feats) {
-                    LocalSrdDB.feats.bulkAdd(feats);
-                }
-                }),
-            );
-            } else {
-            return of(feats);
-            }
-        }),
+      concatMap((feats) => {
+        if (feats.length === 0) {
+          return HttpClient$.post<Feat[]>("/api/DnDInfo/Feats", {}).pipe(
+            take(1),
+            catchError((err) => {
+              console.error("Error: ", err);
+              return of(null);
+            }),
+            tap((feats) => {
+              if (feats) {
+                LocalSrdDB.feats.bulkAdd(feats);
+              }
+            }),
+          );
+        } else {
+          return of(feats);
+        }
+      }),
       tap((classes) => !!classes && classes.length > 0 ? setFeats(classes) : null),
     ).subscribe();
   }

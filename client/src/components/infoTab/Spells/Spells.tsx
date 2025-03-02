@@ -41,18 +41,18 @@ const masterSpells: Component = () => {
   const stylin = createMemo(() => useStyles(userSettings().theme));
   const dndSrdSpells = useGetSpells();
   const navigate = useNavigate()
-  let compArr: any[] = [];
+  const compArr: any[] = [];
 
 
 
   // search param stuff
 
   const [searchParam, setSearchParam] = useSearchParams();
-  if (!!!searchParam.name) setSearchParam({ name: dndSrdSpells()[0]?.name });
+  if (!searchParam.name) setSearchParam({ name: dndSrdSpells()[0]?.name });
   const selectedSpell = dndSrdSpells().filter(
     (x) =>
       x.name?.toLowerCase() ===
-      (searchParam?.name || dndSrdSpells()[0]?.name).toLowerCase()
+      (searchParam?.name || (dndSrdSpells()[0]?.name ?? "")).toLowerCase()
   )[0];
   const [currentSpell, setCurrentSpell] = createSignal<Spell>(selectedSpell);
 
@@ -204,17 +204,17 @@ const masterSpells: Component = () => {
           </Column>
           <Show when={!sharedHooks.isMobile()}>
             <Column name="school">
-                <Header class={styles.clickyHeader}>
-                  <span onClick={() => dataSort("school")}>
-                    <strong>School</strong>
-                    <Show when={currentSort().sortKey === "school"}>
-                      <span >{currentSort().isAsc ? "▲" : "▼"}</span>
-                    </Show>
-                  </span>
-                </Header>
-                <Cell<Spell> class={`${styles.center}`}>{ (spell, i) => <div>
-                    <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
-                </div>}</Cell>
+              <Header class={styles.clickyHeader}>
+                <span onClick={() => dataSort("school")}>
+                  <strong>School</strong>
+                  <Show when={currentSort().sortKey === "school"}>
+                    <span >{currentSort().isAsc ? "▲" : "▼"}</span>
+                  </Show>
+                </span>
+              </Header>
+              <Cell<Spell> class={`${styles.center}`}>{ (spell, i) => <div>
+                <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
+              </div>}</Cell>
             </Column>
           </Show>
           <Column name="level">
@@ -245,11 +245,11 @@ const masterSpells: Component = () => {
           <Row style={{width:"98%"}} />
           <SecondRow<Spell>>
             {(spell, i) => <div class={`${!sharedHooks.isMobile()?styles.flexRow:''}`}>
-                  {spell.ritual? <Chip key="ritual" value="yes" /> : ""}
-                  {spell.concentration ? <Chip key="concentration" value="yes" /> : ""}
-                  {spell.damageType ? <Chip key="dmg-type" value={spell.damageType} /> : ""}
-                  <Chip key="Comps" value={`${checkForComponents(spell).join(", ")}`} />
-                </div>
+              {spell.ritual? <Chip key="ritual" value="yes" /> : ""}
+              {spell.concentration ? <Chip key="concentration" value="yes" /> : ""}
+              {spell.damageType ? <Chip key="dmg-type" value={spell.damageType} /> : ""}
+              <Chip key="Comps" value={`${checkForComponents(spell).join(", ")}`} />
+            </div>
             }
           </SecondRow>
           
@@ -257,7 +257,7 @@ const masterSpells: Component = () => {
       </div>
 
       <Show when={showSpell()}>
-          <SpellModal spell={currentSpell} backgroundClick={[showSpell,setShowSpell]}   />
+        <SpellModal spell={currentSpell} backgroundClick={[showSpell,setShowSpell]}   />
       </Show>
     
       <div class={`${styles.paginator}`}>

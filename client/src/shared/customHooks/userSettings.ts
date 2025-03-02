@@ -12,30 +12,30 @@ const [currentSettings, setCurrentSettings] = createSignal<UserSettings>({
 const [loaded, setLoaded] = createSignal(false);
 
 export function getUserSettings(forceReload?: boolean): [Accessor<UserSettings>, Setter<UserSettings>] {
-    if (!!forceReload) setLoaded(false);
-    if (!loaded()) {
-      setLoaded(true);
-      getAllUsers().pipe(
-        take(1),
-        tap((settings)=>{
-          if(settings.length > 0 && settings[0].userId === currentSettings().userId){
-            setCurrentSettings(settings[0]);
-          }
-        })
-      ).subscribe();
-    }
+  if (forceReload) setLoaded(false);
+  if (!loaded()) {
+    setLoaded(true);
+    getAllUsers().pipe(
+      take(1),
+      tap((settings)=>{
+        if(settings.length > 0 && settings[0].userId === currentSettings().userId){
+          setCurrentSettings(settings[0]);
+        }
+      })
+    ).subscribe();
+  }
     
-    return [currentSettings, setCurrentSettings];
+  return [currentSettings, setCurrentSettings];
 }
 export default getUserSettings;
 
 export function saveUserSettings(settings: UserSettings, callback?: ()=>void) {
-    userSettingDB.userSettings.put(settings).then(()=>{
-      if(!!callback) callback();
-    }).catch((err)=>{
-      console.error(err);
-    });
-    setCurrentSettings(settings);
+  userSettingDB.userSettings.put(settings).then(()=>{
+    if(callback) callback();
+  }).catch((err)=>{
+    console.error(err);
+  });
+  setCurrentSettings(settings);
 }
 
 function getAllUsers() {

@@ -21,38 +21,38 @@ const SpellModal: Component<props> = (props) => {
 
   return (
     <Modal
-        title={currentSpell().name}
-        width={sharedHooks.isMobile() ? "98%" : "68%"} // fuck with it
-        height={sharedHooks.isMobile() ? "90%" : "77%"} // fuck with it
-        backgroundClick={[showSpell,setShowSpell]}
+      title={currentSpell().name}
+      width={sharedHooks.isMobile() ? "98%" : "68%"} // fuck with it
+      height={sharedHooks.isMobile() ? "90%" : "77%"} // fuck with it
+      backgroundClick={[showSpell,setShowSpell]}
     >
-        <div class={`${style.view}`}>
-            <h1>{currentSpell().name}</h1>
+      <div class={`${style.view}`}>
+        <h1>{currentSpell().name}</h1>
 
-            <h2>
-                {spellLevel(currentSpell().level)} {currentSpell().school}
-            </h2>
+        <h2>
+          {spellLevel(currentSpell().level)} {currentSpell().school}
+        </h2>
 
-            <h2>Casting time: {currentSpell().castingTime} </h2>
+        <h2>Casting time: {currentSpell().castingTime} </h2>
 
-            <h2>Range: {currentSpell().range} </h2>
+        <h2>Range: {currentSpell().range} </h2>
 
-            <h2>Component: {spellComponents(currentSpell())}</h2>
+        <h2>Component: {spellComponents(currentSpell())}</h2>
 
-            <h2>Duration: {currentSpell().duration}</h2>
+        <h2>Duration: {currentSpell().duration}</h2>
 
-            <h2>Classes: {currentSpell().classes.join(", ")}</h2>
+        <h2>Classes: {currentSpell().classes.join(", ")}</h2>
             
-            <Show when={currentSpell().subClasses.length > 0}>
-              <h2>SubClasses: {currentSpell().subClasses.join(", ")}</h2>
-            </Show>
+        <Show when={currentSpell().subClasses.length > 0}>
+          <h2>SubClasses: {currentSpell().subClasses.join(", ")}</h2>
+        </Show>
 
-            <span>{currentSpell().desc}</span>
+        <span>{currentSpell().desc}</span>
 
-            <Show when={!!currentSpell().higherLevel}>
-                <h4>At Higher Levels: </h4> <span>{currentSpell().higherLevel}</span>
-            </Show>
-        </div>
+        <Show when={!!currentSpell().higherLevel}>
+          <h4>At Higher Levels: </h4> <span>{currentSpell().higherLevel}</span>
+        </Show>
+      </div>
     </Modal>
 
   );

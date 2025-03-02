@@ -17,13 +17,13 @@ const FeatureTable: Component<Props> = (props) => {
   const Class = props.DndClass;
   const fixedSelectValues = (key: string) => {
     switch (props.DndClass().name.toLowerCase()) {
-      case "rogue":
-      case "monk":
-        if (!Number.isNaN(+key)) return key;
-        const fixedValues = JSON.parse(key);
-        return `${JSON.parse(fixedValues).DiceCount}d${
-          JSON.parse(fixedValues).DiceValue
-        }`;
+    case "rogue":
+    case "monk":
+      if (!Number.isNaN(+key)) return key;
+      const fixedValues = JSON.parse(key);
+      return `${JSON.parse(fixedValues).DiceCount}d${
+        JSON.parse(fixedValues).DiceValue
+      }`;
     }
     return key;
   };

@@ -5,7 +5,7 @@ import View from './view';
 
 test("render", async () => {
 
-    render(()=><Router>
-        <Route path='/homebrew/view' component={View} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/homebrew/view' component={View} />
+  </Router>)
 })

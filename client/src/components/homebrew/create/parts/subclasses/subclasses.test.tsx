@@ -5,7 +5,7 @@ import Subclasses from "./subclasses";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/homebrew/subclasses' component={Subclasses} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/homebrew/subclasses' component={Subclasses} />
+  </Router>)
 })

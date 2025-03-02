@@ -19,21 +19,21 @@ export interface User {
 
 export default function useVerify() {
 
-    HttpClient$.post<HttpData>("/api/Verify", {}).pipe(
-        catchError((err, caught)=>{
-            console.error("Error: ", err);
-            return caught;
-        }),
-        tap((data) => {
-            const user: User = JSON.parse(data.data);
-            if (!!user.username) {
-                setSuccess(user);
-            } else {
-                setSuccess(user);
-            }
-        }),
+  HttpClient$.post<HttpData>("/api/Verify", {}).pipe(
+    catchError((err, caught)=>{
+      console.error("Error: ", err);
+      return caught;
+    }),
+    tap((data) => {
+      const user: User = JSON.parse(data.data);
+      if (user.username) {
+        setSuccess(user);
+      } else {
+        setSuccess(user);
+      }
+    }),
 
-    ).subscribe();
+  ).subscribe();
 
-    return success;
+  return success;
 }

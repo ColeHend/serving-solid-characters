@@ -5,7 +5,7 @@ import { Route, Router } from "@solidjs/router";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/info/backgrounds' component={Viewbackgrounds} />
-    </Router>);
+  render(()=><Router>
+    <Route path='/info/backgrounds' component={Viewbackgrounds} />
+  </Router>);
 })

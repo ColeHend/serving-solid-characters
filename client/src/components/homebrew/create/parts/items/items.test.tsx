@@ -5,7 +5,7 @@ import Items from "./items";
 
 test("render",async () => {
 
-    render(()=> <Router>
-        <Route path='/homebrew/items' component={Items} />
-    </Router>)
+  render(()=> <Router>
+    <Route path='/homebrew/items' component={Items} />
+  </Router>)
 })

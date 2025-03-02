@@ -18,49 +18,49 @@ interface TableProps<T> {
 }
 
 const Table = <T,>(props: TableProps<T>) => {
-    const [data, xxxx] = createSignal<T[]>(props.data);
-    const [paginated, setPaginated] = createSignal<T[]>(props.data);
-    const paginatedMemo = createMemo(()=>paginated());
-    const [dummyPage, setDummyPage] = createSignal<T[]>([]);
-    const menuItems = createMemo(()=>!!props.button ? paginatedMemo().map(x=>props.button!.generateMenuButtons(x)) : []);
+  const [data, xxxx] = createSignal<T[]>(props.data);
+  const [paginated, setPaginated] = createSignal<T[]>(props.data);
+  const paginatedMemo = createMemo(()=>paginated());
+  const [dummyPage, setDummyPage] = createSignal<T[]>([]);
+  const menuItems = createMemo(()=>props.button ? paginatedMemo().map(x=>props.button!.generateMenuButtons(x)) : []);
   return (
-      <>
-        <table>
-            <thead>
-            <tr>
-                <For each={props.keys ?? []}>
-                {(key) => {
-                    return <th>{beutifyChip(key.toString())}</th>;
-                }}
-                </For>
-                <Show when={props.button}>
-                    <td>Options</td>
-                </Show>
+    <>
+      <table>
+        <thead>
+          <tr>
+            <For each={props.keys ?? []}>
+              {(key) => {
+                return <th>{beutifyChip(key.toString())}</th>;
+              }}
+            </For>
+            <Show when={props.button}>
+              <td>Options</td>
+            </Show>
+          </tr>
+        </thead>
+        <tbody>
+          <For each={paginatedMemo()}>
+            {(child, i) => <tr>
+              <For each={props.keys}>
+                {(key) => <td>{`${child[key]}`}</td>}
+              </For>
+              <Show when={props.button}>
+                <Button 
+                  enableBackgroundClick={props.button?.backgroundClick}
+                  overrideX={props.button?.overideX} 
+                  overrideY={props.button?.overideY} 
+                  menuItems={menuItems()[i()]}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+                </Button>
+              </Show>
             </tr>
-            </thead>
-            <tbody>
-                <For each={paginatedMemo()}>
-                    {(child, i) => <tr>
-                        <For each={props.keys}>
-                            {(key) => <td>{`${child[key]}`}</td>}
-                        </For>
-                        <Show when={props.button}>
-                            <Button 
-                            enableBackgroundClick={props.button?.backgroundClick}
-                            overrideX={props.button?.overideX} 
-                            overrideY={props.button?.overideY} 
-                            menuItems={menuItems()[i()]}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
-                            </Button>
-                        </Show>
-                    </tr>
-                }</For>
-            </tbody>
-        </table>
-        <Show when={props.paginator}>
-            <Paginator<T> setPaginatedItems={setPaginated} items={data} itemsPerPage={props.paginator} />
-        </Show>
-      </>
+            }</For>
+        </tbody>
+      </table>
+      <Show when={props.paginator}>
+        <Paginator<T> setPaginatedItems={setPaginated} items={data} itemsPerPage={props.paginator} />
+      </Show>
+    </>
   );
 };
 

@@ -7,28 +7,28 @@ import useGetRaces from "./data/useGetRaces";
 import addSnackbar from "../components/Snackbar/snackbar";
 
 class HomebrewSearch {
-    public searchName: string;
+  public searchName: string;
 
-    constructor (SearchName:string) {
-        this.searchName = SearchName;
-    }
+  constructor (SearchName:string) {
+    this.searchName = SearchName;
+  }
 
 
-    public races() {
+  public races() {
 
-        let srdRaces:Race[] = [];
+    let srdRaces:Race[] = [];
 
-        homebrewManager.races().forEach(homerace => {
-            srdRaces = Clone(useGetRaces()()).filter(x=>x.name !== homerace.name);
-        })
+    homebrewManager.races().forEach(homerace => {
+      srdRaces = Clone(useGetRaces()()).filter(x=>x.name !== homerace.name);
+    })
     
 
 
-        addSnackbar({
-            severity:"info",
-            message:"Searching Homebrew",
-            closeTimeout:4000
-        })
+    addSnackbar({
+      severity:"info",
+      message:"Searching Homebrew",
+      closeTimeout:4000
+    })
 
         
 
@@ -36,48 +36,48 @@ class HomebrewSearch {
 
 
 
-        if (srdRaces.length > 0) {
-            const SrdRaces = srdRaces.sort((a, b) => a.name.localeCompare(b.name))
+    if (srdRaces.length > 0) {
+      const SrdRaces = srdRaces.sort((a, b) => a.name.localeCompare(b.name))
 
-            addSnackbar({
-                severity:"info",
-                message:"Searching Srd",
-                closeTimeout:4000
-            })
+      addSnackbar({
+        severity:"info",
+        message:"Searching Srd",
+        closeTimeout:4000
+      })
 
-            return SrdRaces.find(r=>r.name === this.searchName);
-        }
-
+      return SrdRaces.find(r=>r.name === this.searchName);
     }
 
-
-    public dndClasses():DnDClass {
-
-        return {} as DnDClass
-    }
+  }
 
 
-    public feats():Feat {
+  public dndClasses():DnDClass {
 
-        return {} as Feat
-    }   
-
-
-    public items() {
-
-    }
+    return {} as DnDClass
+  }
 
 
-    public spells():Spell {
+  public feats():Feat {
 
-        return {} as Spell
-    }
+    return {} as Feat
+  }   
 
 
-    public background():Background {
+  public items() {
+
+  }
+
+
+  public spells():Spell {
+
+    return {} as Spell
+  }
+
+
+  public background():Background {
         
-        return {} as Background
-    }
+    return {} as Background
+  }
 
 
 

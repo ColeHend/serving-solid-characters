@@ -57,7 +57,7 @@ const LevelBuilder: Component<Props> = (props) => {
   const [toAddValue, setToAddValue] = createSignal("");
   const getSlotString = (slot: number) => slot === 0 ? "cantrips_known" : `spell_slots_level_${slot}`;
   const getSlotValue:(slot:number)=>string = (slot: number) => {
-    if(!!classLevels()[level - 1]?.spellcasting) {
+    if(classLevels()[level - 1]?.spellcasting) {
       if(slot === 0) return `${classLevels()[level - 1]?.spellcasting?.cantrips_known}`;
       
       return classLevels()[level - 1]?.spellcasting?.[`spell_slots_level_${slot}`] ? `${classLevels()[level - 1]?.spellcasting?.[`spell_slots_level_${slot}`]}`: "";
@@ -73,76 +73,76 @@ const LevelBuilder: Component<Props> = (props) => {
         <div>Proficency Bonus: {Math.ceil(level / 4) + 1}</div>
       </div>
       <Show when={hasSpellCasting()}>
-            <div>
-                <div class={`${styles.hasCasting}`} >
-                    <h4>Spells Slots: </h4>
-                    <For each={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}>{(slot) => <>
-                        <label for={`spell_slots_level_${slot}`}>{slot > 0 ? `Level ${slot} `: "Cantrips "}</label>
-                        <span >
-                            <Input value={getSlotValue(slot)} type="number" name={`spell_slots_level_${slot}`} onChange={(e)=>{
-                              setClassLevels((old)=>{
-                                switch (slot) {
-                                    case 0:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["cantrips_known"] : +e.currentTarget.value}
-                                      break;
-                                    case 1:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_1"] : +e.currentTarget.value}
-                                      break;
-                                    case 2:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_2"] : +e.currentTarget.value}
-                                      break;
-                                    case 3:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_3"] : +e.currentTarget.value}
-                                      break;
-                                    case 4:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_4"] : +e.currentTarget.value}
-                                      break;
-                                    case 5:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_5"] : +e.currentTarget.value}
-                                      break;
-                                    case 6:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_6"] : +e.currentTarget.value}
-                                      break;
-                                    case 7:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_7"] : +e.currentTarget.value}
-                                      break;
-                                    case 8:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_8"] : +e.currentTarget.value}
-                                      break;
-                                    case 9:
-                                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_9"] : +e.currentTarget.value}
-                                      break;
-                                    default:
-                                      break;
-                                  }
-                                    return JSON.parse(JSON.stringify(old));
-                                });
-                            }} />
-                        </span>
-                    </>}</For>
-                </div>
-                <div>
-                  <Show when={!props.useCastingCalc()}>
-                    <Input placeholder="Spells Known" type="number" onChange={(e)=>{
-                      setClassLevels((old)=>{
-                        old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, spells_known : +e.currentTarget.value}
-                        return JSON.parse(JSON.stringify(old));
-                      });
-                    }} />
-                  </Show>
-                    <Select value={casterType()} onChange={(e)=>{
-                        setCasterType(e.currentTarget.value);
-                    }}  disableUnselected={true}>
-                        <Option value={""}>None</Option>
-                        <Option value={"full"}>Full Caster</Option>
-                        <Option value={"halfUp"}>Half Caster Round Up</Option>
-                        <Option value={"halfDown"}>Half Caster Round Down</Option>
-                        <Option value={"thirdUp"}>Third Caster Round Up</Option>
-                        <Option value={"thirdDown"}>Third Caster Round Down</Option>
-                    </Select>
-                </div>
-            </div>
-        </Show>
+        <div>
+          <div class={`${styles.hasCasting}`} >
+            <h4>Spells Slots: </h4>
+            <For each={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}>{(slot) => <>
+              <label for={`spell_slots_level_${slot}`}>{slot > 0 ? `Level ${slot} `: "Cantrips "}</label>
+              <span >
+                <Input value={getSlotValue(slot)} type="number" name={`spell_slots_level_${slot}`} onChange={(e)=>{
+                  setClassLevels((old)=>{
+                    switch (slot) {
+                    case 0:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["cantrips_known"] : +e.currentTarget.value}
+                      break;
+                    case 1:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_1"] : +e.currentTarget.value}
+                      break;
+                    case 2:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_2"] : +e.currentTarget.value}
+                      break;
+                    case 3:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_3"] : +e.currentTarget.value}
+                      break;
+                    case 4:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_4"] : +e.currentTarget.value}
+                      break;
+                    case 5:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_5"] : +e.currentTarget.value}
+                      break;
+                    case 6:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_6"] : +e.currentTarget.value}
+                      break;
+                    case 7:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_7"] : +e.currentTarget.value}
+                      break;
+                    case 8:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_8"] : +e.currentTarget.value}
+                      break;
+                    case 9:
+                      old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, ["spell_slots_level_9"] : +e.currentTarget.value}
+                      break;
+                    default:
+                      break;
+                    }
+                    return JSON.parse(JSON.stringify(old));
+                  });
+                }} />
+              </span>
+            </>}</For>
+          </div>
+          <div>
+            <Show when={!props.useCastingCalc()}>
+              <Input placeholder="Spells Known" type="number" onChange={(e)=>{
+                setClassLevels((old)=>{
+                  old[level - 1].spellcasting = {...old[level - 1]?.spellcasting, spells_known : +e.currentTarget.value}
+                  return JSON.parse(JSON.stringify(old));
+                });
+              }} />
+            </Show>
+            <Select value={casterType()} onChange={(e)=>{
+              setCasterType(e.currentTarget.value);
+            }}  disableUnselected={true}>
+              <Option value={""}>None</Option>
+              <Option value={"full"}>Full Caster</Option>
+              <Option value={"halfUp"}>Half Caster Round Up</Option>
+              <Option value={"halfDown"}>Half Caster Round Down</Option>
+              <Option value={"thirdUp"}>Third Caster Round Up</Option>
+              <Option value={"thirdDown"}>Third Caster Round Down</Option>
+            </Select>
+          </div>
+        </div>
+      </Show>
       <div class={`${styles.buttons}`}>
         <Button
           onClick={(e) => {
@@ -193,21 +193,21 @@ const LevelBuilder: Component<Props> = (props) => {
               <div>
                 <h4>Value</h4>
                 <textarea 
-                class={`${styles.textArea}`}
-                value={classFeatureNullCheck(feature.value)}
-                onChange={(e) => {
-                  setFeatures((old) => {
-                    old[level - 1] = {
-                      name: feature.name,
-                      value: e.currentTarget.value,
-                      info: feature.info,
-                    };
-                    return JSON.parse(JSON.stringify(old));
-                  });
-                }}/>
+                  class={`${styles.textArea}`}
+                  value={classFeatureNullCheck(feature.value)}
+                  onChange={(e) => {
+                    setFeatures((old) => {
+                      old[level - 1] = {
+                        name: feature.name,
+                        value: e.currentTarget.value,
+                        info: feature.info,
+                      };
+                      return JSON.parse(JSON.stringify(old));
+                    });
+                  }}/>
               </div>
               <div>
-              <Button
+                <Button
                   onClick={() => {
                     setFeatures((old) => {
                       const index = old.findIndex((x) => x.name === feature.name && x.info.level === level);
@@ -229,47 +229,47 @@ const LevelBuilder: Component<Props> = (props) => {
         <div>No Features Found!</div>
       </Show>
       <h3>New Class Specific <i>(like barbarian rages)</i></h3>
-        <div>
-          <Input value={toAddName()} onChange={(e)=>{
-            setToAddName(e.currentTarget.value);
-          }} placeholder="Name" />
-          <Input value={toAddValue()} onChange={(e)=>{
-            setToAddValue(e.currentTarget.value);
-          }} type="number" placeholder="Value" />
-          <Button disabled={toAddName().length < 1} onClick={(e)=>{
-            setClassLevels((old)=>{
-              old[level - 1].classSpecific[toAddName()] = toAddValue();
-              setToAddName("");
-              setToAddValue("");
-              return JSON.parse(JSON.stringify(old));
-            });
-          }}>Add New</Button>
-          <br />
-          <For each={Object.keys(classLevels()[level - 1].classSpecific)}>{(item, i)=><>
-            <div>
-              <h4>{item}</h4>
-              <Input class={`${classLevels()[level - 1].classSpecific[item] ? "error " : ""}`} value={item} onChange={(e)=>{
-                setClassLevels((old)=>{
-                  old[level - 1].classSpecific[e.currentTarget.value] = old[level - 1].classSpecific[item];
-                  return JSON.parse(JSON.stringify(old));
-                });
-              }} />
-              <Input value={classLevels()[level - 1].classSpecific[item]} onChange={(e)=>{
-                setClassLevels((old)=>{
-                  old[level - 1].classSpecific[item] = e.currentTarget.value;
-                  return JSON.parse(JSON.stringify(old));
-                });
-              }} />
-              <Button onClick={(e)=>{
-                setClassLevels((old)=>{
-                  delete old[level - 1].classSpecific[item];
-                  return JSON.parse(JSON.stringify(old));
-                });
-              }}>Remove</Button>
-            </div>
-          </>}</For>
-          <br />
-        </div>
+      <div>
+        <Input value={toAddName()} onChange={(e)=>{
+          setToAddName(e.currentTarget.value);
+        }} placeholder="Name" />
+        <Input value={toAddValue()} onChange={(e)=>{
+          setToAddValue(e.currentTarget.value);
+        }} type="number" placeholder="Value" />
+        <Button disabled={toAddName().length < 1} onClick={(e)=>{
+          setClassLevels((old)=>{
+            old[level - 1].classSpecific[toAddName()] = toAddValue();
+            setToAddName("");
+            setToAddValue("");
+            return JSON.parse(JSON.stringify(old));
+          });
+        }}>Add New</Button>
+        <br />
+        <For each={Object.keys(classLevels()[level - 1].classSpecific)}>{(item, i)=><>
+          <div>
+            <h4>{item}</h4>
+            <Input class={`${classLevels()[level - 1].classSpecific[item] ? "error " : ""}`} value={item} onChange={(e)=>{
+              setClassLevels((old)=>{
+                old[level - 1].classSpecific[e.currentTarget.value] = old[level - 1].classSpecific[item];
+                return JSON.parse(JSON.stringify(old));
+              });
+            }} />
+            <Input value={classLevels()[level - 1].classSpecific[item]} onChange={(e)=>{
+              setClassLevels((old)=>{
+                old[level - 1].classSpecific[item] = e.currentTarget.value;
+                return JSON.parse(JSON.stringify(old));
+              });
+            }} />
+            <Button onClick={(e)=>{
+              setClassLevels((old)=>{
+                delete old[level - 1].classSpecific[item];
+                return JSON.parse(JSON.stringify(old));
+              });
+            }}>Remove</Button>
+          </div>
+        </>}</For>
+        <br />
+      </div>
     </div>
   );
 };

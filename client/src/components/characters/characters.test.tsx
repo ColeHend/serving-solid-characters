@@ -5,7 +5,7 @@ import Characters from "./characters";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/characters' component={Characters} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/characters' component={Characters} />
+  </Router>)
 })
