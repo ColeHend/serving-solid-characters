@@ -4,5 +4,5 @@ import Exporting from "./Exporting";
 
 test("rendering",async () => {
 
-    render(()=><Exporting />)
+  render(()=><Exporting />)
 })

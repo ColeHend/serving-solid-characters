@@ -2,22 +2,22 @@ import { Accessor, Component, createSignal, For, Setter, Show } from "solid-js";
 import Modal from "../../../../../../shared/components/popup/popup.component";
 import addSnackbar  from "../../../../../../shared/components/Snackbar/snackbar";
 import {
-    useStyle,
-    getUserSettings,
-    Body,
-    homebrewManager,
-    FormField,
-    Input,
-    Select,
-    Option,
-    Button,
-    Chip,
-    Clone,
-    UniqueSet,
-    UniqueStringArray,
-    useGetItems,
-    Tabs,
-    Tab,
+  useStyle,
+  getUserSettings,
+  Body,
+  homebrewManager,
+  FormField,
+  Input,
+  Select,
+  Option,
+  Button,
+  Chip,
+  Clone,
+  UniqueSet,
+  UniqueStringArray,
+  useGetItems,
+  Tabs,
+  Tab,
 } from "../../../../../../shared";
 import { ItemType } from "../../../../../../shared/customHooks/utility/itemType";
 import { createStore, SetStoreFunction } from "solid-js/store";
@@ -34,34 +34,34 @@ interface props {
 }
 
 const StartingProf:Component<props> = (props) => {
-    const allItems = useGetItems();
-    const [showConfirm,setShowConfirm] = createSignal<boolean>(false);
-    const [otherValue,setOtherValue] = createSignal<string>("")
+  const allItems = useGetItems();
+  const [showConfirm,setShowConfirm] = createSignal<boolean>(false);
+  const [otherValue,setOtherValue] = createSignal<string>("")
 
-    // functions
-    const allWeapons = ():string[] => {
+  // functions
+  const allWeapons = ():string[] => {
     const weapons:string[] = [];
     const foundWeapons = allItems().filter(item=>item.equipmentCategory === ItemType[1]).map(x=>x.name);
 
     if (foundWeapons.length > 0) {
-        foundWeapons.forEach(weapon=>weapons.push(weapon));
+      foundWeapons.forEach(weapon=>weapons.push(weapon));
     }
 
     return weapons
-    }
+  }
 
-    const allArmors = ():string[] => {
+  const allArmors = ():string[] => {
     const armors:string[] = []
     const foundArmors = allItems().filter(item=>item.equipmentCategory === ItemType[2]).map(x=>x.name);
 
     if (foundArmors.length > 0) {
-        foundArmors.forEach(armor=>armors.push(armor));
+      foundArmors.forEach(armor=>armors.push(armor));
     }
 
     return armors
-    }
+  }
 
-    const allTools = ():string[] => ([
+  const allTools = ():string[] => ([
     "Alchemist's Supplies",
     "Brewer's Supplies",
     "Calligrapher's Supplies",
@@ -104,9 +104,9 @@ const StartingProf:Component<props> = (props) => {
     "Viol",
     "------------",
     "other",
-    ])
+  ])
 
-    const allSkills = ():string[] => ([
+  const allSkills = ():string[] => ([
     "Athletics",
     "Acrobatics",
     "Sleight of Hand",
@@ -126,240 +126,240 @@ const StartingProf:Component<props> = (props) => {
     "Performance",
     "Persuasion",
     "other"
-    ])
+  ])
 
-    return (
-        <Modal title="Add A Profiencey" setClose={props.setClose} >
+  return (
+    <Modal title="Add A Profiencey" setClose={props.setClose} >
+      <div>
+        <Tabs 
+          transparent>
+          <Tab name="Armor">
+            <h2>General</h2>
+                    
+            <Select
+              transparent
+              value={props.newProficeny.value}
+              onChange={e=>props.setNewProficeny(old=>({
+                info: old.info,
+                metadata: old.metadata,
+                name: old.name,
+                choices: old.choices,
+                value: e.currentTarget.value,
+              }))}
+            >
+              <For each={[
+                "All Armor",
+                "Light",
+                "Medium",
+                "Heavy",
+                "Sheilds"
+              ]}>
+                { (prof, i) => <Option value={prof.split(" ").join("")}>{prof}</Option> }
+              </For>
+            </Select>
+
+            <hr />
+
+            <h2>Specific</h2>
+            <Select
+              transparent
+              value={props.newProficeny.value}
+              onChange={(e)=>props.setNewProficeny(old=>({
+                info: old.info,
+                metadata: old.metadata,
+                name: old.name,
+                choices: old.choices,
+                value: e.currentTarget.value,
+              }))}>
+              <For each={allArmors()}>
+                { (armor, i) => <Option value={armor}>{armor}</Option> }
+              </For>
+            </Select>
+                    
             <div>
-                <Tabs 
-                transparent>
-                  <Tab name="Armor">
-                    <h2>General</h2>
-                    
-                    <Select
-                    transparent
-                    value={props.newProficeny.value}
-                    onChange={e=>props.setNewProficeny(old=>({
-                        info: old.info,
-                        metadata: old.metadata,
-                        name: old.name,
-                        choices: old.choices,
-                        value: e.currentTarget.value,
-                    }))}
-                    >
-                        <For each={[
-                            "All Armor",
-                            "Light",
-                            "Medium",
-                            "Heavy",
-                            "Sheilds"
-                        ]}>
-                            { (prof, i) => <Option value={prof.split(" ").join("")}>{prof}</Option> }
-                        </For>
-                    </Select>
+              <Button onClick={(e)=>{
+                // set info depending on the tab
+                props.setNewProficeny(old=>({
+                  info: old.info,
+                  metadata: old.metadata,
+                  name: "armors",
+                  choices: old.choices,
+                  value: old.value
+                }))
 
-                    <hr />
+                // then add 
+                props.addProfiencey()
 
-                    <h2>Specific</h2>
-                    <Select
-                    transparent
-                    value={props.newProficeny.value}
-                    onChange={(e)=>props.setNewProficeny(old=>({
-                        info: old.info,
-                        metadata: old.metadata,
-                        name: old.name,
-                        choices: old.choices,
-                        value: e.currentTarget.value,
-                    }))}>
-                        <For each={allArmors()}>
-                            { (armor, i) => <Option value={armor}>{armor}</Option> }
-                        </For>
-                    </Select>
-                    
-                    <div>
-                        <Button onClick={(e)=>{
-                            // set info depending on the tab
-                            props.setNewProficeny(old=>({
-                                info: old.info,
-                                metadata: old.metadata,
-                                name: "armors",
-                                choices: old.choices,
-                                value: old.value
-                            }))
+                props.setClose(false)
 
-                            // then add 
-                            props.addProfiencey()
-
-                            props.setClose(false)
-
-                            e.stopPropagation()
-                        }}>Add Proficencey</Button>
-                    </div>
-                  </Tab>  
-                  <Tab name="Weapons">
-                    <h2>General</h2>
-
-                    <Select
-                    transparent
-                    value={props.newProficeny.value}
-                    onChange={(e)=>props.setNewProficeny(old=>({
-                        info: old.info,
-                        metadata: old.metadata,
-                        name: old.name,
-                        choices: old.choices,
-                        value: e.currentTarget.value
-                    }))}
-                    >
-                        <For each={[
-                            "Simple",
-                            "Martial"
-                        ]}>
-                            { (prof, i) => <Option value={prof}>{prof}</Option> }
-                        </For>
-                    </Select>
-
-                    <hr />
-
-                    <h2>Speific</h2>
-
-                    <Select
-                    transparent
-                    value={props.newProficeny.value}
-                    onChange={(e)=>props.setNewProficeny(old=>({
-                        info: old.info,
-                        metadata: old.metadata,
-                        name: old.name,
-                        choices: old.choices,
-                        value: e.currentTarget.value
-                    }))}
-                    >
-                        <For each={allWeapons()}>
-                            { (weapon, i) => <Option value={weapon}>{weapon}</Option> }
-                        </For>
-                    </Select>
-
-                    <div>
-                        <Button onClick={(e)=>{
-                            props.setNewProficeny(old=>({
-                                info: old.info,
-                                metadata: old.metadata,
-                                name: "weapons",
-                                choices: old.choices,
-                                value: old.value
-                            }))
-
-                            props.addProfiencey()
-
-                            props.setClose(false)
-
-                            e.stopPropagation()
-                        }}>Add Proficencey</Button>
-                    </div>
-
-                  </Tab>
-                  <Tab name="Tools">
-            
-                  <Select
-                    transparent
-                    value={props.newProficeny.value}
-                    onChange={(e)=>props.setNewProficeny(old=>({
-                        info: old.info,
-                        metadata: old.metadata,
-                        name: old.name,
-                        choices: old.choices,
-                        value: e.currentTarget.value
-                    }))}
-                    >
-                        <For each={allTools()}>
-                            { (tool, i) => <Option value={!tool.includes("------------")? tool :"" }>{tool}</Option> }
-                        </For>
-                  </Select>
-
-                  <Show when={props.newProficeny.value === "other"}>
-                    <FormField name="other">
-                        <Input 
-                        type="text"
-                        transparent
-                        value={otherValue()}
-                        onInput={(e)=>setOtherValue(e.currentTarget.value)}
-                        />
-                    </FormField>
-                  </Show>
-
-                  <div>
-                        <Button onClick={(e)=>{
-                            props.setNewProficeny(old=>({
-                                info: old.info,
-                                metadata: old.metadata,
-                                name: "tools",
-                                choices: old.choices,
-                                value: old.value,
-                            }))
-
-                            if (props.newProficeny.value === "other") props.setNewProficeny("value",otherValue())
-
-                            props.addProfiencey()
-
-                            props.setClose(false)
-
-                            e.stopPropagation()
-                        }}>Add Proficencey</Button>
-                    </div>
-                  </Tab>
-                  <Tab name="Skills">
-                    
-                  <Select
-                    transparent
-                    value={props.newProficeny.value}
-                    onChange={(e)=>props.setNewProficeny(old=>({
-                        info: old.info,
-                        metadata: old.metadata,
-                        name: old.name,
-                        choices: old.choices,
-                        value: e.currentTarget.value
-                    }))}
-                    >
-                        <For each={allSkills()}>
-                            { (skill, i) => <Option value={skill}>{skill}</Option> }
-                        </For>
-                  </Select>
-
-                  <Show when={props.newProficeny.value === "other"}>
-                    <FormField name="other">
-                        <Input 
-                        type="text"
-                        transparent
-                        value={otherValue()}
-                        onInput={(e)=>setOtherValue(e.currentTarget.value)}
-                        />
-                    </FormField>
-                  </Show>
-
-                  <div>
-                        <Button onClick={(e)=>{
-                            props.setNewProficeny(old=>({
-                                info: old.info,
-                                metadata: old.metadata,
-                                name: "Skills",
-                                choices: old.choices,
-                                value: old.value
-                            }))
-
-                            if (props.newProficeny.value === "other") props.setNewProficeny("value",otherValue())
-
-                            props.addProfiencey()
-
-                            props.setClose(false)
-
-                            e.stopPropagation()
-                        }}>Add Proficencey</Button>
-                    </div>
-                  </Tab>
-                </Tabs>
-                
+                e.stopPropagation()
+              }}>Add Proficencey</Button>
             </div>
-        </Modal>
-    )
+          </Tab>  
+          <Tab name="Weapons">
+            <h2>General</h2>
+
+            <Select
+              transparent
+              value={props.newProficeny.value}
+              onChange={(e)=>props.setNewProficeny(old=>({
+                info: old.info,
+                metadata: old.metadata,
+                name: old.name,
+                choices: old.choices,
+                value: e.currentTarget.value
+              }))}
+            >
+              <For each={[
+                "Simple",
+                "Martial"
+              ]}>
+                { (prof, i) => <Option value={prof}>{prof}</Option> }
+              </For>
+            </Select>
+
+            <hr />
+
+            <h2>Speific</h2>
+
+            <Select
+              transparent
+              value={props.newProficeny.value}
+              onChange={(e)=>props.setNewProficeny(old=>({
+                info: old.info,
+                metadata: old.metadata,
+                name: old.name,
+                choices: old.choices,
+                value: e.currentTarget.value
+              }))}
+            >
+              <For each={allWeapons()}>
+                { (weapon, i) => <Option value={weapon}>{weapon}</Option> }
+              </For>
+            </Select>
+
+            <div>
+              <Button onClick={(e)=>{
+                props.setNewProficeny(old=>({
+                  info: old.info,
+                  metadata: old.metadata,
+                  name: "weapons",
+                  choices: old.choices,
+                  value: old.value
+                }))
+
+                props.addProfiencey()
+
+                props.setClose(false)
+
+                e.stopPropagation()
+              }}>Add Proficencey</Button>
+            </div>
+
+          </Tab>
+          <Tab name="Tools">
+            
+            <Select
+              transparent
+              value={props.newProficeny.value}
+              onChange={(e)=>props.setNewProficeny(old=>({
+                info: old.info,
+                metadata: old.metadata,
+                name: old.name,
+                choices: old.choices,
+                value: e.currentTarget.value
+              }))}
+            >
+              <For each={allTools()}>
+                { (tool, i) => <Option value={!tool.includes("------------")? tool :"" }>{tool}</Option> }
+              </For>
+            </Select>
+
+            <Show when={props.newProficeny.value === "other"}>
+              <FormField name="other">
+                <Input 
+                  type="text"
+                  transparent
+                  value={otherValue()}
+                  onInput={(e)=>setOtherValue(e.currentTarget.value)}
+                />
+              </FormField>
+            </Show>
+
+            <div>
+              <Button onClick={(e)=>{
+                props.setNewProficeny(old=>({
+                  info: old.info,
+                  metadata: old.metadata,
+                  name: "tools",
+                  choices: old.choices,
+                  value: old.value,
+                }))
+
+                if (props.newProficeny.value === "other") props.setNewProficeny("value",otherValue())
+
+                props.addProfiencey()
+
+                props.setClose(false)
+
+                e.stopPropagation()
+              }}>Add Proficencey</Button>
+            </div>
+          </Tab>
+          <Tab name="Skills">
+                    
+            <Select
+              transparent
+              value={props.newProficeny.value}
+              onChange={(e)=>props.setNewProficeny(old=>({
+                info: old.info,
+                metadata: old.metadata,
+                name: old.name,
+                choices: old.choices,
+                value: e.currentTarget.value
+              }))}
+            >
+              <For each={allSkills()}>
+                { (skill, i) => <Option value={skill}>{skill}</Option> }
+              </For>
+            </Select>
+
+            <Show when={props.newProficeny.value === "other"}>
+              <FormField name="other">
+                <Input 
+                  type="text"
+                  transparent
+                  value={otherValue()}
+                  onInput={(e)=>setOtherValue(e.currentTarget.value)}
+                />
+              </FormField>
+            </Show>
+
+            <div>
+              <Button onClick={(e)=>{
+                props.setNewProficeny(old=>({
+                  info: old.info,
+                  metadata: old.metadata,
+                  name: "Skills",
+                  choices: old.choices,
+                  value: old.value
+                }))
+
+                if (props.newProficeny.value === "other") props.setNewProficeny("value",otherValue())
+
+                props.addProfiencey()
+
+                props.setClose(false)
+
+                e.stopPropagation()
+              }}>Add Proficencey</Button>
+            </div>
+          </Tab>
+        </Tabs>
+                
+      </div>
+    </Modal>
+  )
 }
 
 export default StartingProf;

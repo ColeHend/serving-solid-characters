@@ -5,7 +5,7 @@ import featsList from "./feats"
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/info/feats' component={featsList} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/info/feats' component={featsList} />
+  </Router>)
 })

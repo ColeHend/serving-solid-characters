@@ -12,115 +12,115 @@ interface props {
 
 const ArmorsView:Component<props> = (props) => {
 
-    const SrdArmors = props.SrdArmors
+  const SrdArmors = props.SrdArmors
 
-    const [results,setResults] = createSignal<Armor[]>([]);
-    const [paginated,setPaginated] = createSignal<Armor[]>([]);
+  const [results,setResults] = createSignal<Armor[]>([]);
+  const [paginated,setPaginated] = createSignal<Armor[]>([]);
 
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
-    const checkForHomebrew = (SrdArmor:Armor):boolean => {
-        const itemsHomebrew = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[2]);
+  const checkForHomebrew = (SrdArmor:Armor):boolean => {
+    const itemsHomebrew = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[2]);
 
-        itemsHomebrew.forEach(armor=>{
-            if (armor.name.toLowerCase() === SrdArmor.name.toLowerCase()) {
-                true
-            }
-        })
+    itemsHomebrew.forEach(armor=>{
+      if (armor.name.toLowerCase() === SrdArmor.name.toLowerCase()) {
+        true
+      }
+    })
 
-        return false
+    return false
+  }
+
+  const menuButtons = (armor:Armor) => ([
+    {
+      name:checkForHomebrew(armor)?"Edit":"Clone & Edit",
+      action: () => navigate(`/homebrew/create/items?itemType=${armor.equipmentCategory}&name=${armor.name}`)
     }
+  ])
 
-    const menuButtons = (armor:Armor) => ([
-        {
-            name:checkForHomebrew(armor)?"Edit":"Clone & Edit",
-            action: () => navigate(`/homebrew/create/items?itemType=${armor.equipmentCategory}&name=${armor.name}`)
-        }
-    ])
+  return <div>
 
-    return <div>
+    <div class={`${styles.searchBar}`}>
+      <SearchBar dataSource={SrdArmors} setResults={setResults} />
+    </div>
 
-        <div class={`${styles.searchBar}`}>
-            <SearchBar dataSource={SrdArmors} setResults={setResults} />
-        </div>
-
-        <div class={`${styles.armorTable}`}>
-            <Table data={paginated} columns={["name","ac","strMin","stealthDisadvant","weight","cost","options"]}>
+    <div class={`${styles.armorTable}`}>
+      <Table data={paginated} columns={["name","ac","strMin","stealthDisadvant","weight","cost","options"]}>
                 
-                <Column name="name">
-                    <Header>Armor</Header>
-                    <Cell<Armor>>
-                        { (armor, i) => <span>
-                            {armor.name}
-                        </span>}
-                    </Cell>
-                </Column>
+        <Column name="name">
+          <Header>Armor</Header>
+          <Cell<Armor>>
+            { (armor, i) => <span>
+              {armor.name}
+            </span>}
+          </Cell>
+        </Column>
 
-                <Column name="ac">
-                    <Header>AC</Header>
-                    <Cell<Armor>>
-                        { (armor, i) => <span>
-                            {armor.armorClass.base} <Show when={armor.armorClass.dexBonus}>+ Dex mod</Show>
-                        </span>}
-                    </Cell>
-                </Column>
+        <Column name="ac">
+          <Header>AC</Header>
+          <Cell<Armor>>
+            { (armor, i) => <span>
+              {armor.armorClass.base} <Show when={armor.armorClass.dexBonus}>+ Dex mod</Show>
+            </span>}
+          </Cell>
+        </Column>
 
-                <Column name="strMin">
-                    <Header>Strength</Header>
-                    <Cell<Armor>>
-                        { (armor, i) => <span>
-                            {armor.strMin > 0 ? `Str: ${armor.strMin}` : "-" }
-                        </span>}
-                    </Cell>
-                </Column>
+        <Column name="strMin">
+          <Header>Strength</Header>
+          <Cell<Armor>>
+            { (armor, i) => <span>
+              {armor.strMin > 0 ? `Str: ${armor.strMin}` : "-" }
+            </span>}
+          </Cell>
+        </Column>
 
-                <Column name="stealthDisadvant">
-                    <Header>Stealth</Header>
-                    <Cell<Armor>>
-                        { (armor, i) => <span>
-                            {armor.stealthDisadvantage? "disadvantage" : "-"}
-                        </span>}
-                    </Cell>
-                </Column>
+        <Column name="stealthDisadvant">
+          <Header>Stealth</Header>
+          <Cell<Armor>>
+            { (armor, i) => <span>
+              {armor.stealthDisadvantage? "disadvantage" : "-"}
+            </span>}
+          </Cell>
+        </Column>
 
-                <Column name="weight">
-                    <Header>Weight</Header>
-                    <Cell<Armor>>
-                        { (armor, i) => <span>
-                            {armor.weight} lb
-                        </span>}
-                    </Cell>
-                </Column>
+        <Column name="weight">
+          <Header>Weight</Header>
+          <Cell<Armor>>
+            { (armor, i) => <span>
+              {armor.weight} lb
+            </span>}
+          </Cell>
+        </Column>
 
             
-                <Column name="cost">
-                    <Header>Cost</Header>
-                    <Cell<Armor>>
-                        { (armor, i) => <span>
-                            {armor.cost.quantity} {armor.cost.unit}
-                        </span>}
-                    </Cell>
-                </Column>
+        <Column name="cost">
+          <Header>Cost</Header>
+          <Cell<Armor>>
+            { (armor, i) => <span>
+              {armor.cost.quantity} {armor.cost.unit}
+            </span>}
+          </Cell>
+        </Column>
 
-                <Column name="options">
-                    <Header><></></Header>
-                    <Cell<Armor>>
-                        { (armor, i) => <span>
-                            <Button enableBackgroundClick menuItems={menuButtons(armor)} class={`${styles.menuBtn}`}>
-                                <SkinnySnowman />
-                            </Button>
-                        </span>}
-                    </Cell>
-                </Column>
+        <Column name="options">
+          <Header><></></Header>
+          <Cell<Armor>>
+            { (armor, i) => <span>
+              <Button enableBackgroundClick menuItems={menuButtons(armor)} class={`${styles.menuBtn}`}>
+                <SkinnySnowman />
+              </Button>
+            </span>}
+          </Cell>
+        </Column>
 
 
-                <Row />
-            </Table>
-        </div>
-
-        <div class={`${styles.paginator}`}>
-            <Paginator items={results} setPaginatedItems={setPaginated} />
-        </div>
+        <Row />
+      </Table>
     </div>
+
+    <div class={`${styles.paginator}`}>
+      <Paginator items={results} setPaginatedItems={setPaginated} />
+    </div>
+  </div>
 }
 export default ArmorsView;

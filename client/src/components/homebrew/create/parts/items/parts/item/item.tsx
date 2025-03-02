@@ -12,7 +12,7 @@ interface props {
 
 const ItemCreate:Component<props> = (props) => {
 
-    return <div>
+  return <div>
     <h2>Description</h2>
     <FormField name="Item desc">
       <TextArea

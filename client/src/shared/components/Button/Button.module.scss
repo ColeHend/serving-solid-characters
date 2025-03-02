@@ -5,7 +5,7 @@
     margin: 0;
     padding: 0;
     li {
-        margin: 5px 0;
+        margin: var(--spacing-1) 0;
     }
     svg {
         width: 90%;
@@ -15,25 +15,94 @@
 .menuButton {
     width: 100%;
     height: 75%;
-		border-radius: 10px;
-		padding: 5px;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-1);
     &:hover {
         cursor: pointer;
+        link {
+            background-color: var(--tertiary-color);
+        }
     }
 }
 .customButtonStyle {
-    border-radius: 15px;
-    padding: 5px;
+    border-radius: var(--border-radius-lg);
+    $paddingSize: calc(var(--spacing-1) / 2);
+    padding: $paddingSize calc(var(--spacing-1) + $paddingSize);
     border: none;
-    margin: 10px;
+
+    // transform-origin: top left;
+    transition: transform 0.2s ease,background 0.2s ease;
+
+    &:active {
+        transform: scale(0.9);
+        box-shadow: var((--shadow-elevation-2));
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: var(--shadow-elevation-1);
+    }
+
+    &:not(:disabled) {
+        &:hover {
+            cursor: pointer;
+            box-shadow: var(--shadow-elevation-3);
+        }
+    }
     
     &:disabled {
         &:hover {
             cursor: not-allowed;
         }
     }
-
-
+}
+.primary {
+    background-color: var(--primary-color);
+    color: var(--on-primary-color);
+    &:hover {
+        background-color: var(--primary-color-hover);
+    }
+    &:active {
+        background-color: var(--primary-color-active);
+    }
+    &:focus {
+        background-color: var(--primary-color-focus);
+    }
+    &:focus:not(:hover) {
+        background-color: var(--primary-color);
+    }
+}
+.accent {
+    background-color: var(--secondary-color);
+    color: var(--on-secondary-color);
+    &:hover {
+        background-color: var(--secondary-color-hover);
+    }
+    &:active {
+        background-color: var(--secondary-color-active);
+    }
+    &:focus {
+        background-color: var(--secondary-color-focus);
+    }
+    &:focus:not(:hover) {
+        background-color: var(--secondary-color);
+    }
+}
+.tertiary {
+    background-color: var(--tertiary-color);
+    color: var(--on-tertiary-color);
+    &:hover {
+        background-color: var(--tertiary-color-hover);
+    }
+    &:active {
+        background-color: var(--tertiary-color-active);
+    }
+    &:focus {
+        background-color: var(--tertiary-color-focus);
+    }
+    &:focus:not(:hover) {
+        background-color: var(--tertiary-color);
+    }
 }
 .transparent {
     background-color: inherit !important;

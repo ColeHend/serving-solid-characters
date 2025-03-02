@@ -13,25 +13,25 @@ interface Props {
 		onClick?: (e: MouseEvent)=> any;
 }
 const Chip: Component<Props> = (props)=> {
-    const [userSettings, setUserSettings] = getUserSettings();
-    const stylin = createMemo(()=>useStyles(userSettings().theme));
-    //  const stylin = createMemo(()=>useStyles(userSettings().theme));
-    //  
-		const hoverChip = !!props.onClick ? stylin()?.hover : "";
-    return (
-        <span onClick={props.onClick} class={`${stylin().accent} ${style.Chip} ${props.class ?? ""} ${hoverChip}`}>
-            <Show when={!!props.key}>
-                <span>{props.key}</span>
-                <span>:</span>
-            </Show>
-            <span>{'  '+props.value}</span>
-            <Show when={!!props.remove}>
-                <Button class={`${stylin()?.hover} ${style.removeChipButton}`} onClick={props.remove}>
+  const [userSettings, setUserSettings] = getUserSettings();
+  const stylin = createMemo(()=>useStyles(userSettings().theme));
+  //  const stylin = createMemo(()=>useStyles(userSettings().theme));
+  //  
+  const hoverChip = props.onClick ? stylin()?.hover : "";
+  return (
+    <span onClick={props.onClick} class={`${stylin().accent} ${style.Chip} ${props.class ?? ""} ${hoverChip}`}>
+      <Show when={!!props.key}>
+        <span>{props.key}</span>
+        <span>:</span>
+      </Show>
+      <span>{'  '+props.value}</span>
+      <Show when={!!props.remove}>
+        <Button class={`${stylin()?.hover} ${style.removeChipButton}`} onClick={props.remove}>
                     X
-                </Button>
-            </Show>
-        </span>
-    )
+        </Button>
+      </Show>
+    </span>
+  )
 }
 export { Chip };
 export default Chip;

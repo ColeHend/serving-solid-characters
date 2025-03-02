@@ -6,4 +6,5 @@ export interface Character {
 		metadata: CharacterMetadata;
 }
 export interface CharacterMetadata {
+	something: string;
 }

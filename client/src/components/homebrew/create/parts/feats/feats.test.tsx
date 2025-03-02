@@ -5,7 +5,7 @@ import Feats from "./feats";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/homebrew/feats' component={Feats} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/homebrew/feats' component={Feats} />
+  </Router>)
 })

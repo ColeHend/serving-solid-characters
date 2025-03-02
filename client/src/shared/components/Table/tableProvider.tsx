@@ -16,8 +16,8 @@ export interface TableContext<T=any> {
 	setTableState: Setter<TableState<StateType<T>>>;
 }
 const tableContext = createContext<TableContext>({
-	tableState: () => ({ headers: [], rowTransform: [], currentColumns: [] }),
-	setTableState: () => {},
+  tableState: () => ({ headers: [], rowTransform: [], currentColumns: [] }),
+  setTableState: () => {},
 });
 
 interface TableProviderProps<T = any> {
@@ -27,14 +27,14 @@ interface TableProviderProps<T = any> {
 
 export const TableProvider = <T,>(props: TableProviderProps<T>) => {
 
-	const [tableState, setTableState] = createSignal(props.value);
-    return (
-        <tableContext.Provider value={{tableState, setTableState}}>
-            {props.children}
-        </tableContext.Provider>
-    );
+  const [tableState, setTableState] = createSignal(props.value);
+  return (
+    <tableContext.Provider value={{tableState, setTableState}}>
+      {props.children}
+    </tableContext.Provider>
+  );
 };
 export function getTableContext<T>() {
-    return useContext<TableContext<T>>(tableContext);
+  return useContext<TableContext<T>>(tableContext);
 };
 export type ColumnState<T> = (item: T, index: number)=>JSX.Element;

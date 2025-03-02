@@ -1,31 +1,73 @@
 .formField {
+		$textHeight: calc(var(--spacing-4) + var(--spacing-3));
     display: inline-block;
-    border-radius: 5px;
-    padding-right: 40px;
-		textarea {
-			& {
-				padding-right: 25px;
-			}
-		}
-		padding-bottom: 25px;
-		
-		min-width: 50px;
-		min-height: 30px;
-    width: max-content;
-		height: min-content;
+    border-radius: var(--border-radius-md);
+		box-sizing: border-box;
+		// min-width: 50px;
+		// min-height: 30px;
+		width: 100%;
+		// height: min-content;
 		label {
 			position: relative;
 			top: -.5rem;
 			padding-right: 10px;
 		}
+		&:has(textarea) {
+			position: relative;
+			textarea {
+				width: auto;
+				min-width: 95%;
+				font-family: var(--font-family);
+				font-size: var(--font-size-base);
+				margin-top: var(--spacing-2);
+				// margin-bottom: var(--spacing-1);
+				// margin-left: var(--spacing-1);
+				padding-right: var(--spacing-3);
+				padding-bottom: var(--spacing-1);
+			}
+			legend {
+				height: var(--spacing-3);
+				position: absolute;
+				top: 0px;
+				left: var(--spacing-1);
+				transition: all 0.2s ease;
+				background-color: transparent;
+				opacity: 0.75;
+			}
+		}
+		&:has(input[type="text"]) {
+			background-color: var(--secondary-color);
+			height: $textHeight;
+			position: relative;
+			legend {
+				height: var(--spacing-3);
+				position: absolute;
+				top: 0px;
+				left: var(--spacing-1);
+				transition: all 0.2s ease;
+				background-color: transparent;
+				opacity: 0.75;
+			}
+			input[type="text"] {
+				background-color: transparent !important;
+				color: var(--on-secondary-color);
+				height: calc($textHeight - var(--spacing-3));
+				margin-top: var(--spacing-2);
+				margin-bottom: var(--spacing-1);
+				margin-left: var(--spacing-1);
+				font-family: var(--font-family);
+				font-size: var(--font-size-base);
+				width: auto;
+				min-width: 95%;
+			}
+		}
     @media screen and (max-width: 768px) {
-        max-width: 75%;
+			max-width: 75%;
     }
 }
 
 .moveLegendInside {
-    float: left;
-		display: none;
+	display: none;
 }
 
 .checkboxPadding {

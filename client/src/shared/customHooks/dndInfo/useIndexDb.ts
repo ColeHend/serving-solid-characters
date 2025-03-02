@@ -8,7 +8,7 @@ interface Config {
 
 const db = new Dexie("dndInfo")
 db.version(1).stores({
-    "classes": "++id, name"
+  "classes": "++id, name"
 })
 
 export default function useIndexDb(table:string) {

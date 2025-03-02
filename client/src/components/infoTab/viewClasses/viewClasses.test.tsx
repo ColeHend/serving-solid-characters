@@ -5,7 +5,7 @@ import ViewClasses from './viewClasses';
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/info/classes' component={ViewClasses} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/info/classes' component={ViewClasses} />
+  </Router>)
 })

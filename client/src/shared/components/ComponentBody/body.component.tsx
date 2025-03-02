@@ -9,13 +9,13 @@ interface Props extends JSX.HTMLAttributes<HTMLDivElement> {
     class?: CSSModuleClasses[string];
 }
 export const Body: Component<Props> = (props) => {
-    const [customProps, normalProps] = splitProps(props, ["children", "class"]);
-    const [userSettings, setUserSettings] = getUserSettings();
-    const sharedHooks = useInjectServices();
-    const stylin = createMemo(()=>useStyle(userSettings().theme)); ;  
-    return (
-        <div {...normalProps} class={`${stylin().primary} ${style.compBody} ${customProps.class ?? ""}`}>
-            {customProps.children}
-        </div>
-    )
+  const [customProps, normalProps] = splitProps(props, ["children", "class"]);
+  const [userSettings, setUserSettings] = getUserSettings();
+  const sharedHooks = useInjectServices();
+  const stylin = createMemo(()=>useStyle(userSettings().theme)); ;  
+  return (
+    <div {...normalProps} class={`${stylin().primary} ${style.compBody} ${customProps.class ?? ""}`}>
+      {customProps.children}
+    </div>
+  )
 }

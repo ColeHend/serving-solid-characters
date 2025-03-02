@@ -21,31 +21,31 @@ interface props {
 
 const WeaponCreate:Component<props> = (props) => {
 
-    return <div>
+  return <div>
     <h2>Weapon Category</h2>
     <FormField name="Category">
 
-        <Select
+      <Select
         transparent
         value={props.currentWeapon.weaponCategory}
         onChange={(e)=>props.setCurrentWeapon("weaponCategory",e.currentTarget.value)}
         disableUnselected
-        >
+      >
         <For each={["Martial","Simple"]}>
-            { (weaponType) => <Option value={weaponType}>{weaponType}</Option> }
+          { (weaponType) => <Option value={weaponType}>{weaponType}</Option> }
         </For>
-        </Select>
+      </Select>
 
-        <Select
+      <Select
         transparent
         value={props.currentWeapon.weaponRange}
         onChange={(e)=>props.setCurrentWeapon("weaponRange",e.currentTarget.value)}
         disableUnselected
-        >
+      >
         <For each={["Melee","Ranged"]}>
-            { (weaponRange) => <Option value={weaponRange}>{weaponRange}</Option> }
+          { (weaponRange) => <Option value={weaponRange}>{weaponRange}</Option> }
         </For>
-        </Select>
+      </Select>
 
     </FormField>
 
@@ -97,9 +97,9 @@ const WeaponCreate:Component<props> = (props) => {
       </FormField>
 
       <Button onClick={()=>props.setCurrentWeapon("damage",old=>([...old,{
-          damageDice: props.dmgDice(),
-          damageType: props.dmgType(),
-          damageBonus: props.dmgBonus()
+        damageDice: props.dmgDice(),
+        damageType: props.dmgType(),
+        damageBonus: props.dmgBonus()
       }]))}>Add Damage</Button>
 
     </div>
@@ -116,29 +116,29 @@ const WeaponCreate:Component<props> = (props) => {
       <div>
         <h3>Normal</h3>
         <FormField name="Normal">
-            <Input 
+          <Input 
             type="number"
             transparent
             value={props.currentWeapon.range.normal}
             onInput={(e)=>props.setCurrentWeapon("range",old=>({
-                normal: parseInt(e.currentTarget.value),
-                long: old.long
+              normal: parseInt(e.currentTarget.value),
+              long: old.long
             }))}
-            />
+          />
         </FormField>
       </div>
       <div>
         <h3>Long</h3>
         <FormField name="Long" >
-            <Input 
+          <Input 
             type="number"
             transparent
             value={props.currentWeapon.range.long}
             onInput={(e)=>props.setCurrentWeapon("range",old=>({
-                normal: old.normal,
-                long: parseInt(e.currentTarget.value)
+              normal: old.normal,
+              long: parseInt(e.currentTarget.value)
             }))}
-            />
+          />
         </FormField>
       </div>
     </div>

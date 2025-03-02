@@ -5,7 +5,7 @@ import Homebrew from './homebrew';
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/homebrew' component={Homebrew} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/homebrew' component={Homebrew} />
+  </Router>)
 })

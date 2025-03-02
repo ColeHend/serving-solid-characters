@@ -1,50 +1,34 @@
-import { effect } from 'solid-js/web';
 import getUserSettings from '../../userSettings';
-import darkStyle from './themes/darkTheme.module.scss';
-import lightStyle from './themes/lightTheme.module.scss'
-import { useContext, createMemo } from 'solid-js';
-import { SharedHookContext } from '../../../../components/rootApp';
-const lightTheme: Style = {
-    body: lightStyle.body,
-    primary: lightStyle.primary,
-    accent: lightStyle.accent,
-    tertiary: lightStyle.tertiary,
-    warn: lightStyle.warn,
-    hover: lightStyle.hover,
-    popup: lightStyle.popup,
-    table: lightStyle.table,
-};
-
-const darkTheme: Style = {
-    body: darkStyle.body,
-    primary: darkStyle.primary,
-    accent: darkStyle.accent,
-    tertiary: darkStyle.tertiary,
-    warn: darkStyle.warn,
-    hover: darkStyle.hover,
-    popup: darkStyle.popup,
-    table: darkStyle.table,
+import themeStyle from './themes/themeStyle.module.scss';
+import { createMemo } from 'solid-js';
+const theme: Style = {
+  body: themeStyle.body,
+  primary: themeStyle.primary,
+  accent: themeStyle.accent,
+  tertiary: themeStyle.tertiary,
+  warn: themeStyle.warn,
+  hover: themeStyle.hover,
+  popup: themeStyle.popup,
+  table: themeStyle.table,
 };
 
 export function useStyle(styleType?: string): Style {
-    const [settingStyle, setSettings] = getUserSettings();
-    const chosenTheme = styleType ?? settingStyle().theme;
+  const [settingStyle] = getUserSettings();
+  const chosenTheme = styleType ?? settingStyle().theme;
     
-    switch (chosenTheme) {
-        case "light":
-            document.body.style.backgroundColor = "#fff";
-            return lightTheme;
-        case "dark":
-            document.body.style.backgroundColor = "#000";
-            return darkTheme;
-        default:
-            return darkTheme;
-    }
+  switch (chosenTheme) {
+  case "light":
+    document.body.style.backgroundColor = "#fff";
+    break;
+  case "dark":
+    document.body.style.backgroundColor = "#000";
+    break;
+  }
+  return theme;
 }
 export function useUserStyles() {
-    const [userSettings, setUserSettings] = getUserSettings();
-    const sharedHooks = useContext(SharedHookContext);
-    return createMemo(()=>useStyle(userSettings().theme));
+  const [userSettings] = getUserSettings();
+  return createMemo(()=>useStyle(userSettings().theme));
 }
 
 export interface Style {

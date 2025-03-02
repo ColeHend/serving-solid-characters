@@ -60,26 +60,26 @@ const StatBlock: Component<Props> = (props) => {
 
   const getSkills: (name: string) => string[] = (name) => {
     switch (name) {
-      case "Strength":
-        return ["Athletics"];
-      case "Dexterity":
-        return ["Acrobatics", "Sleight of Hand", "Stealth"];
-      case "Constitution":
-        return [];
-      case "Intelligence":
-        return ["Arcana", "History", "Investigation", "Nature", "Religion"];
-      case "Wisdom":
-        return [
-          "Animal Handling",
-          "Insight",
-          "Medicine",
-          "Perception",
-          "Survival",
-        ];
-      case "Charisma":
-        return ["Deception", "Intimidation", "Performance", "Persuasion"];
-      default:
-        return [];
+    case "Strength":
+      return ["Athletics"];
+    case "Dexterity":
+      return ["Acrobatics", "Sleight of Hand", "Stealth"];
+    case "Constitution":
+      return [];
+    case "Intelligence":
+      return ["Arcana", "History", "Investigation", "Nature", "Religion"];
+    case "Wisdom":
+      return [
+        "Animal Handling",
+        "Insight",
+        "Medicine",
+        "Perception",
+        "Survival",
+      ];
+    case "Charisma":
+      return ["Deception", "Intimidation", "Performance", "Persuasion"];
+    default:
+      return [];
     }
   };
   const calcSkillMod = (skill: SkillProficiency) => {

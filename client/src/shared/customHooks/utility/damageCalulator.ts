@@ -6,16 +6,16 @@
  * @returns {number} The chance to hit as a number
  */
 export function ChanceToHit(bonus: number,ac: number, advantage: boolean | null): number {
-    switch (advantage) {
-        case true : // advantage
-            let advant = 1 - ((ac - bonus) / 20);
-            return advant * advant;
-        case false: // disadvantage
-            let disadvantage = ((20 - ac + bonus) / 20);
-            return disadvantage * disadvantage;
-        default: // normal attacks
-            return (1 - (ac - bonus - 1) / 20);
-    }
+  switch (advantage) {
+  case true : // advantage
+    const advant = 1 - ((ac - bonus) / 20);
+    return advant * advant;
+  case false: // disadvantage
+    const disadvantage = ((20 - ac + bonus) / 20);
+    return disadvantage * disadvantage;
+  default: // normal attacks
+    return (1 - (ac - bonus - 1) / 20);
+  }
 };
 
 
@@ -25,14 +25,14 @@ export function ChanceToHit(bonus: number,ac: number, advantage: boolean | null)
  *  @returns {number} The average damage delt as a number;
  */
 export function TotalDamage(options: dmgCalcOptions): number {
-    let critAble = (options.dieNumber * options.dieDamage);
-    if (options.adv) {
-        return ((critAble + options.modifier + options.additional * ChanceToHit(options.atkBonus, options.ac, true)) + ((critAble * 2) * (0.05 * options.critModifier))) // advantage
-    } else if (options.adv === null) {
-        return ((critAble + options.modifier + options.additional * ChanceToHit(options.atkBonus, options.ac, null)) + ((critAble * 2) * (0.05 * options.critModifier))) // normal attacks
-    } else {
-        return ((critAble + options.modifier + options.additional * ChanceToHit(options.atkBonus, options.ac, false)) + ((critAble * 2) * (0.05 * options.critModifier))) // disadvantage
-    }
+  const critAble = (options.dieNumber * options.dieDamage);
+  if (options.adv) {
+    return ((critAble + options.modifier + options.additional * ChanceToHit(options.atkBonus, options.ac, true)) + ((critAble * 2) * (0.05 * options.critModifier))) // advantage
+  } else if (options.adv === null) {
+    return ((critAble + options.modifier + options.additional * ChanceToHit(options.atkBonus, options.ac, null)) + ((critAble * 2) * (0.05 * options.critModifier))) // normal attacks
+  } else {
+    return ((critAble + options.modifier + options.additional * ChanceToHit(options.atkBonus, options.ac, false)) + ((critAble * 2) * (0.05 * options.critModifier))) // disadvantage
+  }
 };
 
 

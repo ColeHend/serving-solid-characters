@@ -32,7 +32,7 @@ const races: Component = () => {
   
   const navigate = useNavigate();
 
-  if(!!!searchParam.name) setSearchParam({name: currentRace()?.name});
+  if(!searchParam.name) setSearchParam({name: currentRace()?.name});
   
   const checkForHomebrew = (race: Race):boolean => {
 
@@ -63,56 +63,56 @@ const races: Component = () => {
     
   })
   return <Body>
-      <h1 class={`${styles.header}`}>Races</h1>
+    <h1 class={`${styles.header}`}>Races</h1>
 
-      <div class={`${styles.searchBar}`}>
-        <SearchBar 
-          dataSource={dndSrdRaces} 
-          setResults={setResults}
-          searchFunction={(data,search)=>{
-            return data.name.toLowerCase() === search.toLowerCase();
+    <div class={`${styles.searchBar}`}>
+      <SearchBar 
+        dataSource={dndSrdRaces} 
+        setResults={setResults}
+        searchFunction={(data,search)=>{
+          return data.name.toLowerCase() === search.toLowerCase();
         }}/>
-      </div>
+    </div>
 
-      <div class={`${styles.racesTable}`}>
-        <Table  data={displayResults} columns={["name","options"]}  >
+    <div class={`${styles.racesTable}`}>
+      <Table  data={displayResults} columns={["name","options"]}  >
           
-          <Column name="name">
-            <Header><></></Header>
+        <Column name="name">
+          <Header><></></Header>
 
-            <Cell<Race>>
-              { (race, i) => <span onClick={()=>{
-                setCurrentRace(race);
-                setShowRace(!showRace());
-              }}>
-                {race.name}
-              </span>}
-            </Cell>
-          </Column>
+          <Cell<Race>>
+            { (race, i) => <span onClick={()=>{
+              setCurrentRace(race);
+              setShowRace(!showRace());
+            }}>
+              {race.name}
+            </span>}
+          </Cell>
+        </Column>
 
-          <Column name="options">
-              <Header><></></Header>
+        <Column name="options">
+          <Header><></></Header>
 
-              <Cell<Race>>
-                { (race, i) => <span>
-                  <Button enableBackgroundClick menuItems={menuItems(race)} class={`${styles.menuBtn}`}>
-                    <SkinnySnowman />
-                  </Button>
-                </span>}
-              </Cell>
-          </Column>
+          <Cell<Race>>
+            { (race, i) => <span>
+              <Button enableBackgroundClick menuItems={menuItems(race)} class={`${styles.menuBtn}`}>
+                <SkinnySnowman />
+              </Button>
+            </span>}
+          </Cell>
+        </Column>
 
-        </Table>
-      </div>
+      </Table>
+    </div>
 
-      <Show when={showRace()}>
-        <RaceView currentRace={currentRace} backClick={[showRace,setShowRace]} width="60%" />
-      </Show>
+    <Show when={showRace()}>
+      <RaceView currentRace={currentRace} backClick={[showRace,setShowRace]} width="60%" />
+    </Show>
 
-      <div class={`${styles.paginator}`}>
-        <Paginator items={results} setPaginatedItems={setPaginatedRaces} />
-      </div>
+    <div class={`${styles.paginator}`}>
+      <Paginator items={results} setPaginatedItems={setPaginatedRaces} />
+    </div>
 
-    </Body>
+  </Body>
 };
 export default races;

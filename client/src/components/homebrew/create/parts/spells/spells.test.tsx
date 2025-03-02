@@ -5,7 +5,7 @@ import Spells from "./spells";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/homebrew/spells' component={Spells} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/homebrew/spells' component={Spells} />
+  </Router>)
 })

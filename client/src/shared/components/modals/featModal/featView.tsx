@@ -17,10 +17,10 @@ const FeatView: Component<props> = (props) => {
 
   return (
     <Modal 
-    title={currentFeat()?.name} 
-    backgroundClick={[backClick,setBackClick]}
-    width={props.width}
-    height={props.height}>
+      title={currentFeat()?.name} 
+      backgroundClick={[backClick,setBackClick]}
+      width={props.width}
+      height={props.height}>
 
       <div class={`${style.featWrapper}`}>
         <h1 class={`${style.nameHeader}`}>{currentFeat().name}</h1>

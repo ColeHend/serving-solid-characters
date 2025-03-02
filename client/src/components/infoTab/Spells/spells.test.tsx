@@ -5,7 +5,7 @@ import masterSpells from "./Spells";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/info/spells' component={masterSpells} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/info/spells' component={masterSpells} />
+  </Router>)
 })

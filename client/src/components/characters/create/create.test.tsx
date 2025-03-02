@@ -5,7 +5,7 @@ import Create from "./create";
 
 test("render",async () => {
 
-    render(()=><Router>
-        <Route path='/characters/create' component={Create} />
-    </Router>)
+  render(()=><Router>
+    <Route path='/characters/create' component={Create} />
+  </Router>)
 })

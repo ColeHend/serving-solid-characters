@@ -4,7 +4,7 @@ interface CalculatorProps extends JSX.SvgSVGAttributes<SVGSVGElement> {}
 
 export const Calculator:Component<CalculatorProps> = (props) => {
 
-    return <svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" {...props} viewBox="0 0 200 300" fill="none">
+  return <svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" {...props} viewBox="0 0 200 300" fill="none">
     {/* <!-- Calculator body --> */}
     <rect x="10" y="10" width="180" height="280" rx="20" fill="#E0E0E0" stroke="#B0B0B0" stroke-width="2"/>
     

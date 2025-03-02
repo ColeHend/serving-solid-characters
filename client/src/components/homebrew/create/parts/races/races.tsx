@@ -101,7 +101,7 @@ const Races: Component = () => {
     subRaces: [],
   });
 
-  if (!!!searchParam.name) setSearchParam({name: currentRace.name ?? ""})
+  if (!searchParam.name) setSearchParam({name: currentRace.name ?? ""})
 
   // --------- Feature Modal
   const [editIndex, setEditIndex] = createSignal<number>(-1);
@@ -161,19 +161,19 @@ const Races: Component = () => {
     let srdraces:Race[] = [];
 
     homebrewManager.races().forEach(homeRace => {
-       srdraces = allRaces().filter(x=>x.name !== homeRace.name)
+      srdraces = allRaces().filter(x=>x.name !== homeRace.name)
     })
 
     return srdraces.findIndex(r=>r.id === currentRace.id) > -1
   }
 
   const fillRacesInfo = async (search?:boolean) => {
-    const searchName = !!search ? searchParam.name: currentRace.name;
+    const searchName = search ? searchParam.name: currentRace.name;
     const homebrewSearch = new HomebrewSearch(searchName ?? "");
 
     const allRace = await homebrewSearch.races();
 
-    if (!!allRace) {
+    if (allRace) {
       setCurrentRace('id',allRace.id);
       setCurrentRace("name",allRace.name);
       setCurrentRace("size",allRace.size);
@@ -211,7 +211,7 @@ const Races: Component = () => {
   }
 
   const addAbiliyScore = () => {
-    let abilityScore:Feature<number, string> = {} as Feature<number,string>;
+    const abilityScore:Feature<number, string> = {} as Feature<number,string>;
 
     // set ability score information
     abilityScore.name = AbilityScores[selectedAbility()];
@@ -224,7 +224,7 @@ const Races: Component = () => {
   const removeAbilityScore = (abilityScore: Feature<number,string>) => {
     const searchAbility = createMemo(()=>currentRace.abilityBonuses.find(x=>x.name === abilityScore.name))
 
-    if(!!searchAbility()) {
+    if(searchAbility()) {
       setCurrentRace("abilityBonuses",currentRace.abilityBonuses.filter(x=>x.name !== searchAbility()?.name))
 
       addSnackbar({
@@ -318,22 +318,22 @@ const Races: Component = () => {
 
   function addProfiencey() {
 
-      setCurrentRace("startingProficencies",(old)=>([...old,Clone(newProficeny)]))
+    setCurrentRace("startingProficencies",(old)=>([...old,Clone(newProficeny)]))
 
-      setNewProficeny({
-        info: {
-          className: "",
-          subclassName: "",
-          level:0,
-          type: FeatureTypes.Race,
-          other: ""
-        },
-        metadata: {},
-        name: "",
-        choices: [],
-        value: ""
-      })
-    }
+    setNewProficeny({
+      info: {
+        className: "",
+        subclassName: "",
+        level:0,
+        type: FeatureTypes.Race,
+        other: ""
+      },
+      metadata: {},
+      name: "",
+      choices: [],
+      value: ""
+    })
+  }
 
   // other state for text areas
 
@@ -349,7 +349,7 @@ const Races: Component = () => {
   })
 
   onMount(() => {
-    if (!!searchParam.name) fillRacesInfo(true)
+    if (searchParam.name) fillRacesInfo(true)
   })
 
   // setting values for textareas
@@ -512,11 +512,11 @@ const Races: Component = () => {
               <h2>Age</h2>
 
               <FormField name="age desc">
-                  <TextArea 
+                <TextArea 
                   transparent 
                   text={ageDesc}
                   setText={setAgeDesc}
-                  />
+                />
               </FormField>
             </div>
 
@@ -574,40 +574,40 @@ const Races: Component = () => {
           <div>
             <div>
               <FormField name="alignment desc">
-                  <TextArea 
+                <TextArea 
                   text={alignTextarea} 
                   setText={setAlignTextarea}
                   transparent
-                  />
+                />
               </FormField>
             </div>
 
             <div>
               <h2>languages</h2>
               <div>
-                  <Select
-                    transparent
-                    value={newLanguage()}
-                    onChange={(e)=>setNewLanguage(e.currentTarget.value)}
-                  >
-                    <For each={allLanguages()}>
-                      { (language) => <Option value={language}>{language}</Option> }
-                    </For>
-                  </Select>
+                <Select
+                  transparent
+                  value={newLanguage()}
+                  onChange={(e)=>setNewLanguage(e.currentTarget.value)}
+                >
+                  <For each={allLanguages()}>
+                    { (language) => <Option value={language}>{language}</Option> }
+                  </For>
+                </Select>
 
-                  <Button
-                    onClick={(e)=>{
-                      setCurrentRace("languages",(old)=>([...old,newLanguage()]))
-                    }}
-                  >
+                <Button
+                  onClick={(e)=>{
+                    setCurrentRace("languages",(old)=>([...old,newLanguage()]))
+                  }}
+                >
                     Add Language
-                  </Button>
+                </Button>
               </div>
               <div>
                 <Show when={currentRace.languages.length > 0}>
-                    <For each={currentRace.languages}>
-                      { (language, i) => <Chip value={language} remove={()=>setCurrentRace("languages",(old)=>([...old.filter((l)=>l !== language)]))} /> }
-                    </For>
+                  <For each={currentRace.languages}>
+                    { (language, i) => <Chip value={language} remove={()=>setCurrentRace("languages",(old)=>([...old.filter((l)=>l !== language)]))} /> }
+                  </For>
                 </Show>
                 <Show when={currentRace.languages.length === 0}>
                   <Chip key="" value="None" />
@@ -615,11 +615,11 @@ const Races: Component = () => {
               </div>
               <div>
                 <FormField name="Language Description">
-                    <TextArea 
+                  <TextArea 
                     transparent
                     text={languageDesc}
                     setText={setLanguageDesc}
-                    />
+                  />
                 </FormField>
               </div>
             </div>
@@ -631,7 +631,7 @@ const Races: Component = () => {
                 <div>
                   <Show when={currentRace.startingProficencies.length > 0}>
                     <For each={currentRace.startingProficencies}>
-                        { (startingProf) => <Chip key={startingProf.name} value={startingProf.value} /> }
+                      { (startingProf) => <Chip key={startingProf.name} value={startingProf.value} /> }
                     </For>
                   </Show>
                   <Show when={currentRace.startingProficencies.length === 0}>

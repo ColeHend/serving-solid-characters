@@ -13,14 +13,14 @@ interface RowProviderProps<T> {
 	rowItem: T;
 }
 export const RowProvider = <T,>(props: RowProviderProps<T>) => {
-	const [getRowI, setRowI] = createSignal(props.rowI);
-	const [getRowItem, setRowItem] = createSignal(props.rowItem);
-	return (
-		<Context.Provider value={{getRowI, setRowI, getRowItem, setRowItem}}>
-			{props.children}
-		</Context.Provider>
-	);
+  const [getRowI, setRowI] = createSignal(props.rowI);
+  const [getRowItem, setRowItem] = createSignal(props.rowItem);
+  return (
+    <Context.Provider value={{getRowI, setRowI, getRowItem, setRowItem}}>
+      {props.children}
+    </Context.Provider>
+  );
 };
 export function useRowContext() {
-	return useContext(Context);
+  return useContext(Context);
 };
