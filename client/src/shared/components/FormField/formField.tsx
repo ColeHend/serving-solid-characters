@@ -1,9 +1,8 @@
-import { Component, createSignal, createMemo, JSX, splitProps, createContext, useContext, Accessor, Setter, children, Show } from "solid-js";
-import { useStyle, getUserSettings } from "../..";
+import { Component, createSignal, createMemo, JSX, splitProps, children } from "solid-js";
+import { Provider, useFormProvider } from "./formProvider";
+import useClickOutside from "solid-click-outside";
 import style from "./formfield.module.scss";
 import { effect } from "solid-js/web";
-import useClickOutside from "solid-click-outside";
-import { Provider, useFormProvider } from "./formProvider";
 
 interface Props extends JSX.FieldsetHTMLAttributes<HTMLFieldSetElement> {
 	children: JSX.Element;
@@ -11,6 +10,7 @@ interface Props extends JSX.FieldsetHTMLAttributes<HTMLFieldSetElement> {
 	name: string;
 	class?: string;
 	value?: string;
+  legendClass?: string;
 }
 
 const FormField: Component<Props> = (props)=>{
@@ -22,10 +22,8 @@ const FormField: Component<Props> = (props)=>{
 }
 
 const FormField2: Component<Props> = (props) => {
-  const [local, others] = splitProps(props, ["children", "styleType", "name", "class", "value"]);
+  const [local, others] = splitProps(props, ["children", "styleType", "name", "class", "value", "legendClass"]);
   const context = useFormProvider();
-  const [userSettings] = getUserSettings();
-  const themeStyle = createMemo(() => useStyle(userSettings().theme));
   const hasInsideText = createMemo(()=> !context.getValue() && !context.getFocused() && !context.getTextInside());
 
   // -- context -- 
@@ -45,7 +43,7 @@ const FormField2: Component<Props> = (props) => {
       ref={setFieldRef}
       onClick={()=>context.setFocused(true)}
       class={`${style[local.styleType ?? "accent"]} ${style.formField} ${local.class ?? ''}`}>
-      <legend class={`${themeStyle()[local.styleType ?? "accent"]} ${hasInsideText() ? `${style.moveLegendInside}` : ``}`}>
+      <legend class={`${hasInsideText() ? `${style.moveLegendInside}` : ``} ${local?.legendClass ?? ''}`}>
         {context.getName() ? context.getName() : ``}
       </legend>
       {theChildren()}

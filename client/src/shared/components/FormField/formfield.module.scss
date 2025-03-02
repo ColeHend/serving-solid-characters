@@ -1,73 +1,134 @@
 .formField {
-    display: inline-block;
-    border-radius: var(--border-radius-md);
-		box-sizing: border-box;
-		// min-width: 50px;
-		// min-height: 30px;
-		width: 100%;
-		// height: min-content;
-		label {
-			position: relative;
-			top: -.5rem;
-			padding-right: 10px;
+	display: inline-block;
+	border-radius: var(--border-radius-md);
+	box-sizing: border-box;
+	// min-width: 50px;
+	// min-height: 30px;
+	width: 100%;
+	// height: min-content;
+	label {
+		position: relative;
+		top: -.5rem;
+		padding-right: 10px;
+	}
+	&:has(textarea) {
+		position: relative;
+		margin-top: var(--spacing-1);
+		margin-bottom: var(--spacing-1);
+		textarea {
+			width: auto;
+			min-width: 95%;
+			font-family: var(--font-family);
+			font-size: var(--font-size-base);
+			// margin-left: var(--spacing-1);
+			padding-right: var(--spacing-3);
+			padding-bottom: var(--spacing-1);
 		}
-		&:has(textarea) {
-			position: relative;
-			textarea {
-				width: auto;
-				min-width: 95%;
-				font-family: var(--font-family);
-				font-size: var(--font-size-base);
-				margin-top: var(--spacing-2);
-				// margin-bottom: var(--spacing-1);
-				// margin-left: var(--spacing-1);
-				padding-right: var(--spacing-3);
-				padding-bottom: var(--spacing-1);
-			}
-			legend {
-				height: var(--spacing-3);
-				position: absolute;
-				top: 0px;
-				left: var(--spacing-1);
-				transition: all 0.2s ease;
-				background-color: transparent;
+		legend {
+			height: var(--spacing-3);
+			position: absolute;
+			top: calc(var(--spacing-2) * -1);
+			left: var(--spacing-1);
+			transition: all 0.2s ease;
+		}
+	}
+	$textHeight: calc(var(--spacing-4) + var(--spacing-1));
+	&:has(input[type="text"]) {
+		height: $textHeight;
+		position: relative;
+		legend {
+			height: var(--spacing-3);
+			position: absolute;
+			top: calc(var(--spacing-2) * -1);
+			left: var(--spacing-1);
+			transition: all 0.2s ease;
+		}
+		margin-top: var(--spacing-2);
+		margin-bottom: var(--spacing-2);
+		input[type="text"] {
+			background-color: transparent !important;
+			height: calc($textHeight - var(--spacing-3));
+			border-radius: var(--border-radius-sm);
+			margin: auto 0px;
+			margin-top: var(--spacing-1);
+			font-family: var(--font-family);
+			font-size: var(--font-size-base);
+			width: auto;
+			min-width: 95%;
+			&::placeholder {
 				opacity: 0.75;
 			}
 		}
-		$textHeight: calc(var(--spacing-4) + var(--spacing-1));
-		&:has(input[type="text"]) {
-			background-color: var(--secondary-color);
-			height: $textHeight;
-			position: relative;
-			legend {
-				height: var(--spacing-3);
-				position: absolute;
-				top: calc(var(--spacing-2) * -1);
-				left: var(--spacing-1);
-				transition: all 0.2s ease;
-				background: linear-gradient(to bottom, transparent 60%, var(--secondary-color) 40%);
-			}
-			margin-top: var(--spacing-2);
-			margin-bottom: var(--spacing-2);
-			input[type="text"] {
-				background-color: transparent !important;
-				color: var(--on-secondary-color);
-				height: calc($textHeight - var(--spacing-3));
-				border-radius: var(--border-radius-sm);
-				margin: auto 0px;
-				margin-top: var(--spacing-1);
-				font-family: var(--font-family);
-				font-size: var(--font-size-base);
-				width: auto;
-				min-width: 95%;
-				&::placeholder {
-					opacity: 0.75;
-				}
-			}
+	}
+	@media screen and (max-width: 768px) {
+		max-width: 75%;
+	}
+}
+
+.primary {
+	background-color: var(--primary-color);
+	color: var(--on-primary-color);
+	&:has(input[type="text"]) {
+		legend {
+			background: linear-gradient(to bottom, transparent 60%, var(--primary-color) 40%);
 		}
-    @media screen and (max-width: 768px) {
-			max-width: 75%;
-    }
+		input[type="text"] {
+			color: var(--on-primary-color);
+		}
+	}
+	&:has(textarea) {
+		textarea {
+			background-color: var(--primary-color);
+			color: var(--on-primary-color);
+		}
+		legend {
+			background: linear-gradient(to bottom, transparent 60%, var(--primary-color) 40%);
+		}
+	}
+}
+
+.accent {
+	background-color: var(--secondary-color);
+	color: var(--on-secondary-color);
+	&:has(input[type="text"]) {
+		legend {
+			background: linear-gradient(to bottom, transparent 60%, var(--secondary-color) 40%);
+		}
+		input[type="text"] {
+			color: var(--on-secondary-color);
+		}
+	}
+	&:has(textarea) {
+		textarea {
+			background-color: var(--secondary-color);
+			color: var(--on-secondary-color);
+		}
+		legend {
+			background: linear-gradient(to bottom, transparent 60%, var(--secondary-color) 40%);
+		}
+	}
+}
+
+.tertiary {
+	background-color: var(--tertiary-color);
+	color: var(--on-tertiary-color);
+	&:has(input[type="text"]) {
+		legend {
+			background: linear-gradient(to bottom, transparent 60%, var(--tertiary-color) 40%);
+		}
+		input[type="text"] {
+			color: var(--on-tertiary-color);
+		}
+	}
+	&:has(textarea) {
+		textarea {
+			background-color: var(--tertiary-color);
+			color: var(--on-tertiary-color);
+		}
+		legend {
+			background: linear-gradient(to bottom, transparent 60%, var(--tertiary-color) 40%);
+		}
+	}
 }
 
 .moveLegendInside {
