@@ -308,14 +308,18 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
 								setSelectedSet={setSelectedSet}
 								showOtherChangeType={showOtherChangeType}
 							/>
-							<FormField name="Feature Name">
-								<Input type="text" transparent
-									value={newName()}
-									onInput={(e) => setNewName(e.currentTarget.value)} />
-							</FormField>
-							<FormField name="Feature Description">
-								<TextArea transparent text={newDesc} setText={setNewDesc} />
-							</FormField>
+							<div class={`${styles.formField}`}>
+								<FormField name="Feature Name">
+									<Input type="text" transparent
+										value={newName()}
+										onInput={(e) => setNewName(e.currentTarget.value)} />
+								</FormField>
+							</div>
+							<div class={`${styles.formField}`}>
+								<FormField name="Feature Description">
+									<TextArea transparent text={newDesc} setText={setNewDesc} />
+								</FormField>
+							</div>
 							<Button onClick={() => saveAndClose()} disabled={validate()}>Save</Button>
 						</div>
 					</Show>

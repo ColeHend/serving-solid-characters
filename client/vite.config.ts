@@ -29,8 +29,6 @@ const pwaOptions: Partial<VitePWAOptions> = //
   manifest: manifest,
 };
 
-console.log("pwaOptions: ", pwaOptions);
-
 export default defineConfig({
   plugins: [
     devtools({

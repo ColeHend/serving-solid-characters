@@ -3,6 +3,7 @@ import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./input.module.scss";
 import { effect } from "solid-js/web";
 import { useFormProvider } from "../FormField/formProvider";
+import { c } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 
 interface InputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
     tooltip?: string;
@@ -26,36 +27,32 @@ const Input: Component<InputProps> = (props)=> {
     return (
 			<input
 			{...normalProps}
-			placeholder={!!context.getName() && context.getTextInside() ? context.getName() : props.placeholder}
+			placeholder={!!context.getName() && !context.getTextInside() && !context.getFocused() ? context.getName() : props.placeholder}
 			value={inputValue()}
 			onFocus={(e)=>{
 				if (!!context.getName) {
 					context.setFocused(true); 
-					context.setTextInside(false);
 				}
 
 			}}
 			onBlur={(e)=>{
-				if (!!context.setFocused) {
+				if (!!context.getName) {
 					context.setFocused(false)
 				}
 			}}
 			type={context.getFieldType().length > 0 ? context.getFieldType() : props.type}
 			onChange={(e)=>{
 				if (!!context.getName) {
-					if (!!e.currentTarget.value) {
+					if (!!e.currentTarget.value.trim()) {
 						context.setValue(e.currentTarget.value);
-						context.setTextInside(false); 
-						context.setFocused(true);
+						context.setTextInside(true); 
 					} else {
-						if (e.currentTarget.checked) { 
+						if (props.type === "checkbox") {
 							context.setValue(e.currentTarget.checked ? "true" : "");
-							context.setFocused(true); 
-							context.setTextInside(false); 
-						} else if (!e.currentTarget.checked) {
-							context.setValue(e.currentTarget.checked ? "true" : "");
-							context.setFocused(false);
-							context.setTextInside(true);
+							context.setTextInside(e.currentTarget.checked);
+						} else {
+							context.setValue("");
+							context.setTextInside(false);
 						}
 					}
 					

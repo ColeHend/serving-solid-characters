@@ -33,7 +33,7 @@ interface ProviderProps {
 }
 export const Provider: Component<ProviderProps> = (props) => {
 	const [getName, setName] = createSignal(props.name ?? "");
-	const [getTextInside, setTextInside] = createSignal(true);
+	const [getTextInside, setTextInside] = createSignal(false);
 	const [getFocused, setFocused] = createSignal(false);
 	const [getValue, setValue] = createSignal(props.value ?? "");
 	const [getFieldType, setFieldType] = createSignal(props.type ?? "text");

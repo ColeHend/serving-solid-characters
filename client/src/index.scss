@@ -1,3 +1,7 @@
+@import 'styles/themes';
+
+//------------------------------------------------------------------
+// Styles
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,6 +15,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
 @mixin sideNav() {
   display: flex;
   flex-direction: row;
@@ -24,6 +29,7 @@ code {
   width: 90vw;
   max-width: 90%;
 }
+
 .closeFirst {
   width: 95vw;
   max-width: 100%;
@@ -34,20 +40,25 @@ code {
 .sideHead {
   display: flex;
   flex-direction: row;
+
   :nth-child(1) {
     flex-grow: 1;
   }
 }
+
 .sideBody {
   li {
     margin: 10px;
     display: flex;
     flex-direction: row;
+
     h3 {
       margin: 0px;
     }
+
     span {
       height: min-content;
+
       svg {
         margin: auto 0px;
         margin-left: 10px;
@@ -55,6 +66,7 @@ code {
     }
   }
 }
+
 .theLine {
   border-bottom: #fff 3px solid;
   width: 100%;

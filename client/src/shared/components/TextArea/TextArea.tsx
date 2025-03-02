@@ -26,7 +26,10 @@ export const TextArea: Component<Props> = (props) => {
     const [customProps, normalProps] = splitProps(props, ["buttons","minSize","text", "setText", "class", "tooltip", "transparent", "picToTextEnabled"]);
     const [showPicModal, setShowPicModal] = createSignal(false);
     const [imageSrc, setImageSrc] = createSignal<string>("");
-		const context = useFormProvider();
+    const context = useFormProvider();
+    /**
+     * Function to set the height of the textarea based on the content
+     */
     function OnInput() {
         if (!!myElement) {
             myElement.style.height = 'auto';
@@ -36,19 +39,25 @@ export const TextArea: Component<Props> = (props) => {
             myElement.setAttribute("style", "height:" + currentHeight + "px;overflow-y:hidden;");
         }
     }
+
+    // sets the field type on mount and sets the height of the textarea
     onMount(()=>{
         OnInput();
-				context.setFieldType("textarea");
+        context.setFieldType("textarea");
     });
+
+    // updates height of textarea when text is changed
     effect(()=>{
         OnInput();
         customProps.text();
     })
 
+    // if the imageSrc is changed, parse the image to text
     effect(()=>{
         if (!!imageSrc()) {
             addSnackbar({message: "Parsing text from image...", closeTimeout: 2000});
-            useImageToText(imageSrc(), customProps.setText, ()=>{
+            useImageToText(imageSrc(), customProps.setText, () =>
+            {
                 OnInput();
                 addSnackbar({message: "Text parsed from image successfully.", closeTimeout: 2000});
             });
@@ -72,28 +81,29 @@ export const TextArea: Component<Props> = (props) => {
                     myElement = el;
                     OnInput();
                 }}
-								onFocus={(e)=>{
-									if (!!context.getName) {
-										context.setFocused(true); 
-										context.setTextInside(false);
-									}
-								}}
-								onBlur={(e)=>{
-									if (!!context.setFocused) {
-										context.setFocused(false)
-									}
-								}}
-								placeholder={!!context.getName && context.getTextInside() ? context.getName() : props.placeholder}
+                onFocus={(e)=>{
+                    if (!!context.getName) {
+                        context.setFocused(true); 
+                    }
+                }}
+                onBlur={(e)=>{
+                    if (!!context.setFocused) {
+                        context.setFocused(false)
+                    }
+                }}
+                placeholder={!!context.getName && !context.getTextInside() && !context.getFocused() ? context.getName() : props.placeholder}
                 class={`${styles.areaStyle} ${customProps.class ?? ""} ${!!customProps.transparent ? styles.transparent : ""}`}
                 value={customProps.text()}
                 onInput={(e) => {
                     customProps.setText(e.currentTarget.value);
                     OnInput();
-										if (!!context.getName && !!e.currentTarget.value) {
-											context.setValue(e.currentTarget.value);
-											context.setTextInside(false); 
-											context.setFocused(true);
-										}
+                    if (!!context.getName && !!e.currentTarget.value.trim()) {
+                        context.setValue(e.currentTarget.value);
+                        context.setTextInside(true); 
+                    } else if (!!context.getName && !e.currentTarget.value.trim()) {
+                        context.setValue("");
+                        context.setTextInside(false); 
+                    }
                 }}
                 title={customProps.tooltip}
             />

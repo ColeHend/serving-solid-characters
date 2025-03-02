@@ -1,0 +1,78 @@
+@import 'variables';
+
+[data-theme="dark"] {
+  --primary-color: #282828;
+  --on-primary-color: #ffffff;
+  --primary-color-dark: #262626;
+
+  --secondary-color: #323232;
+  --on-secondary-color: #ffffff;
+  --secondary-color-dark: #303030;
+
+  --tertiary-color: #757575;
+  --on-tertiary-color: #000000;
+  --tertiary-color-dark: #666666;
+
+  --warn-color: #b00020;
+  --on-warn-color: #000000;
+
+  --background-color: #121212;
+  --on-background-color: #ffffff;
+
+  --surface-color: #f5f5f5;
+  --on-surface-color: #000000;
+}
+
+[data-theme="light"] {
+  --primary-color: #3F51B5;
+  --on-primary-color: #ffffff;
+  --primary-color-dark: #303F9F;
+
+  --secondary-color: #5C6BC0;
+  --on-secondary-color: #ffffff;
+  --secondary-color-dark: #3949AB;
+
+  --tertiary-color: #009688;
+  --on-tertiary-color: #000000;
+  --tertiary-color-dark: #018786;
+
+  --warn-color: #b00020;
+  --on-warn-color: #ffffff;
+
+  --background-color: #ffffff;
+  --on-background-color: #000000;
+
+  --surface-color: #f5f5f5;
+  --on-surface-color: #000000;
+}
+:root {
+  --spacing-1: #{$spacing-1};
+  --spacing-2: #{$spacing-2};
+  --spacing-3: #{$spacing-3};
+  --spacing-4: #{$spacing-4};
+  
+  --border-radius-sm: #{$border-radius-sm};
+  --border-radius-md: #{$border-radius-md};
+  --border-radius-lg: #{$border-radius-lg};
+  
+  --shadow-elevation-1: #{$shadow-elevation-1};
+  --shadow-elevation-2: #{$shadow-elevation-2};
+  --shadow-elevation-3: #{$shadow-elevation-3};
+  
+  --transition-duration: #{$transition-duration};
+  --transition-easing: #{$transition-easing};
+  
+  --font-family: #{$font-family};
+  --font-size-base: #{$font-size-base};
+  --font-size-h1: #{$font-size-h1};
+  --font-size-h2: #{$font-size-h2};
+  --font-size-h3: #{$font-size-h3};
+  --font-size-h4: #{$font-size-h4};
+  --font-size-h5: #{$font-size-h5};
+  --font-size-h6: #{$font-size-h6};
+  --font-weight-light: {$font-weight-light};
+  --font-weight-regular: {$font-weight-regular};
+  --font-weight-medium: #{$font-weight-medium};
+  --line-height: #{$line-height};
+  --letter-spacing: #{$letter-spacing};
+}

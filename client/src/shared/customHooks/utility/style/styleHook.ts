@@ -1,29 +1,17 @@
 import { effect } from 'solid-js/web';
 import getUserSettings from '../../userSettings';
-import darkStyle from './themes/darkTheme.module.scss';
-import lightStyle from './themes/lightTheme.module.scss'
+import themeStyle from './themes/themeStyle.module.scss';
 import { useContext, createMemo } from 'solid-js';
 import { SharedHookContext } from '../../../../components/rootApp';
-const lightTheme: Style = {
-    body: lightStyle.body,
-    primary: lightStyle.primary,
-    accent: lightStyle.accent,
-    tertiary: lightStyle.tertiary,
-    warn: lightStyle.warn,
-    hover: lightStyle.hover,
-    popup: lightStyle.popup,
-    table: lightStyle.table,
-};
-
-const darkTheme: Style = {
-    body: darkStyle.body,
-    primary: darkStyle.primary,
-    accent: darkStyle.accent,
-    tertiary: darkStyle.tertiary,
-    warn: darkStyle.warn,
-    hover: darkStyle.hover,
-    popup: darkStyle.popup,
-    table: darkStyle.table,
+const theme: Style = {
+    body: themeStyle.body,
+    primary: themeStyle.primary,
+    accent: themeStyle.accent,
+    tertiary: themeStyle.tertiary,
+    warn: themeStyle.warn,
+    hover: themeStyle.hover,
+    popup: themeStyle.popup,
+    table: themeStyle.table,
 };
 
 export function useStyle(styleType?: string): Style {
@@ -33,13 +21,12 @@ export function useStyle(styleType?: string): Style {
     switch (chosenTheme) {
         case "light":
             document.body.style.backgroundColor = "#fff";
-            return lightTheme;
+            break;
         case "dark":
             document.body.style.backgroundColor = "#000";
-            return darkTheme;
-        default:
-            return darkTheme;
+            break;
     }
+    return theme;
 }
 export function useUserStyles() {
     const [userSettings, setUserSettings] = getUserSettings();

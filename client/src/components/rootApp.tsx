@@ -48,6 +48,10 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
       const check = mobileCheck() || window.innerWidth <= 768 ? true : false;
       // setDefaultShowList(!check);
     });
+
+    effect(() => {
+      document.body.setAttribute("data-theme", defaultUserSettings().theme);
+    })
 		const mouseCapture = (e: MouseEvent) => setMouse({x: e.clientX, y: e.clientY});
 
 		onMount(()=>{
@@ -62,6 +66,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
 		onCleanup(()=>{
 			window.removeEventListener('mousemove', mouseCapture)
 		})
+  console.log("theme", defaultUserSettings().theme);
   
   const {isMobile} = useInjectServices();
     return (
@@ -71,16 +76,27 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
         useStyle: useStyle,
 				getMouse: ()=>mouse()
       }}>
-        <div style={{ height: "100vh" }} class={userStyle().body}>
-        <Navbar isMobile={isMobile()} style={"margin-bottom: 15px;"} list={[defaultShowList, setDefaultShowList]} />
-        <div class="body">
-          <span class={`${defaultShowList() ? "openFirst": "closeFirst"}`}>
-            {props.children}
-          </span>
-          <Show when={defaultShowList()}>
-            <NavMenu userStyle={userStyle} defaultShowList={defaultShowList} setDefaultShowList={setDefaultShowList} defaultIsMobile={defaultIsMobile} setDefaultIsMobile={setDefaultIsMobile} defaultUserSettings={defaultUserSettings} setDefaultUserSettings={setDefaultUserSettings} />
-          </Show>
-  
+        <div 
+          style={{ height: "100vh" }} 
+          class={userStyle().body}>
+          <Navbar 
+            isMobile={isMobile()} 
+            style={"margin-bottom: 15px;"} 
+            list={[defaultShowList, setDefaultShowList]} />
+          <div class="body">
+            <span class={`${defaultShowList() ? "openFirst": "closeFirst"}`}>
+              {props.children}
+            </span>
+            <Show when={defaultShowList()}>
+              <NavMenu 
+                userStyle={userStyle} 
+                defaultShowList={defaultShowList} 
+                setDefaultShowList={setDefaultShowList} 
+                defaultIsMobile={defaultIsMobile} 
+                setDefaultIsMobile={setDefaultIsMobile} 
+                defaultUserSettings={defaultUserSettings} 
+                setDefaultUserSettings={setDefaultUserSettings} />
+            </Show>
           </div>
         </div>
 				<SnackbarController />

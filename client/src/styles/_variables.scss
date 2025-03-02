@@ -1,0 +1,41 @@
+// ------------- Theme Variables -------------
+$mobile: 768px;
+
+// ------ Typography
+$spacing-unit: 8px;
+
+// Derived spacing values:
+$spacing-1: $spacing-unit;
+$spacing-2: $spacing-unit * 2;
+$spacing-3: $spacing-unit * 3;
+$spacing-4: $spacing-unit * 4;
+
+// Border radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 16px;
+
+// Shadows
+$shadow-elevation-1: 0px 1px 3px rgba(0, 0, 0, 0.2);
+$shadow-elevation-2: 0px 3px 6px rgba(0, 0, 0, 0.16);
+$shadow-elevation-3: 0px 10px 20px rgba(0, 0, 0, 0.19);
+
+// Transitions
+$transition-duration: 0.3s;
+$transition-easing: ease-in-out;
+
+
+// Define typography scale (e.g., font sizes for headings and body)
+$font-family: 'Roboto, sans-serif';
+$font-size-base: 16px;
+$font-size-h1: 96px;
+$font-size-h2: 60px;
+$font-size-h3: 48px;
+$font-size-h4: 34px;
+$font-size-h5: 24px;
+$font-size-h6: 20px;
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$line-height: 1.5;
+$letter-spacing: normal;

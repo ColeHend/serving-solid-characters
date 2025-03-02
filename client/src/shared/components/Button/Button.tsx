@@ -30,41 +30,41 @@ interface Props extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
     styleType?: "primary" | "accent" | "tertiary"
 }
 
-const Button: Component<Props> = (props)=> {
-    const [showMenu, setShowMenu] = createSignal<ShowMenu>({show: false, lastX: 0, lastY: 0});
-    const isMenuButton = createMemo(()=>!!props.menuItems && showMenu().show);
-    const filteredMenuItems = createMemo(()=>props.menuItems?.filter(x=>(!!x.condition ? x.condition() : true)) ?? []);
+const Button: Component<Props> = (props) => {
+    const [showMenu, setShowMenu] = createSignal<ShowMenu>({ show: false, lastX: 0, lastY: 0 });
+    const isMenuButton = createMemo(() => !!props.menuItems && showMenu().show);
+    const filteredMenuItems = createMemo(() => props.menuItems?.filter(x => (!!x.condition ? x.condition() : true)) ?? []);
     const sharedHooks = useInjectServices();
     const [userSettings, setUserSettings] = getUserSettings();
     const styleTypeConst = props.styleType ?? "accent";
-    const stylin = createMemo(()=>useStyles(userSettings().theme));
-    const stylinType = createMemo(()=>stylin()?.[styleTypeConst]);
+    const stylin = createMemo(() => useStyles(userSettings().theme));
+    const stylinType = createMemo(() => stylin()?.[styleTypeConst]);
 
-		const [menuRef, setMenuRefer] = createSignal<HTMLDivElement>();
-    const menuStyle: Accessor<JSX.CSSProperties> = createMemo(()=>({
-        position:"absolute", 
-        top: props.overrideY ?? `${showMenu().lastY}px`, 
+    const [menuRef, setMenuRefer] = createSignal<HTMLDivElement>();
+    const menuStyle: Accessor<JSX.CSSProperties> = createMemo(() => ({
+        position: "absolute",
+        top: props.overrideY ?? `${showMenu().lastY}px`,
         left: props.overrideX ?? `${showMenu().lastX < 45 ? showMenu().lastX - +(!!menuRef() ? menuRef().width : '0') : showMenu().lastX}px`,
         display: `${showMenu().show ? "block" : "none"}`
     } as JSX.CSSProperties));
 
-		useClickOutside(menuRef, ()=>{
-			const xClose = Math.abs(sharedHooks.getMouse().x - showMenu().lastX) < 20;
-			const yClose = Math.abs(sharedHooks.getMouse().y - showMenu().lastY) < 20;
-			if (showMenu().show && !xClose && !yClose && Object.keys(props).includes("enableBackgroundClick")) {
-				setShowMenu({show: false, lastX: 0, lastY: 0})
-			}
-		});
-    
+    useClickOutside(menuRef, () => {
+        const xClose = Math.abs(sharedHooks.getMouse().x - showMenu().lastX) < 20;
+        const yClose = Math.abs(sharedHooks.getMouse().y - showMenu().lastY) < 20;
+        if (showMenu().show && !xClose && !yClose && Object.keys(props).includes("enableBackgroundClick")) {
+            setShowMenu({ show: false, lastX: 0, lastY: 0 })
+        }
+    });
+
     return (
         <>
             <button
-							{...props}
-							onClick={(e)=>{
-								if (!!props.menuItems?.length) setShowMenu({show: !showMenu().show, lastX: e.clientX + (e.view?.scrollX ?? 0), lastY: e.clientY + (e.view?.scrollY ?? 0)});
-								if (!!props.onClick) props.onClick(e);
-							}}
-            	class={`${stylinType()} ${stylin()?.hover} ${style.customButtonStyle} ${!!props.transparent ? style.transparent : ""} ${props.class ?? ""} `}
+                {...props}
+                onClick={(e) => {
+                    if (!!props.menuItems?.length) setShowMenu({ show: !showMenu().show, lastX: e.clientX + (e.view?.scrollX ?? 0), lastY: e.clientY + (e.view?.scrollY ?? 0) });
+                    if (!!props.onClick) props.onClick(e);
+                }}
+                class={`${stylinType()} ${stylin()?.hover} ${style.customButtonStyle} ${!!props.transparent ? style.transparent : ""} ${props.class ?? ""} `}
             >
                 {props.children}
             </button>
@@ -74,8 +74,8 @@ const Button: Component<Props> = (props)=> {
                         <ul class={`${style.menuButtons}`}>
                             <For each={props.menuItems ?? []}>
                                 {(button) => (
-                                    <Show when={(!!button.condition ? button.condition() : true) &&isMenuButton()}>
-                                        <li style={{height:`${100 / filteredMenuItems().length}%`}} class={`${stylin().hover}`}>
+                                    <Show when={(!!button.condition ? button.condition() : true) && isMenuButton()}>
+                                        <li style={{ height: `${100 / filteredMenuItems().length}%` }} class={`${stylin().hover}`}>
                                             <button class={`${stylin().accent} ${style.menuButton}`} on:click={button.action}>
                                                 {button.name}
                                             </button>
