@@ -15,7 +15,8 @@
 		&:has(textarea) {
 			position: relative;
 			textarea {
-				width: 100%;
+				width: auto;
+				min-width: 95%;
 				font-family: var(--font-family);
 				font-size: var(--font-size-base);
 				margin-top: var(--spacing-2);
@@ -35,6 +36,7 @@
 			}
 		}
 		&:has(input[type="text"]) {
+			background-color: var(--secondary-color);
 			height: $textHeight;
 			position: relative;
 			legend {
@@ -48,6 +50,7 @@
 			}
 			input[type="text"] {
 				background-color: transparent !important;
+				color: var(--on-secondary-color);
 				height: calc($textHeight - var(--spacing-3));
 				margin-top: var(--spacing-2);
 				margin-bottom: var(--spacing-1);
