@@ -287,7 +287,7 @@ const Classes: Component = () => {
           <div class={`${styles.rowOne}`}>
             <span>
               <FormField class={`${styles.fieldStyle}`} name="Class Name">
-                <Input transparent value={currentClass.name} onChange={(e)=>setName(e.currentTarget.value)} />
+                <Input transparent required value={currentClass.name} onChange={(e)=>setName(e.currentTarget.value)} />
               </FormField>
             </span>
             <span class={`${styles.selectSpan}`}>
