@@ -3,6 +3,7 @@ import {
   children,
   Component,
   createContext,
+  createEffect,
   createMemo,
   createSignal,
   For,
@@ -117,6 +118,10 @@ const TabInternal: Component<Props> = (props) => {
 				setShowLeft(true);
 		}
     const styleType = props.styleType ?? "accent";
+		const [tabsArr, setTabsArr] = createSignal(Object.keys(tabs()));
+		createEffect(()=>{
+			setTabsArr(Object.keys(tabs()));
+		});
     return (
         <div class={`${style.tabs}`}>
             <div  class={`${userStyle()[styleType]} ${style.singleTabs} ${hasTranparent() === true ? style.transparent : ""}`}>
@@ -126,12 +131,12 @@ const TabInternal: Component<Props> = (props) => {
 									</span>
 							</Show>
 							<div ref={tabContainer!} class={`${style.tabHeader}`}>
-								<For each={Object.keys(tabs())}>
+								<For each={tabsArr()}>
 										{(tab, index) => (
-												<span class={`${useStyle().hover}`} onClick={() => setSelectedTab(tab)}>
-														<Show when={tab === selectedTab()}><b>{tab}</b></Show>
-														<Show when={tab !== selectedTab()}>{tab}</Show>
-												</span>
+											<span class={`${useStyle().hover}`} onClick={() => setSelectedTab(tab)}>
+													<Show when={tab === selectedTab()}><b>{tab}</b></Show>
+													<Show when={tab !== selectedTab()}>{tab}</Show>
+											</span>
 										)}
 								</For>
 							</div>

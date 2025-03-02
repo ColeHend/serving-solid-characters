@@ -1,77 +1,54 @@
 import {
-  Accessor,
   Component,
   For,
   Setter,
   Show,
-  createEffect,
   createMemo,
   createSignal,
   onMount,
   untrack,
-  useContext,
-  type JSX,
+  useContext
 } from "solid-js";
 import styles from "./classes.module.scss";
-import HomebrewSidebar from "../../sidebar";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import {
   Input,
   Button,
   Select,
   Option,
-  Carousel,
   Chip,
   useGetClasses,
-  useGetItems,
-  getUserSettings,
-  useStyle,
   Body,
-	SkinnySnowman,
 	Clone,
-	getSpellSlots,
 	Tabs,
 	Tab,
 	TextArea
 } from "../../../../../shared/";
 import type { DnDClass } from "../../../../../models";
-import { ClassCasting, LevelEntity, Subclass } from "../../../../../models/class.model";
-import {
-  Choice,
-  StartingEquipment,
-  Feature,
-	Description,
-	FeatureTypes,
-} from "../../../../../models/core.model";
-import LevelBuilder from "./levelBuilder";
+import { LevelEntity } from "../../../../../models/class.model";
+import { Feature, FeatureTypes } from "../../../../../models/core.model";
 import { SpellsKnown } from "../subclasses/subclasses";
-import { A, useSearchParams } from "@solidjs/router";
+import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../../../rootApp";
 import Table from '../../../../../shared/components/Table/table';
-import { SecondRow, Cell, Column, Header, Row } from '../../../../../shared/components/Table/innerTable';
+import { Cell, Column, Header, Row } from '../../../../../shared/components/Table/innerTable';
 import FormField from "../../../../../shared/components/FormField/formField";
 import Proficiency from "./sections/proficiency";
 import StartEquipment from "./sections/startEquipment";
-import { CastingStat, Stat } from "../../../../../shared/models/stats";
+import { CastingStat } from "../../../../../shared/models/stats";
 import { SpellLevels } from "../../../../../shared/models/casting";
-import Chipbar from "../../../../../shared/components/Chipbar/chipbar";
-import { Item } from '../../../../../shared/index';
 import { createStore } from "solid-js/store";
 import Modal from "../../../../../shared/components/popup/popup.component";
 import FeatureModal from "./sections/featureModal";
-import { info } from "console";
-import { f } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { delay, of } from "rxjs";
+import { useGetClassSetters } from "./hooks/classSetters";
 
 const Classes: Component = () => {
 	// --- getter functions
   const [searchParam, setSearchParam] = useSearchParams();
-	const [userSettings, setUserSettings] = getUserSettings();
 	const allClasses = useGetClasses();
 	const hombrewClasses = HomebrewManager.classes
-	const themeStyle = createMemo(()=>useStyle(userSettings().theme));
-	const sharedHooks = useContext(SharedHookContext);
 	const [currentClass, setCurrentClass] = createStore<DnDClass>({
 		id: 0,
 		name: "",
@@ -109,9 +86,6 @@ const Classes: Component = () => {
 			info: []
 		}
 	}); 
-	const tableData = () => currentClass.classLevels
-	const getFeatureChips = (i:number)=>Object.entries((currentClass.classLevels[i]?.classSpecific));
-	// const casterType = createMemo(() => currentClass.spellcasting?.casterType  ?? 'none');
 	const [casterType, setCasterInternalType] = createSignal<string>('none');
 	const setCasterType = (casterType: string) => setCurrentClass((prev)=>({
 		spellcasting: {
@@ -124,7 +98,6 @@ const Classes: Component = () => {
 		}
 	}));
 	const [currentColumns, setCurrentColumns] = createSignal<string[]>(["level", "proficiency", "features"]);
-	const [levels, setLevels] = createSignal<number[]>(Array.from({length: 20}, (_, i)=>i+1));
 	const [newColumnKeyname, setNewColumnKeyname] = createSignal<string>('');
 	const [showAddFeature, setShowAddFeature] = createSignal<boolean>(false);
 	const [currentLevel, setCurrentLevel] = createSignal<LevelEntity>({} as LevelEntity);
@@ -134,199 +107,43 @@ const Classes: Component = () => {
 		if (typeof spellCalc === 'string') return spellCalc;
 		return SpellsKnown[spellCalc];
 	});
+	const {
+    setName,
+    setHitDie,
+    setProficiencies,
+    setProficiencyChoices,
+    setSavingThrows,
+    setStartingEquipment,
+    setStartingEquipChoice,
+    setClassLevels,
+    setSubclasses,
+    setSubclassLevels,
+    setSpellKnown,
+    setSpellCastingAbility,
+    setSpellCasterClass,
+    setSpellCastingInfo,
+    addClassSpecificAll,
+    removeClassSpecific,
+    addFeature,
+    replaceFeature,
+    removeFeature,
+    getSpellSlot,
+    setSpellCantrips,
+    setSpellSlot,
+    setSpellSlots,
+    setSpellsKnown,
+    clearSpellSlots
+  } = useGetClassSetters(currentClass, setCurrentClass, setCurrentColumns, casterType, spellCalc);
+
+	const [levels, setLevels] = createSignal<number[]>(Array.from({length: 20}, (_, i)=>i+1));
 	const classLevels = () => currentClass.classLevels;
-	// --- setter functions
-	const setName = (name: string) => setCurrentClass((prev)=>Clone({...prev, name}));
-	const setHitDie = (hitDie: number) => setCurrentClass((prev)=>Clone({...prev, hitDie}));
-	const setProficiencies = (proficiencies: string[]) => setCurrentClass((prev)=>Clone({...prev, proficiencies}));
-	const setProficiencyChoices = (proficiencyChoices: Choice<string>[]) => setCurrentClass((prev)=>Clone({...prev, proficiencyChoices}));
-	const setSavingThrows = (savingThrows: string[]) => setCurrentClass((prev)=>Clone({...prev, savingThrows}));
-	const setStartingEquipment = (startingEquipment: StartingEquipment) => setCurrentClass((prev)=>Clone({...prev, startingEquipment}));
-	const setStartingEquipChoice = (choiceNum: number, choice: Choice<Item>[]) => {
-		
-		switch (choiceNum) {
-			case 1:
-				setCurrentClass((prev)=>(({ 
-					startingEquipment: {...prev.startingEquipment, choice1: choice}
-				} as DnDClass)));
-				break;
-			case 2:
-			setCurrentClass((prev)=>(({
-				startingEquipment: {...prev.startingEquipment, choice2: choice}
-			} as DnDClass)));
-			break;
-			case 3:
-				setCurrentClass((prev)=>(({
-					startingEquipment: {...prev.startingEquipment, choice3: choice}
-				} as DnDClass)));
-			break;
-			case 4:
-				setCurrentClass((prev)=>(({ 
-					startingEquipment: {...prev.startingEquipment, choice4: choice}
-				} as DnDClass)));
-				break;	
-			default:
-				setCurrentClass((prev)=>(({
-					startingEquipment: {...prev.startingEquipment, choice1: choice}
-				} as DnDClass)));
-				break;
-		}
-	};
-
-	const setClassLevels = (classLevels: LevelEntity[]) => setCurrentClass((prev)=>({ classLevels}));
-	const setSubclasses = (subclasses: Subclass[]) => setCurrentClass((prev)=>({ subclasses}));
-	const setSubclassLevels = (subclassLevels: number[]) => setCurrentClass((prev)=>({ classMetadata: {...prev.classMetadata, subclassLevels}}));
-	// - spellcasting
-	const setSpellKnown = (known: SpellsKnown, roundUp: boolean = false) => setCurrentClass((prev)=>({ 
-		spellcasting: {
-			level: 0,
-			name: prev.spellcasting?.name ?? "",
-			spellsKnownCalc: SpellsKnown[known] as string,
-			spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
-			casterType: prev.spellcasting?.casterType ?? "full",
-			info: prev.spellcasting?.info ?? [],
-			spellsKnownRoundup: roundUp
-		}
-	}));
-
-	const setSpellCastingAbility = (ability: CastingStat) => setCurrentClass((prev)=>({ 
-		spellcasting: {
-			level: 0,
-			name: prev.spellcasting?.name ?? "",
-			spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
-			spellcastingAbility: CastingStat[ability],
-			casterType: prev.spellcasting?.casterType ?? "full",
-			info: prev.spellcasting?.info ?? []
-		}
-	}));
-
-	const setSpellCasterClass = (casterClass: string) => setCurrentClass((prev)=>({ 
-		spellcasting: {
-			level: 0,
-			name: casterClass ?? "",
-			spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
-			spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
-			casterType: prev.spellcasting?.casterType ?? "full",
-			info: prev.spellcasting?.info ?? []
-		}
-	}));
-
-	const setSpellCastingInfo = (info: Description[]) => setCurrentClass((prev)=>({ 
-		spellcasting: {
-			level: 0,
-			name: prev.spellcasting?.name ?? "",
-			spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
-			spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
-			casterType: prev.spellcasting?.casterType ?? "full",
-			info
-		}
-	}));
+	const tableData = () => currentClass.classLevels
+	const getFeatureChips = (i:number)=>Object.entries((currentClass.classLevels[i]?.classSpecific));
+	// const casterType = createMemo(() => currentClass.spellcasting?.casterType  ?? 'none');
 
 	
 	// --- functions
-	const addClassSpecificAll = (feature: string) => {
-		const newClassLevels = currentClass.classLevels.map((x, i)=>({...x, classSpecific: {...x.classSpecific, [feature]: '0'}}));
-		setCurrentClass((old)=>({classLevels: newClassLevels}))
-	};
-
-	const removeClassSpecific = (feature: string) => {
-		setCurrentClass((old)=>{
-			const newOld = Clone(old);
-			Array.from({length: 20}, (_, i)=>i+1).forEach((level)=>{
-				const levelEntries = Object.entries(old.classLevels[level-1].classSpecific)
-				const removeIndex = levelEntries.findIndex(([key, value])=>key === feature);
-				if (removeIndex !== -1) levelEntries.splice(removeIndex, 1);
-				newOld.classLevels[level-1].classSpecific = Object.fromEntries(levelEntries);
-			});
-			return {classLevels: newOld.classLevels};
-		});
-		setCurrentColumns((old)=>old.filter((x)=>x !== feature));
-	};
-
-	const addFeature = (level: number, feature: Feature<string, string>) => {
-		setCurrentClass(old=> {
-			const newClass = Clone(old);
-			newClass.classLevels[(level - 1)].features.push(feature);
-			return newClass;
-		});
-	};
-	const replaceFeature = (level: number, index: number, feature: Feature<string, string>) => {
-		setCurrentClass((old)=>{
-			const newClass = Clone(old);
-			newClass.classLevels[(level - 1)].features[index] = feature;
-			return newClass;
-		}
-		);
-	};
-	const removeFeature = (level: number, name: string) => {
-		setCurrentClass((old)=>{
-			const newClass = Clone(old);
-			const index = newClass.classLevels[(level - 1)].features.findIndex((x)=>x.name === name);
-			newClass.classLevels[(level - 1)].features.splice(index, 1);
-			return newClass;
-		});
-	};
 	
-	function getSpellSlot(level: number, slotLevel: number) {
-    return getSpellSlots(level, slotLevel, untrack(casterType) ?? '');
-	}
-	const setSpellCantrips = (level: number, cantrips: number) => {
-		const newClassLevels = currentClass.classLevels.map((x, i)=>i === level - 1 ? {...x, spellcasting: {...x.spellcasting, cantrips_known: cantrips}} : x);
-		setClassLevels(newClassLevels);
-	}
-	const setSpellSlot = (level: number, slotLevel: number, slots: number) => {
-		const newClassLevels = currentClass.classLevels.map((x, i)=>i === level - 1 && !!slots ? {...x, spellcasting: {...x.spellcasting, [`spell_slots_level_${slotLevel}`]: slots}} : x);
-		setClassLevels(newClassLevels);
-	}
-	function setSpellSlots(casterType: string) {
-		setCurrentClass((prev)=>({ 
-			classLevels: Array.from({length: 20}, (_, i)=>i+1).map((level)=>{
-				const classLevel = prev.classLevels[level-1];
-				const otherKeys = Object.entries(classLevel.spellcasting ?? {}).filter((x)=>!x.includes('spell_slots_level'));
-				classLevel.spellcasting = {};
-				if (!!otherKeys.length) otherKeys.forEach(([key, value])=> classLevel.spellcasting![key] = value);
-				Array.from({length: 9}, (_, i)=>i+1).forEach((slotLevel)=>{
-					const slotValue = getSpellSlots(level, slotLevel, casterType);
-					if (slotValue !== '-') classLevel.spellcasting![`spell_slots_level_${slotLevel}`] = slotValue;
-				});
-				return Clone(classLevel);
-			}), 
-			spellcasting: {
-				level: 0,
-				name: prev.spellcasting?.name ?? "",
-				spellsKnownCalc: prev.spellcasting?.spellsKnownCalc ?? "Level",
-				spellcastingAbility: prev.spellcasting?.spellcastingAbility ?? "INT",
-				casterType: casterType,
-				info: prev.spellcasting?.info ?? []
-			}
-		}));
-	}
-	function setSpellsKnown(level: number, known: number) {
-		const newClassLevels = currentClass.classLevels.map((x, i)=>i === level - 1 ? {...x, spellcasting: {...x.spellcasting, spells_known: known}} : x);
-		setClassLevels(newClassLevels);
-	}
-	
-	function clearSpellSlots() {
-		setCurrentClass((old)=>Clone<DnDClass>({...old,
-			classLevels: old.classLevels.map((x, i)=>({...x, 
-				spellcasting: {
-					['spells_known']: (x?.spellcasting?.['spells_known'] ?? ++i)
-				}
-			})),
-			spellcasting: {
-				level: 0,
-				name: old.spellcasting?.name ?? "",
-				spellsKnownCalc: old.spellcasting?.spellsKnownCalc ?? "Level",
-				spellcastingAbility: old.spellcasting?.spellcastingAbility ?? "INT",
-				casterType: old.spellcasting?.casterType ?? "full",
-				info: old.spellcasting?.info ?? []
-			}
-			
-		}) as DnDClass);
-		if (spellCalc() === 'Other') {
-			return 'spellsKnown'
-		}
-	}
 	// ---- effects
 	const getShouldDisplayColumns = (casterType: string, currClass?: DnDClass) => {
 		const currentColumns = ["level", "proficiency", "features", ...getClassSpecificKeys(currClass ?? currentClass)].filter(x=>!!x);
@@ -373,26 +190,6 @@ const Classes: Component = () => {
 		}
 	}
 	const canSaveValidation = ()=>{
-		// if (!!currentClass.classMetadata.subclassType.trim().length) {
-		// 	addSnackbar({message: 'Please fill out the subclass type', severity: 'warning'});
-		// 	return true;
-		// };
-		// if (!!currentClass.startingEquipment.trim().length) {
-		// 	addSnackbar({message: 'Please fill out the starting equipment class', severity: 'warning'});
-		// 	return true;
-		// };
-		// if (!!currentClass.classMetadata.subclassLevels.length) {
-		// 	addSnackbar({message: 'Please fill out the subclass levels', severity: 'warning'});
-		// 	return true;
-		// }
-		// if (!!currentClass.proficiencies.length) {
-		// 	addSnackbar({message: 'Please fill out the proficiencies', severity: 'warning'});
-		// 	return true;
-		// }
-		// if (!!currentClass.savingThrows.length) {
-		// 	addSnackbar({message: 'Please fill out the saving throws', severity: 'warning'});
-		// 	return true;
-		// }
 		if (currentClass.name.trim().length === 0) {
 			addSnackbar({message: 'Please fill out the class name', severity: 'warning'});
 			return true;
@@ -615,113 +412,108 @@ const Classes: Component = () => {
 											</>}</For>
 										</div>
 									</Tab>
-									<Tab name="Spellcasting">
-										<Show when={!!casterType() && casterType() !== "none"}>
-											<div class={`${styles.spellcasting}`}>
-												<span class={`${styles.selectSpan}`}>
-													<label>Casting Stat</label>
-													<Select disableUnselected transparent 
-														value={(()=>{
-															const classCast = currentClass.spellcasting;
-															if (!!classCast) {
-																const abilityValue = classCast.spellcastingAbility;
-																if (typeof abilityValue === 'string'  && !/\d/.test(abilityValue)) return JSON.parse(JSON.stringify(CastingStat))[abilityValue]?.toString();
-																if (typeof abilityValue === 'number' || /\d/.test(abilityValue)) return abilityValue?.toString();
-															}
-															return '1';
-														})()} 
-														onChange={(e)=>{setSpellCastingAbility(+e.currentTarget.value)}}> 
-														<For each={[1,2,3]}>{(x)=><>
-															<Option value={x}>{CastingStat[x]}</Option>
-														</>}</For>
-													</Select>
-												</span>
-												<span class={`${styles.selectSpan}`}>
-													<label>Spells Known</label>
-													<Input type="checkbox"
-														tooltip="Round up spells known?"
-														style={{"margin": "0px", 'margin-left': '10px'}} 
-														checked={currentClass.spellcasting?.spellsKnownRoundup ?? false} 
-														onChange={(e)=>{
-															const casterType = currentClass.spellcasting?.casterType as keyof typeof SpellsKnown;
-															if (!!casterType) {
-																const num = +SpellsKnown[casterType] as number;
-																setSpellKnown(num, e.currentTarget.checked);
-															}
-														}}/>
-													<Select disableUnselected transparent
-														value={Clone<any>(SpellsKnown)[(currentClass.spellcasting?.spellsKnownCalc ?? 'Level')] as number}
-														onChange={(e)=>{
-															setSpellKnown(+e.currentTarget.value);
-															setCurrentColumns(getShouldDisplayColumns(casterType()));
-														}}>
-														<For each={[1,2,3,4,5,6]}>{(x)=><>
-															<Option value={x}>{SpellsKnown[x]}</Option>
-														</>}</For>
-													</Select>
-												</span>
-												<span>
-													<Button onClick={()=>setShowSpellcasting(!showSpellcasting())}>Add Spellcasting Description</Button>
-													
-													<Show when={showSpellcasting()}>
-														<Modal title="Spellcasting Desc" setClose={setShowSpellcasting}>
-															<div style={{"margin-top":"1%"}}>
-																<div>
-																	<Button onClick={(e)=>{
-																		setSpellCastingInfo((currentClass.spellcasting?.info ?? []).concat({name:'', desc:[]}));
-																	}}>Add Spellcasting Description</Button>
-																</div>
-																<div style={{
-																	"overflow-y": "auto", 
-																	"height": "450px", 
-																	'width': '100%',
-																	display: 'flex',
-																	'flex-direction': 'row',
-																	'flex-wrap': 'wrap',
-																}
-															}>
-																	<For each={currentClass.spellcasting?.info}>{(entry, i)=>
-																		<div style={{
-																			display: 'flex',
-																			"flex-direction": 'column',
-																			width: '48%'
-																		}}>
-																			<FormField name={`Spellcasting Desc ${i()}`}>
-																				<Input transparent 
-																					value={entry.name} 
-																					onChange={(e)=>{
-																						setSpellCastingInfo((currentClass.spellcasting?.info ?? [])
-																							.map((x, index)=>index === i() ? {name:e.currentTarget.value , desc: x.desc }: x)
-																						);
-																					}}/>
-																			</FormField>
-																			<FormField style={{width: '50%'}} name={`Spellcasting Desc ${i()}`}>
-																				<TextArea transparent 
-																					text={()=>entry.desc.join('\n')}
-																					onChange={getSpellDesc(i())} 
-																					style={{width: '100%'}}
-																					setText={()=>{}} />
-																			</FormField>
-																			<Button onClick={(e)=>{
-																				setSpellCastingInfo((currentClass.spellcasting?.info ?? []).filter((x, index)=>index !== i()));
-																			}}>Remove</Button>
-																			<br style={{
-																				border: '1px solid',
-																			}} />
-																		</div>
-																	}</For>
-																</div>
+									<Tab 
+										name="Spellcasting"
+										hidden={() => !casterType() || !!casterType() && casterType() === "none"}>
+										<div class={`${styles.spellcasting}`}>
+											<span class={`${styles.selectSpan}`}>
+												<label>Casting Stat</label>
+												<Select disableUnselected transparent 
+													value={(()=>{
+														const classCast = currentClass.spellcasting;
+														if (!!classCast) {
+															const abilityValue = classCast.spellcastingAbility;
+															if (typeof abilityValue === 'string'  && !/\d/.test(abilityValue)) return JSON.parse(JSON.stringify(CastingStat))[abilityValue]?.toString();
+															if (typeof abilityValue === 'number' || /\d/.test(abilityValue)) return abilityValue?.toString();
+														}
+														return '1';
+													})()} 
+													onChange={(e)=>{setSpellCastingAbility(+e.currentTarget.value)}}> 
+													<For each={[1,2,3]}>{(x)=><>
+														<Option value={x}>{CastingStat[x]}</Option>
+													</>}</For>
+												</Select>
+											</span>
+											<span class={`${styles.selectSpan}`}>
+												<label>Spells Known</label>
+												<Input type="checkbox"
+													tooltip="Round up spells known?"
+													style={{"margin": "0px", 'margin-left': '10px'}} 
+													checked={currentClass.spellcasting?.spellsKnownRoundup ?? false} 
+													onChange={(e)=>{
+														const casterType = currentClass.spellcasting?.casterType as keyof typeof SpellsKnown;
+														if (!!casterType) {
+															const num = +SpellsKnown[casterType] as number;
+															setSpellKnown(num, e.currentTarget.checked);
+														}
+													}}/>
+												<Select disableUnselected transparent
+													value={Clone<any>(SpellsKnown)[(currentClass.spellcasting?.spellsKnownCalc ?? 'Level')] as number}
+													onChange={(e)=>{
+														setSpellKnown(+e.currentTarget.value);
+														setCurrentColumns(getShouldDisplayColumns(casterType()));
+													}}>
+													<For each={[1,2,3,4,5,6]}>{(x)=><>
+														<Option value={x}>{SpellsKnown[x]}</Option>
+													</>}</For>
+												</Select>
+											</span>
+											<span>
+												<Button onClick={()=>setShowSpellcasting(!showSpellcasting())}>Add Spellcasting Description</Button>
+												
+												<Show when={showSpellcasting()}>
+													<Modal title="Spellcasting Desc" setClose={setShowSpellcasting}>
+														<div style={{"margin-top":"1%"}}>
+															<div>
+																<Button onClick={(e)=>{
+																	setSpellCastingInfo((currentClass.spellcasting?.info ?? []).concat({name:'', desc:[]}));
+																}}>Add Spellcasting Description</Button>
 															</div>
-														</Modal>
-													</Show>
-												</span>
-											</div>
-										</Show>
-										<Show when={!!!casterType() || casterType().toLowerCase() === "none"}>
-											<h4>
-												Not A Caster
-											</h4>
-										</Show>
+															<div style={{
+																"overflow-y": "auto", 
+																"height": "450px", 
+																'width': '100%',
+																display: 'flex',
+																'flex-direction': 'row',
+																'flex-wrap': 'wrap',
+															}
+														}>
+																<For each={currentClass.spellcasting?.info}>{(entry, i)=>
+																	<div style={{
+																		display: 'flex',
+																		"flex-direction": 'column',
+																		width: '48%'
+																	}}>
+																		<FormField name={`Spellcasting Desc ${i()}`}>
+																			<Input transparent 
+																				value={entry.name} 
+																				onChange={(e)=>{
+																					setSpellCastingInfo((currentClass.spellcasting?.info ?? [])
+																						.map((x, index)=>index === i() ? {name:e.currentTarget.value , desc: x.desc }: x)
+																					);
+																				}}/>
+																		</FormField>
+																		<FormField style={{width: '50%'}} name={`Spellcasting Desc ${i()}`}>
+																			<TextArea transparent 
+																				text={()=>entry.desc.join('\n')}
+																				onChange={getSpellDesc(i())} 
+																				style={{width: '100%'}}
+																				setText={()=>{}} />
+																		</FormField>
+																		<Button onClick={(e)=>{
+																			setSpellCastingInfo((currentClass.spellcasting?.info ?? []).filter((x, index)=>index !== i()));
+																		}}>Remove</Button>
+																		<br style={{
+																			border: '1px solid',
+																		}} />
+																	</div>
+																}</For>
+															</div>
+														</div>
+													</Modal>
+												</Show>
+											</span>
+										</div>
 									</Tab>
 								</Tabs>
 							</div>
