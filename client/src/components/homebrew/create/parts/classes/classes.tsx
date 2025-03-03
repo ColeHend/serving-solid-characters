@@ -442,6 +442,7 @@ const Classes: Component = () => {
                             }
                           }}/>
                         <Select disableUnselected transparent
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           value={Clone<any>(SpellsKnown)[(currentClass.spellcasting?.spellsKnownCalc ?? 'Level')] as number}
                           onChange={(e)=>{
                             setSpellKnown(+e.currentTarget.value);
@@ -459,7 +460,7 @@ const Classes: Component = () => {
                           <Modal title="Spellcasting Desc" setClose={setShowSpellcasting}>
                             <div style={{"margin-top":"1%"}}>
                               <div>
-                                <Button onClick={(e)=>{
+                                <Button onClick={()=>{
                                   setSpellCastingInfo((currentClass.spellcasting?.info ?? []).concat({name:'', desc:[]}));
                                 }}>Add Spellcasting Description</Button>
                               </div>
@@ -494,7 +495,8 @@ const Classes: Component = () => {
                                         style={{width: '100%'}}
                                         setText={()=>{}} />
                                     </FormField>
-                                    <Button onClick={(e)=>{
+                                    <Button onClick={()=>{
+                                       
                                       setSpellCastingInfo((currentClass.spellcasting?.info ?? []).filter((x, index)=>index !== i()));
                                     }}>Remove</Button>
                                     <br style={{
@@ -528,14 +530,14 @@ const Classes: Component = () => {
               </Column>
               <Column name="features">
                 <Header class={`${styles.headerStyle}`}>Features</Header>
-                <Cell<LevelEntity> class={`${styles.tableFeature}`}>{(x, i)=>{
+                <Cell<LevelEntity> class={`${styles.tableFeature}`}>{(x)=>{
                   return <>
-                    <Button onClick={(e)=>{
+                    <Button onClick={()=>{
                       setCurrentLevel(x);
                       setShowAddFeature(old => !old);
                     }}>+</Button>
                     <For each={x?.features}>{(entry, i)=>{
-                      return <span class={`${styles.chipHover}`} onClick={(e)=>{
+                      return <span class={`${styles.chipHover}`} onClick={()=>{
                         setCurrentFeatureIndex(i());
                         setCurrentLevel(x);
                         setShowAddFeature(old => !old);

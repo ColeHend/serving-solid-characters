@@ -1,6 +1,6 @@
-import { Component, createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import { Component, createMemo, createSignal, For, Show } from "solid-js";
 import styles from '../classes.module.scss';
-import { Button, Chip, Input, Option, Select, useDnDItems, Weapon, Armor, Item, useGetItems } from "../../../../../../shared";
+import { Button, Chip, Option, Select, Weapon, Armor, Item, useGetItems } from "../../../../../../shared";
 import { DnDClass } from "../../../../../../models";
 import Modal from "../../../../../../shared/components/popup/popup.component";
 interface Props {
@@ -58,7 +58,7 @@ const Proficiency: Component<Props> = (props) => {
       <h2>Proficiencies</h2>
       <div  class={`${styles.allProficiency}`}>
         <div class={`${styles.singleProficiency}`}>
-          <h3>Armor<Button onClick={(e)=>setShowArmor(old=>!old)}>+</Button></h3>
+          <h3>Armor<Button onClick={()=>setShowArmor(old=>!old)}>+</Button></h3>
           <Show when={showArmor()}>
             <Modal backgroundClick={[showArmor, setShowArmor]} title="Add Armor">
               <div>
@@ -71,7 +71,7 @@ const Proficiency: Component<Props> = (props) => {
                       {(type) => <Option value={type} >{type}</Option>}
                     </For>
                   </Select>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     props.setProficiencies([...props.currentClass.proficiencies, selectedGeneralArmor()].filter(x=>!!x));
                   }}>Add</Button>
                 </div>
@@ -84,7 +84,7 @@ const Proficiency: Component<Props> = (props) => {
                       {(armor) => <Option value={armor.name} >{armor.name}</Option>}
                     </For>
                   </Select>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     props.setProficiencies([...props.currentClass.proficiencies, selectedSpecificArmor()].filter(x=>!!x));
                   }}>Add</Button>
                 </div>
@@ -101,7 +101,7 @@ const Proficiency: Component<Props> = (props) => {
         </div>
         <div class={`${styles.singleProficiency}`}>
           <h3>Weapons
-            <Button onClick={(e)=>{
+            <Button onClick={()=>{
               setShowWeapon(old=>!old);
             }}>+</Button>
           </h3>
@@ -117,7 +117,7 @@ const Proficiency: Component<Props> = (props) => {
                       {(type) => <Option value={type} >{type}</Option>}
                     </For>
                   </Select>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     props.setProficiencies([...props.currentClass.proficiencies, selectedGeneralWeapon()].filter(x=>!!x));
                   }}>Add</Button>
                 </div>
@@ -130,7 +130,7 @@ const Proficiency: Component<Props> = (props) => {
                       {(weapon) => <Option value={weapon.name} >{weapon.name}</Option>}
                     </For>
                   </Select>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     const selected = selectedSpecificWeapon();
                     const newWeapon = selected ? selected : allWeapons()[0].name;
                     props.setProficiencies([...props.currentClass.proficiencies, newWeapon].filter(x=>!!x));
@@ -149,7 +149,7 @@ const Proficiency: Component<Props> = (props) => {
         </div>
         <div class={`${styles.singleProficiency}`}>
           <h3>Tools
-            <Button onClick={(e)=>{
+            <Button onClick={()=>{
               setShowTool(old=>!old);
             }}>+</Button>
           </h3>
@@ -164,7 +164,7 @@ const Proficiency: Component<Props> = (props) => {
                       {(tool) => <Option value={tool.name} >{tool.name}</Option>}
                     </For>
                   </Select>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     props.setProficiencies([...props.currentClass.proficiencies, selectedTool()].filter(x=>!!x));
                   }}>Add</Button>
                 </div>
@@ -181,7 +181,7 @@ const Proficiency: Component<Props> = (props) => {
         </div>
         <div class={`${styles.singleProficiency}`}>
           <h3>Saving Throws
-            <Button onClick={(e)=>{
+            <Button onClick={()=>{
               setShowStat(old=>!old);
             }}>+</Button>
           </h3>
@@ -196,7 +196,7 @@ const Proficiency: Component<Props> = (props) => {
                       {(stat) => <Option value={stat} >{stat}</Option>}
                     </For>
                   </Select>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     props.setSaves([...props.currentClass.savingThrows, selectedStat()].filter(x=>!!x));
                   }}>Add</Button>
                 </div>
@@ -213,7 +213,7 @@ const Proficiency: Component<Props> = (props) => {
         </div>
         <div class={`${styles.singleProficiency}`}>
           <h3>Skills
-            <Button onClick={(e)=>{
+            <Button onClick={()=>{
               setShowSkill(old=>!old);
             }}>+</Button>
           </h3>
@@ -228,7 +228,7 @@ const Proficiency: Component<Props> = (props) => {
                       {(skill) => <Option value={skill} >{skill}</Option>}
                     </For>
                   </Select>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     props.setProficiencies([...props.currentClass.proficiencies, selectedSkill()].filter(x=>!!x));
                   }}>Add</Button>
                 </div>

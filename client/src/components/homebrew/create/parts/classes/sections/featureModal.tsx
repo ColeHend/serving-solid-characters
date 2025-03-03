@@ -1,6 +1,6 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show, untrack } from "solid-js";
-import { Button, Input, FormField, TextArea, Select, Option, Markdown, useGetClasses, isNullish } from "../../../../../../shared";
-import { AbilityScores, ChangeSubTypes, CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes, Info, TypeRestrictions } from "../../../../../../models/core.model";
+import { Button, Input, FormField, TextArea, Select, Option, Markdown, isNullish } from "../../../../../../shared";
+import { AbilityScores, ChangeSubTypes, CharacterChange, CharacterChangeTypes, Feature, FeatureTypes, Info, TypeRestrictions } from "../../../../../../models/core.model";
 import styles from './featureModal.module.scss';
 import Modal from "../../../../../../shared/components/popup/popup.component";
 import { LevelEntity, Subclass } from "../../../../../../models/class.model";
@@ -25,6 +25,7 @@ interface FeatureModalProps {
 	editIndex: Accessor<number>;
 	setEditIndex: Setter<number>;
 }
+
 const FeatureModal: Component<FeatureModalProps> = (props) => {
   const allFeatures = useGetFeatures();
   // -------- Signals --------
@@ -52,7 +53,8 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
     classes.forEach((c) => uniqueClasses.add(c.info.className));
     return Array.from(uniqueClasses);
   });
-  const allDisplayFeatures = createMemo(() => {
+
+  const allDisplayFeatures = createMemo(() => { 
     if (classFilter() === '') {
       return allFeatures();
     } else if (classFilter() === 'Background') {
@@ -72,6 +74,7 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
     setNewName("");
     setNewDesc("");
   }
+
   const saveAndClose = () => {
     let level = 0;
     switch (true) {
@@ -266,6 +269,7 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
   })
   // ----------------- Return -----------------
   return (
+    // eslint-disable-next-line
     <Modal title="Add Feature" setClose={(value: any) => {
       props.setEditIndex(-1);
       return props.setShowFeature(value);
@@ -280,7 +284,7 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
         <div class={`${styles.body}`}>
           <Show when={featureType() === "" && !isEdit()}>
             <div>
-              <Button onClick={(e) => {
+              <Button onClick={() => {
                 setFeatureType("new");
               }}>New Feature</Button>
               <Button onClick={() => setFeatureType("existing")}>Existing Feature</Button>
@@ -366,7 +370,7 @@ const FeatureModal: Component<FeatureModalProps> = (props) => {
                   <Option value="Feature">Feats</Option>
                   <For each={allClasses()}>{(c) => <Option value={c}>{c}</Option>}</For>
                 </Select>
-                <Button onClick={(e) => {
+                <Button onClick={() => {
                   setNewName(selectedFeature().name);
                   setNewDesc(getUnknownToString(selectedFeature().value));
                 }}>Fill Feature</Button>

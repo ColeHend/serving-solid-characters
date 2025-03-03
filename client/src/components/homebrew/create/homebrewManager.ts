@@ -94,7 +94,7 @@ export default class HomebrewManager {
   public updateClassesInDB = () => {
     this.homebrewClasses$.pipe(
       take(1),
-      concatMap((classes) => {
+      concatMap(() => {
         return httpClient$.toObservable(homebrewDB.classes.bulkPut(this.classes()));
       })
     ).subscribe();
@@ -146,7 +146,7 @@ export default class HomebrewManager {
   public updateItemsInDB = () => {
     this.homebrewItems$.pipe(
       take(1),
-      concatMap((items) => {
+      concatMap(() => {
         return httpClient$.toObservable(homebrewDB.items.bulkPut(this.items()));
       })
     ).subscribe();
@@ -198,7 +198,7 @@ export default class HomebrewManager {
   public updateFeatsInDB = () => {
     this.homebrewFeats$.pipe(
       take(1),
-      concatMap((feats) => {
+      concatMap(() => {
         return httpClient$.toObservable(homebrewDB.feats.bulkPut(this.feats()));
       })
     ).subscribe();
@@ -250,7 +250,7 @@ export default class HomebrewManager {
   public updateSpellsInDB = () => {
     this.homebrewSpells$.pipe(
       take(1),
-      concatMap((spells) => {
+      concatMap(() => {
         return httpClient$.toObservable(homebrewDB.spells.bulkPut(this.spells()));
       })
     ).subscribe();
@@ -303,7 +303,7 @@ export default class HomebrewManager {
   private updateBackgroundsInDB = () => {
     this.homebrewBackgrounds$.pipe(
       take(1),
-      concatMap((backgrounds) => {
+      concatMap(() => {
         return httpClient$.toObservable(homebrewDB.backgrounds.bulkPut(this.backgrounds()));
       })
     ).subscribe();
@@ -355,7 +355,7 @@ export default class HomebrewManager {
   private updateRacesInDB = () => {
     return this.homebrewRaces$.pipe(
       take(1),
-      concatMap((races)=>{
+      concatMap(()=>{
         return httpClient$.toObservable(homebrewDB.races.bulkPut(this.races()));
       })
     )
