@@ -1,14 +1,12 @@
-import { Component, createEffect, createSignal } from "solid-js";
+import { Component } from "solid-js";
 import { importJsonObject } from "../../../shared/customHooks/utility/importJsonObject";
 import { Trade } from "../../../models/trade.model";
-import { Button } from "../../../shared";
 import addSnackbar from "../../../shared/components/Snackbar/snackbar";
 
 const Importing:Component = () => {
 
-  const [upload,setUpload] = createSignal<HTMLInputElement>()
 
-  function arrayBufferToJson(buffer: ArrayBuffer): any {
+  function arrayBufferToJson(buffer: ArrayBuffer): object {
     // Decode the ArrayBuffer to a string
     const decoder = new TextDecoder('utf-8');
     const jsonString = decoder.decode(buffer);

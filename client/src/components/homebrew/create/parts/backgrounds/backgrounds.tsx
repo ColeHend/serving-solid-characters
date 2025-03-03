@@ -1,7 +1,6 @@
 import { Component, For, createSignal, createMemo, Show, onMount } from "solid-js";
-import { useStyle, Body, Input, Select, Option, Button, TextArea, Chip, useGetItems, Weapon, Armor } from "../../../../../shared/";
+import { Body, Input, Select, Option, Button, TextArea, Chip, useGetItems, Weapon, Armor } from "../../../../../shared/";
 import styles from './backgrounds.module.scss';
-import getUserSettings from "../../../../../shared/customHooks/userSettings";
 import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { createStore } from "solid-js/store";
 import { Background } from "../../../../../models";
@@ -39,6 +38,7 @@ const Backgrounds: Component = () => {
 
   const [selectedChoiceItem, setSelectedChoiceItem] = createSignal("");
   const [selectedChoices, setSelectedChoices] = createSignal<string[]>([]);
+  // eslint-disable-next-line
   const [selectedChoiceItemAmnt, setSelectedChoiceItemAmnt] = createSignal(1);
   const [selectedChoicesItemType, setSelectedChoiceItemType] = createSignal("Item");
 
@@ -62,6 +62,7 @@ const Backgrounds: Component = () => {
     setCurrentBackground({ feature: [...currentBackground.feature, newFeature] });
   };
 
+   
   const replaceFeature = (level: number, index: number, feature: Feature<string, string>) => {
     const newFeatures = [...currentBackground.feature];
     newFeatures[index] = {
@@ -142,7 +143,7 @@ const Backgrounds: Component = () => {
                     <Option value={skill}>{skill}</Option>
                   }</For>
                 </Select>
-                <Button onClick={(e) => {
+                <Button onClick={() => {
                   setCurrentBackground({
                     startingProficiencies: [...currentBackground.startingProficiencies,
                       {
@@ -240,7 +241,7 @@ const Backgrounds: Component = () => {
                   }</For>
                   <Option value="Custom">Custom</Option>
                 </Select>
-                <Button onClick={(e) => {
+                <Button onClick={() => {
                   setCurrentBackground({
                     languageChoice: {
                       ...currentBackground.languageChoice,
@@ -311,7 +312,7 @@ const Backgrounds: Component = () => {
                     onChange={(e) => { 
                       setSelectedItemAmnt(parseInt(e.currentTarget.value));
                     }} />
-                  <Button onClick={(e) => {
+                  <Button onClick={() => {
                     const item = allItemsTypes().find((i) => i.item === selectedItem());
                     if (!item) return;
                     setCurrentBackground((old)=>({
@@ -348,7 +349,7 @@ const Backgrounds: Component = () => {
                         <Option value={item.name}>{item.name}</Option>
                       }</For>
                     </Select>
-                    <Button onClick={(e)=>{
+                    <Button onClick={()=>{
                       const item = allOtherItems().find((i) => i.name === selectedChoiceItem());
                       if (!item) return;
                       setSelectedChoices(old=>[...old, item.name]);
@@ -365,7 +366,7 @@ const Backgrounds: Component = () => {
                         <Option value={item.name}>{item.name}</Option>
                       }</For>
                     </Select>
-                    <Button onClick={(e)=>{
+                    <Button onClick={()=>{
                       const item = allWeapons().find((i) => i.name === selectedChoiceItem());
                       if (!item) return;
                       setSelectedChoices(old=>[...old, item.name]);
@@ -382,7 +383,7 @@ const Backgrounds: Component = () => {
                         <Option value={item.name}>{item.name}</Option>
                       }</For>
                     </Select>
-                    <Button onClick={(e)=>{
+                    <Button onClick={()=>{
                       const item = allArmor().find((i) => i.name === selectedChoiceItem());
                       if (!item) return;
                       setSelectedChoices(old=>[...old, item.name]);
@@ -395,7 +396,7 @@ const Backgrounds: Component = () => {
                   </div>
                 </Show>
                 <div>
-                  <Button disabled={selectedChoices().length === 0} onClick={(e) => {
+                  <Button disabled={selectedChoices().length === 0} onClick={() => {
                     setCurrentBackground((old)=>({
                       startingEquipmentChoices: [...old.startingEquipmentChoices, {
                         choose: selectedChoiceItemAmnt(),
@@ -486,7 +487,7 @@ const Backgrounds: Component = () => {
           </div>
           <div class={`${styles.features}`}>
             <h4>Features</h4>
-            <Button onClick={(e) => {
+            <Button onClick={() => {
               setShowFeatureModal(true);
               setEditIndex(-1);
             }}>Add Feature</Button>
@@ -503,7 +504,7 @@ const Backgrounds: Component = () => {
               />
             </Show>
             <For each={currentBackground.feature}>{(f, index) =>
-              <Button onClick={(e) => {
+              <Button onClick={() => {
                 setShowFeatureModal(true);
                 setEditIndex(index);
               }}>{f.name}</Button>
@@ -511,7 +512,7 @@ const Backgrounds: Component = () => {
           </div>
           <div>
             <Show when={!!doesExist()}>
-              <Button onClick={(e)=>{
+              <Button onClick={()=>{
                 const result = HomebrewManager.updateBackground(currentBackground);
                 if (result) {
                   addSnackbar({
@@ -527,7 +528,7 @@ const Backgrounds: Component = () => {
               }} >Edit</Button>
             </Show>
             <Show when={!doesExist()}>
-              <Button onClick={(e)=>{
+              <Button onClick={()=>{
                 HomebrewManager.addBackground(currentBackground);
               }}>Save</Button>
             </Show>

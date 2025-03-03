@@ -1,10 +1,9 @@
-import { Accessor, Component, Setter, useContext } from "solid-js";
+import { Component, Setter, useContext } from "solid-js";
 import Modal from "../../shared/components/popup/popup.component";
 import styles from "./dataTransferModal.module.scss";
 import { Tab, Tabs } from "../../shared";
 import Importing from "./Import/Importing";
 import Exporting from "./Export/Exporting";
-import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../rootApp";
 
 interface props {

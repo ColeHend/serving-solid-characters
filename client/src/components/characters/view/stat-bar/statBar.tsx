@@ -3,7 +3,6 @@ import {
   Character,
   Stats,
 } from "../../../../shared/customHooks/dndInfo/useCharacters";
-import useStyle from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./statBar.module.scss";
 import StatBlock from "./stat/stat";
 
@@ -12,7 +11,6 @@ type Props = {
   currentCharacter: Accessor<Character>;
 };
 const StatBar: Component<Props> = (props) => {
-  const stylin = useStyle();
   const getProficiencyBonus = (level: number) => Math.ceil(level / 4) + 1;
 
   return (

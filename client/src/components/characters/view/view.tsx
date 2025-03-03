@@ -1,41 +1,27 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
-import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./view.module.scss";
-import useCharacters, { Character, Stats } from "../../../shared/customHooks/dndInfo/useCharacters";
-import StatBlock from "./stat-bar/stat/stat";
+import useCharacters, { Character } from "../../../shared/customHooks/dndInfo/useCharacters";
 import StatBar from "./stat-bar/statBar";
-import { useParams, useSearchParams } from "@solidjs/router";
+import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
-import useGetClasses from "../../../shared/customHooks/data/useGetClasses";
-import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
-import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
-import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
-import useGetItems from "../../../shared/customHooks/data/useGetItems";
-import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
 import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 
 
 const CharacterView: Component = () => {
+  // eslint-disable-next-line
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
-  const routedSelected = useParams()
+
   const [searchParam, setSearchParam] = useSearchParams();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [characters, setCharacters] = useCharacters();
   if(!searchParam.name) setSearchParam({name: characters()[0].name});
   const selectedCharacter = characters().filter(x=>x.name.toLowerCase() === (searchParam.name || characters()[0].name).toLowerCase())[0];
   const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
   const fullStats = useGetFullStats(currentCharacter);
-  const getStatMod = (stat: number) => Math.floor((stat - 10)/2);
-  const getProficiencyBonus = (level: number) => Math.ceil(level/4) + 1;
-  const dndSrdClasses = useGetClasses();
-  const dndSrdSpells = useGetSpells();
-  const dndSrdFeats = useGetFeats();
-  const dndSrdRaces = useGetRaces();
-  const dndSrdItems = useGetItems();
-  const dndSrdBackgrounds = useGetBackgrounds();
   effect(()=>{
     setSearchParam({name: currentCharacter().name})
   })

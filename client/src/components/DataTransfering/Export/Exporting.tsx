@@ -1,10 +1,8 @@
-import { Component, createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import { Component, createMemo, createSignal, For, Show } from "solid-js";
 import styles from "./Exporting.module.scss";
 import { Button, ExpansionPanel, homebrewManager, Input, isNullish } from "../../../shared";
-import { BehaviorSubject, race } from "rxjs";
 import { Trade } from "../../../models/trade.model";
 import { createStore } from "solid-js/store";
-import { Spell } from "../../../models";
 import Modal from "../../../shared/components/popup/popup.component";
 import { downloadObjectAsJson } from "../../../shared/customHooks/utility/downloadObjectAsJson";
 
@@ -140,7 +138,7 @@ const Exporting:Component = () => {
 
               <div class={`${styles.innerList}`}>
                 <For each={AvalableSpells()}>
-                  { (spell,i) =><Show when={!exportObject.spells.includes(spell)}><li>
+                  { (spell) =><Show when={!exportObject.spells.includes(spell)}><li>
                     <Input 
                       type="checkbox" 
                       name={spell.name}
@@ -181,7 +179,7 @@ const Exporting:Component = () => {
 
               <div class={`${styles.innerList}`}>
                 <For each={AvalableFeats()}>
-                  { (feat,i) => <Show when={!exportObject.feats.includes(feat)}><li>
+                  { (feat) => <Show when={!exportObject.feats.includes(feat)}><li>
                     <Input 
                       name={feat.name} 
                       type="checkbox" 
@@ -220,7 +218,7 @@ const Exporting:Component = () => {
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={AvalableClasses()}>
-                  { (dndClass, i) => <Show when={!exportObject.srdclasses.includes(dndClass)}><li>
+                  { (dndClass) => <Show when={!exportObject.srdclasses.includes(dndClass)}><li>
                     <Input 
                       name={dndClass.name} 
                       type="checkbox"
@@ -259,7 +257,7 @@ const Exporting:Component = () => {
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={AvalableBackground()}>
-                  { (background, i) => <Show when={!exportObject.backgrounds.includes(background)}><li>
+                  { (background) => <Show when={!exportObject.backgrounds.includes(background)}><li>
                     <Input 
                       name={background.name} 
                       type="checkbox" 
@@ -298,7 +296,7 @@ const Exporting:Component = () => {
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={AvalableItems()}>
-                  { (item,i) => <Show when={!exportObject.items.includes(item)}><li>
+                  { (item) => <Show when={!exportObject.items.includes(item)}><li>
                     <Input 
                       name={item.item} 
                       type="checkbox" 
@@ -337,7 +335,7 @@ const Exporting:Component = () => {
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={AvalableRaces()}>
-                  { (race,i) => <Show when={!exportObject.races.includes(race)}><li>
+                  { (race) => <Show when={!exportObject.races.includes(race)}><li>
                     <Input 
                       name={race.name}  
                       type="checkbox" 
@@ -405,7 +403,7 @@ const Exporting:Component = () => {
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.spells}>
-                  { (spell, i) => <li>
+                  { (spell) => <li>
                     <Input
                       name={spell.name} 
                       type="checkbox"
@@ -443,7 +441,7 @@ const Exporting:Component = () => {
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.feats}>
-                  { (feat,i) => <li>
+                  { (feat) => <li>
                     <Input 
                       name={feat.name}
                       type="checkbox"
@@ -479,7 +477,7 @@ const Exporting:Component = () => {
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.srdclasses}>
-                  { (dndclass,i) => <li>
+                  { (dndclass) => <li>
                     <Input 
                       name={dndclass.name}
                       type="checkbox"
@@ -517,7 +515,7 @@ const Exporting:Component = () => {
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.backgrounds}>
-                  { (background, i) => <li>
+                  { (background) => <li>
                     <Input 
                       name={background.name}
                       type="checkbox"
@@ -555,7 +553,7 @@ const Exporting:Component = () => {
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.items}>
-                  { (item, i) => <li>
+                  { (item) => <li>
                     <Input 
                       name={item.item}
                       type="checkbox"
@@ -593,7 +591,7 @@ const Exporting:Component = () => {
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.races}>
-                  { (race, i) => <li>
+                  { (race) => <li>
                     <Input 
                       name={race.name}
                       type="checkbox"

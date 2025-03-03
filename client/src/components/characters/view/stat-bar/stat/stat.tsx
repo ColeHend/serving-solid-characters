@@ -41,6 +41,7 @@ type Props = {
 
 const StatBlock: Component<Props> = (props) => {
   const getStatMod = (stat: number) => Math.floor((stat - 10) / 2);
+  // eslint-disable-next-line
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
