@@ -12,13 +12,10 @@ import {
   Button,
   Select,
   Option,
-  Carousel,
-  Chip,
 } from "../../../../../shared/components";
 import { Feature, FeatureTypes, Info } from "../../../../../models/core.model";
 import styles from "./classes.module.scss";
 import { DnDClass } from "../../../../../models";
-import { effect } from "solid-js/web";
 import { LevelEntity } from "../../../../../models/class.model";
 
 interface Props {
@@ -55,7 +52,6 @@ const LevelBuilder: Component<Props> = (props) => {
   };
   const [toAddName, setToAddName] = createSignal("");
   const [toAddValue, setToAddValue] = createSignal("");
-  const getSlotString = (slot: number) => slot === 0 ? "cantrips_known" : `spell_slots_level_${slot}`;
   const getSlotValue:(slot:number)=>string = (slot: number) => {
     if(classLevels()[level - 1]?.spellcasting) {
       if(slot === 0) return `${classLevels()[level - 1]?.spellcasting?.cantrips_known}`;
@@ -159,6 +155,8 @@ const LevelBuilder: Component<Props> = (props) => {
                   type: FeatureTypes.Class,
                   other: "",
                 },
+                metadata: {
+                },
               });
               return JSON.parse(JSON.stringify(old));
             });
@@ -184,6 +182,7 @@ const LevelBuilder: Component<Props> = (props) => {
                         name: e.currentTarget.value,
                         value: feature.value,
                         info: feature.info,
+                        metadata: {}
                       };
                       return JSON.parse(JSON.stringify(old));
                     });
@@ -201,6 +200,7 @@ const LevelBuilder: Component<Props> = (props) => {
                         name: feature.name,
                         value: e.currentTarget.value,
                         info: feature.info,
+                        metadata: {}
                       };
                       return JSON.parse(JSON.stringify(old));
                     });

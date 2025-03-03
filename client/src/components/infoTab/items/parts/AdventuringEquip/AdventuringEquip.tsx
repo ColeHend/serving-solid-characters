@@ -5,7 +5,7 @@ interface props {
     Items:Accessor<Item[]>;
 }
 
-const AdventEquipView:Component<props> = (props) => {
+const AdventEquipView:Component<props> = () => {
 
   return <div>
 

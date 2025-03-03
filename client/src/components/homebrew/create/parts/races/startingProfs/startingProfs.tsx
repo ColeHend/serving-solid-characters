@@ -1,20 +1,11 @@
-import { Accessor, Component, createSignal, For, Setter, Show } from "solid-js";
+import {Component, createSignal, For, Setter, Show } from "solid-js";
 import Modal from "../../../../../../shared/components/popup/popup.component";
-import addSnackbar  from "../../../../../../shared/components/Snackbar/snackbar";
 import {
-  useStyle,
-  getUserSettings,
-  Body,
-  homebrewManager,
   FormField,
   Input,
   Select,
   Option,
   Button,
-  Chip,
-  Clone,
-  UniqueSet,
-  UniqueStringArray,
   useGetItems,
   Tabs,
   Tab,

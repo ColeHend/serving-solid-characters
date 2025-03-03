@@ -9,9 +9,6 @@ import {
   onMount,
 } from "solid-js";
 import {
-  useStyle,
-  Carousel,
-  getUserSettings,
   Body,
   Item,
   Weapon,
@@ -27,9 +24,6 @@ import {
   homebrewManager,
 } from "../../../../../shared/";
 import styles from "./items.module.scss";
-import type { Tab } from "../../../../navbar/navbar";
-import HomebrewSidebar from "../../sidebar";
-import { SharedHookContext } from "../../../../rootApp";
 import { useSearchParams } from "@solidjs/router";
 import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
 import { createStore } from "solid-js/store";
@@ -37,19 +31,14 @@ import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Feature } from "../../../../../models/core.model";
 import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
-import HomebrewManager from "../../homebrewManager";
 import {useGetItems} from "../../../../../shared/";
 import useGetSpells from "../../../../../shared/customHooks/data/useGetSpells";
-import { c } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import ItemCreate from "./parts/item/item";
 import ArmorCreate from "./parts/armor/armor";
 import WeaponCreate from "./parts/weapon/weapon";
 
 const Items: Component = () => {
   // state
-  const sharedHooks = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(() => useStyle(userSettings().theme));
   const [searchParams, setSearchParams] = useSearchParams();
   const allItems = useGetItems()
 

@@ -1,13 +1,10 @@
-import { Component, For, Show, createMemo, createSignal, useContext } from "solid-js";
-import { useStyle, homebrewManager, useDnDSpells, Option, Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Carousel, Chip, Input, Select, useDnDClasses, getUserSettings, Body, FormField, TextArea, Markdown } from "../../../../../shared";
-import styles from './subclasses.module.scss'
-import type { Tab } from "../../../../navbar/navbar";
-import HomebrewSidebar from "../../sidebar";
+import { Component, For, Show, createMemo, createSignal } from "solid-js";
+import { homebrewManager, useDnDSpells, Option, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Chip, Input, Select, useDnDClasses, Body, FormField, TextArea } from "../../../../../shared";
+import styles from './subclasses.module.scss';
 import { effect } from "solid-js/web";
 import { LevelEntity, Subclass } from "../../../../../models/class.model";
 import { Spell } from "../../../../../models/spell.model";
 import { useSearchParams } from "@solidjs/router";
-import { SharedHookContext } from "../../../../rootApp";
 import FeatureModal from "../classes/sections/featureModal";
 import { Feature } from "../../../../../models/core.model";
 export enum SpellsKnown {
@@ -22,9 +19,6 @@ export enum SpellsKnown {
 
 const Subclasses: Component = () => {
   const [searchParam, setSearchParam] = useSearchParams();
-  const sharedHooks = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(()=>useStyle(userSettings().theme));
   const allClasses = useDnDClasses();
   const allClassNames = ()=> allClasses().map((c)=> c.name);
   const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(0);

@@ -1,7 +1,6 @@
 import {
   Component,
   For,
-  Setter,
   Show,
   createMemo,
   createSignal,

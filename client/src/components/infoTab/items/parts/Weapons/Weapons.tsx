@@ -2,7 +2,6 @@ import { Accessor, Component, createEffect, createMemo, createSignal, For } from
 import { Button, Chip, homebrewManager, Paginator, SkinnySnowman, Weapon } from "../../../../../shared";
 import styles from "./weapons.module.scss";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
-import { create } from "domain";
 import Table from "../../../../../shared/components/Table/table";
 import { Cell, Column, Header,Row, SecondRow } from "../../../../../shared/components/Table/innerTable";
 import { useNavigate } from "@solidjs/router";
@@ -56,7 +55,7 @@ const WeaponsView:Component<props> = (props) => {
         <Column name="name">
           <Header><></></Header>
           <Cell<Weapon>>
-            { (weapon, i) => <span>
+            { (weapon) => <span>
               {weapon.name}    
             </span>}
           </Cell>
@@ -65,7 +64,7 @@ const WeaponsView:Component<props> = (props) => {
         <Column name="options">
           <Header><></></Header>
           <Cell<Weapon>>
-            { (weapon, i) => <span>
+            { (weapon) => <span>
               <Button enableBackgroundClick menuItems={menuItems(weapon)} class={`${styles.menuBtn}`}>
                 <SkinnySnowman />
               </Button>
@@ -75,9 +74,9 @@ const WeaponsView:Component<props> = (props) => {
 
         <Row />
         <SecondRow<Weapon>>
-          { (weapon, i) => <span class={`${styles.tagRow}`}>
+          { (weapon) => <span class={`${styles.tagRow}`}>
             <For each={weapon.tags}>
-              { (tag, i) => <Chip key="" value={tag} /> }
+              { (tag) => <Chip key="" value={tag} /> }
             </For>
           </span>}
         </SecondRow>

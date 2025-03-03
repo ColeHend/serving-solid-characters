@@ -20,15 +20,10 @@ import {
   Button,
   Chip,
   Clone,
-  UniqueSet,
   UniqueStringArray,
-  useGetItems,
   TextArea,
-  useDnDRaces,
 } from "../../../../../shared/";
 import styles from "./races.module.scss";
-import type { Tab } from "../../../../navbar/navbar";
-import HomebrewSidebar from "../../sidebar";
 import { SharedHookContext } from "../../../../rootApp";
 import { Race } from "../../../../../models";
 import { createStore } from "solid-js/store";
@@ -42,18 +37,11 @@ import { LevelEntity } from "../../../../../models/class.model";
 import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
-import { Observable } from "rxjs";
-import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
 import StartingProf from "./startingProfs/startingProfs";
-import { className } from "solid-js/web";
 import HomebrewSearch from "../../../../../shared/customHooks/homebrewSearch";
 
 const Races: Component = () => {
-  const sharedHooks = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(() => useStyle(userSettings().theme));
   const allRaces = useGetRaces();
-  const hombrewRaces = createMemo(() => homebrewManager.races());
   const [searchParam, setSearchParam] = useSearchParams();
   // -------------------- Signals/State
   const [selectedAbility, setSelectedAbility] = createSignal<AbilityScores>(0);

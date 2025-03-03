@@ -1,32 +1,24 @@
-import { Component, For, Match, Switch, createSignal, untrack, useContext, createMemo, Show, onMount } from "solid-js";
+import { Component, For, Match, Switch, createSignal, createMemo, Show, onMount } from "solid-js";
 import styles from "./feats.module.scss";
-import type { Tab } from "../../../../navbar/navbar";
-import HomebrewSidebar from "../../sidebar";
-import { useGetClasses, useGetFeats, ExpansionPanel, Input, Select, Option, Chip, homebrewManager, useStyle, getUserSettings, Body, Button, TextArea } from "../../../../../shared/";
+import { useGetClasses, useGetFeats, Input, Select, Option, Chip, homebrewManager, Body, Button, TextArea } from "../../../../../shared/";
 import { Feature, FeatureTypes } from "../../../../../models/core.model";
 import { effect } from "solid-js/web";
 import { Feat } from "../../../../../models/feat.model";
-import { BehaviorSubject } from "rxjs";
-import { SharedHookContext } from "../../../../rootApp";
 import FormField from "../../../../../shared/components/FormField/formField";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
 
 
 const Feats: Component = () => {
-  const sharedHooks = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(()=>useStyle(userSettings().theme));
   const classes = useGetClasses();
   const feats = useGetFeats();
-  const currentFeat$ = new BehaviorSubject<Feat>({} as Feat);
   const [preReqs, setPreReqs] = createSignal<Feature<string, string>[]>([]);
   const [selectedType, setSelectedType] = createSignal<number>(0);
   const [featName, setFeatName] = createSignal<string>("");
   const [keyName, setKeyName] = createSignal<string>("str");
   const [keyValue, setKeyValue] = createSignal<string>("0");
   const [featDescription, setFeatDescription] = createSignal<string>("");
-  const [shouldAdd, setShouldAdd] = createSignal<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
   const clearFields = () => {
     setPreReqs([]);

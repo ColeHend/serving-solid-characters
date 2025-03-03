@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, For, onMount, Show } from "solid-js";
+import { Component, createEffect, createSignal, For, onMount, Show } from "solid-js";
 import Style from "./subraces.module.scss";
 import { Body, homebrewManager, Select,Option, Chip, FormField, Input, Button, UniqueStringArray, Clone, TextArea } from "../../../../../shared";
 import { createStore } from "solid-js/store";
@@ -17,7 +17,6 @@ const Subraces:Component = () => {
 
   const allRaceNames = () => homebrewManager.races().map(x=>x.name)
 
-  const [showProfPopup,setShowProfPopup] = createSignal<boolean>(false);
 
   const [newProficeny,setNewProficeny] = createStore<Feature<string,string>>({
     info: {
@@ -393,7 +392,7 @@ const Subraces:Component = () => {
             
     >
       <For each={allRaceNames()}>
-        { (raceName,i) => <Option value={raceName}>{raceName}</Option> }
+        { (raceName) => <Option value={raceName}>{raceName}</Option> }
       </For>
     </Select>
         

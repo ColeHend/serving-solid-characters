@@ -1,7 +1,5 @@
-import { Accessor, Component, For, JSX, Match, Setter, Show, Switch, createEffect, createSignal } from "solid-js";
-import useDnDSpells from "../../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
+import { Accessor, Component, For, Match, Setter, Show, Switch, createEffect, createSignal } from "solid-js";
 import { Spell } from "../../../../models/spell.model";
-import { effect } from "solid-js/web";
 import styles from "./searchBar.module.scss";
 import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
 import { Button, Input, Select, Option } from "../../../../shared/components";
@@ -117,7 +115,7 @@ const SearchBar: Component<Props> = (props) => {
   return (
     <div>
       <div class={`${styles.searchBar}`}>
-        <Button transparent={true} onClick={()=>setSearchChip((old)=>({key: searchKey(), value: beutifyChip(searchValue())  }))} >
+        <Button transparent={true} onClick={()=>setSearchChip(()=>({key: searchKey(), value: beutifyChip(searchValue())  }))} >
           <SearchGlass />
         </Button>
         <Select class={`${styles.all}`} disableUnselected={true} onChange={(e)=>setSearchKey(e.target.value)} id="chipDropdown">
@@ -156,7 +154,9 @@ const SearchBar: Component<Props> = (props) => {
               <Input
                 id="searchBar"
                 onChange={(e) => setSearchValue(e.currentTarget.value)}
-                onKeyDown={(e) => {(e.key === "Enter") && setSearchChip((old)=>({key: searchKey(), value: beutifyChip(e.currentTarget.value)}))}}
+                onKeyDown={(e) => {
+                  return (e.key === "Enter") && setSearchChip(()=>({key: searchKey(), value: beutifyChip(e.currentTarget.value)}))
+                }}
                 placeholder="Search Spells..."
                 value={searchValue()}
                 type="text"
@@ -196,7 +196,8 @@ const SearchBar: Component<Props> = (props) => {
 export default SearchBar;
 
 type SProps = {
-    [key: string]: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any  
+  [key: string]: any;
 }
 const SearchGlass: Component<SProps> = (props)=>{
   return <svg {...props} xmlns="http://www.w3.org/2000/svg" x="0" y="0" width="100" height="100" viewBox="0 0 50 50">
