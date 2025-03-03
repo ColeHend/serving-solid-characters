@@ -1,5 +1,7 @@
 import { type Component, For, createResource, JSX, useContext, createMemo, createSignal, Show } from 'solid-js';
-import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel, Markdown, Input, Select, Option, Button } from './shared';
+import { Body, TextArea, useStyle, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, ExpansionPanel, Markdown, Input, Button } from './shared';
+import { Select } from './shared/components/Select/select.component';
+import { Option } from './shared/components/Select/option.component';
 import { effect } from 'solid-js/web';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
@@ -26,6 +28,8 @@ const App: Component = () => {
   const [testCheckbox, setTestCheckbox] = createSignal(false);
   const [showDataTransfer,setShowDataTransfer] = createSignal(false);
 
+  const [testValues, setTestValues] = createSignal<string[]>(["one", "two", "three"]);
+  const [testSelect, setTestSelect] = createSignal<string>();
   return (
     <Body>
       <div class={`${styles.topRow}`}>
@@ -91,6 +95,14 @@ const App: Component = () => {
             <FormField name='TextArea Test'>
               <TextArea text={testFieldText} setText={setTestFieldText} />
             </FormField>
+            <Select 
+              multiple={false} 
+              value={testSelect()}
+              onChange={setTestSelect}>
+              <For each={testValues()}>{(item) => {
+                return <Option value={item}>{item}</Option>
+              }}</For>
+            </Select>
           </div>
         </Tab>
       </Tabs>

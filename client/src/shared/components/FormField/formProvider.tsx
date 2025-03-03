@@ -1,16 +1,16 @@
-import { Accessor, JSX, Component, createSignal, useContext, createContext } from "solid-js";
+import { Accessor, JSX, Component, createSignal, useContext, createContext, Setter } from "solid-js";
 
 interface formFieldContext {
 	getName: Accessor<string>;
-	setName: (name: string) => void;
+	setName: Setter<string>;
 	getTextInside: Accessor<boolean>;
-	setTextInside: (textInside: boolean) => void;
+	setTextInside: Setter<boolean>;
 	getFocused: Accessor<boolean>;
-	setFocused: (focused: boolean) => any;
+	setFocused: Setter<boolean>;
 	getValue: Accessor<string>;
-	setValue: (value: string) => void;
+	setValue: Setter<string>;
 	getFieldType: Accessor<string>;
-	setFieldType: (type: string) => void;
+	setFieldType: Setter<string>;
 }
 
 const FormFieldContext = createContext<formFieldContext>({

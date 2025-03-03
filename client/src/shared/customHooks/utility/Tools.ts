@@ -1,71 +1,155 @@
 import { Spell } from "../../../models";
 import { FeatureTypes } from "../../../models/core.model";
 
+/**
+ * Retrieves the feature type, falling back to a default if the provided type is nullish.
+ *
+ * @param type - The feature type to check. Can be undefined or nullish.
+ * @param normal - The default feature type to return if `type` is nullish. Defaults to `FeatureTypes.Feat`.
+ * @returns The provided `type` if it is not nullish, otherwise returns `normal` or `FeatureTypes.Feat`.
+ */
 export function GetFeatureType(type?:FeatureTypes, normal?: FeatureTypes ): FeatureTypes {
   if (isNullish(type)) return normal ?? FeatureTypes.Feat;
   return type!;
 }
 
+/**
+ * Checks if a given value is null or undefined.
+ *
+ * @template T - The type of the value to check.
+ * @param {T} value - The value to check for nullishness.
+ * @returns {boolean} - Returns `true` if the value is null or undefined, otherwise `false`.
+ */
 export const isNullish = <T,>(value: T) => value === null || value === undefined;
+/**
+ * A class that represents a unique set of items.
+ * Items are stored in a Map with their JSON stringified representation as the key.
+ * 
+ * @template T - The type of items to be stored in the set.
+ */
 export class UniqueSet<T> {
+  /**
+   * The internal Map that stores the items.
+   * The key is the JSON stringified representation of the item.
+   */
   private set: Map<string, T>;
+
+  /**
+   * Creates an instance of UniqueSet.
+   */
   constructor() {
     this.set = new Map();
   }
+
+  /**
+   * Adds an item to the set.
+   * If the item already exists, it will be replaced.
+   * 
+   * @param item - The item to add to the set.
+   */
   public add(item: T) {
     this.set.set(JSON.stringify(item), item);
   }
-	
+
+  /**
+   * Deletes an item from the set.
+   * 
+   * @param item - The item to delete from the set.
+   */
   public delete(item: T) {
     this.set.delete(JSON.stringify(item));
   }
-	 
+
+  /**
+   * Gets the array of items in the set.
+   * 
+   * @returns An array of items in the set.
+   */
   public get value() {
     return Array.from(this.set.values()) as T[];
   }
 
+  /**
+   * Sets the array of items in the set.
+   * Clears the current set and adds the new items.
+   * 
+   * @param value - An array of items to set.
+   */
   public set value(value: T[]) {
-    if (!value?.length) return ;
+    if (!value?.length) return;
     this.clear();
     value.forEach((item) => this.add(item));
   }
 
+  /**
+   * Clears all items from the set.
+   */
   public clear() {
     this.set.clear();
   }
 }
 
+/**
+ * Removes duplicate strings from an array and returns an array of unique strings.
+ *
+ * @param strings - An array of strings that may contain duplicates.
+ * @returns An array of unique strings.
+ */
 export const UniqueStringArray = (strings: string[]) => {
   return [...new Set(strings)]
 }
 
+/**
+ * Sorts an array of objects by a specified key.
+ *
+ * @template T - The type of the objects in the array.
+ * @param {T[]} arr - The array to be sorted.
+ * @param {keyof T} key - The key of the object to sort by.
+ * @param {boolean} isAsc - Determines if the sorting should be in ascending order. If true, sorts in ascending order; otherwise, sorts in descending order.
+ * @returns {T[]} The sorted array.
+ *
+ * @example
+ * const items = [
+ *   { cost: { quantity: 10 }, damage: [{ damageDice: 5 }], range: { normal: 30 }, armorClass: { base: 15 } },
+ *   { cost: { quantity: 5 }, damage: [{ damageDice: 10 }], range: { normal: 20 }, armorClass: { base: 10 } }
+ * ];
+ * const sortedItems = SortArrayByKey(items, 'cost', true);
+ * console.log(sortedItems);
+ */
 export const SortArrayByKey = <T,>(arr: T[], key: keyof T, isAsc: boolean) => {
   return arr.sort((a, b) => {
     switch (key) {
     case 'cost':
+    { 
       const c:any = a[key];
       const d:any = b[key];
       if (c['quantity'] > d['quantity']) return isAsc ? 1 : -1;
       if (c['quantity'] < d['quantity']) return isAsc ? -1 : 1;
-      break;
+      break; 
+    }
     case 'damage':
-      const e:any = a[key];
+    { const e:any = a[key];
       const f:any = b[key];
       if (e[0]['damageDice'] > f[0]['damageDice']) return isAsc ? 1 : -1;
       if (e[0]['damageDice'] < f[0]['damageDice']) return isAsc ? -1 : 1;
-      break;
+      break; 
+    }
     case 'range':
+    { 
       const g:any = a[key];
       const h:any = b[key];
       if (g['normal'] > h['normal']) return isAsc ? 1 : -1;
       if (g['normal'] < h['normal']) return isAsc ? -1 : 1;
-      break;
+      break; 
+    }
     case 'armorClass':
+    { 
       const c1:any = a[key];
       const d2:any = b[key];
       if (c1['base'] > d2['base']) return isAsc ? 1 : -1;
       if (c1['base'] < d2['base']) return isAsc ? -1 : 1;
-      break;
+      break; 
+    }
     default:
       if (a[key] > b[key]) return isAsc ? 1 : -1;
       if (a[key] < b[key]) return isAsc ? -1 : 1;
@@ -81,6 +165,15 @@ interface typeValues {
 		third: number;
 		[other: string]: number;
 }
+/**
+ * Calculates the number of spell slots available for a given character level, slot level, and caster type.
+ *
+ * @param {number} level - The character's level.
+ * @param {number} slotLevel - The level of the spell slot (1-9).
+ * @param {keyof typeValues} casterType - The type of caster (e.g., 'full', 'half', 'third').
+ * @param {typeValues} [typeValues={ full: 1, half: 0.5, third: 1 / 3 }] - An object defining the caster type multipliers.
+ * @returns {number | string} The number of spell slots available, or '-' if the slot level is too high for the effective level.
+ */
 export function getSpellSlots(level: number, slotLevel: number, casterType: keyof typeValues, typeValues: typeValues = { full: 1, half: 0.5, third: 1 / 3 }) {
   if (level < 1 || slotLevel < 1 || slotLevel > 9) return 0;
 

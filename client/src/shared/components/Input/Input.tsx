@@ -1,6 +1,7 @@
-import { Component, JSX, splitProps, createMemo, onMount } from "solid-js";
+import { Component, JSX, splitProps, createMemo, onMount, createEffect } from "solid-js";
 import { useFormProvider } from "../FormField/formProvider";
 import style from "./input.module.scss";
+import { isNullish } from "../..";
 
 interface InputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
     tooltip?: string;
@@ -16,12 +17,17 @@ const Input: Component<InputProps> = (props)=> {
     return Object.keys(customProps).includes("transparent");
   });
 
+  createEffect(() => {
+    if (Object.keys(props).includes("required") || props?.required === true) {
+      context.setName((old) => `${old} *`);
+    } else {
+      context.setName((old) => old);
+    }
+  });
+
   onMount(()=>{
-    if (context.getName) {
+    if (!isNullish(context.getName)) {
       context.setFieldType(props.type ?? "text"); 
-      if (Object.keys(props).includes("required") && props.required !== false) {
-        context.setName(`${context.getName()} *`);
-      }
     }
   });
   return (
@@ -30,19 +36,19 @@ const Input: Component<InputProps> = (props)=> {
       placeholder={!!context.getName() && !context.getTextInside() && !context.getFocused() ? context.getName() : props.placeholder}
       value={inputValue()}
       onFocus={(e)=>{
-        if (context.getName) {
+        if (!isNullish(context.getName)) {
           context.setFocused(true); 
         }
 
       }}
       onBlur={(e)=>{
-        if (context.getName) {
+        if (!isNullish(context.getName)) {
           context.setFocused(false)
         }
       }}
       type={context.getFieldType().length > 0 ? context.getFieldType() : props.type}
       onChange={(e)=>{
-        if (context.getName) {
+        if (!isNullish(context.getName)) {
           if (e.currentTarget.value.trim()) {
             context.setValue(e.currentTarget.value);
             context.setTextInside(true); 

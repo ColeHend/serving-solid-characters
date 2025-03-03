@@ -1,0 +1,172 @@
+/* Container and control (trigger) */
+.solid-select {
+  position: relative;
+  display: inline-block;
+  width: max-content;
+  height: max-content;
+  margin-right: calc(var(--spacing-1) * 1.5);
+  text-align: left;
+}
+.solid-select__control {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  .solid-select__value {
+    flex-grow: 1;
+  }
+  .solid-select__arrow {
+    float: right;
+  }
+  padding: calc(var(--spacing-1) * 0.5) var(--spacing-1);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+}
+.solid-select__control:hover {
+  border-color: #999;
+}
+/* Placeholder text style */
+.solid-select__placeholder {
+  color: #888;
+}
+/* Dropdown arrow icon */
+.solid-select__arrow {
+  font-size: 0.7em;
+  margin-left: 8px;
+}
+
+/* Dropdown menu */
+.solid-select__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 90000;
+  width: fit-content !important;
+  min-height: var(--spacing-4);
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  .solid-select__option {
+    width: fit-content;
+    .option-label {
+      width: fit-content;
+    }
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.solid-select__transparent {
+  background-color: transparent;
+  color: var(--on-background-color);
+}
+
+.solid-select__primary {
+  background-color: var(--primary-color);
+  color: var(--on-primary-color);
+  .solid-select__option {
+    background-color: var(--primary-color);
+    color: var(--on-primary-color);
+  }
+  .solid-select__option:hover {
+    background: var(--primary-color-dark);
+  }
+  .solid-select__option.selected {
+    background: var(--primary-color-dark);
+  }
+}
+.solid-select__primary_dropdown {
+  background-color: var(--primary-color);
+  color: var(--on-primary-color);
+  .solid-select__option {
+    background-color: var(--primary-color);
+    color: var(--on-primary-color);
+  }
+  .solid-select__option:hover {
+    background: var(--primary-color-dark);
+  }
+  .solid-select__option.selected {
+    background: var(--primary-color-dark);
+  }
+}
+
+.solid-select__accent {
+  background-color: var(--secondary-color);
+  color: var(--on-secondary-color);
+  .solid-select__option {
+    background-color: var(--secondary-color);
+    color: var(--on-secondary-color);
+  }
+  .solid-select__option:hover {
+    background: var(--secondary-color-dark);
+  }
+  .solid-select__option.selected {
+    background: var(--secondary-color-dark);
+  }
+}
+
+.solid-select__accent_dropdown {
+  background-color: var(--secondary-color);
+  color: var(--on-secondary-color);
+  .solid-select__option {
+    background-color: var(--secondary-color);
+    color: var(--on-secondary-color);
+  }
+  .solid-select__option:hover {
+    background: var(--secondary-color-dark);
+  }
+  .solid-select__option.selected {
+    background: var(--secondary-color-dark);
+  }
+}
+
+.solid-select__tertiary {
+  background-color: var(--tertiary-color);
+  color: var(--on-tertiary-color);
+  .solid-select__option {
+    background-color: var(--tertiary-color);
+    color: var(--on-tertiary-color);
+  }
+  .solid-select__option:hover {
+    background: var(--tertiary-color-dark);
+  }
+  .solid-select__option.selected {
+    background: var(--tertiary-color-dark);
+  }
+}
+
+.solid-select__tertiary_dropdown {
+  background-color: var(--tertiary-color);
+  color: var(--on-tertiary-color);
+  .solid-select__option {
+    background-color: var(--tertiary-color);
+    color: var(--on-tertiary-color);
+  }
+  .solid-select__option:hover {
+    background: var(--tertiary-color-dark);
+  }
+  .solid-select__option.selected {
+    background: var(--tertiary-color-dark);
+  }
+}
+
+/* Option items */
+.solid-select__option {
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  min-height: var(--spacing-4);
+}
+/* Selected option styling */
+.solid-select__option.selected {
+  font-weight: bold;
+}
+/* Checkmark before option label */
+.solid-select__option .checkmark {
+  display: inline-block;
+  width: 1.2em;           /* reserve space for the checkmark */
+  margin-right: 4px;
+  text-align: center;
+}

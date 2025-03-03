@@ -1,3 +1,6 @@
+.overall {
+    
+}
 .searchBar {
     display: flex;
     flex-direction: row;
@@ -25,7 +28,7 @@
     }
     span {
         padding-left: 1%;
-        width: 50px !important;
+        // max-width: 50px !important;
         color: black;
     }
     svg {
