@@ -211,6 +211,7 @@ const Subclasses: Component = () => {
     setCurrentSubclass(newSubclass);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getUnknownToString = (value: unknown) => {
     if (typeof value === 'string') {
       return value;
@@ -248,6 +249,7 @@ const Subclasses: Component = () => {
             <TextArea 
               placeholder="Enter a Subclass description.." 
               text={()=>currentSubclass().desc.join("\n")}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               setText={(e: any)=>setCurrentSubclass(old=>({...old, desc: e.split("\n")}))}
               value={currentSubclass().desc.join("\n")} 
               transparent
@@ -277,7 +279,7 @@ const Subclasses: Component = () => {
               editIndex={editIndex} setEditIndex={setEditIndex} />
           </Show>
           <For each={getLevelUpFeatures(toAddFeatureLevel())}>{(feature)=>(
-            <Button onClick={(e)=>{
+            <Button onClick={()=>{
               setEditIndex(currentSubclass().features.indexOf(feature));
               setShowFeatureModal(true);
             }}>{feature.name}</Button>
@@ -344,7 +346,7 @@ const Subclasses: Component = () => {
                       setToAddKnownAmount(+e.currentTarget.value);
                     }} />
                   </div>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     if (!spellsKnownPerLevel().map(x=>x.level).includes(toAddKnownLevel())) {
                       setSpellsKnownPerLevel((old)=>[...old, {level: toAddKnownLevel(), amount: toAddKnownAmount()}].sort((a,b)=>+a.level-+b.level));
                     }
@@ -373,7 +375,7 @@ const Subclasses: Component = () => {
                       <Option value={JSON.stringify(spell)}>{spell.name}</Option>
                     )}</For>
                   </Select>
-                  <Button onClick={(e)=>setCurrentSubclass(old=>({...old, spells: [...old.spells, selectedSpell()]}))}
+                  <Button onClick={()=>setCurrentSubclass(old=>({...old, spells: [...old.spells, selectedSpell()]}))}
                   >Add Spell</Button>
                 </div>
                 <div>
@@ -387,7 +389,7 @@ const Subclasses: Component = () => {
               <div>
                 <h3>Spellcasting Info</h3>
                 <div>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     setCurrentSubclass((old)=>{
                       const newInfo = [...old.spellcasting?.info || []];
                       newInfo.push({name: "", desc: []});
@@ -419,7 +421,7 @@ const Subclasses: Component = () => {
                         }} />
                       </div>
                       <div>
-                        <Button onClick={(e)=>{
+                        <Button onClick={()=>{
                           setCurrentSubclass((old)=>{
                             const newInfo = [...old.spellcasting?.info || []];
                             newInfo.splice(i(), 1);
@@ -434,7 +436,7 @@ const Subclasses: Component = () => {
             </Show>
             <div>
               <Show when={canAddSubclass()}>
-                <Button onClick={(e)=>{
+                <Button onClick={()=>{
                   const updatedClass = allClasses().filter((c)=> c.name === currentSubclass().class)[0];
                   updatedClass.subclasses = [...updatedClass.subclasses, currentSubclass()];
                   homebrewManager.updateClass(updatedClass);

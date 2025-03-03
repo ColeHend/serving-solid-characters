@@ -488,7 +488,7 @@ const Subraces:Component = () => {
             </For>
           </Select>
 
-          <Button onClick={(e)=>{
+          <Button onClick={()=>{
             const selSize = currentSubrace.size.split(",");
             const newArray = [...selSize,newSizes().trim()]
               .map((s)=> s.trim())
@@ -572,7 +572,7 @@ const Subraces:Component = () => {
             </For>
           </Select>
 
-          <Button disabled={newLanguage() === ""} onClick={e=>{
+          <Button disabled={newLanguage() === ""} onClick={()=>{
             setCurrentSubrace("languages",old=>([...old,newLanguage()]))
             setNewLanguage("")
           }}>Add Language</Button>
@@ -593,12 +593,12 @@ const Subraces:Component = () => {
           <div style={{display:"flex","flex-direction":"column"}}>
             <Show when={currentSubrace.startingProficencies?.length} fallback={<Chip value="None" />}>
               <For each={currentSubrace.startingProficencies}>
-                { (prof,i) => <Chip value={prof.value} /> }
+                { (prof) => <Chip value={prof.value} /> }
               </For>
             </Show>
           </div>
 
-          <Button onClick={(e)=>setShowStartProf(!showStartProf())}>Add Proficencey</Button>
+          <Button onClick={()=>setShowStartProf(!showStartProf())}>Add Proficencey</Button>
 
         </div>
 
@@ -609,12 +609,12 @@ const Subraces:Component = () => {
           <div>
             <Show when={currentSubrace.traits.length > 0} fallback={<Chip value="None" />}>
               <For each={currentSubrace.traits}>
-                { (trait,i) => <Chip value={trait.name} remove={()=>setCurrentSubrace("traits",old=>([...old.filter(t=>t.name !== trait.name)]))} /> }
+                { (trait) => <Chip value={trait.name} remove={()=>setCurrentSubrace("traits",old=>([...old.filter(t=>t.name !== trait.name)]))} /> }
               </For>
             </Show>
           </div>
 
-          <Button onClick={(e)=>setShowTraitPopup(!showTraitPopup())}>Add Trait</Button>
+          <Button onClick={()=>setShowTraitPopup(!showTraitPopup())}>Add Trait</Button>
         </div>
       </div>
     </Show>

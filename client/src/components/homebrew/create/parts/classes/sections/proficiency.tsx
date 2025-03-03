@@ -1,11 +1,7 @@
 import { Component, createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import styles from '../classes.module.scss';
-import { Choice } from "../../../../../../models/core.model";
 import { Button, Chip, Input, Option, Select, useDnDItems, Weapon, Armor, Item, useGetItems } from "../../../../../../shared";
-import FormField from "../../../../../../shared/components/FormField/formField";
 import { DnDClass } from "../../../../../../models";
-import Chipbar from "../../../../../../shared/components/Chipbar/chipbar";
-import type Chiptype from "../../../../../../shared/models/chip";
 import Modal from "../../../../../../shared/components/popup/popup.component";
 interface Props {
 	currentClass: DnDClass;

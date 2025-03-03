@@ -1,4 +1,4 @@
-import { Component, For, createSignal, useContext, createMemo, Show, createEffect, onMount } from "solid-js";
+import { Component, For, createSignal, createMemo, Show, onMount } from "solid-js";
 import { useStyle, Body, Input, Select, Option, Button, TextArea, Chip, useGetItems, Weapon, Armor } from "../../../../../shared/";
 import styles from './backgrounds.module.scss';
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
@@ -6,7 +6,6 @@ import HomebrewManager, { homebrewManager } from "../../../../../shared/customHo
 import { createStore } from "solid-js/store";
 import { Background } from "../../../../../models";
 import useGetBackgrounds from "../../../../../shared/customHooks/data/useGetBackgrounds";
-import { className, effect } from "solid-js/web";
 import FormField from "../../../../../shared/components/FormField/formField";
 import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
@@ -15,10 +14,9 @@ import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 
 const Backgrounds: Component = () => {
-  const [userSettings, setUserSettings] = getUserSettings();
+  // eslint-disable-next-line
   const [searchParams, setSearchParams] = useSearchParams();
   const allBackgrounds = useGetBackgrounds();
-  const stylin = createMemo(() => useStyle(userSettings().theme));
   const allItemsTypes = useGetItems();
   const allOtherItems = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory !== "Weapon" && item.equipmentCategory !== "Armor"));
   const allWeapons = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory === "Weapon") as Weapon[]);

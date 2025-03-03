@@ -2,7 +2,6 @@ import { Accessor, Component, Setter } from "solid-js";
 import { FormField, Input, Item, TextArea } from "../../../../../../../shared";
 import { SetStoreFunction } from "solid-js/store";
 
-
 interface props {
     currentItem:Item
     setCurrentItem: SetStoreFunction<Item>

@@ -1,13 +1,11 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch, untrack } from "solid-js";
-import { Button, Input, Tabs, Tab, FormField, TextArea, Select, Option, Markdown, useGetClasses, ExpansionPanel, isNullish } from "../../../../../../shared";
-import { AbilityScores, ChangeSubTypes, CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes, Info, MovementTypes, TypeRestrictions } from "../../../../../../models/core.model";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show, untrack } from "solid-js";
+import { Button, Input, FormField, TextArea, Select, Option, Markdown, useGetClasses, isNullish } from "../../../../../../shared";
+import { AbilityScores, ChangeSubTypes, CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes, Info, TypeRestrictions } from "../../../../../../models/core.model";
 import styles from './featureModal.module.scss';
 import Modal from "../../../../../../shared/components/popup/popup.component";
 import { LevelEntity, Subclass } from "../../../../../../models/class.model";
 import useGetFeatures from "../../../../../../shared/customHooks/useGetFeatures";
-import { useSearchParams } from "@solidjs/router";
 import { Background, Item, Race } from "../../../../../../models";
-import { p, S } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
 import CharacterChanges from "./characterChanges";
 import { Subrace } from "../../../../../../models/race.model";
 
@@ -28,7 +26,6 @@ interface FeatureModalProps {
 	setEditIndex: Setter<number>;
 }
 const FeatureModal: Component<FeatureModalProps> = (props) => {
-  const allFullClasses = useGetClasses();
   const allFeatures = useGetFeatures();
   // -------- Signals --------
   const [featureType, setFeatureType] = createSignal<FeatureType>("");

@@ -11,11 +11,8 @@ import {
   Tab,
 } from "../../../../../../shared";
 import { ItemType } from "../../../../../../shared/customHooks/utility/itemType";
-import { createStore, SetStoreFunction } from "solid-js/store";
-import { Race } from "../../../../../../models";
-import { Feature, FeatureTypes } from "../../../../../../models/core.model";
-import { Subrace } from "../../../../../../models/race.model";
-import { p } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40";
+import { SetStoreFunction } from "solid-js/store";
+import { Feature } from "../../../../../../models/core.model";
 
 interface props {
     setClose: Setter<boolean>;
@@ -26,7 +23,6 @@ interface props {
 
 const StartingProf:Component<props> = (props) => {
   const allItems = useGetItems();
-  const [showConfirm,setShowConfirm] = createSignal<boolean>(false);
   const [otherValue,setOtherValue] = createSignal<string>("")
 
   // functions
@@ -145,7 +141,7 @@ const StartingProf:Component<props> = (props) => {
                 "Heavy",
                 "Sheilds"
               ]}>
-                { (prof, i) => <Option value={prof.split(" ").join("")}>{prof}</Option> }
+                { (prof) => <Option value={prof.split(" ").join("")}>{prof}</Option> }
               </For>
             </Select>
 
@@ -163,7 +159,7 @@ const StartingProf:Component<props> = (props) => {
                 value: e.currentTarget.value,
               }))}>
               <For each={allArmors()}>
-                { (armor, i) => <Option value={armor}>{armor}</Option> }
+                { (armor) => <Option value={armor}>{armor}</Option> }
               </For>
             </Select>
                     
@@ -205,7 +201,7 @@ const StartingProf:Component<props> = (props) => {
                 "Simple",
                 "Martial"
               ]}>
-                { (prof, i) => <Option value={prof}>{prof}</Option> }
+                { (prof) => <Option value={prof}>{prof}</Option> }
               </For>
             </Select>
 
@@ -225,7 +221,7 @@ const StartingProf:Component<props> = (props) => {
               }))}
             >
               <For each={allWeapons()}>
-                { (weapon, i) => <Option value={weapon}>{weapon}</Option> }
+                { (weapon) => <Option value={weapon}>{weapon}</Option> }
               </For>
             </Select>
 
@@ -262,7 +258,7 @@ const StartingProf:Component<props> = (props) => {
               }))}
             >
               <For each={allTools()}>
-                { (tool, i) => <Option value={!tool.includes("------------")? tool :"" }>{tool}</Option> }
+                { (tool) => <Option value={!tool.includes("------------")? tool :"" }>{tool}</Option> }
               </For>
             </Select>
 
@@ -311,7 +307,7 @@ const StartingProf:Component<props> = (props) => {
               }))}
             >
               <For each={allSkills()}>
-                { (skill, i) => <Option value={skill}>{skill}</Option> }
+                { (skill) => <Option value={skill}>{skill}</Option> }
               </For>
             </Select>
 

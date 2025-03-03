@@ -52,6 +52,7 @@ const Spells: Component = () => {
   const spellLevels = Array.from({ length: 10 }, (_, i) => i);
   const allSpells = useGetSpells();
   const allClasses = useGetClasses();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParam, setSearchParam] = useSearchParams();
   const ClassNames = createMemo(()=> allClasses().map((x) => x.name));
   const [tempValue, setTempValue] = createStore<{[key:string]:string}>({});
@@ -191,7 +192,7 @@ const Spells: Component = () => {
                 </Option>
               }</For>
             </Select>
-            <Button disabled={currentSpell["classes"].includes(tempValue["currentClass"])} onClick={(e)=>{
+            <Button disabled={currentSpell["classes"].includes(tempValue["currentClass"])} onClick={()=>{
               setCurrentSpell({ classes: [...currentSpell["classes"], tempValue["currentClass"]] })
             }}>Add</Button>
           </div>

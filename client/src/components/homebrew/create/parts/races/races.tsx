@@ -2,15 +2,12 @@ import {
   Component,
   For,
   createSignal,
-  useContext,
   createMemo,
   createEffect,
   Show,
   onMount,
 } from "solid-js";
 import {
-  useStyle,
-  getUserSettings,
   Body,
   homebrewManager,
   FormField,
@@ -24,7 +21,6 @@ import {
   TextArea,
 } from "../../../../../shared/";
 import styles from "./races.module.scss";
-import { SharedHookContext } from "../../../../rootApp";
 import { Race } from "../../../../../models";
 import { createStore } from "solid-js/store";
 import {
@@ -235,7 +231,7 @@ const Races: Component = () => {
     setCurrentRace("id","");
     setCurrentRace("id",crypto.randomUUID());
 
-    allraceNames().forEach((name,i) => {
+    allraceNames().forEach((name) => {
       if (currentRace.name === name) {
         addSnackbar({
           severity:"error",
@@ -407,7 +403,7 @@ const Races: Component = () => {
                   </For>
                 </Select>
                 <Button
-                  onClick={(e) => {
+                  onClick={() => {
                     const selSize = currentRace.size.split(",");
                     const newArray = [...selSize, newSizes().trim()]
                       .map((s) => s.trim())
@@ -584,7 +580,7 @@ const Races: Component = () => {
                 </Select>
 
                 <Button
-                  onClick={(e)=>{
+                  onClick={()=>{
                     setCurrentRace("languages",(old)=>([...old,newLanguage()]))
                   }}
                 >
@@ -594,7 +590,7 @@ const Races: Component = () => {
               <div>
                 <Show when={currentRace.languages.length > 0}>
                   <For each={currentRace.languages}>
-                    { (language, i) => <Chip value={language} remove={()=>setCurrentRace("languages",(old)=>([...old.filter((l)=>l !== language)]))} /> }
+                    { (language) => <Chip value={language} remove={()=>setCurrentRace("languages",(old)=>([...old.filter((l)=>l !== language)]))} /> }
                   </For>
                 </Show>
                 <Show when={currentRace.languages.length === 0}>
@@ -627,7 +623,7 @@ const Races: Component = () => {
                   </Show>
                 </div>
 
-                <Button onClick={(e)=>setStartProfPopup(!startProfPopup())}>
+                <Button onClick={()=>setStartProfPopup(!startProfPopup())}>
                   Add Proficency
                 </Button>
               </div>

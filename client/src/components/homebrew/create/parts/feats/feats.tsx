@@ -28,7 +28,8 @@ const Feats: Component = () => {
     setKeyValue("0");
     setFeatDescription("");
   };
-  const addPreReq = (e: Event) => {
+
+  const addPreReq = () => {
     switch (selectedType()) {
     case 7: // Ability Score
       setPreReqs((old) => [

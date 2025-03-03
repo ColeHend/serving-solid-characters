@@ -1,5 +1,4 @@
 import {
-  Accessor,
   Component,
   For,
   Show,
@@ -7,21 +6,12 @@ import {
   createMemo,
   createSignal,
   untrack,
-  useContext,
-  type JSX,
 } from "solid-js";
 import {
   Input,
   Button,
-  Select,
-  Option,
-  Carousel,
   Chip,
-  useGetClasses,
   useGetItems,
-  getUserSettings,
-  useStyle,
-  Body,
   Weapon,
   Item,
   Armor,
@@ -30,7 +20,6 @@ import {
   Clone,
   UniqueSet
 } from "../../../../../../shared/";
-import FormField from "../../../../../../shared/components/FormField/formField";
 import { DnDClass } from "../../../../../../models";
 import { Choice, FeatureTypes } from "../../../../../../models/core.model";
 import Modal from "../../../../../../shared/components/popup/popup.component";
@@ -39,7 +28,6 @@ import { Table } from "../../../../../../shared/components/Table/table";
 import { Column, Header, Cell, Row } from "../../../../../../shared/components/Table/innerTable";
 import styles from './equipment.module.scss';
 import SearchBar from "../../../../../../shared/components/SearchBar/SearchBar";
-import { effect } from "solid-js/web";
 
 interface Props {
 	currentClass: DnDClass;
@@ -117,7 +105,7 @@ const StartingEquipment: Component<Props> = (props) => {
     const newChoices = [...choice, {
       choose,
       type: FeatureTypes.Weapon,
-      choices: selectedWeapons().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
+      choices: selectedWeapons().flatMap((item)=>Array.from({length: item.amnt}, ()=>item.item))
     }];
     props.setStartEquipChoice(currentChoiceNum(), newChoices);
     setShowChoices(false);
@@ -129,7 +117,7 @@ const StartingEquipment: Component<Props> = (props) => {
     props.setStartEquipChoice(currentChoiceNum(), [...choice, {
       choose,
       type: FeatureTypes.Armor,
-      choices: selectedArmor().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
+      choices: selectedArmor().flatMap((item)=>Array.from({length: item.amnt}, ()=>item.item))
     }]);
     setShowChoices(false);
     setSelectedArmor([]);
@@ -140,7 +128,7 @@ const StartingEquipment: Component<Props> = (props) => {
     props.setStartEquipChoice(currentChoiceNum(), [...choice, {
       choose,
       type: FeatureTypes.Item,
-      choices: selectedItems().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
+      choices: selectedItems().flatMap((item)=>Array.from({length: item.amnt}, ()=>item.item))
     }]);
     setShowChoices(false);
     setSelectedItems([]);
@@ -167,6 +155,7 @@ const StartingEquipment: Component<Props> = (props) => {
                     <span>
                       <Button onClick={(e) => {
                         e.preventDefault();
+                         
                         const newChoices = Clone(getChoice(choiceNum)).filter((x, idx)=>idx !== i());
                         props.setStartEquipChoice(choiceNum, newChoices);
                       }}>x</Button>Choose: {item?.choose} 
@@ -203,7 +192,7 @@ const StartingEquipment: Component<Props> = (props) => {
                         columns={['include','name', 'price', 'category']}>
                         <Column name='include'>
                           <Header class={`${styles.header}`}>Include</Header>
-                          <Cell<Item> >{(item, i)=><><Input class={`${styles.checkbox}`} type="number" min={0}  onChange={(e)=>{
+                          <Cell<Item> >{(item)=><><Input class={`${styles.checkbox}`} type="number" min={0}  onChange={(e)=>{
                             const val = parseInt(e.currentTarget.value);
                             if (val > 0) {
                               setSelectedItems(old=>[...old.filter((ite)=>ite.item.name!==item.name), {item, amnt: val}])
@@ -214,13 +203,13 @@ const StartingEquipment: Component<Props> = (props) => {
                         </Column>
                         <Column name='amount'>
                           <Header class={`${styles.header}`}>Include</Header>
-                          <Cell<Item> >{(item, i)=><><Input class={`${styles.checkbox}`} type="number" /></>}</Cell>
+                          <Cell<Item> >{()=><><Input class={`${styles.checkbox}`} type="number" /></>}</Cell>
                         </Column>
                         <Column name="name">
                           <Header class={`${styles.header}`} onClick={()=>{setItemSort(old=>({key: 'name', isAsc: !old.isAsc}))}}>
 															Name {itemSort().key === "name" ? (itemSort().isAsc ? "▲" : "▼") : ""}
                           </Header>
-                          <Cell<Item> >{(item, i)=><span title={(item.desc??[]).join('\n')}>{item.name}</span>}</Cell>
+                          <Cell<Item> >{(item)=><span title={(item.desc??[]).join('\n')}>{item.name}</span>}</Cell>
                         </Column>
                         <Column name="price">
                           <Header class={`${styles.header}`} onClick={()=>{setItemSort(old=>({key: 'cost', isAsc: !old.isAsc}))}}>

@@ -2,7 +2,6 @@ import {
   Component,
   For,
   createSignal,
-  useContext,
   createMemo,
   createEffect,
   Show,
@@ -633,7 +632,7 @@ const Items: Component = () => {
             </Show>
 
             <Button
-              onClick={(e) => {
+              onClick={() => {
                 switch (getItemObj().equipmentCategory) {
                 case "Item":
                   if (itemTag() === "Other") {
@@ -706,7 +705,7 @@ const Items: Component = () => {
           <span>
             <Show when={(getItemObj().features ?? []).length > 0} >
               <For each={getItemObj().features}>
-                { (feature, i) => <Chip value={feature.name} remove={()=>{
+                { (feature) => <Chip value={feature.name} remove={()=>{
                   switch(getItemObj().equipmentCategory){
                   case "Item":
                     setCurrentItem("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
