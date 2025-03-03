@@ -113,22 +113,22 @@ const SearchBar: Component<Props> = (props) => {
   const getFirstSpell = ()=> props.spellsSrd().length > 0 ? props.spellsSrd()[0] : {} as Spell
     
   return (
-    <div>
+    <div class={`${styles.overall}`}>
       <div class={`${styles.searchBar}`}>
         <Button transparent={true} onClick={()=>setSearchChip(()=>({key: searchKey(), value: beutifyChip(searchValue())  }))} >
           <SearchGlass />
         </Button>
-        <Select class={`${styles.all}`} disableUnselected={true} onChange={(e)=>setSearchKey(e.target.value)} id="chipDropdown">
+        <Select transparent class={`${styles.all}`} value={searchKey()} onChange={(e)=>setSearchKey(e)} id="chipDropdown">
           <For each={Object.keys(getFirstSpell()).filter(x=> !["materials_Needed","higherLevel","page"].includes(x) )}>{(key) => 
             <Option value={key}>{beautifyKey(key)}</Option>
           }</For>
         </Select>
         <Switch>
           <Match when={Array.isArray(getFirstSpell()[searchKey() as keyof Spell]) || ['damageType', 'castingTime', 'range', 'duration'].includes(searchKey())}>
-            <Select onChange={(e) => setSearchValue(e.currentTarget.value)}>
+            <Select transparent value={searchValue()} onChange={(e) => setSearchValue(e)}>
               <For each={getKeyOptions(searchKey() as keyof Spell)}>
                 {(option)=>
-                  <option value={option}>{option}</option>
+                  <Option value={option}>{option}</Option>
                 }
               </For>
             </Select>
@@ -164,7 +164,7 @@ const SearchBar: Component<Props> = (props) => {
 
             }>
               <Match when={["school", "level"].includes(searchKey())}> 
-                <Select onChange={(e)=>setSearchValue(e.currentTarget.value)}>
+                <Select transparent value={searchValue()} onChange={(e)=>setSearchValue(e)}>
                   <Show when={searchKey() === "school"}>
                     <For each={spellSchools}>
                       {(school)=>

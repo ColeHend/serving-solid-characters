@@ -1,9 +1,9 @@
-import { Accessor, Component, createSignal, JSX, onMount, Setter, Show, splitProps } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, JSX, onMount, Setter, Show, splitProps } from "solid-js";
 import styles from './TextArea.module.scss';
 import { effect } from "solid-js/web";
 import Button from "../Button/Button";
 import Modal from "../popup/popup.component";
-import { Camera, useImageToText } from "../..";
+import { Camera, isNullish, useImageToText } from "../..";
 import { createFileUploader } from "@solid-primitives/upload";
 import FileUploader from "../uploader/fileUploader";
 import addSnackbar from "../Snackbar/snackbar";
@@ -63,6 +63,15 @@ export const TextArea: Component<Props> = (props) => {
       });
     };
   });
+
+  createEffect(() => {
+    if (Object.keys(props).includes("required") || props?.required === true) {
+      context.setName((old) => `${old} *`);
+    } else {
+      context.setName((old) => old);
+    }
+  })
+
   return (
     <>
       <Show when={customProps.picToTextEnabled}>
@@ -82,7 +91,7 @@ export const TextArea: Component<Props> = (props) => {
           OnInput();
         }}
         onFocus={(e)=>{
-          if (context.getName) {
+          if (!isNullish(context.getName)) {
             context.setFocused(true); 
           }
         }}
