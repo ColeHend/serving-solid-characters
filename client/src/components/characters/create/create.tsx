@@ -1,10 +1,10 @@
 import { Component, createMemo } from "solid-js";
-import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./create.module.scss";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 
 const CharacterCreate: Component = () => {
+  // eslint-disable-next-line
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 

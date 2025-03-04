@@ -1,13 +1,10 @@
-import { Component, For, Show, createMemo, createSignal, useContext } from "solid-js";
-import { useStyle, homebrewManager, useDnDSpells, Option, Clone, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Carousel, Chip, Input, Select, useDnDClasses, getUserSettings, Body, FormField, TextArea, Markdown } from "../../../../../shared";
-import styles from './subclasses.module.scss'
-import type { Tab } from "../../../../navbar/navbar";
-import HomebrewSidebar from "../../sidebar";
+import { Component, For, Show, createMemo, createSignal } from "solid-js";
+import { homebrewManager, useDnDSpells, Option, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Chip, Input, Select, useDnDClasses, Body, FormField, TextArea } from "../../../../../shared";
+import styles from './subclasses.module.scss';
 import { effect } from "solid-js/web";
 import { LevelEntity, Subclass } from "../../../../../models/class.model";
 import { Spell } from "../../../../../models/spell.model";
 import { useSearchParams } from "@solidjs/router";
-import { SharedHookContext } from "../../../../rootApp";
 import FeatureModal from "../classes/sections/featureModal";
 import { Feature } from "../../../../../models/core.model";
 export enum SpellsKnown {
@@ -22,9 +19,6 @@ export enum SpellsKnown {
 
 const Subclasses: Component = () => {
   const [searchParam, setSearchParam] = useSearchParams();
-  const sharedHooks = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(()=>useStyle(userSettings().theme));
   const allClasses = useDnDClasses();
   const allClassNames = ()=> allClasses().map((c)=> c.name);
   const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(0);
@@ -217,6 +211,7 @@ const Subclasses: Component = () => {
     setCurrentSubclass(newSubclass);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getUnknownToString = (value: unknown) => {
     if (typeof value === 'string') {
       return value;
@@ -254,6 +249,7 @@ const Subclasses: Component = () => {
             <TextArea 
               placeholder="Enter a Subclass description.." 
               text={()=>currentSubclass().desc.join("\n")}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               setText={(e: any)=>setCurrentSubclass(old=>({...old, desc: e.split("\n")}))}
               value={currentSubclass().desc.join("\n")} 
               transparent
@@ -283,7 +279,7 @@ const Subclasses: Component = () => {
               editIndex={editIndex} setEditIndex={setEditIndex} />
           </Show>
           <For each={getLevelUpFeatures(toAddFeatureLevel())}>{(feature)=>(
-            <Button onClick={(e)=>{
+            <Button onClick={()=>{
               setEditIndex(currentSubclass().features.indexOf(feature));
               setShowFeatureModal(true);
             }}>{feature.name}</Button>
@@ -350,7 +346,7 @@ const Subclasses: Component = () => {
                       setToAddKnownAmount(+e.currentTarget.value);
                     }} />
                   </div>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     if (!spellsKnownPerLevel().map(x=>x.level).includes(toAddKnownLevel())) {
                       setSpellsKnownPerLevel((old)=>[...old, {level: toAddKnownLevel(), amount: toAddKnownAmount()}].sort((a,b)=>+a.level-+b.level));
                     }
@@ -379,7 +375,7 @@ const Subclasses: Component = () => {
                       <Option value={JSON.stringify(spell)}>{spell.name}</Option>
                     )}</For>
                   </Select>
-                  <Button onClick={(e)=>setCurrentSubclass(old=>({...old, spells: [...old.spells, selectedSpell()]}))}
+                  <Button onClick={()=>setCurrentSubclass(old=>({...old, spells: [...old.spells, selectedSpell()]}))}
                   >Add Spell</Button>
                 </div>
                 <div>
@@ -393,7 +389,7 @@ const Subclasses: Component = () => {
               <div>
                 <h3>Spellcasting Info</h3>
                 <div>
-                  <Button onClick={(e)=>{
+                  <Button onClick={()=>{
                     setCurrentSubclass((old)=>{
                       const newInfo = [...old.spellcasting?.info || []];
                       newInfo.push({name: "", desc: []});
@@ -425,7 +421,7 @@ const Subclasses: Component = () => {
                         }} />
                       </div>
                       <div>
-                        <Button onClick={(e)=>{
+                        <Button onClick={()=>{
                           setCurrentSubclass((old)=>{
                             const newInfo = [...old.spellcasting?.info || []];
                             newInfo.splice(i(), 1);
@@ -440,7 +436,7 @@ const Subclasses: Component = () => {
             </Show>
             <div>
               <Show when={canAddSubclass()}>
-                <Button onClick={(e)=>{
+                <Button onClick={()=>{
                   const updatedClass = allClasses().filter((c)=> c.name === currentSubclass().class)[0];
                   updatedClass.subclasses = [...updatedClass.subclasses, currentSubclass()];
                   homebrewManager.updateClass(updatedClass);

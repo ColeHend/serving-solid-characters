@@ -1,6 +1,5 @@
 import { Accessor, JSX, Setter } from "solid-js";
 import { Style } from "../shared/customHooks/utility/style/styleHook";
-import { UserSettings } from "./userSettings";
 
 export interface HookContext {
     isMobile: Accessor<boolean>;

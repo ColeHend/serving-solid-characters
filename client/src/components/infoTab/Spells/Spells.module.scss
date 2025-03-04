@@ -1,20 +1,19 @@
 $mobile: 768px;
 .SpellsBody{
     display: block;
-    height: 49vh;
+    max-height: 70vh;
     width: 50%;
     margin: 0 auto;
     overflow-y: scroll;
 
     table {
         margin: 0 auto;
-
+        
         tbody {
 
             tr {
 
                 td {
-                    
                     &:hover {
                         cursor: pointer;
                     }
@@ -59,9 +58,8 @@ $mobile: 768px;
 
 
 .spellMenuBtn {
-    padding: 0;
-    height: 40%;
     background: inherit;
+    margin-right: 5%;
 
 
     svg {
@@ -83,3 +81,12 @@ $mobile: 768px;
     margin: 0 auto;
     text-align: center;
 }
+
+.center {
+    text-align: center;
+    button {
+        display: block;
+        margin: 0 auto;
+    }
+}
+

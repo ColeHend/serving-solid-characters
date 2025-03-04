@@ -1,5 +1,5 @@
-import {test, expect} from "vitest";
-import { render, screen } from "@solidjs/testing-library";
+import {test} from "vitest";
+import { render } from "@solidjs/testing-library";
 import Exporting from "./Exporting";
 
 test("rendering",async () => {

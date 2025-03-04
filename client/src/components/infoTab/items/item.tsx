@@ -1,11 +1,9 @@
 import { Component, createEffect, createMemo, createSignal } from "solid-js";
-import { Armor, Body, Carousel, CarouselElement, Tab, Tabs, useGetItems, Weapon } from "../../../shared";
-import styles from "./item.module.scss";
+import { Armor, Body, Carousel, CarouselElement, useGetItems, Weapon } from "../../../shared";
 import WeaponsView from "./parts/Weapons/Weapons";
 import ArmorsView from "./parts/Armors/Armors";
 import AdventEquipView from "./parts/AdventuringEquip/AdventuringEquip";
 import { useSearchParams } from "@solidjs/router";
-import { effect } from "solid-js/web";
 import { ItemType } from "../../../shared/customHooks/utility/itemType";
 
 

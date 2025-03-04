@@ -1,9 +1,9 @@
-import { Accessor, Component, createSignal, For,createEffect, Show } from "solid-js";
-import { Armor, Button, Chip, homebrewManager, Paginator, SkinnySnowman } from "../../../../../shared";
+import { Accessor, Component, createSignal, Show } from "solid-js";
+import { Armor, Button, homebrewManager, Paginator, SkinnySnowman } from "../../../../../shared";
 import styles from "./Armors.module.scss";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import Table from "../../../../../shared/components/Table/table";
-import { Cell, Column, Header, Row, SecondRow } from "../../../../../shared/components/Table/innerTable";
+import { Cell, Column, Header, Row } from "../../../../../shared/components/Table/innerTable";
 import { useNavigate } from "@solidjs/router";
 import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
 interface props {
@@ -24,7 +24,7 @@ const ArmorsView:Component<props> = (props) => {
 
     itemsHomebrew.forEach(armor=>{
       if (armor.name.toLowerCase() === SrdArmor.name.toLowerCase()) {
-        true
+        return true;
       }
     })
 
@@ -50,7 +50,7 @@ const ArmorsView:Component<props> = (props) => {
         <Column name="name">
           <Header>Armor</Header>
           <Cell<Armor>>
-            { (armor, i) => <span>
+            { (armor) => <span>
               {armor.name}
             </span>}
           </Cell>
@@ -59,7 +59,7 @@ const ArmorsView:Component<props> = (props) => {
         <Column name="ac">
           <Header>AC</Header>
           <Cell<Armor>>
-            { (armor, i) => <span>
+            { (armor) => <span>
               {armor.armorClass.base} <Show when={armor.armorClass.dexBonus}>+ Dex mod</Show>
             </span>}
           </Cell>
@@ -68,7 +68,7 @@ const ArmorsView:Component<props> = (props) => {
         <Column name="strMin">
           <Header>Strength</Header>
           <Cell<Armor>>
-            { (armor, i) => <span>
+            { (armor) => <span>
               {armor.strMin > 0 ? `Str: ${armor.strMin}` : "-" }
             </span>}
           </Cell>
@@ -77,7 +77,7 @@ const ArmorsView:Component<props> = (props) => {
         <Column name="stealthDisadvant">
           <Header>Stealth</Header>
           <Cell<Armor>>
-            { (armor, i) => <span>
+            { (armor) => <span>
               {armor.stealthDisadvantage? "disadvantage" : "-"}
             </span>}
           </Cell>
@@ -86,7 +86,7 @@ const ArmorsView:Component<props> = (props) => {
         <Column name="weight">
           <Header>Weight</Header>
           <Cell<Armor>>
-            { (armor, i) => <span>
+            { (armor) => <span>
               {armor.weight} lb
             </span>}
           </Cell>
@@ -96,7 +96,7 @@ const ArmorsView:Component<props> = (props) => {
         <Column name="cost">
           <Header>Cost</Header>
           <Cell<Armor>>
-            { (armor, i) => <span>
+            { (armor) => <span>
               {armor.cost.quantity} {armor.cost.unit}
             </span>}
           </Cell>
@@ -105,7 +105,7 @@ const ArmorsView:Component<props> = (props) => {
         <Column name="options">
           <Header><></></Header>
           <Cell<Armor>>
-            { (armor, i) => <span>
+            { (armor) => <span>
               <Button enableBackgroundClick menuItems={menuButtons(armor)} class={`${styles.menuBtn}`}>
                 <SkinnySnowman />
               </Button>

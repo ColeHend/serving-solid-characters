@@ -1,6 +1,5 @@
 import {
   Component,
-  For,
   Show,
   createEffect,
   createMemo,
@@ -8,22 +7,16 @@ import {
   useContext,
 } from "solid-js";
 import styles from "./Spells.module.scss";
-import useStyle from "../../../shared/customHooks/utility/style/styleHook";
-import useDnDSpells from "../../../shared/customHooks/dndInfo/srdinfo/useDnDSpells";
 import Paginator from "../../../shared/components/paginator/paginator";
 import { Spell } from "../../../models/spell.model";
 import SearchBar from "./searchBar/searchBar";
 import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import { effect } from "solid-js/web";
 import { SharedHookContext } from "../../rootApp";
-import useStyles from "../../../shared/customHooks/utility/style/styleHook";
-import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Button } from "../../../shared/components";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import Table from "../../../shared/components/Table/table";
 import {Chip} from "../../../shared/components";
-
 import {
   Column,
   Header,
@@ -32,16 +25,11 @@ import {
   SecondRow,
 } from "../../../shared/components/Table/innerTable";
 import { Clone, homebrewManager, SkinnySnowman } from "../../../shared";
-import ChipType from "../../../shared/models/chip";
-import { DnDClass } from "../../../models";
 
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(() => useStyles(userSettings().theme));
   const dndSrdSpells = useGetSpells();
-  const navigate = useNavigate()
-  const compArr: any[] = [];
+  const navigate = useNavigate();
 
 
 
@@ -59,9 +47,8 @@ const masterSpells: Component = () => {
   //-------------
 
   const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
-  const [searchResults, setSearchResults] = createSignal<any[]>([]);
+  const [searchResults, setSearchResults] = createSignal<Spell[]>([]);
   const [showSpell, setShowSpell] = createSignal(false);
-  const [spellChips, setSpellChips] = createSignal<ChipType[]>([])
   const [currentSort, setCurrentSort] = createSignal<{
     sortKey: string;
     isAsc: boolean;
@@ -155,7 +142,7 @@ const masterSpells: Component = () => {
 
 
   createEffect(() => {
-    setSearchParam({ name: currentSpell()?.name ?? "" });
+    setSearchParam({ name: currentSpell()?.name});
 
     if(showSpell() === false) {
       setSearchParam({name: ""})
@@ -182,11 +169,10 @@ const masterSpells: Component = () => {
         <Table
           data={paginatedSpells}
           columns={["name","school","level","menu"]}
-          dropdown
-          dropdownArrow={{width:"3vw",height:"20%"}}>
+          dropdown>
           
           <Column name="name">
-            <Header class={styles.clickyHeader}>
+            <Header>
               <span onClick={() => dataSort("name")}>
                 <strong>Name</strong>
                 <Show when={currentSort().sortKey === "name"}>
@@ -195,13 +181,14 @@ const masterSpells: Component = () => {
               </span>
             </Header>
             <Cell<Spell> class={`${styles.center}`}>
-              {(spell, i) => (
+              {(spell) => (
                 <div>
                   <span onClick={()=>setCurrentObj(spell)}>{spell.name}</span>
                 </div>
               )}
             </Cell>
           </Column>
+
           <Show when={!sharedHooks.isMobile()}>
             <Column name="school">
               <Header class={styles.clickyHeader}>
@@ -212,13 +199,14 @@ const masterSpells: Component = () => {
                   </Show>
                 </span>
               </Header>
-              <Cell<Spell> class={`${styles.center}`}>{ (spell, i) => <div>
+              <Cell<Spell> class={`${styles.center}`}>{ (spell) => <div>
                 <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
               </div>}</Cell>
             </Column>
           </Show>
+
           <Column name="level">
-            <Header class={`${styles.clickyHeader}`}>
+            <Header>
               <span onClick={() => dataSort("level")}>
                 <strong>Level</strong>
                 <Show when={currentSort().sortKey === "level"}>
@@ -227,14 +215,15 @@ const masterSpells: Component = () => {
               </span>
             </Header>
             <Cell<Spell> class={`${styles.center}`}>
-              {(spell, i) => <span onClick={()=>setCurrentObj(spell)}>{spell.level}</span>}
+              {(spell) => <span onClick={()=>setCurrentObj(spell)}>{spell.level}</span>}
             </Cell>
           </Column>
+          
           <Column name="menu">
-            <Header><span></span></Header>
+            <Header><strong></strong></Header>
 
             <Cell<Spell>>
-              { (spell, i) => <span class={`${styles.flexRow}`}>
+              { (spell) => <span>
                 <Button enableBackgroundClick menuItems={menuItems(spell)} class={`${styles.spellMenuBtn}`}>
                   <SkinnySnowman />
                 </Button>
@@ -244,7 +233,7 @@ const masterSpells: Component = () => {
 
           <Row style={{width:"98%"}} />
           <SecondRow<Spell>>
-            {(spell, i) => <div class={`${!sharedHooks.isMobile()?styles.flexRow:''}`}>
+            {(spell) => <div class={`${!sharedHooks.isMobile()?styles.flexRow:''}`}>
               {spell.ritual? <Chip key="ritual" value="yes" /> : ""}
               {spell.concentration ? <Chip key="concentration" value="yes" /> : ""}
               {spell.damageType ? <Chip key="dmg-type" value={spell.damageType} /> : ""}

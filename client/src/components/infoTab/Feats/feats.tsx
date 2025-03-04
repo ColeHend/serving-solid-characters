@@ -1,15 +1,9 @@
 import {
   Component,
-  For,
-  Match,
   Show,
-  Switch,
   createMemo,
   createSignal,
-  useContext,
 } from "solid-js";
-import useDnDFeats from "../../../shared/customHooks/dndInfo/srdinfo/useDnDFeats";
-import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import styles from "./feats.module.scss";
 import { Feat } from "../../../models/feat.model";
 import Paginator from "../../../shared/components/paginator/paginator";
@@ -17,14 +11,10 @@ import { effect } from "solid-js/web";
 import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import { SharedHookContext } from "../../rootApp";
-import useStyles from "../../../shared/customHooks/utility/style/styleHook";
-import getUserSettings from "../../../shared/customHooks/userSettings";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
 import { Body, Button, homebrewManager, SkinnySnowman } from "../../../shared";
 import FeatView from "../../../shared/components/modals/featModal/featView";
-import { FeatureTypes as PreReqType } from "../../../models/core.model";
 
 const featsList: Component = () => {
   const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
@@ -33,7 +23,6 @@ const featsList: Component = () => {
     if (searchResult().length === 0) return paginatedFeats();
     return searchResult();
   });
-  const sharedHooks = useContext(SharedHookContext);
   const srdFeats = useGetFeats();
   const [searchParam, setSearchParam] = useSearchParams();
   if (!searchParam.name) setSearchParam({ name: srdFeats()[0]?.name });
@@ -92,7 +81,7 @@ const featsList: Component = () => {
           <Column name="name">
             <Header><></></Header>
             <Cell<Feat>>
-              { (feat, i) => <span onClick={()=>{
+              { (feat) => <span onClick={()=>{
                 setCurrentFeat(feat);
                 setShowFeatModal(!showFeatModal());
               }}>
@@ -103,7 +92,7 @@ const featsList: Component = () => {
           <Column name="options">
             <Header><></></Header>
             <Cell<Feat>>
-              { (feat,i) => <span>
+              { (feat) => <span>
                 <Button menuItems={menuItems(feat)} enableBackgroundClick class={`${styles.menuBtn}`}>
                   <SkinnySnowman />
                 </Button>

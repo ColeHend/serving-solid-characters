@@ -1,13 +1,10 @@
-import { Accessor, Component, For, Match, Show, Switch, createMemo, createSignal, useContext } from "solid-js";
+import { Component, Show, createMemo, createSignal } from "solid-js";
 import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
 import styles from "./races.module.scss";
 import { effect } from "solid-js/web";
 import { Race } from "../../../models/race.model";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import Button from "../../../shared/components/Button/Button";
-import { SharedHookContext } from "../../rootApp";
-import useStyles from "../../../shared/customHooks/utility/style/styleHook";
-import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Paginator, SkinnySnowman,homebrewManager } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import {Table} from "../../../shared/components/Table/table";
@@ -18,13 +15,11 @@ const races: Component = () => {
   // import services ↓
   const dndSrdRaces = useGetRaces();
 
-  const sharedHooks = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(()=>useStyles(userSettings().theme));
   const [searchParam,setSearchParam] = useSearchParams();
-  const selectedRace = dndSrdRaces()?.filter((val)=>val.name?.toLowerCase() === searchParam?.name?.toLowerCase());
   const [currentRace,setCurrentRace] = createSignal<Race>({} as Race);
   const [results,setResults] = createSignal<Race[]>([]);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [paginatedRaces,setPaginatedRaces] = createSignal<Race[]>([]);
   const [showRace,setShowRace] = createSignal<boolean>(false);
   
@@ -81,7 +76,7 @@ const races: Component = () => {
           <Header><></></Header>
 
           <Cell<Race>>
-            { (race, i) => <span onClick={()=>{
+            { (race) => <span onClick={()=>{
               setCurrentRace(race);
               setShowRace(!showRace());
             }}>
@@ -94,7 +89,7 @@ const races: Component = () => {
           <Header><></></Header>
 
           <Cell<Race>>
-            { (race, i) => <span>
+            { (race) => <span>
               <Button enableBackgroundClick menuItems={menuItems(race)} class={`${styles.menuBtn}`}>
                 <SkinnySnowman />
               </Button>

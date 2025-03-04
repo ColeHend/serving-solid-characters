@@ -52,8 +52,8 @@ export function useGetClassSetters(
     }
   };
 
-  const setClassLevels = (classLevels: LevelEntity[]) => setCurrentClass((prev)=>({ classLevels}));
-  const setSubclasses = (subclasses: Subclass[]) => setCurrentClass((prev)=>({ subclasses}));
+  const setClassLevels = (classLevels: LevelEntity[]) => setCurrentClass(()=>({ classLevels}));
+  const setSubclasses = (subclasses: Subclass[]) => setCurrentClass(()=>({ subclasses}));
   const setSubclassLevels = (subclassLevels: number[]) => setCurrentClass((prev)=>({ classMetadata: {...prev.classMetadata, subclassLevels}}));
   // - spellcasting
   const setSpellKnown = (known: SpellsKnown, roundUp: boolean = false) => setCurrentClass((prev)=>({ 
@@ -104,8 +104,8 @@ export function useGetClassSetters(
   // ---
 
   const addClassSpecificAll = (feature: string) => {
-    const newClassLevels = currentClass.classLevels.map((x, i)=>({...x, classSpecific: {...x.classSpecific, [feature]: '0'}}));
-    setCurrentClass((old)=>({classLevels: newClassLevels}))
+    const newClassLevels = currentClass.classLevels.map((x)=>({...x, classSpecific: {...x.classSpecific, [feature]: '0'}}));
+    setCurrentClass(()=>({classLevels: newClassLevels}))
   };
 
   const removeClassSpecific = (feature: string) => {
@@ -113,7 +113,7 @@ export function useGetClassSetters(
       const newOld = Clone(old);
       Array.from({length: 20}, (_, i)=>i+1).forEach((level)=>{
         const levelEntries = Object.entries(old.classLevels[level-1].classSpecific)
-        const removeIndex = levelEntries.findIndex(([key, value])=>key === feature);
+        const removeIndex = levelEntries.findIndex(([key])=>key === feature);
         if (removeIndex !== -1) levelEntries.splice(removeIndex, 1);
         newOld.classLevels[level-1].classSpecific = Object.fromEntries(levelEntries);
       });

@@ -1,24 +1,15 @@
-import { Component, createMemo, createSignal, For, Show, useContext } from "solid-js";
-import useStyle from "../../../shared/customHooks/utility/style/styleHook";
+import { Component, createMemo, createSignal, Show } from "solid-js";
 import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
-import ExpansionPanel from "../../../shared/components/expansion/expansion";
 import styles from "./backgrounds.module.scss";
-import { effect } from "solid-js/web";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models";
-import { SharedHookContext } from "../../rootApp";
-import useStyles from "../../../shared/customHooks/utility/style/styleHook";
-import getUserSettings from "../../../shared/customHooks/userSettings";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
 import { Body, Button, homebrewManager, Paginator, SkinnySnowman } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
 
 const Viewbackgrounds: Component = () => {
-  const sharedContext = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(()=>useStyles(userSettings().theme));
   const backgrounds = useGetBackgrounds();
   const [searchResult, setSearchResult] = createSignal(backgrounds() || []);
   const displayResults = createMemo(()=>{
@@ -72,7 +63,7 @@ const Viewbackgrounds: Component = () => {
           <Header><></></Header>
 
           <Cell<Background>>
-            { (background,i) => <span onClick={()=>{
+            { (background) => <span onClick={()=>{
               setCurrentBackground(background);
               setShowTheBackground(!showTheBackground());
             }}>
@@ -85,7 +76,7 @@ const Viewbackgrounds: Component = () => {
           <Header><></></Header>
 
           <Cell<Background>>
-            { (background, i) => <span>
+            { (background) => <span>
               <Button enableBackgroundClick menuItems={menuItems(background)} class={`${styles.menuBtn}`}>
                 <SkinnySnowman />
               </Button>

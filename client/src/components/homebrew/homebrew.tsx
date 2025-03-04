@@ -1,10 +1,7 @@
-import { Component, useContext } from "solid-js";
-import {useStyle, Carousel, Body} from "../../shared/";
-import { SharedHookContext } from "../rootApp";
+import { Component } from "solid-js";
+import { Carousel, Body} from "../../shared/";
 
 const Homebrew: Component = () => {
-  const sharedHooks = useContext(SharedHookContext);
-  const stylin = sharedHooks?.useStyle();
   const elements = [
     {name: "Element A", element: <div>Element 1</div>},
     {name: "Element 2", element: <div>Element 2</div>},

@@ -1,24 +1,14 @@
-import { Component, For, createSignal, useContext, createMemo, Show, createEffect, onMount } from "solid-js";
-import styles from './spells.module.scss'
-import type { Tab } from "../../../../navbar/navbar";
-import HomebrewSidebar from "../../sidebar";
-import { SharedHookContext } from "../../../../rootApp";
+import { Component, For, createSignal, createMemo, Show, createEffect, onMount } from "solid-js";
+import styles from './spells.module.scss';
 import FormField from "../../../../../shared/components/FormField/formField";
 import {
   Input,
   Button,
   Select,
   Option,
-  Carousel,
   Chip,
   useGetClasses,
-  useGetItems,
-  getUserSettings,
-  useStyle,
   Body,
-  SkinnySnowman,
-  Clone,
-  getSpellSlots,
   getAddNumberAccent,
   UniqueSet,
   TextArea
@@ -30,9 +20,6 @@ import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
 
 const Spells: Component = () => {
-  const sharedHooks = useContext(SharedHookContext);
-  const [userSettings, setUserSettings] = getUserSettings();
-  const stylin = createMemo(() => useStyle(userSettings().theme));
   const doesExist = ()=>{
     return HomebrewManager.spells().findIndex((x) => x.name === currentSpell.name) > -1;
   }
@@ -65,6 +52,7 @@ const Spells: Component = () => {
   const spellLevels = Array.from({ length: 10 }, (_, i) => i);
   const allSpells = useGetSpells();
   const allClasses = useGetClasses();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParam, setSearchParam] = useSearchParams();
   const ClassNames = createMemo(()=> allClasses().map((x) => x.name));
   const [tempValue, setTempValue] = createStore<{[key:string]:string}>({});
@@ -204,7 +192,7 @@ const Spells: Component = () => {
                 </Option>
               }</For>
             </Select>
-            <Button disabled={currentSpell["classes"].includes(tempValue["currentClass"])} onClick={(e)=>{
+            <Button disabled={currentSpell["classes"].includes(tempValue["currentClass"])} onClick={()=>{
               setCurrentSpell({ classes: [...currentSpell["classes"], tempValue["currentClass"]] })
             }}>Add</Button>
           </div>

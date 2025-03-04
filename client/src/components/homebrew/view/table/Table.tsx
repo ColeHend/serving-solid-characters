@@ -1,5 +1,5 @@
 // src/components/Table.tsx
-import { createContext, useContext, JSX, ParentComponent, Show, createMemo, createSignal } from "solid-js";
+import { Show, createMemo, createSignal } from "solid-js";
 import { For } from "solid-js/web";
 import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
 import Button, { MenuButton } from "../../../../shared/components/Button/Button";
@@ -18,10 +18,10 @@ interface TableProps<T> {
 }
 
 const Table = <T,>(props: TableProps<T>) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [data, xxxx] = createSignal<T[]>(props.data);
   const [paginated, setPaginated] = createSignal<T[]>(props.data);
   const paginatedMemo = createMemo(()=>paginated());
-  const [dummyPage, setDummyPage] = createSignal<T[]>([]);
   const menuItems = createMemo(()=>props.button ? paginatedMemo().map(x=>props.button!.generateMenuButtons(x)) : []);
   return (
     <>

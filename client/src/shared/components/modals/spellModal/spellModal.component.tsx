@@ -22,8 +22,8 @@ const SpellModal: Component<props> = (props) => {
   return (
     <Modal
       title={currentSpell().name}
-      width={sharedHooks.isMobile() ? "98%" : "68%"} // fuck with it
-      height={sharedHooks.isMobile() ? "90%" : "77%"} // fuck with it
+      width={sharedHooks.isMobile() ? "98%" : "40"} // fuck with it
+      height={sharedHooks.isMobile() ? "90%" : "47%"} // fuck with it
       backgroundClick={[showSpell,setShowSpell]}
     >
       <div class={`${style.view}`}>

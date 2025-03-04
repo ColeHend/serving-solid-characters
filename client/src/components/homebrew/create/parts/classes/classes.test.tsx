@@ -1,5 +1,5 @@
-import {test, expect} from "vitest";
-import { render, screen } from "@solidjs/testing-library";
+import {test} from "vitest";
+import { render} from "@solidjs/testing-library";
 import { Route, Router } from "@solidjs/router";
 import Classes from "./classes";
 

@@ -1,5 +1,4 @@
 import {
-  Accessor,
   Component,
   For,
   Show,
@@ -7,21 +6,12 @@ import {
   createMemo,
   createSignal,
   untrack,
-  useContext,
-  type JSX,
 } from "solid-js";
 import {
   Input,
   Button,
-  Select,
-  Option,
-  Carousel,
   Chip,
-  useGetClasses,
   useGetItems,
-  getUserSettings,
-  useStyle,
-  Body,
   Weapon,
   Item,
   Armor,
@@ -30,7 +20,6 @@ import {
   Clone,
   UniqueSet
 } from "../../../../../../shared/";
-import FormField from "../../../../../../shared/components/FormField/formField";
 import { DnDClass } from "../../../../../../models";
 import { Choice, FeatureTypes } from "../../../../../../models/core.model";
 import Modal from "../../../../../../shared/components/popup/popup.component";
@@ -39,7 +28,6 @@ import { Table } from "../../../../../../shared/components/Table/table";
 import { Column, Header, Cell, Row } from "../../../../../../shared/components/Table/innerTable";
 import styles from './equipment.module.scss';
 import SearchBar from "../../../../../../shared/components/SearchBar/SearchBar";
-import { effect } from "solid-js/web";
 
 interface Props {
 	currentClass: DnDClass;
@@ -108,8 +96,11 @@ const StartingEquipment: Component<Props> = (props) => {
     setAllWeaponsT(old => Clone(SortArrayByKey(old, curSort.key, curSort.isAsc)));
   });
   createEffect(()=>{
+    // eslint-disable-next-line
     !showChoices() && setSelectedItems([]);
+    // eslint-disable-next-line
     !showChoices() && setSelectedWeapons([]);
+    // eslint-disable-next-line
     !showChoices() && setSelectedArmor([]);
   });
   const addWeapons = (choose: number = 1) => {
@@ -117,7 +108,7 @@ const StartingEquipment: Component<Props> = (props) => {
     const newChoices = [...choice, {
       choose,
       type: FeatureTypes.Weapon,
-      choices: selectedWeapons().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
+      choices: selectedWeapons().flatMap((item)=>Array.from({length: item.amnt}, ()=>item.item))
     }];
     props.setStartEquipChoice(currentChoiceNum(), newChoices);
     setShowChoices(false);
@@ -129,7 +120,7 @@ const StartingEquipment: Component<Props> = (props) => {
     props.setStartEquipChoice(currentChoiceNum(), [...choice, {
       choose,
       type: FeatureTypes.Armor,
-      choices: selectedArmor().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
+      choices: selectedArmor().flatMap((item)=>Array.from({length: item.amnt}, ()=>item.item))
     }]);
     setShowChoices(false);
     setSelectedArmor([]);
@@ -140,7 +131,7 @@ const StartingEquipment: Component<Props> = (props) => {
     props.setStartEquipChoice(currentChoiceNum(), [...choice, {
       choose,
       type: FeatureTypes.Item,
-      choices: selectedItems().flatMap((item)=>Array.from({length: item.amnt}, (_,i)=>item.item))
+      choices: selectedItems().flatMap((item)=>Array.from({length: item.amnt}, ()=>item.item))
     }]);
     setShowChoices(false);
     setSelectedItems([]);
@@ -167,6 +158,7 @@ const StartingEquipment: Component<Props> = (props) => {
                     <span>
                       <Button onClick={(e) => {
                         e.preventDefault();
+                         
                         const newChoices = Clone(getChoice(choiceNum)).filter((x, idx)=>idx !== i());
                         props.setStartEquipChoice(choiceNum, newChoices);
                       }}>x</Button>Choose: {item?.choose} 
@@ -203,7 +195,7 @@ const StartingEquipment: Component<Props> = (props) => {
                         columns={['include','name', 'price', 'category']}>
                         <Column name='include'>
                           <Header class={`${styles.header}`}>Include</Header>
-                          <Cell<Item> >{(item, i)=><><Input class={`${styles.checkbox}`} type="number" min={0}  onChange={(e)=>{
+                          <Cell<Item> >{(item)=><><Input class={`${styles.checkbox}`} type="number" min={0}  onChange={(e)=>{
                             const val = parseInt(e.currentTarget.value);
                             if (val > 0) {
                               setSelectedItems(old=>[...old.filter((ite)=>ite.item.name!==item.name), {item, amnt: val}])
@@ -214,13 +206,13 @@ const StartingEquipment: Component<Props> = (props) => {
                         </Column>
                         <Column name='amount'>
                           <Header class={`${styles.header}`}>Include</Header>
-                          <Cell<Item> >{(item, i)=><><Input class={`${styles.checkbox}`} type="number" /></>}</Cell>
+                          <Cell<Item> >{()=><><Input class={`${styles.checkbox}`} type="number" /></>}</Cell>
                         </Column>
                         <Column name="name">
                           <Header class={`${styles.header}`} onClick={()=>{setItemSort(old=>({key: 'name', isAsc: !old.isAsc}))}}>
 															Name {itemSort().key === "name" ? (itemSort().isAsc ? "▲" : "▼") : ""}
                           </Header>
-                          <Cell<Item> >{(item, i)=><span title={(item.desc??[]).join('\n')}>{item.name}</span>}</Cell>
+                          <Cell<Item> >{(item)=><span title={(item.desc??[]).join('\n')}>{item.name}</span>}</Cell>
                         </Column>
                         <Column name="price">
                           <Header class={`${styles.header}`} onClick={()=>{setItemSort(old=>({key: 'cost', isAsc: !old.isAsc}))}}>
@@ -264,7 +256,7 @@ const StartingEquipment: Component<Props> = (props) => {
                         columns={['include', 'name', 'price', 'category', 'damage', 'range']}>
                         <Column name='include'>
                           <Header class={`${styles.header}`}>Include</Header>
-                          <Cell<Weapon> >{(item, i)=><><Input class={`${styles.checkbox}`} type="number" min={0}  onChange={(e)=>{
+                          <Cell<Weapon> >{(item)=><><Input class={`${styles.checkbox}`} type="number" min={0}  onChange={(e)=>{
                             const val = parseInt(e.currentTarget.value);
                             if (val > 0) {
                               setSelectedWeapons(old=>[...old.filter((ite)=>ite.item.name!==item.name), {item, amnt: val}])
@@ -277,7 +269,7 @@ const StartingEquipment: Component<Props> = (props) => {
                           <Header class={`${styles.header}`} onClick={()=>{setWeaponSort(old=>({key: 'name', isAsc: !old.isAsc}))}}>
 															Name {weaponSort().key === "name" ? (weaponSort().isAsc ? "▲" : "▼") : ""}
                           </Header>
-                          <Cell<Weapon> >{(weapon, i)=><span title={(weapon.desc??[]).join('\n')}>{weapon.name}</span>}</Cell>
+                          <Cell<Weapon> >{(weapon)=><span title={(weapon.desc??[]).join('\n')}>{weapon.name}</span>}</Cell>
                         </Column>
                         <Column name="price">
                           <Header class={`${styles.header}`} onClick={()=>{setWeaponSort(old=>({key: 'cost', isAsc: !old.isAsc}))}}>
@@ -299,7 +291,7 @@ const StartingEquipment: Component<Props> = (props) => {
                           <Header class={`${styles.header}`} onClick={()=>{setWeaponSort(old=>({key: 'damage', isAsc: !old.isAsc}))}}>
 															Damage {weaponSort().key === 'damage' ? (weaponSort().isAsc ? "▲" : "▼") : ""}
                           </Header>
-                          <Cell<Weapon> >{(weapon,i)=><span title={(weapon.desc??[]).join('\n')}>
+                          <Cell<Weapon> >{(weapon)=><span title={(weapon.desc??[]).join('\n')}>
                             {weapon.damage.map((x)=>`${x.damageDice} ${x.damageBonus ? '+' : ''} ${x.damageBonus ? x.damageBonus : ''} ${x.damageType}`).join(' ')}
                           </span>}</Cell>
                         </Column>
@@ -307,7 +299,7 @@ const StartingEquipment: Component<Props> = (props) => {
                           <Header class={`${styles.header}`} onClick={()=>{setWeaponSort(old=>({key: 'range', isAsc: !old.isAsc}))}}>
 															Range {weaponSort().key === 'range' ? (weaponSort().isAsc ? "▲" : "▼") : ""}
                           </Header>
-                          <Cell<Weapon> >{(weapon,i)=><span title={(weapon.desc??[]).join('\n')}>
+                          <Cell<Weapon> >{(weapon)=><span title={(weapon.desc??[]).join('\n')}>
                             {weapon.range.long ? `${weapon.range.normal}ft / ${weapon.range.long}ft`: `${weapon.range.normal}ft`}
                           </span>}</Cell>
                         </Column>
@@ -337,7 +329,7 @@ const StartingEquipment: Component<Props> = (props) => {
                         columns={['include', 'name', 'price', 'category', 'damage', 'range']}>
                         <Column name='include'>
                           <Header class={`${styles.header}`}>Include</Header>
-                          <Cell<Armor> >{(item, i)=><><Input class={`${styles.checkbox}`} type="number" min={0}  onChange={(e)=>{
+                          <Cell<Armor> >{(item)=><><Input class={`${styles.checkbox}`} type="number" min={0}  onChange={(e)=>{
                             const val = parseInt(e.currentTarget.value);
                             if (val > 0) {
                               setSelectedArmor(old=>[...old.filter((ite)=>ite.item.name!==item.name), {item, amnt: val}])
@@ -350,7 +342,7 @@ const StartingEquipment: Component<Props> = (props) => {
                           <Header class={`${styles.header}`} onClick={()=>{setArmorSort(old=>({key: 'name', isAsc: !old.isAsc}))}}>
 															Name {armorSort().key === "name" ? (armorSort().isAsc ? "▲" : "▼") : ""}
                           </Header>
-                          <Cell<Armor> >{(armor, i)=><span title={(armor.desc??[]).join('\n')}>{armor.name}</span>}</Cell>
+                          <Cell<Armor> >{(armor)=><span title={(armor.desc??[]).join('\n')}>{armor.name}</span>}</Cell>
                         </Column>
                         <Column name="price">
                           <Header class={`${styles.header}`} onClick={()=>{setArmorSort(old=>({key: 'cost', isAsc: !old.isAsc}))}}>
@@ -372,7 +364,7 @@ const StartingEquipment: Component<Props> = (props) => {
                           <Header class={`${styles.header}`} onClick={()=>{setArmorSort(old=>({key: 'armorClass', isAsc: !old.isAsc}))}}>
 															Armor Class {armorSort().key === 'armorClass' ? (armorSort().isAsc ? "▲" : "▼") : ""}
                           </Header>
-                          <Cell<Armor> >{(armor,i)=><span title={(armor.desc??[]).join('\n')}>
+                          <Cell<Armor> >{(armor)=><span title={(armor.desc??[]).join('\n')}>
                             {armor.armorClass.base} {armor.armorClass.dexBonus ? `+ DEX ` : ``} {armor.armorClass.maxBonus ? <i>{`Max(${armor.armorClass.maxBonus})`}</i>: ``}
                           </span>}</Cell>
                         </Column>

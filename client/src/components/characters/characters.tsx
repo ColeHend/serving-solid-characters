@@ -1,17 +1,17 @@
-import { Component, For, createSignal, createMemo } from "solid-js";
-import useStyle from "../../shared/customHooks/utility/style/styleHook";
+import { Component, For, createMemo } from "solid-js";
 import styles from "./characters.module.scss";
-import { Feature } from "../../models/core.model";
 import useCharacters, { Character } from "../../shared/customHooks/dndInfo/useCharacters";
-import Button, { MenuButton } from "../../shared/components/Button/Button";
+import Button from "../../shared/components/Button/Button";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
 
 
 const Characters: Component = () => {
+  // eslint-disable-next-line
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
+  // eslint-disable-next-line
   const [characters, setCharacters] = useCharacters();
   const menuButtons = (character: Character) => ([
     {

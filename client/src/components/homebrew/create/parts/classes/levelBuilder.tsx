@@ -12,13 +12,10 @@ import {
   Button,
   Select,
   Option,
-  Carousel,
-  Chip,
 } from "../../../../../shared/components";
-import { Feature, FeatureTypes, Info } from "../../../../../models/core.model";
+import { Feature, FeatureTypes } from "../../../../../models/core.model";
 import styles from "./classes.module.scss";
 import { DnDClass } from "../../../../../models";
-import { effect } from "solid-js/web";
 import { LevelEntity } from "../../../../../models/class.model";
 
 interface Props {
@@ -55,7 +52,6 @@ const LevelBuilder: Component<Props> = (props) => {
   };
   const [toAddName, setToAddName] = createSignal("");
   const [toAddValue, setToAddValue] = createSignal("");
-  const getSlotString = (slot: number) => slot === 0 ? "cantrips_known" : `spell_slots_level_${slot}`;
   const getSlotValue:(slot:number)=>string = (slot: number) => {
     if(classLevels()[level - 1]?.spellcasting) {
       if(slot === 0) return `${classLevels()[level - 1]?.spellcasting?.cantrips_known}`;
@@ -145,7 +141,7 @@ const LevelBuilder: Component<Props> = (props) => {
       </Show>
       <div class={`${styles.buttons}`}>
         <Button
-          onClick={(e) => {
+          onClick={() => {
             setFeatures((old) => {
               old.push({
                 name: `New Feature${
@@ -159,6 +155,8 @@ const LevelBuilder: Component<Props> = (props) => {
                   type: FeatureTypes.Class,
                   other: "",
                 },
+                metadata: {
+                },
               });
               return JSON.parse(JSON.stringify(old));
             });
@@ -170,7 +168,7 @@ const LevelBuilder: Component<Props> = (props) => {
       </div>
       <h3>Features</h3>
       <For each={features().filter((x) => x?.info?.level === level)}>
-        {(feature, i) => {
+        {(feature) => {
           return (
             <div>
               
@@ -184,6 +182,7 @@ const LevelBuilder: Component<Props> = (props) => {
                         name: e.currentTarget.value,
                         value: feature.value,
                         info: feature.info,
+                        metadata: {}
                       };
                       return JSON.parse(JSON.stringify(old));
                     });
@@ -201,6 +200,7 @@ const LevelBuilder: Component<Props> = (props) => {
                         name: feature.name,
                         value: e.currentTarget.value,
                         info: feature.info,
+                        metadata: {}
                       };
                       return JSON.parse(JSON.stringify(old));
                     });
@@ -236,7 +236,7 @@ const LevelBuilder: Component<Props> = (props) => {
         <Input value={toAddValue()} onChange={(e)=>{
           setToAddValue(e.currentTarget.value);
         }} type="number" placeholder="Value" />
-        <Button disabled={toAddName().length < 1} onClick={(e)=>{
+        <Button disabled={toAddName().length < 1} onClick={()=>{
           setClassLevels((old)=>{
             old[level - 1].classSpecific[toAddName()] = toAddValue();
             setToAddName("");
@@ -245,7 +245,7 @@ const LevelBuilder: Component<Props> = (props) => {
           });
         }}>Add New</Button>
         <br />
-        <For each={Object.keys(classLevels()[level - 1].classSpecific)}>{(item, i)=><>
+        <For each={Object.keys(classLevels()[level - 1].classSpecific)}>{(item)=><>
           <div>
             <h4>{item}</h4>
             <Input class={`${classLevels()[level - 1].classSpecific[item] ? "error " : ""}`} value={item} onChange={(e)=>{
@@ -260,7 +260,7 @@ const LevelBuilder: Component<Props> = (props) => {
                 return JSON.parse(JSON.stringify(old));
               });
             }} />
-            <Button onClick={(e)=>{
+            <Button onClick={()=>{
               setClassLevels((old)=>{
                 delete old[level - 1].classSpecific[item];
                 return JSON.parse(JSON.stringify(old));

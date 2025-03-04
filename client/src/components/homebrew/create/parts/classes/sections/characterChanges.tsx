@@ -1,4 +1,4 @@
-import { Component, Accessor, Setter, For, Show, splitProps } from "solid-js"
+import { Component, Accessor, Setter, For, Show } from "solid-js"
 import { CharacterChange, CharacterChangeTypes, MovementTypes, ChangeSubTypes, AbilityScores, TypeRestrictions } from "../../../../../../models/core.model";
 import { ExpansionPanel, Select, Input, Button, Option, isNullish } from "../../../../../../shared";
 

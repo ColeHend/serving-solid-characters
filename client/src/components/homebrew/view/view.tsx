@@ -1,15 +1,10 @@
-import { Component, createMemo, createSignal, useContext } from "solid-js";
-import style from './view.module.scss'
-import { Background, DnDClass, Feat, Item, Spell } from "../../../models";
-import { Carousel, homebrewManager, useInjectServices, getUserSettings, useStyle, useDnDSpells, MenuButton, Body } from "../../../shared/";
+import { Component, createMemo, createSignal, } from "solid-js";
+import { Carousel, homebrewManager, MenuButton, Body } from "../../../shared/";
 import Table from "./table/Table";
-import { SharedHookContext } from "../../rootApp";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
 
 const View: Component = () => {
-  const sharedHooks = useInjectServices();
-  const [userSettings, setUserSettings] = getUserSettings();
     
   const navigate = useNavigate();
   const elementMemo = createMemo(()=>[
