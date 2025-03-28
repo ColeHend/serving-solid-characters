@@ -1,19 +1,12 @@
-import { A } from "@solidjs/router";
-import { Accessor, Component, createSignal, For, Setter, Show, splitProps } from "solid-js";
-import { Button, MenuButton } from "../../shared/components";
-import Modal from "../../shared/components/popup/popup.component";
-import { Clone } from "../../shared/customHooks/utility/Tools";
-import { UpArrow, DownArrow } from "../../shared/svgs/arrows";
-import Eye from "../../shared/svgs/eye";
+import { useNavigate } from "@solidjs/router";
+import { Accessor, Component, createEffect, createSignal, For, Setter, Show, splitProps } from "solid-js";
 import Gear from "../../shared/svgs/gear";
-import Pencil from "../../shared/svgs/pencil";
-import SkinnySnowman from "../../shared/svgs/skinnySnowman";
 import { Style } from "../../shared/customHooks/utility/style/styleHook";
 import { UserSettings } from "../../models/userSettings";
 import { ExtendedTab } from "../../models/extendedTab";
 import SettingsPopup from "./settingsPopup";
-import { useInjectServices } from "../../shared/customHooks/injectServices";
-import Styles from "./navMenu.module.scss";
+import styles from "./navMenu.module.scss";
+import { Button, Menu, MenuItem, Modal, MenuDropdown, Icon } from "coles-solid-library";
 
 interface Props {
     userStyle: Accessor<Style>,
@@ -22,14 +15,15 @@ interface Props {
     defaultIsMobile: Accessor<boolean>,
     setDefaultIsMobile: Setter<boolean>,
     defaultUserSettings: Accessor<UserSettings>,
-    setDefaultUserSettings: Setter<UserSettings>
+    setDefaultUserSettings: Setter<UserSettings>,
+    anchorElement: Accessor<HTMLElement | undefined>
 }
 
 const NavMenu: Component<Props> = (props) => {
-  const [{ userStyle, defaultShowList, setDefaultShowList, defaultIsMobile: isMobile, defaultUserSettings, setDefaultUserSettings }] = splitProps(props, ["userStyle", "defaultShowList", "setDefaultShowList", "defaultIsMobile", "setDefaultIsMobile", "defaultUserSettings", "setDefaultUserSettings"]);
+  const Navigate = useNavigate();
   const [showSettings, setShowSettings] = createSignal(false);
-  const services = useInjectServices();
-  const [MenuItems, setMenuItems] = createSignal<ExtendedTab[]>([
+  
+  const [MenuItems,] = createSignal<ExtendedTab[]>([
     {
       Name: "Characters", 
       Link: "/characters",
@@ -72,91 +66,68 @@ const NavMenu: Component<Props> = (props) => {
   const convertHombrewViewToCreate = (link: string) => {
     return link.replace('view', 'create').replace("?name=", "/");
   };
+  createEffect(() => {
+    console.log('showSettings', showSettings());
+  });
 
-  const settingsOptions: ()=>MenuButton[] = ()=>[
-    {
-      name: "Login",
-      action: ()=>{console.log("Login")},
-      condition: ()=>true
-    },
-    {
-      name: "Register",
-      action: ()=>{console.log("Register")},
-      condition: ()=>true
-    },
-    {
-      name: "Logout",
-      action: ()=>{console.log("Logout")},
-      condition: ()=>true
-    },
-    {
-      name: "Profile",
-      action: ()=>{console.log("Profile")},
-      condition: ()=>true
-    },
-  ];
   return (
-    <span class={`${userStyle().primary} ${defaultShowList() ? `${Styles.navOpen}` : `${Styles.navClosed}`}`}>
-      <div class={`${userStyle().accent} ${Styles.topper}`}>
-        <h2>Navigation</h2>
-        <Button >
-          <Gear height={30} onClick={() => setShowSettings(old => !old)} />
-          <Show when={showSettings()}>
-            <Modal title="Settings" width={services.isMobile() ? "90vw":"45vw"} height={services.isMobile() ? "90vh" :"60vh"} backgroundClick={[showSettings, setShowSettings]}>
-              <SettingsPopup 
-                userStyle={userStyle}
-                defaultUserSettings={defaultUserSettings} 
-                setDefaultUserSettings={setDefaultUserSettings} />
-            </Modal> 
-          </Show>
-        </Button>
-        <Button enableBackgroundClick={true} menuItems={settingsOptions()} overrideX={isMobile() ? "42vw" : "93vw"} >
-          <SkinnySnowman height={30} />
-        </Button>
-      </div>
-      <div class="theLine" />
-      <For each={MenuItems()}>{(item) => {
-        return <div class="sidebar">
-          <div class="sideHead">
-            <h2>
-              <A onClick={() => setDefaultShowList(old => !old)} href={item.Link}>
-                {item.Name}
-              </A>
-            </h2>
-            <span class={`${userStyle().hover}`} onClick={() => setMenuItems(old => {
-              item.isOpen = !item.isOpen;
-              return Clone([...old.filter(x => x.Name !== item.Name), item].sort((a, b) => a.Name > b.Name ? 1 : -1));
-            })}>
-              {item.isOpen ? <UpArrow /> : <DownArrow />}
-            </span>
-          </div>
-          <div class="theLine" />
-          <Show when={item.isOpen}>
-            <ul class="sideBody">
-              <For each={item.children}>{(child) => {
-                return <li>
-                  <h3>
-                    <A onClick={() => setDefaultShowList(old => !old)} href={child.Link}>
+    <>
+      <Menu 
+        position="right"
+        style={{width: '180px'}}
+        show={[props.defaultShowList, props.setDefaultShowList]} 
+        anchorElement={props.anchorElement} >
+        <MenuItem class={`${styles.headerItem}`}>
+          <h3 onClick={()=>Navigate("/")}>Navigation</h3>
+          <Button transparent onClick={(e) => {
+            e.stopPropagation();
+            setShowSettings(old=>!old);
+          }} >
+            <Gear height={30} />
+          </Button>
+        </MenuItem>
+        <MenuDropdown header={()=>"User Settings"} >
+          <MenuItem>Login</MenuItem>
+          <MenuItem>Logout</MenuItem>
+          <MenuItem>Register</MenuItem>
+        </MenuDropdown>
+        <For each={MenuItems()}>{(menuItem)=>(
+          <>
+            <Show when={menuItem.Name !== "Homebrew"}>
+              <MenuDropdown header={()=><><span class={`${styles.linkFix}`}  onClick={(e)=>Navigate(menuItem.Link)}>{menuItem.Name}</span></>} >
+                <For each={menuItem?.children ?? []}>{(child)=>(
+                  <MenuItem onClick={()=>Navigate(child.Link)} class={`${styles.menuItem}`}>
+                    <span class={`${styles.linkFix}`} onClick={()=>Navigate(child.Link)}>
                       {child.Name}
-                    </A>
-                  </h3>
-                  <Show when={child.Link.includes("homebrew")}>
-                    <span>
-                      <A onClick={() => setDefaultShowList(old => !old)} href={convertHombrewViewToCreate(child.Link)}>
-                        <Pencil />
-                      </A>
-                      <A onClick={() => setDefaultShowList(old => !old)} href={child.Link}>
-                        <Eye />
-                      </A>
                     </span>
-                  </Show>
-                </li>
-              }}</For>
-            </ul>
-          </Show>
-        </div>
-      }}</For>
-    </span>
-  )
+                  </MenuItem>
+                )}</For>
+              </MenuDropdown>
+            </Show>
+            <Show when={menuItem.Name === "Homebrew"}>
+              <MenuDropdown header={()=><><span class={`${styles.linkFix}`}  onClick={(e)=>Navigate(menuItem.Link)}>{menuItem.Name}</span></>} >
+                <For each={menuItem?.children ?? []}>{(child)=>(
+                  <MenuItem class={`${styles.menuItem}`}>
+                    <span>{child.Name}</span>
+                    <Button transparent onClick={()=>Navigate(child.Link)} >
+                      <Icon name="visibility" size={'small'} />
+                    </Button>
+                    <Button transparent onClick={()=>Navigate(convertHombrewViewToCreate(child.Link))}>
+                      <Icon name="edit" size={'small'} />
+                    </Button>
+                  </MenuItem>
+                )}</For>
+              </MenuDropdown>
+            </Show>
+          </>
+        )}</For>
+      </Menu>
+      <Modal title="Settings" show={[showSettings, setShowSettings]}>
+        <SettingsPopup 
+          defaultUserSettings={props.defaultUserSettings} 
+          setDefaultUserSettings={props.setDefaultUserSettings} />
+      </Modal>
+    </>
+  );
 }
 export default NavMenu;

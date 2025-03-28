@@ -25,8 +25,10 @@ export default defineConfig({
       workbox: {
         globPatterns: [
           "**/*.{js,jsx,css,scss,ts,tsx,html,woff,woff2,otf}"
-        ]
+        ],
+        maximumFileSizeToCacheInBytes: 5020000
       },
+      minify: true,
       injectRegister: 'auto',
       outDir: '../wwwroot',
       // strategies: 'injectManifest',

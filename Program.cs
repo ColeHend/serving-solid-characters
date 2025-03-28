@@ -139,16 +139,12 @@ app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(path)
 });
-app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapDefaultControllerRoute();
-});
+app.MapDefaultControllerRoute();
 
 app.UseSpaStaticFiles();
 
@@ -160,6 +156,26 @@ app.UseSpa(spa =>
     {
         // spa.UseReactDevelopmentServer(npmScript: "build");
         spa.UseProxyToSpaDevelopmentServer("http://192.168.1.100:3000/");
+        // Start the client webserver via npm
+        // var clientPath = Path.Combine(Directory.GetCurrentDirectory(), "client");
+        // var npmProcess = new System.Diagnostics.Process
+        // {
+        //     StartInfo = new System.Diagnostics.ProcessStartInfo
+        //     {
+        //         FileName = "npm",
+        //         Arguments = "start",
+        //         WorkingDirectory = clientPath,
+        //         UseShellExecute = false,
+        //         RedirectStandardOutput = true,
+        //         RedirectStandardError = true,
+        //     }
+        // };
+
+        // npmProcess.OutputDataReceived += (sender, args) => { if(args.Data != null && args.Data.Trim() != String.Empty) Console.WriteLine("[CLIENT]: ", args.Data); };
+        // npmProcess.ErrorDataReceived += (sender, args) => { if(args.Data != null && args.Data.Trim() != String.Empty) Console.Error.WriteLine("[CLIENT]: ", args.Data); };
+        // npmProcess.Start();
+        // npmProcess.BeginOutputReadLine();
+        // npmProcess.BeginErrorReadLine();
     } else {
         spa.Options.DefaultPage = "/index.html";
         spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions

@@ -1,7 +1,9 @@
 import {
   Component,
   For,
+  Match,
   Show,
+  Switch,
   createMemo,
   createSignal,
   onMount,
@@ -9,19 +11,8 @@ import {
 } from "solid-js";
 import styles from "./classes.module.scss";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
-import {
-  Input,
-  Button,
-  Select,
-  Option,
-  Chip,
-  useGetClasses,
-  Body,
-  Clone,
-  Tabs,
-  Tab,
-  TextArea
-} from "../../../../../shared/";
+import { Button, Input, Select, Option, Chip, Container, TabBar, TextArea, Form, FormField, FieldError } from "coles-solid-library";
+import { useGetClasses, Clone } from "../../../../../shared/";
 import type { DnDClass } from "../../../../../models";
 import { LevelEntity } from "../../../../../models/class.model";
 import { Feature, FeatureTypes } from "../../../../../models/core.model";
@@ -29,7 +20,6 @@ import { SpellsKnown } from "../subclasses/subclasses";
 import { useSearchParams } from "@solidjs/router";
 import Table from '../../../../../shared/components/Table/table';
 import { Cell, Column, Header, Row } from '../../../../../shared/components/Table/innerTable';
-import FormField from "../../../../../shared/components/FormField/formField";
 import Proficiency from "./sections/proficiency";
 import StartEquipment from "./sections/startEquipment";
 import { CastingStat } from "../../../../../shared/models/stats";
@@ -40,6 +30,12 @@ import FeatureModal from "./sections/featureModal";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { delay, of } from "rxjs";
 import { useGetClassSetters } from "./hooks/classSetters";
+
+enum ClassTabs {
+  Subclasses,
+  ClassSpecific,
+  Spellcasting
+}
 
 const Classes: Component = () => {
   // --- getter functions
@@ -125,13 +121,6 @@ const Classes: Component = () => {
     setSpellSlots,
     setSpellsKnown,
   } = useGetClassSetters(currentClass, setCurrentClass, setCurrentColumns, casterType, spellCalc);
-
-  // const [levels, setLevels] = createSignal<number[]>(Array.from({length: 20}, (_, i)=>i+1));
-  // const classLevels = () => currentClass.classLevels;
-  // const tableData = () => currentClass.classLevels
-  // const getFeatureChips = (i:number)=>Object.entries((currentClass.classLevels[i]?.classSpecific));
-  // const casterType = createMemo(() => currentClass.spellcasting?.casterType  ?? 'none');
-
 	
   // --- functions
 	
@@ -250,7 +239,7 @@ const Classes: Component = () => {
   };
 
   const isHomebrew = createMemo(()=>!!hombrewClasses().find((x)=>x.name === currentClass.name));
-
+  const [activeTab, setActiveTab] = createSignal<ClassTabs>(ClassTabs.Subclasses);
   onMount(()=>{
     if (searchParam.name) {
       of(null).pipe(delay(50)).subscribe(()=>{
@@ -261,7 +250,7 @@ const Classes: Component = () => {
 	
   return (
     <>
-      <Body>
+      <Container theme="surface">
         <div>
           <h1>Classes Homebrewing</h1>
           <span>
@@ -324,8 +313,11 @@ const Classes: Component = () => {
             }}>
               <Proficiency setSaves={setSavingThrows} setProficiencies={setProficiencies} currentClass={currentClass} />
               <div style={{width:'100%'}}>
-                <Tabs>
-                  <Tab name="Subclasses">
+                <TabBar tabs={['Subclasses', 'Class Specific', 'Spellcasting']} activeTab={activeTab()} onTabChange={(label, i)=>{
+                  setActiveTab(i);
+                }} />
+                <Switch>
+                  <Match when={activeTab() === ClassTabs.Subclasses} >
                     <div>
                       <div>
                         <FormField name="Subclass Type">
@@ -376,8 +368,8 @@ const Classes: Component = () => {
                         </div>
                       </Show>
                     </div>
-                  </Tab>
-                  <Tab name="Class Specific">
+                  </Match>
+                  <Match when={activeTab() === ClassTabs.ClassSpecific}>
                     <div>
                       <FormField name="Column Name">
                         <Input transparent type="text" 
@@ -405,10 +397,8 @@ const Classes: Component = () => {
                         </span>
                       </>}</For>
                     </div>
-                  </Tab>
-                  <Tab 
-                    name="Spellcasting"
-                    hidden={() => !casterType() || !!casterType() && casterType() === "none"}>
+                  </Match>
+                  <Match when={activeTab() === ClassTabs.Spellcasting}>
                     <div class={`${styles.spellcasting}`}>
                       <span class={`${styles.selectSpan}`}>
                         <label>Casting Stat</label>
@@ -509,8 +499,8 @@ const Classes: Component = () => {
                         </Show>
                       </span>
                     </div>
-                  </Tab>
-                </Tabs>
+                  </Match>
+                </Switch>
               </div>
 
             </div>
@@ -613,7 +603,7 @@ const Classes: Component = () => {
             </Show>
           </div>
         </div>
-      </Body>
+      </Container>
     </>
   );
 };

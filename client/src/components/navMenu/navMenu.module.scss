@@ -1,44 +1,64 @@
+@use 'coles-solid-library/themes/variables.scss' as *;
+
 .topper {
+    background-color: $subheader-background-color;
+    color: $subheader-on-background-color;
     display: flex;
     flex-direction: row;
-    padding: 5px;
-    border-radius: 15px;
+    
+}
+
+.menu {
+    width: 150px !important;
+}
+.headerItem {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    height: min-content;
+    h3 {
+        display: inline;
+        flex-grow: 1;
+    }
+    &:hover {
+        background-color: $color-container !important;
+        color: $color-on-container !important;
+    }
+}
+.menuItem {
+    display: flex;
+    flex-direction: row;
     :first-child {
         flex-grow: 1;
     }
-    button {
-        border: none !important;
-        padding: 0px !important;
-        margin: auto 5px;
-        padding: 5px;
-        height: min-content;
-        svg {
-        height: 40%;
-        margin: auto 5px;
-        path {
-            color: #fff;
-            fill: #fff;
-        }
-        }
+    :nth-child(2), :nth-child(3) {
+        margin: 0 4px;
+    }
+    h3 {
+        display: inline;
     }
 }
-
+.linkFix {
+    text-decoration: none;
+    color: $color-on-container;
+}
 .navOpen {
-    @media screen and (max-width: 768px) {
-        position: absolute;
-        top: 7vh;
-        left: 7vw;
-        min-width: 80vw;
-        width: max-content;
-      }
-    
-      width: 10vw;
-      margin: 10px;
-      max-width: 15%;
-      width: 100%;
-      border-radius: 15px;
-      padding: 5px;
-      height: min-content;
+    // @media screen and (max-width: 768px) {
+    //     position: absolute;
+    //     top: 7vh;
+    //     left: 7vw;
+    //     min-width: 80vw;
+    //     width: max-content;
+    //   }
+      background-color: $header-background-color;
+      color: $header-on-background-color;
+    //   width: 10vw;
+    //   margin: 10px;
+    //   max-width: 15%;
+    //   width: 100%;
+    //   border-radius: 15px;
+    //   padding: 5px;
+    //   height: min-content;
 }
 
 .navClosed {

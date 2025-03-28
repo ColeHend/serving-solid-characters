@@ -2,12 +2,12 @@ import { Accessor, Component, Show, createSignal, Setter, createMemo, splitProps
 import navStyles from './navbar.module.scss';
 import {  effect } from "solid-js/web";
 import { A } from "@solidjs/router";
-import Button from "../../shared/components/Button/Button";
 import BarMenu from "../../shared/svgs/barMenu";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
 import { Calculator } from "../../shared/svgs/calulator";
 import DamageCalulator from "../../shared/components/modals/damageCalculator/damageCalculator";
+import { Button, Container, Icon } from "coles-solid-library";
 
 type Props = {
     style?: CSSModuleClasses[string],
@@ -15,6 +15,7 @@ type Props = {
     links?: Tab[]
     list: [Accessor<boolean>, Setter<boolean>];
     isMobile: boolean;
+    setAnchor: Setter<HTMLElement | undefined>;
 };
 
 export interface Tab {
@@ -24,19 +25,15 @@ export interface Tab {
 
 const Navbar: Component<Props> = (props) => {
   const [userSettings] = getUserSettings();
-  const stylin = createMemo(()=>useStyles(userSettings().theme));
   const [showDamageCalc,setShowDamageCalc] = createSignal(false);
-  const [{"list":[, setShowList]}, other] = splitProps(props, ["list"]);
+  const [local, other] = splitProps(props, ["list"]);
 
-  effect(()=>{
-    if (other.isMobile) setShowList(false);
-  });
   return (
-    <div class={`${stylin()?.primary} ${navStyles.navbar}`}>
+    <Container theme="header"  class={`${navStyles.navbar}`}>
       <div  class={`${other.style ?? ''}`}>
         <span>
           <A href="/">
-                        MySite
+            MySite
           </A>
         </span>
 
@@ -45,7 +42,7 @@ const Navbar: Component<Props> = (props) => {
             <li >
               <div>
                 <A href="/">
-                                        MySite
+                  MySite
                 </A>
               </div>
             </li> 
@@ -56,18 +53,19 @@ const Navbar: Component<Props> = (props) => {
           <Button onClick={()=>setShowDamageCalc(!showDamageCalc())} title="damage calculator">
             <Calculator />
           </Button>
+
+          <Button transparent ref={props.setAnchor} onClick={()=>(local.list[1](true))} >
+            <Icon  color="white" name="menu" size="large" />
+          </Button>
         </div>
                 
-        <Button onClick={()=>setShowList(old => !old)} >
-          <BarMenu />
-        </Button>
       </div>
 
 
       <Show when={showDamageCalc()}>
         <DamageCalulator setter={setShowDamageCalc} accssor={showDamageCalc} />
       </Show>
-    </div>
+    </Container>
   )
 }
 export default Navbar;

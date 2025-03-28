@@ -2,12 +2,13 @@ import { RouteSectionProps } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
 import { getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDItems, useDnDRaces, useDnDSpells  } from "../shared";
-import { Component, createSignal, Show, createContext, createMemo, onMount, onCleanup } from "solid-js";
+import { Component, createSignal, Show, createContext, createMemo, onMount, onCleanup, createEffect } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
 import NavMenu from "./navMenu/navMenu";
 import { SnackbarController } from "../shared/components/Snackbar/snackbar";
+import { addTheme } from "coles-solid-library";
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
@@ -24,7 +25,7 @@ const Provider: Component<ProviderProps<HookContext>> = (props) => {
 const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   const [defaultUserSettings, setDefaultUserSettings] = getUserSettings();
   const userStyle = createMemo(()=>useStyle(defaultUserSettings().theme));
-  const [defaultShowList, setDefaultShowList] = createSignal(!mobileCheck());
+  const [defaultShowList, setDefaultShowList] = createSignal(false);
   const [defaultIsMobile, setDefaultIsMobile] = createSignal(mobileCheck());
   const [mouse, setMouse] = createSignal({x: 0, y: 0});
   effect(()=>{
@@ -41,9 +42,10 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   setDefaultIsMobile(mobileCheck());
   window.addEventListener('resize', clickIntercept);
 
-  effect(() => {
-    document.body.setAttribute("data-theme", defaultUserSettings().theme);
+  createEffect(() => {
+    addTheme(defaultUserSettings().theme);
   })
+
   const mouseCapture = (e: MouseEvent) => setMouse({x: e.clientX, y: e.clientY});
 
   onMount(()=>{
@@ -61,6 +63,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   console.log("theme", defaultUserSettings().theme);
   
   const {isMobile} = useInjectServices();
+  const [menuAnchor, setMenuAnchor] = createSignal<HTMLElement | undefined>();
   return (
     <Provider value={{
       isMobile: defaultIsMobile,
@@ -71,7 +74,8 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
       <div 
         style={{ height: "100vh" }} 
         class={userStyle().body}>
-        <Navbar 
+        <Navbar
+          setAnchor={setMenuAnchor} 
           isMobile={isMobile()} 
           style={"margin-bottom: 15px;"} 
           list={[defaultShowList, setDefaultShowList]} />
@@ -80,7 +84,8 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
             {props.children}
           </span>
           <Show when={defaultShowList()}>
-            <NavMenu 
+            <NavMenu
+              anchorElement={menuAnchor} 
               userStyle={userStyle} 
               defaultShowList={defaultShowList} 
               setDefaultShowList={setDefaultShowList} 

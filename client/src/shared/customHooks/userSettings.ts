@@ -7,7 +7,7 @@ const [currentSettings, setCurrentSettings] = createSignal<UserSettings>({
   userId: 0,
   username: "",
   email: "",
-  theme: "light"
+  theme: "dark"
 });
 const [loaded, setLoaded] = createSignal(false);
 

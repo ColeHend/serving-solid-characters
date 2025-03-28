@@ -1,3 +1,4 @@
+@use 'coles-solid-library/themes/variables.scss' as *;
 .active {
     font-weight: 900;
     font-size: 1.05rem;
@@ -8,7 +9,11 @@
 }
 
 .navbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     $mobile: 768px;
+    color: $header-on-background-color !important;
     :nth-child(1) {
         display: flex;
         flex-direction: row;
@@ -98,11 +103,15 @@
 .toolBar {
     display: flex;
     flex-direction: row;
-
+    align-items: center;
+    svg {
+        fill: $header-on-background-color !important;
+        color: $header-on-background-color !important;
+    }
     button {
         border: none;
         background-color: inherit;
-
+        
         svg {
             width: 0.8rem;
             height: 2.8rem;
