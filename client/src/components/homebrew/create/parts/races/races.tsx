@@ -28,7 +28,6 @@ import {
   AbilityScores,
   Feature,
 } from "../../../../../models/core.model";
-import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
 import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
@@ -536,18 +535,6 @@ const Races: Component = () => {
                   </Show>
                 </span>
 
-                <Show when={showFeatureModal()}>
-                  <FeatureModal
-                    addFeature={addFeature}
-                    replaceFeature={replaceFeature}
-                    currentLevel={{} as LevelEntity}
-                    showFeature={showFeatureModal}
-                    setShowFeature={setShowFeatureModal}
-                    editIndex={editIndex}
-                    setEditIndex={setEditIndex}
-                    currentRace={currentRace}
-                  />
-                </Show>
               </div>
 
             </div>

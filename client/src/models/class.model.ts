@@ -13,9 +13,9 @@ export interface DnDClass {
     startingEquipment: StartingEquipment;
     classLevels: LevelEntity[];
     subclasses: Subclass[];
-		spellcasting?: ClassCasting
-		classMetadata: ClassMetadata;
-	}
+    spellcasting?: ClassCasting
+    classMetadata: ClassMetadata;
+}
 export interface ClassMetadata {
 	subclassLevels: number[];
 	subclassType: string;
@@ -27,8 +27,21 @@ export interface LevelEntity {
     profBonus: number;
     features: Feature<string, string>[];
     classSpecific: {[key: string]: string;};
-    spellcasting?: {[key: string]: number;};
+    spellcasting?: Spellslots;
 }
+interface Spellslots {
+    cantrips_known?: number;
+    spell_slots_level_0?: number;
+    spell_slots_level_1?: number;
+    spell_slots_level_2?: number;
+    spell_slots_level_3?: number;
+    spell_slots_level_4?: number;
+    spell_slots_level_5?: number;
+    spell_slots_level_6?: number;
+    spell_slots_level_7?: number;
+    spell_slots_level_8?: number;
+    spell_slots_level_9?: number;
+};
 export interface Subclass {
     id: number;
     name: string;
@@ -48,7 +61,7 @@ interface Spellcasting {
 }
 export interface SubclassCasting extends Spellcasting {
     castingLevels: {
-        spellcasting: {[key: string]: number;};
+        spellcasting: Spellslots;
         level: number;
     }[];
 }

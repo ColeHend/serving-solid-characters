@@ -83,7 +83,7 @@ const NavMenu: Component<Props> = (props) => {
             e.stopPropagation();
             setShowSettings(old=>!old);
           }} >
-            <Gear height={30} />
+            <Icon name="settings" size={'large'} />
           </Button>
         </MenuItem>
         <MenuDropdown header={()=>"User Settings"} >

@@ -6,7 +6,6 @@ import { createStore } from "solid-js/store";
 import { Background } from "../../../../../models";
 import useGetBackgrounds from "../../../../../shared/customHooks/data/useGetBackgrounds";
 import FormField from "../../../../../shared/components/FormField/formField";
-import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
 import { Feature, FeatureTypes } from "../../../../../models/core.model";
 import { useSearchParams } from "@solidjs/router";
@@ -491,18 +490,6 @@ const Backgrounds: Component = () => {
               setShowFeatureModal(true);
               setEditIndex(-1);
             }}>Add Feature</Button>
-            <Show when={showFeatureModal()}>
-              <FeatureModal
-                addFeature={addFeature}
-                replaceFeature={replaceFeature}
-                currentLevel={{} as LevelEntity}
-                showFeature={showFeatureModal}
-                setShowFeature={setShowFeatureModal}
-                editIndex={editIndex}
-                setEditIndex={setEditIndex}
-                currentBackground={currentBackground}
-              />
-            </Show>
             <For each={currentBackground.feature}>{(f, index) =>
               <Button onClick={() => {
                 setShowFeatureModal(true);

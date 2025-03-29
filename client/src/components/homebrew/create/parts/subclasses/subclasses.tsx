@@ -5,7 +5,6 @@ import { effect } from "solid-js/web";
 import { LevelEntity, Subclass } from "../../../../../models/class.model";
 import { Spell } from "../../../../../models/spell.model";
 import { useSearchParams } from "@solidjs/router";
-import FeatureModal from "../classes/sections/featureModal";
 import { Feature } from "../../../../../models/core.model";
 export enum SpellsKnown {
     None = 0,
@@ -258,7 +257,7 @@ const Subclasses: Component = () => {
         </div>
         <div>
           <h2>Level up features</h2>
-          <Select value={toAddFeatureLevel()} disableUnselected transparent onChange={(e)=>{
+          <Select value={toAddFeatureLevel()} transparent onChange={(e)=>{
             const newLevel = parseInt(e.currentTarget.value);
             setToAddFeatureLevel(newLevel);
           }}>
@@ -268,15 +267,6 @@ const Subclasses: Component = () => {
           </Select>
           <Show when={toAddFeatureLevel() > 0}>
                     	<Button onClick={()=>setShowFeatureModal(old=>!old)}>Add Feature</Button>
-          </Show>
-          <Show when={showFeatureModal()}>
-            <FeatureModal 
-              addFeature={addFeature} 
-              replaceFeature={replaceFeature}
-              currentSubclass={currentSubclass()} 
-              currentLevel={{level: toAddFeatureLevel()} as LevelEntity} 
-              showFeature={showFeatureModal} setShowFeature={setShowFeatureModal} 
-              editIndex={editIndex} setEditIndex={setEditIndex} />
           </Show>
           <For each={getLevelUpFeatures(toAddFeatureLevel())}>{(feature)=>(
             <Button onClick={()=>{

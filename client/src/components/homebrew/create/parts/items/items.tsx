@@ -28,7 +28,6 @@ import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
 import { createStore } from "solid-js/store";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Feature } from "../../../../../models/core.model";
-import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
 import {useGetItems} from "../../../../../shared/";
 import useGetSpells from "../../../../../shared/customHooks/data/useGetSpells";
@@ -726,19 +725,6 @@ const Items: Component = () => {
               <Chip value="None" />
             </Show>
           </span>
-
-          <Show when={showFeatureModal()}>
-            <FeatureModal 
-              addFeature={addFeature}
-              replaceFeature={replaceFeature}
-              currentLevel={{} as LevelEntity}
-              showFeature={showFeatureModal}
-              setShowFeature={setShowFeatureModal}
-              editIndex={editIndex}
-              setEditIndex={setEditIndex}
-              currentItem={getItemObj()}
-            />
-          </Show>
         </div>
 
         

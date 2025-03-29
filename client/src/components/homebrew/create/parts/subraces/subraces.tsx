@@ -7,7 +7,6 @@ import { AbilityScores, Feature, FeatureTypes } from "../../../../../models/core
 import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
-import FeatureModal from "../classes/sections/featureModal";
 import { LevelEntity } from "../../../../../models/class.model";
 import StartingProf from "../races/startingProfs/startingProfs";
 
@@ -474,7 +473,6 @@ const Subraces:Component = () => {
             transparent
             value={newSizes()}
             onChange={((e)=>setNewSizes(e.currentTarget.value))}
-            disableUnselected
           >
             <For each={[
               "Tiny",
@@ -535,7 +533,6 @@ const Subraces:Component = () => {
               onChange={(e)=> 
                 setSelectedAbility(parseInt(e.currentTarget.value))
               }
-              disableUnselected
             >
               <For each={[0, 1, 2, 3, 4, 5, 6]}>
                 { (ability) => <Option value={ability}>{AbilityScores[ability]}</Option> }
@@ -628,18 +625,6 @@ const Subraces:Component = () => {
       />
     </Show>
 
-    <Show when={showTraitPopup()}>
-      <FeatureModal 
-        addFeature={addFeature}
-        replaceFeature={replaceFeature}
-        currentLevel={{} as LevelEntity}
-        showFeature={showTraitPopup}
-        setShowFeature={setShowTraitPopup}
-        editIndex={editIndex}
-        setEditIndex={setEditIndex}
-        currentSubrace={currentSubrace}
-      />
-    </Show>
 
     <Show when={!!doesExist()}>
       <Button onClick={updateSubrace}>Update</Button>

@@ -1,120 +1,60 @@
-.fieldStyle {
-	padding-top: 0;
-	padding-bottom: 0 !important;
-	border-radius: 25px;
+@use 'coles-solid-library/themes/variables' as *;
+// classes.tsx
+.container {
+  display: flex;
+  flex-direction: column;
+  border-radius: $border-radius-md;
+  padding: $spacing-1;
+  justify-content: stretch;
+  @media (max-width: 768px) {
+    margin: $spacing-2;
+    width: 95%;
+  }
+  @media (min-width: 769px) {
+    margin: $spacing-3;
+    width: 95%;
+  }
 }
-.selectSpan {
-	background-color: var(--secondary-color);
-	height: min-content;
-	border: 1px solid;
-	border-radius: 15px;
-	padding: 2px 5px;
-	padding-left: 10px;
-	margin: auto 0;
-	margin-left: 15px;
-}
-.rowOne {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	// margin: 0 30%;
-}
-.twoRowContainer {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-
-	@media screen and (max-width: 768px){
-		flex-direction: column;
-	}
-}
-.divide {
-	flex-grow: 1;
-}
-.rowTwo {
-	display: flex;
-	flex-direction: column;
-	flex-wrap: wrap;
-	width: 50%;
-	@media screen and (max-width: 768px){
-		width: 100%;
-	}
-}
-.allProficiency {
-	display: flex;
-	flex-direction: column;
-}
-.singleProficiency {
-	display: flex;
-	flex-direction: row;
-	margin-top: 0px !important;
-	margin-bottom: 0px !important;
-	h3 {
-		height: min-content;
-		margin-top: 0px !important;
-		margin-bottom: 0px !important;
-	}
-	:nth-child(2) {
-		margin-left: 10px;
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-		height: min-content;
-	}
+.body {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: stretch;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+  @media (min-width: 769px) {
+    flex-direction: row;
+  }
 }
 
-.levelSecondRow {
-	display: flex;
-	flex-direction: row;
-	:nth-child(1) {
-		margin: auto 0;
-	}
+.classSection {
+  @media (max-width: 768px) {
+    flex-basis: 100%;
+  }
+  @media (min-width: 769px) {
+    flex-basis: 48%;
+  }
 }
 
-@mixin tableStyle {
-	margin-left: 10px;
+.fieldSizeSm {
+  width: 75px !important;
 }
-.wholeTable {
-	width: 100%;
+.fieldSizeMd {
+  width: 115px !important;
 }
-.scrollX {
-	overflow-x: auto;
+.fieldSizeLg {
+  width: 165px !important;
 }
-.rowStyle {
-	:nth-child(3) {
-		margin-left: 15px;
-	}
+.fieldSizeXl {
+  width: 265px !important;
 }
-.headerStyle {
-	@include tableStyle;
-	text-align: center;
-}
-.cellStyle {
-	@include tableStyle;
-	width: 45px;
-	text-align: center;
-}
-.tableFeature {
-	@include tableStyle;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-}
-.spellcasting {
-	display: flex;
-	flex-direction: column;
-	:nth-child(n) {
-		margin-bottom: 15px;
-		width: max-content;
-	}
-}
-.specific {
-	display: flex;
-	flex-direction: column;
+.fieldSizeXxl {
+  width: 350px !important;
 }
 
-.chipHover {
-	&:hover {
-		cursor: pointer;
-	}
+// header.tsx
+.header {
+  min-width: 300px !important;
+  display: flex;
+  flex-direction: column;
 }

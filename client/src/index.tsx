@@ -13,7 +13,7 @@ const CharacterView = lazy(() => import("./components/characters/view/view"));
 import { useRegisterSW } from "virtual:pwa-register/solid";
 import Homebrew from "./components/homebrew/homebrew";
 import View from "./components/homebrew/view/view";
-import Classes from "./components/homebrew/create/parts/classes/classes";
+import { Classes } from "./components/homebrew/create/parts/classes/classes";
 import Items from "./components/homebrew/create/parts/items/items";
 import Feats from "./components/homebrew/create/parts/feats/feats";
 import Backgrounds from "./components/homebrew/create/parts/backgrounds/backgrounds";

@@ -7,8 +7,7 @@ import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
 import NavMenu from "./navMenu/navMenu";
-import { SnackbarController } from "../shared/components/Snackbar/snackbar";
-import { addTheme } from "coles-solid-library";
+import { addTheme, SnackbarController } from "coles-solid-library";
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
@@ -80,22 +79,18 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           style={"margin-bottom: 15px;"} 
           list={[defaultShowList, setDefaultShowList]} />
         <div class="body">
-          <span class={`${defaultShowList() ? "openFirst": "closeFirst"}`}>
-            {props.children}
-          </span>
-          <Show when={defaultShowList()}>
-            <NavMenu
-              anchorElement={menuAnchor} 
-              userStyle={userStyle} 
-              defaultShowList={defaultShowList} 
-              setDefaultShowList={setDefaultShowList} 
-              defaultIsMobile={defaultIsMobile} 
-              setDefaultIsMobile={setDefaultIsMobile} 
-              defaultUserSettings={defaultUserSettings} 
-              setDefaultUserSettings={setDefaultUserSettings} />
-          </Show>
+          {props.children}
         </div>
       </div>
+      <NavMenu
+        anchorElement={menuAnchor} 
+        userStyle={userStyle} 
+        defaultShowList={defaultShowList} 
+        setDefaultShowList={setDefaultShowList} 
+        defaultIsMobile={defaultIsMobile} 
+        setDefaultIsMobile={setDefaultIsMobile} 
+        defaultUserSettings={defaultUserSettings} 
+        setDefaultUserSettings={setDefaultUserSettings} />
       <SnackbarController />
     </Provider>
   );
