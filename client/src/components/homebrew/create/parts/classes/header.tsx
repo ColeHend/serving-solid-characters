@@ -1,6 +1,6 @@
 import { Component, createSignal } from "solid-js";
 import styles from "./classes.module.scss";
-import { FormField, Input, TextArea } from "coles-solid-library";
+import { FieldError, FormField, Input, TextArea } from "coles-solid-library";
 
 export const Header: Component = () => {
   const [desc, setDesc] = createSignal<string>("");
@@ -9,6 +9,7 @@ export const Header: Component = () => {
       <div class={`${styles.fieldSizeLg}`}>
         <FormField name="Class Name" formName="name">
           <Input type="text" />
+          <FieldError errorName="required">Name Is Required</FieldError>
         </FormField>
       </div>
       <div class={`${styles.fieldSizeXl}`}>

@@ -7,7 +7,7 @@ import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
 import NavMenu from "./navMenu/navMenu";
-import { addTheme, SnackbarController } from "coles-solid-library";
+import { addTheme, Container, SnackbarController } from "coles-solid-library";
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
@@ -78,6 +78,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           isMobile={isMobile()} 
           style={"margin-bottom: 15px;"} 
           list={[defaultShowList, setDefaultShowList]} />
+        <Container theme="subheader" style={{"margin-bottom": '8px'}} ><></></Container>
         <div class="body">
           {props.children}
         </div>

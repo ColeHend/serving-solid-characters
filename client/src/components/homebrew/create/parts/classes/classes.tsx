@@ -8,8 +8,9 @@ import { Container, Form, FormGroup, Validators, FormArray } from "coles-solid-l
 import styles from './classes.module.scss';
 import { CastingStat, Stat } from "../../../../../shared/models/stats";
 import { DnDClass, ClassMetadata, LevelEntity, Subclass, ClassCasting } from "../../../../../models/class.model";
-import { Choice } from "../../../../../models/core.model";
+import { Choice, FeatureTypes } from "../../../../../models/core.model";
 import { SpellsKnown } from "../../../../../shared/models/casting";
+import { ArrayValidation, ValidatorResult } from "coles-solid-library/dist/components/Form/formHelp/models";
 enum CasterType {
   None,
   Third,
@@ -22,17 +23,20 @@ interface ClassSpecificValue {
   value: string;
 };
 
-interface ClassForm {
+export interface ClassForm {
   name: string;
   description: string;
   hitDie: number;
   primaryStat: Stat;
   savingThrows: Stat[];
   armorProficiencies: string[];
-  armorProfChoices: Choice<string>[];
   weaponProficiencies: string[];
-  weaponProfChoices: Choice<string>[];
   toolProficiencies: string[];
+  armorStart: string[];
+  weaponStart: string[];
+  itemStart: string[];
+  armorProfChoices: Choice<string>[];
+  weaponProfChoices: Choice<string>[];
   toolProfChoices: Choice<string>[];
   skills: Stat[];
   skillChoiceNum: number;
@@ -55,19 +59,39 @@ interface ClassForm {
   spellsLevel: number;
 }
 
-export const Classes: Component= () => {
-  const classLevels = new FormArray<LevelEntity[]>([[], []]);
+export const Classes: Component = () => {
+  const defaultClassLevels: LevelEntity[] = Array.from({ length: 20 }, (_, i) => ({
+    level: i + 1,
+    features: [],
+    spellcasting: undefined,
+    info: {
+      className: "",
+      classLevel: i + 1,
+      subclassName: '',
+      level: i + 1,
+      type: FeatureTypes.Class,
+      other: ''
+    },
+    profBonus: 1 + Math.ceil((i + 1) / 4),
+    classSpecific: {}
+  }));
+
+  const classLevels = new FormArray<LevelEntity[]>([[], []], defaultClassLevels);
+
   const ClassFormGroup = new FormGroup<ClassForm>({
-    name: ['',[Validators.Required]],
-    description: ['',[Validators.Required]],
+    name: ['', [Validators.Required]],
+    description: ['', [Validators.Required]],
     hitDie: [undefined, [Validators.Required]],
     primaryStat: [undefined, [Validators.Required]],
     savingThrows: [[], [Validators.Required]],
     armorProficiencies: [[], []],
-    armorProfChoices: [[], []],
     weaponProficiencies: [[], []],
-    weaponProfChoices: [[], []],
     toolProficiencies: [[], []],
+    armorStart: [[], []],
+    weaponStart: [[], []],
+    itemStart: [[], []],
+    armorProfChoices: [[], []],
+    weaponProfChoices: [[], []],
     toolProfChoices: [[], []],
     skills: [[], [Validators.Required]],
     skillChoiceNum: [undefined, []],
@@ -89,20 +113,20 @@ export const Classes: Component= () => {
     spellsInfo: ['', []],
     spellsLevel: [1, []]
   });
-  
+
   const onSubmit = (data: ClassForm) => {
     console.log('Submitted: ', data);
   };
 
   return (
-    <Container theme="surface"  class={`${styles.container}`}>
+    <Container theme="surface" class={`${styles.container}`}>
       <Form data={ClassFormGroup} onSubmit={onSubmit}>
         <div class={`${styles.body}`}>
           <Header />
           <Stats />
-          <Proficiencies />
-          <Items />
-          <FeatureTable formArray={classLevels} />
+          <Proficiencies formGroup={ClassFormGroup} />
+          <Items formGroup={ClassFormGroup} />
+          <FeatureTable formGroup={ClassFormGroup} />
         </div>
       </Form>
     </Container>

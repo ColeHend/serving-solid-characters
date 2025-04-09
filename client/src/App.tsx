@@ -4,7 +4,7 @@ import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import DataTransferModal from './components/DataTransfering/dataTransferModal';
-import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table } from 'coles-solid-library';
+import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table, Checkbox } from 'coles-solid-library';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings(); 
   const dndSrdClasses = useDnDClasses();
@@ -26,7 +26,7 @@ const App: Component = () => {
     const classes = dndSrdClasses();
     setIsTableRowOpen(Array(classes.length).fill(false));
   });
-  
+  const [isNewChoice, setIsNewChoice] = createSignal<boolean>(false);
   return (
     <Container class={`${styles.body}`} theme='container'>
       <div class={`${styles.topRow}`}>
@@ -47,10 +47,12 @@ const App: Component = () => {
               <div>
                   Welcome to my app. This is a work in progress.
               </div>
-              <div style={{width:"100%",padding: "15px"}}>
+              <div>
                 <TextArea readOnly={true} transparent={true} tooltip='Testing' text={bannerText} setText={setBannerText} />
               </div>
             </ExpansionPanel>
+            <Checkbox checked={isNewChoice()} onChange={setIsNewChoice} />
+            <Checkbox />
           </Match>
           <Match when={activeTab() === 1}>
             <div>

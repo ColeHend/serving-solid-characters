@@ -1,17 +1,59 @@
-import { Component, createSignal, For } from "solid-js";
+import { Component, createSignal, For, Setter } from "solid-js";
 import styles from "./classes.module.scss";
 import { useGetArmor, useGetItems, useGetWeapons } from "../../../../../shared";
 import { Stat } from "../../../../../shared/models/stats";
-import { Button, Chipbar, ChipType, FormField, Icon, Input, Modal, Option, Select } from "coles-solid-library";
+import { Button, Chipbar, ChipType, FormField, FormGroup, Icon, Input, Modal, Option, Select } from "coles-solid-library";
+import { ClassForm } from "./classes";
 
-export const Proficiencies: Component = () => {
+interface ProficienciesProps {
+  formGroup: FormGroup<ClassForm>;
+}
+export const Proficiencies: Component<ProficienciesProps> = (props) => {
   const [showEquipTable, setShowEquipTable] = createSignal<boolean>(false);
-  const [armorChips, setArmorChips] = createSignal<ChipType[]>([]);
-  const [weaponChips, setWeaponChips] = createSignal<ChipType[]>([]);
-  const [toolChips, setToolChips] = createSignal<ChipType[]>([]);
+  const armorChips = () => {
+    const currentArmor = props.formGroup.get("armorProficiencies") as string[];
+    return currentArmor.map((armor) => ({ key: "Armor", value: armor } as ChipType));
+  };
+  const setArmorChips: Setter<ChipType[]> = (chips) => {
+    const prev = props.formGroup.get("armorProficiencies") as string[];
+    if (typeof chips === "function") {
+      props.formGroup.set("armorProficiencies", chips(prev.map(x=>({key:"Armor", value: x}))).map((chip) => chip.value));
+    }
+    else {
+      props.formGroup.set("armorProficiencies", chips.map((chip) => chip.value));
+    }
+  };
+  const weaponChips = () => {
+    const currentWeapons = props.formGroup.get("weaponProficiencies") as string[];
+    return currentWeapons.map((weapon) => ({ key: "Weapon", value: weapon } as ChipType));
+  };
+  const setWeaponChips: Setter<ChipType[]> = (chips) => {
+    const prev = props.formGroup.get("weaponProficiencies") as string[];
+    if (typeof chips === "function") {
+      props.formGroup.set("weaponProficiencies", chips(prev.map(x=>({key:"Weapon", value: x}))).map((chip) => chip.value));
+    }
+    else {
+      props.formGroup.set("weaponProficiencies", chips.map((chip) => chip.value));
+    }
+  };
+  const toolChips = () => {
+    const currentTools = props.formGroup.get("toolProficiencies") as string[];
+    return currentTools.map((tool) => ({ key: "Tool", value: tool } as ChipType));
+  };
+  const setToolChips: Setter<ChipType[]> = (chips) => {
+    const prev = props.formGroup.get("toolProficiencies") as string[];
+    if (typeof chips === "function") {
+      props.formGroup.set("toolProficiencies", chips(prev.map(x=>({key:"Tool", value: x}))).map((chip) => chip.value));
+    } else {
+      props.formGroup.set("toolProficiencies", chips.map((chip) => chip.value));
+    }
+  };
   const allItems = useGetItems();
+  const [selectedItems, setSelectedItems] = createSignal<string[]>([]);
   const allWeapons = useGetWeapons();
+  const [selectedWeapons, setSelectedWeapons] = createSignal<string[]>([]);
   const allArmor = useGetArmor();
+  const [selectedArmor, setSelectedArmor] = createSignal<string[]>([]);
   return (
     <div class={`${styles.classSection}`}>
       <div>
@@ -21,8 +63,21 @@ export const Proficiencies: Component = () => {
         <div>
           <div>Armor</div>
           <div>
-            <span>
-              <Button><Icon name="add" /></Button>
+            <span class={styles.lineUp}>
+              <Button onClick={()=>{
+                const currentArmor = props.formGroup.get("armorProficiencies") as string[];
+                props.formGroup.set("armorProficiencies", [...currentArmor, ...selectedArmor()]);
+                setSelectedArmor([]);
+              }}><Icon name="add" /></Button>
+              <Select multiple value={selectedArmor()} onChange={setSelectedArmor}>
+                <Option value="Light">Light</Option>
+                <Option value="Medium">Medium</Option>
+                <Option value="Heavy">Heavy</Option>
+                <Option value="Shields">Shields</Option>
+                <For each={allArmor()}>
+                  {(armor) => <Option value={armor.name}>{armor.name}</Option>}
+                </For>
+              </Select>
             </span>
             <span>
               <Chipbar chips={armorChips} setChips={setArmorChips} />
@@ -32,8 +87,19 @@ export const Proficiencies: Component = () => {
         <div>
           <div>Weapons</div>
           <div>
-            <span>
-              <Button><Icon name="add" /></Button>
+            <span class={styles.lineUp}>
+              <Button onClick={()=>{
+                const currentWeapons = props.formGroup.get("weaponProficiencies") as string[];
+                props.formGroup.set("weaponProficiencies", [...currentWeapons, ...selectedWeapons()]);
+                setSelectedWeapons([]);
+              }}><Icon name="add" /></Button>
+              <Select multiple value={selectedWeapons()} onChange={setSelectedWeapons}>
+                <Option value="Simple">Simple</Option>
+                <Option value="Martial">Martial</Option>
+                <For each={allWeapons()}>
+                  {(weapon) => <Option value={weapon.name}>{weapon.name}</Option>}
+                </For>
+              </Select>
             </span>
             <span>
               <Chipbar chips={weaponChips} setChips={setWeaponChips} />
@@ -43,8 +109,17 @@ export const Proficiencies: Component = () => {
         <div>
           <div>Tools</div>
           <div>
-            <span>
-              <Button><Icon name="add" /></Button>
+            <span class={styles.lineUp}>
+              <Button onClick={()=>{
+                const currentTools = props.formGroup.get("toolProficiencies") as string[];
+                props.formGroup.set("toolProficiencies", [...currentTools, ...selectedItems()]);
+                setSelectedItems([]);
+              }}><Icon name="add" /></Button>
+              <Select multiple value={selectedItems()} onChange={setSelectedItems}>
+                <For each={allItems().filter((item) => item.equipmentCategory === "Tools")}>
+                  {(item) => <Option value={item.name}>{item.name}</Option>}
+                </For>
+              </Select>
             </span>
             <span>
               <Chipbar chips={toolChips} setChips={setToolChips} />

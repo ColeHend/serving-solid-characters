@@ -33,6 +33,7 @@
   }
   @media (min-width: 769px) {
     flex-basis: 48%;
+    max-width: 50%;
   }
 }
 
@@ -57,4 +58,23 @@
   min-width: 300px !important;
   display: flex;
   flex-direction: column;
+}
+
+// proficiencies.tsx
+.lineUp {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+// itemMenuButton.tsx
+.choiceType {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.list {
+  list-style: none;
 }
