@@ -45,6 +45,13 @@ export enum FeatureUses {
 	NumPerRest
 }
 
+export enum CasterType {
+  None,
+  Third,
+  Half,
+  Full
+};
+
 export enum FeatureTypes {
 	Class = 0,
 	Subclass,

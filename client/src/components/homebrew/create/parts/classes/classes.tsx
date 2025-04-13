@@ -8,15 +8,9 @@ import { Container, Form, FormGroup, Validators, FormArray } from "coles-solid-l
 import styles from './classes.module.scss';
 import { CastingStat, Stat } from "../../../../../shared/models/stats";
 import { DnDClass, ClassMetadata, LevelEntity, Subclass, ClassCasting } from "../../../../../models/class.model";
-import { Choice, FeatureTypes } from "../../../../../models/core.model";
+import { CasterType, Choice, FeatureTypes } from "../../../../../models/core.model";
 import { SpellsKnown } from "../../../../../shared/models/casting";
 import { ArrayValidation, ValidatorResult } from "coles-solid-library/dist/components/Form/formHelp/models";
-enum CasterType {
-  None,
-  Third,
-  Half,
-  Full
-};
 
 interface ClassSpecificValue {
   key: string;
@@ -57,6 +51,7 @@ export interface ClassForm {
   spellsKnownRoundup?: boolean;
   spellsInfo: string;
   spellsLevel: number;
+  hasCantrips: boolean;
 }
 
 export const Classes: Component = () => {
@@ -99,7 +94,7 @@ export const Classes: Component = () => {
     startingEquipment: [[], []],
     spellCasting: [false, []],
     castingStat: [undefined, []],
-    casterType: [CasterType.None, []],
+    casterType: [CasterType.Full, []],
     classSpecificValues: [[], []],
     subclasses: [[], []],
     metadataSubclassLevels: [[], []],
@@ -111,7 +106,8 @@ export const Classes: Component = () => {
     spellcastAbility: [CastingStat.WIS, []],
     spellsKnownRoundup: [false, []],
     spellsInfo: ['', []],
-    spellsLevel: [1, []]
+    spellsLevel: [1, []],    
+    hasCantrips: [false, []]
   });
 
   const onSubmit = (data: ClassForm) => {

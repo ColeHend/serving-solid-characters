@@ -60,17 +60,17 @@ const App: Component = () => {
                 <Column name='className'>
                   <Header>Class Name</Header>
                   <Cell<DnDClass>>{(x)=> x.name }</Cell>
+                </Column>
+                <Column name='hitDie'>
+                  <Header>Hit Die</Header>
+                  <Cell<DnDClass>>{(x)=> x.hitDie }</Cell>
                   <Cell<DnDClass> rowNumber={2}>{(item)=> (
                     <div style={{border: "1px solid", padding: "5px", 'border-radius': "10px"}}>
                       <div>{item?.name}</div>
                       <div>{item?.hitDie}</div>
                       <span>{item?.spellcasting?.spellcastingAbility}</span>
                     </div>
-                  ) }</Cell>
-                </Column>
-                <Column name='hitDie'>
-                  <Header>Hit Die</Header>
-                  <Cell<DnDClass>>{(x)=> x.hitDie }</Cell> 
+                  ) }</Cell> 
                 </Column>
                 <Column name='saves'>
                   <Header>Saves</Header>

@@ -78,3 +78,89 @@
 .list {
   list-style: none;
 }
+
+// featureTable.tsx
+.classSpecific {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  &:first {
+    width: 50%;
+  }
+}
+
+.deleteClassSpecificBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $spacing-1;
+  border-radius: $border-radius-sm;
+  background-color: $color-error;
+  font-size: $font-size-h6;
+  cursor: pointer;
+  margin-top: $spacing-1;
+  &:hover {
+    background-color: $color-error;
+    // transition: background-color $transition-duration-1s ease-in-out;
+  }
+}
+
+.casterFeatures {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100% !important;
+  fieldset {
+    flex-basis: 48%;
+    margin: $spacing-1 0px !important;
+  }
+  &:first {
+    flex-basis: 75% !important;
+  }
+}
+// classTable.tsx
+.tableStyle {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: center;
+}
+.casterColumn {
+  width: calc($spacing-1 + $spacing-4);
+}
+.featureColumn {
+  width: max-content;
+  text-align: left !important;
+  padding-left: $spacing-1;
+  padding-right: $spacing-1;
+};
+.cantripSpacing {
+  padding: 0px $spacing-1;
+  border-radius: $border-radius-sm !important;
+}
+.singleFeature {
+  &:hover {
+    cursor: pointer;
+    background-color: $color-surface-variant;
+    transition: background-color .1s ease-in-out;
+    border-radius: $border-radius-sm;
+  }
+}
+.addFeature {
+  input {
+    margin: 0px $spacing-2 !important;
+    width: 50px;
+  }
+  border-radius: $border-radius-sm;
+  width: 100%;
+}
+.deleteFeature {
+  &:hover {
+    cursor: pointer;
+    background-color: $color-error;
+    transition: background-color .1s ease-in-out;
+    border-radius: $border-radius-sm;
+  }
+}
