@@ -31,6 +31,7 @@ export interface LevelEntity {
 }
 interface Spellslots {
     cantrips_known?: number;
+    spells_known?: number;
     spell_slots_level_0?: number;
     spell_slots_level_1?: number;
     spell_slots_level_2?: number;

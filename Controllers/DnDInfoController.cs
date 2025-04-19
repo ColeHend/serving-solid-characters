@@ -14,67 +14,68 @@ using Microsoft.OpenApi.Any;
 using sharpAngleTemplate.Repositories;
 
 [ApiController]
-    [Route("api/[controller]/[action]")]
-    public class DnDInfoController : Controller
+[Route("api/[controller]")]
+public class DnDInfoController : ControllerBase
+{
+    private readonly IDndInfoRepository dndInfoRepository;
+    private readonly IDbJsonService jsonService;
+    
+    public DnDInfoController(IDndInfoRepository dndInfoRepository, IDbJsonService jsonService)
     {
-        private readonly IDndInfoRepository dndInfoRepository;
-        private readonly IDbJsonService jsonService;
+        this.dndInfoRepository = dndInfoRepository;
+        this.jsonService = jsonService;
+    }
+    [HttpPost("Classes")]
+    public ActionResult<List<ClassesEntity.ClassDTO>> Classes()
+    {
+        var classes = dndInfoRepository.GetClasses();
+        return Ok(classes);
+    }
+
+    [HttpPost("Spells")]
+    public ActionResult<List<SpellEntity>> Spells()
+    {
+        var spells = dndInfoRepository.GetSpells();
+        return Ok(spells);
+    }
+    
+    [HttpPost("Items")]
+    public ActionResult<List<object>> Items()
+    {
+        List<object> toSend = new List<object>();
+        var items = dndInfoRepository.GetItems();
+        items.ForEach(item => toSend.Add(item));
         
-        public DnDInfoController(IDndInfoRepository dndInfoRepository, IDbJsonService jsonService)
-        {
-            this.dndInfoRepository = dndInfoRepository;
-            this.jsonService = jsonService;
-        }
-        
-        [HttpPost()]
-        public ActionResult<List<ClassesEntity.ClassDTO>> Classes()
-        {
-            var classes = dndInfoRepository.GetClasses();
-            return Ok(classes);
-        }
+        var weapons = dndInfoRepository.GetWeapons();
+        weapons.ForEach(weapon => toSend.Add(weapon));
 
-        [HttpPost()]
-        public ActionResult<List<SpellEntity>> Spells()
-        {
-            var spells = dndInfoRepository.GetSpells();
-            return Ok(spells);
-        }
-        
-        [HttpPost()]
-        public ActionResult<List<object>> Items()
-        {
-            List<object> toSend = new List<object>();
-            var items = dndInfoRepository.GetItems();
-            items.ForEach(item => toSend.Add(item));
-            
-            var weapons = dndInfoRepository.GetWeapons();
-            weapons.ForEach(weapon => toSend.Add(weapon));
+        var armors = dndInfoRepository.GetArmor();
+        armors.ForEach(armor => toSend.Add(armor));
 
-            var armors = dndInfoRepository.GetArmor();
-            armors.ForEach(armor => toSend.Add(armor));
+        return Ok(toSend);
+    }
 
-            return Ok(toSend);
-        }
+    [HttpPost("Races")]
+    public ActionResult<List<RaceEntity>> Races()
+    {
+        var races = dndInfoRepository.GetRaces();
+        return Ok(races);
+    }
 
-        [HttpPost()]
-        public ActionResult<List<RaceEntity>> Races()
-        {
-            var races = dndInfoRepository.GetRaces();
-            return Ok(races);
-        }
+    [HttpPost("Feats")]
+    public ActionResult<List<FeatEntity>> Feats()
+    {
+        var feats = dndInfoRepository.GetFeats();
+        return Ok(feats);
+    }
 
-        [HttpPost()]
-        public ActionResult<List<FeatEntity>> Feats()
-        {
-            var feats = dndInfoRepository.GetFeats();
-            return Ok(feats);
-        }
+    [HttpPost("Backgrounds")]
+    public ActionResult<List<BackgroundEntity>> Backgrounds()
+    {
+        Console.WriteLine("DnDInfo/Backgrounds endpoint called");
+        var backgrounds = dndInfoRepository.GetBackgrounds();
+        Console.WriteLine($"Found {backgrounds.Count} backgrounds");
+        return Ok(backgrounds);
+    }
 
-        [HttpPost()]
-        public ActionResult<List<BackgroundEntity>> Backgrounds()
-        {
-            var backgrounds = dndInfoRepository.GetBackgrounds();
-            return Ok(backgrounds);
-        }
-
-    }   
+}

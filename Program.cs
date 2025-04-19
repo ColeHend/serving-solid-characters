@@ -122,18 +122,9 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-
-
 app.UseHttpsRedirection();
 string path;
-// if (false == true && app.Environment.IsDevelopment())
-// {
-//     path = Path.Combine(Directory.GetCurrentDirectory(), "client", "dist");
-// }
-// else
-// {
-// }
-    path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 Console.WriteLine(path);
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -143,46 +134,17 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers();
 
-app.MapDefaultControllerRoute();
-
-app.UseSpaStaticFiles();
-
-app.UseSpa(spa =>
+// Handle SPA routing - catch all routes that don't match API controllers or physical files
+if (app.Environment.IsDevelopment())
 {
-    spa.Options.SourcePath = "client";
-
-    if (app.Environment.IsDevelopment())
+    app.UseSpa(spa =>
     {
-        // spa.UseReactDevelopmentServer(npmScript: "build");
-        spa.UseProxyToSpaDevelopmentServer("http://192.168.1.100:3000/");
-        // Start the client webserver via npm
-        // var clientPath = Path.Combine(Directory.GetCurrentDirectory(), "client");
-        // var npmProcess = new System.Diagnostics.Process
-        // {
-        //     StartInfo = new System.Diagnostics.ProcessStartInfo
-        //     {
-        //         FileName = "npm",
-        //         Arguments = "start",
-        //         WorkingDirectory = clientPath,
-        //         UseShellExecute = false,
-        //         RedirectStandardOutput = true,
-        //         RedirectStandardError = true,
-        //     }
-        // };
-
-        // npmProcess.OutputDataReceived += (sender, args) => { if(args.Data != null && args.Data.Trim() != String.Empty) Console.WriteLine("[CLIENT]: ", args.Data); };
-        // npmProcess.ErrorDataReceived += (sender, args) => { if(args.Data != null && args.Data.Trim() != String.Empty) Console.Error.WriteLine("[CLIENT]: ", args.Data); };
-        // npmProcess.Start();
-        // npmProcess.BeginOutputReadLine();
-        // npmProcess.BeginErrorReadLine();
-    } else {
-        spa.Options.DefaultPage = "/index.html";
-        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(path)
-        };
-    }
-});
+        spa.Options.SourcePath = "client";
+        spa.UseProxyToSpaDevelopmentServer("http://192.168.1.100:3000");
+    });
+}
+app.MapFallbackToFile("index.html"); 
 
 app.Run();

@@ -5,6 +5,7 @@ import ReloadPrompt from './ReloadPrompt';
 import { DnDClass } from './models/class.model';
 import DataTransferModal from './components/DataTransfering/dataTransferModal';
 import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table, Checkbox } from 'coles-solid-library';
+import { useGetSRDClasses } from './shared/customHooks/api/useGetSrdClasses';
 const App: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings(); 
   const dndSrdClasses = useDnDClasses();
@@ -21,6 +22,7 @@ const App: Component = () => {
 
   const [activeTab, setActiveTab] = createSignal(0);
   const [isTableRowOpen, setIsTableRowOpen] = createSignal<boolean[]>([]);
+  // useGetSRDClasses().subscribe(x=>console.log('SRD Classes: ',x));
   
   createEffect(() => {
     const classes = dndSrdClasses();

@@ -20,8 +20,7 @@ export enum CharacterChangeTypes {
 	Save,
 	AttackRoll,
 	Spell,
-	SpellSlot,
-	UseNumber
+	SpellSlot
 }
 
 export enum ChangeSubTypes {

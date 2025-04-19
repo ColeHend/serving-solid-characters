@@ -1,7 +1,7 @@
 /* @refresh reload */
 import { effect, render } from "solid-js/web";
 import { Router, Route, RouteSectionProps, A } from "@solidjs/router";
-import { Component, createSignal, For, lazy, onMount, Show } from "solid-js";
+import { Component, createSignal, For, lazy, onMount, Show, ErrorBoundary } from "solid-js";
 import "./index.scss";
 import App from "./App";
 import 'solid-devtools';
@@ -61,38 +61,46 @@ const [offlineReadySig, setOfflineReady] = offlineReady;
 
 render(
   () => (
-    <Router root={RootApp}>
-      <Route path="/" component={App} />
-      <Route path="/characters">
-        <Route path="/" component={Characters} />
-        <Route path="/view" component={CharacterView} />
-        <Route path="/create" component={CharacterCreate} />
-      </Route>
-      <Route path="/info" >
-        <Route path="/races" component={races} />
-        <Route path="/spells" component={masterSpells} />
-        <Route path="/feats" component={featsList} />
-        <Route path="/classes" component={viewClasses} />
-        <Route path="/backgrounds" component={Viewbackgrounds} />
-        <Route path="/items" component={ItemsViewTab} />
-        <Route path="/*any" component={masterSpells} />
-      </Route>
-      <Route path="/homebrew">
-        <Route path="/" component={Homebrew} />
-        <Route path="/view" component={View} />
-        <Route path="/create" >
-          <Route path="/classes" component={Classes} />
-          <Route path={"/subclasses"} component={Subclasses} />
-          <Route path="/items" component={Items} />
-          <Route path="/feats" component={Feats} />
-          <Route path="/backgrounds" component={Backgrounds} />
-          <Route path="/spells" component={Spells} />
-          <Route path="/races" component={Races} />
-          <Route path="/subraces" component={Subraces} />
+    <ErrorBoundary fallback={(err) => {
+      console.error("Rendering error:", err);
+      return <div style="padding: 20px; color: red;">
+        <h2>Something went wrong rendering the application</h2>
+        <pre>{err.toString()}</pre>
+      </div>;
+    }}>
+      <Router root={RootApp}>
+        <Route path="/" component={App} />
+        <Route path="/characters">
+          <Route path="/" component={Characters} />
+          <Route path="/view" component={CharacterView} />
+          <Route path="/create" component={CharacterCreate} />
         </Route>
-        <Route path="/*any" component={View} />
-      </Route>
-    </Router>
+        <Route path="/info" >
+          <Route path="/races" component={races} />
+          <Route path="/spells" component={masterSpells} />
+          <Route path="/feats" component={featsList} />
+          <Route path="/classes" component={viewClasses} />
+          <Route path="/backgrounds" component={Viewbackgrounds} />
+          <Route path="/items" component={ItemsViewTab} />
+          <Route path="/*any" component={masterSpells} />
+        </Route>
+        <Route path="/homebrew">
+          <Route path="/" component={Homebrew} />
+          <Route path="/view" component={View} />
+          <Route path="/create" >
+            <Route path="/classes" component={Classes} />
+            <Route path={"/subclasses"} component={Subclasses} />
+            <Route path="/items" component={Items} />
+            <Route path="/feats" component={Feats} />
+            <Route path="/backgrounds" component={Backgrounds} />
+            <Route path="/spells" component={Spells} />
+            <Route path="/races" component={Races} />
+            <Route path="/subraces" component={Subraces} />
+          </Route>
+          <Route path="/*any" component={View} />
+        </Route>
+      </Router>
+    </ErrorBoundary>
   ),
   root!
 );
