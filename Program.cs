@@ -123,9 +123,26 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// Path Variables
 string path;
 path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 Console.WriteLine(path);
+// maps api routes to the controllers
+app.MapControllers();
+
+// Handle SPA routing - catch all routes that don't match API controllers or physical files
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseSpa(spa =>
+//     {
+//         spa.Options.SourcePath = "client";
+//         spa.UseProxyToSpaDevelopmentServer("http://192.168.1.100:3000");
+//     });
+// }
+// else
+// {
+// }
+    app.UseDefaultFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(path)
@@ -134,17 +151,6 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
-
-// Handle SPA routing - catch all routes that don't match API controllers or physical files
-if (app.Environment.IsDevelopment())
-{
-    app.UseSpa(spa =>
-    {
-        spa.Options.SourcePath = "client";
-        spa.UseProxyToSpaDevelopmentServer("http://192.168.1.100:3000");
-    });
-}
 app.MapFallbackToFile("index.html"); 
 
 app.Run();
