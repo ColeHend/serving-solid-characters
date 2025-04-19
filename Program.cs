@@ -140,16 +140,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // 8. SPA fallback / proxy
-// app.UseSpa(spa =>
-// {
-//     spa.Options.SourcePath = "client";
-//     if (app.Environment.IsDevelopment())
-//     {
-//         // proxy to your React/Angular/Vue dev server
-//         spa.UseProxyToSpaDevelopmentServer("http://192.168.1.100:3000");
-//     }
-//     // in production, it will serve files from client/dist
-// });
 app.MapWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"), spaApp =>
 {
     spaApp.UseSpa(spa =>
