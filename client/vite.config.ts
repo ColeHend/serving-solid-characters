@@ -19,7 +19,6 @@ export default defineConfig({
         enabled: true,
         type: 'module',
         navigateFallback: '/index.html',
-        navigateFallbackAllowlist: [/^\/$/],
       },
       includeAssets: ["**/*.{png,svg,ico,json,jpg}"],
       workbox: {
@@ -30,13 +29,15 @@ export default defineConfig({
       },
       minify: true,
       injectRegister: 'auto',
-      outDir: '../wwwroot',
-      // strategies: 'injectManifest',
-      // filename: 'claims-sw.ts',
-      // injectManifest: { 
-      //   minify: false, 
-      //   enableWorkboxModulesLogs: true, 
-      // },
+      outDir: 'dist',
+      strategies: 'injectManifest',
+      // Change the filename to match what registerSW.js is looking for
+      filename: 'claims-sw.js',
+      injectManifest: {
+        minify: false,
+        enableWorkboxModulesLogs: true,
+        maximumFileSizeToCacheInBytes: 5000000
+      },
       manifest: manifest,
     }),
     { // default settings on build (i.e. fail on error)
@@ -44,7 +45,7 @@ export default defineConfig({
         failOnWarning: false,
         failOnError: true,
         include: [
-          'src/components/**/*.ts', 
+          'src/components/**/*.ts',
           'src/components/**/*.tsx',
           'src/models/**/*.ts',
           'src/models/**/*.tsx',
@@ -65,7 +66,7 @@ export default defineConfig({
         failOnError: false,
         lintOnStart: true,
         include: [
-          'src/components/**/*.ts', 
+          'src/components/**/*.ts',
           'src/components/**/*.tsx',
           'src/models/**/*.ts',
           'src/models/**/*.tsx',
@@ -83,7 +84,14 @@ export default defineConfig({
     }
   ],
   server: {
-    port: 3000
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: '0.0.0.0',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   },
   build: {
     outDir: 'dist',

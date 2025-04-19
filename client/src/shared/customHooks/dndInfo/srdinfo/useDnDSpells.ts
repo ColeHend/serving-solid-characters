@@ -27,7 +27,7 @@ export function useDnDSpells(excludeHomebrew?:boolean): Accessor<Spell[]> {
       }),
       concatMap((spells)=>{
         if (spells.length === 0) {
-          return HttpClient$.post<Spell[]>("/api/DnDInfo/Spells",{}).pipe(
+          return HttpClient$.get<Spell[]>("/api/DnDInfo/Spells",{}).pipe(
             take(1),
             catchError((err)=> {
               console.error("Error: ", err);

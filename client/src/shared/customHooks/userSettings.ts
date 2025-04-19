@@ -2,27 +2,54 @@ import { Accessor, createSignal, Setter } from "solid-js";
 import { UserSettings } from "../../models/userSettings";
 import httpClient$ from "./utility/httpClientObs";
 import userSettingDB from "./utility/localDB/userSettingDB";
-import { take, tap } from "rxjs";
-const [currentSettings, setCurrentSettings] = createSignal<UserSettings>({
+import { catchError, of, take, tap } from "rxjs";
+
+const DEFAULT_SETTINGS: UserSettings = {
+  theme: 'dark',
   userId: 0,
   username: "",
-  email: "",
-  theme: "dark"
-});
+  email: ""
+}
+// Initialize with default settings
+const [currentSettings, setCurrentSettings] = createSignal<UserSettings>({...DEFAULT_SETTINGS});
 const [loaded, setLoaded] = createSignal(false);
+const [isLoading, setIsLoading] = createSignal(false);
 
 export function getUserSettings(forceReload?: boolean): [Accessor<UserSettings>, Setter<UserSettings>] {
-  if (forceReload) setLoaded(false);
-  if (!loaded()) {
-    setLoaded(true);
+  if ((forceReload || !loaded()) && !isLoading()) {
+    console.log("Loading user settings...");
+    setIsLoading(true);
+    
+    // Attempt to load settings from IndexedDB
     getAllUsers().pipe(
       take(1),
-      tap((settings)=>{
-        if(settings.length > 0 && settings[0].userId === currentSettings().userId){
+      catchError(err => {
+        console.error("Error loading user settings:", err);
+        return of([] as UserSettings[]);
+      }),
+      tap((settings) => {
+        console.log("User settings retrieved:", settings);
+        
+        if (settings && settings.length > 0) {
+          // We found saved settings, use them
           setCurrentSettings(settings[0]);
+          console.log("Loaded user settings:", settings[0]);
+        } else {
+          // No settings found, create default settings entry
+          console.log("No settings found, using defaults");
+          saveUserSettings({...DEFAULT_SETTINGS});
         }
+        
+        setLoaded(true);
+        setIsLoading(false);
       })
-    ).subscribe();
+    ).subscribe({
+      error: (err) => {
+        console.error("Critical error in user settings subscription:", err);
+        setLoaded(true);
+        setIsLoading(false);
+      }
+    });
   }
     
   return [currentSettings, setCurrentSettings];
@@ -30,14 +57,25 @@ export function getUserSettings(forceReload?: boolean): [Accessor<UserSettings>,
 export default getUserSettings;
 
 export function saveUserSettings(settings: UserSettings, callback?: ()=>void) {
-  userSettingDB.userSettings.put(settings).then(()=>{
+  console.log("Saving user settings:", settings);
+  
+  userSettingDB.userSettings.put(settings).then(() => {
+    console.log("User settings saved successfully");
     if(callback) callback();
-  }).catch((err)=>{
-    console.error(err);
+  }).catch((err) => {
+    console.error("Failed to save user settings:", err);
   });
+  
   setCurrentSettings(settings);
 }
 
 function getAllUsers() {
-  return httpClient$.toObservable(userSettingDB.userSettings.toArray());
+  return httpClient$.toObservable(
+    userSettingDB.userSettings.toArray()
+  ).pipe(
+    catchError(err => {
+      console.error("Error in getAllUsers:", err);
+      return of([]);
+    })
+  );
 }

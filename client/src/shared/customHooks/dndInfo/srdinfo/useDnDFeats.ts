@@ -22,7 +22,7 @@ export function useDnDFeats(): Accessor<Feat[]> {
       }),
       concatMap((feats) => {
         if (feats.length === 0) {
-          return HttpClient$.post<Feat[]>("/api/DnDInfo/Feats", {}).pipe(
+          return HttpClient$.get<Feat[]>("/api/DnDInfo/Feats", {}).pipe(
             take(1),
             catchError((err) => {
               console.error("Error: ", err);

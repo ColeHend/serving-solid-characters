@@ -23,7 +23,7 @@ export function useDnDBackgrounds(): Accessor<Background[]> {
       concatMap((backgrounds) => {
         if (backgrounds.length === 0) {
           console.log("No local backgrounds found, fetching from API...");
-          return HttpClient$.post<Background[]>("/api/DnDInfo/Backgrounds", {}).pipe(
+          return HttpClient$.get<Background[]>("/api/DnDInfo/Backgrounds", {}).pipe(
             take(1),
             tap(response => console.log("API Response:", response)),
             catchError((err) => {

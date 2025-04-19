@@ -21,7 +21,7 @@ export function useDnDRaces(): Accessor<Race[]> {
       }),
       concatMap((races)=>{
         if (races.length === 0) {
-          return HttpClient$.post<Race[]>(`/api/DnDInfo/Races`,{}).pipe(
+          return HttpClient$.get<Race[]>(`/api/DnDInfo/Races`,{}).pipe(
             take(1),
             catchError((err)=>{
               console.error("Error: ", err);

@@ -25,21 +25,22 @@ public class DnDInfoController : ControllerBase
         this.dndInfoRepository = dndInfoRepository;
         this.jsonService = jsonService;
     }
-    [HttpPost("Classes")]
+    [HttpGet("Classes")]
     public ActionResult<List<ClassesEntity.ClassDTO>> Classes()
     {
         var classes = dndInfoRepository.GetClasses();
         return Ok(classes);
     }
 
-    [HttpPost("Spells")]
+    [HttpGet("Spells")]
     public ActionResult<List<SpellEntity>> Spells()
     {
         var spells = dndInfoRepository.GetSpells();
         return Ok(spells);
     }
     
-    [HttpPost("Items")]
+    [HttpGet("Items")]
+    [ProducesResponseType(typeof(List<object>), 200)]
     public ActionResult<List<object>> Items()
     {
         List<object> toSend = new List<object>();
@@ -55,21 +56,24 @@ public class DnDInfoController : ControllerBase
         return Ok(toSend);
     }
 
-    [HttpPost("Races")]
+    [HttpGet("Races")]
+    [ProducesResponseType(typeof(List<RaceEntity>), 200)]
     public ActionResult<List<RaceEntity>> Races()
     {
         var races = dndInfoRepository.GetRaces();
         return Ok(races);
     }
 
-    [HttpPost("Feats")]
+    [HttpGet("Feats")]
+    [ProducesResponseType(typeof(List<FeatEntity>), 200)]
     public ActionResult<List<FeatEntity>> Feats()
     {
         var feats = dndInfoRepository.GetFeats();
         return Ok(feats);
     }
 
-    [HttpPost("Backgrounds")]
+    [HttpGet("Backgrounds")]
+    [ProducesResponseType(typeof(List<BackgroundEntity>), 200)]
     public ActionResult<List<BackgroundEntity>> Backgrounds()
     {
         Console.WriteLine("DnDInfo/Backgrounds endpoint called");

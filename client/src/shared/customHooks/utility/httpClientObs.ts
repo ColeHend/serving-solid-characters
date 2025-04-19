@@ -115,6 +115,17 @@ class HttpClientObs {
   public delete<T>(url: string, config?: HttpConfig): Observable<T> {
     return this.request<T>('DELETE', url, undefined, config);
   }
+
+  public toObservable<T>(promise: Promise<T>): Observable<T> {
+    return new Observable<T>((observer) => {
+      promise
+        .then((data) => {
+          observer.next(data);
+          observer.complete();
+        })
+        .catch((err) => observer.error(err));
+    });
+  }
 }
 
 // export a single shared instance

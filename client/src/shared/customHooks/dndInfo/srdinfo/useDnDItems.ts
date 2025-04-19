@@ -21,7 +21,7 @@ export function useDnDItems(): Accessor<Item[]> {
       }),
       concatMap((items) => {
         if (items.length === 0) {
-          return HttpClient$.post<Item[]>("/api/DnDInfo/Items", {}).pipe(
+          return HttpClient$.get<Item[]>("/api/DnDInfo/Items", {}).pipe(
             take(1),
             catchError((err) => {
               console.error("Error: ", err);
