@@ -1,6 +1,6 @@
 import { Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
-import { LevelEntity } from "../../../../../models/class.model";
-import { CasterType } from "../../../../../models/core.model";
+import { LevelEntity } from "../../../../../models/old/class.model";
+import { CasterType } from "../../../../../models/old/core.model";
 import { Button, FormGroup, Icon, Input, Modal } from "coles-solid-library";
 import { ClassForm } from "./classes";
 import styles from "./classes.module.scss";

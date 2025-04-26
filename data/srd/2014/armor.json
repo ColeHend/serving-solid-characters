@@ -1,0 +1,184 @@
+[
+  {
+    "id": 0,
+    "name": "Padded",
+    "desc": "",
+    "type": 1,
+    "weight": 8,
+    "cost": "5 Gp",
+    "properties": {
+      "ArmorCategory": "Light",
+      "AC": "11 + Dex modifier",
+      "Stealth": "Disadvantage",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 1,
+    "name": "Leather",
+    "desc": "",
+    "type": 1,
+    "weight": 10,
+    "cost": "10 Gp",
+    "properties": {
+      "ArmorCategory": "Light",
+      "AC": "11 + Dex modifier",
+      "Stealth": "Normal",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Studded Leather",
+    "desc": "",
+    "type": 1,
+    "weight": 13,
+    "cost": "45 Gp",
+    "properties": {
+      "ArmorCategory": "Light",
+      "AC": "12 + Dex modifier",
+      "Stealth": "Normal",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 3,
+    "name": "Hide",
+    "desc": "",
+    "type": 1,
+    "weight": 12,
+    "cost": "10 Gp",
+    "properties": {
+      "ArmorCategory": "Medium",
+      "AC": "12 + Dex modifier (max 2)",
+      "Stealth": "Normal",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 4,
+    "name": "Chain Shirt",
+    "desc": "",
+    "type": 1,
+    "weight": 20,
+    "cost": "50 Gp",
+    "properties": {
+      "ArmorCategory": "Medium",
+      "AC": "13 + Dex modifier (max 2)",
+      "Stealth": "Normal",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 5,
+    "name": "Scale Mail",
+    "desc": "",
+    "type": 1,
+    "weight": 45,
+    "cost": "50 Gp",
+    "properties": {
+      "ArmorCategory": "Medium",
+      "AC": "14 + Dex modifier (max 2)",
+      "Stealth": "Disadvantage",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 6,
+    "name": "Breastplate",
+    "desc": "",
+    "type": 1,
+    "weight": 20,
+    "cost": "400 Gp",
+    "properties": {
+      "ArmorCategory": "Medium",
+      "AC": "14 + Dex modifier (max 2)",
+      "Stealth": "Normal",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 7,
+    "name": "Half Plate",
+    "desc": "",
+    "type": 1,
+    "weight": 40,
+    "cost": "750 Gp",
+    "properties": {
+      "ArmorCategory": "Medium",
+      "AC": "15 + Dex modifier (max 2)",
+      "Stealth": "Disadvantage",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 8,
+    "name": "Ring Mail",
+    "desc": "",
+    "type": 1,
+    "weight": 40,
+    "cost": "30 Gp",
+    "properties": {
+      "ArmorCategory": "Heavy",
+      "AC": "14",
+      "Stealth": "Disadvantage",
+      "StrengthReq": "0"
+    }
+  },
+  {
+    "id": 9,
+    "name": "Chain Mail",
+    "desc": "",
+    "type": 1,
+    "weight": 55,
+    "cost": "75 Gp",
+    "properties": {
+      "ArmorCategory": "Heavy",
+      "AC": "16",
+      "Stealth": "Disadvantage",
+      "StrengthReq": "13"
+    }
+  },
+  {
+    "id": 10,
+    "name": "Splint",
+    "desc": "",
+    "type": 1,
+    "weight": 60,
+    "cost": "200 Gp",
+    "properties": {
+      "ArmorCategory": "Heavy",
+      "AC": "17",
+      "Stealth": "Disadvantage",
+      "StrengthReq": "15"
+    }
+  },
+  {
+    "id": 11,
+    "name": "Plate",
+    "desc": "",
+    "type": 1,
+    "weight": 65,
+    "cost": "1500 Gp",
+    "properties": {
+      "ArmorCategory": "Heavy",
+      "AC": "18",
+      "Stealth": "Disadvantage",
+      "StrengthReq": "15"
+    }
+  },
+  {
+    "id": 12,
+    "name": "Shield",
+    "desc": "",
+    "type": 1,
+    "weight": 6,
+    "cost": "10 Gp",
+    "properties": {
+      "ArmorCategory": "Shield",
+      "AC": "+2",
+      "Stealth": "Normal",
+      "StrengthReq": "0"
+    }
+  }
+]

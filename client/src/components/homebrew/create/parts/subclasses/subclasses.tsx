@@ -2,10 +2,10 @@ import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { homebrewManager, useDnDSpells, Option, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Chip, Input, Select, useDnDClasses, Body, FormField, TextArea } from "../../../../../shared";
 import styles from './subclasses.module.scss';
 import { effect } from "solid-js/web";
-import { LevelEntity, Subclass } from "../../../../../models/class.model";
-import { Spell } from "../../../../../models/spell.model";
+import { LevelEntity, Subclass } from "../../../../../models/old/class.model";
+import { Spell } from "../../../../../models/old/spell.model";
 import { useSearchParams } from "@solidjs/router";
-import { Feature } from "../../../../../models/core.model";
+import { Feature } from "../../../../../models/old/core.model";
 export enum SpellsKnown {
     None = 0,
     Level = 1,

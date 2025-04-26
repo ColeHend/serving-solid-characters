@@ -3,10 +3,11 @@ import styles from "./classes.module.scss";
 import { useGetArmor, useGetItems, useGetWeapons } from "../../../../../shared";
 import { Stat } from "../../../../../shared/models/stats";
 import { Button, Chipbar, ChipType, FormField, FormGroup, Icon, Input, Modal, Option, Select } from "coles-solid-library";
-import { ClassForm } from "./classes";
+import { ClassForm, ProfStore } from "./classes";
 
 interface ProficienciesProps {
   formGroup: FormGroup<ClassForm>;
+  setProfStore: Setter<ProfStore>;
 }
 export const Proficiencies: Component<ProficienciesProps> = (props) => {
   const [showEquipTable, setShowEquipTable] = createSignal<boolean>(false);
@@ -17,10 +18,13 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
   const setArmorChips: Setter<ChipType[]> = (chips) => {
     const prev = props.formGroup.get("armorProficiencies") as string[];
     if (typeof chips === "function") {
-      props.formGroup.set("armorProficiencies", chips(prev.map(x=>({key:"Armor", value: x}))).map((chip) => chip.value));
+      const val1 = chips(prev.map(x=>({key:"Armor", value: x}))).map((chip) => chip.value);
+      props.formGroup.set("armorProficiencies", val1);
+
     }
     else {
       props.formGroup.set("armorProficiencies", chips.map((chip) => chip.value));
+
     }
   };
   const weaponChips = () => {
@@ -30,10 +34,13 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
   const setWeaponChips: Setter<ChipType[]> = (chips) => {
     const prev = props.formGroup.get("weaponProficiencies") as string[];
     if (typeof chips === "function") {
-      props.formGroup.set("weaponProficiencies", chips(prev.map(x=>({key:"Weapon", value: x}))).map((chip) => chip.value));
+      const value = chips(prev.map(x=>({key:"Weapon", value: x}))).map((chip) => chip.value);
+      props.formGroup.set("weaponProficiencies", value);
+
     }
     else {
       props.formGroup.set("weaponProficiencies", chips.map((chip) => chip.value));
+
     }
   };
   const toolChips = () => {
@@ -43,9 +50,12 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
   const setToolChips: Setter<ChipType[]> = (chips) => {
     const prev = props.formGroup.get("toolProficiencies") as string[];
     if (typeof chips === "function") {
-      props.formGroup.set("toolProficiencies", chips(prev.map(x=>({key:"Tool", value: x}))).map((chip) => chip.value));
+      const value = chips(prev.map(x=>({key:"Tool", value: x}))).map((chip) => chip.value);
+      props.formGroup.set("toolProficiencies", value);
+
     } else {
       props.formGroup.set("toolProficiencies", chips.map((chip) => chip.value));
+
     }
   };
   const allItems = useGetItems();
@@ -68,6 +78,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 const currentArmor = props.formGroup.get("armorProficiencies") as string[];
                 props.formGroup.set("armorProficiencies", [...currentArmor, ...selectedArmor()]);
                 setSelectedArmor([]);
+                props.setProfStore((prev) => ({ ...prev, armor: [...prev.armor || [], ...selectedArmor()] }));
               }}><Icon name="add" /></Button>
               <Select multiple value={selectedArmor()} onChange={setSelectedArmor}>
                 <Option value="Light">Light</Option>
@@ -92,6 +103,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 const currentWeapons = props.formGroup.get("weaponProficiencies") as string[];
                 props.formGroup.set("weaponProficiencies", [...currentWeapons, ...selectedWeapons()]);
                 setSelectedWeapons([]);
+                props.setProfStore((prev) => ({ ...prev, weapons: [...prev.weapons || [], ...selectedWeapons()] }));
               }}><Icon name="add" /></Button>
               <Select multiple value={selectedWeapons()} onChange={setSelectedWeapons}>
                 <Option value="Simple">Simple</Option>
@@ -114,6 +126,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 const currentTools = props.formGroup.get("toolProficiencies") as string[];
                 props.formGroup.set("toolProficiencies", [...currentTools, ...selectedItems()]);
                 setSelectedItems([]);
+                props.setProfStore((prev) => ({ ...prev, tools: [...prev.tools || [], ...selectedItems()] }));
               }}><Icon name="add" /></Button>
               <Select multiple value={selectedItems()} onChange={setSelectedItems}>
                 <For each={allItems().filter((item) => item.equipmentCategory === "Tools")}>

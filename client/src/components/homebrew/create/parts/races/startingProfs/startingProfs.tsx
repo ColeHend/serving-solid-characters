@@ -12,7 +12,7 @@ import {
 } from "../../../../../../shared";
 import { ItemType } from "../../../../../../shared/customHooks/utility/itemType";
 import { SetStoreFunction } from "solid-js/store";
-import { Feature } from "../../../../../../models/core.model";
+import { Feature } from "../../../../../../models/old/core.model";
 
 interface props {
     setClose: Setter<boolean>;

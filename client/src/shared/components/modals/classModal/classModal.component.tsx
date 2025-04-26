@@ -12,7 +12,7 @@ import {
 import FeatureTable from "./featureTable/featureTable";
 import Carousel from "../../Carosel/Carosel";
 import ExpansionPanel from "../../expansion/expansion";
-import { DnDClass, Subclass } from "../../../../models/class.model";
+import { DnDClass, Subclass } from "../../../../models/old/class.model";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
 import { SharedHookContext } from "../../../../components/rootApp";
@@ -21,7 +21,7 @@ import getUserSettings from "../../../customHooks/userSettings";
 import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";
 import Paginator from "../../paginator/paginator";
-import { Feature } from "../../../../models/core.model";
+import { Feature } from "../../../../models/old/core.model";
 import Modal from "../../popup/popup.component";
 import ChipType from "../../../models/chip";
 import Chipbar from "../../Chipbar/chipbar";

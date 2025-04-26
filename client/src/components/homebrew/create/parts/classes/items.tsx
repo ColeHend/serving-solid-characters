@@ -3,7 +3,7 @@ import styles from "./classes.module.scss";
 import { Armor, Clone, Item, useGetArmor, useGetItems, useGetWeapons, Weapon } from "../../../../../shared";
 import { Modal, Select, Option, Input, FormField, Table, Column, Header, Cell, Row, FormGroup, Button, Icon } from "coles-solid-library";
 import { ClassForm } from "./classes";
-import { Choice, FeatureTypes } from "../../../../../models/core.model";
+import { Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { ItemMenuButton } from "./itemMenuButton";
 
 export interface AddItem<T=Item> {

@@ -5,7 +5,7 @@ import {
   createSignal,
 } from "solid-js";
 import styles from "./feats.module.scss";
-import { Feat } from "../../../models/feat.model";
+import { Feat } from "../../../models/old/feat.model";
 import Paginator from "../../../shared/components/paginator/paginator";
 import { effect } from "solid-js/web";
 import useGetFeats from "../../../shared/customHooks/data/useGetFeats";

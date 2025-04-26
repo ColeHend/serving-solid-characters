@@ -1,0 +1,722 @@
+[
+  {
+    "id": "dragonborn",
+    "name": "Dragonborn",
+    "size": "Medium",
+    "speed": 30,
+    "languages": [
+      "Common",
+      "Draconic"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Draconic Ancestry",
+          "description": "Choose a dragon lineage (Black/Acid, Blue/Lightning, Brass/Fire, Bronze/Lightning, Copper/Acid, Gold/Fire, Green/Poison, Red/Fire, Silver/Cold, White/Cold】. This determines the damage type of your other traits (Breath Weapon and Resistance) and influences your appearance (scale color)."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Breath Weapon",
+          "description": "You can replace one of your attacks (when you take the Attack action) with an exhalation of elemental energy. Your Breath Weapon is either a 15-foot cone or a 30-foot by 5-foot line (your choice each time) dealing damage of your Ancestry’s type. Creatures in the area must make a Dexterity save (DC = 8 + Con mod + Prof】, taking 1d10 damage on a failed save or half on success. This damage increases to 2d10 at 5th level, 3d10 at 11th, and 4d10 at 17th level. You can use this Breath Weapon a number of times equal to your proficiency bonus per Long Res】.",
+          "metadata": {
+            "uses": "proficiency bonus"
+          }
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Damage Resistance",
+          "description": "You have resistance to the damage type associated with your Draconic Ancestry (e.g. a Gold dragonborn has resistance to fire damage】."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Darkvision",
+          "description": "Thanks to your draconic senses, you have Darkvision out to 60 feet. You can see in dim light as if it were bright light and in darkness as if it were dim light."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Draconic Flight",
+          "description": "Starting at 5th level, you can channel magic to briefly sprout spectral dragon wings. As a Bonus Action, you gain a fly speed equal to your walking speed for 10 minute】. Your wings appear as energy in the color of your ancestry’s breath. You can use this trait once per Long Rest.",
+          "metadata": {
+            "recharge": "long rest"
+          }
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Medium (about 5–7 feet tall)",
+      "abilities": "No fixed bonuses (choose +2 to one and +1 to another, or +1 to three different scores, as per background selection)"
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "dwarf",
+    "name": "Dwarf",
+    "size": "Medium",
+    "speed": 30,
+    "languages": [
+      "Common",
+      "Dwarvish"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Darkvision",
+          "description": "Accustomed to life underground, you have superior vision in dark conditions. You have Darkvision with a range of 120 fee】."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Dwarven Resilience",
+          "description": "You have resistance to poison damage, and you have advantage on saving throws to avoid or end the Poisoned condition on yoursel】."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Dwarven Toughness",
+          "description": "Your hit point maximum increases by 1, and it increases by an additional 1 every time you gain a leve】 (reflecting dwarven hardiness)."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Stonecunning",
+          "description": "You can touch stone and sense its secrets. As a Bonus Action, you gain Tremorsense out to 60 feet for 10 minutes, but you must be on a stone surface (natural or worked) to use this trai】. You can use this ability a number of times equal to your proficiency bonus per Long Rest.",
+          "metadata": {
+            "recharge": "long rest",
+            "uses": "proficiency bonus"
+          }
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Medium (about 4–5 feet tall)",
+      "abilities": "No fixed bonuses (choose via background; traditionally +2 CON in previous editions)"
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "elf",
+    "name": "Elf",
+    "size": "Medium",
+    "speed": 30,
+    "languages": [
+      "Common",
+      "Elvish"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Darkvision",
+          "description": "Accustomed to twilit forests and night skies, you have Darkvision out to 60 fee】."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Fey Ancestry",
+          "description": "You have advantage on saving throws to avoid or end the charmed condition on yourself (magic can’t put you to sleep】."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Keen Senses",
+          "description": "You have proficiency in one of the following: Insight, Perception, or Survival (your attunement to natural surroundings grants acute senses】."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Trance",
+          "description": "Elves do not need to sleep. Instead, you meditate deeply for 4 hours a day, remaining semi-conscious. After resting in this way, you gain the same benefit that a human does from 8 hours of slee】."
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Medium (about 5–6 feet tall)",
+      "abilities": "No fixed bonuses (choose via background; traditionally +2 DEX in earlier editions)"
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    },
+    "traitChoice": {
+      "amount": 1,
+      "choices": [
+        {
+          "details": {
+            "name": "Elven Lineage",
+            "description": "You carry one of three elven magical lineages. Choose one of: **High Elf (Lineage of the Feywild)** – You know one cantrip of your choice from the Wizard spell list. At 3rd level, you gain the ability to cast *Detect Magic* once per day. At 5th level, you can cast *Misty Step* once per day. **Wood Elf (Lineage of Twilight)** – You know the *Druidcraft* cantrip. At 3rd level, you can cast *Longstrider* once per day. At 5th level, you can cast *Pass Without Trace* once per day. **Drow (Lineage of the Underdark)** – You know the *Dancing Lights* cantrip. At 3rd level, you can cast *Faerie Fire* once per day. At 5th level, you can cast *Darkness* once per day. You regain uses of these lineage spells after a Long Res】. (Intelligence, Wisdom, or Charisma is your spellcasting ability for these, chosen when you select the lineage.)",
+            "metadata": {
+              "spells": [
+                "Charisma"
+              ]
+            }
+          },
+          "prerequisites": []
+        },
+        {
+          "details": {
+            "name": "Fey Ancestry",
+            "description": "You have advantage on saving throws to avoid or end the charmed condition on yourself (magic can’t put you to sleep】."
+          },
+          "prerequisites": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "gnome",
+    "name": "Gnome",
+    "size": "Small",
+    "speed": 30,
+    "languages": [
+      "Common",
+      "Gnomish"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Darkvision",
+          "description": "Accustomed to life underground in burrows, you have Darkvision out to 60 fee】."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Gnomish Cunning",
+          "description": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magi】 (reflecting innate gnome resistance to magical effects)."
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Small (about 3–4 feet tall)",
+      "abilities": "No fixed bonuses (choose via background; traditionally +2 INT earlier)"
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    },
+    "traitChoice": {
+      "amount": 1,
+      "choices": [
+        {
+          "details": {
+            "name": "Gnomish Lineage",
+            "description": "You inherit magical abilities from your gnome subrace. Choose one: **Forest Gnome** – You know the *Minor Illusion* cantrip. You can also cast *Speak with Animals* with this trait a number of times equal to your proficiency bonus per Long Rest (and you can use spell slots to cast it as well】. **Rock Gnome** – You know the *Mending* and *Prestidigitation* cantrips. Additionally, over 10 minutes you can use *Prestidigitation* to create a Tiny clockwork device (AC 5, 1 HP) that produces one minor effect (such as a small music box chime, a toy that emits a faint odor, etc.) resembling one of the cantrip’s effect】. You can have up to three such devices active at once, and each falls apart after 8 hours (or sooner if you dismantle it as an action).",
+            "metadata": {
+              "recharge": "long rest",
+              "uses": "proficiency bonus",
+              "spells": [
+                "You"
+              ]
+            }
+          },
+          "prerequisites": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "goliath",
+    "name": "Goliath",
+    "size": "Medium",
+    "speed": 35,
+    "languages": [
+      "Common",
+      "Giant"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Powerful Build",
+          "description": "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift (goliaths are incredibly strong for their size)."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Mountain Born",
+          "description": "You have resistance to cold damage, and you’re acclimated to high altitude (you do not suffer penalties in high-altitude environments)."
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Medium (about 7–8 feet tall)",
+      "abilities": "No fixed bonuses (choose via background; traditionally +2 STR, +1 CON in earlier editions)"
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    },
+    "traitChoice": {
+      "amount": 1,
+      "choices": [
+        {
+          "details": {
+            "name": "Giant Ancestry",
+            "description": "You have blood of giants running in your veins, granting you a supernatural boon. Choose one of the following benefits (you can use the chosen benefit a number of times equal to your proficiency bonus per Long Rest】:\n- **Cloud’s Jaunt (Cloud Giant):** As a Bonus Action, you magically teleport up to 30 feet to a visible unoccupied spac】.\n- **Fire’s Burn (Fire Giant):** When you hit a target with a melee attack, you can deal an extra 1d10 fire damage to i】.\n- **Frost’s Chill (Frost Giant):** When you hit a creature with an attack, you can also deal 1d6 cold damage and reduce its speed by 10 feet until your next turn.\n- **Stone’s Endurance (Stone Giant):** When you take damage, you can use your reaction to roll a d12. Subtract the number rolled + your Constitution modifier from the damage taken (once per rest use).\n- **Storm’s Thunder (Storm Giant):** When you take damage from a creature within 60 feet, you can use your reaction to deal 1d8 thunder damage back to that creature.\n*(These are example giant gifts; Cloud and Fire are explicitly mentioned in the SRD text.)*",
+            "metadata": {
+              "recharge": "long rest",
+              "uses": "proficiency bonus"
+            }
+          },
+          "prerequisites": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "halfling",
+    "name": "Halfling",
+    "size": "Small",
+    "speed": 30,
+    "languages": [
+      "Common",
+      "Halfling"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Brave",
+          "description": "You have advantage on saving throws against being frightene】. Halflings have an uncommon valor that steels them against fear."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Halfling Nimbleness",
+          "description": "You can move through the space of any creature that is of a size larger than yours (you can’t stop in their space, but you can slip by in combat】. This reflects your small stature and agility."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Lucky (Halfling)",
+          "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and **must** use the new rol】. (This trait is different from the Lucky feat; it represents the halfling’s general good fortune.)"
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Naturally Stealthy",
+          "description": "You can attempt to hide even when you are only obscured by a creature that is one size larger than yo】. For example, you can hide behind a Medium ally during combat."
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Small (about 2–3 feet tall)",
+      "abilities": "No fixed bonuses (choose via background; traditionally +2 DEX earlier)"
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "human",
+    "name": "Human",
+    "size": "Small",
+    "speed": 30,
+    "languages": [
+      "Common"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Resourceful",
+          "description": "Humans are known for their ingenuity. You gain Heroic Inspiration (one free reroll, also called Inspiration) whenever you finish a Long Res】. (If you already have Inspiration, you don’t gain another; essentially you often start each adventuring day with Inspiration.)"
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Skillful",
+          "description": "You gain proficiency in one skill of your choic】. Humans have a wide range of talents, so you pick up an extra trained skill."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Versatile",
+          "description": "You gain one *Origin feat* of your choice at 1st level (representing the diverse backgrounds of humans】. For example, many humans choose the Skilled feat as recommended, but you may choose any feat with the 'Origin' category."
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Medium (4–7 feet tall) or Small (2–4 feet tall) (your choice at character creation)",
+      "abilities": "No fixed bonuses (increase three different ability scores by 1 each, or similar distribution via background)"
+    },
+    "languageChoice": {
+      "options": [
+        "Any"
+      ],
+      "amount": 1
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "orc",
+    "name": "Orc",
+    "size": "Medium",
+    "speed": 30,
+    "languages": [
+      "Common",
+      "Orc"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Adrenaline Rush",
+          "description": "You can take the Dash action as a Bonus Action. When you do so, you gain temporary hit points equal to your proficiency bonu】. You can use this trait a number of times equal to your proficiency bonus per Long Rest. (This burst of adrenaline lets you surge forward in battle.)",
+          "metadata": {
+            "recharge": "long rest",
+            "uses": "proficiency bonus"
+          }
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Darkvision",
+          "description": "You have superior vision in dark conditions. You can see in dim light within 120 feet as if it were bright light, and in darkness as if it were dim ligh】. Your orcish heritage grants you exceptional night vision."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Relentless Endurance",
+          "description": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instea】. Once you use this trait, you can’t do so again until you finish a Long Rest. (Your ferocity allows you to fight on when others would fall.)"
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Medium (about 6–7 feet tall)",
+      "abilities": "No fixed bonuses (choose via background; traditionally +2 STR, +1 CON earlier)"
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "tiefling",
+    "name": "Tiefling",
+    "size": "Small",
+    "speed": 30,
+    "languages": [
+      "Common",
+      "Infernal"
+    ],
+    "abilityBonuses": [],
+    "traits": [
+      {
+        "details": {
+          "name": "Darkvision",
+          "description": "Thanks to your infernal heritage, you have Darkvision out to 60 fee】. You can see in dim light and darkness as other tieflings do, with hues of heat and shadow."
+        },
+        "prerequisites": []
+      },
+      {
+        "details": {
+          "name": "Otherworldly Presence",
+          "description": "You know the *Thaumaturgy* cantri】. This minor magic allows you to manifest supernatural signs (harmless tremors, flashes of light, eerie sounds, etc.), often associated with fiendish influence.",
+          "metadata": {
+            "spells": [
+              "This"
+            ]
+          }
+        },
+        "prerequisites": []
+      }
+    ],
+    "descriptions": {
+      "physical": "Medium (about 4–7 feet tall) or Small (about 3–4 feet tall) (your choice)",
+      "abilities": "No fixed bonuses (choose via background; traditionally +2 CHA, +1 INT earlier)"
+    },
+    "abilityBonusChoice": {
+      "amount": 3,
+      "choices": [
+        {
+          "stat": 0,
+          "value": 1
+        },
+        {
+          "stat": 1,
+          "value": 1
+        },
+        {
+          "stat": 2,
+          "value": 1
+        },
+        {
+          "stat": 3,
+          "value": 1
+        },
+        {
+          "stat": 4,
+          "value": 1
+        },
+        {
+          "stat": 5,
+          "value": 1
+        }
+      ]
+    },
+    "traitChoice": {
+      "amount": 1,
+      "choices": [
+        {
+          "details": {
+            "name": "Fiendish Legacy",
+            "description": "You are the inheritor of a fiendish bloodline, granting magical abilities. Choose a Fiendish Legacy: **Abyssal (Demonic)**, **Chthonic (Shadow)**, or **Infernal (Devil)*】. Each legacy gives a specific cantrip and spells at higher levels:\n- **Abyssal Legacy:** Resistance to poison damage. You know the *Poison Spray* cantrip. At 3rd level, you always have *Ray of Sickness* prepared; at 5th level, *Hold Person*. You can cast each of those once per Long Rest without a slot (or using slots】.\n- **Chthonic Legacy:** Resistance to necrotic damage. You know the *Chill Touch* cantrip. At 3rd level, you get *False Life*; at 5th, *Ray of Enfeeblement* (1/day each or using slots).\n- **Infernal Legacy:** Resistance to fire damage. You know the *Fire Bolt* cantrip. At 3rd level, you get *Hellish Rebuke*; at 5th, *Darkness* (1/day each】.\nYour spellcasting ability for these is Intelligence, Wisdom, or Charisma (choose when you select the legacy).",
+            "metadata": {
+              "recharge": "long rest",
+              "spells": [
+                "Rest",
+                "Enfeeblement",
+                "Darkness"
+              ]
+            }
+          },
+          "prerequisites": []
+        }
+      ]
+    }
+  }
+]

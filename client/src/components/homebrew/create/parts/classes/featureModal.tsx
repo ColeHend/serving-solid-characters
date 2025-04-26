@@ -1,8 +1,9 @@
 import { Button, FormGroup, Input, Modal, Select, Option, Checkbox } from "coles-solid-library";
 import { Accessor, Component, createEffect, createSignal, Setter, Switch, Match, Show, For } from "solid-js";
 import { ClassForm } from "./classes";
-import { CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes } from "../../../../../models/core.model";
-import { LevelEntity } from "../../../../../models/class.model";
+import { CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes } from "../../../../../models/old/core.model";
+import { LevelEntity } from "../../../../../models/old/class.model";
+import { Clone, TextArea } from "../../../../../shared";
 interface FeatureModalProps {
   showAddFeature: Accessor<boolean>;
   setShowAddFeature: Setter<boolean>;
@@ -73,8 +74,11 @@ export const FeatureModal: Component<FeatureModalProps> = (props) => {
       // Add new feature
       level?.features.push(feature);
     }
-
-    props.setTableData([...levels.map(l => l.level === level?.level ? level : l)]);
+    const newLevels = [...levels.map(l => l.level === level?.level ? level : l)];
+    console.log('New Levels:', newLevels);
+    
+    props.setTableData(newLevels);
+    props.formGroup.set('classLevels', Clone(newLevels));
     props.setShowAddFeature(false);
 
   }
@@ -92,9 +96,9 @@ export const FeatureModal: Component<FeatureModalProps> = (props) => {
 
         <div>
           <h3>Description</h3>
-          <Input
-            value={description()}
-            onChange={(e) => setDescription(e.currentTarget.value)}
+          <TextArea
+            text={description}
+            setText={setDescription}
             placeholder="Enter feature description"
           />
         </div>

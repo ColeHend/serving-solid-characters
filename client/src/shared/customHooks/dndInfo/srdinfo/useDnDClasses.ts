@@ -1,4 +1,4 @@
-import type { DnDClass } from "../../../../models/class.model";
+import type { DnDClass } from "../../../../models/old/class.model";
 import type { Accessor } from "solid-js";
 import { createSignal, onMount } from "solid-js";
 import { catchError, concatMap, from, map, mergeMap, of, take, tap } from "rxjs";
@@ -42,30 +42,7 @@ export function useDnDClasses(): Accessor<DnDClass[]> {
           return of(localClasses);
         } else {
           console.log("No classes in local DB, fetching from API");
-          return HttpClient$.get<DnDClass[]>("/api/DnDInfo/Classes", {}).pipe(
-            take(1),
-            map((apiClasses) => {
-              if (!apiClasses || apiClasses.length === 0) {
-                console.warn("API returned no classes");
-                return [];
-              }
-              console.log(`API returned ${apiClasses.length} classes`);
-              return FixClasses(apiClasses);
-            }),
-            catchError((err) => {
-              console.error("API error loading classes:", err);
-              setErrorMessage("Failed to load classes from server");
-              return of([]);
-            }),
-            tap((apiClasses) => {
-              if (apiClasses && apiClasses.length > 0) {
-                console.log("Saving classes to local DB");
-                LocalSrdDB.classes.bulkAdd(apiClasses).catch(err => {
-                  console.error("Error saving classes to local DB:", err);
-                });
-              }
-            })
-          );
+          return of([]);
         }
       }),
       concatMap((classes: DnDClass[]) => {

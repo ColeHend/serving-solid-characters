@@ -1,4 +1,4 @@
-import { Item } from "../shared";
+import { Item } from "../../shared";
 
 export enum AbilityScores {
 	STR = 0,

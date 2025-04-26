@@ -2,7 +2,7 @@ import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, of, take, tap, concatMap } from "rxjs";
 import HttpClient$ from "../../utility/httpClientObs";
-import { Race } from "../../../../models/race.model";
+import { Race } from "../../../../models/old/race.model";
 import LocalSrdDB from "../../utility/localDB/srdDBFile";
 
 const [race, setRace] = createSignal<Race[]>([]);

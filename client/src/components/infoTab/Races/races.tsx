@@ -2,7 +2,7 @@ import { Component, Show, createMemo, createSignal } from "solid-js";
 import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
 import styles from "./races.module.scss";
 import { effect } from "solid-js/web";
-import { Race } from "../../../models/race.model";
+import { Race } from "../../../models/old/race.model";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import Button from "../../../shared/components/Button/Button";
 import { Body, Paginator, SkinnySnowman,homebrewManager } from "../../../shared";

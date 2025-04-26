@@ -4,7 +4,7 @@ import styles from "./classes.module.scss";
 import { Item } from "../../../../../models";
 import { Armor, Weapon } from "../../../../../shared";
 import { ClassForm } from "./classes";
-import { Choice, FeatureTypes } from "../../../../../models/core.model";
+import { Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { AddItem } from "./items";
 
 interface ItemMenuButtonProps {

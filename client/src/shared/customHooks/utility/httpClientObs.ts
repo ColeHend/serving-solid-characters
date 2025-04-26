@@ -1,8 +1,10 @@
+import { o } from '@vite-pwa/assets-generator/shared/assets-generator.5e51fd40';
 import { Observable } from 'rxjs';
 import { Accessor, createSignal } from 'solid-js';
 
 interface HttpConfig {
   headers?: Record<string, string>;
+  nocors?: boolean;
 }
 
 class HttpClientObs {
@@ -64,14 +66,15 @@ class HttpClientObs {
 
     const opts: RequestInit = {
       method,
-      headers,
-      mode: 'cors' ,
-      credentials: 'include',    // <- if you ever need cookies/auth
+      headers,  
       // only attach body if present
       ...(body !== undefined
         ? { body: JSON.stringify(body) }
         : {}),
     };
+    if (!config?.nocors) {
+      opts.mode = 'cors';
+    }
 
     return new Observable<T>((observer) => {
       fetch(fullUrl, opts)

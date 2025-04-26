@@ -1,4 +1,4 @@
-import { Item } from "../shared";
+import { Item } from "../../shared";
 import type { Choice, Feature } from "./core.model";
 
 export interface Background {

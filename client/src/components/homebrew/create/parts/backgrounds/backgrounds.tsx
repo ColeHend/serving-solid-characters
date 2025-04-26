@@ -6,8 +6,8 @@ import { createStore } from "solid-js/store";
 import { Background } from "../../../../../models";
 import useGetBackgrounds from "../../../../../shared/customHooks/data/useGetBackgrounds";
 import FormField from "../../../../../shared/components/FormField/formField";
-import { LevelEntity } from "../../../../../models/class.model";
-import { Feature, FeatureTypes } from "../../../../../models/core.model";
+import { LevelEntity } from "../../../../../models/old/class.model";
+import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 

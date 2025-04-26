@@ -1,7 +1,7 @@
 import { Accessor, Component, For, Match, Setter, Switch } from "solid-js";
 import Modal from "../../popup/popup.component";
 import { Feat } from "../../../../models";
-import { FeatureTypes as PreReqType } from "../../../../models/core.model";
+import { FeatureTypes as PreReqType } from "../../../../models/old/core.model";
 import style from "./featView.module.scss"
 
 interface props {

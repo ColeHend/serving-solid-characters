@@ -1,0 +1,104 @@
+[
+  {
+    "backgroundName": "Acolyte",
+    "abilityScoreOptions": [
+      "Intelligence",
+      "Wisdom",
+      "Charisma"
+    ],
+    "feat": "Magic Initiate (Cleric)",
+    "skillProficiencies": [
+      "Insight",
+      "Religion"
+    ],
+    "toolProficiency": "Calligraphers Supplies",
+    "equipmentOptions": {
+      "A": [
+        "Calligraphers Supplies",
+        "Book (prayers)",
+        "Holy Symbol",
+        "Parchment (10 sheets)",
+        "Robe",
+        "8 GP"
+      ],
+      "B": "50 GP"
+    }
+  },
+  {
+    "backgroundName": "Criminal",
+    "abilityScoreOptions": [
+      "Dexterity",
+      "Constitution",
+      "Intelligence"
+    ],
+    "feat": "Alert",
+    "skillProficiencies": [
+      "Sleight of Hand",
+      "Stealth"
+    ],
+    "toolProficiency": "Thieves Tools",
+    "equipmentOptions": {
+      "A": [
+        "2 Daggers",
+        "Thieves Tools",
+        "Crowbar",
+        "2 Pouches",
+        "Travelers Clothes",
+        "16 GP"
+      ],
+      "B": "50 GP"
+    }
+  },
+  {
+    "backgroundName": "Sage",
+    "abilityScoreOptions": [
+      "Constitution",
+      "Intelligence",
+      "Wisdom"
+    ],
+    "feat": "Magic Initiate (Wizard)",
+    "skillProficiencies": [
+      "Arcana",
+      "History"
+    ],
+    "toolProficiency": "Calligraphers Supplies",
+    "equipmentOptions": {
+      "A": [
+        "Quarterstaff",
+        "Calligraphers Supplies",
+        "Book (history)",
+        "Parchment (8 sheets)",
+        "Robe",
+        "8 GP"
+      ],
+      "B": "50 GP"
+    }
+  },
+  {
+    "backgroundName": "Soldier",
+    "abilityScoreOptions": [
+      "Strength",
+      "Dexterity",
+      "Constitution"
+    ],
+    "feat": "Savage Attacker",
+    "skillProficiencies": [
+      "Athletics",
+      "Intimidation"
+    ],
+    "toolProficiency": "Gaming Set (choose one kind)",
+    "equipmentOptions": {
+      "A": [
+        "Spear",
+        "Shortbow",
+        "20 Arrows",
+        "Gaming Set (same as above)",
+        "Healers Kit",
+        "Quiver",
+        "Travelers Clothes",
+        "14 GP"
+      ],
+      "B": "50 GP"
+    }
+  }
+]

@@ -2,7 +2,7 @@ import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, of, take, tap, concatMap } from "rxjs";
 import HttpClient$ from "../../utility/httpClientObs";
-import { Background } from "../../../../models/background.model";
+import { Background } from "../../../../models/old/background.model";
 import LocalSrdDB from "../../utility/localDB/srdDBFile";
 
 const [background, setBackgrounds] = createSignal<Background[]>([]);

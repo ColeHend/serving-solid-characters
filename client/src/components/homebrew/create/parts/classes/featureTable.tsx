@@ -1,9 +1,9 @@
-import { Component, createEffect, createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
-import { LevelEntity } from "../../../../../models/class.model";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, splitProps, Switch } from "solid-js";
+import { LevelEntity } from "../../../../../models/old/class.model";
 import { Table, Column, Row, Header, Cell, TabBar, FormGroup, FormField, Input, Icon, Button, Select, Option } from "coles-solid-library";
 import styles from "./classes.module.scss";
 import { ClassForm } from "./classes";
-import { CasterType, FeatureTypes } from "../../../../../models/core.model";
+import { CasterType, FeatureTypes } from "../../../../../models/old/core.model";
 import { ClassTable } from "./classTable";
 
 enum FeatureTabs {
@@ -12,37 +12,18 @@ enum FeatureTabs {
 }
 interface FeatureTableProps {
   formGroup: FormGroup<ClassForm>;
+  tableData: Accessor<LevelEntity[]>;
+  setTableData: Setter<LevelEntity[]>;
 }
 export const FeatureTable: Component<FeatureTableProps> = (props) => {
   const [activeTab, setActiveTab] = createSignal<FeatureTabs>(0);
   const [tabs, setTabs] = createSignal<string[]>(['Class Specific', 'Caster Features']);
-  const defaultTableData: LevelEntity[] = Array.from({ length: 20 }, (_, i) => ({
-    level: i + 1,
-    features: [{
-      name: `Feature ${i + 1}`,
-      value: 'Description of the feature',
-      metadata: {
-
-      },
-      info: {
-        className: '',
-        subclassName: '',
-        level: i + 1,
-        type: FeatureTypes.Class,
-        other: '',
-      }
-    }],
-    info: {
-      className: '',
-      subclassName: '',
-      level: i + 1,
-      type: FeatureTypes.Class,
-      other: '',
-    },
-    profBonus: i < 5 ? 2 : i < 9 ? 3 : i < 13 ? 4 : i < 17 ? 5 : 6,
-    classSpecific: {},
-  }));
-  const [tableData, setTableData] = createSignal<LevelEntity[]>(defaultTableData);
+  const [{tableData, setTableData}, rest] = splitProps(props, ['tableData', 'setTableData']);
+  
+  // const [tableData, setTableData] = createSignal<LevelEntity[]>(defaultTableData);
+  createEffect(() => {
+    props.formGroup.set('classLevels', tableData());
+  })
   const [newColumnName, setNewColumnName] = createSignal<string>('');
   
   const classSpecificKeys = createMemo(() => {

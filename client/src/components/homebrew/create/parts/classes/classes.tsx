@@ -1,14 +1,14 @@
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { Proficiencies } from "./proficiencies";
 import { FeatureTable } from "./featureTable";
 import { Stats } from "./stats";
 import { Items } from "./items";
 import { Header } from "./header";
-import { Container, Form, FormGroup, Validators, FormArray } from "coles-solid-library";
+import { Container, Form, FormGroup, Validators, FormArray, Button } from "coles-solid-library";
 import styles from './classes.module.scss';
 import { CastingStat, Stat } from "../../../../../shared/models/stats";
-import { DnDClass, ClassMetadata, LevelEntity, Subclass, ClassCasting } from "../../../../../models/class.model";
-import { CasterType, Choice, FeatureTypes } from "../../../../../models/core.model";
+import { DnDClass, ClassMetadata, LevelEntity, Subclass, ClassCasting } from "../../../../../models/old/class.model";
+import { CasterType, Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { SpellsKnown } from "../../../../../shared/models/casting";
 import { ArrayValidation, ValidatorResult } from "coles-solid-library/dist/components/Form/formHelp/models";
 
@@ -57,28 +57,39 @@ export interface ClassForm {
 export const Classes: Component = () => {
   const defaultClassLevels: LevelEntity[] = Array.from({ length: 20 }, (_, i) => ({
     level: i + 1,
-    features: [],
-    spellcasting: undefined,
+    features: [{
+      name: `Feature ${i + 1}`,
+      value: 'Description of the feature',
+      metadata: {
+
+      },
+      info: {
+        className: '',
+        subclassName: '',
+        level: i + 1,
+        type: FeatureTypes.Class,
+        other: '',
+      }
+    }],
     info: {
-      className: "",
-      classLevel: i + 1,
+      className: '',
       subclassName: '',
       level: i + 1,
       type: FeatureTypes.Class,
-      other: ''
+      other: '',
     },
-    profBonus: 1 + Math.ceil((i + 1) / 4),
-    classSpecific: {}
+    profBonus: i < 5 ? 2 : i < 9 ? 3 : i < 13 ? 4 : i < 17 ? 5 : 6,
+    classSpecific: {},
   }));
 
-  const classLevels = new FormArray<LevelEntity[]>([[], []], defaultClassLevels);
+  // const classLevels = new FormArray<LevelEntity[]>([[], []], defaultClassLevels);
 
   const ClassFormGroup = new FormGroup<ClassForm>({
     name: ['', [Validators.Required]],
-    description: ['', [Validators.Required]],
-    hitDie: [undefined, [Validators.Required]],
-    primaryStat: [undefined, [Validators.Required]],
-    savingThrows: [[], [Validators.Required]],
+    description: ['', []],
+    hitDie: [undefined, []],
+    primaryStat: [undefined, []],
+    savingThrows: [[], []],
     armorProficiencies: [[], []],
     weaponProficiencies: [[], []],
     toolProficiencies: [[], []],
@@ -88,7 +99,7 @@ export const Classes: Component = () => {
     armorProfChoices: [[], []],
     weaponProfChoices: [[], []],
     toolProfChoices: [[], []],
-    skills: [[], [Validators.Required]],
+    skills: [[], []],
     skillChoiceNum: [undefined, []],
     skillChoices: [[], []],
     startingEquipment: [[], []],
@@ -100,7 +111,7 @@ export const Classes: Component = () => {
     metadataSubclassLevels: [[], []],
     metadataSubclassName: ['', []],
     metadataSubclassPos: ['before', []],
-    classLevels: classLevels,
+    classLevels: [[], []],
     spellcastName: ['', []],
     spellsKnownCalc: [SpellsKnown.Number, []],
     spellcastAbility: [CastingStat.WIS, []],
@@ -109,22 +120,42 @@ export const Classes: Component = () => {
     spellsLevel: [1, []],    
     hasCantrips: [false, []]
   });
-
   const onSubmit = (data: ClassForm) => {
-    console.log('Submitted: ', data);
+    const fullData: ClassForm = {
+      ...data,
+      weaponProficiencies: profStore().weapons || [],
+      armorProficiencies: profStore().armor || [],
+      toolProficiencies: profStore().tools || [],
+      classLevels: classLevels(),
+    };
+    console.log('ProfStore: ', profStore());
+    
+    console.log('Submitted: ', fullData);
+    
   };
-
+  ClassFormGroup.set('classLevels', defaultClassLevels);
+  const [classLevels, setClassLevels] = createSignal<LevelEntity[]>(defaultClassLevels);
+  const [profStore, setProfStore] = createSignal<ProfStore>({})
   return (
     <Container theme="surface" class={`${styles.container}`}>
       <Form data={ClassFormGroup} onSubmit={onSubmit}>
         <div class={`${styles.body}`}>
           <Header />
           <Stats />
-          <Proficiencies formGroup={ClassFormGroup} />
+          <Proficiencies setProfStore={setProfStore} formGroup={ClassFormGroup} />
           <Items formGroup={ClassFormGroup} />
-          <FeatureTable formGroup={ClassFormGroup} />
+          <FeatureTable tableData={classLevels} setTableData={setClassLevels} formGroup={ClassFormGroup} />
         </div>
+        <Button type="submit">
+        Submit
+        </Button>
       </Form>
     </Container>
   );
 };
+
+export interface ProfStore {
+  weapons?: string[];
+  armor?: string[];
+  tools?: string[];
+}

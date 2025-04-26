@@ -2,7 +2,7 @@ import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, combineLatest, concatMap, map, Observable, of, take, tap } from "rxjs";
 import HttpClient$ from "../../utility/httpClientObs";
-import { Spell } from "../../../../models/spell.model";
+import { Spell } from "../../../../models/old/spell.model";
 import LocalSrdDB from "../../utility/localDB/srdDBFile"
 import LocalHomebrewDB from "../../utility/localDB/homebrewDBFile";
 

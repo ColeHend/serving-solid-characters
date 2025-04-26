@@ -1,5 +1,5 @@
 import { Spell } from "../../../models";
-import { FeatureTypes } from "../../../models/core.model";
+import { FeatureTypes } from "../../../models/old/core.model";
 
 /**
  * Retrieves the feature type, falling back to a default if the provided type is nullish.

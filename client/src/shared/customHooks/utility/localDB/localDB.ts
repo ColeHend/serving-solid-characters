@@ -1,10 +1,10 @@
 import Dexie from 'dexie';
-import { Spell } from "../../../../models/spell.model";
-import { DnDClass } from "../../../../models/class.model";
-import { Race } from "../../../../models/race.model";
-import { Background } from "../../../../models/background.model";
-import { Item } from "../../../../models/items.model";
-import { Feat } from "../../../../models/feat.model";
+import { Spell } from "../../../../models/old/spell.model";
+import { DnDClass } from "../../../../models/old/class.model";
+import { Race } from "../../../../models/old/race.model";
+import { Background } from "../../../../models/old/background.model";
+import { Item } from "../../../../models/old/items.model";
+import { Feat } from "../../../../models/old/feat.model";
 
 class LocalDB extends Dexie {
   spells!: Dexie.Table<Spell, 'name'>;

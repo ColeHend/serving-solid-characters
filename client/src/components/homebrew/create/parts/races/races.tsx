@@ -27,8 +27,8 @@ import {
   FeatureTypes,
   AbilityScores,
   Feature,
-} from "../../../../../models/core.model";
-import { LevelEntity } from "../../../../../models/class.model";
+} from "../../../../../models/old/core.model";
+import { LevelEntity } from "../../../../../models/old/class.model";
 import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";

@@ -2,9 +2,11 @@ import { type Component, For, createResource, JSX, useContext, createMemo, creat
 import { TextArea, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, Markdown, Clone } from './shared';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
-import { DnDClass } from './models/class.model';
 import DataTransferModal from './components/DataTransfering/dataTransferModal';
 import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table, Checkbox } from 'coles-solid-library';
+import { DnDClass } from './models/old/class.model';
+import { useGetSRDClasses$ } from './shared/customHooks/api/useGetSrdClasses';
+import { combineLatest, concatMap, of } from 'rxjs';
 
 const App: Component = () => {
   console.log("App component initializing");
@@ -67,6 +69,10 @@ const App: Component = () => {
     setHasError(true);
     setErrorMessage("Failed to load game data. Please refresh the page.");
   }
+
+  // useGetSRDClasses$().subscribe((val)=>{
+  //   console.log("\n\nSRD Classes loaded", val);
+  // })
 
   // Mark loading as complete after a short delay to ensure UI renders
   setTimeout(() => {

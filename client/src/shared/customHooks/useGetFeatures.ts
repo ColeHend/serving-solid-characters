@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js"
 import useGetClasses from "./data/useGetClasses"
 import useGetFeats from "./data/useGetFeats"
-import { Feature, FeatureTypes } from "../../models/core.model"
+import { Feature, FeatureTypes } from "../../models/old/core.model"
 import { GetFeatureType, UniqueSet } from "./utility/Tools"
 import useGetBackgrounds from "./data/useGetBackgrounds"
 import useGetItems from "./data/useGetItems"

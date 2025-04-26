@@ -1,5 +1,5 @@
 import { Accessor, Component, For, createSignal, createMemo, Setter, useContext } from "solid-js";
-import { Spell } from "../../../models/spell.model";
+import { Spell } from "../../../models/old/spell.model";
 import { effect } from "solid-js/web";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./paginator.module.scss";
