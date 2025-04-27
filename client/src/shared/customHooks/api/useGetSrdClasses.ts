@@ -2,7 +2,7 @@ import { CasterType, FeatureDetail, Spellcasting, StartingEquipment, Subclass, C
 import { of, forkJoin, Observable } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
-import HttpClient$ from "../utility/httpClientObs";
+import HttpClient$ from "../utility/tools/httpClientObs";
 /* ------------------------------------------------------------------
    Helper types for the remote API
 ------------------------------------------------------------------ */

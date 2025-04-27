@@ -1,5 +1,5 @@
 import { Component, Accessor, Setter, createSignal, For, Switch, Match } from "solid-js";
-import { Clone } from "../../shared/customHooks/utility/Tools";
+import { Clone } from "../../shared/customHooks/utility/tools/Tools";
 import { UserSettings } from "../../models/userSettings";
 import styles from "./settingsPopup.module.scss";
 import getUserSettings, { saveUserSettings } from "../../shared/customHooks/userSettings";

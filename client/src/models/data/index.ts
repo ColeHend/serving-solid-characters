@@ -7,3 +7,4 @@ export * from "./races";
 export * from "./spellcasting";
 export * from "./subclasses";
 export * from "./spell";
+export * from './masteries';

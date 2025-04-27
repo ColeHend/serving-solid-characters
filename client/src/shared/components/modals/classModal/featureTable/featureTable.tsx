@@ -3,7 +3,7 @@ import { DnDClass, LevelEntity } from "../../../../../models/old/class.model";
 import {
   formatKeysForDisplay,
   toDisplayFormat,
-} from "../../../../customHooks/utility/stringsHelper";
+} from "../../../../customHooks/utility/tools/stringsHelper";
 import styles from "./featureTable.module.scss";
 import { Clone } from "../../../../customHooks";
 import { Feature } from "../../../../../models/old/core.model";

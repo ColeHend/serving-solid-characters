@@ -25,6 +25,7 @@ builder.Services.AddSingleton<IDndInfoRepository, DndInfoRepository>();
 builder.Services.AddTransient<IUserMapper, UserMapper>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ITokenRepository, TokenRepository>();
+builder.Services.AddTransient<ISrdInfoRepository, SrdInfoRepository>();
 
 // ----- Add Database Stuff ----
 var location = "localDefault";

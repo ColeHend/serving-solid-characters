@@ -1,7 +1,7 @@
 import { Accessor, Component, For, Match, Setter, Show, Switch, createEffect, createSignal } from "solid-js";
 import { Spell } from "../../../../models/old/spell.model";
 import styles from "./searchBar.module.scss";
-import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
+import { beutifyChip } from "../../../../shared/customHooks/utility/tools/beautifyChip";
 import { Button, Input, Select, Option } from "../../../../shared/components";
 import Chipbar from "../../../../shared/components/Chipbar/chipbar";
 import type ChipType from "../../../../shared/models/chip";

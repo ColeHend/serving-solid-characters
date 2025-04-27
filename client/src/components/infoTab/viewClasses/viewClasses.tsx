@@ -1,5 +1,5 @@
 import { Component, Show, createSignal, createMemo } from "solid-js";
-import useGetClasses from "../../../shared/customHooks/data/useGetClasses";
+import useGetClasses from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetClasses";
 import styles from "./viewClasses.module.scss"
 import { useSearchParams, useNavigate } from "@solidjs/router";
 import { effect } from "solid-js/web";

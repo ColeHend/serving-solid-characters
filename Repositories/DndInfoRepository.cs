@@ -26,14 +26,14 @@ namespace sharpAngleTemplate.models.repositories
         public DndInfoRepository(IDbJsonService jsonService)
         {
             this.jsonService = jsonService;
-            var classJson = jsonService.GetJson<List<ClassEntity>>("srd/classes");
-            var spellJson = jsonService.GetJson<SpellEntity[]>("srd/spells");
-            var raceJson = jsonService.GetJson<RaceEntity[]>("srd/races");
-            var itemJson = jsonService.GetJson<Item[]>("srd/items");
-            var weaponJson = jsonService.GetJson<Weapon[]>("srd/weapons");
-            var armorJson = jsonService.GetJson<Armor[]>("srd/armor");
-            var featJson = jsonService.GetJson<FeatEntity[]>("srd/feats");
-            var backgroundJson = jsonService.GetJson<BackgroundEntity[]>("srd/backgrounds");
+            var classJson = jsonService.GetJson<List<ClassEntity>>("srd/old/classes");
+            var spellJson = jsonService.GetJson<SpellEntity[]>("srd/old/spells");
+            var raceJson = jsonService.GetJson<RaceEntity[]>("srd/old/races");
+            var itemJson = jsonService.GetJson<Item[]>("srd/old/items");
+            var weaponJson = jsonService.GetJson<Weapon[]>("srd/old/weapons");
+            var armorJson = jsonService.GetJson<Armor[]>("srd/old/armor");
+            var featJson = jsonService.GetJson<FeatEntity[]>("srd/old/feats");
+            var backgroundJson = jsonService.GetJson<BackgroundEntity[]>("srd/old/backgrounds");
 
             classDTOs = classJson!;
             spellDTOs = spellJson!.ToList();

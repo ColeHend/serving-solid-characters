@@ -16,7 +16,7 @@ import { DnDClass, Subclass } from "../../../../models/old/class.model";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
 import { SharedHookContext } from "../../../../components/rootApp";
-import useGetClasses from "../../../customHooks/data/useGetClasses";
+import useGetClasses from "../../../customHooks/dndInfo/oldSrdinfo/data/useGetClasses";
 import getUserSettings from "../../../customHooks/userSettings";
 import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";
@@ -26,7 +26,7 @@ import Modal from "../../popup/popup.component";
 import ChipType from "../../../models/chip";
 import Chipbar from "../../Chipbar/chipbar";
 import Tabs, { Tab } from "../../Tabs/tabs";
-import { classFeatureNullCheck } from "../../../customHooks/utility/Tools";
+import { classFeatureNullCheck } from "../../../customHooks/utility/tools/Tools";
 
 type props = {
   currentClass: Accessor<DnDClass>;

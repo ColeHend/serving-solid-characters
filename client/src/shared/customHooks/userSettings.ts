@@ -1,6 +1,6 @@
 import { Accessor, createSignal, Setter } from "solid-js";
 import { UserSettings } from "../../models/userSettings";
-import httpClient$ from "./utility/httpClientObs";
+import httpClient$ from "./utility/tools/httpClientObs";
 import userSettingDB from "./utility/localDB/userSettingDB";
 import { catchError, of, take, tap } from "rxjs";
 

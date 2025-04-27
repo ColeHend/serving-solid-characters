@@ -7,6 +7,7 @@ import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Se
 import { DnDClass } from './models/old/class.model';
 import { useGetSRDClasses$ } from './shared/customHooks/api/useGetSrdClasses';
 import { combineLatest, concatMap, of } from 'rxjs';
+import { useTest } from './useTest';
 
 const App: Component = () => {
   console.log("App component initializing");
@@ -69,10 +70,6 @@ const App: Component = () => {
     setHasError(true);
     setErrorMessage("Failed to load game data. Please refresh the page.");
   }
-
-  // useGetSRDClasses$().subscribe((val)=>{
-  //   console.log("\n\nSRD Classes loaded", val);
-  // })
 
   // Mark loading as complete after a short delay to ensure UI renders
   setTimeout(() => {

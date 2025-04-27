@@ -4,7 +4,7 @@ import { Button, ExpansionPanel, homebrewManager, Input, isNullish } from "../..
 import { Trade } from "../../../models/trade.model";
 import { createStore } from "solid-js/store";
 import Modal from "../../../shared/components/popup/popup.component";
-import { downloadObjectAsJson } from "../../../shared/customHooks/utility/downloadObjectAsJson";
+import { downloadObjectAsJson } from "../../../shared/customHooks/utility/tools/downloadObjectAsJson";
 
 const Exporting:Component = () => {
 

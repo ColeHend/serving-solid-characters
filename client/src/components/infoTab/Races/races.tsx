@@ -1,5 +1,5 @@
 import { Component, Show, createMemo, createSignal } from "solid-js";
-import useGetRaces from "../../../shared/customHooks/data/useGetRaces";
+import useGetRaces from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
 import styles from "./races.module.scss";
 import { effect } from "solid-js/web";
 import { Race } from "../../../models/old/race.model";

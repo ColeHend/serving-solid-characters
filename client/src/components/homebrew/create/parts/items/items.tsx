@@ -24,13 +24,13 @@ import {
 } from "../../../../../shared/";
 import styles from "./items.module.scss";
 import { useSearchParams } from "@solidjs/router";
-import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
+import { ItemType } from "../../../../../shared/customHooks/utility/tools/itemType";
 import { createStore } from "solid-js/store";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Feature } from "../../../../../models/old/core.model";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import {useGetItems} from "../../../../../shared/";
-import useGetSpells from "../../../../../shared/customHooks/data/useGetSpells";
+import useGetSpells from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
 import ItemCreate from "./parts/item/item";
 import ArmorCreate from "./parts/armor/armor";
 import WeaponCreate from "./parts/weapon/weapon";

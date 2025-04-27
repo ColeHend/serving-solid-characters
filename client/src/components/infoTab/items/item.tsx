@@ -4,7 +4,7 @@ import WeaponsView from "./parts/Weapons/Weapons";
 import ArmorsView from "./parts/Armors/Armors";
 import AdventEquipView from "./parts/AdventuringEquip/AdventuringEquip";
 import { useSearchParams } from "@solidjs/router";
-import { ItemType } from "../../../shared/customHooks/utility/itemType";
+import { ItemType } from "../../../shared/customHooks/utility/tools/itemType";
 
 
 const ItemsViewTab:Component = () => {

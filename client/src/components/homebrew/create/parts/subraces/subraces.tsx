@@ -4,7 +4,7 @@ import { Body, homebrewManager, Select,Option, Chip, FormField, Input, Button, U
 import { createStore } from "solid-js/store";
 import { Race, Subrace } from "../../../../../models/old/race.model";
 import { AbilityScores, Feature, FeatureTypes } from "../../../../../models/old/core.model";
-import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
+import useGetRaces from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { LevelEntity } from "../../../../../models/old/class.model";

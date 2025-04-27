@@ -34,5 +34,6 @@ export enum CasterType {
   None,
   Third,
   Half,
-  Full
+  Full,
+  Pact,
 };

@@ -10,7 +10,7 @@ import {
   Tabs,
   Tab,
 } from "../../../../../../shared";
-import { ItemType } from "../../../../../../shared/customHooks/utility/itemType";
+import { ItemType } from "../../../../../../shared/customHooks/utility/tools/itemType";
 import { SetStoreFunction } from "solid-js/store";
 import { Feature } from "../../../../../../models/old/core.model";
 

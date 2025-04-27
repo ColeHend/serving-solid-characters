@@ -8,7 +8,11 @@
       "Strength",
       "Constitution"
     ],
-    "starting_equipment": [],
+    "starting_equipment": [
+      {
+        "optionKeys": ["equipment"]
+      }
+    ],
     "proficiencies": {
       "armor": [
         "Light armor",
@@ -256,22 +260,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Leather Armor",
-          "2 Daggers",
-          "one Musical Instrument",
-          "Entertainer’s Pack",
-          "19 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "90 GP"
+          "start_equip"
         ]
       }
     ],
@@ -285,9 +274,7 @@
       "tools": [
         "3 Musical Instruments of your choice"
       ],
-      "skills": [
-        "Any"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -428,11 +415,35 @@
       ]
     },
     "choices": {
-      "expertise": {
+      "start_expertise": {
         "options": [
-          "skills"
+          "Acrobatics",
+          "Animal Handling",
+          "Arcana",
+          "Athletics",
+          "Deception",
+          "History",
+          "Insight",
+          "Intimidation",
+          "Investigation",
+          "Medicine",
+          "Nature",
+          "Perception",
+          "Performance",
+          "Persuasion",
+          "Religion",
+          "Sleight of Hand",
+          "Stealth",
+          "Survival"
         ],
         "amount": 2
+      },
+      "start_equip": {
+        "amount": 1,
+        "options": [
+          "Leather Armor, 2 Daggers, one Musical Instrument, Entertainer’s Pack, 19 GP",
+          "90 GP"
+        ]
       }
     },
     "spellcasting": {
@@ -647,23 +658,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Chain Shirt",
-          "Shield",
-          "Mace",
-          "Holy Symbol",
-          "Priest’s Pack",
-          "7 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "110 GP"
+          "starting_equipment"
         ]
       }
     ],
@@ -674,16 +669,10 @@
         "Shields"
       ],
       "weapons": [
-        "Simple weapons"
+        "Simple"
       ],
       "tools": [],
-      "skills": [
-        "History",
-        "Insight",
-        "Medicine",
-        "Persuasion",
-        "Religion"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -838,6 +827,13 @@
           "Survival"
         ],
         "amount": 2
+      },
+      "starting_equipment": {
+        "options": [
+          "Chain Shirt, Shield, Mace, Holy Symbol, Priest’s Pack, 7 GP",
+          "110 GP"
+        ],
+        "amount": 1
       }
     },
     "spellcasting": {
@@ -1035,31 +1031,14 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Leather Armor",
-          "Shield",
-          "Sickle",
-          "Druidic Focus (e.g. Quarterstaff)",
-          "Explorer’s Pack",
-          "Herbalism Kit",
-          "9 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "50 GP"
+          "starting_equipment"
         ]
       }
     ],
     "proficiencies": {
       "armor": [
         "Light armor",
-        "Shields (Druids will not wear armor or use shields made of metal)"
+        "Shields"
       ],
       "weapons": [
         "Simple weapons"
@@ -1067,16 +1046,7 @@
       "tools": [
         "Herbalism Kit"
       ],
-      "skills": [
-        "Animal Handling",
-        "Arcana",
-        "Insight",
-        "Medicine",
-        "Nature",
-        "Perception",
-        "Religion",
-        "Survival"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -1239,6 +1209,13 @@
           "Survival"
         ],
         "amount": 2
+      },
+      "starting_equipment": {
+        "options": [
+          "Leather Armor, Shield, Sickle, Druidic Focus, Explorer’s Pack, Herbalism Kit, 9 GP",
+          "50 GP"
+        ],
+        "amount": 1
       }
     },
     "spellcasting": {
@@ -1436,36 +1413,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Chain Mail",
-          "Greatsword",
-          "Flail",
-          "8 Javelins",
-          "Dungeoneer’s Pack",
-          "4 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "Studded Leather Armor",
-          "Scimitar",
-          "Shortsword",
-          "Longbow & 20 arrows",
-          "Dungeoneer’s Pack",
-          "11 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionC"
-        ],
-        "items": [
-          "155 GP"
+          "starting_equipment"
         ]
       }
     ],
@@ -1481,17 +1429,7 @@
         "Martial weapons"
       ],
       "tools": [],
-      "skills": [
-        "Acrobatics",
-        "Animal Handling",
-        "Athletics",
-        "History",
-        "Insight",
-        "Intimidation",
-        "Perception",
-        "Persuasion",
-        "Survival"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -1685,6 +1623,14 @@
           "Two-Weapon Fighting"
         ],
         "amount": 1
+      },
+      "starting_equipment": {
+        "options": [
+          "Chain Mail, Greatsword, Flail, 8 Javelins, Dungeoneer’s Pack, 4 GP",
+          "Studded Leather Armor, Scimitar, Shortsword, Longbow & 20 arrows, Dungeoneer’s Pack, 11 GP",
+          "155 GP"
+        ],
+        "amount": 1
       }
     }
   },
@@ -1700,29 +1646,12 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Spear",
-          "5 Daggers",
-          "tools (artisan’s or musical) chosen for proficiency",
-          "Explorer’s Pack",
-          "11 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "50 GP"
+          "starting_equipment"
         ]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "None"
-      ],
+      "armor": [],
       "weapons": [
         "Simple weapons",
         "Martial weapons with the Light property"
@@ -1730,14 +1659,7 @@
       "tools": [
         "One type of artisan’s tools or one musical instrument"
       ],
-      "skills": [
-        "Acrobatics",
-        "Athletics",
-        "History",
-        "Insight",
-        "Religion",
-        "Stealth"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -1924,6 +1846,13 @@
           "Survival"
         ],
         "amount": 2
+      },
+      "starting_equipment": {
+        "options": [
+          "Shortsword, 2 Handaxes, tools (artisan’s or musical) chosen for proficiency, Explorer’s Pack, 11 GP",
+          "50 GP"
+        ],
+        "amount": 1
       }
     },
     "classSpecific": {
@@ -1962,24 +1891,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Chain Mail",
-          "Shield",
-          "Longsword",
-          "6 Javelins",
-          "Holy Symbol",
-          "Priest’s Pack",
-          "9 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "150 GP"
+          "starting_equipment"
         ]
       }
     ],
@@ -1995,14 +1907,7 @@
         "Martial weapons"
       ],
       "tools": [],
-      "skills": [
-        "Athletics",
-        "Insight",
-        "Intimidation",
-        "Medicine",
-        "Persuasion",
-        "Religion"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -2173,6 +2078,14 @@
           "Survival"
         ],
         "amount": 2
+      },
+      "starting_equipment": {
+        "options": [
+          "Chain Mail, Shield, Longsword, 6 Javelins, Holy Symbol, Priest’s Pack, 9 GP",
+          "Studded Leather Armor, Shield, Scimitar, 2 Handaxes, Explorer’s Pack, 11 GP",
+          "150 GP"
+        ],
+        "amount": 1
       }
     },
     "spellcasting": {
@@ -2180,94 +2093,78 @@
         "casterType": 2,
         "slots": {
           "1": {
-            "cantrips_known": 0
+            "spell_slots_level_1": 2
           },
           "2": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 2
           },
           "3": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 3
           },
           "4": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 3
           },
           "5": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 2
           },
           "6": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 2
           },
           "7": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3
           },
           "8": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3
           },
           "9": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 2
           },
           "10": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 2
           },
           "11": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3
           },
           "12": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3
           },
           "13": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
             "spell_slots_level_4": 1
           },
           "14": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
             "spell_slots_level_4": 1
           },
           "15": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
             "spell_slots_level_4": 2
           },
           "16": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
             "spell_slots_level_4": 2
           },
           "17": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
@@ -2275,7 +2172,6 @@
             "spell_slots_level_5": 1
           },
           "18": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
@@ -2283,7 +2179,6 @@
             "spell_slots_level_5": 1
           },
           "19": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
@@ -2291,7 +2186,6 @@
             "spell_slots_level_5": 2
           },
           "20": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
@@ -2321,24 +2215,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Studded Leather Armor",
-          "Scimitar",
-          "Shortsword",
-          "Longbow & 20 arrows (with quiver)",
-          "Druidic Focus (sprig of mistletoe)",
-          "Explorer’s Pack",
-          "7 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "150 GP"
+          "starting_equipment"
         ]
       }
     ],
@@ -2353,16 +2230,7 @@
         "Martial weapons"
       ],
       "tools": [],
-      "skills": [
-        "Animal Handling",
-        "Athletics",
-        "Insight",
-        "Investigation",
-        "Nature",
-        "Perception",
-        "Stealth",
-        "Survival"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -2517,6 +2385,13 @@
           "Survival"
         ],
         "amount": 3
+      },
+      "starting_equipment": {
+        "options": [
+          "Studded Leather Armor, Scimitar, Shortsword, Longbow & 20 arrows (with quiver), Druidic Focus (sprig of mistletoe), Explorer’s Pack, 7 GP",
+          "150 GP"
+        ],
+        "amount": 1
       }
     },
     "spellcasting": {
@@ -2524,94 +2399,78 @@
         "casterType": 2,
         "slots": {
           "1": {
-            "cantrips_known": 0
+            "spell_slots_level_1": 2
           },
           "2": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 2
           },
           "3": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 3
           },
           "4": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 3
           },
           "5": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 2
           },
           "6": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 2
           },
           "7": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3
           },
           "8": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3
           },
           "9": {
-            "cantrips_known": 2,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 2
           },
           "10": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 2
           },
           "11": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3
           },
           "12": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3
           },
           "13": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
             "spell_slots_level_4": 1
           },
           "14": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
             "spell_slots_level_4": 1
           },
           "15": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
             "spell_slots_level_4": 2
           },
           "16": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
             "spell_slots_level_4": 2
           },
           "17": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
@@ -2619,7 +2478,6 @@
             "spell_slots_level_5": 1
           },
           "18": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
@@ -2627,7 +2485,6 @@
             "spell_slots_level_5": 1
           },
           "19": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
@@ -2635,7 +2492,6 @@
             "spell_slots_level_5": 2
           },
           "20": {
-            "cantrips_known": 3,
             "spell_slots_level_1": 4,
             "spell_slots_level_2": 3,
             "spell_slots_level_3": 3,
@@ -2665,25 +2521,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Leather Armor",
-          "2 Daggers",
-          "Shortsword",
-          "Shortbow & 20 arrows",
-          "Quiver",
-          "Thieves’ Tools",
-          "Burglar’s Pack",
-          "8 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "100 GP"
+          "starting_equipment"
         ]
       }
     ],
@@ -2698,19 +2536,7 @@
       "tools": [
         "Thieves’ Tools"
       ],
-      "skills": [
-        "Acrobatics",
-        "Athletics",
-        "Deception",
-        "Insight",
-        "Intimidation",
-        "Investigation",
-        "Perception",
-        "Performance",
-        "Persuasion",
-        "Sleight of Hand",
-        "Stealth"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -2875,6 +2701,14 @@
           "skills"
         ],
         "amount": 2
+      },
+      "starting_equipment": {
+        "options": [
+          "Leather Armor, 2 Daggers, Shortsword, Shortbow & 20 arrows (with quiver), Thieves’ Tools, Burglar’s Pack, 8 GP",
+          "Studded Leather Armor, 2 Handaxes, Rapier, Longbow & 20 arrows (with quiver), Thieves’ Tools, Explorer’s Pack, 8 GP",
+          "150 GP"
+        ],
+        "amount": 1
       }
     }
   },
@@ -2890,22 +2724,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Spear",
-          "2 Daggers",
-          "Arcane Focus (Crystal)",
-          "Dungeoneer’s Pack",
-          "28 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "50 GP"
+          "starting_equipment"
         ]
       }
     ],
@@ -2917,14 +2736,7 @@
         "Simple weapons"
       ],
       "tools": [],
-      "skills": [
-        "Arcana",
-        "Deception",
-        "Insight",
-        "Intimidation",
-        "Persuasion",
-        "Religion"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -3075,6 +2887,14 @@
           "Survival"
         ],
         "amount": 2
+      },
+      "starting_equipment": {
+        "options": [
+          "Light Crossbow & 20 bolts, 2 Daggers, Arcane Focus (Crystal), Dungeoneer’s Pack, 28 GP",
+          "Studded Leather Armor, Shield, Scimitar, 2 Handaxes, Explorer’s Pack, 11 GP",
+          "50 GP"
+        ],
+        "amount": 1
       }
     },
     "classSpecific": {
@@ -3312,24 +3132,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "Leather Armor",
-          "Sickle",
-          "2 Daggers",
-          "Arcane Focus (Orb)",
-          "Book of occult lore",
-          "Scholar’s Pack",
-          "15 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "100 GP"
+          "starting_equipment"
         ]
       }
     ],
@@ -3341,15 +3144,7 @@
         "Simple weapons"
       ],
       "tools": [],
-      "skills": [
-        "Arcana",
-        "Deception",
-        "History",
-        "Intimidation",
-        "Investigation",
-        "Nature",
-        "Religion"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -3508,11 +3303,19 @@
           "Survival"
         ],
         "amount": 2
+      },
+      "starting_equipment": {
+        "options": [
+          "Leather Armor, 2 Daggers, Arcane Focus (Crystal), Dungeoneer’s Pack, 28 GP",
+          "Studded Leather Armor, Shield, Scimitar, 2 Handaxes, Explorer’s Pack, 11 GP",
+          "50 GP"
+        ],
+        "amount": 1
       }
     },
     "spellcasting": {
       "metadata": {
-        "casterType": 3,
+        "casterType": 4,
         "slots": {
           "1": {
             "cantrips_known": 2,
@@ -3567,41 +3370,59 @@
           "13": {
             "cantrips_known": 4,
             "spell_slots_level_5": 3,
+            "spell_slots_level_6": 1,
             "spell_slots_level_7": 1
           },
           "14": {
             "cantrips_known": 4,
             "spell_slots_level_5": 3,
+            "spell_slots_level_6": 1,
             "spell_slots_level_7": 1
           },
           "15": {
             "cantrips_known": 4,
             "spell_slots_level_5": 3,
+            "spell_slots_level_6": 1,
+            "spell_slots_level_7": 1,
             "spell_slots_level_8": 1
           },
           "16": {
             "cantrips_known": 4,
             "spell_slots_level_5": 3,
+            "spell_slots_level_6": 1,
+            "spell_slots_level_7": 1,
             "spell_slots_level_8": 1
           },
           "17": {
             "cantrips_known": 4,
             "spell_slots_level_5": 4,
+            "spell_slots_level_6": 1,
+            "spell_slots_level_7": 1,
+            "spell_slots_level_8": 1,
             "spell_slots_level_9": 1
           },
           "18": {
             "cantrips_known": 4,
             "spell_slots_level_5": 4,
+            "spell_slots_level_6": 1,
+            "spell_slots_level_7": 1,
+            "spell_slots_level_8": 1,
             "spell_slots_level_9": 1
           },
           "19": {
             "cantrips_known": 4,
             "spell_slots_level_5": 4,
+            "spell_slots_level_6": 1,
+            "spell_slots_level_7": 1,
+            "spell_slots_level_8": 1,
             "spell_slots_level_9": 1
           },
           "20": {
             "cantrips_known": 4,
             "spell_slots_level_5": 4,
+            "spell_slots_level_6": 1,
+            "spell_slots_level_7": 1,
+            "spell_slots_level_8": 1,
             "spell_slots_level_9": 1
           }
         }
@@ -3644,23 +3465,7 @@
     "starting_equipment": [
       {
         "optionKeys": [
-          "optionA"
-        ],
-        "items": [
-          "2 Daggers",
-          "Arcane Focus (Quarterstaff)",
-          "Robe",
-          "Spellbook",
-          "Scholar’s Pack",
-          "5 GP"
-        ]
-      },
-      {
-        "optionKeys": [
-          "optionB"
-        ],
-        "items": [
-          "55 GP"
+          "starting_equipment"
         ]
       }
     ],
@@ -3672,15 +3477,7 @@
         "Simple weapons"
       ],
       "tools": [],
-      "skills": [
-        "Arcana",
-        "History",
-        "Insight",
-        "Investigation",
-        "Medicine",
-        "Nature",
-        "Religion"
-      ]
+      "skills": []
     },
     "features": {
       "1": [
@@ -3835,6 +3632,14 @@
           "Survival"
         ],
         "amount": 2
+      },
+      "starting_equipment": {
+        "options": [
+          "2 Daggers, Arcane Focus (Quarterstaff), Robe, Spellbook, Scholar’s Pack, 5 GP",
+          "Leather Armor, Shield, Scimitar, 2 Handaxes, Explorer’s Pack, 11 GP",
+          "55 GP"
+        ],
+        "amount": 1
       }
     },
     "spellcasting": {

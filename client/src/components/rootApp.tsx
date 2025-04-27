@@ -1,5 +1,5 @@
 import { RouteSectionProps } from "@solidjs/router";
-import mobileCheck from '../shared/customHooks/utility/mobileCheck'
+import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
 import { getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDItems, useDnDRaces, useDnDSpells } from "../shared";
 import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary } from "solid-js";
