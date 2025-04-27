@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Worker Diagnostics</title>
+  <style>
+    body { 
+      font-family: sans-serif; 
+      padding: 20px; 
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .box { 
+      padding: 20px; 
+      border: 1px solid #ccc; 
+      border-radius: 5px; 
+      margin-bottom: 20px; 
+      background-color: #f9f9f9;
+    }
+    h1, h2 { color: #333; }
+    pre { 
+      background: #eee; 
+      padding: 10px; 
+      overflow: auto; 
+      border-radius: 3px;
+    }
+    button {
+      background: #4a6ee0;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover { background: #3a5dcc; }
+    .success { color: green; }
+    .error { color: red; }
+    .warning { color: orange; }
+    .loading { color: blue; }
+  </style>
+</head>
+<body>
+  <h1>Service Worker Diagnostics</h1>
+  
+  <div class="box">
+    <h2>Browser Support</h2>
+    <div id="browserSupport">Checking...</div>
+  </div>
+  
+  <div class="box">
+    <h2>Service Worker Status</h2>
+    <div id="swStatus">Checking...</div>
+    <div id="swDetails"></div>
+    <div id="swActions" style="margin-top: 15px;">
+      <button id="unregisterBtn" style="display: none;">Unregister All Service Workers</button>
+      <button id="registerBtn" style="display: none;">Force Register Service Worker</button>
+    </div>
+  </div>
+  
+  <div class="box">
+    <h2>Cache Storage</h2>
+    <div id="cacheStatus">Checking...</div>
+    <div id="cacheDetails"></div>
+    <button id="clearCacheBtn" style="display: none;">Clear All Caches</button>
+  </div>
+  
+  <div class="box">
+    <h2>Network Diagnostics</h2>
+    <div id="networkStatus">
+      <button id="testFetchBtn">Test Fetch API</button>
+      <div id="fetchResult"></div>
+    </div>
+  </div>
+  
+  <div class="box">
+    <h2>Console Log</h2>
+    <pre id="consoleLog"></pre>
+    <button id="clearLogBtn">Clear Log</button>
+  </div>
+  
+  <script>
+    // Console log interceptor
+    const logContainer = document.getElementById('consoleLog');
+    const originalConsole = {
+      log: console.log,
+      error: console.error,
+      warn: console.warn,
+      info: console.info
+    };
+    
+    function logToUI(type, ...args) {
+      const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ');
+      
+      const line = document.createElement('div');
+      line.className = type;
+      line.textContent = `[${type}] ${message}`;
+      logContainer.appendChild(line);
+      logContainer.scrollTop = logContainer.scrollHeight;
+      
+      // Call original console method
+      originalConsole[type](...args);
+    }
+    
+    console.log = (...args) => logToUI('log', ...args);
+    console.error = (...args) => logToUI('error', ...args);
+    console.warn = (...args) => logToUI('warning', ...args);
+    console.info = (...args) => logToUI('info', ...args);
+    
+    document.getElementById('clearLogBtn').addEventListener('click', () => {
+      logContainer.innerHTML = '';
+    });
+    
+    // Check browser support
+    const browserSupportElem = document.getElementById('browserSupport');
+    if ('serviceWorker' in navigator) {
+      browserSupportElem.innerHTML = '<span class="success">✓ Service Workers are supported in this browser</span>';
+    } else {
+      browserSupportElem.innerHTML = '<span class="error">✗ Service Workers are NOT supported in this browser</span>';
+    }
+    
+    // Check service worker status
+    const swStatusElem = document.getElementById('swStatus');
+    const swDetailsElem = document.getElementById('swDetails');
+    const unregisterBtn = document.getElementById('unregisterBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    
+    async function checkServiceWorker() {
+      swStatusElem.innerHTML = '<span class="loading">Checking service worker status...</span>';
+      
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          
+          if (registrations.length === 0) {
+            swStatusElem.innerHTML = '<span class="warning">⚠ No service workers are registered</span>';
+            registerBtn.style.display = 'inline-block';
+            unregisterBtn.style.display = 'none';
+          } else {
+            swStatusElem.innerHTML = `<span class="success">✓ ${registrations.length} service worker(s) registered</span>`;
+            registerBtn.style.display = 'none';
+            unregisterBtn.style.display = 'inline-block';
+            
+            const details = registrations.map((reg, index) => {
+              const status = [];
+              if (reg.installing) status.push('installing');
+              if (reg.waiting) status.push('waiting');
+              if (reg.active) status.push('active');
+              
+              return `
+                <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+                  <strong>Service Worker #${index + 1}</strong><br>
+                  <strong>Scope:</strong> ${reg.scope}<br>
+                  <strong>Status:</strong> ${status.join(', ') || 'unknown'}<br>
+                  <strong>Update State:</strong> ${reg.updateViaCache}<br>
+                </div>
+              `;
+            }).join('');
+            
+            swDetailsElem.innerHTML = details;
+          }
+        } catch (error) {
+          swStatusElem.innerHTML = `<span class="error">✗ Error checking service worker: ${error.message}</span>`;
+          console.error('Service worker check error:', error);
+        }
+      } else {
+        swStatusElem.innerHTML = '<span class="error">✗ Service workers not supported</span>';
+      }
+    }
+    
+    // Check cache storage
+    const cacheStatusElem = document.getElementById('cacheStatus');
+    const cacheDetailsElem = document.getElementById('cacheDetails');
+    const clearCacheBtn = document.getElementById('clearCacheBtn');
+    
+    async function checkCaches() {
+      cacheStatusElem.innerHTML = '<span class="loading">Checking cache storage...</span>';
+      
+      if ('caches' in window) {
+        try {
+          const cacheNames = await caches.keys();
+          
+          if (cacheNames.length === 0) {
+            cacheStatusElem.innerHTML = '<span class="warning">⚠ No caches found</span>';
+            clearCacheBtn.style.display = 'none';
+          } else {
+            cacheStatusElem.innerHTML = `<span class="success">✓ ${cacheNames.length} cache(s) found</span>`;
+            clearCacheBtn.style.display = 'inline-block';
+            
+            const cachePromises = cacheNames.map(async name => {
+              const cache = await caches.open(name);
+              const keys = await cache.keys();
+              return { name, count: keys.length };
+            });
+            
+            const cacheInfo = await Promise.all(cachePromises);
+            const details = cacheInfo.map(info => {
+              return `<div><strong>${info.name}:</strong> ${info.count} entries</div>`;
+            }).join('');
+            
+            cacheDetailsElem.innerHTML = details;
+          }
+        } catch (error) {
+          cacheStatusElem.innerHTML = `<span class="error">✗ Error checking caches: ${error.message}</span>`;
+          console.error('Cache check error:', error);
+        }
+      } else {
+        cacheStatusElem.innerHTML = '<span class="error">✗ Cache API not supported</span>';
+      }
+    }
+    
+    // Event listeners
+    unregisterBtn.addEventListener('click', async () => {
+      if (confirm('Are you sure you want to unregister all service workers?')) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+            console.log('Service worker unregistered:', registration.scope);
+          }
+          alert('All service workers unregistered. Please reload the page.');
+          checkServiceWorker();
+          checkCaches();
+        } catch (error) {
+          console.error('Error unregistering service workers:', error);
+          alert('Error unregistering service workers: ' + error.message);
+        }
+      }
+    });
+    
+    registerBtn.addEventListener('click', async () => {
+      try {
+        const registration = await navigator.serviceWorker.register('/claims-sw.js', {
+          scope: '/'
+        });
+        console.log('Service worker registration successful with scope:', registration.scope);
+        alert('Service worker registered successfully!');
+        checkServiceWorker();
+      } catch (error) {
+        console.error('Service worker registration failed:', error);
+        alert('Failed to register service worker: ' + error.message);
+      }
+    });
+    
+    clearCacheBtn.addEventListener('click', async () => {
+      if (confirm('Are you sure you want to clear all caches?')) {
+        try {
+          const cacheNames = await caches.keys();
+          for (const name of cacheNames) {
+            await caches.delete(name);
+            console.log('Cache deleted:', name);
+          }
+          alert('All caches cleared. Please reload the page.');
+          checkCaches();
+        } catch (error) {
+          console.error('Error clearing caches:', error);
+          alert('Error clearing caches: ' + error.message);
+        }
+      }
+    });
+    
+    document.getElementById('testFetchBtn').addEventListener('click', async () => {
+      const fetchResultElem = document.getElementById('fetchResult');
+      fetchResultElem.innerHTML = '<span class="loading">Testing fetch...</span>';
+      
+      try {
+        const response = await fetch('/index.html');
+        const text = await response.text();
+        const success = text.includes('<!DOCTYPE html>');
+        
+        if (success) {
+          fetchResultElem.innerHTML = '<span class="success">✓ Fetch API working correctly</span>';
+        } else {
+          fetchResultElem.innerHTML = '<span class="warning">⚠ Fetch response looks unusual</span>';
+        }
+        
+        console.log('Fetch response status:', response.status);
+        console.log('Fetch response headers:', [...response.headers].map(h => h.join(': ')).join('\n'));
+      } catch (error) {
+        fetchResultElem.innerHTML = `<span class="error">✗ Fetch failed: ${error.message}</span>`;
+        console.error('Fetch error:', error);
+      }
+    });
+    
+    // Initial checks
+    checkServiceWorker();
+    checkCaches();
+    
+    // Log page load complete
+    console.info('Diagnostics page loaded.');
+  </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "name": "Longsword",
+    "desc": "A versatile, one-handed sword with a long blade, favored by knights and soldiers.",
+    "type": 0,
+    "weight": 3,
+    "cost": "15 gp",
+    "properties": {
+      "Damage": "1d8 slashing (Versatile 1d10)",
+      "Properties": [
+        "Versatile"
+      ],
+      "Mastery": "Sap (on hit, impose disadvantage on target’s next attack roll】"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Shortbow",
+    "desc": "A smaller bow made of wood, easy to handle from horseback or in tight quarters.",
+    "type": 0,
+    "weight": 2,
+    "cost": "25 gp",
+    "properties": {
+      "Damage": "1d6 piercing",
+      "Properties": [
+        "Two-Handed",
+        "Ammunition (range 80/320)"
+      ],
+      "Mastery": "Vex (on hit, gain advantage on next attack vs same target】"
+    }
+  },
+  {
+    "id": 3,
+    "name": "Leather Armor",
+    "desc": "A jacket and leggings of toughened leather. Offers basic protection without hindering movement.",
+    "type": 1,
+    "weight": 10,
+    "cost": "10 gp",
+    "properties": {
+      "AC": "11 + Dexterity modifier",
+      "Stealth": "No disadvantage",
+      "StrengthReq": "None"
+    }
+  },
+  {
+    "id": 4,
+    "name": "Chain Mail",
+    "desc": "Interlocking metal rings worn over padding. Protects well but is noisy and heavy.",
+    "type": 1,
+    "weight": 55,
+    "cost": "75 gp",
+    "properties": {
+      "AC": "16",
+      "Stealth": "Disadvantage on Stealth checks (due to clinking metal】",
+      "StrengthReq": "Str 13 (if not met, speed reduced)"
+    }
+  },
+  {
+    "id": 5,
+    "name": "Shield",
+    "desc": "Wooden or metal handheld shield. Increases defense when wielded.",
+    "type": 1,
+    "weight": 6,
+    "cost": "10 gp",
+    "properties": {
+      "AC": "+2 (when equipped in one hand)",
+      "Stealth": "—",
+      "StrengthReq": "None"
+    }
+  },
+  {
+    "id": 6,
+    "name": "Explorer’s Pack",
+    "desc": "A backpack containing essential gear for exploration: a bedroll, mess kit, tinderbox, torches, rations, and waterskin, plus 50 feet of hempen rope strapped to the side.",
+    "type": 3,
+    "weight": 59,
+    "cost": "10 gp",
+    "properties": {
+      "Includes": "Backpack, Bedroll, Mess kit, Tinderbox, 10 Torches, 10 days Rations, Waterskin, 50 ft. Hempen Rope"
+    }
+  },
+  {
+    "id": 7,
+    "name": "Backpack",
+    "desc": "A sturdy leather backpack with straps. It can hold up to 1 cubic foot/30 pounds of gear inside.",
+    "type": 3,
+    "weight": 5,
+    "cost": "2 gp",
+    "properties": {
+      "Capacity": "Up to 30 lb of gear"
+    }
+  },
+  {
+    "id": 8,
+    "name": "50 ft. Hempen Rope",
+    "desc": "A 50-foot length of hempen rope. Useful for climbing, tying, or securing items.",
+    "type": 3,
+    "weight": 10,
+    "cost": "1 gp",
+    "properties": {
+      "Strength": "Can hold about 1,000 lb of weight before breaking"
+    }
+  },
+  {
+    "id": 9,
+    "name": "Torch",
+    "desc": "A wooden torch wrapped in oil-soaked cloth. When lit, it burns for 1 hour, providing bright light in a 20-foot radius (and dim light 20 feet further).",
+    "type": 3,
+    "weight": 1,
+    "cost": "1 cp",
+    "properties": {
+      "Light": "Bright light 20 ft, dim light additional 20 ft; burns 1 hour",
+      "Special": "Can be used as an improvised melee weapon (1 fire damage)"
+    }
+  },
+  {
+    "id": 10,
+    "name": "Rations (1 day)",
+    "desc": "Dried foods suitable for travel: jerky, dried fruit, hardtack. One day's worth of sustenance for one person.",
+    "type": 3,
+    "weight": 2,
+    "cost": "5 sp (per day)",
+    "properties": {
+      "Uses": "Consumed to avoid starvation during travel"
+    }
+  },
+  {
+    "id": 11,
+    "name": "Crowbar",
+    "desc": "A metal bar with a curved, forked end. Grants leverage for prying objects open or breaking through barriers.",
+    "type": 2,
+    "weight": 5,
+    "cost": "2 gp",
+    "properties": {
+      "Usage": "Using a crowbar gives advantage on Strength checks made to force open a door or container"
+    }
+  },
+  {
+    "id": 12,
+    "name": "Lantern, Hooded",
+    "desc": "A hooded lantern that burns oil to produce light. You can lower the hood to dim the light.",
+    "type": 3,
+    "weight": 2,
+    "cost": "5 gp",
+    "properties": {
+      "Light": "Bright light 30 ft, dim light 30 ft (can be reduced to dim 5 ft when hooded)",
+      "Fuel": "Burns 1 pint of oil in 6 hours"
+    }
+  },
+  {
+    "id": 13,
+    "name": "Waterskin",
+    "desc": "A sturdy leather pouch for carrying water (or other liquids). Can hold up to 4 pints of liquid.",
+    "type": 3,
+    "weight": 5,
+    "cost": "2 sp",
+    "properties": {
+      "Capacity": "2 quarts (roughly 4 pints of liquid)"
+    }
+  }
+]

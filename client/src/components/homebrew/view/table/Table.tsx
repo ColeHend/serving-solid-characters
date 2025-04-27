@@ -1,7 +1,7 @@
 // src/components/Table.tsx
 import { Show, createMemo, createSignal } from "solid-js";
 import { For } from "solid-js/web";
-import { beutifyChip } from "../../../../shared/customHooks/utility/beautifyChip";
+import { beutifyChip } from "../../../../shared/customHooks/utility/tools/beautifyChip";
 import Button, { MenuButton } from "../../../../shared/components/Button/Button";
 import Paginator from "../../../../shared/components/paginator/paginator";
 

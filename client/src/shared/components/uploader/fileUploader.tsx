@@ -1,7 +1,7 @@
 import { catchError, Component, createSignal, Setter, splitProps } from "solid-js";
 import { createFileUploader, FileUploaderDirective } from "@solid-primitives/upload";
 import Modal from "../popup/popup.component";
-import httpClient$ from "../../customHooks/utility/httpClientObs";
+import httpClient$ from "../../customHooks/utility/tools/httpClientObs";
 import { take, tap } from "rxjs";
 import Button from "../Button/Button";
 import { effect } from "solid-js/web";

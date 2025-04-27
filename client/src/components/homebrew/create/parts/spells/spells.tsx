@@ -13,7 +13,7 @@ import {
   UniqueSet,
   TextArea
 } from "../../../../../shared/";
-import useGetSpells from "../../../../../shared/customHooks/data/useGetSpells";
+import useGetSpells from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
 import { createStore } from "solid-js/store";
 import { Spell } from "../../../../../models";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";

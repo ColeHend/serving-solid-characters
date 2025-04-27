@@ -27,10 +27,9 @@ import {
   FeatureTypes,
   AbilityScores,
   Feature,
-} from "../../../../../models/core.model";
-import FeatureModal from "../classes/sections/featureModal";
-import { LevelEntity } from "../../../../../models/class.model";
-import useGetRaces from "../../../../../shared/customHooks/data/useGetRaces";
+} from "../../../../../models/old/core.model";
+import { LevelEntity } from "../../../../../models/old/class.model";
+import useGetRaces from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import StartingProf from "./startingProfs/startingProfs";
@@ -536,18 +535,6 @@ const Races: Component = () => {
                   </Show>
                 </span>
 
-                <Show when={showFeatureModal()}>
-                  <FeatureModal
-                    addFeature={addFeature}
-                    replaceFeature={replaceFeature}
-                    currentLevel={{} as LevelEntity}
-                    showFeature={showFeatureModal}
-                    setShowFeature={setShowFeatureModal}
-                    editIndex={editIndex}
-                    setEditIndex={setEditIndex}
-                    currentRace={currentRace}
-                  />
-                </Show>
               </div>
 
             </div>

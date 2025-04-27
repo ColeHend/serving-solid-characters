@@ -1,26 +1,25 @@
 import type { Component } from 'solid-js'
 import { Show } from 'solid-js'
-import { useRegisterSW } from 'virtual:pwa-register/solid'
 import styles from './ReloadPrompt.module.css'
 
-const ReloadPrompt: Component = () => {
-  const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
-    onRegistered(r) {
-       
-      console.log('SW Registered: ' , r)
-    },
-    onRegisterError(error) {
-      console.log('SW registration error', error)
-    },
-  })
+interface ReloadPromptProps {
+  needRefresh?: boolean;
+  offlineReady?: boolean;
+  updateServiceWorker?: (reloadPage?: boolean) => Promise<void>;
+}
+
+const ReloadPrompt: Component<ReloadPromptProps> = (props) => {
+  // Use props if provided, otherwise fallback to empty functions/values
+  const needRefresh = () => props.needRefresh || false;
+  const offlineReady = () => props.offlineReady || false;
+  
+  // If no updateServiceWorker provided, create a dummy function
+  const updateServiceWorker = props.updateServiceWorker || (() => Promise.resolve());
 
   const close = () => {
-    setOfflineReady(false)
-    setNeedRefresh(false)
+    // Since we're now using props, we can't set the signals directly
+    // This will be handled by the parent component
+    console.log('Close clicked');
   }
 
   return (

@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
 import Dexie from "dexie"
-import httpClient$ from "../utility/httpClientObs";
+import httpClient$ from "../utility/tools/httpClientObs";
 import { from } from "solid-js";
 interface Config {
     keyNames: ({key: string, unique: boolean})[]

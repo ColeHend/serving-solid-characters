@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Page</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .box { padding: 20px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Debugging Page</h1>
+  <div class="box">
+    <h2>Basic DOM Test</h2>
+    <p>If you can see this, basic HTML rendering is working.</p>
+    <button id="testBtn">Click to test JavaScript</button>
+    <div id="jsResult"></div>
+  </div>
+  
+  <div class="box">
+    <h2>Service Worker Status</h2>
+    <div id="swStatus">Checking...</div>
+  </div>
+  
+  <script>
+    // Test basic JavaScript functionality
+    document.getElementById('testBtn').addEventListener('click', function() {
+      document.getElementById('jsResult').textContent = 'JavaScript is working: ' + new Date().toISOString();
+    });
+    
+    // Check service worker status
+    const swStatus = document.getElementById('swStatus');
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        if (registrations.length === 0) {
+          swStatus.textContent = 'No service workers registered';
+        } else {
+          swStatus.innerHTML = 'Service workers registered:<br>' + 
+            registrations.map(r => `- ${r.scope} (${r.active ? 'active' : 'inactive'})`).join('<br>');
+          
+          // Add unregister button
+          const unregBtn = document.createElement('button');
+          unregBtn.textContent = 'Unregister all service workers';
+          unregBtn.addEventListener('click', async () => {
+            for (const registration of registrations) {
+              await registration.unregister();
+            }
+            swStatus.textContent = 'Service workers unregistered. Please reload the page.';
+          });
+          swStatus.appendChild(document.createElement('br'));
+          swStatus.appendChild(unregBtn);
+        }
+      }).catch(err => {
+        swStatus.textContent = 'Error checking service workers: ' + err.message;
+      });
+    } else {
+      swStatus.textContent = 'Service workers not supported in this browser';
+    }
+  </script>
+</body>
+</html>

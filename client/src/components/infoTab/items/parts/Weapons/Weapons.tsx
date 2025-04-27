@@ -5,7 +5,7 @@ import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import Table from "../../../../../shared/components/Table/table";
 import { Cell, Column, Header,Row, SecondRow } from "../../../../../shared/components/Table/innerTable";
 import { useNavigate } from "@solidjs/router";
-import { ItemType } from "../../../../../shared/customHooks/utility/itemType";
+import { ItemType } from "../../../../../shared/customHooks/utility/tools/itemType";
 
 interface props {
     weapons:Accessor<Weapon[]>;

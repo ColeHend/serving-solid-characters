@@ -1,11 +1,11 @@
 import { Accessor, createMemo } from "solid-js";
 import { Character, Stats } from "./useCharacters";
-import useGetBackgrounds from "../data/useGetBackgrounds";
-import useGetClasses from "../data/useGetClasses";
-import useGetFeats from "../data/useGetFeats";
-import useGetItems from "../data/useGetItems";
-import useGetRaces from "../data/useGetRaces";
-import useGetSpells from "../data/useGetSpells";
+import useGetBackgrounds from "./oldSrdinfo/data/useGetBackgrounds";
+import useGetClasses from "./oldSrdinfo/data/useGetClasses";
+import useGetFeats from "./oldSrdinfo/data/useGetFeats";
+import useGetItems from "./oldSrdinfo/data/useGetItems";
+import useGetRaces from "./oldSrdinfo/data/useGetRaces";
+import useGetSpells from "./oldSrdinfo/data/useGetSpells";
 
 const useExportFullStats = (currentCharacter: Accessor<Character>) => {
   

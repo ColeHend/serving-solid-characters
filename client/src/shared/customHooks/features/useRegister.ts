@@ -1,5 +1,5 @@
 import { catchError, tap } from "rxjs";
-import HttpClient$ from "../utility/httpClientObs";
+import HttpClient$ from "../utility/tools/httpClientObs";
 
 export default function useRegister(username: string, password: string, moreData: string = "") {
   HttpClient$.post<string>("/api/Register", {username, password, moreData}).pipe(

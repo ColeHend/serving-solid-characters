@@ -1,5 +1,5 @@
 import { Component, createMemo, createSignal, Show } from "solid-js";
-import useGetBackgrounds from "../../../shared/customHooks/data/useGetBackgrounds";
+import useGetBackgrounds from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetBackgrounds";
 import styles from "./backgrounds.module.scss";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useNavigate, useSearchParams } from "@solidjs/router";

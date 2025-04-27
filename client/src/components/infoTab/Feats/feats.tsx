@@ -5,10 +5,10 @@ import {
   createSignal,
 } from "solid-js";
 import styles from "./feats.module.scss";
-import { Feat } from "../../../models/feat.model";
+import { Feat } from "../../../models/old/feat.model";
 import Paginator from "../../../shared/components/paginator/paginator";
 import { effect } from "solid-js/web";
-import useGetFeats from "../../../shared/customHooks/data/useGetFeats";
+import useGetFeats from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetFeats";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import Table from "../../../shared/components/Table/table";

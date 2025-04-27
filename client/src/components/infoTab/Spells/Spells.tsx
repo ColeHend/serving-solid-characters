@@ -8,9 +8,9 @@ import {
 } from "solid-js";
 import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
-import { Spell } from "../../../models/spell.model";
+import { Spell } from "../../../models/old/spell.model";
 import SearchBar from "./searchBar/searchBar";
-import useGetSpells from "../../../shared/customHooks/data/useGetSpells";
+import useGetSpells from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
 import { Body, Button } from "../../../shared/components";

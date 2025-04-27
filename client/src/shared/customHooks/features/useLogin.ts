@@ -1,5 +1,5 @@
 import { catchError, tap } from "rxjs";
-import HttpClient$ from "../utility/httpClientObs";
+import HttpClient$ from "../utility/tools/httpClientObs";
 
 export default function useLogin(username: string, password: string) {
   HttpClient$.post<string>("/api/Login", {username, password}).pipe(

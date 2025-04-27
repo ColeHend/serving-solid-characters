@@ -1,7 +1,7 @@
 /* use:clickOutside is not actually an error! Solid fixes on compile! */
 import { Accessor, Component, JSX, Setter, createMemo, createSignal, useContext } from "solid-js";
 import { Portal, effect } from "solid-js/web";
-import clickOutside from "../../../shared/customHooks/utility/clickOutside";
+import clickOutside from "../../customHooks/utility/tools/clickOutside";
 import Button from "../Button/Button";
 import { SharedHookContext } from "../../../components/rootApp";
 import userSettings from "../../customHooks/userSettings";

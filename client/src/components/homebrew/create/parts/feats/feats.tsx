@@ -1,9 +1,9 @@
 import { Component, For, Match, Switch, createSignal, createMemo, Show, onMount } from "solid-js";
 import styles from "./feats.module.scss";
 import { useGetClasses, useGetFeats, Input, Select, Option, Chip, homebrewManager, Body, Button, TextArea } from "../../../../../shared/";
-import { Feature, FeatureTypes } from "../../../../../models/core.model";
+import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { effect } from "solid-js/web";
-import { Feat } from "../../../../../models/feat.model";
+import { Feat } from "../../../../../models/old/feat.model";
 import FormField from "../../../../../shared/components/FormField/formField";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";

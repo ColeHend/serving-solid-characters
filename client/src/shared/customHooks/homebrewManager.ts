@@ -1,9 +1,9 @@
 import { Observable, take, tap, of, concatMap, OperatorFunction, catchError, finalize, endWith, retry } from "rxjs";
 import { Accessor, Setter, createSignal } from "solid-js";
 import { DnDClass, Item, Feat, Spell, Background, Race } from "../../models";
-import homebrewDB from "./utility/localDB/homebrewDBFile";
-import httpClient$ from "./utility/httpClientObs";
-import { Clone } from "./utility/Tools";
+import homebrewDB from "./utility/localDB/old/homebrewDBFile";
+import httpClient$ from "./utility/tools/httpClientObs";
+import { Clone } from "./utility/tools/Tools";
 import addSnackbar from "../components/Snackbar/snackbar";
 class HomebrewManager {
   public classes: Accessor<DnDClass[]>;

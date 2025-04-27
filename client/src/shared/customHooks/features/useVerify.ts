@@ -1,5 +1,5 @@
 import { catchError, tap } from "rxjs";
-import HttpClient$ from "../utility/httpClientObs";
+import HttpClient$ from "../utility/tools/httpClientObs";
 import { createSignal } from "solid-js";
 
 const [success, setSuccess] = createSignal<User | null>(null);

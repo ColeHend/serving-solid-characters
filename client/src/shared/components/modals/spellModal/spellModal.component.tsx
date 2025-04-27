@@ -5,7 +5,7 @@ import getUserSettings from "../../../customHooks/userSettings";
 import { SharedHookContext } from "../../../../components/rootApp";
 import { useUserStyles } from "../../../customHooks/utility/style/styleHook";
 import style from "./spellModal.module.scss";
-import { spellLevel, spellComponents } from "../../../customHooks/utility/Tools";
+import { spellLevel, spellComponents } from "../../../customHooks/utility/tools/Tools";
 
 type props = {
   spell: Accessor<Spell>;

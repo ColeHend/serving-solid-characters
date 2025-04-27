@@ -1,5 +1,5 @@
 import { Component } from "solid-js";
-import { importJsonObject } from "../../../shared/customHooks/utility/importJsonObject";
+import { importJsonObject } from "../../../shared/customHooks/utility/tools/importJsonObject";
 import { Trade } from "../../../models/trade.model";
 import addSnackbar from "../../../shared/components/Snackbar/snackbar";
 

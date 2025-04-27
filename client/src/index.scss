@@ -1,4 +1,26 @@
-@import 'styles/themes';
+@use 'coles-solid-library/themes/themes.scss';
+
+// /* Basic CSS reset to ensure elements are visible regardless of font loading */
+// * {
+//   visibility: visible !important;
+//   display: revert !important;
+//   opacity: 1 !important;
+// }
+
+// /* Add a fallback basic theme with default colors */
+// :root {
+//   --background-color: #121212;
+//   --on-background-color: #ffffff;
+//   --primary-color: #2196f3;
+//   --on-primary-color: #ffffff;
+//   --secondary-color: #f50057;
+//   --on-secondary-color: #ffffff;
+// }
+
+// /* Diagnostic rule to help identify hidden elements */
+// [style*="display: none"], [style*="visibility: hidden"], [style*="opacity: 0"] {
+//   border: 3px solid red !important;
+// }
 
 //------------------------------------------------------------------
 // Styles
@@ -14,6 +36,18 @@ body {
   background-color: var(--background-color);
   color: var(--on-background-color);
 }
+
+// html {
+//   height: 100%;
+//   width: 100%;
+// }
+
+// /* Basic styles for root element to ensure it's always visible */
+// #root {
+//   min-height: 100vh;
+//   width: 100%;
+//   display: block !important;
+// }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
@@ -81,35 +115,18 @@ code {
   margin-bottom: 15px;
 }
 
-/*
-
-**fonts** : **and what they do**
-
-- Bookinsanity : Body text
-
-- Scaly_Sans_Caps : Monster Manual quotes
-
-- Nodesto_Caps_Condensed : Book and card titles
-
-- Mr_Eaves_Small_Caps : Headings
-
-- Zatanna_Misdirection : Titles of tables
-
-- Scaly_Sans : Tables
-
-- Solbera_Imitation : Drop caps
-
-- Dungeon_Drop_Case : Drop caps
-
-*/
+/* 
+ * Load fonts asynchronously with font-display: swap 
+ * to prevent font loading from blocking rendering
+ */
 
 // Bookinsanity : Body text ↓
-
 @font-face {
   font-family: 'Bookinsanity';
   src: url('./assets/solbera-dnd-fonts-master/Bookinsanity/Bookinsanity.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -117,6 +134,7 @@ code {
   src: url('./assets/solbera-dnd-fonts-master/Bookinsanity/Bookinsanity_Bold.otf') format('opentype');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -124,6 +142,7 @@ code {
   src: url('./assets/solbera-dnd-fonts-master/Bookinsanity/Bookinsanity_Italic.otf') format('opentype');
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -131,6 +150,7 @@ code {
   src: url('./assets/solbera-dnd-fonts-master/Bookinsanity/Bookinsanity_Bold_Italic.otf') format('opentype');
   font-weight: bold;
   font-style: italic;
+  font-display: swap;
 }
 
 // Scaly_Sans_Caps : Monster Manual quotes ↓
@@ -140,6 +160,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans_Caps/Scaly_Sans_Caps.otf") format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -147,6 +168,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans_Caps/Scaly_Sans_Caps_Bold.otf") format('opentype');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -154,6 +176,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans_Caps/Scaly_Sans_Caps_Italic.otf") format('opentype');
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -161,6 +184,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans_Caps/Scaly_Sans_Caps_Bold_Italic.otf") format('opentype');
   font-weight: bold;
   font-style: italic;
+  font-display: swap;
 }
 
 // Nodesto_Caps_Condensed : Book and card titles ↓
@@ -170,6 +194,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Nodesto_Caps_Condensed/Nodesto_Caps_Condensed.otf") format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -177,6 +202,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Nodesto_Caps_Condensed/NodestoCapsCondensed_Bold.otf") format('opentype');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -184,6 +210,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Nodesto_Caps_Condensed/NodestoCapsCondensed_Italic.otf") format('opentype');
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -191,6 +218,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Nodesto_Caps_Condensed/NodestoCapsCondensed_Bold_Italic.otf") format('opentype');
   font-weight: bold;
   font-style: italic;
+  font-display: swap;
 }
 
 // Mr_Eaves_Small_Caps : Headings ↓
@@ -200,6 +228,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Mr_Eaves/Mr_Eaves_Small_Caps.otf") format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 // Zatanna_Misdirection : Titles of tables ↓
@@ -209,6 +238,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Zatanna_Misdirection/Zatanna_Misdirection.otf") format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -216,6 +246,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Zatanna_Misdirection/Zatanna_Misdirection_Bold.otf") format('opentype');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -223,6 +254,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Zatanna_Misdirection/Zatanna_Misdirection_Italic.otf") format('opentype');
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -230,6 +262,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Zatanna_Misdirection/Zatanna_Misdirection_Bold_Italic.otf") format('opentype');
   font-weight: bold;
   font-style: italic;
+  font-display: swap;
 }
 
 // 	Scaly_Sans : Tables ↓
@@ -239,6 +272,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans/Scaly_Sans.otf") format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -246,6 +280,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans/Scaly_Sans_Bold.otf") format('opentype');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -253,6 +288,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans/Scaly_Sans_Italic.otf") format('opentype');
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -260,6 +296,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Scaly_Sans/Scaly_Sans_Bold_Italic.otf") format('opentype');
   font-weight: bold;
   font-style: italic;
+  font-display: swap;
 }
 
 // Solbera_Imitation : Drop caps ↓ 
@@ -269,6 +306,7 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Solbera_Imitation/Solbera_Imitation.otf") format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 // Dungeon_Drop_Case : Drop caps ↓ 
@@ -278,4 +316,5 @@ code {
   src: url("./assets/solbera-dnd-fonts-master/Dungeon_Drop_Case/Dungeon_Drop_Case.otf") format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }

@@ -4,3 +4,6 @@ bin/
 obj/
 appsettings.json
 wwwroot/
+client/dist
+client/dev-dist
+node_modules

@@ -1,10 +1,10 @@
 import { createMemo } from "solid-js"
-import useGetClasses from "./data/useGetClasses"
-import useGetFeats from "./data/useGetFeats"
-import { Feature, FeatureTypes } from "../../models/core.model"
-import { GetFeatureType, UniqueSet } from "./utility/Tools"
-import useGetBackgrounds from "./data/useGetBackgrounds"
-import useGetItems from "./data/useGetItems"
+import useGetClasses from "./dndInfo/oldSrdinfo/data/useGetClasses"
+import useGetFeats from "./dndInfo/oldSrdinfo/data/useGetFeats"
+import { Feature, FeatureTypes } from "../../models/old/core.model"
+import { GetFeatureType, UniqueSet } from "./utility/tools/Tools"
+import useGetBackgrounds from "./dndInfo/oldSrdinfo/data/useGetBackgrounds"
+import useGetItems from "./dndInfo/oldSrdinfo/data/useGetItems"
 import { n, V } from "@vite-pwa/assets-generator/shared/assets-generator.5e51fd40"
 
 const useGetFeatures = () => {

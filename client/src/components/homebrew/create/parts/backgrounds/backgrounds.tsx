@@ -4,11 +4,10 @@ import styles from './backgrounds.module.scss';
 import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { createStore } from "solid-js/store";
 import { Background } from "../../../../../models";
-import useGetBackgrounds from "../../../../../shared/customHooks/data/useGetBackgrounds";
+import useGetBackgrounds from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetBackgrounds";
 import FormField from "../../../../../shared/components/FormField/formField";
-import FeatureModal from "../classes/sections/featureModal";
-import { LevelEntity } from "../../../../../models/class.model";
-import { Feature, FeatureTypes } from "../../../../../models/core.model";
+import { LevelEntity } from "../../../../../models/old/class.model";
+import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 
@@ -491,18 +490,6 @@ const Backgrounds: Component = () => {
               setShowFeatureModal(true);
               setEditIndex(-1);
             }}>Add Feature</Button>
-            <Show when={showFeatureModal()}>
-              <FeatureModal
-                addFeature={addFeature}
-                replaceFeature={replaceFeature}
-                currentLevel={{} as LevelEntity}
-                showFeature={showFeatureModal}
-                setShowFeature={setShowFeatureModal}
-                editIndex={editIndex}
-                setEditIndex={setEditIndex}
-                currentBackground={currentBackground}
-              />
-            </Show>
             <For each={currentBackground.feature}>{(f, index) =>
               <Button onClick={() => {
                 setShowFeatureModal(true);

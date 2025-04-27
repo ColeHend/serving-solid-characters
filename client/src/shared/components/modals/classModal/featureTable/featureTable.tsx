@@ -1,12 +1,12 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
-import { DnDClass, LevelEntity } from "../../../../../models/class.model";
+import { DnDClass, LevelEntity } from "../../../../../models/old/class.model";
 import {
   formatKeysForDisplay,
   toDisplayFormat,
-} from "../../../../customHooks/utility/stringsHelper";
+} from "../../../../customHooks/utility/tools/stringsHelper";
 import styles from "./featureTable.module.scss";
 import { Clone } from "../../../../customHooks";
-import { Feature } from "../../../../../models/core.model";
+import { Feature } from "../../../../../models/old/core.model";
 import Table from "../../../Table/table";
 import { Cell, Column, Header } from "../../../Table/innerTable";
 type Props = {
