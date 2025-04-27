@@ -12,33 +12,29 @@ enum FeatureTabs {
 }
 interface FeatureTableProps {
   formGroup: FormGroup<ClassForm>;
-  tableData: Accessor<LevelEntity[]>;
-  setTableData: Setter<LevelEntity[]>;
+  change: Accessor<boolean>;
+  setChange: Setter<boolean>;
 }
 export const FeatureTable: Component<FeatureTableProps> = (props) => {
   const [activeTab, setActiveTab] = createSignal<FeatureTabs>(0);
   const [tabs, setTabs] = createSignal<string[]>(['Class Specific', 'Caster Features']);
-  const [{tableData, setTableData}, rest] = splitProps(props, ['tableData', 'setTableData']);
-  
   // const [tableData, setTableData] = createSignal<LevelEntity[]>(defaultTableData);
+  
+  
   createEffect(() => {
-    props.formGroup.set('classLevels', tableData());
+    // props.formGroup.set('classLevels', tableData());
   })
   const [newColumnName, setNewColumnName] = createSignal<string>('');
   
   const classSpecificKeys = createMemo(() => {
     // Force memo to recalculate when columnUpdateTrigger changes
-    const groupKeys = Object.keys(tableData()[0].classSpecific);
+    const groupKeys = Object.keys(props.formGroup.get('classSpecific') ?? {});
     return [...new Set([...groupKeys])];
   });
   const tableColumns = createMemo(() => {
     return ["Level", "Features", ...classSpecificKeys()];
   });
   const casterType = createMemo(() => props.formGroup.get('casterType') ?? CasterType.None);
-
-  createEffect(() => {
-    console.log('Table Data:', tableData());
-  });
   
   return (
     <div class={`${styles.classSection}`}>
@@ -52,22 +48,45 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
           <Switch >
             <Match when={activeTab() === FeatureTabs.ClassSpecific}>
               <div class={`${styles.classSpecific}`}>
-                <FormField name="New Column Name"><Input value={newColumnName()} onChange={(e)=>{setNewColumnName(e.currentTarget.value)}} /></FormField>
+                <FormField name="New Column Name">
+                  <Input value={newColumnName()} onChange={(e)=>{setNewColumnName(e.currentTarget.value)}} />
+                </FormField>
                 <Button title="Add new Column" onClick={()=>{
-                  setTableData((old)=>([...old.map((level) => {
-                    level.classSpecific[newColumnName()] = '-';
-                    return level;
-                  })]));
+                  const classSpecific = props.formGroup.get('classSpecific') ?? {};
+                  props.formGroup.set('classSpecific', {
+                    ...classSpecific,
+                    [newColumnName()]: {
+                      1: '',
+                      2: '',
+                      3: '',
+                      4: '',
+                      5: '',
+                      6: '',
+                      7: '',
+                      8: '',
+                      9: '',
+                      10: '',
+                      11: '',
+                      12: '',
+                      13: '',
+                      14: '',
+                      15: '',
+                      16: '',
+                      17: '',
+                      18: '',
+                      19: '',
+                      20: ''
+                    }
+                  });
                   setNewColumnName(''); // Clear the input field after adding
                 }}><Icon name="add_box" /></Button>
               </div>
               <div class={`${styles.classSpecific}`}>
-                <For each={Object.keys(tableData()[0].classSpecific)}>{(key)=>
+                <For each={Object.keys(props.formGroup.get('classSpecific'))}>{(key)=>
                   <Button class={`${styles.deleteClassSpecificBtn}`} onClick={()=>{
-                    setTableData((old)=>([...old.map((level) => {
-                      delete level.classSpecific[key];
-                      return level;
-                    })]));
+                    const classSpecific = props.formGroup.get('classSpecific') ?? {};
+                    delete classSpecific[key];
+                    props.formGroup.set('classSpecific', classSpecific);
                   }} ><Icon name="delete" size={'medium'}/> {key}</Button>
                 }</For>
               </div>
@@ -125,9 +144,9 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
       <div>
         <ClassTable 
           formGroup={props.formGroup} 
-          data={tableData()}
-          setData={setTableData} 
-          columns={tableColumns()} 
+          columns={tableColumns()}
+          change={props.change}
+          setChange={props.setChange} 
           casterType={props.formGroup.get('casterType') ?? CasterType.None} />
       </div>
     </div>

@@ -10,7 +10,7 @@ import { CastingStat, Stat } from "../../../../../shared/models/stats";
 import { DnDClass, ClassMetadata, LevelEntity, Subclass, ClassCasting } from "../../../../../models/old/class.model";
 import { CasterType, Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { SpellsKnown } from "../../../../../shared/models/casting";
-import { ArrayValidation, ValidatorResult } from "coles-solid-library/dist/components/Form/formHelp/models";
+import { FeatureDetail, Spellslots } from "../../../../../models/data";
 
 interface ClassSpecificValue {
   key: string;
@@ -44,7 +44,6 @@ export interface ClassForm {
   metadataSubclassLevels?: number[];
   metadataSubclassName?: string;
   metadataSubclassPos?: 'before' | 'after' | string;
-  classLevels: LevelEntity[];
   spellcastName: string;
   spellsKnownCalc: SpellsKnown;
   spellcastAbility: CastingStat;
@@ -52,35 +51,12 @@ export interface ClassForm {
   spellsInfo: string;
   spellsLevel: number;
   hasCantrips: boolean;
+  features: Record<number, FeatureDetail[]>;
+  classSpecific: Record<string, Record<number, string>>;
+  spellSlots?: Record<number, Spellslots>;
 }
 
 export const Classes: Component = () => {
-  const defaultClassLevels: LevelEntity[] = Array.from({ length: 20 }, (_, i) => ({
-    level: i + 1,
-    features: [{
-      name: `Feature ${i + 1}`,
-      value: 'Description of the feature',
-      metadata: {
-
-      },
-      info: {
-        className: '',
-        subclassName: '',
-        level: i + 1,
-        type: FeatureTypes.Class,
-        other: '',
-      }
-    }],
-    info: {
-      className: '',
-      subclassName: '',
-      level: i + 1,
-      type: FeatureTypes.Class,
-      other: '',
-    },
-    profBonus: i < 5 ? 2 : i < 9 ? 3 : i < 13 ? 4 : i < 17 ? 5 : 6,
-    classSpecific: {},
-  }));
 
   // const classLevels = new FormArray<LevelEntity[]>([[], []], defaultClassLevels);
 
@@ -111,14 +87,16 @@ export const Classes: Component = () => {
     metadataSubclassLevels: [[], []],
     metadataSubclassName: ['', []],
     metadataSubclassPos: ['before', []],
-    classLevels: [[], []],
     spellcastName: ['', []],
     spellsKnownCalc: [SpellsKnown.Number, []],
     spellcastAbility: [CastingStat.WIS, []],
     spellsKnownRoundup: [false, []],
     spellsInfo: ['', []],
     spellsLevel: [1, []],    
-    hasCantrips: [false, []]
+    hasCantrips: [false, []],
+    classSpecific: [{}, []],
+    features: [{}, []],
+    spellSlots: [{}, []],
   });
   const onSubmit = (data: ClassForm) => {
     const fullData: ClassForm = {
@@ -126,15 +104,13 @@ export const Classes: Component = () => {
       weaponProficiencies: profStore().weapons || [],
       armorProficiencies: profStore().armor || [],
       toolProficiencies: profStore().tools || [],
-      classLevels: classLevels(),
     };
     console.log('ProfStore: ', profStore());
     
     console.log('Submitted: ', fullData);
     
   };
-  ClassFormGroup.set('classLevels', defaultClassLevels);
-  const [classLevels, setClassLevels] = createSignal<LevelEntity[]>(defaultClassLevels);
+  const [change, setChange] = createSignal<boolean>(false);
   const [profStore, setProfStore] = createSignal<ProfStore>({})
   return (
     <Container theme="surface" class={`${styles.container}`}>
@@ -144,7 +120,7 @@ export const Classes: Component = () => {
           <Stats />
           <Proficiencies setProfStore={setProfStore} formGroup={ClassFormGroup} />
           <Items formGroup={ClassFormGroup} />
-          <FeatureTable tableData={classLevels} setTableData={setClassLevels} formGroup={ClassFormGroup} />
+          <FeatureTable change={change} setChange={setChange} formGroup={ClassFormGroup} />
         </div>
         <Button type="submit">
         Submit

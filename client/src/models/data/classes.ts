@@ -9,14 +9,19 @@ export interface Class5E {
   hit_die: string;
   primary_ability: string;
   saving_throws: string[];
-  starting_equipment: StartingEquipment[];
   proficiencies: Proficiencies;
   spellcasting?: Spellcasting;
+  starting_equipment: StartingEquipment[];
   features?: Record<number, FeatureDetail[]>;
+  classSpecific?: Record<string, Record<number, string>>;
   choices?: Choices;
-  classSpecific?: {
-    [key: string]: Record<number, string>;
-  }
+  metadata?: ClassMetadata;
+}
+
+export interface ClassMetadata {
+  subclassLevels: number[];
+  subclassName: string;
+  subclassPos: "before" | "after" | string;
 }
 
 export interface Proficiencies {

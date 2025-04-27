@@ -4,6 +4,7 @@ import { ClassForm } from "./classes";
 import { CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import { Clone, TextArea } from "../../../../../shared";
+import { FeatureDetail } from "../../../../../models/data";
 interface FeatureModalProps {
   showAddFeature: Accessor<boolean>;
   setShowAddFeature: Setter<boolean>;
@@ -11,8 +12,8 @@ interface FeatureModalProps {
   setSelectedFeature: Setter<string>;
   isEditChoice: Accessor<boolean>;
   selectedLevel: Accessor<number>;
-  setTableData: Setter<LevelEntity[]>;
   formGroup: FormGroup<ClassForm>;
+  setChange: Setter<boolean>;
 }
 export const FeatureModal: Component<FeatureModalProps> = (props) => {
   createEffect(() => {
@@ -23,14 +24,10 @@ export const FeatureModal: Component<FeatureModalProps> = (props) => {
       setDescription('');
     } else if (props.isEditChoice() && props.selectedFeature()) {
       // When editing, load the feature data
-      const levels = props.formGroup.get('classLevels') as LevelEntity[];
-      const level = levels.find(l => l.level === props.selectedLevel());
-      if (level) {
-        const feature = level.features.find(f => f.name === props.selectedFeature());
-        if (feature) {
-          setName(feature.name);
-          setDescription(typeof feature.value === 'string' ? feature.value : '');
-        }
+      const feature = props.formGroup.get('features')[props.selectedLevel()]?.find(f => f.name === props.selectedFeature());
+      if (feature) {
+        setName(feature.name);
+        setDescription(typeof feature.description === 'string' ? feature.description : '');
       }
     }
   });
@@ -44,41 +41,30 @@ export const FeatureModal: Component<FeatureModalProps> = (props) => {
   const [choices] = createSignal<Choice<string>[]>([]);
   // save button
   const save = () => {
-    const feature = {} as Feature<string, string>;
+    const feature = {} as FeatureDetail;
     feature.name = name();
-    feature.value = description();
+    feature.description = description();
     feature.metadata = {
-      changes: charChanges(),
+      // changes: charChanges(),
     };
-    feature.info = {
-      className: props.formGroup.get('name') as string,
-      subclassName: '',
-      level: props.selectedLevel(),
-      type: FeatureTypes.Class,
-      other: '',
-    };
+
     if (choices().length > 0) {
-      feature.choices = choices();
+      // feature.choices = choices();
     };
 
-    const levels = props.formGroup.get('classLevels') as LevelEntity[];
-    const level = levels.find(l => l.level === props.selectedLevel())!;
-
-    if (props.isEditChoice() && props.selectedFeature()) {
-      // Update existing feature
-      const featureIndex = level.features.findIndex(f => f.name === props.selectedFeature());
-      if (featureIndex !== -1) {
-        level.features[featureIndex] = feature;
-      }
+    const features = props.formGroup.get('features')[props.selectedLevel()] ?? [];
+    if (features.find(f => f.name === feature.name)) {
+      const ind = features.findIndex(f => f.name === feature.name);
+      features[ind] = feature;
+      const allFeatures = props.formGroup.get('features');
+      allFeatures[props.selectedLevel()] = features;
+      props.formGroup.set('features', allFeatures);
     } else {
-      // Add new feature
-      level?.features.push(feature);
+      const allFeatures = props.formGroup.get('features');
+      allFeatures[props.selectedLevel()] = [...features, feature];
+      props.formGroup.set('features', allFeatures);
     }
-    const newLevels = [...levels.map(l => l.level === level?.level ? level : l)];
-    console.log('New Levels:', newLevels);
-    
-    props.setTableData(newLevels);
-    props.formGroup.set('classLevels', Clone(newLevels));
+    props.setChange(old => !old);
     props.setShowAddFeature(false);
 
   }

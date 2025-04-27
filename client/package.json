@@ -57,11 +57,11 @@
   "dependencies": {
     "@solid-primitives/upload": "^0.0.117",
     "@solidjs/router": "^0.13.3",
-    "coles-solid-library": "^0.3.1",
+    "coles-solid-library": "^0.3.3",
     "dexie": "^3.2.4",
     "dompurify": "^3.1.6",
     "marked": "^14.0.0",
-    "rxjs": "^7.8.1",
+    "rxjs": "^7.8.2",
     "scss": "^0.2.4",
     "solid-click-outside": "^0.0.1",
     "solid-js": "^1.8.11",

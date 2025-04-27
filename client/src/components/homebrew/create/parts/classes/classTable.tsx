@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import { CasterType } from "../../../../../models/old/core.model";
 import { Button, FormGroup, Icon, Input, Modal } from "coles-solid-library";
@@ -9,21 +9,20 @@ import { getSpellSlots } from "../../../../../shared";
 import { FeatureModal } from "./featureModal";
 
 interface ClassTableProps {
-  data: LevelEntity[];
-  setData: Setter<LevelEntity[]>;
   columns: string[];
   casterType: CasterType;
   formGroup: FormGroup<ClassForm>;
+  change: Accessor<boolean>;
+  setChange: Setter<boolean>;
 }
 export const ClassTable: Component<ClassTableProps> = (props) => {
   const [selectedFeature, setSelectedFeature] = createSignal<string>('');
   const classSpecificKeys = createMemo(() => {
-    const groupKeys = Object.keys(props.data[0].classSpecific);
+    props.change();
+    const groupKeys = Object.keys(props.formGroup.get('classSpecific'));
     return [...new Set([...groupKeys])];
   });
-  const getFeatureNames = (level: LevelEntity) => {
-    return level.features.map(f=> f.name).join(', ');
-  }
+  
   const getColumnName = (l: string) => {
     const level = parseInt(l);
     if (!isNaN(level)) {
@@ -90,25 +89,41 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
       return styles.casterColumn;
     }
   };
-  const setClassSpecific = (level: LevelEntity, key: string, value: string) => {
-    const newLevel = {...level};
-    newLevel.classSpecific[key] = value;
-    props.setData((prev)=>([...prev.map(l => l.level === level.level ? newLevel : l)]));
+  const getClassSpecific = (level: number, key: string) => {
+    return props.formGroup.get('classSpecific')[key][level];
+  }
+  const setClassSpecific = (level: number, key: string, value: string) => {
+    const classSpecific = props.formGroup.get('classSpecific');
+    classSpecific[key][level] = value;
+    props.formGroup.set('classSpecific', classSpecific);
+    props.setChange((old)=>(!old));
   };
-  const getCantripsKnown = (level: LevelEntity) => {
-    if (level.spellcasting?.cantrips_known) {
-      return level.spellcasting.cantrips_known;
+  const getCantripsKnown = (level: number) => {
+    props.change();
+    const spellSlots = props.formGroup.get('spellSlots') ?? {};
+    const cantrips = spellSlots[level]?.cantrips_known;
+    if (cantrips) {
+      return cantrips;
     }
     return 0;
   };
-  const setCantripsKnown = (level: LevelEntity, value: number) => {
-    const newLevel = {...level};
-    newLevel.spellcasting ??= {};
-    newLevel.spellcasting.cantrips_known = value;
-    props.setData((prev)=>([...prev.map(l => l.level === level.level ? newLevel : l)]));
+  const setCantripsKnown = (level: number, value: number) => {
+    const newLevel = props.formGroup.get('spellSlots') ?? {};
+    newLevel[level].cantrips_known = value;
+    props.formGroup.set('spellSlots', newLevel);
+    props.setChange((old)=>(!old));
   };
+  const getFeatures = (level: number) => {
+    props.change();
+    const features = props.formGroup.get('features') ?? {};
+    if (features[level]) {
+      return features[level];
+    }
+    return [];
+  }
+
   createEffect(()=>{
-    props.formGroup.set('classLevels', props.data);
+    // props.formGroup.set('classLevels', props.data);
   });
   const [featureToAddLvl, setFeatureToAddLvl] = createSignal<number>(1);
   const [showAddFeature, setShowAddFeature] = createSignal<boolean>(false);
@@ -147,30 +162,32 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
         </tr>
       </thead>
       <tbody>
-        <For each={props.data}>{(row, level)=>
+        <For each={Array.from({ length: 20 }, (_, i) => i + 1)}>{(row, level)=>
           <tr>
             <For each={currentColumns()}>{(col)=>(
               <Switch>
                 {/* Level Number */}
                 <Match when={col === 'Level'}>
-                  <td>{getColumnName(`${row.level}`)}</td>
+                  <td>{getColumnName(`${row}`)}</td>
                 </Match>
                 {/* Features */}
                 <Match when={col === 'Features'}>
                   <td  class={getColumnStyle(col)}>
-                    <For each={row.features}>{(feature) => (
+                    <For each={getFeatures(row)}>{(feature) => (
                       <span>
                         <span class={styles.deleteFeature} onClick={()=>{
-                          const newLevel = {...row};
-                          newLevel.features = newLevel.features.filter(f => f.name !== feature.name);
-                          props.setData((prev)=>([...prev.map(l => l.level === row.level ? newLevel : l)]));
+                          const newLevel = getFeatures(row).filter(f => f.name !== feature.name);;
+                          props.formGroup.set('features', {
+                            ...props.formGroup.get('features'),
+                            [row]: newLevel
+                          });
                         }}>
                           <Icon name="delete" size={'small'} />
                         </span>
                         <span class={styles.singleFeature} onClick={()=>{
                           setSelectedFeature(feature.name);
                           setIsEditChoice(true);
-                          setFeatureToAddLvl(row.level);
+                          setFeatureToAddLvl(row);
                           setShowAddFeature(true);
                         }} >{feature.name}</span>
                       </span>
@@ -180,7 +197,7 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
                 {/* Class Specific Features */}
                 <Match when={classSpecificKeys().includes(col)}>
                   <td class={`${styles.cantripSpacing}`}>
-                    <Input value={row.classSpecific[col]} onChange={(e)=>setClassSpecific(row, col, e.currentTarget.value)} />
+                    <Input value={getClassSpecific(row,col)} onChange={(e)=>setClassSpecific(row, col, e.currentTarget.value)} />
                   </td>
                 </Match>
                 {/* Spell Slots */}
@@ -207,8 +224,8 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
       setShowAddFeature={setShowAddFeature}
       isEditChoice={isEditChoice}
       selectedLevel={featureToAddLvl}
-      setTableData={props.setData}
-      formGroup={props.formGroup} 
+      formGroup={props.formGroup}
+      setChange={props.setChange} 
     />
   </>;
 }
