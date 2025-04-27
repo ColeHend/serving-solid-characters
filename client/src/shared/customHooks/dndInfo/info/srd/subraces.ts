@@ -34,5 +34,10 @@ export function useGetSrdSubraces(version: '2014' | '2024' = '2014') {
 function fetchSubraces(version: '2014' | '2024' = '2014') {
   return HttpClient$.get<Subrace[]>(`/api/${version}/Subraces`).pipe(
     take(1),
+    tap((subraces) => {
+      if (subraces) {
+        SrdDB.subraces.bulkAdd(subraces);
+      }
+    })
   )
 }

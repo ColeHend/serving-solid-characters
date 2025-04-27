@@ -34,6 +34,11 @@ export function useGetSrdFeats(version: '2014' | '2024' = '2014') {
 
 function fetchFeats(version: '2014' | '2024' = '2014') {
   return HttpClient$.get<Feat[]>(`/api/${version}/Feats`).pipe(
-    take(1)
+    take(1),
+    tap((feats) => {
+      if (feats) {
+        SrdDB.feats.bulkAdd(feats);
+      }
+    })
   )
 }

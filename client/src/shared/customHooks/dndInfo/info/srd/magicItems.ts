@@ -35,5 +35,6 @@ export function useGetSrdMagicItems(version: '2014' | '2024' = '2014') {
 function fetchMagicItems(version: '2014' | '2024' = '2014') {
   return HttpClient$.get<MagicItem[]>(`/api/${version}/MagicItems`).pipe(
     take(1),
+    tap((magicItems) => !!magicItems && magicItems.length > 0 ? SrdDB.magicItems.bulkAdd(magicItems) : null)
   )
 }

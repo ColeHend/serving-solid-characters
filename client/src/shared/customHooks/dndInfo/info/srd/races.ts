@@ -36,5 +36,10 @@ export function useGetSrdRaces(version: '2014' | '2024' = '2014') {
 function fetchRaces(version: '2014' | '2024' = '2014') {
   return HttpClient$.get<Race[]>(`/api/${version}/Races`).pipe(
     take(1),
+    tap((races) => {
+      if (races) {
+        SrdDB.races.bulkAdd(races);
+      }
+    })
   )
 }

@@ -38,6 +38,11 @@ export function useGetSrdMasteries() {
 
 function fetchMasteries() {
   return HttpClient$.get<WeaponMastery[]>(`/api/2024/Masteries`).pipe(
-    take(1)
+    take(1),
+    tap((masteries) => {
+      if (masteries.length > 0) {
+        SrdDB.weaponMasteries.bulkAdd(masteries);
+      }
+    })
   )
 }

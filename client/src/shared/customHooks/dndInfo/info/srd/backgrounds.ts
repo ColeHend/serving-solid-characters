@@ -34,6 +34,11 @@ export function useGetSrdBackgrounds(version: '2014' | '2024' = '2014') {
 
 function fetchBackgrounds(version: '2014' | '2024' = '2014') {
   return HttpClient$.get<Background[]>(`/api/${version}/Backgrounds`).pipe(
-    take(1)
+    take(1),
+    tap((backgrounds) => {
+      if (backgrounds) {
+        SrdDB.backgrounds.bulkAdd(backgrounds);
+      }
+    })
   )
 }

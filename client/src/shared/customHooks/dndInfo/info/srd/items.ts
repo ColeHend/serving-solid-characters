@@ -34,6 +34,11 @@ export function useGetSrdItems(version: '2014' | '2024' = '2014') {
 
 function fetchItems(version: '2014' | '2024' = '2014') {
   return HttpClient$.get<Item[]>(`/api/${version}/Items`).pipe(
-    take(1)
+    take(1),
+    tap((items) => {
+      if (items) {
+        SrdDB.items.bulkAdd(items);
+      }
+    })
   )
 }
