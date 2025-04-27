@@ -89,7 +89,9 @@ builder.Services.AddSwaggerGen(c =>
     });
     c.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-
+// how to generate a https certificate run these two commands with your info.
+// mkcert <spaced apart addresses>
+// openssl pkcs12 -export -out <mydomains>.pfx -inkey <example.com+5-key>.pem -in <example.com+5>.pem 
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
     options.ListenLocalhost(5000, listenOptions =>
