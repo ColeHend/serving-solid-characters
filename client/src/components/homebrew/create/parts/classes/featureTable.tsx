@@ -19,13 +19,13 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
   const [activeTab, setActiveTab] = createSignal<FeatureTabs>(0);
   const [tabs, setTabs] = createSignal<string[]>(['Class Specific', 'Caster Features']);
   // const [tableData, setTableData] = createSignal<LevelEntity[]>(defaultTableData);
-  
-  
+
+
   createEffect(() => {
     // props.formGroup.set('classLevels', tableData());
   })
   const [newColumnName, setNewColumnName] = createSignal<string>('');
-  
+
   const classSpecificKeys = createMemo(() => {
     // Force memo to recalculate when columnUpdateTrigger changes
     const groupKeys = Object.keys(props.formGroup.get('classSpecific') ?? {});
@@ -35,23 +35,23 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
     return ["Level", "Features", ...classSpecificKeys()];
   });
   const casterType = createMemo(() => props.formGroup.get('casterType') ?? CasterType.None);
-  
+
   return (
     <div class={`${styles.classSection}`}>
       <div>
         <div>
-          <TabBar activeTab={activeTab()} tabs={tabs()} onTabChange={(e, i)=>{
+          <TabBar activeTab={activeTab()} tabs={tabs()} onTabChange={(e, i) => {
             setActiveTab(i);
-          }}/>
+          }} />
         </div>
         <div>
           <Switch >
             <Match when={activeTab() === FeatureTabs.ClassSpecific}>
               <div class={`${styles.classSpecific}`}>
                 <FormField name="New Column Name">
-                  <Input value={newColumnName()} onChange={(e)=>{setNewColumnName(e.currentTarget.value)}} />
+                  <Input value={newColumnName()} onChange={(e) => { setNewColumnName(e.currentTarget.value) }} />
                 </FormField>
-                <Button title="Add new Column" onClick={()=>{
+                <Button title="Add new Column" onClick={() => {
                   const classSpecific = props.formGroup.get('classSpecific') ?? {};
                   props.formGroup.set('classSpecific', {
                     ...classSpecific,
@@ -82,12 +82,12 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
                 }}><Icon name="add_box" /></Button>
               </div>
               <div class={`${styles.classSpecific}`}>
-                <For each={Object.keys(props.formGroup.get('classSpecific'))}>{(key)=>
-                  <Button class={`${styles.deleteClassSpecificBtn}`} onClick={()=>{
+                <For each={Object.keys(props.formGroup.get('classSpecific'))}>{(key) =>
+                  <Button class={`${styles.deleteClassSpecificBtn}`} onClick={() => {
                     const classSpecific = props.formGroup.get('classSpecific') ?? {};
                     delete classSpecific[key];
                     props.formGroup.set('classSpecific', classSpecific);
-                  }} ><Icon name="delete" size={'medium'}/> {key}</Button>
+                  }} ><Icon name="delete" size={'medium'} /> {key}</Button>
                 }</For>
               </div>
             </Match>
@@ -95,16 +95,26 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
               <div>
               </div>
               <div class={`${styles.casterFeatures}`}>
-                <div style={{"flex-basis": "100%"}}>
-                  <FormField style={{width:'50%'}} name="Caster Type" formName="casterType">
+                <FormField style={{ width: '45%' }} name="Caster Type" formName="casterType">
+                  <Select>
+                    <Option value={CasterType.None}>None</Option>
+                    <Option value={CasterType.Full}>Full</Option>
+                    <Option value={CasterType.Half}>Half</Option>
+                    <Option value={CasterType.Third}>Third</Option>
+                  </Select>
+                </FormField>
+                <Show when={casterType() === CasterType.Half}>
+                  <FormField style={{ width: '45%' }} name="RoundUp?" formName="spellsKnownRoundup">
                     <Select>
-                      <Option value={CasterType.None}>None</Option>
-                      <Option value={CasterType.Full}>Full</Option>
-                      <Option value={CasterType.Half}>Half</Option>
-                      <Option value={CasterType.Third}>Third</Option>
+                      <Option value={true}>Yes</Option>
+                      <Option value={false}>No</Option>
                     </Select>
                   </FormField>
-                </div>
+                </Show>
+                {/* <div style={{"flex-basis": "100%"}}>
+                  <span>
+                  </span>
+                </div> */}
                 <Show when={casterType() !== CasterType.None}>
                   <FormField name="Has Cantrips?" formName="hasCantrips">
                     <Select>
@@ -142,11 +152,11 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
         </div>
       </div>
       <div>
-        <ClassTable 
-          formGroup={props.formGroup} 
+        <ClassTable
+          formGroup={props.formGroup}
           columns={tableColumns()}
           change={props.change}
-          setChange={props.setChange} 
+          setChange={props.setChange}
           casterType={props.formGroup.get('casterType') ?? CasterType.None} />
       </div>
     </div>

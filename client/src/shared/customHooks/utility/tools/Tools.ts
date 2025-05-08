@@ -165,6 +165,103 @@ interface typeValues {
 		third: number;
 		[other: string]: number;
 }
+
+/**
+ * Official “Multiclass Spell-caster: Spell Slots per Spell Level” table,
+ * indexed [effectiveCasterLevel-1][slotLevel-1].
+ * See SRD 5.1 / PHB p.165.
+ */
+const SLOT_TABLE: Readonly<number[][]> = [
+  /*  1 */ [2, 0, 0, 0, 0, 0, 0, 0, 0],
+  /*  2 */ [3, 0, 0, 0, 0, 0, 0, 0, 0],
+  /*  3 */ [4, 2, 0, 0, 0, 0, 0, 0, 0],
+  /*  4 */ [4, 3, 0, 0, 0, 0, 0, 0, 0],
+  /*  5 */ [4, 3, 2, 0, 0, 0, 0, 0, 0],
+  /*  6 */ [4, 3, 3, 0, 0, 0, 0, 0, 0],
+  /*  7 */ [4, 3, 3, 1, 0, 0, 0, 0, 0],
+  /*  8 */ [4, 3, 3, 2, 0, 0, 0, 0, 0],
+  /*  9 */ [4, 3, 3, 3, 1, 0, 0, 0, 0],
+  /* 10 */ [4, 3, 3, 3, 2, 0, 0, 0, 0],
+  /* 11 */ [4, 3, 3, 3, 2, 1, 0, 0, 0],
+  /* 12 */ [4, 3, 3, 3, 2, 1, 0, 0, 0],
+  /* 13 */ [4, 3, 3, 3, 2, 1, 1, 0, 0],
+  /* 14 */ [4, 3, 3, 3, 2, 1, 1, 0, 0],
+  /* 15 */ [4, 3, 3, 3, 2, 1, 1, 1, 0],
+  /* 16 */ [4, 3, 3, 3, 2, 1, 1, 1, 0],
+  /* 17 */ [4, 3, 3, 3, 2, 1, 1, 1, 1],
+  /* 18 */ [4, 3, 3, 3, 3, 1, 1, 1, 1],
+  /* 19 */ [4, 3, 3, 3, 3, 2, 1, 1, 1],
+  /* 20 */ [4, 3, 3, 3, 3, 2, 2, 1, 1],
+];
+
+/**
+ * Single-class third-caster table (Eldritch Knight & Arcane Trickster).
+ * Only columns 1-4 are relevant; the rest are 0.
+ */
+const THIRD_TABLE: Readonly<number[][]> = [
+  /* Lv  1 */ [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv  2 */ [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv  3 */ [2, 0, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv  4 */ [3, 0, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv  5 */ [3, 0, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv  6 */ [3, 0, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv  7 */ [4, 2, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv  8 */ [4, 2, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv  9 */ [4, 2, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv 10 */ [4, 3, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv 11 */ [4, 3, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv 12 */ [4, 3, 0, 0, 0, 0, 0, 0, 0],
+  /* Lv 13 */ [4, 3, 2, 0, 0, 0, 0, 0, 0],
+  /* Lv 14 */ [4, 3, 2, 0, 0, 0, 0, 0, 0],
+  /* Lv 15 */ [4, 3, 2, 0, 0, 0, 0, 0, 0],
+  /* Lv 16 */ [4, 3, 3, 0, 0, 0, 0, 0, 0],
+  /* Lv 17 */ [4, 3, 3, 0, 0, 0, 0, 0, 0],
+  /* Lv 18 */ [4, 3, 3, 0, 0, 0, 0, 0, 0],
+  /* Lv 19 */ [4, 3, 3, 1, 0, 0, 0, 0, 0],
+  /* Lv 20 */ [4, 3, 3, 1, 0, 0, 0, 0, 0],
+];
+
+/**
+ * Returns the number of spell slots a D&D 5e character has
+ * for the given slot level.
+ *
+ * @param level      – character level (1 to 20)
+ * @param slotLevel  – desired slot level (1 to 9)
+ * @param casterType – “full”, “half_1”, “half_2”, or “third”
+ *
+ * @throws RangeError on impossible inputs
+ */
+export function getSpellSlots2(
+  level: number,
+  slotLevel: number,
+  casterType: "full" | "half_1" | "half_2" | "third",
+): number {
+  // ── validate inputs ───────────────────────────────────────────────────────
+  if (!Number.isInteger(level) || level < 1 || level > 20)
+    throw new RangeError("level must be an integer between 1 and 20.");
+  if (!Number.isInteger(slotLevel) || slotLevel < 1 || slotLevel > 9)
+    throw new RangeError("slotLevel must be an integer between 1 and 9.");
+
+  // hard caps for partial casters
+  if ((casterType === "half_1" || casterType === "half_2") && slotLevel > 5)
+    return 0;
+  if (casterType === "third" && slotLevel > 4) return 0;
+
+  // ── lookup path ───────────────────────────────────────────────────────────
+  if (casterType === "third") {
+    return THIRD_TABLE[level - 1][slotLevel - 1] ?? 0;
+  }
+
+  // full/half casters: convert to effective level → use multiclass table
+  const effective =
+    casterType === "full"
+      ? level
+      : casterType === "half_1"
+      ? Math.ceil(level / 2)
+      : Math.ceil(Math.max(0, level - 1) / 2); // half_2
+  return effective === 0 ? 0 : SLOT_TABLE[effective - 1][slotLevel - 1] ?? 0;
+};
+
 /**
  * Calculates the number of spell slots available for a given character level, slot level, and caster type.
  *

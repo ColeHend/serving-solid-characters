@@ -30,5 +30,21 @@ namespace sharpAngleTemplate.Repositories
         {
             return JsonConvert.DeserializeObject<T>(toObject);
         }
+
+        public static void LogError(this string message)
+        {
+            var oldConsoleColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ForegroundColor = oldConsoleColor;
+        }
+
+        public static void LogWarning(this string message)
+        {
+            var oldConsoleColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(message);
+            Console.ForegroundColor = oldConsoleColor;
+        }
     }
 }

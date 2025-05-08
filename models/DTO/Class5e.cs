@@ -1,6 +1,6 @@
 namespace sharpAngleTemplate.models.DTO.Updated;
 
-/// <summary>Represents a discrete feat a character can gain.</summary>
+// /// <summary>Represents a discrete feat a character can gain.</summary>
 public class Feat
 {
   public FeatureDetail Details { get; set; } = null!;
@@ -15,13 +15,108 @@ public class FeatureDetail
   public string? ChoiceKey { get; set; }
   public FeatureMetadata? Metadata { get; set; }
 }
-
 public class FeatureMetadata
 {
-  public int? Uses { get; set; }
-  public string? Recharge { get; set; }
-  public List<string>? Spells { get; set; }
-  public string? Category { get; set; }
+  public string Name { get; set; }            // Feature name (unique identifier)
+  public string Category { get; set; }        // e.g. "Racial Trait", "Class Feature", "Feat", "Item"
+  public string Description { get; set; }     // Full description text of the feature
+
+  public UsageInfo? Usage { get; set; }        // Usage limitations & recharge info (null if unlimited use)
+  public List<SpellGrant>? GrantedSpells { get; set; }  // Spells or spell-like abilities granted
+  public List<FeatureOption>? Options { get; set; }     // Optional sub-features to choose from (if any)
+}
+
+// Represents an optional sub-feature choice
+public class FeatureOption
+{
+  public string Name { get; set; }         // Option name (e.g. "Archery")
+  public string Description { get; set; }  // Option description/effect
+  public int LevelAcquired { get; set; } // Character level when the option is acquired (use 1 if immediate)
+  public UsageInfo? Usage { get; set; }     // (optional) Usage info, if this option has its own uses
+  public List<Modifier>? Modifiers { get; set; } // (optional) Modifiers applied by this option
+  public List<SpellGrant>? GrantedSpells { get; set; } // (optional) Spells granted by this option
+}
+
+// Defines usage limits and recharge mechanics
+public class UsageInfo
+{
+  public int? MaxUses { get; set; }       // Max uses before recharge (fixed number if set)
+  // "number", "PB", "stat:STR"
+  public string? UsesFormula { get; set; } // Formula for uses if dynamic (e.g. "PB" for proficiency bonus)
+  public string Recharge { get; set; }    // Recharge condition (e.g. "LongRest", "ShortRest", "Dawn", "Special")
+}
+
+// Represents a spell granted by a feature, with the level it’s granted at
+public class SpellGrant
+{
+  public string SpellName { get; set; }   // Name of the spell granted
+  public int LevelAcquired { get; set; }  // Character level when the spell is acquired (use 1 if immediate)
+}
+
+/// <summary>
+/// Represents a modifier that can be applied to character attributes in a D&D 5e system.
+/// </summary>
+/// <remarks>
+/// Modifiers can affect various aspects of a character including ability scores,
+/// armor class, saving throws, and other attributes. They can be conditional
+/// and use different operations for applying their effects.
+/// </remarks>
+public class Modifier
+{
+  /// <summary>
+  /// Gets or sets the target attribute this modifier affects.
+  /// </summary>
+  /// <value>
+  /// "AC" (Armor Class), 
+  /// "save:CON" (Constitution saving throw), check:WIS (Wisdom check),
+  /// "attack" (Attack Rolls), "attack:crit (critical hit), etc.
+  /// "ability:STR" (Strength Ability Score), "spell" (Spell Save DC),
+  /// "feature:Rage" (Rage feature), "spell:slot_1" (Spell Slot),
+  /// </value>
+  public string Target { get; set; }
+
+  /// <summary>
+  /// Gets or sets how the modifier is applied to the target.
+  /// </summary>
+  /// <value>
+  /// -- Currently Used --
+  /// "add" (adds to value), "set" (overwrites value), "replace" (replaces value),
+  /// "advantage" (grants advantage), "die" (adds another die of value), 
+  /// "die:size" (changes die size)
+  /// "DC" (make a save of the dc), duration (for duration of feature)
+  /// </value>
+  public string Operation { get; set; }
+
+  /// <summary>
+  /// Gets or sets the value used in the modifier calculation.
+  /// </summary>
+  /// <value>
+  /// Can be a fixed value ("2"), a reference to a game mechanic ("PB" for Proficiency Bonus),
+  /// /halfD or /halfU (for half of a value), /third (for a third of a value)
+  /// -- e.g. ("ability/halfD:CHA") for half of the Charisma ability score,
+  /// num:2 (for a number),
+  /// die:1d4 (for a die roll),
+  /// ability:(STR, DEX, etc.) for ability mod score,
+  /// abilityF:(STR, DEX, etc.) for full ability score,
+  /// "feature:Rage" (Rage feature)
+  /// null is infinite.
+  /// </value>
+  public string? Value { get; set; }
+
+  /// <summary>
+  /// Gets or sets the condition under which this modifier applies.
+  /// </summary>
+  /// <value>
+  /// --- can be comma separated for multi triggers. --
+  /// -- activate conditions --
+  /// while: rage | unarmored
+  /// not: blinded | deafened | charmed | frightened | incapacitated | paralyzed | petrified | poisoned | proficent
+  /// -- trigger conditions --
+  /// hp: (num if Hit triggers)
+  /// Examples include "WhileWearingArmor", "Rage", 
+  /// etc. Null indicates the modifier always applies.
+  /// </value>
+  public List<string>? Condition { get; set; }
 }
 
 public class Prerequisite
@@ -164,7 +259,7 @@ public class Item
   public ItemType Type { get; set; }
   public double Weight { get; set; }
   public string Cost { get; set; } = null!;
-  public Dictionary<string, string> Properties { get; set; } = new();
+  public Dictionary<string, object> Properties { get; set; } = new();
 }
 
 public enum ItemType

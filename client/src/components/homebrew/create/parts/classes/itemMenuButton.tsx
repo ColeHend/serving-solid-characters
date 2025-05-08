@@ -33,22 +33,32 @@ export const ItemMenuButton: Component<ItemMenuButtonProps> = (props) => {
     setShowMenu(true);
   };
 
+  const removeVersion = (item: Item) => {
+    const name = item.name.replace(/\s*\((?:2014|2024)\)/, '').trim();
+    name.replace('(2014)', '');
+    name.replace('(2024)', '');
+    return {
+      ...item,
+      name,
+    }
+  };
+
   const menuItemClick = (choice: boolean, amnt: number) => {
     if (props?.item) {
       props.addItem({
-        item: props.item,
+        item: removeVersion(props.item),
         choice: choice,
         itemAmnt: amnt,
       });
     } else if (props?.weapon) {
       props.addWeapon({
-        item: props.weapon,
+        item: removeVersion(props.weapon) as Weapon,
         choice: choice,
         itemAmnt: amnt,
       });
     } else if (props?.armor) {
       props.addArmor({
-        item: props.armor,
+        item: removeVersion(props.armor) as Armor,
         choice: choice,
         itemAmnt: amnt,
       });
@@ -127,7 +137,8 @@ export const ItemMenuButton: Component<ItemMenuButtonProps> = (props) => {
       return `x ${occurrences}`;
     }
     return '';
-  }
+  };
+  
   return (
     <div>
       <Button style={{width:'75px'}} ref={setAnchorElement} onClick={handleClick}>
@@ -158,19 +169,19 @@ export const ItemMenuButton: Component<ItemMenuButtonProps> = (props) => {
             <Button onClick={() => {
               if (props?.item) {
                 props.addItem({
-                  item: props.item,
+                  item: removeVersion(props.item),
                   choice: false,
                   itemAmnt: multipleAmnt(),
                 });
               } else if (props?.weapon) {
                 props.addWeapon({
-                  item: props.weapon,
+                  item: removeVersion(props.weapon) as Weapon,
                   choice: false,
                   itemAmnt: multipleAmnt(),
                 });
               } else if (props?.armor) {
                 props.addArmor({
-                  item: props.armor,
+                  item: removeVersion(props.armor) as Armor,
                   choice: false,
                   itemAmnt: multipleAmnt(),
                 });
@@ -215,21 +226,21 @@ export const ItemMenuButton: Component<ItemMenuButtonProps> = (props) => {
                 
                 if (props?.item) {
                   props.addItem({
-                    item: props.item,
+                    item: removeVersion(props.item),
                     choice: true,
                     itemAmnt: multipleAmnt(),
                     choiceAmnt: showChoiceAmnt(),
                   });
                 } else if (props?.weapon) {
                   props.addWeapon({
-                    item: props.weapon,
+                    item: removeVersion(props.weapon) as Weapon,
                     choice: true,
                     itemAmnt: multipleAmnt(),
                     choiceAmnt: showChoiceAmnt(),
                   });
                 } else if (props?.armor) {
                   props.addArmor({
-                    item: props.armor,
+                    item: removeVersion(props.armor) as Armor,
                     choice: true,
                     itemAmnt: multipleAmnt(),
                     choiceAmnt: showChoiceAmnt(),
@@ -259,21 +270,21 @@ export const ItemMenuButton: Component<ItemMenuButtonProps> = (props) => {
               <Button onClick={() => {
                 if (props?.item) {
                   props.addItem({
-                    item: props.item,
+                    item: removeVersion(props.item),
                     choice: true,
                     itemAmnt: showChoiceAmnt(),
                     index: showChoiceIndex(),
                   });
                 } else if (props?.weapon) {
                   props.addWeapon({
-                    item: props.weapon,
+                    item: removeVersion(props.weapon) as Weapon,
                     choice: true,
                     itemAmnt: showChoiceAmnt(),
                     index: showChoiceIndex(),
                   });
                 } else if (props?.armor) {
                   props.addArmor({
-                    item: props.armor,
+                    item: removeVersion(props.armor) as Armor,
                     choice: true,
                     itemAmnt: showChoiceAmnt(),
                     index: showChoiceIndex(),

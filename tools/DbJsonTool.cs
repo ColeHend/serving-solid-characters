@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using DndClassJson;
 using Newtonsoft.Json;
 using sharpAngleTemplate.models;
+using sharpAngleTemplate.Repositories;
 using SRDSpellsjson;
 
 namespace sharpAngleTemplate.tools
 {
-    
+
     public class DbJsonService : IDbJsonService
     {
         private DBCollection DatabaseCollection;
@@ -26,42 +27,74 @@ namespace sharpAngleTemplate.tools
         /// <typeparam name="T">The Type that matches the json structure.</typeparam>
         /// <param name="name">the filename.</param>
         /// <returns></returns>
-        public T? GetJson<T>(string name){
-            using (StreamReader r = new StreamReader($"{path}/data/{name}.json"))
+        public T? GetJson<T>(string name)
+        {
+            string filePath = $"{path}/data/{name}.json";
+
+            if (!File.Exists(filePath))
             {
-                string json = r.ReadToEnd();
-                var item = JsonConvert.DeserializeObject<T>(json);
-                return item;
+                $"File not found: {filePath}".LogError();
+                return default;
+            }
+
+            try
+            {
+                using (StreamReader r = new StreamReader(filePath))
+                {
+                    string json = r.ReadToEnd();
+                    var item = JsonConvert.DeserializeObject<T>(json);
+                    return item;
+                }
+            }
+            catch (IOException ex)
+            {
+                $"Error reading file {filePath}: {ex.Message}".LogError();
+                return default;
+            }
+            catch (JsonException ex)
+            {
+                $"Error deserializing JSON from {filePath}: {ex.Message}".LogError();
+                return default;
+            }
+            catch (Exception ex)
+            {
+                $"Unexpected error: {ex.Message}".LogError();
+                return default;
             }
         }
 
         public List<The5ESrdClassesJson> GetThe5EClasses()
         {
-					using (StreamReader r = new StreamReader($"{path}/data/classes.json"))
-					{
-						string json = r.ReadToEnd();
-						var the5ESrdClassesJson = The5ESrdClassesJson.FromJson(json);
-						return the5ESrdClassesJson;
-					}
+            using (StreamReader r = new StreamReader($"{path}/data/classes.json"))
+            {
+                string json = r.ReadToEnd();
+                var the5ESrdClassesJson = The5ESrdClassesJson.FromJson(json);
+                return the5ESrdClassesJson;
+            }
         }
-        public void SaveJson(string name, object value, bool append = false){
+        public void SaveJson(string name, object value, bool append = false)
+        {
             using (StreamWriter r = new StreamWriter($"{path}/data/{name}.json", append))
             {
                 if (append)
                 {
                     r.WriteLine(JsonConvert.SerializeObject(value));
-                } else {
+                }
+                else
+                {
                     r.Write(JsonConvert.SerializeObject(value));
                 }
             }
         }
 
-        public DBCollection GetDB() {
+        public DBCollection GetDB()
+        {
             var item = GetJson<DBCollection>("db");
             if (item == null)
             {
                 return new DBCollection();
-            } else
+            }
+            else
             {
                 return item;
             }
@@ -71,56 +104,65 @@ namespace sharpAngleTemplate.tools
             var location = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase);
             return new FileInfo(location.AbsolutePath).Directory.Parent.Parent.Parent;
         }
-        public void SyncDatabaseJSON(){
-            SaveJson("db",DatabaseCollection);
+        public void SyncDatabaseJSON()
+        {
+            SaveJson("db", DatabaseCollection);
         }
 
         // --------- DatabaseCollection Interactions ----------
-        public int GetCollectionIndex(string collectionName){
+        public int GetCollectionIndex(string collectionName)
+        {
             int index = -1;
-            var collection = DatabaseCollection.collections.Find((collection)=>{
-                    if (collection.Name == collectionName)
-                    {
-                        index = DatabaseCollection.collections.IndexOf(collection);
-                    }
-                    return collection.Name == collectionName;
-                });
+            var collection = DatabaseCollection.collections.Find((collection) =>
+            {
+                if (collection.Name == collectionName)
+                {
+                    index = DatabaseCollection.collections.IndexOf(collection);
+                }
+                return collection.Name == collectionName;
+            });
             return index;
         }
-        public DBCollectionModel? GetCollectionFromDB(string collectionName) {
+        public DBCollectionModel? GetCollectionFromDB(string collectionName)
+        {
             int index = 0;
-            var collection = DatabaseCollection.collections.Find((collection)=>{
-                    index = DatabaseCollection.collections.IndexOf(collection);
-                    return collection.Name == collectionName;
-                });
+            var collection = DatabaseCollection.collections.Find((collection) =>
+            {
+                index = DatabaseCollection.collections.IndexOf(collection);
+                return collection.Name == collectionName;
+            });
             return collection;
-        } 
-        public void ReplaceCollectionAllData(string collectionName, string[] data){
+        }
+        public void ReplaceCollectionAllData(string collectionName, string[] data)
+        {
             var index = GetCollectionIndex(collectionName);
             if (index > -1)
             {
                 DatabaseCollection.collections[index].Data = data;
             }
-                SyncDatabaseJSON();
+            SyncDatabaseJSON();
         }
-        public void AddToDataCollection(string collectionName, string data) {
+        public void AddToDataCollection(string collectionName, string data)
+        {
             var collectionIndex = GetCollectionIndex(collectionName);
             if (data != null && collectionIndex > -1)
             {
                 DatabaseCollection?.collections[collectionIndex]?.Data?.Append(data ?? "");
             }
-                SyncDatabaseJSON();
+            SyncDatabaseJSON();
         }
-        public void CreateCollectionInDB(string collectionName, string[] data) {
-            var alreadyExists = DatabaseCollection.collections.Find((value)=>value.Name==collectionName);
+        public void CreateCollectionInDB(string collectionName, string[] data)
+        {
+            var alreadyExists = DatabaseCollection.collections.Find((value) => value.Name == collectionName);
             if (alreadyExists == null)
             {
-                DatabaseCollection.collections.Add(new DBCollectionModel(){Name=collectionName,Data=data});
+                DatabaseCollection.collections.Add(new DBCollectionModel() { Name = collectionName, Data = data });
                 SyncDatabaseJSON();
             }
         }
     }
-    public interface IDbJsonService {
+    public interface IDbJsonService
+    {
         List<The5ESrdClassesJson> GetThe5EClasses();
         T? GetJson<T>(string name);
         void SaveJson(string name, object value, bool append = false);

@@ -5,7 +5,7 @@ import { Button, FormGroup, Icon, Input, Modal } from "coles-solid-library";
 import { ClassForm } from "./classes";
 import styles from "./classes.module.scss";
 import { SpellsKnown } from "../../../../../shared/models/casting";
-import { getSpellSlots } from "../../../../../shared";
+import { getSpellSlots, getSpellSlots2 } from "../../../../../shared";
 import { FeatureModal } from "./featureModal";
 
 interface ClassTableProps {
@@ -75,7 +75,10 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
     case CasterType.Full:
       return 'full';
     case CasterType.Half:
-      return 'half';
+      if (props.formGroup.get('spellsKnownRoundup')) {
+        return 'half_2';
+      }
+      return 'half_1';
     case CasterType.Third:
       return 'third';
     default:
@@ -208,7 +211,11 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
                     </td>
                   </Show>
                   <Show when={col !== 'Cantrips'}>
-                    <td>{getSpellSlots(level() + 1, getSlotLevel(col), getTypeKey())}</td>
+                    <td>{
+                      getSpellSlots2(level() + 1, getSlotLevel(col), getTypeKey()) ?
+                        getSpellSlots2(level() + 1, getSlotLevel(col), getTypeKey()) :
+                        '-'
+                    }</td>
                   </Show>
                 </Match>
               </Switch>

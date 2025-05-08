@@ -7,10 +7,11 @@ import { Header } from "./header";
 import { Container, Form, FormGroup, Validators, FormArray, Button } from "coles-solid-library";
 import styles from './classes.module.scss';
 import { CastingStat, Stat } from "../../../../../shared/models/stats";
-import { DnDClass, ClassMetadata, LevelEntity, Subclass, ClassCasting } from "../../../../../models/old/class.model";
+import { Subclass } from "../../../../../models/old/class.model";
 import { CasterType, Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { SpellsKnown } from "../../../../../shared/models/casting";
 import { FeatureDetail, Spellslots } from "../../../../../models/data";
+import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
 
 interface ClassSpecificValue {
   key: string;
@@ -57,7 +58,7 @@ export interface ClassForm {
 }
 
 export const Classes: Component = () => {
-
+  useDnDItems();
   // const classLevels = new FormArray<LevelEntity[]>([[], []], defaultClassLevels);
 
   const ClassFormGroup = new FormGroup<ClassForm>({

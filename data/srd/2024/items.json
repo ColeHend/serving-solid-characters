@@ -133,7 +133,7 @@
     "weight": 5,
     "cost": "2 gp",
     "properties": {
-      "Usage": "Using a crowbar gives advantage on Strength checks made to force open a door or container"
+      "Uses": "Using a crowbar gives advantage on Strength checks made to force open a door or container"
     }
   },
   {

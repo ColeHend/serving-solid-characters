@@ -1,3 +1,5 @@
+import { Modifier } from "../../shared/customHooks/character/buildCharacter";
+
 export interface StartingEquipment {
   optionKeys?: string[];
   items?: string[];
@@ -27,7 +29,7 @@ export interface Item {
   type: ItemType;
   weight: number;
   cost: string;
-  properties: Record<string, string>;
+  properties: ItemProperties;
 };
 
 export enum ItemType {
@@ -38,16 +40,39 @@ export enum ItemType {
 }
 
 export interface ItemProperties {
-  // Armor
+  // --- SRD JSON STUFF ---
+  // --- Armor
   AC?: string;
   Stealth?: string;
   StrengthReq?: string;
-  // Weapon
+  // 2014 armor
+  ArmorCategory?: string;
+  // 2014 barding
+  armorType?: string;
+  //---- Weapon
   Damage?: string;
   Properties?: string[];
+  // 2024 weapon
   Mastery?: string;
-  // Item Packs
+  // 2014 weapon
+  Category?: string;
+  WeaponRange?: string; // text
+  RangeNormal?: string; // number
+  RangeLong?: string;   // number
+  // ---- Item Packs
   Includes?: string;
-  // Other Stuff
-  [key: string]: string | string[] | undefined;
+  // ---- Storage
+  Capacity?: string;
+  // --- Other Stuff
+  // 2024
+  Light?: string;
+  Fuel?: string;
+  Special?: string;
+  Uses?: string;
+  Strength?: string;
+  // 2014 only
+  category?: string;
+  
+  // --- Homebrew ---
+  modifiers?: Modifier[];
 }
