@@ -1638,7 +1638,11 @@
       "1": [
         {
           "name": "Spellcasting: Cleric",
-          "description": "As a conduit for divine power, you can cast cleric spells."
+          "description": "As a conduit for divine power, you can cast cleric spells.",
+          "metadata": {
+            
+          }
+          
         },
         {
           "name": "Divine Domain",
