@@ -1639,132 +1639,609 @@
         {
           "name": "Spellcasting: Cleric",
           "description": "As a conduit for divine power, you can cast cleric spells.",
-          "metadata": {
-            
+           "metadata": {
+            "name": "Spellcasting: Cleric",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting: Cleric",
+                "description": "",
+                "levelAcquired": 1,
+                "options": [
+                  {
+                    "name": "Spellcasting: Cleric",
+                    "description": "",
+                    "levelAcquired": 1
+                  }
+                ]
+              }
+            ]
           }
           
         },
         {
           "name": "Divine Domain",
-          "description": "Choose one domain related to your deity, such as Knowledge, Life, Light, Nature, Tempest, Trickery, or War. Only the Life domain is detailed in the Open Game Licensed SRD. Additional Domains are described in the official rulebooks or products from other publishers. \n Your domain grants you domain spells and other features when you choose it at 1st level. It also grants you additional ways to use Channel Divinity when you gain that feature at 2nd level, and additional benefits at 6th, 8th, and 17th levels."
+          "description": "Choose one domain related to your deity, such as Knowledge, Life, Light, Nature, Tempest, Trickery, or War. Only the Life domain is detailed in the Open Game Licensed SRD. Additional Domains are described in the official rulebooks or products from other publishers. \n Your domain grants you domain spells and other features when you choose it at 1st level. It also grants you additional ways to use Channel Divinity when you gain that feature at 2nd level, and additional benefits at 6th, 8th, and 17th levels.",
+          "metadata": {
+            "name": "Divine Domain",
+            "category":"Class",
+            "description":"",
+            "options": []
+
+          }
         },
         {
           "name": "Domain Spells",
-          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you."
+          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
+          "metadata": {
+            "name": "Domain Spells",
+            "category":"Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Domain Spells",
+                "description": "",
+                "levelAcquired":1,
+                "modifiers": [
+                  {
+                    "target":"char.spells",
+                    "operation":"util.add",
+                    "value":"1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Channel Divinity (1/rest)",
-          "description": "At 2nd level, you gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects. You start with two such effects: Turn Undead and an effect determined by your domain. Some domains grant you additional effects as you advance in levels, as noted in the domain description. \n When you use your Channel Divinity, you choose which effect to create. You must then finish a short or long rest to use your Channel Divinity again. \n Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your cleric spell save DC. \n Beginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses."
+          "description": "At 2nd level, you gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects. You start with two such effects: Turn Undead and an effect determined by your domain. Some domains grant you additional effects as you advance in levels, as noted in the domain description. \n When you use your Channel Divinity, you choose which effect to create. You must then finish a short or long rest to use your Channel Divinity again. \n Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your cleric spell save DC. \n Beginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses.",
+          "metadata": {
+            "name": "Channel Divinity (1/rest)",
+            "category":"Class",
+            "description":"",
+            "usage": {
+              "recharge":"long or short rest",
+              "usesFormula":"number"
+            },
+            "options": [
+              {
+                "name":"Channel Divinity",
+                "description":"",
+                "levelAcquired":2,
+                "modifiers": [
+                  {
+                    "target": "feature:Channel Divinity",
+                    "operation": "util.set.die:uses",
+                    "value":"1"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Channel Divinity: Turn Undead",
-          "description": "As an action, you present your holy symbol and speak a prayer censuring the undead. Each undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage. \n A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly move to a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can use the Dodge action."
+          "description": "As an action, you present your holy symbol and speak a prayer censuring the undead. Each undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage. \n A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly move to a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can use the Dodge action.",
+          "metadata": {
+            "name":"Channel Divinity: Turn Undead",
+            "category":"Class",
+            "description":"",
+            "options": [
+              {
+                "name":"Channel Divinity: Turn Undead",
+                "description":"",
+                "levelAcquired":2,
+                "usage":{
+                  "condition":""
+                },
+                "modifiers": [
+                  {
+                    "target":"",
+                    "operation":"",
+                    "value":""
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Domain Spells",
-          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you."
+          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
+          "metadata":{
+            "name":"Domain Spells",
+            "category":"Class",
+            "description":"",
+            "options":[
+              {
+                "name":"Domain Spells",
+                "description": "",
+                "levelAcquired": 3,
+                "usage": {
+
+                },
+                "modifiers":[
+                  {
+                    "target":"char.spells",
+                    "operation":"util.add",
+                    "value":"1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Domain Spells",
-          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you."
+          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
+          "metadata":{
+            "name":"Domain Spells",
+            "category":"Class",
+            "description":"",
+            "options":[
+              {
+                "name":"Domain Spells",
+                "description": "",
+                "levelAcquired": 3,
+                "usage": {
+
+                },
+                "modifiers":[
+                  {
+                    "target":"char.spells",
+                    "operation":"util.add",
+                    "value":"1"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Destroy Undead (CR 1/2 or below)",
-          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold."
+          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold.",
+          "metadata": {
+            "name": "Destroy Undead (CR 1/2 or below)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition":[
+                "while.target.CR:1/2"
+              ]
+            },
+            "options": [
+              {
+                "name": "Destroy Undead",
+                "description":"",
+                "levelAcquired":5,
+                "modifiers": [
+                  {
+                    "target":"feature:Destroy Undead",
+                    "operation":"util.set.DestroyUndead:CR",
+                    "value":"1/2"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Channel Divinity (2/rest)",
-          "description": "Beginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses."
+          "description": "Beginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses.",
+          "metadata": {
+            "name": "Channel Divinity (1/rest)",
+            "category":"Class",
+            "description":"",
+            "usage": {
+              "recharge":"long or short rest",
+              "usesFormula":"number"
+            },
+            "options": [
+              {
+                "name":"Channel Divinity",
+                "description":"",
+                "levelAcquired":6,
+                "modifiers": [
+                  {
+                    "target": "feature:Channel Divinity",
+                    "operation": "util.set.die:uses",
+                    "value":"2"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "7": [
         {
           "name": "Domain Spells",
-          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you."
+          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
+          "metadata":{
+            "name":"Domain Spells",
+            "category":"Class",
+            "description":"",
+            "options":[
+              {
+                "name":"Domain Spells",
+                "description": "",
+                "levelAcquired": 3,
+                "usage": {
+
+                },
+                "modifiers":[
+                  {
+                    "target":"char.spells",
+                    "operation":"util.add",
+                    "value":"1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Destroy Undead (CR 1 or below)",
-          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold."
+          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold.",
+           "metadata": {
+            "name": "Destroy Undead (CR 1 or below)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition":[
+                "while.target.CR:1"
+              ]
+            },
+            "options": [
+              {
+                "name": "Destroy Undead",
+                "description":"",
+                "levelAcquired":8,
+                "modifiers": [
+                  {
+                    "target":"feature:Destroy Undead",
+                    "operation":"util.set.DestroyUndead:CR",
+                    "value":"1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "Domain Spells",
-          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you."
+          "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. \n If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
+          "metadata":{
+            "name":"Domain Spells",
+            "category":"Class",
+            "description":"",
+            "options":[
+              {
+                "name":"Domain Spells",
+                "description": "",
+                "levelAcquired": 3,
+                "usage": {
+
+                },
+                "modifiers":[
+                  {
+                    "target":"char.spells",
+                    "operation":"util.add",
+                    "value":"1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Divine Intervention",
-          "description":  "Beginning at 10th level, you can call on your deity to intervene on your behalf when your need is great. \n Imploring your deity's aid requires you to use your action. Describe the assistance you seek, and roll percentile dice. If you roll a number equal to or lower than your cleric level, your deity intervenes. The GM chooses the nature of the intervention; the effect of any cleric spell or cleric domain spell would be appropriate. \n If your deity intervenes, you can't use this feature again for 7 days. Otherwise, you can use it again after you finish a long rest. \n At 20th level, your call for intervention succeeds automatically, no roll required." 
+          "description":  "Beginning at 10th level, you can call on your deity to intervene on your behalf when your need is great. \n Imploring your deity's aid requires you to use your action. Describe the assistance you seek, and roll percentile dice. If you roll a number equal to or lower than your cleric level, your deity intervenes. The GM chooses the nature of the intervention; the effect of any cleric spell or cleric domain spell would be appropriate. \n If your deity intervenes, you can't use this feature again for 7 days. Otherwise, you can use it again after you finish a long rest. \n At 20th level, your call for intervention succeeds automatically, no roll required.",
+          "metadata": {
+            "name": "Divine Intervention",
+            "category": "Class",
+            "description":"",
+            "usage": {
+              "usesFormula": "number",
+              "recharge": "7 days & long rest"
+            },
+            "options": [
+              {
+                "name": "Divine Intervention",
+                "description":"",
+                "levelAcquired":10
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "Destroy Undead (CR 2 or below)",
-          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold."
+          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold.",
+           "metadata": {
+            "name": "Destroy Undead (CR 2 or below)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition":[
+                "while.target.CR:2"
+              ]
+            },
+            "options": [
+              {
+                "name": "Destroy Undead",
+                "description":"",
+                "levelAcquired":11,
+                "modifiers": [
+                  {
+                    "target":"feature:Destroy Undead",
+                    "operation":"util.set.DestroyUndead:CR",
+                    "value":"2"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Destroy Undead (CR 3 or below)",
-          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold."
+          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold.",
+           "metadata": {
+            "name": "Destroy Undead (CR 3 or below)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition":[
+                "while.target.CR:3"
+              ]
+            },
+            "options": [
+              {
+                "name": "Destroy Undead",
+                "description":"",
+                "levelAcquired":14,
+                "modifiers": [
+                  {
+                    "target":"feature:Destroy Undead",
+                    "operation":"util.set.DestroyUndead:CR",
+                    "value":"3"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "Destroy Undead (CR 4 or below)",
-          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold."
+          "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold.",
+           "metadata": {
+            "name": "Destroy Undead (CR 4 or below)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition":[
+                "while.target.CR:4"
+              ]
+            },
+            "options": [
+              {
+                "name": "Destroy Undead",
+                "description":"",
+                "levelAcquired":17,
+                "modifiers": [
+                  {
+                    "target":"feature:Destroy Undead",
+                    "operation":"util.set.DestroyUndead:CR",
+                    "value":"4"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Channel Divinity (3/rest)",
-          "description": "Beginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses."
+          "description": "Beginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses.",
+          "metadata": {
+            "name": "Channel Divinity (1/rest)",
+            "category":"Class",
+            "description":"",
+            "usage": {
+              "recharge":"long or short rest",
+              "usesFormula":"number"
+            },
+            "options": [
+              {
+                "name":"Channel Divinity",
+                "description":"",
+                "levelAcquired":18,
+                "modifiers": [
+                  {
+                    "target": "feature:Channel Divinity",
+                    "operation": "util.set.die:uses",
+                    "value":"3"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
         {
           "name": "Divine Intervention Improvement",
-          "description": "At 20th level, your call for intervention succeeds automatically, no roll required."
+          "description": "At 20th level, your call for intervention succeeds automatically, no roll required.",
+          "metadata": {
+            "name": "Divine Intervention",
+            "category": "Class",
+            "description":"",
+            "usage": {
+              "recharge": "7 days & long rest"
+            },
+            "options": [
+              {
+                "name": "Divine Intervention",
+                "description":"",
+                "levelAcquired":20
+              }
+            ]
+          }
         }
       ]
     },
@@ -1909,75 +2386,347 @@
       "1": [
         {
           "name": "Spellcasting: Druid",
-          "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will."
+          "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will.",
+          "metadata": {
+            "name": "Spellcasting: Druid",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting: Druid",
+                "description": "",
+                "levelAcquired": 1,
+                "options": [
+                  {
+                    "name": "Spellcasting: Druid",
+                    "description": "",
+                    "levelAcquired": 1
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Druidic",
-          "description": "You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message. Others spot the message's presence with a successful DC 15 Wisdom (Perception) check but can't decipher it without magic."
+          "description": "You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message. Others spot the message's presence with a successful DC 15 Wisdom (Perception) check but can't decipher it without magic.",
+          "metadata": {
+            "name":"Druidic",
+            "category":"Class",
+            "description":"",
+            "options": [
+              {
+                "name": "Druidic",
+                "description":"",
+                "levelAcquired":1,
+                "options": [
+                  {
+                    "name": "Druidic",
+                    "description":"",
+                    "levelAcquired":1
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Wild Shape (CR 1/4 or below, no flying or swim speed)",
-          "description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.\n Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn't have a flying or swimming speed.\n You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die.\n While you are transformed, the following rules apply:\n - Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature's bonus instead of yours. If the creature has any legendary or lair actions, you can't use them.\n - When you transform, you assume the beast's hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn't reduce your normal form to 0 hit points, you aren't knocked unconscious.\n - You can't cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn't break your concentration on a spell you've already cast, however, or prevent you from taking actions that are part of a spell, such as call lightning, that you've already cast.\n - You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can't use any of your special senses, such as darkvision, unless your new form also has that sense.\n - You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the GM decides whether it is practical for the new form to wear a piece of equipment, based on the creature's shape and size. Your equipment doesn't change size or shape to match the new form, and any equipment that the new form can't wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form."
+          "description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.\n Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn't have a flying or swimming speed.\n You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die.\n While you are transformed, the following rules apply:\n - Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature's bonus instead of yours. If the creature has any legendary or lair actions, you can't use them.\n - When you transform, you assume the beast's hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn't reduce your normal form to 0 hit points, you aren't knocked unconscious.\n - You can't cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn't break your concentration on a spell you've already cast, however, or prevent you from taking actions that are part of a spell, such as call lightning, that you've already cast.\n - You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can't use any of your special senses, such as darkvision, unless your new form also has that sense.\n - You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the GM decides whether it is practical for the new form to wear a piece of equipment, based on the creature's shape and size. Your equipment doesn't change size or shape to match the new form, and any equipment that the new form can't wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form.",
+          "metadata": {
+            "name": "Wild Shape (CR 1/4 or below, no flying or swim speed)",
+            "category":"Class",
+            "description":"",
+            "usage": {
+              "recharge":"long or short rest",
+              "maxUses":2,
+              "condition":[
+                "not.char.condition:incapacitated"
+              ]
+            },
+            "options": [
+              {
+                "name": "Wild Shape",
+                "description":"",
+                "levelAcquired":2,
+                "modifiers": [
+                  {
+                    "target": "feature:Wild Shape",
+                    "operation": "util.set.Feature:CR",
+                    "value": "1/4"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Druid Circle",
-          "description": "At 2nd level, you choose to identify with a circle of druids, such as the Circle of the Land. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level."
+          "description": "At 2nd level, you choose to identify with a circle of druids, such as the Circle of the Land. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.",
+          "metadata": {
+            "name": "Druid Circle",
+            "category":"Class",
+            "description":"",
+            "options": []
+
+          }
         }
       ],
       "4": [
         {
           "name": "Wild Shape (CR 1/2 or below, no flying speed)",
-          "description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.\n Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn't have a flying or swimming speed.\n You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die.\n While you are transformed, the following rules apply:\n - Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature's bonus instead of yours. If the creature has any legendary or lair actions, you can't use them.\n - When you transform, you assume the beast's hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn't reduce your normal form to 0 hit points, you aren't knocked unconscious.\n - You can't cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn't break your concentration on a spell you've already cast, however, or prevent you from taking actions that are part of a spell, such as call lightning, that you've already cast.\n - You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can't use any of your special senses, such as darkvision, unless your new form also has that sense. \n - You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the GM decides whether it is practical for the new form to wear a piece of equipment, based on the creature's shape and size. Your equipment doesn't change size or shape to match the new form, and any equipment that the new form can't wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form."
+          "description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.\n Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn't have a flying or swimming speed.\n You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die.\n While you are transformed, the following rules apply:\n - Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature's bonus instead of yours. If the creature has any legendary or lair actions, you can't use them.\n - When you transform, you assume the beast's hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn't reduce your normal form to 0 hit points, you aren't knocked unconscious.\n - You can't cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn't break your concentration on a spell you've already cast, however, or prevent you from taking actions that are part of a spell, such as call lightning, that you've already cast.\n - You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can't use any of your special senses, such as darkvision, unless your new form also has that sense. \n - You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the GM decides whether it is practical for the new form to wear a piece of equipment, based on the creature's shape and size. Your equipment doesn't change size or shape to match the new form, and any equipment that the new form can't wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form.",
+          "metadata": {
+            "name": "Wild Shape (CR 1/2 or below, no flying speed)",
+            "category":"Class",
+            "description":"",
+            "usage": {
+              "recharge":"long or short rest",
+              "maxUses":2,
+              "condition":[
+                "not.char.condition:incapacitated"
+              ]
+            },
+            "options": [
+              {
+                "name": "Wild Shape",
+                "description":"",
+                "levelAcquired":4,
+                "modifiers": [
+                  {
+                    "target": "feature:Wild Shape",
+                    "operation": "util.set.Feature:CR",
+                    "value": "1/2"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Wild Shape (CR 1 or below)",
-          "description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest. \n Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn't have a flying or swimming speed.\n You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die. \n While you are transformed, the following rules apply: \n - Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature's bonus instead of yours. If the creature has any legendary or lair actions, you can't use them.\n - When you transform, you assume the beast's hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn't reduce your normal form to 0 hit points, you aren't knocked unconscious.\n - You can't cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn't break your concentration on a spell you've already cast, however, or prevent you from taking actions that are part of a spell, such as call lightning, that you've already cast.\n - You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can't use any of your special senses, such as darkvision, unless your new form also has that sense. \n - You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the GM decides whether it is practical for the new form to wear a piece of equipment, based on the creature's shape and size. Your equipment doesn't change size or shape to match the new form, and any equipment that the new form can't wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form."
+          "description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest. \n Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn't have a flying or swimming speed.\n You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die. \n While you are transformed, the following rules apply: \n - Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature's bonus instead of yours. If the creature has any legendary or lair actions, you can't use them.\n - When you transform, you assume the beast's hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn't reduce your normal form to 0 hit points, you aren't knocked unconscious.\n - You can't cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn't break your concentration on a spell you've already cast, however, or prevent you from taking actions that are part of a spell, such as call lightning, that you've already cast.\n - You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can't use any of your special senses, such as darkvision, unless your new form also has that sense. \n - You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the GM decides whether it is practical for the new form to wear a piece of equipment, based on the creature's shape and size. Your equipment doesn't change size or shape to match the new form, and any equipment that the new form can't wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form.",
+          "metadata": {
+            "name": "Wild Shape (CR 1 or below)",
+            "category":"Class",
+            "description":"",
+            "usage": {
+              "recharge":"long or short rest",
+              "maxUses":2,
+              "condition":[
+                "not.char.condition:incapacitated"
+              ]
+            },
+            "options": [
+              {
+                "name": "Wild Shape",
+                "description":"",
+                "levelAcquired":8,
+                "modifiers": [
+                  {
+                    "target": "feature:Wild Shape",
+                    "operation": "util.set.Feature:CR",
+                    "value": "1"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
+          
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Timeless Body",
-          "description": "Starting at 18th level, the primal magic that you wield causes you to age more slowly. For every 10 years that pass, your body ages only 1 year."
+          "description": "Starting at 18th level, the primal magic that you wield causes you to age more slowly. For every 10 years that pass, your body ages only 1 year.",
+          "metadata": {
+            "name": "Timeless Body",
+            "category": "Class",
+            "description":"",
+            "options": [
+              {
+                "name": "Timeless Body",
+                "description": "",
+                "levelAcquired":18
+              }
+            ]
+          }
         },
         {
           "name": "Beast Spells",
-          "description": "Beginning at 18th level, you can cast many of your druid spells in any shape you assume using Wild Shape. You can perform the somatic and verbal components of a druid spell while in a beast shape, but you aren't able to provide material components."
+          "description": "Beginning at 18th level, you can cast many of your druid spells in any shape you assume using Wild Shape. You can perform the somatic and verbal components of a druid spell while in a beast shape, but you aren't able to provide material components.", 
+          "metadata": {
+            "name": "Beast Spells",
+            "category": "Class",
+            "description":"",
+            "options": [
+              {
+                "name": "Beast Spells",
+                "description": "",
+                "levelAcquired":18
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
         {
           "name": "Archdruid",
-          "description": "At 20th level, you can use your Wild Shape an unlimited number of times.\n Additionally, you can ignore the verbal and somatic components of your druid spells, as well as any material components that lack a cost and aren't consumed by a spell. You gain this benefit in both your normal shape and your beast shape from Wild Shape."
+          "description": "At 20th level, you can use your Wild Shape an unlimited number of times.\n Additionally, you can ignore the verbal and somatic components of your druid spells, as well as any material components that lack a cost and aren't consumed by a spell. You gain this benefit in both your normal shape and your beast shape from Wild Shape.",
+          "metadata": {
+            "name": "Archdruid",
+            "category":"Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Archdruid",
+                "description": "",
+                "levelAcquired": 20,
+                "modifiers": [
+                  {
+                    "target":"feature:Wild Shape",
+                    "operation":"util.set.die:uses",
+                    "value": 9999
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -2110,105 +2859,455 @@
       "1": [
         {
           "name": "Fighting Style",
-          "description": "You adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."
+          "description": "You adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.",
+          "metadata": {
+            "name": "Fighting Style",
+            "category": "Class",
+            "description": "",
+            "options": [
+
+            ]
+          }
         },
         {
           "name": "Second Wind",
-          "description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again."
+          "description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again.",
+          "metadata": {
+            "name": "Second Wind",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge":"long or short rest"
+            },
+            "options": [
+               {
+                "name": "Second Wind",
+                "description": "",
+                "levelAcquired": 1
+                
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Action Surge (1 use)",
-          "description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action.\n Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn."
+          "description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action.\n Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn.",
+          "metadata": {
+            "name": "Action Surge (1 use)",
+            "category":"Class",
+            "description": "",
+            "usage": {
+              "recharge":"long or short rest",
+              "maxUses": 1
+            },
+            "options": [
+              {
+                "name": "Action Surge",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target":"feature:Action Surge",
+                    "operation": "util.set.die:uses",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+            
+          }
         }
       ],
       "3": [
         {
           "name": "Martial Archetype",
-          "description": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques, such as Champion. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level."
+          "description": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques, such as Champion. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.",
+          "metadata": {
+            "name": "Martial Archetype",
+            "category": "Class",
+            "description": "",
+            "options": [
+
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Extra Attack",
-          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class."
+          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class.",
+          "metadata": {
+            "name": "Extra Attack",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "util.num:1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 6,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "Indomitable (1 use)",
-          "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
+          "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level.",
+          "metadata": {
+            "name": "Indomitable (1 use)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Indomitable",
+                "description": "",
+                "levelAcquired": 9,
+                "modifiers": [
+                  {
+                    "target": "feature:Indomitable",
+                    "operation": "util.set.die:uses",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "Extra Attack (2)",
-          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class."
+          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class.",
+          "metadata": {
+            "name": "Extra Attack (2)",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "",
+                "levelAcquired": 11,
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "util.num:2"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "13": [
         {
           "name": "Indomitable (2 uses)",
-          "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
+          "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level.",
+          "metadata": {
+            "name": "Indomitable (1 use)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Indomitable",
+                "description": "",
+                "levelAcquired": 13,
+                "modifiers": [
+                  {
+                    "target": "feature:Indomitable",
+                    "operation": "util.set.die:uses",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 14,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "Action Surge (2 uses)",
-          "description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action.\n Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn."
+          "description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action.\n Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn.",
+          "metadata": {
+            "name": "Action Surge (2 uses)",
+            "category":"Class",
+            "description": "",
+            "usage": {
+              "recharge":"long or short rest",
+              "maxUses": 2
+            },
+            "options": [
+              {
+                "name": "Action Surge",
+                "description": "",
+                "levelAcquired": 17,
+                "modifiers": [
+                  {
+                    "target":"feature:Action Surge",
+                    "operation": "util.set.die:uses",
+                    "value": 2
+                  }
+                ]
+              }
+            ]
+            
+          }
         },
         {
           "name": "Indomitable (3 uses)",
-          "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
+          "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level.",
+          "metadata": {
+            "name": "Indomitable (3 use)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Indomitable",
+                "description": "",
+                "levelAcquired": 17,
+                "modifiers": [
+                  {
+                    "target": "feature:Indomitable",
+                    "operation": "util.set.die:uses",
+                    "value": 3
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
         {
           "name": "Extra Attack (3)",
-          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class."
+          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class.",
+          "metadata": {
+            "name": "Extra Attack (3)",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "util.num:1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -2283,145 +3382,585 @@
       "1": [
         {
           "name": "Unarmored Defense",
-          "description": "Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."
+          "description": "Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier.",
+          "metadata": {
+            "name": "Unarmored Defense",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Unarmored Defense",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "char.ac",
+                    "operation":"replace",
+                    "value": "10 + char.stats.DEX.mod + char.stats.WIS.mod"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Martial Arts",
-          "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don't have the two- handed or heavy property.\n You gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield:\n - You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.\n - You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of Table: The Monk.\n - When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.\n Certain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon."
+          "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don't have the two- handed or heavy property.\n You gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield:\n - You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.\n - You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of Table: The Monk.\n - When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.\n Certain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon.",
+          "metadata": {
+            "name": "Martial Arts",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Martial Arts",
+                "description": "",
+                "levelAcquired": 1,
+                "usage": {
+                  "condition": [
+                    "not.char.equip.armor.type:all"
+                  ]
+                },
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll:Stat",
+                    "operation": "replace",
+                    "value": "char.stats.DEX.mod"
+                  },
+                  {
+                    "target": "char.attack.roll",
+                    "operation":"util.set.die:size",
+                    "value": 4
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Ki",
-          "description": "Starting at 2nd level, your training allows you to harness the mystic energy of ki. Your access to this energy is represented by a number of ki points. Your monk level determines the number of points you have, as shown in the Ki Points column of Table: The Monk. \n You can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class. \n When you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points. \n Some of your ki features require your target to make a saving throw to resist the feature's effects. The saving throw DC is calculated as follows: \n Ki save DC = 8 + your proficiency bonus + your Wisdom modifier"
+          "description": "Starting at 2nd level, your training allows you to harness the mystic energy of ki. Your access to this energy is represented by a number of ki points. Your monk level determines the number of points you have, as shown in the Ki Points column of Table: The Monk. \n You can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class. \n When you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points. \n Some of your ki features require your target to make a saving throw to resist the feature's effects. The saving throw DC is calculated as follows: \n Ki save DC = 8 + your proficiency bonus + your Wisdom modifier",
+          "metadata": {
+            "name": "Ki",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge":"long or short rest"
+            },
+            "options": [
+              {
+                "name": "Ki",
+                "description": "",
+                "levelAcquired": 2
+              }
+            ]
+          }
         },
         {
           "name": "Flurry of Blows",
-          "description": "Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action."
+          "description": "Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action.",
+          "metadata": {
+            "name": "Flurry of Blows",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Flurry of Blows",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Patient Defense",
-          "description": "You can spend 1 ki point to take the Dodge action as a bonus action on your turn."
+          "description": "You can spend 1 ki point to take the Dodge action as a bonus action on your turn.",
+          "metadata": {
+            "name": "Patient Defense",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Patient Defense",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Step of the Wind",
-          "description": "You can spend 1 ki point to take the Disengage or Dash action as a bonus action on your turn, and your jump distance is doubled for the turn."
+          "description": "You can spend 1 ki point to take the Disengage or Dash action as a bonus action on your turn, and your jump distance is doubled for the turn.",
+          "metadata": {
+            "name": "Step of the Wind",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Step of the Wind",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Unarmored Movement",
-          "description": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in Table: The Monk.\n At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move."
+          "description": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in Table: The Monk.\n At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move.",
+          "metadata": {
+            "name": "Unarmored Movement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition": [
+                "not.char.equip.armor.type:all"
+              ]
+            },
+            "options": [
+              {
+                "name": "Unarmored Movement",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "char.move",
+                    "operation": "add",
+                    "value": 10
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Monastic Tradition",
-          "description": "When you reach 3rd level, you commit yourself to a monastic tradition, such as the Way of the Open Hand. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level."
+          "description": "When you reach 3rd level, you commit yourself to a monastic tradition, such as the Way of the Open Hand. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level.",
+          "metadata": {
+            "name": "Monastic Tradition",
+            "category": "Class",
+            "description": "",
+            "options": [
+
+            ]
+          }
         },
         {
           "name": "Deflect Missiles",
-          "description": "Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack. When you do so, the damage you take from the attack is reduced by 1d10 + your Dexterity modifier + your monk level. \n If you reduce the damage to 0, you can catch the missile if it is small enough for you to hold in one hand and you have at least one hand free. If you catch a missile in this way, you can spend 1 ki point to make a ranged attack with the weapon or piece of ammunition you just caught, as part of the same reaction. You make this attack with proficiency, regardless of your weapon proficiencies, and the missile counts as a monk weapon for the attack, which has a normal range of 20 feet and a long range of 60 feet."
+          "description": "Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack. When you do so, the damage you take from the attack is reduced by 1d10 + your Dexterity modifier + your monk level. \n If you reduce the damage to 0, you can catch the missile if it is small enough for you to hold in one hand and you have at least one hand free. If you catch a missile in this way, you can spend 1 ki point to make a ranged attack with the weapon or piece of ammunition you just caught, as part of the same reaction. You make this attack with proficiency, regardless of your weapon proficiencies, and the missile counts as a monk weapon for the attack, which has a normal range of 20 feet and a long range of 60 feet.",
+          "metadata": {
+            "name": "Deflect Missiles",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Deflect Missiles",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "char.targeted.roll",
+                    "operation":"add",
+                    "value": "5.5 + char.stats.DEX.mod + char.level"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Slow Fall",
-          "description": "Beginning at 4th level, you can use your reaction when you fall to reduce any falling damage you take by an amount equal to five times your monk level."
+          "description": "Beginning at 4th level, you can use your reaction when you fall to reduce any falling damage you take by an amount equal to five times your monk level.",
+          "metadata": {
+            "name": "Slow Fall",
+            "category":"Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Slow Fall",
+                "description": "",
+                "levelAcquired": 4,
+                "modifiers": []
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Extra Attack",
-          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+          "metadata": {
+            "name": "Extra Attack",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "util.num:1"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Stunning Strike",
-          "description": "Starting at 5th level, you can interfere with the flow of ki in an opponent's body. When you hit another creature with a melee weapon attack, you can spend 1 ki point to attempt a stunning strike. The target must succeed on a Constitution saving throw or be stunned until the end of your next turn."
+          "description": "Starting at 5th level, you can interfere with the flow of ki in an opponent's body. When you hit another creature with a melee weapon attack, you can spend 1 ki point to attempt a stunning strike. The target must succeed on a Constitution saving throw or be stunned until the end of your next turn.",
+          "metadata": {
+            "name": "Stunning Strike",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Stunning Strike",
+                "description": "",
+                "levelAcquired": 5
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Ki Empowered Strikes",
-          "description": "Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage."
+          "description": "Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+          "metadata": {
+            "name": "Ki Empowered Strikes",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Ki Empowered Strikes",
+                "description": "",
+                "levelAcquired": 6
+              }
+            ]
+          }
         }
       ],
       "7": [
         {
           "name": "Evasion",
-          "description": "At 7th level, your instinctive agility lets you dodge out of the way of certain area effects, such as a blue dragon's lightning breath or a fireball spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail."
+          "description": "At 7th level, your instinctive agility lets you dodge out of the way of certain area effects, such as a blue dragon's lightning breath or a fireball spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+          "metadata": {
+            "name": "Evasion",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Evasion",
+                "description": "",
+                "levelAcquired": 7
+              }
+            ]
+          }
         },
         {
           "name": "Stillness of Mind",
-          "description": "Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened."
+          "description": "Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened.",
+          "metadata": {
+            "name": "Evasion",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Evasion",
+                "description": "",
+                "levelAcquired": 7
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "Unarmored Movement",
-          "description": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in Table: The Monk. \n At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move."
+          "description": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in Table: The Monk. \n At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move.",
+          "metadata": {
+            "name": "Unarmored Movement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition": [
+                "not.char.equip.armor.type:all"
+              ]
+            },
+            "options": [
+              {
+                "name": "Unarmored Movement",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "char.move",
+                    "operation": "add",
+                    "value": 20
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Purity of Body",
-          "description": "At 10th level, your mastery of the ki flowing through you makes you immune to disease and poison."
+          "description": "At 10th level, your mastery of the ki flowing through you makes you immune to disease and poison.",
+          "metadata": {
+            "name": "Purity of Body",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Purity of Body",
+                "description": "",
+                "levelAcquired": 10
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "13": [
         {
           "name": "Tongue of the Sun and Moon",
-          "description": "Starting at 13th level, you learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say."
+          "description": "Starting at 13th level, you learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say.",
+          "metadata": {
+            "name": "Tongue of the Sun and Moon",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Tongue of the Sun and Moon",
+                "description": "",
+                "levelAcquired": 13
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Diamond Soul",
-          "description": "Beginning at 14th level, your mastery of ki grants you proficiency in all saving throws. \n Additionally, whenever you make a saving throw and fail, you can spend 1 ki point to reroll it and take the second result."
+          "description": "Beginning at 14th level, your mastery of ki grants you proficiency in all saving throws. \n Additionally, whenever you make a saving throw and fail, you can spend 1 ki point to reroll it and take the second result.",
+          "metadata": {
+            "name": "Diamond Soul",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Diamond Soul",
+                "description": "",
+                "levelAcquired": 14
+              }
+            ]
+          }
         }
       ],
       "15": [
         {
           "name": "Timeless Body",
-          "description": "At 15th level, your ki sustains you so that you suffer none of the frailty of old age, and you can't be aged magically. You can still die of old age, however. In addition, you no longer need food or water."
+          "description": "At 15th level, your ki sustains you so that you suffer none of the frailty of old age, and you can't be aged magically. You can still die of old age, however. In addition, you no longer need food or water.",
+          "metadata": {
+            "name": "Timeless Body",
+            "category": "Class",
+            "description":"",
+            "options": [
+              {
+                "name": "Timeless Body",
+                "description": "",
+                "levelAcquired":15
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Empty Body",
-          "description": "Beginning at 18th level, you can use your action to spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force damage.\n Additionally, you can spend 8 ki points to cast the astral projection spell, without needing material components. When you do so, you can't take any other creatures with you."
+          "description": "Beginning at 18th level, you can use your action to spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force damage.\n Additionally, you can spend 8 ki points to cast the astral projection spell, without needing material components. When you do so, you can't take any other creatures with you.",
+          "metadata": {
+            "name": "Empty Body",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Empty Body",
+                "description": "",
+                "levelAcquired": 18
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
         {
           "name": "Perfect Self",
-          "description": "At 20th level, when you roll for initiative and have no ki points remaining, you regain 4 ki points."
+          "description": "At 20th level, when you roll for initiative and have no ki points remaining, you regain 4 ki points.",
+          "metadata": {
+            "name": "Perfect Self",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Perfect Self",
+                "description": "",
+                "levelAcquired": 20
+              }
+            ]
+          }
         }
       ]
     },
@@ -3131,7 +4670,26 @@
       "1": [
         {
           "name": "Expertise",
-          "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n At 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit"
+          "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n At 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit",
+          "metadata": {
+            "name": "Expertise",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Expertise",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "char.skills:proficient",
+                    "operation": "util.set.proficient",
+                    "value": 2
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Sneak Attack",
@@ -3157,7 +4715,28 @@
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
@@ -3169,7 +4748,26 @@
       "6": [
         {
           "name": "Expertise",
-          "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n At 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit"
+          "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n At 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit",
+          "metadata": {
+            "name": "Expertise",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Expertise",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "char.skills:proficient",
+                    "operation": "util.set.proficient",
+                    "value": 2
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "7": [
@@ -3181,13 +4779,55 @@
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 10,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "11": [
@@ -3199,7 +4839,28 @@
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "14": [
@@ -3217,7 +4878,28 @@
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "18": [
@@ -3229,7 +4911,28 @@
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
@@ -3331,79 +5034,281 @@
       "1": [
         {
           "name": "Spellcasting: Sorcerer",
-          "description": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells."
+          "description": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells.",
+          "metadata": {
+            "name": "Spellcasting: Sorcerer",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting: Sorcerer",
+                "description": "",
+                "levelAcquired": 1,
+                "options": [
+                  {
+                    "name": "Spellcasting: Sorcerer",
+                    "description": "",
+                    "levelAcquired": 1
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Sorcerous Origin",
-          "description": "Choose a sorcerous origin, which describes the source of your innate magical power, such as Draconic Bloodline.\n Your choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level."
+          "description": "Choose a sorcerous origin, which describes the source of your innate magical power, such as Draconic Bloodline.\n Your choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level.",
+          "metadata": {
+            "name": "Sorcerous Origin",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "2": [
         {
           "name": "Font of Magic",
-          "description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects.\n Sorcery Points\n You have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest."
+          "description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects.\n Sorcery Points\n You have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest.",
+          "metadata": {
+            "name": "Font of Magic",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Font of Magic",
+                "description": "",
+                "levelAcquired": 2
+              }
+            ]
+          }
         },
         {
           "name": "Flexible Casting: Creating Spell Slots",
-          "description": "You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th. \n Any spell slot you create with this feature vanishes when you finish a long rest."
+          "description": "You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th. \n Any spell slot you create with this feature vanishes when you finish a long rest.",
+          "metadata": {
+            "name": "Flexible Casting: Creating Spell Slots",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Flexible Casting: Creating Spell Slots",
+                "description": "",
+                "levelAcquired": 2
+              }
+            ]
+          }
         },
         {
           "name": "Flexible Casting: Converting Spell Slot",
-          "description": "As a bonus action on your turn, you can expend one spell slot and gain a number of sorcery points equal to the slot's level.."
+          "description": "As a bonus action on your turn, you can expend one spell slot and gain a number of sorcery points equal to the slot's level..",
+          "metadata": {
+            "name": "Flexible Casting: Converting Spell Slot",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Flexible Casting: Converting Spell Slot",
+                "description": "",
+                "levelAcquired": 2
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Metamagic",
-          "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level.\n You can use only one Metamagic option on a spell when you cast it, unless otherwise noted."
+          "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level.\n You can use only one Metamagic option on a spell when you cast it, unless otherwise noted.",
+          "metadata": {
+            "name": "Metamagic",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Metamagic",
-          "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level.\n You can use only one Metamagic option on a spell when you cast it, unless otherwise noted."
+          "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level.\n You can use only one Metamagic option on a spell when you cast it, unless otherwise noted.",
+          "metadata": {
+            "name": "Metamagic",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "Metamagic",
-          "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level.\n You can use only one Metamagic option on a spell when you cast it, unless otherwise noted."
+          "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level.\n You can use only one Metamagic option on a spell when you cast it, unless otherwise noted.",
+          "metadata": {
+            "name": "Metamagic",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
         {
           "name": "Sorcerous Restoration",
-          "description": "At 20th level, you regain 4 expended sorcery points whenever you finish a short rest."
+          "description": "At 20th level, you regain 4 expended sorcery points whenever you finish a short rest.",
+          "metadata": {
+            "name": "Sorcerous Restoration",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "short rest"
+            },
+            "options": [
+              {
+                "name": "Sorcerous Restoration",
+                "description": "",
+                "levelAcquired": 20
+              }
+            ]
+          }
         }
       ]
     },
@@ -3582,83 +5487,274 @@
       "1": [
         {
           "name": "Otherworldly Patron",
-          "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice, such as the Fiend. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level."
+          "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice, such as the Fiend. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.",
+          "metadata": {
+            "name": "Otherworldly Patron",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         },
         {
           "name": "Pact Magic",
-          "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells."
+          "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells.",
+          "metadata": {
+            "name": "Pact Magic",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Pact Magic",
+                "description": "",
+                "levelAcquired": 1
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Eldritch Invocations",
-          "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability.\n At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table.\n Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level."
+          "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability.\n At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table.\n Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level.",
+          "metadata": {
+            "name": "Eldritch Invocations",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "usesFormula": "number"
+            },
+            "options": []
+          }
         }
       ],
       "3": [
         {
           "name": "Pact Boon",
-          "description": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice."
+          "description": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice.",
+          "metadata": {
+            "name": "Pact Boon",
+            "category": "Class",
+            "description": "",
+            "options": [
+             
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "Mystic Arcanum (6th level)",
-          "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.\n You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."
+          "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.\n You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest.",
+          "metadata": {
+            "name": "Mystic Arcanum (6th level)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge":"long rest"
+            },
+            "options": []
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "13": [
         {
           "name": "Mystic Arcanum (7th level)",
-          "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.\n You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."
+          "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.\n You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest.",
+          "metadata": {
+            "name": "Mystic Arcanum (7th level)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge":"long rest"
+            },
+            "options": []
+          }
         }
       ],
       "15": [
         {
           "name": "Mystic Arcanum (8th level)",
-          "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.\n You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."
+          "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.\n You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest.",
+          "metadata": {
+            "name": "Mystic Arcanum (8th level)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge":"long rest"
+            },
+            "options": []
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "Mystic Arcanum (9th level)",
-          "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.\n You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."
+          "description": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.\n You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.\n At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest.",
+          "metadata": {
+            "name": "Mystic Arcanum (9th level)",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge":"long rest"
+            },
+            "options": []
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
         {
           "name": "Eldritch Master",
-          "description": "At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature.\n Once you regain spell slots with this feature, you must finish a long rest before you can do so again."
+          "description": "At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature.\n Once you regain spell slots with this feature, you must finish a long rest before you can do so again.",
+          "metadata": {
+            "name": "Eldritch Master",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge":"long rest"
+            },
+            "options": [
+              {
+                "name": "Eldritch Master",
+                "description": "",
+                "levelAcquired": 20
+              }
+            ]
+          }
         }
       ]
     },
@@ -3834,59 +5930,236 @@
       "1": [
         {
           "name": "Spellcasting: Wizard",
-          "description": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power."
+          "description": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power.",
+           "metadata": {
+            "name": "Spellcasting: Wizard",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting: Wizard",
+                "description": "",
+                "levelAcquired": 1,
+                "options": [
+                  {
+                    "name": "Spellcasting: Wizard",
+                    "description": "",
+                    "levelAcquired": 1
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Arcane Recovery",
-          "description": "You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your wizard level (rounded up), and none of the slots can be 6th level or higher.\n For example, if you're a 4th-level wizard, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level spell slot or two 1st-level spell slots."
+          "description": "You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your wizard level (rounded up), and none of the slots can be 6th level or higher.\n For example, if you're a 4th-level wizard, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level spell slot or two 1st-level spell slots.",
+          "metadata": {
+            "name": "Arcane Recovery",
+            "category": "Class",
+            "description": "",
+            "roundUp":true,
+            "usage": {
+              "usesFormula": "number",
+              "recharge": "short rest",
+              "maxUses": 1
+            },
+            "options": [
+              {
+                "name": "Arcane Recovery",
+                "description": "",
+                "levelAcquired": 1
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Arcane Tradition",
-          "description": "When you reach 2nd level, you choose an arcane tradition, shaping your practice of magic through one of eight schools, such as Evocation.\n Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level."
+          "description": "When you reach 2nd level, you choose an arcane tradition, shaping your practice of magic through one of eight schools, such as Evocation.\n Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.",
+          "metadata": {
+            "name": "Arcane Tradition",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Spell Mastery",
-          "description": "At 18th level, you have achieved such mastery over certain spells that you can cast them at will. Choose a 1st-level wizard spell and a 2nd-level wizard spell that are in your spellbook. You can cast those spells at their lowest level without expending a spell slot when you have them prepared. If you want to cast either spell at a higher level, you must expend a spell slot as normal.\n By spending 8 hours in study, you can exchange one or both of the spells you chose for different spells of the same levels."
+          "description": "At 18th level, you have achieved such mastery over certain spells that you can cast them at will. Choose a 1st-level wizard spell and a 2nd-level wizard spell that are in your spellbook. You can cast those spells at their lowest level without expending a spell slot when you have them prepared. If you want to cast either spell at a higher level, you must expend a spell slot as normal.\n By spending 8 hours in study, you can exchange one or both of the spells you chose for different spells of the same levels.",
+          "metadata": {
+            "name": "Spell Mastery",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spell Mastery",
+                "description": "",
+                "levelAcquired": 18,
+                "options": []
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
         {
           "name": "Signature Spell",
-          "description": "When you reach 20th level, you gain mastery over two powerful spells and can cast them with little effort. Choose two 3rd-level wizard spells in your spellbook as your signature spells. You always have these spells prepared, they don't count against the number of spells you have prepared, and you can cast each of them once at 3rd level without expending a spell slot. When you do so, you can't do so again until you finish a short or long rest.\n If you want to cast either spell at a higher level, you must expend a spell slot as normal."
+          "description": "When you reach 20th level, you gain mastery over two powerful spells and can cast them with little effort. Choose two 3rd-level wizard spells in your spellbook as your signature spells. You always have these spells prepared, they don't count against the number of spells you have prepared, and you can cast each of them once at 3rd level without expending a spell slot. When you do so, you can't do so again until you finish a short or long rest.\n If you want to cast either spell at a higher level, you must expend a spell slot as normal.",
+          "metadata": {
+            "name": "Signature Spell",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge":"long or short rest"
+            },
+            "options": [
+              {
+                "name": "Signature Spell",
+                "description": "",
+                "levelAcquired": 20,
+                "options": []
+              }
+            ]
+          }
         }
       ]
     },
