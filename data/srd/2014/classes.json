@@ -4060,7 +4060,7 @@
       }
     }
   },
-  {
+  { 
     "id": -1,
     "name": "Paladin",
     "hit_die": "10",
@@ -4087,109 +4087,484 @@
       "1": [
         {
           "name": "Divine Sense",
-          "description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell.\n You can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses."
+          "description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell.\n You can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses.",
+          "metadata": {
+            "name": "Divine Sense",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "recharge":"long rest"
+            },
+            "options": [
+              {
+                "name": "Divine Sense",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Lay on Hands",
-          "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level x 5.\n As an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.\n Alternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.\n This feature has no effect on undead and constructs."
+          "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level x 5.\n As an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.\n Alternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.\n This feature has no effect on undead and constructs.",
+          "metadata": {
+            "name": "Lay on Hands",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "long rest",
+              "usesFormula": "number"
+            },
+            "options": [
+              {
+                "name": "Lay on Hands",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "char.target:heath",
+                    "operation": "add",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Fighting Style",
-          "description": "At 2nd level, you adopt a style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."
+          "description": "At 2nd level, you adopt a style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.",
+          "metadata": {
+            "name": "Fighting Style",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1
+            },
+            "options": []
+          }
         },
         {
           "name": "Spellcasting: Paladin",
-          "description": "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does."
+          "description": "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does.",
+          "metadata": {
+            "name": "Spellcasting: Paladin",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting: Paladin",
+                "description": "",
+                "levelAcquired": 2,
+                "options": [
+                  {
+                    "name": "Spellcasting: Paladin",
+                    "description": "",
+                    "levelAcquired": 2
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Divine Smite",
-          "description": "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon's damage. The extra damage is 2d8 for a 1st-level spell slot, plus 1d8 for each spell level higher than 1st, to a maximum of 5d8. The damage increases by 1d8 if the target is an undead or a fiend."
+          "description": "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon's damage. The extra damage is 2d8 for a 1st-level spell slot, plus 1d8 for each spell level higher than 1st, to a maximum of 5d8. The damage increases by 1d8 if the target is an undead or a fiend.",
+          "metadata": {
+            "name": "Divine Smite",
+            "category": "Class",
+            "description": "",
+            "usage": {
+
+            },
+            "options": [
+              {
+               "name": "Divine Smite",
+               "description": "",
+               "levelAcquired": 2,
+               "modifiers": [
+                {
+                  "target": "char.features:Divine Smite",
+                  "operation": "util.set.die:number",
+                  "value": "2"
+                }
+               ] 
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Divine Health",
-          "description": "By 3rd level, the divine magic flowing through you makes you immune to disease."
+          "description": "By 3rd level, the divine magic flowing through you makes you immune to disease.",
+          "metadata": {
+            "name": "Divine Health",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Divine Health",
+                "description": "",
+                "modifiers": [
+                  {
+                    "target": "char.resistances",
+                    "operation": "util.addImmunity",
+                    "value": "disease"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Sacred Oath",
-          "description": "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose an oath, such as the Oath of Devotion.\n Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature."
+          "description": "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose an oath, such as the Oath of Devotion.\n Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature.",
+          "metadata": {
+            "name": "Sacred Oath",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         },
         {
           "name": "Oath Spells",
-          "description": "Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.\n If you gain an oath spell that doesn't appear on the paladin spell list, the spell is nonetheless a paladin spell for you."
+          "description": "Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.\n If you gain an oath spell that doesn't appear on the paladin spell list, the spell is nonetheless a paladin spell for you.",
+          "metadata": {
+            "name": "Oath Spells",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         },
         {
           "name": "Channel Divinity",
-          "description": "Your oath allows you to channel divine energy to fuel magical effects. Each Channel Divinity option provided by your oath explains how to use it.\n When you use your Channel Divinity, you choose which option to use. You must then finish a short or long rest to use your Channel Divinity again.\n Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your paladin spell save DC."
+          "description": "Your oath allows you to channel divine energy to fuel magical effects. Each Channel Divinity option provided by your oath explains how to use it.\n When you use your Channel Divinity, you choose which option to use. You must then finish a short or long rest to use your Channel Divinity again.\n Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your paladin spell save DC.",
+          "metadata": {
+            "name": "Channel Divinity",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "long rest",
+              "usesFormula": "number"
+            },
+            "options": []
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Extra Attack",
-          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+          "metadata": {
+            "name": "Extra Attack",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "util.num:1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Aura of Protection",
-          "description": "Starting at 6th level, whenever you or a friendly creature within 10 feet of you must make a saving throw, the creature gains a bonus to the saving throw equal to your Charisma modifier (with a minimum bonus of +1). You must be conscious to grant this bonus.\n At 18th level, the range of this aura increases to 30 feet."
+          "description": "Starting at 6th level, whenever you or a friendly creature within 10 feet of you must make a saving throw, the creature gains a bonus to the saving throw equal to your Charisma modifier (with a minimum bonus of +1). You must be conscious to grant this bonus.\n At 18th level, the range of this aura increases to 30 feet.",
+          "metadata": {
+            "name": "Aura of Protection",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition": [
+                "not.char.condition:unconscious"
+              ],
+              "usesFormula": "stat:CHA"
+            },
+            "options": [
+              {
+                "name": "Aura of Protection",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "char.targeted.roll",
+                    "operation": "add",
+                    "value": "char.stat.mod:CHA"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Aura of Courage",
-          "description": "Starting at 10th level, you and friendly creatures within 10 feet of you can't be frightened while you are conscious.\n At 18th level, the range of this aura increases to 30 feet."
+          "description": "Starting at 10th level, you and friendly creatures within 10 feet of you can't be frightened while you are conscious.\n At 18th level, the range of this aura increases to 30 feet.",
+          "metadata": {
+            "name": "Aura of Courage",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition": [
+                "not.char.condition:unconscious"
+              ]
+            },
+            "options": [
+              {
+                "name": "Aura of Courage",
+                "description": "",
+                "levelAcquired": 10,
+                "modifiers": [
+                  {
+                    "target": "char.resistances",
+                    "operation": "util.addImmunity",
+                    "value": "frightened"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "Improved Divine Smite",
-          "description": "By 11th level, you are so suffused with righteous might that all your melee weapon strikes carry divine power with them. Whenever you hit a creature with a melee weapon, the creature takes an extra 1d8 radiant damage. If you also use your Divine Smite with an attack, you add this damage to the extra damage of your Divine Smite."
+          "description": "By 11th level, you are so suffused with righteous might that all your melee weapon strikes carry divine power with them. Whenever you hit a creature with a melee weapon, the creature takes an extra 1d8 radiant damage. If you also use your Divine Smite with an attack, you add this damage to the extra damage of your Divine Smite.",
+          "metadata": {
+            "name": "Improved Divine Smite",
+            "category": "Class",
+            "description": "",
+            "usage": {
+
+            },
+            "options": [
+              {
+               "name": "Improved Divine Smite",
+               "description": "",
+               "levelAcquired": 2,
+               "modifiers": [
+                {
+                  "target": "char.features:Divine Smite",
+                  "operation": "util.add.die",
+                  "value": "4.5"
+                }
+               ] 
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Cleansing Touch",
-          "description": "Beginning at 14th level, you can use your action to end one spell on yourself or on one willing creature that you touch.\n You can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain expended uses when you finish a long rest."
+          "description": "Beginning at 14th level, you can use your action to end one spell on yourself or on one willing creature that you touch.\n You can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain expended uses when you finish a long rest.",
+          "metadata": {
+            "name": "Cleansing Touch",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Cleansing Touch",
+                "description": "",
+                "levelAcquired": 14,
+                "modifiers": [
+                  {
+                    "target": "char.activeMagicEffect",
+                    "operation": "remove",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Aura improvements",
-          "description": "At 18th level, the range of your auras increase to 30 feet."
+          "description": "At 18th level, the range of your auras increase to 30 feet.",
+          "metadata": {
+            "name": "Aura improvements",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Aura improvements",
+                "description": "",
+                "levelAcquired": 18,
+                "modifiers": [
+                  {
+                    "target": "feature: Aura of Protection",
+                    "operation": "util.set.Feature:Range",
+                    "value": 30
+                  },
+                  {
+                    "target": "feature: Aura of Courage",
+                    "operation": "util.set.Feature:Range",
+                    "value": 30
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ]
     },
@@ -4366,113 +4741,519 @@
       "1": [
         {
           "name": "Favored Enemy (1 type)",
-          "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+          "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+          "metadata": {
+            "name": "Favored Enemy (1 type)",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Favored Enemy (1 type)",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "util.char.stat.save:WIS",
+                    "operation": "advantage",
+                    "value": "true"
+                  },
+                  {
+                    "target": "util.char.stat.save:INT",
+                    "operation": "advantage",
+                    "value": "true"
+                  }
+                ]
+
+              }
+            ]
+          }
         },
         {
           "name": "Natural Explorer (1 terrain type)",
-          "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n While traveling for an hour or more in your favored terrain, you gain the following benefits:\n - Difficult terrain doesn't slow your group's travel.\n - Your group can't become lost except by magical means.\n - Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n - If you are traveling alone, you can move stealthily at a normal pace.\n - When you forage, you find twice as much food as you normally would.\n - While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.\n You choose additional favored terrain types at 6th and 10th level."
+          "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n While traveling for an hour or more in your favored terrain, you gain the following benefits:\n - Difficult terrain doesn't slow your group's travel.\n - Your group can't become lost except by magical means.\n - Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n - If you are traveling alone, you can move stealthily at a normal pace.\n - When you forage, you find twice as much food as you normally would.\n - While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.\n You choose additional favored terrain types at 6th and 10th level.",
+          "metadata": {
+            "name": "Natural Explorer (1 terrain type)",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Natural Explorer (1 terrain type)",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "",
+                    "operation": "", 
+                    "value": ""
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Fighting Style",
-          "description": "At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."
+          "description": "At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.",
+           "metadata": {
+            "name": "Fighting Style",
+            "category": "Class",
+            "description": "",
+            "options": [
+
+            ]
+          }
         },
         {
           "name": "Spellcasting: Ranger",
-          "description": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does."
+          "description": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does.",
+          "metadata": {
+            "name": "Spellcasting: Ranger",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting: Ranger",
+                "description": "",
+                "levelAcquired": 2,
+                "options": [
+                  {
+                    "name": "Spellcasting: Ranger",
+                    "description": "",
+                    "levelAcquired": 2
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Ranger Archetype",
-          "description": "At 3rd level, you choose an archetype that you strive to emulate, such as the Hunter. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level."
+          "description": "At 3rd level, you choose an archetype that you strive to emulate, such as the Hunter. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level.",
+          "metadata": {
+            "name": "Ranger Archetype",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         },
         {
           "name": "Primeval Awareness",
-          "description": "Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you. For 1 minute per level of the spell slot you expend, you can sense whether the following types of creatures are present within 1 mile of you (or within up to 6 miles if you are in your favored terrain): aberrations, celestials, dragons, elementals, fey, fiends, and undead. This feature doesn't reveal the creatures' location or number."
+          "description": "Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you. For 1 minute per level of the spell slot you expend, you can sense whether the following types of creatures are present within 1 mile of you (or within up to 6 miles if you are in your favored terrain): aberrations, celestials, dragons, elementals, fey, fiends, and undead. This feature doesn't reveal the creatures' location or number.",
+          "metadata": {
+            "name": "Primeval Awareness",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Primeval Awareness",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "not sure",
+                    "operation": "not sure",
+                    "value": "not sure"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Extra Attack",
-          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+          "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+          "metadata": {
+            "name": "Extra Attack",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "util.num:1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Favored Enemy (2 types)",
-          "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+          "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+          "metadata": {
+            "name": "Favored Enemy (2 type)",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Favored Enemy (2 type)",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "util.char.stat.save:WIS",
+                    "operation": "advantage",
+                    "value": "true"
+                  },
+                  {
+                    "target": "util.char.stat.save:INT",
+                    "operation": "advantage",
+                    "value": "true"
+                  }
+                ]
+
+              }
+            ]
+          }
         },
         {
           "name": "Natural Explorer (2 terrain types)",
-          "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n While traveling for an hour or more in your favored terrain, you gain the following benefits:\n - Difficult terrain doesn't slow your group's travel.\n - Your group can't become lost except by magical means.\n - Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n - If you are traveling alone, you can move stealthily at a normal pace.\n - When you forage, you find twice as much food as you normally would.\n - While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area. \n You choose additional favored terrain types at 6th and 10th level."
+          "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n While traveling for an hour or more in your favored terrain, you gain the following benefits:\n - Difficult terrain doesn't slow your group's travel.\n - Your group can't become lost except by magical means.\n - Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n - If you are traveling alone, you can move stealthily at a normal pace.\n - When you forage, you find twice as much food as you normally would.\n - While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area. \n You choose additional favored terrain types at 6th and 10th level.",
+           "metadata": {
+            "name": "Natural Explorer (2 terrain type)",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Natural Explorer (2 terrain type)",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "",
+                    "operation": "", 
+                    "value": ""
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Land's Stride",
-          "description": "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.\n In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle spell."
+          "description": "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.\n In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle spell.",
+          "metadata": {
+            "name": "Land's Stride",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Land's Stride",
+                "description": "",
+                "levelAcquired": 8,
+                "modifiers": [
+                  {
+                    "target": "char:targeted.roll:advantage",
+                    "operation": "advantage",
+                    "value": "true"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Natural Explorer (3 terrain types)",
-          "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n While traveling for an hour or more in your favored terrain, you gain the following benefits:\n - Difficult terrain doesn't slow your group's travel.\n - Your group can't become lost except by magical means.\n - Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n - If you are traveling alone, you can move stealthily at a normal pace.\n - When you forage, you find twice as much food as you normally would.\n - While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area. \n You choose additional favored terrain types at 6th and 10th level."
+          "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n While traveling for an hour or more in your favored terrain, you gain the following benefits:\n - Difficult terrain doesn't slow your group's travel.\n - Your group can't become lost except by magical means.\n - Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n - If you are traveling alone, you can move stealthily at a normal pace.\n - When you forage, you find twice as much food as you normally would.\n - While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area. \n You choose additional favored terrain types at 6th and 10th level.",
+          "metadata": {
+            "name": "Natural Explorer (3 terrain type)",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Natural Explorer (3 terrain type)",
+                "description": "",
+                "levelAcquired": 10,
+                "modifiers": [
+                  {
+                    "target": "",
+                    "operation": "", 
+                    "value": ""
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Hide in Plain Sight",
-          "description": "Starting at 10th level, you can spend 1 minute creating camouflage for yourself. You must have access to fresh mud, dirt, plants, soot, and other naturally occurring materials with which to create your camouflage.\n Once you are camouflaged in this way, you can try to hide by pressing yourself up against a solid surface, such as a tree or wall, that is at least as tall and wide as you are. You gain a +10 bonus to Dexterity (Stealth) checks as long as you remain there without moving or taking actions. Once you move or take an action or a reaction, you must camouflage yourself again to gain this benefit."
+          "description": "Starting at 10th level, you can spend 1 minute creating camouflage for yourself. You must have access to fresh mud, dirt, plants, soot, and other naturally occurring materials with which to create your camouflage.\n Once you are camouflaged in this way, you can try to hide by pressing yourself up against a solid surface, such as a tree or wall, that is at least as tall and wide as you are. You gain a +10 bonus to Dexterity (Stealth) checks as long as you remain there without moving or taking actions. Once you move or take an action or a reaction, you must camouflage yourself again to gain this benefit.",
+          "metadata": {
+            "name": "Hide in Plain Sight",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Hide in Plain Sight",
+                "description": "",
+                "levelAcquired": 10,
+                "usage": {
+                  "condition": [
+                    "while.util.requiredMaterials"
+                  ]
+                },
+                "modifiers": [
+                  {
+                    "target": "char.stat.save:DEX",
+                    "operation": "add",
+                    "value": "10"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Favored Enemy (3 enemies)",
-          "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+          "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+          "metadata": {
+            "name": "Favored Enemy (3 type)",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Favored Enemy (3 type)",
+                "description": "",
+                "levelAcquired": 14,
+                "modifiers": [
+                  {
+                    "target": "util.char.stat.save:WIS",
+                    "operation": "advantage",
+                    "value": "true"
+                  },
+                  {
+                    "target": "util.char.stat.save:INT",
+                    "operation": "advantage",
+                    "value": "true"
+                  }
+                ]
+
+              }
+            ]
+          }
         },
         {
           "name": "Vanish",
-          "description": "Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can't be tracked by nonmagical means, unless you choose to leave a trail."
+          "description": "Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can't be tracked by nonmagical means, unless you choose to leave a trail.",
+          "metadata": {
+            "name": "Vanish",
+            "description": "",
+            "options": [
+              {
+                "name": "Vanish",
+                "description": "",
+                "levelAcquired": 14
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Feral Senses",
-          "description": "At 18th level, you gain preternatural senses that help you fight creatures you can't see. When you attack a creature you can't see, your inability to see it doesn't impose disadvantage on your attack rolls against it.\n You are also aware of the location of any invisible creature within 30 feet of you, provided that the creature isn't hidden from you and you aren't blinded or deafened."
+          "description": "At 18th level, you gain preternatural senses that help you fight creatures you can't see. When you attack a creature you can't see, your inability to see it doesn't impose disadvantage on your attack rolls against it.\n You are also aware of the location of any invisible creature within 30 feet of you, provided that the creature isn't hidden from you and you aren't blinded or deafened.",
+          "metadata": {
+            "name": "Feral Senses",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "condition": [
+                "not.char.condition:blinded",
+                "not.char.condition:deafened"
+              ]
+            },
+            "options": [
+              {
+                "name": "Feral Senses",
+                "description": "",
+                "levelAcquired": 18,
+                "modifiers": [
+                  {
+                    "target": "target:invisiable",
+                    "operation": "disadvantage",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
-          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 19,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "20": [
         {
           "name": "Foe Slayer",
-          "description": "At 20th level, you become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied."
+          "description": "At 20th level, you become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied.",
+          "metadata": {
+            "name": "Foe Slayer",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Foe Slayer",
+                "description": "",
+                "levelAcquired": 20,
+                "modifiers": [
+                  {
+                    "target": "char.targeted.roll",
+                    "operation": "add",
+                    "value": "char.stat.mod:WIS"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -4693,23 +5474,83 @@
         },
         {
           "name": "Sneak Attack",
-          "description": "Beginning at 1st level, you know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon.\n You don't need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn't incapacitated, and you don't have disadvantage on the attack roll.\n The amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table."
+          "description": "Beginning at 1st level, you know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon.\n You don't need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn't incapacitated, and you don't have disadvantage on the attack roll.\n The amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table.",
+          "metadata":{
+            "name": "Sneak Attack",
+            "category":"Class",
+            "description":"",
+            "usage":{
+              "condition":[
+                "while.condition.advantage"
+              ] 
+            },
+            "options":[
+              {
+                "name":"Sneak Attack",
+                "description":"",
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "3.5"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Thieves' Cant",
-          "description": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation. Only another creature that knows thieves' cant understands such messages. It takes four times longer to convey such a message than it does to speak the same idea plainly.\n In addition, you understand a set of secret signs and symbols used to convey short, simple messages, such as whether an area is dangerous or the territory of a thieves' guild, whether loot is nearby, or whether the people in an area are easy marks or will provide a safe house for thieves on the run."
+          "description": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation. Only another creature that knows thieves' cant understands such messages. It takes four times longer to convey such a message than it does to speak the same idea plainly.\n In addition, you understand a set of secret signs and symbols used to convey short, simple messages, such as whether an area is dangerous or the territory of a thieves' guild, whether loot is nearby, or whether the people in an area are easy marks or will provide a safe house for thieves on the run.",
+          "metadata": {
+            "name": "Thieves' Cant",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Thieves' Cant",
+                "description": ""
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Cunning Action",
-          "description": "Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action."
+          "description": "Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action.",
+          "metadata": {
+            "name": "Cunning Action",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Cunning Action",
+                "description": "",
+                "modifiers": [
+                  {
+                    "target": "char.bounusAction",
+                    "operation": "util.add",
+                    "value": "1"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Roguish Archetype",
-          "description": "At 3rd level, you choose an archetype that you emulate in the exercise of your rogue abilities, such as Thief. Additional archetypes are available in the original source material. Your archetype choice grants you features at 3rd level and then again at 9th, 13th, and 17th level."
+          "description": "At 3rd level, you choose an archetype that you emulate in the exercise of your rogue abilities, such as Thief. Additional archetypes are available in the original source material. Your archetype choice grants you features at 3rd level and then again at 9th, 13th, and 17th level.",
+          "metadata": {
+            "name": "Roguish Archetype",
+            "category": "Class",
+            "description": "",
+            "options": [
+
+            ]
+          }
         }
       ],
       "4": [
@@ -4742,7 +5583,25 @@
       "5": [
         {
           "name": "Uncanny Dodge",
-          "description": "Starting at 5th level, when an attacker that you can see hits you with an attack, you can use your reaction to halve the attack's damage against you."
+          "description": "Starting at 5th level, when an attacker that you can see hits you with an attack, you can use your reaction to halve the attack's damage against you.",
+          "metadata": {
+            "name": "Uncanny Dodge",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Uncanny Dodge",
+                "description": "",
+                "modifiers": [
+                  {
+                    "target": "attack",
+                    "operation": "util.divide",
+                    "value": "2"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
@@ -4773,7 +5632,25 @@
       "7": [
         {
           "name": "Evasion",
-          "description": "Beginning at 7th level, you can nimbly dodge out of the way of certain area effects, such as a red dragon's fiery breath or an ice storm spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail."
+          "description": "Beginning at 7th level, you can nimbly dodge out of the way of certain area effects, such as a red dragon's fiery breath or an ice storm spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+          "metadata": {
+            "name": "Evasion",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Evasion",
+                "description": "",
+                "modifiers": [
+                  {
+                    "target": "attack",
+                    "operation": "util.divide",
+                    "value": "2"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "8": [
@@ -4833,7 +5710,23 @@
       "11": [
         {
           "name": "Reliable Talent",
-          "description": "By 11th level, you have refined your chosen skills until they approach perfection. Whenever you make an ability check that lets you add your proficiency bonus, you can treat a d20 roll of 9 or lower as a 10."
+          "description": "By 11th level, you have refined your chosen skills until they approach perfection. Whenever you make an ability check that lets you add your proficiency bonus, you can treat a d20 roll of 9 or lower as a 10.",
+          "metadata": {
+            "name": "Reliable Talent",
+            "category": "Class",
+            "description": "",
+            "options": {
+              "name": "Reliable Talent",
+              "description": "",
+              "modifiers": [
+                {
+                  "target": "char.skills:proficient",
+                  "operation": "replace",
+                  "value": "10"
+                }
+              ]
+            }
+          }
         }
       ],
       "12": [
@@ -4866,13 +5759,51 @@
       "14": [
         {
           "name": "Blindsense",
-          "description": "Starting at 14th level, if you are able to hear, you are aware of the location of any hidden or invisible creature within 10 feet of you."
+          "description": "Starting at 14th level, if you are able to hear, you are aware of the location of any hidden or invisible creature within 10 feet of you.",
+          "metadata": {
+            "name": "Blindsense",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Blindsense",
+                "description": "",
+                "usage": {},
+                "modifiers": [
+                  {
+                    "target": "char.vision",
+                    "operation": "add",
+                    "value": "blindsense"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "15": [
         {
           "name": "Slippery Mind",
-          "description": "By 15th level, you have acquired greater mental strength. You gain proficiency in Wisdom saving throws."
+          "description": "By 15th level, you have acquired greater mental strength. You gain proficiency in Wisdom saving throws.",
+          "metadata": {
+            "name": "Slippery Mind",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Slippery Mind",
+                "description": "",
+                "usage": {},
+                "modifiers": [
+                  {
+                    "target": "char.savingThrows",
+                    "operation": "util.set.proficient",
+                    "value": "wisdom"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "16": [
@@ -4905,7 +5836,26 @@
       "18": [
         {
           "name": "Elusive",
-          "description": "Beginning at 18th level, you are so evasive that attackers rarely gain the upper hand against you. No attack roll has advantage against you while you aren't incapacitated."
+          "description": "Beginning at 18th level, you are so evasive that attackers rarely gain the upper hand against you. No attack roll has advantage against you while you aren't incapacitated.",
+          "metadata": {
+            "name": "Elusive",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Elusive",
+                "description": "",
+                "usage": {},
+                "modifiers": [
+                  {
+                    "target": "char:targeted.roll:advantage",
+                    "operation": "set",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "19": [
@@ -4938,7 +5888,25 @@
       "20": [
         {
           "name": "Stroke of Luck",
-          "description": "At 20th level, you have an uncanny knack for succeeding when you need to. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20.\n Once you use this feature, you can't use it again until you finish a short or long rest."
+          "description": "At 20th level, you have an uncanny knack for succeeding when you need to. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20.\n Once you use this feature, you can't use it again until you finish a short or long rest.",
+          "metadata": {
+            "name": "Stroke of Luck",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Stroke of Luck",
+                "description": "",
+                "modifiers": [
+                  {
+                    "target": "char.targeted.roll",
+                    "operation": "set",
+                    "value": "20"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
