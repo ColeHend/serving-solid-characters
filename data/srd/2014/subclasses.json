@@ -9,7 +9,42 @@
           "name": "Frenzy",
           "description": [
             "Starting when you choose this path at 3rd level, you can go into a frenzy when you rage. If you do so, for the duration of your rage you can make a single melee weapon attack as a bonus action on each of your turns after this one. When your rage ends, you suffer one level of exhaustion (as described in appendix A)."
-          ]
+          ],
+          "metadata": {
+            "name": "Frenzy",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "condition": ["while.util.find.feature:Rage"]
+            },
+            "options": [
+              {
+                "name": "Frenzy",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack.action",
+                    "operation": "util.set",
+                    "value": "bounusAction",
+                    "condition": [
+                      "while.util.find.feature:Rage",
+                      "not.char.condition:unconscious"
+                    ]
+                  },
+                  {
+                    "target": "util.char.exhaustion",
+                    "operation": "util.add",
+                    "value": 1,
+                    "condition": [
+                      "while.util.find.feature:Rage",
+                      "util.duration:end"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
@@ -17,7 +52,34 @@
           "name": "Mindless Rage",
           "description": [
             "Beginning at 6th level, you can't be charmed or frightened while raging. If you are charmed or frightened when you enter your rage, the effect is suspended for the duration of the rage."
-          ]
+          ],
+          "metadata": {
+            "name": "Mindless Rage",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "condition": ["while.util.find.feature:Rage"]
+            },
+            "options": [
+              {
+                "name": "Mindless Rage",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "util.resist:charmed",
+                    "operation": "util.add",
+                    "condition": ["while.util.find.feature:Rage"]
+                  },
+                  {
+                    "target": "util.resist:frightened",
+                    "operation": "util.add",
+                    "condition": ["while.util.find.feature:Rage"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
@@ -26,7 +88,46 @@
           "description": [
             "Beginning at 10th level, you can use your action to frighten someone with your menacing presence. When you do so, choose one creature that you can see within 30 feet of you. If the creature can see or hear you, it must succeed on a Wisdom saving throw (DC equal to 8 + your proficiency bonus + your Charisma modifier) or be frightened of you until the end of your next turn. On subsequent turns, you can use your action to extend the duration of this effect on the frightened creature until the end of your next turn. This effect ends if the creature ends its turn out of line of sight or more than 60 feet away from you.",
             " If the creature succeeds on its saving throw, you can't use this feature on that creature again for 24 hours."
-          ]
+          ],
+          "metadata": {
+            "name": "Intimidating Presence",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Intimidating Presence",
+                "description": "",
+                "levelAcquired": 10,
+                "modifiers": [
+                  {
+                    "target": "util.target.condition:frightened",
+                    "operation": "util.set",
+                    "value": "frightened",
+                    "condition": [
+                      "util.action:use",
+                      "util.target.inRange:30",
+                      "util.target.canSeeOrHear:true",
+                      "util.target.save:wisdom:fail"
+                    ]
+                  },
+                  {
+                    "target": "util.target.condition:frightened",
+                    "operation": "util.remove",
+                    "condition": [
+                      "util.target.outOfSight:true",
+                      "util.target.distance:gt:60"
+                    ]
+                  },
+                  {
+                    "target": "util.target.intimidatingPresence:immune",
+                    "operation": "util.set",
+                    "value": "24h",
+                    "condition": ["util.target.save:wisdom:success"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "14": [
@@ -34,7 +135,30 @@
           "name": "Retaliation",
           "description": [
             "Starting at 14th level, when you take damage from a creature that is within 5 feet of you, you can use your reaction to make a melee weapon Attack against that creature."
-          ]
+          ],
+          "metadata": {
+            "name": "Retaliation",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "condition": ["util.target.inRange:5", "util.action:use"]
+            },
+            "options": [
+              {
+                "name": "Retaliation",
+                "description": "",
+                "levelAcquired": 14,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack.action",
+                    "operation": "util.set",
+                    "value": "reaction",
+                    "condition": ["util.target.inRange:5", "util.action:use"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
@@ -50,7 +174,30 @@
           "description": [
             "When you join the College of Lore at 3rd level, you gain proficiency with three skills of your choice."
           ],
-          "choiceKey": "skill_choice"
+          "choiceKey": "skill_choice",
+          "metadata": {
+            "name": "Bonus Proficiencies",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "condition": ["util.action:choose"]
+            },
+            "options": [
+              {
+                "name": "Skill Proficiencies",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.char.skill.proficiency",
+                    "operation": "util.add",
+                    "value": 3,
+                    "condition": ["util.action:choose"]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Cutting Words",
@@ -58,7 +205,27 @@
             "Also at 3rd level, you learn how to use your wit to distract, confuse, and otherwise sap the confidence and competence of others.",
             "When a creature that you can see within 60 feet of you makes an attack roll, an ability check, or a damage roll, you can use your reaction to expend one of your uses of Bardic Inspiration, rolling a Bardic Inspiration die and subtracting the number rolled from the creature's roll.",
             "You can choose to use this feature after the creature makes its roll, but before the GM determines whether the attack roll or ability check succeeds or fails, or before the creature deals its damage. The creature is immune if it can't hear you or if it's immune to being charmed."
-          ]
+          ],
+          "metadata": {
+            "name": "Cutting Words",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Cutting Words",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.target.condition:cuttingWords",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": ["util.action:use"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
@@ -67,7 +234,30 @@
           "description": [
             "At 6th level, you learn two spells of your choice from any class. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip. The chosen spells count as bard spells for you but don't count against the number of bard spells you know."
           ],
-          "choiceKey": "magical_secrets"
+          "choiceKey": "magical_secrets",
+          "metadata": {
+            "name": "Additional Magical Secrets",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Magical Secrets",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.known",
+                    "operation": "util.add",
+                    "value": 2,
+                    "condition": [
+                      "util.action:choose",
+                      "util.char.spell.level:canCast"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "14": [
@@ -75,7 +265,26 @@
           "name": "Peerless Skill",
           "description": [
             "Starting at 14th level, when you make an ability check, you can expend one use of Bardic Inspiration. Roll a Bardic Inspiration die and add the number rolled to your ability check. You can choose to do so after you roll the die for the ability check, but before the GM tells you whether you succeed or fail."
-          ]
+          ],
+          "metadata": {
+            "name": "Peerless Skill",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Peerless Skill",
+                "description": "",
+                "levelAcquired": 14,
+                "modifiers": [
+                  {
+                    "target": "util.char.ability.check",
+                    "operation": "util.add",
+                    "value": "bardicInspirationDie"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -96,9 +305,7 @@
       },
       "magical_secrets": {
         "amount": 2,
-        "options": [
-          "Any Spell"
-        ]
+        "options": ["Any Spell"]
       }
     }
   },
@@ -113,14 +320,53 @@
           "description": [
             "When you choose this circle at 2nd level, you learn one additional druid cantrip of your choice."
           ],
-          "choiceKey": "cantrip_choice"
+          "choiceKey": "cantrip_choice",
+          "metadata": {
+            "name": "Bonus Cantrip",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Bonus Cantrip",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "util.char.cantrip.known",
+                    "operation": "util.add",
+                    "value": "cantrip_choice"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Natural Recovery",
           "description": [
             "Starting at 2nd level, you can regain some of your magical energy by sitting in meditation and communing with nature. During a short rest, you choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your druid level (rounded up), and none of the slots can be 6th level or higher. You can't use this feature again until you finish a long rest.",
             "For example, when you are a 4th-level druid, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level slot or two 1st-level slots."
-          ]
+          ],
+          "metadata": {
+            "name": "Natural Recovery",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Natural Recovery",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.slot.recover",
+                    "operation": "util.set",
+                    "value": "naturalRecovery",
+                    "condition": ["util.action:use", "util.rest:short"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
@@ -129,7 +375,39 @@
           "description": [
             "Starting at 6th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.",
             "In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle spell."
-          ]
+          ],
+          "metadata": {
+            "name": "Land's Stride",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Land's Stride",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "util.char.movement.difficultTerrain",
+                    "operation": "util.set",
+                    "value": 0,
+                    "condition": ["util.action:use", "util.char.level:gte:6"]
+                  },
+                  {
+                    "target": "util.char.movement.passThroughPlants",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": ["util.action:use", "util.char.level:gte:6"]
+                  },
+                  {
+                    "target": "util.char.save:plants",
+                    "operation": "util.add",
+                    "value": "advantage",
+                    "condition": ["util.action:use", "util.char.level:gte:6"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
@@ -137,7 +415,37 @@
           "name": "Nature's Ward",
           "description": [
             "When you reach 10th level, you can't be charmed or frightened by elementals or fey, and you are immune to poison and disease."
-          ]
+          ],
+          "metadata": {
+            "name": "Nature's Ward",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Nature's Ward",
+                "description": "",
+                "levelAcquired": 10,
+                "modifiers": [
+                  {
+                    "target": "util.resist:charmed",
+                    "operation": "util.add"
+                  },
+                  {
+                    "target": "util.resist:frightened",
+                    "operation": "util.add"
+                  },
+                  {
+                    "target": "util.resist:poison",
+                    "operation": "util.add"
+                  },
+                  {
+                    "target": "util.resist:disease",
+                    "operation": "util.add"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "14": [
@@ -145,16 +453,39 @@
           "name": "Nature's Sanctuary",
           "description": [
             "When you reach 14th level, creatures of the natural world sense your connection to nature and become hesitant to attack you. When a beast or plant creature attacks you, that creature must make a Wisdom saving throw against your druid spell save DC. On a failed save, the creature must choose a different target, or the attack automatically misses. On a successful save, the creature is immune to this effect for 24 hours. The creature is aware of this effect before it makes its attack against you."
-          ]
+          ],
+          "metadata": {
+            "name": "Nature's Sanctuary",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Nature's Sanctuary",
+                "description": "",
+                "levelAcquired": 14,
+                "modifiers": [
+                  {
+                    "target": "util.target.save:wisdom",
+                    "operation": "util.set",
+                    "value": ""
+                  },
+                  {
+                    "target": "util.target.condition:natureSanctuaryImmune",
+                    "operation": "util.set",
+                    "value": 24,
+                    "condition": ["util.target.save:wisdom:success"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
     "choices": {
       "cantrip_choice": {
         "amount": 1,
-        "options": [
-          "Druid Cantrip"
-        ]
+        "options": ["Druid Cantrip"]
       }
     }
   },
@@ -168,13 +499,50 @@
           "name": "Bonus Proficiency",
           "description": [
             "When you choose this domain at 1st level, you gain proficiency with heavy armor."
-          ]
+          ],
+          "metadata": {
+            "name": "Bonus Proficiency",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Bonus Proficiency",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "util.proficences:Heavy Armor",
+                    "operation": "util.add"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Disciple of Life",
           "description": [
             "Also starting at 1st level, your healing spells are more effective. Whenever you use a spell of 1st level or higher to restore hit points to a creature, the creature regains additional hit points equal to 2 + the spell's level."
-          ]
+          ],
+          "metadata": {
+            "name": "Disciple of Life",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Disciple of Life",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.heal",
+                    "operation": "util.add",
+                    "value": 2
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "2": [
@@ -184,7 +552,34 @@
             "Starting at 2nd level, you can use your Channel Divinity to heal the badly injured.",
             "As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level.",
             "Choose any creatures within 30 feet of you, and divide those hit points among them. This feature can restore a creature to no more than half of its hit point maximum. You can't use this feature on an undead or a construct."
-          ]
+          ],
+          "metadata": {
+              "name": "Channel Divinity: Preserve Life",
+              "category": "Subclass",
+              "description": "",
+              "options": [
+                {
+                  "name": "channel Divinity: Preserve Life",
+                  "description": "",
+                  "levelAcquired": 2,
+                  "modifiers": [
+                    {
+                    "target": "util.char.spell.heal",
+                    "operation": "util.set",
+                    "value": "5 x util.char.level",
+                    "condition": [
+                      "util.action:use",
+                      "util.channelDivinity:PreserveLife",
+                      "util.target.inRange:30",
+                      "util.target.notType:undead",
+                      "util.target.notType:construct",
+                      "util.target.hp:lt:halfMax"
+                    ]
+                    }
+                  ]
+                }
+            ]
+          }
         }
       ],
       "6": [
@@ -192,7 +587,26 @@
           "name": "Blessed Healer",
           "description": [
             "Beginning at 6th level, the healing spells you cast on others heal you as well. When you cast a spell of 1st level or higher that restores hit points to a creature other than you, you regain hit points equal to 2 + the spell's level."
-          ]
+          ],
+          "metadata": {
+            "name": "Blessed Healer",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Blessed Healer",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.heal",
+                    "operation": "util.add",
+                    "value": 2
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "8": [
@@ -200,7 +614,27 @@
           "name": "Divine Strike",
           "description": [
             "At 8th level, you gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage to the target. When you reach 14th level, the extra damage increases to 2d8."
-          ]
+          ],
+          "metadata": {
+            "name": "Divine Strike",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Divine Strike",
+                "description": "",
+                "levelAcquired": 8,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack.damage",
+                    "operation": "util.dice.add",
+                    "value": "1d8",
+                    "condition": []
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "17": [
@@ -208,7 +642,25 @@
           "name": "Supreme Healing",
           "description": [
             "Starting at 17th level, when you would normally roll one or more dice to restore hit points with a spell, you instead use the highest number possible for each die. For example, instead of restoring 2d6 hit points to a creature, you restore 12."
-          ]
+          ],
+          "metadata": {
+            "name": "Supreme Healing",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Supreme Healing",
+                "description": "",
+                "levelAcquired": 17,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.heal",
+                    "operation": "util.dice.max"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
@@ -223,7 +675,26 @@
           "name": "Improved Critical",
           "description": [
             "Beginning when you choose this archetype at 3rd level, your weapon attacks score a critical hit on a roll of 19 or 20."
-          ]
+          ],
+          "metadata": {
+            "name": "Improved Critical",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Improved Critical",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack.critical",
+                    "operation": "util.set",
+                    "value": 19
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "7": [
@@ -231,7 +702,41 @@
           "name": "Remarkable Athlete",
           "description": [
             "Starting at 7th level, you can add half your proficiency bonus (round up) to any Strength, Dexterity, or Constitution check you make that doesn't already use your proficiency bonus. In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier."
-          ]
+          ],
+          "metadata": {
+            "name": "Remarkable Athlete",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Remarkable Athlete",
+                "description": "",
+                "levelAcquired": 7,
+                "modifiers": [
+                  {
+                    "target": "util.char.ability.check:STR",
+                    "operation": "util.add",
+                    "value": "halfProficiency"
+                  },
+                  {
+                    "target": "util.char.ability.check:DEX",
+                    "operation": "util.add",
+                    "value": "halfProficiency"
+                  },
+                  {
+                    "target": "util.char.ability.check:CON",
+                    "operation": "util.add",
+                    "value": "halfProficiency"
+                  },
+                  {
+                    "target": "util.char.jump.distance:long",
+                    "operation": "util.add",
+                    "value": "util.char.ability:STR"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
@@ -239,7 +744,16 @@
           "name": "Additional Fighting Style",
           "description": [
             "At 10th level, you can choose a second option from the Fighting Style class feature."
-          ]
+          ],
+          "metadata": {
+            "name": "Additional Fighting Style",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "maxuses": 1 
+            },
+            "options": []
+          }
         }
       ],
       "15": [
@@ -247,7 +761,26 @@
           "name": "Superior Critical",
           "description": [
             "Starting at 15th level, your weapon attacks score a critical hit on a roll of 18-20."
-          ]
+          ],
+          "metadata": {
+            "name": "Superior Critical",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Superior Critical",
+                "description": "",
+                "levelAcquired": 15,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack.critical",
+                    "operation": "util.set",
+                    "value": 18
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "18": [
@@ -255,7 +788,27 @@
           "name": "Survivor",
           "description": [
             "At 18th level, you attain the pinnacle of resilience in battle. At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don't gain this benefit if you have 0 hit points."
-          ]
+          ],
+          "metadata": {
+            "name": "Survivor",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Survivor",
+                "description": "",
+                "levelAcquired": 18,
+                "modifiers": [
+                  {
+                    "target": "util.char.hp",
+                    "operation": "util.add",
+                    "value": "5 + util.char.ability:CON",
+                    "condition": ["util.char.hp:lt:halfMax", "!util.char.hp:0"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
@@ -273,7 +826,59 @@
             "- It must succeed on a Dexterity saving throw or be knocked prone.",
             "- It must make a Strength saving throw. If it fails, you can push it up to 15 feet away from you.",
             "- It can't take reactions until the end of your next turn."
-          ]
+          ],
+          "metadata": {
+            "name": "Open Hand Technique",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Open Hand Effect",
+                "description": "It must succeed on a Dexterity saving throw or be knocked prone.",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.target.condition:knockedProne",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "util.target.save:dexterity:fail"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Open Hand Effect",
+                "description": "It must make a Strength saving throw. If it fails, you can push it up to 15 feet away from you.",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.target.condition:pushed",
+                    "operation": "util.set",
+                    "value": 15,
+                    "condition": [
+                      "util.target.save:strength:fail"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Open Hand Effect",
+                "description": "It can't take reactions until the end of your next turn.",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.target.condition:noReactions",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "util.duration:char.nextTurn"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
@@ -281,7 +886,29 @@
           "name": "Wholeness of Body",
           "description": [
             "At 6th level, you gain the ability to heal yourself. As an action, you can regain hit points equal to three times your monk level. You must finish a long rest before you can use this feature again."
-          ]
+          ],
+          "metadata": {
+            "name": "Wholeness of Body",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Wholeness of Body",
+                "description": "",
+                "levelAcquired": 6,
+                "usage": {
+                  "recharge": "long rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.hp",
+                    "operation": "util.add",
+                    "value": "3 x util.char.level:Monk"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "11": [
@@ -289,7 +916,30 @@
           "name": "Tranquility",
           "description": [
             "Beginning at 11th level, you can enter a special meditation that surrounds you with an aura of peace. At the end of a long rest, you gain the effect of a sanctuary spell that lasts until the start of your next long rest (the spell can end early as normal). The saving throw DC for the spell equals 8 + your Wisdom modifier + your proficiency bonus."
-          ]
+          ],
+          "metadata": {
+            "name": "Tranquility",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Tranquility",
+                "description": "",
+                "levelAcquired": 11,
+                "usage": {
+                  "recharge": "long rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.condition:sanctuary",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": ["util.rest:long"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "17": [
@@ -298,7 +948,44 @@
           "description": [
             "At 17th level, you gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an unarmed strike, you can spend 3 ki points to start these imperceptible vibrations, which last for a number of days equal to your monk level. The vibrations are harmless unless you use your action to end them. To do so, you and the target must be on the same plane of existence. When you use this action, the creature must make a Constitution saving throw. If it fails, it is reduced to 0 hit points. If it succeeds, it takes 10d10 necrotic damage.",
             "You can have only one creature under the effect of this feature at a time. You can choose to end the vibrations harmlessly without using an action."
-          ]
+          ],
+          "metadata": {
+            "name": "Quivering Palm",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Quivering Palm",
+                "description": "",
+                "levelAcquired": 17,
+                "usage": {
+                  "recharge": "long rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "target.hp",
+                    "operation": "util.set",
+                    "value": 0,
+                    "condition": [
+                      "util.target.save:constitution:fail",
+                      "util.target.inRange:monkQuiveringPalm",
+                      "single.target:monkQuiveringPalm"
+                    ]
+                  },
+                  {
+                    "target": "util.target.hp",
+                    "operation": "util.subtract",
+                    "value": "util.dice.roll:10d10",
+                    "condition": [
+                      "util.target.save:constitution:success",
+                      "util.target.inRange:monkQuiveringPalm",
+                      "single.target:monkQuiveringPalm"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
@@ -314,14 +1001,95 @@
           "description": [
             "As an action, you can imbue one weapon that you are holding with positive energy, using your Channel Divinity. For 1 minute, you add your Charisma modifier to attack rolls made with that weapon (with a minimum bonus of +1). The weapon also emits bright light in a 20-foot radius and dim light 20 feet beyond that. If the weapon is not already magical, it becomes magical for the duration.",
             "You can end this effect on your turn as part of any other action. If you are no longer holding or carrying this weapon, or if you fall unconscious, this effect ends."
-          ]
+          ],
+          "metadata": {
+            "name": "Channel Divinity: Sacred Weapon",
+            "category": "Subclass",
+            "description": "Imbue a weapon with positive energy for 1 minute, adding your Charisma modifier to attack rolls (minimum +1), emitting bright and dim light, and making it magical if not already. Ends if you drop the weapon or fall unconscious.",
+            "usage": {
+              "condition": [
+                "util.action:use",
+                "util.channelDivinity:SacredWeapon",
+                "util.duration:1m",
+                "util.char.holdingWeapon:true"
+              ]
+            },
+            "options": [
+              {
+                "name": "Channel Divinity: Sacred Weapon",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack.weapon",
+                    "operation": "util.add",
+                    "value": "util.char.ability:CHA",
+                    "condition": [
+                      "util.channelDivinity:SacredWeapon",
+                      "util.char.holdingWeapon:true"
+                    ]
+                  },
+                  {
+                    "target": "util.char.attack.weapon.magic",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "util.channelDivinity:SacredWeapon",
+                      "util.char.holdingWeapon:true"
+                    ]
+                  },
+                  {
+                    "target": "util.char.light:bright",
+                    "operation": "util.set",
+                    "value": 20,
+                    "condition": [
+                      "util.channelDivinity:SacredWeapon"
+                    ]
+                  },
+                  {
+                    "target": "util.char.light:dim",
+                    "operation": "util.set",
+                    "value": 20,
+                    "condition": [
+                      "util.channelDivinity:SacredWeapon"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Channel Divinity: Turn the Unholy",
           "description": [
             "As an action, you present your holy symbol and speak a prayer censuring fiends and undead, using your Channel Divinity. Each fiend or undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes damage.",
             "A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly move to a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can use the Dodge action."
-          ]
+          ],
+          "metadata": {
+            "name": "Channel Divinity: Turn the Unholy",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+
+            },
+            "options": [
+              {
+                "name": "Channel Divinity: Turn the Unholy",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.target.condition:turned",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "util.target.save:wisdom:fail"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "7": [
@@ -330,7 +1098,42 @@
           "description": [
             "Starting at 7th level, you and friendly creatures within 10 feet of you can't be charmed while you are conscious.",
             "At 18th level, the range of this aura increases to 30 feet."
-          ]
+          ],
+          "metadata": {
+            "name": "Aura of Devotion",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Aura of Devotion",
+                "description": "",
+                "levelAcquired": 7,
+                "modifiers": [
+                  {
+                    "target": "util.char.condition:charmed",
+                    "operation": "util.set",
+                    "value": false,
+                    "condition": [
+                      "util.char.inRange:10",
+                      "!util.char.condition:unconscious"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Aura of Devotion (18th level)",
+                "description": "",
+                "levelAcquired": 18,
+                "modifiers": [
+                  {
+                    "target": "util.char.inRange:30",
+                    "operation": "util.set",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "15": [
@@ -338,7 +1141,26 @@
           "name": "Purity of Spirit",
           "description": [
             "Beginning at 15th level, you are always under the effects of a protection from evil and good spell."
-          ]
+          ],
+          "metadata": {
+            "name": "Purity of Spirit",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Purity of Spirit",
+                "description": "",
+                "levelAcquired": 15,
+                "modifiers": [
+                  {
+                    "target": "util.char.condition:protectionFromEvilAndGood",
+                    "operation": "util.set",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "20": [
@@ -348,7 +1170,58 @@
             "At 20th level, as an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30-foot radius, and dim light shines 30 feet beyond that.",
             "Whenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.",
             "In addition, for the duration, you have advantage on saving throws against spells cast by fiends or undead."
-          ]
+          ],
+          "metadata": {
+            "name": "Holy Nimbus",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Holy Nimbus",
+                "description": "",
+                "levelAcquired": 20,
+                "modifiers": [
+                  {
+                  "target": "util.char.light:bright",
+                  "operation": "util.set",
+                  "value": 30,
+                  "condition": [
+                    "util.action:use",
+                    "util.duration:1m"
+                  ]
+                  },
+                  {
+                  "target": "util.char.light:dim",
+                  "operation": "util.set",
+                  "value": 30,
+                  "condition": [
+                    "util.action:use",
+                    "util.duration:1m"
+                  ]
+                  },
+                  {
+                  "target": "util.target.damage:enemy",
+                  "operation": "util.add",
+                  "value": "10 radiant",
+                  "condition": [
+                    "util.target.startsTurn:inBrightLight"
+                  ]
+                  },
+                  {
+                  "target": "util.char.save:spells:fiendOrUndead",
+                  "operation": "util.add",
+                  "value": "advantage",
+                  "condition": [
+                    "util.duration:1m"
+                  ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
@@ -362,65 +1235,83 @@
         {
           "name": "Hunter's Prey",
           "description": "At 3rd level, you gain one of the following features of your choice. Colossus Slayer, Giant Killer, or Horde Breaker",
-          "choiceKey": "hunter_prey_choice"
+          "choiceKey": "hunter_prey_choice",
+          "metadata": {
+            "name": "Hunter's Prey",
+            "category": "Subclass",
+            "description": "Choose a feature at 3rd level",
+            "usage": {
+              "maxuses": 1
+            },
+            "options": []
+          }
         }
       ],
       "7": [
         {
           "name": "Defensive Tactics",
-          "description": 
-            "At 7th level, you gain one of the following features of your choice. Escape the Horde, Multiattack Defense, Steel Will",
-          "choiceKey": "defensive_tactics_choice"
+          "description": "At 7th level, you gain one of the following features of your choice. Escape the Horde, Multiattack Defense, Steel Will",
+          "choiceKey": "defensive_tactics_choice",
+          "metadata": {
+            "name": "Defensive Tactics",
+            "category": "Subclass",
+            "description": "Choose a feature at 7th level",
+            "usage": {
+              "maxuses": 1
+            },
+            "options": []
+          }
         }
       ],
       "11": [
         {
           "name": "Multiattack",
           "description": "At 11th level, you gain one of the following features of your choice. Volley, Whirlwind Attack",
-          "choiceKey": "multiattack_choice"
+          "choiceKey": "multiattack_choice",
+          "metadata": {
+            "name": "Multiattack",
+            "category": "Subclass",
+            "description": "Choose a feature at 11th level",
+            "usage": {
+              "maxuses": 1
+            },
+            "options": []
+          }
         }
       ],
       "15": [
         {
           "name": "Superior Hunter's Defense",
-          "description": 
-            "At 15th level, you gain one of the following features of your choice. Evasion, Stand Against the Tide, Uncanny Dodge"
-          ,
-          "choiceKey": "hunter_defense_choice"
+          "description": "At 15th level, you gain one of the following features of your choice. Evasion, Stand Against the Tide, Uncanny Dodge",
+          "choiceKey": "hunter_defense_choice",
+          "metadata": {
+            "name": "Superior Hunter's Defense",
+            "category": "Subclass",
+            "description": "Choose a feature at 15th level",
+            "usage": {
+              "maxuses": 1
+            },
+            "options": []
+          }
         }
       ]
     },
     "choices": {
       "hunter_prey_choice": {
         "amount": 1,
-        "options": [
-          "Colossus Slayer",
-          "Giant Killer",
-          "Horde Breaker"
-        ]
+        "options": ["Colossus Slayer", "Giant Killer", "Horde Breaker"]
       },
       "defensive_tactics_choice": {
         "amount": 1,
-        "options": [
-          "Escape the Horde",
-          "Multiattack Defense",
-          "Steel Will"
-        ]
+        "options": ["Escape the Horde", "Multiattack Defense", "Steel Will"]
       },
       "multiattack_choice": {
         "amount": 1,
-        "options": [
-          "Volley",
-          "Whirlwind Attack"
-        ]
+        "options": ["Volley", "Whirlwind Attack"]
       },
       "hunter_defense_choice": {
         "amount": 1,
-        "options": [
-          "Evasion",
-          "Stand Against the Tide",
-          "Uncanny Dodge"
-        ]
+        "options": ["Evasion", "Stand Against the Tide", "Uncanny Dodge"]
       }
     }
   },
@@ -432,31 +1323,145 @@
       "3": [
         {
           "name": "Fast Hands",
-          "description": "Starting at 3rd level, you can use the bonus action granted by your Cunning Action to make a Dexterity (Sleight of Hand) check, use your thieves' tools to disarm a trap or open a lock, or take the Use an Object action."
-          
+          "description": "Starting at 3rd level, you can use the bonus action granted by your Cunning Action to make a Dexterity (Sleight of Hand) check, use your thieves' tools to disarm a trap or open a lock, or take the Use an Object action.",
+          "metadata": { 
+            "name": "Fast Hands",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "maxuses": 1
+            },
+            "options": [
+              {
+                "name": "Fast Hands",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.char.action.bonus",
+                    "operation": "util.set",
+                    "value": [
+                      "dexterity.sleightOfHand",
+                      "thievesTools.disarmTrap",
+                      "thievesTools.openLock"
+                    ],
+                    "condition": [
+                      "util.feature:CunningAction"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Second-Story Work",
-          "description": "When you choose this archetype at 3rd level, you gain the ability to climb faster than normal; climbing no longer costs you extra movement.\n In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier."
+          "description": "When you choose this archetype at 3rd level, you gain the ability to climb faster than normal; climbing no longer costs you extra movement.\n In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier.",
+          "metadata": {
+            "name": "Second-Story Work",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Second-Story Work",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.char.climb.cost",
+                    "operation": "util.set",
+                    "value": 0
+                  },
+                  {
+                    "target": "util.char.jump.distance:running",
+                    "operation": "util.add",
+                    "value": "util.char.ability:DEX"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "Supreme Sneak",
-          "description": "Starting at 9th level, you have advantage on a Dexterity (Stealth) check if you move no more than half your speed on the same turn."
+          "description": "Starting at 9th level, you have advantage on a Dexterity (Stealth) check if you move no more than half your speed on the same turn.",
+          "metadata": {
+            "name": "Supreme Sneak",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Supreme Sneak",
+                "description": "",
+                "levelAcquired": 9,
+                "modifiers": [
+                  {
+                    "target": "util.char.stealth:advantage",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "util.char.movement:halfSpeed"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "13": [
         {
           "name": "Use Magic Device",
-          "description": "By 13th level, you have learned enough about the workings of magic that you can improvise the use of items even when they are not intended for you. You ignore all class, race, and level requirements on the use of magic items."
-          
+          "description": "By 13th level, you have learned enough about the workings of magic that you can improvise the use of items even when they are not intended for you. You ignore all class, race, and level requirements on the use of magic items.",
+          "metadata": {
+            "name": "Use Magic Device",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Use Magic Device",
+                "description": "",
+                "levelAcquired": 13,
+                "modifiers": [
+                  {
+                    "target": "util.char.magicItem:use",
+                    "operation": "util.set",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "Thief's Reflexes",
-          "description": "When you reach 17th level, you have become adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal initiative and your second turn at your initiative minus 10. You can't use this feature when you are surprised."
+          "description": "When you reach 17th level, you have become adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal initiative and your second turn at your initiative minus 10. You can't use this feature when you are surprised.",
+          "metadata": {
+            "name": "Thief's Reflexes",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Thief's Reflexes",
+                "description": "",
+                "levelAcquired": 17,
+                "modifiers": [
+                  {
+                    "target": "util.char.action:extraTurn",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "!util.char.condition:surprised"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
@@ -470,30 +1475,151 @@
         {
           "name": "Dragon Ancestor",
           "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later. You can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check.",
-          "choiceKey": "dragon_ancestor_choice"
+          "choiceKey": "dragon_ancestor_choice",
+          "metadata": {
+            "name": "Dragon Ancestor",
+            "category": "Subclass",
+            "description": "Choose a dragon ancestor at 1st level",
+            "usage": {
+              "maxuses": 1
+            },
+            "options": []
+          }
         },
         {
           "name": "Draconic Resilience",
-          "description": "As magic flows through your body, it causes physical traits of your dragon ancestors to emerge. At 1st level, your hit point maximum increases by 1 and increases by 1 again whenever you gain a level in this class. Additionally, parts of your skin are covered by a thin sheen of dragon-like scales. When you aren't wearing armor, your AC equals 13 + your Dexterity modifier."
-          
+          "description": "As magic flows through your body, it causes physical traits of your dragon ancestors to emerge. At 1st level, your hit point maximum increases by 1 and increases by 1 again whenever you gain a level in this class. Additionally, parts of your skin are covered by a thin sheen of dragon-like scales. When you aren't wearing armor, your AC equals 13 + your Dexterity modifier.",
+          "metadata": {
+            "name": "Draconic Resilience",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Draconic Resilience",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "util.char.hp:max",
+                    "operation": "util.add",
+                    "value": 1
+                  },
+                  {
+                    "target": "util.char.ac",
+                    "operation": "util.set",
+                    "value": "13 + util.char.ability:DEX"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Elemental Affinity",
-          "description": "Starting at 6th level, when you cast a spell that deals damage of the type associated with your draconic ancestry, you can add your Charisma modifier to one damage roll of that spell. At the same time, you can spend 1 sorcery point to gain resistance to that damage type for 1 hour."
+          "description": "Starting at 6th level, when you cast a spell that deals damage of the type associated with your draconic ancestry, you can add your Charisma modifier to one damage roll of that spell. At the same time, you can spend 1 sorcery point to gain resistance to that damage type for 1 hour.",
+          "metadata": {
+            "name": "Elemental Affinity",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+            },
+            "options": [
+              {
+                "name": "Elemental Affinity",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.damage",
+                    "operation": "util.add",
+                    "value": "util.char.ability:CHA",
+                    "condition": [
+                      "util.char.spell.damageType:dragonAncestor"
+                    ]
+                  },
+                  {
+                    "target": "util.char.condition:resistance",
+                    "operation": "util.set",
+                    "value": "dragonAncestor",
+                    "cost": 1,
+                    "condition": [
+                      "util.char.spell.cast",
+                      "util.char.spell.damageType:dragonAncestor",
+                      "SoreryPoint.spend:1"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Dragon Wings",
-          "description": "At 14th level, you gain the ability to sprout a pair of dragon wings from your back, gaining a flying speed equal to your current speed. You can create these wings as a bonus action on your turn. They last until you dismiss them as a bonus action on your turn. You can't manifest your wings while wearing armor unless the armor is made to accommodate them, and clothing not made to accommodate your wings might be destroyed when you manifest them."
+          "description": "At 14th level, you gain the ability to sprout a pair of dragon wings from your back, gaining a flying speed equal to your current speed. You can create these wings as a bonus action on your turn. They last until you dismiss them as a bonus action on your turn. You can't manifest your wings while wearing armor unless the armor is made to accommodate them, and clothing not made to accommodate your wings might be destroyed when you manifest them.",
+          "metadata": {
+            "name": "Dragon Wings",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Dragon Wings",
+                "description": "",
+                "levelAcquired": 14,
+                "modifiers": [
+                  {
+                    "target": "util.char.condition:dragonWings",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "util.action:use",
+                      "!util.char.condition:wearingArmor"
+                    ]
+                  },
+                  {
+                    "target": "util.char.movement:flying",
+                    "operation": "util.set",
+                    "value": "util.char.movement:speed"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Draconic Presence",
-          "description": "Beginning at 18th level, you can channel the dread presence of your dragon ancestor, causing those around you to become awestruck or frightened. As an action, you can spend 5 sorcery points to draw on this power and exude an aura of awe or fear (your choice) to a distance of 60 feet. For 1 minute or until you lose your concentration (as if you were casting a concentration spell), each hostile creature that starts its turn in this aura must succeed on a Wisdom saving throw or be charmed (if you chose awe) or frightened (if you chose fear) until the aura ends. A creature that succeeds on this saving throw is immune to your aura for 24 hours."
+          "description": "Beginning at 18th level, you can channel the dread presence of your dragon ancestor, causing those around you to become awestruck or frightened. As an action, you can spend 5 sorcery points to draw on this power and exude an aura of awe or fear (your choice) to a distance of 60 feet. For 1 minute or until you lose your concentration (as if you were casting a concentration spell), each hostile creature that starts its turn in this aura must succeed on a Wisdom saving throw or be charmed (if you chose awe) or frightened (if you chose fear) until the aura ends. A creature that succeeds on this saving throw is immune to your aura for 24 hours.",
+          "metadata": {
+            "name": "Draconic Presence",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Draconic Presence",
+                "description": "",
+                "levelAcquired": 18,
+                "modifiers": [
+                  {
+                    "target": "util.target.condition:charmedOrFrightened",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "util.action:use",
+                      "!util.char.condition:unconscious"
+                    ]
+                  }
+                ]
+              }
+            ]
+          } 
         }
       ]
     },
@@ -525,7 +1651,30 @@
           "name": "Dark One's Blessing",
           "description": [
             "Starting at 1st level, when you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum of 1)."
-          ]
+          ],
+          "metadata": {
+            "name": "Dark One's Blessing",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Dark One's Blessing",
+                "description": "",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "util.char.tempHp",
+                    "operation": "util.add",
+                    "value": "util.char.ability:CHA + util.char.level:Warlock",
+                    "condition": [
+                      "util.target.hp:0",
+                      "!util.char.condition:unconscious"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
@@ -534,7 +1683,32 @@
           "description": [
             "Starting at 6th level, you can call on your patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add a d10 to your roll. You can do so after seeing the initial roll but before any of the roll's effects occur.",
             "Once you use this feature, you can't use it again until you finish a short or long rest."
-          ]
+          ],
+          "metadata": {
+            "name": "Dark One's Own Luck",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "recharge": "short or long rest"
+            },
+            "options": [
+              {
+                "name": "Dark One's Own Luck",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "util.char.roll:abilityCheck",
+                    "operation": "util.add",
+                    "value": "util.dice.roll:d10",
+                    "condition": [
+                      "!util.char.condition:unconscious"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
@@ -542,13 +1716,72 @@
           "name": "Fiendish Resilience",
           "description": [
             "Starting at 10th level, you can choose one damage type when you finish a short or long rest. You gain resistance to that damage type until you choose a different one with this feature. Damage from magical weapons or silver weapons ignores this resistance."
-          ]
+          ],
+          "metadata": {
+            "name": "Fiendish Resilience",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "recharge": "short or long rest"
+            },
+            "options": [
+              {
+                "name": "Fiendish Resilience",
+                "description": "",
+                "levelAcquired": 10,
+                "modifiers": [
+                  {
+                    "target": "util.char.condition:resistance",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "!util.char.condition:unconscious"
+                    ],
+                    "options": []
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Hurl Through Hell",
-          "description": "Starting at 14th level, when you hit a creature with an attack, you can use this feature to instantly transport the target through the lower planes. The creature disappears and hurtles through a nightmare landscape.\n At the end of your next turn, the target returns to the space it previously occupied, or the nearest unoccupied space. If the target is not a fiend, it takes 10d10 psychic damage as it reels from its horrific experience. \nOnce you use this feature, you can't use it again until you finish a long rest."
+          "description": "Starting at 14th level, when you hit a creature with an attack, you can use this feature to instantly transport the target through the lower planes. The creature disappears and hurtles through a nightmare landscape.\n At the end of your next turn, the target returns to the space it previously occupied, or the nearest unoccupied space. If the target is not a fiend, it takes 10d10 psychic damage as it reels from its horrific experience. \nOnce you use this feature, you can't use it again until you finish a long rest.",
+          "metadata": {
+            "name": "Hurl Through Hell",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Hurl Through Hell",
+                "description": "",
+                "levelAcquired": 14,
+                "modifiers": [
+                  {
+                    "target": "util.target.condition:hurtledThroughHell",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "!util.char.condition:unconscious"
+                    ]
+                  },
+                  {
+                    "target": "util.target.damage:psychic",
+                    "operation": "util.add",
+                    "value": "10d10",
+                    "condition": [
+                      "!util.target.condition:fiend"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
@@ -563,13 +1796,54 @@
           "name": "Evocation Savant",
           "description": [
             "Beginning when you select this school at 2nd level, the gold and time you must spend to copy an evocation spell into your spellbook is halved."
-          ]
+          ],
+          "metadata": {
+            "name": "Evocation Savant",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Evocation Savant",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.copyCost:evocation",
+                    "operation": "util.halve",
+                    "condition": []
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Sculpt Spells",
           "description": [
             "Beginning at 2nd level, you can create pockets of relative safety within the effects of your evocation spells. When you cast an evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 + the spell's level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save."
-          ]
+          ],
+          "metadata": {
+            "name": "Sculpt Spells",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Sculpt Spells",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.sculpt",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "!util.char.condition:unconscious"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
@@ -577,7 +1851,29 @@
           "name": "Potent Cantrip",
           "description": [
             "Starting at 6th level, your damaging cantrips affect even creatures that avoid the brunt of the effect. When a creature succeeds on a saving throw against your cantrip, the creature takes half the cantrip's damage (if any) but suffers no additional effect from the cantrip."
-          ]
+          ],
+          "metadata": {
+            "name": "Potent Cantrip",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Potent Cantrip",
+                "description": "",
+                "levelAcquired": 6,
+                "modifiers": [
+                  {
+                    "target": "util.char.cantrip.damage:halfOnSave",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "!util.char.condition:unconscious"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
@@ -585,14 +1881,68 @@
           "name": "Empowered Evocation",
           "description": [
             "Beginning at 10th level, you can add your Intelligence modifier to one damage roll of any wizard evocation spell you cast."
-          ]
+          ],
+          "metadata": {
+            "name": "Empowered Evocation",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Empowered Evocation",
+                "description": "",
+                "levelAcquired": 10,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.damage:evocation",
+                    "operation": "util.add",
+                    "value": "util.char.ability:INT",
+                    "condition": [
+                      "!util.char.condition:unconscious"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Overchannel",
-          "description": "Starting at 14th level, you can increase the power of your simpler spells. When you cast a wizard spell of 1st through 5th level that deals damage, you can deal maximum damage with that spell.\n The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a long rest, you take 2d12 necrotic damage for each level of the spell, immediately after you cast it. Each time you use this feature again before finishing a long rest, the necrotic damage per spell level increases by 1d12. This damage ignores resistance and immunity."
-          
+          "description": "Starting at 14th level, you can increase the power of your simpler spells. When you cast a wizard spell of 1st through 5th level that deals damage, you can deal maximum damage with that spell.\n The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a long rest, you take 2d12 necrotic damage for each level of the spell, immediately after you cast it. Each time you use this feature again before finishing a long rest, the necrotic damage per spell level increases by 1d12. This damage ignores resistance and immunity.",
+          "metadata": {
+            "name": "Overchannel",
+            "category": "Subclass",
+            "description": "",
+            "usage": {
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Overchannel",
+                "description": "",
+                "levelAcquired": 14,
+                "modifiers": [
+                  {
+                    "target": "util.char.spell.damage:max",
+                    "operation": "util.set",
+                    "value": true,
+                    "condition": [
+                      "!util.char.condition:unconscious"
+                    ]
+                  },
+                  {
+                    "target": "util.char.damage:necrotic",
+                    "operation": "util.add",
+                    "value": "2d12 per spell level",
+                    "condition": [
+                      "!util.char.condition:unconscious"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
