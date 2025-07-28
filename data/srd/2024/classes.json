@@ -1,4 +1,4 @@
-[
+ [
   {
     "id": 1,
     "name": "Barbarian",
@@ -39,17 +39,120 @@
           "name": "Rage",
           "description": "Enter a primal rage as a Bonus Action, granting bonus damage, resistance to physical damage, advantage on Strength checks/saves, and preventing spellcasting or Concentration. Can be used 2 times (regain on rest), lasts 1 round and can be extended each turn by attacking, forcing a save, or using a Bonus Action (up to 10 minutes).",
           "metadata": {
-            "uses": 2,
-            "recharge": "long"
+            "name": "Rage",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 2,
+              "usesFormula": "number",
+              "recharge": "long or short rest"
+            },
+            "options": [
+              {
+                "name": "Rage",
+                "description": "Enter a primal rage, gaining benefits to damage, resistance, and Strength checks/saves.",
+                "levelAcquired": 1,
+                "actionType": 2,
+                "usage": {
+                  "MaxUses": 2,
+                  "usesFormula": "number",
+                  "recharge": "long or short rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.resist:physical",
+                    "operation": "util.add",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:rage"
+                    ]
+                  },
+                  {
+                    "target": "util.bonus:damage",
+                    "operation": "util.add",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:rage"
+                    ]
+                  },
+                  {
+                    "target": "util.advantage:strength-checks",
+                    "operation": "util.add",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:rage"
+                    ]
+                  },
+                  {
+                    "target": "util.condition:spellcasting",
+                    "operation": "util.remove",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:rage"
+                    ]
+                  },
+                  {
+                    "target": "util.condition:concentration",
+                    "operation": "util.remove",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:rage"
+                    ]
+                  }
+                ]        
+              }
+            ]
           }
         },
         {
           "name": "Unarmored Defense",
-          "description": "While not wearing armor, AC = 10 + Dex mod + Con mod. Can use a shield and still gain this benefit."
+          "description": "While not wearing armor, AC = 10 + Dex mod + Con mod. Can use a shield and still gain this benefit.",
+          "metadata": {
+            "name": "Unarmored Defense",
+            "category": "Class",
+            "description": "While not wearing armor, your AC equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit.",
+            "usage": {
+              "usesFormula": "number",
+              "conditions": [
+                "not.char.equip.armor.type:light",
+                "not.char.equip.armor.type:medium",
+                "not.char.equip.armor.type:heavy"
+              ]
+            },
+            "options": [
+              {
+                "name": "Unarmored Defense",
+                "description": "While not wearing armor, your AC equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit.",
+                "levelAcquired": 1,
+                "modifiers": [
+                  {
+                    "target": "util.char.ac",
+                    "operation": "util.set",
+                    "value": "10 + char.stats.DEX.mod + char.stats.CON.mod",
+                    "conditions": [
+                      "not.char.equip.armor.type:light",
+                      "not.char.equip.armor.type:medium",
+                      "not.char.equip.armor.type:heavy"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Weapon Mastery",
-          "description": "Choose 2 kinds of simple or martial melee weapons to unlock their Mastery properties. You can change one choice after each Long Rest. At higher Barbarian levels, you gain additional weapon Mastery choices."
+          "description": "Choose 2 kinds of simple or martial melee weapons to unlock their Mastery properties. You can change one choice after each Long Rest. At higher Barbarian levels, you gain additional weapon Mastery choices.",
+          "metadata": {
+            "name": "Weapon Mastery",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 1,
+              "recharge": "long rest" 
+            },
+            "options": []
+          }
         }
       ],
       "2": [
