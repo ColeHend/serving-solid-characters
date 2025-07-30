@@ -1,28 +1,18 @@
- [
+[
   {
     "id": 1,
     "name": "Barbarian",
     "hit_die": "d12",
     "primary_ability": "Strength",
-    "saving_throws": [
-      "Strength",
-      "Constitution"
-    ],
+    "saving_throws": ["Strength", "Constitution"],
     "starting_equipment": [
       {
         "optionKeys": ["equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor",
-        "Medium armor",
-        "Shields"
-      ],
-      "weapons": [
-        "Simple weapons",
-        "Martial weapons"
-      ],
+      "armor": ["Light armor", "Medium armor", "Shields"],
+      "weapons": ["Simple weapons", "Martial weapons"],
       "tools": [],
       "skills": [
         "Animal Handling",
@@ -99,7 +89,7 @@
                       "while.util.find.feature:rage"
                     ]
                   }
-                ]        
+                ]
               }
             ]
           }
@@ -149,7 +139,7 @@
             "description": "",
             "usage": {
               "MaxUses": 1,
-              "recharge": "long rest" 
+              "recharge": "long rest"
             },
             "options": []
           }
@@ -158,71 +148,363 @@
       "2": [
         {
           "name": "Danger Sense",
-          "description": "Advantage on Dexterity saving throws against effects you can see (traps, spells) as long as you aren’t incapacitated."
+          "description": "Advantage on Dexterity saving throws against effects you can see (traps, spells) as long as you aren’t incapacitated.",
+          "metadata": {
+            "name": "Danger Sense",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Danger Sense",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "util.advantage:dexterity-saving-throws",
+                    "operation": "util.add",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:danger-sense"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Reckless Attack",
-          "description": "When you make your first attack on a turn, you can choose to attack recklessly, granting you advantage on melee weapon attack rolls using Strength during that turn, but attack rolls against you have advantage until your next turn."
+          "description": "When you make your first attack on a turn, you can choose to attack recklessly, granting you advantage on melee weapon attack rolls using Strength during that turn, but attack rolls against you have advantage until your next turn.",
+          "metadata": {
+            "name": "Reckless Attack",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Reckless Attack",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "util.advantage:melee-weapon-attack-rolls",
+                    "operation": "util.add",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:reckless-attack"
+                    ]
+                  },
+                  {
+                    "target": "util.condition:advantage-against-you",
+                    "operation": "util.add",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:reckless-attack"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Barbarian Subclass",
-          "description": "Choose a Barbarian subclass (Path of the Berserker is available in the SRD). Subclass features are gained at levels 3, 6, 10, 14."
+          "description": "Choose a Barbarian subclass (Path of the Berserker is available in the SRD). Subclass features are gained at levels 3, 6, 10, 14.",
+          "metadata": {
+            "name": "Barbarian Subclass",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 1
+            },
+            "options": []
+          }
         },
         {
           "name": "Primal Knowledge",
-          "description": "Gain proficiency in one additional skill from the Barbarian skill list. Also, while raging, you can use Strength for certain skill checks (Acrobatics, Intimidation, Perception, Stealth, Survival) instead of the normal ability."
+          "description": "Gain proficiency in one additional skill from the Barbarian skill list. Also, while raging, you can use Strength for certain skill checks (Acrobatics, Intimidation, Perception, Stealth, Survival) instead of the normal ability.",
+          "metadata": {
+            "name": "Primal Knowledge",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Primal Knowledge",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "util.char.skill:primal-knowledge",
+                    "operation": "util.add",
+                    "value": "1",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:primal-knowledge"
+                    ]
+                  },
+                  {
+                    "target": "util.char.skill:strength-based",
+                    "operation": "util.add",
+                    "value": [
+                      "Acrobatics",
+                      "Intimidation",
+                      "Perception",
+                      "Stealth",
+                      "Survival"
+                    ],
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:primal-knowledge"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase one ability score by 2, or two scores by 1 (to a max of 20), or take a feat."
+          "description": "Increase one ability score by 2, or two scores by 1 (to a max of 20), or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Extra Attack",
-          "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn."
+          "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
+          "metadata": {
+            "name": "Extra Attack",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "util.num:1"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Fast Movement",
-          "description": "Your speed increases by 10 feet while you aren’t wearing heavy armor."
+          "description": "Your speed increases by 10 feet while you aren’t wearing heavy armor.",
+          "metadata": {
+            "name": "Fast Movement",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Fast Movement",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "util.char.speed",
+                    "operation": "util.add",
+                    "value": "10",
+                    "conditions": [
+                      "not.char.equip.armor.type:heavy"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Barbarian subclass (Path of the Berserker: Mindless Rage)."
+          "description": "You gain a feature from your Barbarian subclass (Path of the Berserker: Mindless Rage).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 6
+              }
+            ]
+          }
         }
       ],
       "7": [
         {
           "name": "Feral Instinct",
-          "description": "You have advantage on initiative rolls. Also, if you are surprised at the beginning of combat and not incapacitated, you can act normally on your first turn but only if you enter your Rage first."
+          "description": "You have advantage on initiative rolls. Also, if you are surprised at the beginning of combat and not incapacitated, you can act normally on your first turn but only if you enter your Rage first.",
+          "metadata": {
+            "name": "Feral Instinct",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Feral Instinct",
+                "description": "",
+                "levelAcquired": 7,
+                "modifiers": [
+                  {
+                    "target": "util.advantage:initiation-rolls",
+                    "operation": "util.add",
+                    "condition": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:feral-instinct"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Instinctive Pounce",
-          "description": "As part of the bonus action you use to enter Rage, you can move up to half your speed."
+          "description": "As part of the bonus action you use to enter Rage, you can move up to half your speed.",
+          "metadata": {
+            "name": "Instinctive Pounce",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Instinctive Pounce",
+                "description": "",
+                "levelAcquired": 7,
+                "modifiers": [
+                  {
+                    "target": "util.char.speed",
+                    "operation": "util.add",
+                    "value": "util.char.speed / 2",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:instinctive-pounce"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "Brutal Strike",
-          "description": "Once per turn when you hit with a melee weapon using Strength, you can roll one additional weapon damage die (extra die increases at higher levels). (Improves at lv 13 and 17.)"
+          "description": "Once per turn when you hit with a melee weapon using Strength, you can roll one additional weapon damage die (extra die increases at higher levels). (Improves at lv 13 and 17.)",
+          "metadata": {
+            "name": "Brutal Strike",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Brutal Strike",
+                "description": "",
+                "levelAcquired": 9,
+                "modifiers": [
+                  {
+                    "target": "util.char.brutal-strike-damage",
+                    "operation": "util.add",
+                    "value": "target.weapon.damage.die + 1",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:brutal-strike"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Barbarian subclass (Path of the Berserker: Retaliation)."
+          "description": "You gain a feature from your Barbarian subclass (Path of the Berserker: Retaliation).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 10
+              }
+            ]
+          }
         }
       ],
       "11": [
@@ -230,27 +512,110 @@
           "name": "Relentless Rage",
           "description": "If you drop to 0 HP while raging and don’t die outright, you can make a DC 10 Con save to drop to 1 HP instead. DC increases by 5 each subsequent use until rest.",
           "metadata": {
-            "uses": 2,
-            "recharge": "long"
+            "name": "Reckless Rage",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Relentless Rage",
+                "description": "",
+                "levelAcquired": 11,
+                "modifiers": [
+                  {
+                    "target": "util.char.hp",
+                    "operation": "util.set",
+                    "value": "1",
+                    "conditions": [
+                      "util.DEX.save:10"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "13": [
         {
           "name": "Improved Brutal Strike",
-          "description": "Your Brutal Strike extra damage die increases to two dice."
+          "description": "Your Brutal Strike extra damage die increases to two dice.",
+           "metadata": {
+            "name": "Improved Brutal Strike",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Improved Brutal Strike",
+                "description": "",
+                "levelAcquired": 9,
+                "modifiers": [
+                  {
+                    "target": "util.char.brutal-strike-damage",
+                    "operation": "util.add",
+                    "value": "target.weapon.damage.die + 2",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:brutal-strike"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Barbarian subclass (Path of the Berserker: Intimidating Presence)."
+          "description": "You gain a feature from your Barbarian subclass (Path of the Berserker: Intimidating Presence).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 14
+              }
+            ]
+          }
         }
       ],
       "15": [
@@ -258,39 +623,176 @@
           "name": "Persistent Rage",
           "description": "Your Rage only ends early if you fall unconscious or choose to end it; being inactive or not attacking no longer ends your rage.",
           "metadata": {
-            "uses": 2,
-            "recharge": "long"
+            "name": "Persistent Rage",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Persistent Rage",
+                "description": "",
+                "levelAcquired": 15,
+                "modifiers": [
+                  {
+                    "target": "util.condition:rage",
+                    "operation": "util.add",
+                    "value": "persistent",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:persistent-rage"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "Improved Brutal Strike",
-          "description": "Your Brutal Strike extra damage increases to 2d10, and you can apply two different Brutal Strike effects when you use it."
+          "description": "Your Brutal Strike extra damage increases to 2d10, and you can apply two different Brutal Strike effects when you use it.",
+          "metadata": {
+            "name": "Brutal Strike",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Brutal Strike",
+                "description": "",
+                "levelAcquired": 9,
+                "modifiers": [
+                  {
+                    "target": "util.char.brutal-strike-damage",
+                    "operation": "util.add",
+                    "value": "2d10",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:brutal-strike"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Indomitable Might",
-          "description": "If your total for a Strength check is less than your Strength score, you can use your Strength score in place of the total."
+          "description": "If your total for a Strength check is less than your Strength score, you can use your Strength score in place of the total.",
+          "metadata": {
+            "name": "Indomitable Might",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Indomitable Might",
+                "description": "",
+                "levelAcquired": 18,
+                "modifiers": [
+                  {
+                    "target": "util.char.strength-checks",
+                    "operation": "util.set",
+                    "value": "char.stats.STR.score",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:indomitable-might"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Epic Boon",
-          "description": "You gain one Epic Boon feat of your choice (Epic Boon of Irresistible Offense is recommended)."
+          "description": "You gain one Epic Boon feat of your choice (Epic Boon of Irresistible Offense is recommended).",
+          "metadata": {
+            "name": "Epic Boon",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 1,
+              "recharge": ""
+            },
+            "options": []
+          }
         }
       ],
       "20": [
         {
           "name": "Primal Champion",
-          "description": "Your Strength and Constitution scores each increase by 4, up to a maximum of 25."
+          "description": "Your Strength and Constitution scores each increase by 4, up to a maximum of 25.",
+          "metadata": {
+            "name": "Primal Champion",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Primal Champion",
+                "description": "",
+                "levelAcquired": 20,
+                "modifiers": [
+                  {
+                    "target": "util.char.stats.STR.score",
+                    "operation": "util.add",
+                    "value": "4",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:primal-champion"
+                    ]
+                  },
+                  {
+                    "target": "util.char.stats.CON.score",
+                    "operation": "util.add",
+                    "value": "4",
+                    "conditions": [
+                      "util.duration:rounds",
+                      "while.util.find.feature:primal-champion"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -356,27 +858,16 @@
     "name": "Bard",
     "hit_die": "d8",
     "primary_ability": "Charisma",
-    "saving_throws": [
-      "Dexterity",
-      "Charisma"
-    ],
+    "saving_throws": ["Dexterity", "Charisma"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "start_equip"
-        ]
+        "optionKeys": ["start_equip"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor"
-      ],
-      "weapons": [
-        "Simple weapons"
-      ],
-      "tools": [
-        "3 Musical Instruments of your choice"
-      ],
+      "armor": ["Light armor"],
+      "weapons": ["Simple weapons"],
+      "tools": ["3 Musical Instruments of your choice"],
       "skills": []
     },
     "features": {
@@ -754,26 +1245,15 @@
     "name": "Cleric",
     "hit_die": "d8",
     "primary_ability": "Wisdom",
-    "saving_throws": [
-      "Wisdom",
-      "Charisma"
-    ],
+    "saving_throws": ["Wisdom", "Charisma"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor",
-        "Medium armor",
-        "Shields"
-      ],
-      "weapons": [
-        "Simple"
-      ],
+      "armor": ["Light armor", "Medium armor", "Shields"],
+      "weapons": ["Simple"],
       "tools": [],
       "skills": []
     },
@@ -1127,28 +1607,16 @@
     "name": "Druid",
     "hit_die": "d8",
     "primary_ability": "Wisdom",
-    "saving_throws": [
-      "Intelligence",
-      "Wisdom"
-    ],
+    "saving_throws": ["Intelligence", "Wisdom"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor",
-        "Shields"
-      ],
-      "weapons": [
-        "Simple weapons"
-      ],
-      "tools": [
-        "Herbalism Kit"
-      ],
+      "armor": ["Light armor", "Shields"],
+      "weapons": ["Simple weapons"],
+      "tools": ["Herbalism Kit"],
       "skills": []
     },
     "features": {
@@ -1509,28 +1977,15 @@
     "name": "Fighter",
     "hit_die": "d10",
     "primary_ability": "Strength, Dexterity",
-    "saving_throws": [
-      "Strength",
-      "Constitution"
-    ],
+    "saving_throws": ["Strength", "Constitution"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor",
-        "Medium armor",
-        "Heavy armor",
-        "Shields"
-      ],
-      "weapons": [
-        "Simple weapons",
-        "Martial weapons"
-      ],
+      "armor": ["Light armor", "Medium armor", "Heavy armor", "Shields"],
+      "weapons": ["Simple weapons", "Martial weapons"],
       "tools": [],
       "skills": []
     },
@@ -1742,26 +2197,16 @@
     "name": "Monk",
     "hit_die": "d8",
     "primary_ability": "Dexterity, Wisdom",
-    "saving_throws": [
-      "Strength",
-      "Dexterity"
-    ],
+    "saving_throws": ["Strength", "Dexterity"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
       "armor": [],
-      "weapons": [
-        "Simple weapons",
-        "Martial weapons with the Light property"
-      ],
-      "tools": [
-        "One type of artisan’s tools or one musical instrument"
-      ],
+      "weapons": ["Simple weapons", "Martial weapons with the Light property"],
+      "tools": ["One type of artisan’s tools or one musical instrument"],
       "skills": []
     },
     "features": {
@@ -1987,28 +2432,15 @@
     "name": "Paladin",
     "hit_die": "d10",
     "primary_ability": "Strength, Charisma",
-    "saving_throws": [
-      "Wisdom",
-      "Charisma"
-    ],
+    "saving_throws": ["Wisdom", "Charisma"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor",
-        "Medium armor",
-        "Heavy armor",
-        "Shields"
-      ],
-      "weapons": [
-        "Simple weapons",
-        "Martial weapons"
-      ],
+      "armor": ["Light armor", "Medium armor", "Heavy armor", "Shields"],
+      "weapons": ["Simple weapons", "Martial weapons"],
       "tools": [],
       "skills": []
     },
@@ -2311,27 +2743,15 @@
     "name": "Ranger",
     "hit_die": "d10",
     "primary_ability": "Dexterity, Wisdom",
-    "saving_throws": [
-      "Strength",
-      "Dexterity"
-    ],
+    "saving_throws": ["Strength", "Dexterity"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor",
-        "Medium armor",
-        "Shields"
-      ],
-      "weapons": [
-        "Simple weapons",
-        "Martial weapons"
-      ],
+      "armor": ["Light armor", "Medium armor", "Shields"],
+      "weapons": ["Simple weapons", "Martial weapons"],
       "tools": [],
       "skills": []
     },
@@ -2617,28 +3037,19 @@
     "name": "Rogue",
     "hit_die": "d8",
     "primary_ability": "Dexterity",
-    "saving_throws": [
-      "Dexterity",
-      "Intelligence"
-    ],
+    "saving_throws": ["Dexterity", "Intelligence"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor"
-      ],
+      "armor": ["Light armor"],
       "weapons": [
         "Simple weapons",
         "Martial weapons with the Finesse or Light property"
       ],
-      "tools": [
-        "Thieves’ Tools"
-      ],
+      "tools": ["Thieves’ Tools"],
       "skills": []
     },
     "features": {
@@ -2800,9 +3211,7 @@
         "amount": 4
       },
       "expertise": {
-        "options": [
-          "skills"
-        ],
+        "options": ["skills"],
         "amount": 2
       },
       "starting_equipment": {
@@ -2820,24 +3229,15 @@
     "name": "Sorcerer",
     "hit_die": "d6",
     "primary_ability": "Charisma",
-    "saving_throws": [
-      "Constitution",
-      "Charisma"
-    ],
+    "saving_throws": ["Constitution", "Charisma"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "None"
-      ],
-      "weapons": [
-        "Simple weapons"
-      ],
+      "armor": ["None"],
+      "weapons": ["Simple weapons"],
       "tools": [],
       "skills": []
     },
@@ -3228,24 +3628,15 @@
     "name": "Warlock",
     "hit_die": "d8",
     "primary_ability": "Charisma",
-    "saving_throws": [
-      "Wisdom",
-      "Charisma"
-    ],
+    "saving_throws": ["Wisdom", "Charisma"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "Light armor"
-      ],
-      "weapons": [
-        "Simple weapons"
-      ],
+      "armor": ["Light armor"],
+      "weapons": ["Simple weapons"],
       "tools": [],
       "skills": []
     },
@@ -3561,24 +3952,15 @@
     "name": "Wizard",
     "hit_die": "d6",
     "primary_ability": "Intelligence",
-    "saving_throws": [
-      "Intelligence",
-      "Wisdom"
-    ],
+    "saving_throws": ["Intelligence", "Wisdom"],
     "starting_equipment": [
       {
-        "optionKeys": [
-          "starting_equipment"
-        ]
+        "optionKeys": ["starting_equipment"]
       }
     ],
     "proficiencies": {
-      "armor": [
-        "None"
-      ],
-      "weapons": [
-        "Simple weapons"
-      ],
+      "armor": ["None"],
+      "weapons": ["Simple weapons"],
       "tools": [],
       "skills": []
     },
