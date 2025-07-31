@@ -876,41 +876,177 @@
           "name": "Bardic Inspiration",
           "description": "You have a d6 Bardic Inspiration die. As a Bonus Action, grant one creature within 60 feet that can hear you one Bardic Inspiration die. Once within 10 minutes, that creature can add the d6 to a damage roll, d20 Test, or saving throw. (Inspiration die increases in size at higher levels.)",
           "metadata": {
-            "uses": 3,
-            "recharge": "long"
+            "name": "Bardic Inspiration",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Bardic Inspiration",
+                "description": "As a Bonus Action, you can grant one creature within 60 feet that can hear you one Bardic Inspiration die. Once within 10 minutes, that creature can add the die to a damage roll, d20 Test, or saving throw.",
+                "levelAcquired": 1,
+                "actionType": 2,
+                "usage": {
+                  "MaxUses": 1,
+                  "usesFormula": "number",
+                  "recharge": "long or short rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.bardic-inspiration-die",
+                    "operation": "util.set",
+                    "value": "d6"
+                  }
+                ]
+              }
+            ]
           }
         },
         {
           "name": "Spellcasting",
-          "description": "You can cast Bard spells. You know 2 cantrips and 4 level-1 spells from the Bard spell list at 1st level. Charisma is your spellcasting ability. (You prepare a number of spells equal to your slots, and can replace known cantrips on level-ups.)"
+          "description": "You can cast Bard spells. You know 2 cantrips and 4 level-1 spells from the Bard spell list at 1st level. Charisma is your spellcasting ability. (You prepare a number of spells equal to your slots, and can replace known cantrips on level-ups.)",
+          "metadata": {
+            "name": "Spellcasting",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting",
+                "description": "You can cast Bard spells. You know 2 cantrips and 4 level-1 spells from the Bard spell list at 1st level. Charisma is your spellcasting ability.",
+                "levelAcquired": 1
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Expertise",
-          "description": "Choose two of your skill proficiencies; your proficiency bonus is doubled for any ability check that uses either of the chosen proficiencies."
+          "description": "Choose two of your skill proficiencies; your proficiency bonus is doubled for any ability check that uses either of the chosen proficiencies.",
+          "metadata": {
+            "name": "Expertise",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Expertise",
+                "description": "",
+                "levelAcquired": 3,
+                "modifiers": [
+                  {
+                    "target": "char.skills:proficient",
+                    "operation": "util.set.proficient",
+                    "value": 2
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Jack of All Trades",
-          "description": "You can add +1/2 of your proficiency bonus (rounded down) to any ability check you make that doesn’t already include your proficiency bonus."
+          "description": "You can add +1/2 of your proficiency bonus (rounded down) to any ability check you make that doesn’t already include your proficiency bonus.",
+          "metadata": {
+            "name": "Jack of All Trades",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Jack of All Trades",
+                "description": "",
+                "levelAcquired": 2,
+                "modifiers": [
+                  {
+                    "target": "check",
+                    "operation": "add",
+                    "value": "char.stats.CHA.mod/halfD",
+                    "condition": ["not.char.skills:proficient"]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Bard Subclass",
-          "description": "Choose a Bard subclass (College of Lore is available in the SRD). You gain subclass features at 3, 6, 10, 14."
+          "description": "Choose a Bard subclass (College of Lore is available in the SRD). You gain subclass features at 3, 6, 10, 14.",
+          "metadata": {
+            "name": "Bard Subclass",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 1
+            },
+            "options": [
+              {
+                "name": "Bard Subclass Feature",
+                "description": "You gain a feature from your Bard subclass (College of Lore: Cutting Words).",
+                "levelAcquired": 3
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Font of Inspiration",
-          "description": "You regain all expended uses of Bardic Inspiration when you finish a Short or Long Rest (instead of only on Long Rest)."
+          "description": "You regain all expended uses of Bardic Inspiration when you finish a Short or Long Rest (instead of only on Long Rest).",
+          "metadata": {
+            "name": "Font of Inspiration",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Font of Inspiration",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "util.char.bardic-inspiration-uses",
+                    "operation": "util.set",
+                    "value": "util.char.bardic-inspiration-max-uses"
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Peerless Skill (College of Lore feature)",
@@ -920,91 +1056,305 @@
       "6": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Bard subclass (College of Lore: Magical Discoveries)."
+          "description": "You gain a feature from your Bard subclass (College of Lore: Magical Discoveries).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 6
+              }
+            ]
+          }
         }
       ],
       "7": [
         {
           "name": "—",
-          "description": "No new feature at Bard 7 (just spell slot progression)."
+          "description": "No new feature at Bard 7 (just spell slot progression).",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "—",
+                "description": "No new feature at Bard 7 (just spell slot progression).",
+                "levelAcquired": 7
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "—",
-          "description": "No new feature (Bard spell progression continues)."
+          "description": "No new feature (Bard spell progression continues).",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new feature (Bard spell progression continues).",
+            "options": [
+              {
+                "name": "—",
+                "description": "No new feature (Bard spell progression continues).",
+                "levelAcquired": 9
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Bard subclass (College of Lore: Peerless Skill)."
+          "description": "You gain a feature from your Bard subclass (College of Lore: Peerless Skill).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 10
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "—",
-          "description": "No new base feature (spell progression continues)."
+          "description": "No new base feature (spell progression continues).",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature (spell progression continues).",
+            "options": [
+              {
+                "name": "—",
+                "description": "No new base feature (spell progression continues).",
+                "levelAcquired": 11
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "13": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "14": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Bard subclass."
+          "description": "You gain a feature from your Bard subclass.",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 14
+              }
+            ]
+          }
         }
       ],
       "15": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "18": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "19": [
         {
           "name": "Epic Boon",
-          "description": "Gain an Epic Boon feat or another feat of your choice (Boon of Fate is recommended for Bards)."
+          "description": "Gain an Epic Boon feat or another feat of your choice (Boon of Fate is recommended for Bards).",
+          "metadata": {
+            "name": "Epic Boon",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 1,
+              "recharge": ""
+            },
+            "options": []
+          }
         }
       ],
       "20": [
         {
           "name": "Superior Inspiration",
-          "description": "When you roll initiative and have no uses of Bardic Inspiration left, you regain one use."
+          "description": "When you roll initiative and have no uses of Bardic Inspiration left, you regain one use.",
+          "metadata": {
+            "name": "Superior Inspiration",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Superior Inspiration",
+                "description": "",
+                "levelAcquired": 20,
+                "modifiers": [
+                  {
+                    "target": "util.char.bardic-inspiration-uses",
+                    "operation": "util.set",
+                    "value": "1",
+                    "conditions": [
+                      "while.util.find.feature:superior-inspiration"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -1261,11 +1611,29 @@
       "1": [
         {
           "name": "Spellcasting",
-          "description": "You can cast Cleric spells. You know three cantrips (e.g. Guidance, Sacred Flame, Thaumaturgy recommended). You prepare a list of cleric spells equal to your Wisdom mod + Cleric level (minimum 1). You can change prepared spells after each Long Rest. Wisdom is your spellcasting ability."
+          "description": "You can cast Cleric spells. You know three cantrips (e.g. Guidance, Sacred Flame, Thaumaturgy recommended). You prepare a list of cleric spells equal to your Wisdom mod + Cleric level (minimum 1). You can change prepared spells after each Long Rest. Wisdom is your spellcasting ability.",
+          "metadata": {
+            "name": "Spellcasting",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting",
+                "description": "You can cast Cleric spells. You know three cantrips (e.g. Guidance, Sacred Flame, Thaumaturgy recommended). You prepare a list of cleric spells equal to your Wisdom mod + Cleric level (minimum 1). You can change prepared spells after each Long Rest. Wisdom is your spellcasting ability.",
+                "levelAcquired": 1
+              }
+            ]
+          }
         },
         {
           "name": "Divine Order",
-          "description": "Choose a Divine Order that shapes your clergy training (not detailed in SRD excerpt; likely affects future features such as Channel Divinity options)."
+          "description": "Choose a Divine Order that shapes your clergy training (not detailed in SRD excerpt; likely affects future features such as Channel Divinity options).",
+          "metadata": {
+            "name": "Divine Order",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "2": [
@@ -1273,117 +1641,403 @@
           "name": "Channel Divinity",
           "description": "You gain the ability to channel divine energy. At 2nd level, you have one use (regained on Long Rest). Your base Channel option is Turn Undead: As an Action, present holy symbol to force undead within 30 ft to make a Wisdom save or be Turned (cannot approach you, etc.) for 1 minute or until damaged. Additional Channel options come from your Cleric subclass.",
           "metadata": {
-            "uses": 1,
-            "recharge": "short"
+            "name": "Channel Divinity",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Channel Divinity",
+                "description": "You gain the ability to channel divine energy. At 2nd level, you have one use (regained on Long Rest). Your base Channel option is Turn Undead: As an Action, present holy symbol to force undead within 30 ft to make a Wisdom save or be Turned (cannot approach you, etc.) for 1 minute or until damaged. Additional Channel options come from your Cleric subclass.",
+                "levelAcquired": 2,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "long rest"
+                }
+              },
+              {
+                "name": "Turn Undead",
+                "description": "As an Action, present your holy symbol to force undead within 30 ft to make a Wisdom save or be Turned for 1 minute or until damaged.",
+                "levelAcquired": 2,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "long rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.channel-divinity-uses",
+                    "operation": "util.set",
+                    "value": "1"
+                  }
+                ]
+              }
+            ]
+          
           }
         }
       ],
       "3": [
         {
           "name": "Cleric Subclass",
-          "description": "Choose a Cleric subclass (Divine Domain, e.g. Life Domain). Subclass features gained at 3, 6, 10, 14, 17."
+          "description": "Choose a Cleric subclass (Divine Domain, e.g. Life Domain). Subclass features gained at 3, 6, 10, 14, 17.",
+          "metadata": {
+            "name": "Cleric Subclass",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Cleric Subclass Feature",
+                "description": "You gain a feature from your Cleric subclass (Life Domain: Disciple of Life).",
+                "levelAcquired": 3
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Sear Undead",
-          "description": "When you use Turn Undead (Channel Divinity), each undead of CR 1/2 or lower that fails its save is instantly destroyed (higher CR thresholds for destroy increase at higher levels)."
+          "description": "When you use Turn Undead (Channel Divinity), each undead of CR 1/2 or lower that fails its save is instantly destroyed (higher CR thresholds for destroy increase at higher levels).",
+          "metadata": {
+            "name": "Sear Undead",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Sear Undead",
+                "description": "When you use Turn Undead (Channel Divinity), each undead of CR 1/2 or lower that fails its save is instantly destroyed (higher CR thresholds for destroy increase at higher levels).",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "util.char.channel-divinity-sear-undead",
+                    "operation": "util.set",
+                    "value": true,
+                    "conditions": [
+                      "util.char.find.feature:channel-divinity",
+                      "util.char.find.feature:turn-undead"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Cleric subclass (Life Domain: Blessed Healer)."
+          "description": "You gain a feature from your Cleric subclass (Life Domain: Blessed Healer).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 6
+              }
+            ]
+          }
         }
       ],
       "7": [
         {
           "name": "—",
-          "description": "No new base feature (higher-level spell slots become available)."
+          "description": "No new base feature (higher-level spell slots become available).",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature (higher-level spell slots become available)."
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 7,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 7,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "—",
-          "description": "No new base feature (spell progression continues)."
+          "description": "No new base feature (spell progression continues).",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature (spell progression continues)."
+          }
         }
       ],
       "10": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Cleric subclass (Life Domain: Divine Strike or Supreme Healing, depending on domain)."
+          "description": "You gain a feature from your Cleric subclass (Life Domain: Divine Strike or Supreme Healing, depending on domain).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 10
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "13": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "14": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Cleric subclass (Life Domain: perhaps improved domain feature)."
+          "description": "You gain a feature from your Cleric subclass (Life Domain: perhaps improved domain feature).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 14
+              }
+            ]
+          }
         }
       ],
       "15": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Cleric subclass (Life Domain: Supreme Healing if not earlier)."
+          "description": "You gain a feature from your Cleric subclass (Life Domain: Supreme Healing if not earlier).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 17
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "19": [
         {
           "name": "Epic Boon",
-          "description": "Gain an Epic Boon feat or another feat (Boon of Fate recommended)."
+          "description": "Gain an Epic Boon feat or another feat (Boon of Fate recommended).",
+          "metadata": {
+            "name": "Epic Boon",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 1,
+              "recharge": ""
+            },
+            "options": []
+          }
         }
       ],
       "20": [
         {
           "name": "Greater Divine Intervention",
-          "description": "Your Divine Intervention feature (if any from subclass or class) improves (usually allowing a Wish spell effect once per week, if following 2014 PHB pattern for Cleric)."
+          "description": "Your Divine Intervention feature (if any from subclass or class) improves (usually allowing a Wish spell effect once per week, if following 2014 PHB pattern for Cleric).",
+          "metadata": {
+            "name": "Greater Divine Intervention",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Greater Divine Intervention",
+                "description": "",
+                "levelAcquired": 20
+              }
+            ]
+          }
         }
       ]
     },
@@ -1623,15 +2277,45 @@
       "1": [
         {
           "name": "Spellcasting",
-          "description": "You have learned Druidic magic drawn from nature. You know 2 cantrips and can prepare Druid spells each day (Wisdom is your spellcasting ability). You can cast prepared spells using your spell slots."
+          "description": "You have learned Druidic magic drawn from nature. You know 2 cantrips and can prepare Druid spells each day (Wisdom is your spellcasting ability). You can cast prepared spells using your spell slots.",
+          "metadata": {
+            "name": "Spellcasting",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting",
+                "description": "You have learned Druidic magic drawn from nature. You know 2 cantrips and can prepare Druid spells each day (Wisdom is your spellcasting ability). You can cast prepared spells using your spell slots.",
+                "levelAcquired": 1
+              }
+            ]
+          }
         },
         {
           "name": "Druidic",
-          "description": "You know Druidic, a secret language of druids. You can speak it and use it to leave hidden messages that only other druids can perceive."
+          "description": "You know Druidic, a secret language of druids. You can speak it and use it to leave hidden messages that only other druids can perceive.",
+          "metadata": {
+            "name": "Druidic",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Druidic",
+                "description": "You know Druidic, a secret language of druids. You can speak it and use it to leave hidden messages that only other druids can perceive.",
+                "levelAcquired": 1
+              }
+            ]
+          }
         },
         {
           "name": "Primal Order",
-          "description": "Choose a Primal Order (circle) influencing your druidic training (not fully detailed in SRD excerpt)."
+          "description": "Choose a Primal Order (circle) influencing your druidic training (not fully detailed in SRD excerpt).",
+          "metadata": {
+            "name": "Primal Order",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "2": [
@@ -1639,121 +2323,439 @@
           "name": "Wild Shape",
           "description": "As a Magic action, you can expend a use of Wild Shape to transform into a Beast you have seen (CR 0 or 1/4 at starting levels). You can use Wild Shape twice per rest. (Lasts for hours equal to half your Druid level, etc.)",
           "metadata": {
-            "uses": 2,
-            "recharge": "short"
+            "name": "Wild Shape",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Wild Shape",
+                "description": "As a Magic action, you can expend a use of Wild Shape to transform into a Beast you have seen (CR 0 or 1/4 at starting levels). You can use Wild Shape twice per rest. (Lasts for hours equal to half your Druid level, etc.)",
+                "levelAcquired": 2,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 2,
+                  "recharge": "short rest"
+                }
+              }
+            ]
           }
         },
         {
           "name": "Wild Companion",
-          "description": "You can expend a use of Wild Shape to cast Find Familiar without material components."
+          "description": "You can expend a use of Wild Shape to cast Find Familiar without material components.",
+          "metadata": {
+            "name": "Wild Companion",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Wild Companion",
+                "description": "You can expend a use of Wild Shape to cast Find Familiar without material components.",
+                "levelAcquired": 2,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "short rest"
+                }
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Druid Subclass",
-          "description": "Choose a Druid Circle (Circle of the Land is available in SRD). Subclass features at 3, 6, 10, 14."
+          "description": "Choose a Druid Circle (Circle of the Land is available in SRD). Subclass features at 3, 6, 10, 14.",
+          "metadata": {
+            "name": "Druid Subclass",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Druid Subclass Feature",
+                "description": "You gain a feature from your Druid subclass (Circle of the Land: Natural Recovery).",
+                "levelAcquired": 3
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Wild Resurgence",
-          "description": "You regain one expended use of Wild Shape whenever you finish a Short Rest (allowing additional transformations)."
+          "description": "You regain one expended use of Wild Shape whenever you finish a Short Rest (allowing additional transformations).",
+          "metadata": {
+            "name": "Wild Resurgence",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Wild Resurgence",
+                "description": "You regain one expended use of Wild Shape whenever you finish a Short Rest (allowing additional transformations).",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "util.char.wild-shape-uses",
+                    "operation": "util.set",
+                    "value": 2,
+                    "conditions": [
+                      "util.char.find.feature:wild-shape"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Druid subclass (Circle of the Land: e.g. Land’s Stride or Nature’s Ward)."
+          "description": "You gain a feature from your Druid subclass (Circle of the Land: e.g. Land’s Stride or Nature’s Ward).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 6
+              }
+            ]
+          }
         }
       ],
       "7": [
         {
           "name": "Elemental Fury",
-          "description": "Once per Long Rest, you can expend both uses of Wild Shape at the same time to transform into an Air, Earth, Fire, or Water elemental (as per Elemental Wild Shape)."
+          "description": "Once per Long Rest, you can expend both uses of Wild Shape at the same time to transform into an Air, Earth, Fire, or Water elemental (as per Elemental Wild Shape).",
+          "metadata": {
+            "name": "Elemental Fury",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Elemental Fury",
+                "description": "Once per Long Rest, you can expend both uses of Wild Shape at the same time to transform into an Air, Earth, Fire, or Water elemental (as per Elemental Wild Shape).",
+                "levelAcquired": 7,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "long rest"
+                }
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "—",
-          "description": "No new base feature (spell progression continues)."
+          "description": "No new base feature (spell progression continues).",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature (spell progression continues)."
+          }
         }
       ],
       "10": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Druid subclass (Circle of the Land: Nature’s Sanctuary or similar)."
+          "description": "You gain a feature from your Druid subclass (Circle of the Land: Nature’s Sanctuary or similar).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 10
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "13": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "14": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Druid subclass."
+          "description": "You gain a feature from your Druid subclass.",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 14
+              }
+            ]
+          }
         }
       ],
       "15": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "17": [
         {
           "name": "—",
-          "description": "No new base feature."
+          "description": "No new base feature.",
+          "metadata": {
+            "name": "—",
+            "category": "Class",
+            "description": "No new base feature."
+          }
         }
       ],
       "18": [
         {
           "name": "Beast Spells",
-          "description": "You can cast many of your Druid spells while in Wild Shape form (no material components)."
+          "description": "You can cast many of your Druid spells while in Wild Shape form (no material components).",
+          "metadata": {
+            "name": "Beast Spells",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Beast Spells",
+                "description": "You can cast many of your Druid spells while in Wild Shape form (no material components).",
+                "levelAcquired": 18,
+                "modifiers": [
+                  {
+                    "target": "util.char.spellcasting:wild-shape",
+                    "operation": "util.set",
+                    "value": true,
+                    "conditions": [
+                      "util.char.find.feature:wild-shape"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Epic Boon",
-          "description": "Gain an Epic Boon feat or another feat (Boon of the Night Spirit recommended)."
+          "description": "Gain an Epic Boon feat or another feat (Boon of the Night Spirit recommended).",
+          "metadata": {
+            "name": "Epic Boon",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 1,
+              "recharge": ""
+            },
+            "options": []
+          }
         }
       ],
       "20": [
         {
           "name": "Archdruid",
-          "description": "You can use Wild Shape an unlimited number of times. Additionally, you no longer need to provide material components for Druid spells that lack a cost."
+          "description": "You can use Wild Shape an unlimited number of times. Additionally, you no longer need to provide material components for Druid spells that lack a cost.",
+          "metadata": {
+            "name": "Archdruid",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Archdruid",
+                "description": "You can use Wild Shape an unlimited number of times. Additionally, you no longer need to provide material components for Druid spells that lack a cost.",
+                "levelAcquired": 20,
+                "modifiers": [
+                  {
+                    "target": "util.char.wild-shape-uses",
+                    "operation": "util.set",
+                    "value": -1,
+                    "conditions": [
+                      "util.char.find.feature:wild-shape"
+                    ]
+                  }
+                ]
+              }
+            ]
+          
+          
+          }
         }
       ]
     },
@@ -1993,15 +2995,49 @@
       "1": [
         {
           "name": "Fighting Style",
-          "description": "You gain a Fighting Style feat of your choice (such as Defense, Archery, etc.). Whenever you gain a Fighter level, you can replace this Fighting Style with another."
+          "description": "You gain a Fighting Style feat of your choice (such as Defense, Archery, etc.). Whenever you gain a Fighter level, you can replace this Fighting Style with another.",
+          "metadata": {
+            "name": "Fighting Style",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         },
         {
           "name": "Second Wind",
-          "description": "On your turn, you can use a Bonus Action to regain hit points equal to 1d10 + your Fighter level. Once used, this cannot be used again until you finish a Short or Long Rest."
+          "description": "On your turn, you can use a Bonus Action to regain hit points equal to 1d10 + your Fighter level. Once used, this cannot be used again until you finish a Short or Long Rest.",
+          "metadata": {
+            "name": "Second Wind",
+            "category": "Class",
+            "description": "",
+            "actionType": 2,
+            "usage": {
+              "MaxUses": 1,
+              "recharge": "short rest"
+            },
+            "options": [
+              {
+                "name": "Second Wind",
+                "description": "On your turn, you can use a Bonus Action to regain hit points equal to 1d10 + your Fighter level. Once used, this cannot be used again until you finish a Short or Long Rest.",
+                "levelAcquired": 1,
+                "actionType": 2,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "short rest"
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Weapon Mastery",
-          "description": "You unlock the Mastery properties of 3 kinds of weapons of your choice (simple or martial). You can change one choice after each Long Rest. (Fighters get more Mastery choices at higher levels as shown on the Fighter table.)"
+          "description": "You unlock the Mastery properties of 3 kinds of weapons of your choice (simple or martial). You can change one choice after each Long Rest. (Fighters get more Mastery choices at higher levels as shown on the Fighter table.)",
+          "metadata": {
+            "name": "Weapon Mastery",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "2": [
@@ -2009,87 +3045,420 @@
           "name": "Action Surge (one use)",
           "description": "On your turn, you can take one additional action on top of your regular action and possible bonus action. Once you use this, you must finish a Short or Long Rest before you can use Action Surge again. (You gain an additional use at higher levels.)",
           "metadata": {
-            "uses": 1,
-            "recharge": "short"
+            "name": "Action Surge",
+            "category": "Class",
+            "description": "",
+            "actionType": 1,
+            "usage": {
+              "MaxUses": 1,
+              "recharge": "short rest"
+            },
+            "options": [
+              {
+                "name": "Action Surge",
+                "description": "On your turn, you can take one additional action on top of your regular action and possible bonus action. Once you use this, you must finish a Short or Long Rest before you can use Action Surge again.",
+                "levelAcquired": 2,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "short rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.action",
+                    "operation": "util.add",
+                    "value": 1,
+                    "conditions": [
+                      "util.char.find.feature:action-surge"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         },
         {
           "name": "Tactical Mind",
-          "description": "When you fail an ability check, you can expend Second Wind (instead of healing) to roll 1d10 and add it to the check, potentially turning failure into success (if it still fails, Second Wind isn’t spent)."
+          "description": "When you fail an ability check, you can expend Second Wind (instead of healing) to roll 1d10 and add it to the check, potentially turning failure into success (if it still fails, Second Wind isn’t spent).",
+          "metadata": {
+            "name": "Tactical Mind",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Tactical Mind",
+                "description": "When you fail an ability check, you can expend Second Wind (instead of healing) to roll 1d10 and add it to the check, potentially turning failure into success (if it still fails, Second Wind isn’t spent).",
+                "levelAcquired": 2,
+                "actionType": 2,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "short rest"
+                }
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Fighter Subclass",
-          "description": "Choose a Fighter subclass (Martial Archetype, e.g. Champion). Subclass features at 3, 7, 10, 15, 18."
+          "description": "Choose a Fighter subclass (Martial Archetype, e.g. Champion). Subclass features at 3, 7, 10, 15, 18.",
+          "metadata": {
+            "name": "Fighter Subclass",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "You gain a feature from your Fighter subclass (Champion: Improved Critical).",
+                "levelAcquired": 3
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+}
         }
       ],
       "5": [
         {
           "name": "Extra Attack",
-          "description": "You can attack twice instead of once whenever you take the Attack action on your turn."
+          "description": "You can attack twice instead of once whenever you take the Attack action on your turn.",
+          "metadata": {
+            "name": "Extra Attack",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "You can attack twice instead of once whenever you take the Attack action on your turn.",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack-actions",
+                    "operation": "util.add",
+                    "value": 1,
+                    "conditions": [
+                      "util.char.find.feature:extra-attack"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Tactical Shift",
-          "description": "When you use Second Wind as a Bonus Action, you can also move up to half your speed without provoking Opportunity Attacks."
+          "description": "When you use Second Wind as a Bonus Action, you can also move up to half your speed without provoking Opportunity Attacks.",
+          "metadata": {
+            "name": "Tactical Shift",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Tactical Shift",
+                "description": "When you use Second Wind as a Bonus Action, you can also move up to half your speed without provoking Opportunity Attacks.",
+                "levelAcquired": 5,
+                "actionType": 2,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "short rest"
+                }
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 6,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 6,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+}
         }
       ],
       "7": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Fighter subclass (Champion: Remarkable Athlete or Additional Fighting Style)."
+          "description": "You gain a feature from your Fighter subclass (Champion: Remarkable Athlete or Additional Fighting Style).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 7
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 8,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+}
         }
       ],
       "9": [
         {
           "name": "Indomitable (one use)",
-          "description": "When you fail a saving throw, you can reroll it with a bonus equal to your Fighter level and must use the new roll. Once used, can’t use again until Long Rest (two uses at level 13, three at 17)."
+          "description": "When you fail a saving throw, you can reroll it with a bonus equal to your Fighter level and must use the new roll. Once used, can’t use again until Long Rest (two uses at level 13, three at 17).",
+          "metadata": {
+            "name": "Indomitable",
+            "category": "Class",
+            "description": "",
+            "actionType": 1,
+            "usage": {
+              "MaxUses": 1,
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Indomitable",
+                "description": "When you fail a saving throw, you can reroll it with a bonus equal to your Fighter level and must use the new roll. Once used, can’t use again until Long Rest.",
+                "levelAcquired": 9,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "long rest"
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Tactical Master",
-          "description": "When you attack with a weapon that you have Mastery with, you can replace its mastery property with Push, Sap, or Slow for that attack."
+          "description": "When you attack with a weapon that you have Mastery with, you can replace its mastery property with Push, Sap, or Slow for that attack.",
+          "metadata": {
+            "name": "Tactical Master",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Tactical Master",
+                "description": "When you attack with a weapon that you have Mastery with, you can replace its mastery property with Push, Sap, or Slow for that attack.",
+                "levelAcquired": 9,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Fighter subclass (Champion: Improved Critical range 18–20, or Heroic Warrior for Champion in 2024 rules)."
+          "description": "You gain a feature from your Fighter subclass (Champion: Improved Critical range 18–20, or Heroic Warrior for Champion in 2024 rules).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 10
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "Two Extra Attacks",
-          "description": "You can attack three times whenever you take the Attack action (instead of twice)."
+          "description": "You can attack three times whenever you take the Attack action (instead of twice).",
+          "metadata": {
+            "name": "Two Extra Attacks",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Two Extra Attacks",
+                "description": "You can attack three times whenever you take the Attack action on your turn.",
+                "levelAcquired": 11,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack-actions",
+                    "operation": "util.add",
+                    "value": 1,
+                    "conditions": [
+                      "util.char.find.feature:extra-attack"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+}
         }
       ],
       "13": [
         {
           "name": "Indomitable (two uses)",
-          "description": "You can use Indomitable twice between Long Rests."
+          "description": "You can use Indomitable twice between Long Rests.",
+          "metadata": {
+            "name": "Indomitable",
+            "category": "Class",
+            "description": "",
+            "actionType": 1,
+            "usage": {
+              "MaxUses": 2,
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Indomitable",
+                "description": "When you fail a saving throw, you can reroll it with a bonus equal to your Fighter level and must use the new roll. Once used, can’t use again until Long Rest.",
+                "levelAcquired": 13,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 2,
+                  "recharge": "long rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.indomitable-uses",
+                    "operation": "util.set",
+                    "value": 2,
+                    "conditions": [
+                      "util.char.find.feature:indomitable"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Studied Attacks",
@@ -2099,51 +3468,223 @@
       "14": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 14,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 14,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+}
         }
       ],
       "15": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Fighter subclass (Champion: Superior Critical on 18–20)."
+          "description": "You gain a feature from your Fighter subclass (Champion: Superior Critical on 18–20).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 15
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+}
         }
       ],
       "17": [
         {
           "name": "Indomitable (three uses)",
-          "description": "You can use Indomitable three times between Long Rests."
+          "description": "You can use Indomitable three times between Long Rests.",
+          "metadata": {
+            "name": "Indomitable (three uses)",
+            "category": "Class",
+            "description": "",
+            "actionType": 1,
+            "usage": {
+              "MaxUses": 3,
+              "recharge": "long rest"
+            },
+            "options": [
+              {
+                "name": "Indomitable",
+                "description": "When you fail a saving throw, you can reroll it with a bonus equal to your Fighter level and must use the new roll. Once used, can’t use again until Long Rest.",
+                "levelAcquired": 17,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 3,
+                  "recharge": "long rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.indomitable-uses",
+                    "operation": "util.set",
+                    "value": 3,
+                    "conditions": [
+                      "util.char.find.feature:indomitable"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Action Surge (two uses)",
           "description": "You can use Action Surge twice between rests, but only once per turn.",
           "metadata": {
-            "uses": 1,
-            "recharge": "short"
+            "name": "Action Surge (two uses)",
+            "category": "Class",
+            "description": "",
+            "actionType": 1,
+            "usage": {
+              "MaxUses": 2,
+              "recharge": "short rest"
+            },
+            "options": [
+              {
+                "name": "Action Surge",
+                "description": "On your turn, you can take one additional action on top of your regular action and possible bonus action. Once you use this, you must finish a Short or Long Rest before you can use Action Surge again.",
+                "levelAcquired": 17,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 2,
+                  "recharge": "short rest"
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.action-surges",
+                    "operation": "util.set",
+                    "value": 2,
+                    "conditions": [
+                      "util.char.find.feature:action-surge"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         }
       ],
       "18": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Fighter subclass (Champion: Survivor)."
+          "description": "You gain a feature from your Fighter subclass (Champion: Survivor).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 18
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Epic Boon",
-          "description": "Gain an Epic Boon feat or another feat (Boon of Combat Prowess recommended)."
+          "description": "Gain an Epic Boon feat or another feat (Boon of Combat Prowess recommended).",
+          "metadata": {
+            "name": "Epic Boon",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "20": [
         {
           "name": "Three Extra Attacks",
-          "description": "You can attack four times whenever you take the Attack action on your turn."
+          "description": "You can attack four times whenever you take the Attack action on your turn.",
+          "metadata": {
+            "name": "Three Extra Attacks",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Three Extra Attacks",
+                "description": "You can attack four times whenever you take the Attack action on your turn.",
+                "levelAcquired": 20,
+                "modifiers": [
+                  {
+                    "target": "util.char.attack-actions",
+                    "operation": "util.add",
+                    "value": 1,
+                    "conditions": [
+                      "util.char.find.feature:extra-attack"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -2213,161 +3754,792 @@
       "1": [
         {
           "name": "Martial Arts",
-          "description": "You can use Dexterity instead of Strength for unarmed strikes and monk weapons, roll a d6 in place of normal damage for unarmed/monk weapons (martial arts die increases with level), and make one unarmed strike as a Bonus Action if you attacked with unarmed or monk weapon. Monk weapons: simple melee weapons and martial melee weapons with Light property."
+          "description": "You can use Dexterity instead of Strength for unarmed strikes and monk weapons, roll a d6 in place of normal damage for unarmed/monk weapons (martial arts die increases with level), and make one unarmed strike as a Bonus Action if you attacked with unarmed or monk weapon. Monk weapons: simple melee weapons and martial melee weapons with Light property.",
+          "metadata": {
+            "name": "Martial Arts",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Martial Arts",
+                "description": "You can use Dexterity instead of Strength for unarmed strikes and monk weapons, roll a d6 in place of normal damage for unarmed/monk weapons (martial arts die increases with level), and make one unarmed strike as a Bonus Action if you attacked with unarmed or monk weapon.",
+                "levelAcquired": 1,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.martial-arts-die",
+                    "operation": "util.setDice",
+                    "value": 6,
+                    "conditions": [
+                      "util.char.find.feature:martial-arts"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Unarmored Defense",
-          "description": "While not wearing armor or wielding a shield, your AC = 10 + Dex mod + Wis mod."
+          "description": "While not wearing armor or wielding a shield, your AC = 10 + Dex mod + Wis mod.",
+          "metadata": {
+            "name": "Unarmored Defense",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Unarmored Defense",
+                "description": "While not wearing armor or wielding a shield, your AC = 10 + Dex mod + Wis mod.",
+                "levelAcquired": 1,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": []
+              }
+            ]
+          }
         }
       ],
       "2": [
         {
           "name": "Ki (Focus Points)",
-          "description": "You have a pool of Focus (Ki) points (equal to your Monk level) to fuel special techniques. You regain all Focus points after a Short or Long Rest. Your Ki save DC = 8 + Prof + Wis mod."
+          "description": "You have a pool of Focus (Ki) points (equal to your Monk level) to fuel special techniques. You regain all Focus points after a Short or Long Rest. Your Ki save DC = 8 + Prof + Wis mod.", 
+          "metadata": {
+            "name": "Ki",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Ki",
+                "description": "You have a pool of Focus (Ki) points (equal to your Monk level) to fuel special techniques. You regain all Focus points after a Short or Long Rest. Your Ki save DC = 8 + Prof + Wis mod.",
+                "levelAcquired": 2,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": []
+              }
+            ]
+          }
         },
         {
           "name": "Flurry of Blows",
-          "description": "Immediately after you take the Attack action on your turn, you can spend 1 Focus Point to make two unarmed strikes as a Bonus Action."
+          "description": "Immediately after you take the Attack action on your turn, you can spend 1 Focus Point to make two unarmed strikes as a Bonus Action.",
+          "metadata": {
+            "name": "Flurry of Blows",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Flurry of Blows",
+                "description": "Immediately after you take the Attack action on your turn, you can spend 1 Focus Point to make two unarmed strikes as a Bonus Action.",
+                "levelAcquired": 2,
+                "actionType": 2,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Patient Defense",
-          "description": "You can spend 1 Focus Point to take the Dodge action as a Bonus Action on your turn."
+          "description": "You can spend 1 Focus Point to take the Dodge action as a Bonus Action on your turn.",
+          "metadata": {
+            "name": "Patient Defense",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Patient Defense",
+                "description": "You can spend 1 Focus Point to take the Dodge action as a Bonus Action on your turn.",
+                "levelAcquired": 2,
+                "actionType": 2,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Step of the Wind",
-          "description": "You can spend 1 Focus Point to take the Disengage or Dash action as a Bonus Action on your turn, and your jump distance is doubled for the turn."
+          "description": "You can spend 1 Focus Point to take the Disengage or Dash action as a Bonus Action on your turn, and your jump distance is doubled for the turn.", 
+          "metadata": {
+            "name": "Step of the Wind",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Step of the Wind",
+                "description": "You can spend 1 Focus Point to take the Disengage or Dash action as a Bonus Action on your turn, and your jump distance is doubled for the turn.",
+                "levelAcquired": 2,
+                "actionType": 2,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "3": [
         {
           "name": "Monk Subclass",
-          "description": "Choose a Monastic Tradition (e.g. Way of the Open Hand). Subclass features at 3, 6, 11, 17."
+          "description": "Choose a Monastic Tradition (e.g. Way of the Open Hand). Subclass features at 3, 6, 11, 17.",
+          "metadata": {
+            "name": "Monk Subclass",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "You gain a feature from your Monastic Tradition (Open Hand: Open Hand Technique).",
+                "levelAcquired": 3
+              }
+            ]
+          }
         },
         {
           "name": "Deflect Missiles",
-          "description": "When you are hit by a ranged weapon attack, you can use your Reaction to reduce the damage by 1d10 + Dex mod + Monk level. If damage is reduced to 0, you can catch the projectile and spend 1 Focus Point to throw it back as part of the same Reaction (range 20/60, counts as monk weapon)."
+          "description": "When you are hit by a ranged weapon attack, you can use your Reaction to reduce the damage by 1d10 + Dex mod + Monk level. If damage is reduced to 0, you can catch the projectile and spend 1 Focus Point to throw it back as part of the same Reaction (range 20/60, counts as monk weapon).",
+          "metadata": {
+            "name": "Deflect Missiles",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Deflect Missiles",
+                "description": "When you are hit by a ranged weapon attack, you can use your Reaction to reduce the damage by 1d10 + Dex mod + Monk level. If damage is reduced to 0, you can catch the projectile and spend 1 Focus Point to throw it back as part of the same Reaction (range 20/60, counts as monk weapon).",
+                "levelAcquired": 3,
+                "actionType": 3,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+     }
         },
         {
           "name": "Slow Fall",
-          "description": "You can use your Reaction when falling to reduce fall damage by an amount equal to 5 × your Monk level."
+          "description": "You can use your Reaction when falling to reduce fall damage by an amount equal to 5 × your Monk level.",
+          "metadata": {
+            "name": "Slow Fall",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Slow Fall",
+                "description": "You can use your Reaction when falling to reduce fall damage by an amount equal to 5 × your Monk level.",
+                "levelAcquired": 4,
+                "actionType": 3,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "5": [
         {
           "name": "Extra Attack",
-          "description": "You can attack twice instead of once when you take the Attack action."
+          "description": "You can attack twice instead of once when you take the Attack action.",
+           "metadata": {
+            "name": "Extra Attack",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Extra Attack",
+                "description": "",
+                "levelAcquired": 5,
+                "modifiers": [
+                  {
+                    "target": "char.attack.roll",
+                    "operation": "util.add",
+                    "value": "util.num:1"
+                  }
+                ]
+              }
+            ]
+        }
         },
         {
           "name": "Stunning Strike",
-          "description": "When you hit another creature with a melee weapon attack, you can spend 1 Focus Point to attempt a stun. Target must succeed on a Con save or be Stunned until end of your next turn."
+          "description": "When you hit another creature with a melee weapon attack, you can spend 1 Focus Point to attempt a stun. Target must succeed on a Con save or be Stunned until end of your next turn.",
+          "metadata": {
+            "name": "Stunning Strike",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Stunning Strike",
+                "description": "When you hit another creature with a melee weapon attack, you can spend 1 Focus Point to attempt a stun. Target must succeed on a Con save or be Stunned until end of your next turn.",
+                "levelAcquired": 5,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Focused Aim",
-          "description": "When you miss an attack, you can spend 1–3 Focus Points to increase your attack roll by 2 per point spent, potentially turning the miss into a hit."
+          "description": "When you miss an attack, you can spend 1–3 Focus Points to increase your attack roll by 2 per point spent, potentially turning the miss into a hit.",
+          "metadata": {
+            "name": "Focused Aim",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Focused Aim",
+                "description": "When you miss an attack, you can spend 1–3 Focus Points to increase your attack roll by 2 per point spent, potentially turning the miss into a hit.",
+                "levelAcquired": 5,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "6": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Monastic Tradition (Open Hand: Wholeness of Body)."
+          "description": "You gain a feature from your Monastic Tradition (Open Hand: Wholeness of Body).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 6
+              }
+            ]
+          }
         }
       ],
       "7": [
         {
           "name": "Evasion",
-          "description": "When you make a Dexterity save for half damage, you take no damage on a success and only half on a failure."
+          "description": "When you make a Dexterity save for half damage, you take no damage on a success and only half on a failure.",
+          "metadata": {
+            "name": "Evasion",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Evasion",
+                "description": "When you make a Dexterity save for half damage, you take no damage on a success and only half on a failure.",
+                "levelAcquired": 7,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.DEX.save.half-damage",
+                    "operation": "util.set",
+                    "value": true,
+                    "conditions": [
+                      "util.char.find.feature:evasion"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Stillness of Mind",
-          "description": "You can use an Action to end one effect on yourself that is causing you to be Charmed or Frightened."
+          "description": "You can use an Action to end one effect on yourself that is causing you to be Charmed or Frightened.",
+          "metadata": {
+            "name": "Stillness of Mind",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Stillness of Mind",
+                "description": "You can use an Action to end one effect on yourself that is causing you to be Charmed or Frightened.",
+                "levelAcquired": 7,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 4,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "9": [
         {
           "name": "Unarmored Movement Improvement",
-          "description": "You gain the ability to move along vertical surfaces or across liquids on your turn without falling during the move."
+          "description": "You gain the ability to move along vertical surfaces or across liquids on your turn without falling during the move.",
+          "metadata": {
+            "name": "Unarmored Movement Improvement",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Unarmored Movement Improvement",
+                "description": "You gain the ability to move along vertical surfaces or across liquids on your turn without falling during the move.",
+                "levelAcquired": 9,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": []
+              }
+            ]
+          }
         }
       ],
       "10": [
         {
           "name": "Purity of Body",
-          "description": "You have immunity to disease and poison (damage and condition)."
+          "description": "You have immunity to disease and poison (damage and condition).",
+          "metadata": {
+            "name": "Purity of Body",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Purity of Body",
+                "description": "You have immunity to disease and poison (damage and condition).",
+                "levelAcquired": 10,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.immunity:poison-damage",
+                    "operation": "util.set",
+                    "value": true,
+                    "conditions": [
+                      "util.char.find.feature:purity-of-body"
+                    ]
+                  },
+                  {
+                    "target": "util.char.immunity:poison-condition",
+                    "operation": "util.set",
+                    "value": true,
+                    "conditions": [
+                      "util.char.find.feature:purity-of-body"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "11": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Monastic Tradition (Open Hand: Fleet Step, or another 11th-level feature)."
+          "description": "You gain a feature from your Monastic Tradition (Open Hand: Fleet Step, or another 11th-level feature).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 11
+              }
+            ]
+          }
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 12,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+         }
         }
       ],
       "13": [
         {
           "name": "Tongue of the Sun and Moon",
-          "description": "You understand all spoken languages, and any creature that knows a language can understand what you say."
+          "description": "You understand all spoken languages, and any creature that knows a language can understand what you say.",
+          "metadata": {
+            "name": "Tongue of the Sun and Moon",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Tongue of the Sun and Moon",
+                "description": "You understand all spoken languages, and any creature that knows a language can understand what you say.",
+                "levelAcquired": 13,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": []
+              }
+            ]
+          }
         }
       ],
       "14": [
         {
           "name": "Diamond Soul",
-          "description": "Your mastery of ki grants proficiency in all saving throws. Additionally, if you fail a save, you can spend 1 Focus Point to reroll it and must use the new roll."
+          "description": "Your mastery of ki grants proficiency in all saving throws. Additionally, if you fail a save, you can spend 1 Focus Point to reroll it and must use the new roll.",
+          "metadata": {
+            "name": "Diamond Soul",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Diamond Soul",
+                "description": "Your mastery of ki grants proficiency in all saving throws. Additionally, if you fail a save, you can spend 1 Focus Point to reroll it and must use the new roll.",
+                "levelAcquired": 14,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.proficiency:saving-throws",
+                    "operation": "util.add",
+                    "value": true,
+                    "conditions": [
+                      "util.char.find.feature:diamond-soul"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "15": [
         {
           "name": "Timeless Body",
-          "description": "You suffer none of the frailty of old age, and you can’t be aged magically. You still die of old age, and you require no food or water."
+          "description": "You suffer none of the frailty of old age, and you can’t be aged magically. You still die of old age, and you require no food or water.",
+          "metadata": {
+            "name": "Timeless Body",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Timeless Body",
+                "description": "You suffer none of the frailty of old age, and you can’t be aged magically. You still die of old age, and you require no food or water.",
+                "levelAcquired": 15,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.immunity:aging",
+                    "operation": "util.set",
+                    "value": true,
+                    "conditions": [
+                      "util.char.find.feature:timeless-body"
+                    ]
+                  },
+                  {
+                    "target": "util.char.requirement:food-water",
+                    "operation": "util.set",
+                    "value": false,
+                    "conditions": [
+                      "util.char.find.feature:timeless-body"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Perfect Focus",
-          "description": "When you roll initiative and have fewer than 4 Focus Points, you regain Focus Points up to 4."
+          "description": "When you roll initiative and have fewer than 4 Focus Points, you regain Focus Points up to 4.",
+          "metadata": {
+            "name": "Perfect Focus",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Perfect Focus",
+                "description": "When you roll initiative and have fewer than 4 Focus Points, you regain Focus Points up to 4.",
+                "levelAcquired": 15,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.focus-points",
+                    "operation": "util.set",
+                    "value": 4,
+                    "conditions": [
+                      "util.char.find.feature:perfect-focus"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
-          "description": "Increase ability scores or take a feat."
+          "description": "Increase ability scores or take a feat.",
+          "metadata": {
+            "name": "Ability Score Improvement",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "usesFormula": "number",
+              "recharge": ""
+            },
+            "options": [
+              {
+                "name": "Ability Score Improvement",
+                "description": "",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Feat",
+                "description": "Choose a feat instead of increasing ability scores.",
+                "levelAcquired": 16,
+                "usage": {
+                  "usesFormula": "number",
+                  "recharge": ""
+                }
+              }
+            ]
+         }
         }
       ],
       "17": [
         {
           "name": "Subclass Feature",
-          "description": "You gain a feature from your Monastic Tradition (Open Hand: Quivering Palm)."
+          "description": "You gain a feature from your Monastic Tradition (Open Hand: Quivering Palm).",
+          "metadata": {
+            "name": "Subclass Feature",
+            "category": "Subclass",
+            "description": "",
+            "options": [
+              {
+                "name": "Subclass Feature",
+                "description": "",
+                "levelAcquired": 17
+              }
+            ]
+          }
         }
       ],
       "18": [
         {
           "name": "Empty Body",
-          "description": "You can use an Action and spend 4 Focus Points to become invisible for 1 minute and gain resistance to all damage except Force. You can also spend 8 Focus to cast Astral Projection on yourself (self only) without material components."
+          "description": "You can use an Action and spend 4 Focus Points to become invisible for 1 minute and gain resistance to all damage except Force. You can also spend 8 Focus to cast Astral Projection on yourself (self only) without material components.",
+          "metadata": {
+            "name": "Empty Body",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Empty Body",
+                "description": "You can use an Action and spend 4 Focus Points to become invisible for 1 minute and gain resistance to all damage except Force. You can also spend 8 Focus to cast Astral Projection on yourself (self only) without material components.",
+                "levelAcquired": 18,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
+          }
         }
       ],
       "19": [
         {
           "name": "Epic Boon",
-          "description": "Gain an Epic Boon feat or another feat (Boon of Irresistible Offense recommended)."
+          "description": "Gain an Epic Boon feat or another feat (Boon of Irresistible Offense recommended).",
+          "metadata": {
+            "name": "Epic Boon",
+            "category": "Class",
+            "description": "",
+            "options": []
+          }
         }
       ],
       "20": [
         {
           "name": "Body and Mind",
-          "description": "Your Dexterity and Wisdom scores each increase by 4, up to a max of 25."
+          "description": "Your Dexterity and Wisdom scores each increase by 4, up to a max of 25.",
+          "metadata": {
+            "name": "Body and Mind",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Body and Mind",
+                "description": "Your Dexterity and Wisdom scores each increase by 4, up to a max of 25.",
+                "levelAcquired": 20,
+                "actionType": 0,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                },
+                "modifiers": [
+                  {
+                    "target": "util.char.ability-score:DEX",
+                    "operation": "util.add",
+                    "value": 4,
+                    "conditions": [
+                      "util.char.find.feature:body-and-mind"
+                    ]
+                  },
+                  {
+                    "target": "util.char.ability-score:WIS",
+                    "operation": "util.add",
+                    "value": 4,
+                    "conditions": [
+                      "util.char.find.feature:body-and-mind"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
