@@ -3943,7 +3943,10 @@
             "usage": {
               "maxUses": 1,
               "usesFormula": "number",
-              "recharge": ""
+              "recharge": "",
+              "conditions": [
+                "option.choices:2"
+              ]
             },
             "options": [
               {
@@ -4620,25 +4623,116 @@
       "1": [
         {
           "name": "Lay on Hands",
-          "description": "You have a healing pool of HP equal to 5 × your Paladin level. As an Action, you can touch a creature and restore HP to it, drawing from your pool. Alternatively, you can expend 5 HP from the pool to cure the target of one disease or neutralize one poison. Regain all spent HP in pool after a Long Rest."
+          "description": "You have a healing pool of HP equal to 5 × your Paladin level. As an Action, you can touch a creature and restore HP to it, drawing from your pool. Alternatively, you can expend 5 HP from the pool to cure the target of one disease or neutralize one poison. Regain all spent HP in pool after a Long Rest.",
+          "metadata": {
+            "name": "Lay on Hands",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Lay on Hands",
+                "description": "You have a healing pool of HP equal to 5 × your Paladin level. As an Action, you can touch a creature and restore HP to it, drawing from your pool. Alternatively, you can expend 5 HP from the pool to cure the target of one disease or neutralize one poison. Regain all spent HP in pool after a Long Rest.",
+                "levelAcquired": 1,
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": "long rest"
+                }
+              }
+            ]
+          }
         },
         {
           "name": "Spellcasting",
-          "description": "You can cast Paladin spells starting at 1st level. You prepare spells from the Paladin list equal to your Cha mod + half your Paladin level. Charisma is your spellcasting ability. (You also gain cantrips or other spellcasting features per revised rules.)"
+          "description": "You can cast Paladin spells starting at 1st level. You prepare spells from the Paladin list equal to your Cha mod + half your Paladin level. Charisma is your spellcasting ability. (You also gain cantrips or other spellcasting features per revised rules.)",
+          "metadata": {
+            "name": "Spellcasting",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Spellcasting",
+                "description": "You can cast Paladin spells starting at 1st level. You prepare spells from the Paladin list equal to your Cha mod + half your Paladin level. Charisma is your spellcasting ability.",
+                "levelAcquired": 1,
+                "actionType": 0
+              }
+            ]
+          }
         },
         {
           "name": "Weapon Mastery",
-          "description": "You unlock the Mastery properties of 2 kinds of weapons of your choice (simple or martial). You can change one choice after each Long Rest."
+          "description": "You unlock the Mastery properties of 2 kinds of weapons of your choice (simple or martial). You can change one choice after each Long Rest.",
+          "metadata": {
+            "name": "Weapon Mastery",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "usesFormula": "number",
+              "recharge": "long rest"
+            },
+            "options": []
+          }
         }
       ],
       "2": [
         {
           "name": "Fighting Style",
-          "description": "You gain a Fighting Style feat of your choice (Defense, Dueling, etc.)."
+          "description": "You gain a Fighting Style feat of your choice (Defense, Dueling, etc.).",
+          "metadata": {
+            "name": "Fighting Style",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "maxUses": 1,
+              "recharge": ""
+            },
+            "options": []
+          }
         },
         {
           "name": "Divine Smite",
-          "description": "When you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to weapon damage. The extra damage is 2d8 for a 1st-level slot, plus 1d8 for each spell level higher than 1st, up to 5d8 total. The damage increases by 1d8 if the target is an Undead or Fiend."
+          "description": "When you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to weapon damage. The extra damage is 2d8 for a 1st-level slot, plus 1d8 for each spell level higher than 1st, up to 5d8 total. The damage increases by 1d8 if the target is an Undead or Fiend.",
+          "metadata": {
+            "name": "Divine Smite",
+            "category": "Class",
+            "description": "",
+            "options": [
+              {
+                "name": "Divine Smite",
+                "description": "When you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to weapon damage. The extra damage is 2d8 for a 1st-level slot, plus 1d8 for each spell level higher than 1st, up to 5d8 total. The damage increases by 1d8 if the target is an Undead or Fiend.",
+                "levelAcquired": 2,
+                "actionType": 1,
+                "modifiers": [
+                  {
+                    "target": "char.melee.attack.damage",
+                    "operation": "util.add",
+                    "value": "util.dice:2d8",
+                    "conditions": [
+                      "util.char.find.feature:divine-smite"
+                    ]
+                  },
+                  {
+                    "target": "char.melee.attack.damage",
+                    "operation": "util.add",
+                    "value": "util.dice:1d8",
+                    "conditions": [
+                      "util.char.find.feature:divine-smite",
+                      "util.char.find.spell-slot-level:>1"
+                    ]
+                  },
+                  {
+                    "target": "char.melee.attack.damage",
+                    "operation": "util.add",
+                    "value": "util.dice:1d8",
+                    "conditions": [
+                      "util.char.find.feature:divine-smite",
+                      "util.char.find.target-type:undead-or-fiend"
+                    ]
+                  }
+                ]  
+              }
+            ]
+          }
         }
       ],
       "3": [
@@ -4646,8 +4740,38 @@
           "name": "Channel Divinity",
           "description": "You gain the ability to Channel Divinity. You have two options: Divine Sense (as an Action, detect celestials, fiends, undead within 60 ft) and your Paladin Subclass’s Channel Divinity option. You can use Channel Divinity once per Short or Long Rest.",
           "metadata": {
-            "uses": 1,
-            "recharge": "short"
+            "name": "Channel Divinity",
+            "category": "Class",
+            "description": "",
+            "usage": {
+              "MaxUses": 1,
+              "recharge": "short or long rest"
+            },
+            "options": [
+              {
+                "name": "Channel Divinity",
+                "description": "You gain the ability to Channel Divinity. You have two options:",
+                "levelAcquired": 3
+              },
+              {
+                "name": "Divine Sense",
+                "description": "As an Action, you can detect celestials, fiends, and undead within 60 ft. You can use this feature a number of times equal to 1 + your Charisma modifier (minimum 1).",
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": "util.char.find.feature:channel-divinity-uses",
+                  "recharge": ""
+                }
+              },
+              {
+                "name": "Channel Divinity: Paladin Subclass",
+                "description": "Use your Paladin subclass’s Channel Divinity option (e.g., Turn the Unholy for Oath of Devotion).",
+                "actionType": 1,
+                "usage": {
+                  "MaxUses": 1,
+                  "recharge": ""
+                }
+              }
+            ]
           }
         },
         {
