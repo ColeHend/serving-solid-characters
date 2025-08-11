@@ -97,7 +97,7 @@ const StatBlock: Component<Props> = (props) => {
     <div class={`${styles.statStyle}`}>
       <div class={`${styles.stat}`}>
         <span>
-          <span class={`${stylin().accent}`}>{getStatMod(props.stat)}</span>
+          <span class={`${stylin().box}`}>{getStatMod(props.stat)}</span>
           <ul>
             <li>{props.stat}</li>
             <li>{props.name}</li>

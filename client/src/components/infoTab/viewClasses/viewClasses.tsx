@@ -8,10 +8,11 @@ import Button from "../../../shared/components/Button/Button";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
-import { Body, homebrewManager, Paginator, SkinnySnowman } from "../../../shared";
+import { homebrewManager, Paginator, SkinnySnowman } from "../../../shared";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import { Body } from "coles-solid-library";
 
 
 const viewClasses: Component = () => {

@@ -5,11 +5,12 @@ import { effect } from "solid-js/web";
 import { Race } from "../../../models/old/race.model";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import Button from "../../../shared/components/Button/Button";
-import { Body, Paginator, SkinnySnowman,homebrewManager } from "../../../shared";
+import { Paginator, SkinnySnowman,homebrewManager } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import {Table} from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
 import RaceView from "../../../shared/components/modals/raceView/raceView";
+import { Body } from "coles-solid-library";
 
 const races: Component = () => {
   // import services ↓

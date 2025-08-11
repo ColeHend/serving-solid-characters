@@ -1,10 +1,11 @@
 import { Component, createEffect, createMemo, createSignal } from "solid-js";
-import { Armor, Body, Carousel, CarouselElement, useGetItems, Weapon } from "../../../shared";
+import { Armor, Carousel, CarouselElement, useGetItems, Weapon } from "../../../shared";
 import WeaponsView from "./parts/Weapons/Weapons";
 import ArmorsView from "./parts/Armors/Armors";
 import AdventEquipView from "./parts/AdventuringEquip/AdventuringEquip";
 import { useSearchParams } from "@solidjs/router";
 import { ItemType } from "../../../shared/customHooks/utility/tools/itemType";
+import { Body } from "coles-solid-library";
 
 
 const ItemsViewTab:Component = () => {

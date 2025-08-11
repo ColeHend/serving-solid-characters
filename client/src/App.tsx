@@ -210,7 +210,7 @@ const App: Component = () => {
           </div>
 
           <Show when={showDataTransfer()}>
-            <DataTransferModal setBackClick={setShowDataTransfer} />
+            <DataTransferModal show={[showDataTransfer,setShowDataTransfer]} />
           </Show>
 
           <ReloadPrompt />

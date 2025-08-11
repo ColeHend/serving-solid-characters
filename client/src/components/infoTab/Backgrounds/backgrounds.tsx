@@ -6,8 +6,9 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
-import { Body, Button, homebrewManager, Paginator, SkinnySnowman } from "../../../shared";
+import {Button, homebrewManager, SkinnySnowman, Paginator } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
+import { Body, } from "coles-solid-library";
 
 const Viewbackgrounds: Component = () => {
   const backgrounds = useGetBackgrounds();

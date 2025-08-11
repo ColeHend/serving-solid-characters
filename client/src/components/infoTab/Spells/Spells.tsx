@@ -13,7 +13,7 @@ import SearchBar from "./searchBar/searchBar";
 import useGetSpells from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
-import { Body, Button } from "../../../shared/components";
+import { Button } from "../../../shared/components";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import Table from "../../../shared/components/Table/table";
 import {Chip} from "../../../shared/components";
@@ -25,6 +25,7 @@ import {
   SecondRow,
 } from "../../../shared/components/Table/innerTable";
 import { Clone, homebrewManager, SkinnySnowman } from "../../../shared";
+import { Body } from "coles-solid-library";
 
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);

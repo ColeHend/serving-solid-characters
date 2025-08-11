@@ -1,20 +1,20 @@
-import { Component, Setter, useContext } from "solid-js";
-import Modal from "../../shared/components/popup/popup.component";
+import { Accessor, Component, Setter, useContext } from "solid-js";
 import styles from "./dataTransferModal.module.scss";
 import { Tab, Tabs } from "../../shared";
 import Importing from "./Import/Importing";
 import Exporting from "./Export/Exporting";
 import { SharedHookContext } from "../rootApp";
+import { Modal } from "coles-solid-library";
 
 interface props {
 
-    setBackClick: Setter<boolean>
+    show: [Accessor<boolean>, Setter<boolean>]
 }
 
 const DataTransferModal:Component<props> = (props) => {
   const sharedContext = useContext(SharedHookContext);
 
-  return <Modal title="File Exchange" setClose={props.setBackClick} width={sharedContext.isMobile()?`99%`:""} height={sharedContext.isMobile()?"95%":""}>
+  return <Modal title="File Exchange" show={props.show} width={sharedContext.isMobile()?`99%`:""} height={sharedContext.isMobile()?"95%":""}>
     <div class={`${styles.Wrapper}`}>
       <Tabs transparent>
         <Tab name="Import">

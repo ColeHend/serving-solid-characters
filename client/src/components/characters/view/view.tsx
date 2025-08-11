@@ -7,7 +7,7 @@ import { effect } from "solid-js/web";
 import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-
+import { Body, Select, Option } from "coles-solid-library";
 
 const CharacterView: Component = () => {
   // eslint-disable-next-line
@@ -26,15 +26,16 @@ const CharacterView: Component = () => {
     setSearchParam({name: currentCharacter().name})
   })
   return (
-    <div class={`${stylin().accent} ${styles.mainBody}`}>
+    <Body class={`${stylin().accent} ${styles.mainBody}`}>
       <h1>Characters View</h1>
       <div>
         <div>
-          <select value={JSON.stringify(currentCharacter())} onChange={(e)=>setCurrentCharacter(()=>JSON.parse(e.target.value))}>
+          <Select value={currentCharacter()} onChange={(e)=>setCurrentCharacter(e)}>
             <For each={characters()}>{(character) => (
-              <option value={JSON.stringify(character)}>{character.name}</option>
+              <Option value={character}>{character.name}</Option>
             )}</For>
-          </select>
+          </Select>
+          
         </div>
         <div>
           <div>
@@ -43,7 +44,7 @@ const CharacterView: Component = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Body>
   )
 };
 

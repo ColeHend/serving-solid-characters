@@ -11,6 +11,7 @@ const defaultStyle: Style = {
   hover: themeStyle.hover || 'default-hover-class',
   popup: themeStyle.popup || 'default-popup-class',
   table: themeStyle.table || 'default-table-class',
+  box: themeStyle.box || 'default-box-class',
 };
 
 export function useStyle(styleType?: string): Style {
@@ -71,6 +72,7 @@ export interface Style {
   hover: CSSModuleClasses[string];
   popup: CSSModuleClasses[string];
   table: CSSModuleClasses[string];
+  box: CSSModuleClasses[string];
 }
 
 export default useStyle;

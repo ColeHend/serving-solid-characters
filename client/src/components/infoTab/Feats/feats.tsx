@@ -13,8 +13,9 @@ import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import Table from "../../../shared/components/Table/table";
 import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
-import { Body, Button, homebrewManager, SkinnySnowman } from "../../../shared";
+import { Button, homebrewManager, SkinnySnowman } from "../../../shared";
 import FeatView from "../../../shared/components/modals/featModal/featView";
+import { Body } from "coles-solid-library";
 
 const featsList: Component = () => {
   const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
