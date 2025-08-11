@@ -1,6 +1,6 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
 import styles from "./view.module.scss";
-import useCharacters, { Character } from "../../../shared/customHooks/dndInfo/useCharacters";
+import useCharacters from "../../../shared/customHooks/dndInfo/useCharacters";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
@@ -8,6 +8,7 @@ import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option } from "coles-solid-library";
+import { Character } from "../../../models/character.model";
 
 const CharacterView: Component = () => {
   // eslint-disable-next-line
