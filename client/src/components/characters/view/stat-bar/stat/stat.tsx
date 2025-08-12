@@ -35,23 +35,23 @@ const StatBlock: Component<Props> = (props) => {
   const getSkills: (name: string) => string[] = (name) => {
     switch (name) {
     case "Strength":
-      return ["athletics"];
+      return ["Athletics"];
     case "Dexterity":
-      return ["acrobatics", "sleightOfHand", "stealth"];
+      return ["Acrobatics", "Sleight Of Hand", "Stealth"];
     case "Constitution":
       return [];
     case "Intelligence":
-      return ["arcana", "history", "investigation", "nature", "religion"];
+      return ["Arcana", "History", "Investigation", "Nature", "Religion"];
     case "Wisdom":
       return [
-        "animalHandling",
-        "insight",
-        "medicine",
-        "perception",
-        "survival",
+        "Animal Handling",
+        "Insight",
+        "Medicine",
+        "Perception",
+        "Survival",
       ];
     case "Charisma":
-      return ["deception", "intimidation", "performance", "persuasion"];
+      return ["Deception", "Intimidation", "Performance", "Persuasion"];
     default:
       return [];
     }
@@ -86,7 +86,7 @@ const StatBlock: Component<Props> = (props) => {
               (skillName) => <li>
                 <span>{props.skills[`${skillName}`].proficient ? props.skills[`${skillName}`].expertise ? <u>✓✓ </u> : <u>✓_ </u> : <u>__</u>}</span>
                 <label for={skillName}> {skillName} </label>
-                <span><u>_{props.skills[`${skillName}`].value}_</u></span>
+                <span><u>_{calcSkillMod(props.skills[`${skillName}`])}_</u></span>
               </li>
             }
           </For>
@@ -97,14 +97,3 @@ const StatBlock: Component<Props> = (props) => {
 };
 
 export default StatBlock;
-// .filter((skill) =>
-//               getSkills(props.name).includes(skill.name)
-//             )}
-//           >
-//             {(skill) => (
-//               <li>
-//                 <span>{skill.proficient ? skill.expertise ? <u>✓✓ </u> : <u>✓_ </u> : <u>__</u>}</span>
-//                 <label for={skill.name}> {skill.name} </label>
-//                 <span><u>_{calcSkillMod(skill)}_</u></span>
-//               </li>
-//             )

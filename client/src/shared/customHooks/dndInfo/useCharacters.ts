@@ -61,109 +61,109 @@ const Gandalf = createExampleCharacter({
   alignment: "neutral",
   proficiencies: {
     skills: {
-      acrobatics: {
+      "Acrobatics": {
         stat: "dex",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      animalHandling: {
+      "Animal Handling": {
         stat: "wis",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      arcana: {
+      "Arcana": {
         stat: "int",
         value: 10,
         proficient: true,
         expertise: true
       },
-      history: {
+      "History": {
         stat: "int",
         value: 10,
         proficient: true,
         expertise: true  
       },
-      athletics: {
+      "Athletics": {
         stat: "str",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      deception: {
+      "Deception": {
         stat: "cha",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      insight: {
+      "Insight": {
         stat: "wis",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      intimidation: {
+      "Intimidation": {
         stat: "cha",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      investigation: {
+      "Investigation": {
         stat: "int",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      medicine: {
+      "Medicine": {
         stat: "wis",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      nature: {
+      "Nature": {
         stat: "int",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      perception: {
+      "Perception": {
         stat: "wis",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      performance: {
+      "Performance": {
         stat: "cha",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      persuasion: {
+      "Persuasion": {
         stat: "cha",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      religion: {
+      "Religion": {
         stat: "int",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      sleightOfHand: {
+      "Sleight Of Hand": {
         stat: "dex",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      stealth: {
+      "Stealth": {
         stat: "dex",
         value: 0,
         proficient: false,
         expertise: false,
       },
-      survival: {
+      "Survival": {
         stat: "wis",
         value: 0,
         proficient: false,
