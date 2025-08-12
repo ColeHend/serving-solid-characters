@@ -61,6 +61,18 @@ const Gandalf = createExampleCharacter({
   alignment: "neutral",
   proficiencies: {
     skills: {
+      acrobatics: {
+        stat: "dex",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      animalHandling: {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
       arcana: {
         stat: "int",
         value: 10,
@@ -72,7 +84,91 @@ const Gandalf = createExampleCharacter({
         value: 10,
         proficient: true,
         expertise: true  
-      }
+      },
+      athletics: {
+        stat: "str",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      deception: {
+        stat: "cha",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      insight: {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      intimidation: {
+        stat: "cha",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      investigation: {
+        stat: "int",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      medicine: {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      nature: {
+        stat: "int",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      perception: {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      performance: {
+        stat: "cha",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      persuasion: {
+        stat: "cha",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      religion: {
+        stat: "int",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      sleightOfHand: {
+        stat: "dex",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      stealth: {
+        stat: "dex",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      survival: {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
     },
     other: {}
   },
