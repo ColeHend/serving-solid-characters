@@ -172,7 +172,11 @@ const Gandalf = createExampleCharacter({
     },
     other: {}
   },
-  languages: [],
+  languages: [
+    "Common",
+    "elvish",
+    "draconic"
+  ],
   health: {
     max: 1,
     current: 1,

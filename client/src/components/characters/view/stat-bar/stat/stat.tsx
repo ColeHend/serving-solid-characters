@@ -18,20 +18,6 @@ const StatBlock: Component<Props> = (props) => {
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
-  const [skills, setSkills] = createSignal<Record<string, CharacterSkillProficiency>>({});
-  
-  // effect(()=>{
-  //   setSkills(allSkills.map((skill) => {
-  //     if () {
-        
-  //     }
-  //     if (props.expertise?.includes(skill.name)) {
-  //       skill = { ...skill, proficient: true, expertise: true };
-  //     }
-  //     return skill;
-  //   }));
-  // })
-
   const getSkills: (name: string) => string[] = (name) => {
     switch (name) {
     case "Strength":
