@@ -1,0 +1,34 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_CONFIGURATION: Release
+    container_name: serving-solid-characters
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      # Override connection string for container environment here if desired
+      # ConnectionStrings__work: "Server=sqlserver,1433;Database=TestDb;User=sa;Password=Passw0rd;TrustServerCertificate=True;Encrypt=False"
+  # DB_CONNECTION_NAME: work
+    depends_on: []
+    # volumes:
+    #   - ./nethost.pfx:/app/nethost.pfx:ro
+
+  # Example SQL Server container (uncomment to enable)
+  # sqlserver:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   container_name: mssql
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     MSSQL_SA_PASSWORD: "Passw0rd!" # change me
+  #   ports:
+  #     - "1433:1433"
+  #   volumes:
+  #     - mssqldata:/var/opt/mssql
+
+# volumes:
+#   mssqldata:

@@ -59,9 +59,21 @@ jobs:
       #   working-directory: ./client
       #   run: npm run test
 
-      # Build Docker Image
-      #- name: Build Docker Image
-      #  run: docker build -t your-docker-image:${{ github.sha }} .
+      # Validate Docker image builds (no push)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (test only)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: serving-solid-characters:test-${{ github.sha }}
+          build-args: |
+            BUILD_CONFIGURATION=Release
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # Optional: Push Docker Image to Registry
       #- name: Login to Docker Registry

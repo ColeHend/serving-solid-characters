@@ -15,6 +15,7 @@ using sharpAngleTemplate.models.repositories;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
+var runningInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
 //------------- Add services to the container.-------------
 builder.Services.AddControllers();
@@ -28,8 +29,8 @@ builder.Services.AddTransient<ITokenRepository, TokenRepository>();
 builder.Services.AddTransient<ISrdInfoRepository, SrdInfoRepository>();
 
 // ----- Add Database Stuff ----
-var location = "localDefault";
-// var location = "work";
+// Select which named connection string to use (default localDefault). Override in container with env var DB_CONNECTION_NAME=work
+var location = Environment.GetEnvironmentVariable("DB_CONNECTION_NAME") ?? "localDefault"; // or "work"
 var connString = builder.Configuration.GetConnectionString(location);
 builder.Services.AddDbContext<SharpAngleContext>(options =>
 {
@@ -92,16 +93,27 @@ builder.Services.AddSwaggerGen(c =>
 // how to generate a https certificate run these two commands with your info.
 // mkcert <spaced apart addresses>
 // openssl pkcs12 -export -out <mydomains>.pfx -inkey <example.com+5-key>.pem -in <example.com+5>.pem 
+// Kestrel Configuration
+// For local dev we keep explicit HTTPS bindings.
+// In container we expose a simple HTTP port (8080) and rely on reverse proxy / platform TLS termination.
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
-    options.ListenLocalhost(5000, listenOptions =>
+    if (runningInContainer)
     {
-        listenOptions.UseHttps("nethost.pfx", "password");
-    });
-    options.Listen(System.Net.IPAddress.Parse("192.168.1.100"), 5000, listenOptions =>
+        options.ListenAnyIP(8080); // HTTP only inside container
+    }
+    else
     {
-        listenOptions.UseHttps("nethost.pfx", "password");
-    });
+        options.ListenLocalhost(5000, listenOptions =>
+        {
+            listenOptions.UseHttps("nethost.pfx", "password");
+        });
+        // If you need LAN access on a fixed IP locally keep this binding
+        options.Listen(System.Net.IPAddress.Parse("192.168.1.100"), 5000, listenOptions =>
+        {
+            listenOptions.UseHttps("nethost.pfx", "password");
+        });
+    }
 });
 
 var app = builder.Build();
@@ -118,8 +130,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// 3. Redirect HTTP to HTTPS
-app.UseHttpsRedirection();
+// 3. Redirect HTTP to HTTPS (skip inside container when only HTTP is configured)
+if (!runningInContainer)
+{
+    app.UseHttpsRedirection();
+}
 
 // 4. Static file serving
 //    - first: any custom physical files
