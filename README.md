@@ -76,6 +76,31 @@ For Development run the following command
 ```
 dotnet run
 ```
+
+### Docker
+
+Build and run the container (multi-stage: builds SolidJS client + .NET API):
+
+```
+docker build -t serving-solid-characters .
+docker run -p 8080:8080 serving-solid-characters
+```
+
+Then browse: http://localhost:8080
+
+Using docker compose:
+
+```
+docker compose up --build
+```
+
+If you want a SQL Server container as well, uncomment the `sqlserver` service and related volume inside `docker-compose.yml`, then set an environment variable (or compose override) for the connection string, e.g.:
+
+```
+ConnectionStrings__work=Server=sqlserver,1433;Database=TestDb;User=sa;Password=Passw0rd!;TrustServerCertificate=True;Encrypt=False
+```
+
+Inside containers we serve plain HTTP on port 8080; terminate TLS at your ingress / reverse proxy. Local dev outside Docker still uses HTTPS with your `nethost.pfx`.
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 - [SQL, Dexie]() - Database
