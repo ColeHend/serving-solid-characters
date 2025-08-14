@@ -53,6 +53,10 @@ const Gandalf = createExampleCharacter({
   spells: [],
   race: {
     species: "elf",
+    subrace: "woodElf",
+    age: "200",
+    size: "Medium",
+    speed: "30ft",
     features: []
   },
   className: "Wizard",
@@ -195,8 +199,9 @@ const Gandalf = createExampleCharacter({
     equipped: [],
     attuned: []
   }
-  
-})
+});
+
+
 
 const [characters, setCharacters] =
   createSignal<Character[]>(exampleCharacters);

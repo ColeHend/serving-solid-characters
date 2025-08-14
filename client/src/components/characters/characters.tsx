@@ -1,9 +1,10 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
 import styles from "./characters.module.scss";
-import useCharacters, { Character } from "../../shared/customHooks/dndInfo/useCharacters";
+import useCharacters from "../../shared/customHooks/dndInfo/useCharacters";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
 import { Body, Button, Menu, MenuItem } from "coles-solid-library";
+import { Character } from "../../models/character.model";
 
 
 const Characters: Component = () => {
@@ -35,10 +36,10 @@ const Characters: Component = () => {
             <For each={characters()}>{(character: Character) => (
               <tr>
                 <td>{character.name}</td>
-                <td>{character.race}</td>
+                <td>{character.race.species}</td>
                 <td>{character.background}</td>
                 <td>{character.level}</td>
-                <td>{character.class}</td>
+                <td>{character.className}</td>
                 <td>{character.subclass}</td>
                 <td>
                   <Button ref={setAnchorEle} onClick={()=>setShowMenu((old)=>!old)}>

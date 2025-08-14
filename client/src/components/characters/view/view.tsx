@@ -7,7 +7,7 @@ import { effect } from "solid-js/web";
 import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-import { Body, Select, Option } from "coles-solid-library";
+import { Body, Select, Option, Input, FormField } from "coles-solid-library";
 import { Character } from "../../../models/character.model";
 
 const CharacterView: Component = () => {
@@ -30,13 +30,13 @@ const CharacterView: Component = () => {
     <Body class={`${stylin().accent} ${styles.mainBody}`}>
       <h1>Characters View</h1>
       <div>
-        <div>
+        <div class={`${stylin().box}`}>
           <Select value={currentCharacter()} onChange={(e)=>setCurrentCharacter(e)}>
             <For each={characters()}>{(character) => (
               <Option value={character}>{character.name}</Option>
             )}</For>
           </Select>
-          
+
         </div>
         <div>
           <div>
