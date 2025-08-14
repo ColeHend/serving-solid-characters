@@ -3,10 +3,12 @@ set -euo pipefail
 
 # Variables (with defaults)
 REPO_OWNER=${REPO_OWNER:-colehend}
+# force lowercase to avoid GHCR case-sensitivity issues
+REPO_OWNER=$(echo "$REPO_OWNER" | tr '[:upper:]' '[:lower:]')
 IMAGE_TAG=${IMAGE_TAG:-latest}
 APP_DIR=/opt/serving-solid-characters
 COMPOSE_FILE=$APP_DIR/docker-compose.yml
-IMAGE="ghcr.io/colehend/serving-solid-characters:${IMAGE_TAG}"
+IMAGE="ghcr.io/${REPO_OWNER}/serving-solid-characters:${IMAGE_TAG}"
 
 echo "Pulling image $IMAGE"
 mkdir -p "$APP_DIR"
