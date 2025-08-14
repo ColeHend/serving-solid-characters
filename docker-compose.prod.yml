@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  web:
+    image: ghcr.io/${REPO_OWNER:-colehend}/serving-solid-characters:${IMAGE_TAG:-latest}
+    container_name: serving-solid-characters
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      DB_CONNECTION_NAME: work
+      # ConnectionStrings__work: Server=sqlserver,1433;Database=TestDb;User=sa;Password=Passw0rd!;TrustServerCertificate=True;Encrypt=False
+    ports:
+      - "8080:8080"
+    depends_on: []
+
+  # sqlserver:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   container_name: mssql
+  #   restart: unless-stopped
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     MSSQL_SA_PASSWORD: "Passw0rd!" # change me
+  #   volumes:
+  #     - mssqldata:/var/opt/mssql
+  #   ports:
+  #     - "1433:1433"
+
+# volumes:
+#   mssqldata:
