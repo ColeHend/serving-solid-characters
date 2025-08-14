@@ -75,7 +75,7 @@ jobs:
     if: github.ref == 'refs/heads/main'  # only run on push to main
     needs: build_and_test               # ensure CI job passes (optional)
     env:
-      IMAGE_NAME: ghcr.io/colehend/solidjs-app:latest
+      IMAGE_NAME: ghcr.io/colehend/serving-solid-characters:latest
     steps:
       - uses: actions/checkout@v3
 
@@ -100,6 +100,6 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
             docker pull ${{ env.IMAGE_NAME }} && \
-            docker stop solidjs-app || true && \
-            docker run -d --name solidjs-app --restart unless-stopped -p 3000:3000 ${{ env.IMAGE_NAME }} \
+            docker stop serving-solid-characters || true && \
+            docker run -d --name serving-solid-characters --restart unless-stopped -p 3000:3000 ${{ env.IMAGE_NAME }} \
           "
