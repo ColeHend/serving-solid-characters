@@ -6,7 +6,7 @@ REPO_OWNER=${REPO_OWNER:-colehend}
 IMAGE_TAG=${IMAGE_TAG:-latest}
 APP_DIR=/opt/serving-solid-characters
 COMPOSE_FILE=$APP_DIR/docker-compose.yml
-IMAGE="ghcr.io/${REPO_OWNER}/serving-solid-characters:${IMAGE_TAG}"
+IMAGE="ghcr.io/colehend/serving-solid-characters:${IMAGE_TAG}"
 
 echo "Pulling image $IMAGE"
 mkdir -p "$APP_DIR"
