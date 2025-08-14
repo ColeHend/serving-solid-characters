@@ -1,0 +1,31 @@
+# .NET
+bin/
+obj/
+
+# Node / client
+client/node_modules
+client/dist
+
+# Git
+.git
+.gitignore
+
+# User secrets / certs
+*.pfx
+*.pem
+
+# IDE
+.vscode
+*.user
+*.swp
+
+# Logs
+logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Archives
+*.zip

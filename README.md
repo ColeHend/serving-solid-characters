@@ -76,6 +76,56 @@ For Development run the following command
 ```
 dotnet run
 ```
+
+### Docker
+
+Build and run the container (multi-stage: builds SolidJS client + .NET API):
+
+```
+docker build -t serving-solid-characters .
+docker run -p 8080:8080 serving-solid-characters
+```
+
+Then browse: http://localhost:8080
+
+Using docker compose:
+
+```
+docker compose up --build
+```
+
+If you want a SQL Server container as well, uncomment the `sqlserver` service and related volume inside `docker-compose.yml`, then set an environment variable (or compose override) for the connection string, e.g.:
+
+```
+ConnectionStrings__work=Server=sqlserver,1433;Database=TestDb;User=sa;Password=Passw0rd!;TrustServerCertificate=True;Encrypt=False
+```
+
+Inside containers we serve plain HTTP on port 8080; terminate TLS at your ingress / reverse proxy. Local dev outside Docker still uses HTTPS with your `nethost.pfx`.
+
+### CI/CD Deployment (GitHub Actions -> Linode)
+
+Workflow builds and pushes an image to GHCR on pushes to `main`, then deploys to your Linode via SSH.
+
+Required GitHub secrets:
+| Secret | Description |
+|--------|-------------|
+| LINODE_SSH_KEY | Private key with access to target server |
+| LINODE_HOST | Public IP / hostname of server |
+| LINODE_USER | SSH user (must have docker perms) |
+| (optional) GHCR_TOKEN | If server needs explicit login (usually not needed; PAT with read:packages) |
+
+Server one-time prep (run manually on Linode):
+```
+sudo mkdir -p /opt/serving-solid-characters
+sudo usermod -aG docker $USER # re-login
+```
+
+Deployment script path on server: `/opt/serving-solid-characters/deploy.sh`
+
+To manually redeploy with a specific image tag:
+```
+ssh $LINODE_USER@$LINODE_HOST 'IMAGE_TAG=<sha> /opt/serving-solid-characters/deploy.sh'
+```
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 - [SQL, Dexie]() - Database
