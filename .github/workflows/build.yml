@@ -8,8 +8,7 @@ on:
 
 permissions:
   contents: read
-  packages: write  # needed for GHCR push
-  id-token: write
+  packages: write
 
 jobs:
   build:
