@@ -76,6 +76,7 @@ For Development run the following command
 ```
 dotnet run
 ```
+
 ### Docker
  
 Build and run the container (multi-stage: builds SolidJS client + .NET API):
