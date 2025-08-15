@@ -132,16 +132,21 @@ builder.WebHost.ConfigureKestrel((context, options) =>
     }
     else
     {
-        // Local dev HTTPS endpoints
-        options.ListenLocalhost(5000, listenOptions =>
+        // Primary HTTPS listener for local development (shared mkcert cert)
+        var devCertPath = Path.Combine(Directory.GetCurrentDirectory(), "ssl", "dev-cert.pfx");
+        if (File.Exists(devCertPath))
         {
-            listenOptions.UseHttps("nethost.pfx", "password");
-        });
-        // Optionally keep LAN binding while developing on network
-        options.Listen(System.Net.IPAddress.Parse("192.168.1.100"), 5000, listenOptions =>
+            options.ListenAnyIP(5000, listenOptions =>
+            {
+                listenOptions.UseHttps(devCertPath, ""); // empty password
+            });
+        }
+        else
         {
-            listenOptions.UseHttps("nethost.pfx", "password");
-        });
+            // Fallback: plain HTTP if certificate missing (logs a warning)
+            Console.WriteLine($"[warn] dev https certificate not found at {devCertPath} – starting HTTP on :5000");
+            options.ListenAnyIP(5000);
+        }
     }
 });
 
@@ -210,14 +215,26 @@ app.UseAuthorization();
 app.MapControllers();
 
 // 8. SPA fallback / proxy
-// Development: proxy to Vite/Solid dev server
+// Two dev modes:
+//   a) USE_VITE_PROXY=true -> proxy to running Vite dev server (:3000)
+//   b) (default)           -> serve pre-built static assets from client/dist on :5000
 if (app.Environment.IsDevelopment())
 {
-    app.UseSpa(spa =>
+    var useViteProxy = Environment.GetEnvironmentVariable("USE_VITE_PROXY") == "true";
+    if (useViteProxy)
     {
-        spa.Options.SourcePath = "client";
-        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
-    });
+        Console.WriteLine("[spa] Using Vite dev server proxy (https://localhost:3000)");
+        app.UseSpa(spa =>
+        {
+            spa.Options.SourcePath = "client";
+            spa.UseProxyToSpaDevelopmentServer("https://localhost:3000");
+        });
+    }
+    else
+    {
+        Console.WriteLine("[spa] Serving built static assets from client/dist (set USE_VITE_PROXY=true to enable live dev proxy)");
+        app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
+    }
 }
 else
 {

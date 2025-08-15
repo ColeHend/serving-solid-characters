@@ -1,4 +1,4 @@
-import { type Component, For, createResource, JSX, useContext, createMemo, createSignal, Show, Switch, Match, createEffect, ErrorBoundary } from 'solid-js';
+import { type Component, For, createResource, JSX, useContext, createMemo, createSignal, Show, Switch, Match, createEffect, ErrorBoundary, onMount } from 'solid-js';
 import { TextArea, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, Markdown, Clone } from './shared';
 import styles from './App.module.scss';
 import ReloadPrompt from './ReloadPrompt';
@@ -45,31 +45,39 @@ const App: Component = () => {
     console.error("Failed to initialize user settings:", error);
   }
 
-  // Safely load DnD data
-  try {
-    const dnClassesAccessor = useDnDClasses();
-    createEffect(() => {
-      try {
-        const classes = dnClassesAccessor();
-        console.log(`Loaded ${classes.length} DnD classes`);
-        setDndClasses(classes);
-        setIsTableRowOpen(Array(classes.length).fill(false));
-      } catch (error) {
-        console.error("Failed to process DnD classes:", error);
-      }
-    });
-    
-    // Load other data services safely
-    try { useDnDSpells(); } catch (e) { console.error("Failed to load spells:", e); }
-    try { useDnDFeats(); } catch (e) { console.error("Failed to load feats:", e); }
-    try { useDnDRaces(); } catch (e) { console.error("Failed to load races:", e); }
-    try { useDnDItems(); } catch (e) { console.error("Failed to load items:", e); }
-    try { useDnDBackgrounds(); } catch (e) { console.error("Failed to load backgrounds:", e); }
-  } catch (error) {
-    console.error("Failed to initialize DnD data hooks:", error);
-    setHasError(true);
-    setErrorMessage("Failed to load game data. Please refresh the page.");
-  }
+  // ---- DnD Data (initialize exactly once) ----
+  let dataInitDone = false; // guards multiple executions (e.g. HMR / hot reload)
+  onMount(() => {
+    if (dataInitDone) return;
+    try {
+      const dnClassesAccessor = useDnDClasses();
+      createEffect(() => {
+        try {
+          const classes = dnClassesAccessor();
+          if (classes && classes.length > 0) {
+            console.log(`[dnd-init] Loaded ${classes.length} classes`);
+            setDndClasses(classes);
+            setIsTableRowOpen(Array(classes.length).fill(false));
+          }
+        } catch (err) {
+          console.error("Failed processing DnD classes:", err);
+        }
+      });
+
+      // Fire & forget other datasets; each hook internally de-dupes
+      try { useDnDSpells(); } catch (e) { console.error("Spells load failed", e); }
+      try { useDnDFeats(); } catch (e) { console.error("Feats load failed", e); }
+      try { useDnDRaces(); } catch (e) { console.error("Races load failed", e); }
+      try { useDnDItems(); } catch (e) { console.error("Items load failed", e); }
+      try { useDnDBackgrounds(); } catch (e) { console.error("Backgrounds load failed", e); }
+    } catch (err) {
+      console.error("Failed initializing DnD data hooks:", err);
+      setHasError(true);
+      setErrorMessage("Failed to load game data. Please refresh the page.");
+    } finally {
+      dataInitDone = true;
+    }
+  });
 
   // Mark loading as complete after a short delay to ensure UI renders
   setTimeout(() => {
