@@ -46,6 +46,8 @@ What things you need to install.
 
 - .net SDK & Runtime installed
 - a SQL Server connection string that works
+ - Node.js (LTS) & npm
+ - mkcert (for local HTTPS across API + Vite dev server)
 
 ### Installing
 
@@ -56,6 +58,51 @@ make sure you have a active sqlDB running. and the connection string is correct.
 ```
 "localDefault":"YourConnectionString"
 ```
+
+### Unified Local HTTPS (.NET API + Vite + PWA)
+
+1. Install mkcert (see project repo instructions) and trust the local CA.
+2. Generate certificates (one time or when domains change):
+  ```bash
+  bash scripts/gen-dev-cert.sh
+  ```
+  This creates `ssl/dev-cert.pem|dev-key.pem|dev-cert.pfx` at the repository root (gitignored).
+3. Start the backend API (Kestrel will use the PFX automatically if present):
+  ```bash
+  dotnet run
+  ```
+  Backend listens on https://localhost:5000 (or HTTP fallback if cert missing).
+4. In another terminal start the client dev server (auto-detects HTTPS certs and proxies /api):
+  ```bash
+  cd client
+  npm install
+  npm run dev
+  ```
+5. Open https://localhost:3000 (PWA secure origin). All `/api/*` calls are proxied to the .NET backend with the self‑signed certificate accepted (secure: false in Vite proxy).
+
+If you need a friendly domain add to `/etc/hosts`:
+```
+127.0.0.1 ssc.local
+```
+Re-run the cert script (adds ssc.local into SAN) and access via https://ssc.local:3000.
+
+#### Mobile / LAN Testing
+Run dev server with `--host` (already default). Add your machine IP to the cert by regenerating with that IP or hostname:
+```
+DOMAINS="localhost 127.0.0.1 ::1 ssc.local 192.168.1.42"
+```
+Clear old PWA install if you change scheme/host to avoid service worker scope issues.
+
+#### Troubleshooting
+| Issue | Fix |
+|-------|-----|
+| Browser "Not Secure" | Remove old certs, re-run script, restart browser |
+| Mixed content errors | Ensure all API URLs are relative `/api/...` not absolute http:// links |
+| SW not updating | DevTools > Application > Unregister, Clear site data, hard reload |
+| Proxy not hitting backend | Confirm backend running on 5000, check console log `[vite] proxy /api -> ...` |
+
+#### Production Contrast
+Docker / container image only exposes HTTP :8080. Terminate TLS at reverse proxy (nginx, Caddy, Cloudflare). The self-signed certs here are strictly for local dev.
 
 ## 🔧 Running the tests <a name = "tests"></a>
 

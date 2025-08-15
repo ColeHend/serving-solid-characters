@@ -1,11 +1,12 @@
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
-import { catchError, of, take, tap, concatMap } from "rxjs";
+import { catchError, of, take, tap, concatMap, shareReplay, Observable } from "rxjs";
 import HttpClient$ from "../../utility/tools/httpClientObs";
 import { Background } from "../../../../models/old/background.model";
 import LocalSrdDB from "../../utility/localDB/old/srdDBFile";
 
 const [background, setBackgrounds] = createSignal<Background[]>([]);
+let backgroundsFetch$: Observable<Background[] | null> | undefined;
 
 export function useDnDBackgrounds(): Accessor<Background[]> {
   const LocalBackgrounds = HttpClient$.toObservable(LocalSrdDB.backgrounds.toArray());
@@ -22,34 +23,36 @@ export function useDnDBackgrounds(): Accessor<Background[]> {
       }),
       concatMap((backgrounds) => {
         if (backgrounds.length === 0) {
-          console.log("No local backgrounds found, fetching from API...");
-          return HttpClient$.get<Background[]>("/api/DnDInfo/Backgrounds", {}).pipe(
-            take(1),
-            tap(response => console.log("API Response:", response)),
-            catchError((err) => {
-              console.error("Error fetching backgrounds:", err);
-              console.error("Status:", err.status);
-              console.error("Message:", err.message);
-              console.error("URL:", "/api/DnDInfo/Backgrounds");
-              
-              // Try GET request as fallback
-              console.log("Attempting fallback GET request...");
-              return HttpClient$.get<Background[]>("/api/DnDInfo/Backgrounds").pipe(
-                take(1),
-                tap(response => console.log("GET Fallback Response:", response)),
-                catchError(getErr => {
-                  console.error("GET fallback also failed:", getErr);
-                  return of(null);
-                })
-              );
-            }),
-            tap((backgrounds) => {
-              if (backgrounds) {
-                console.log(`Storing ${backgrounds.length} backgrounds in local DB`);
-                LocalSrdDB.backgrounds.bulkAdd(backgrounds);
-              }
-            }),
-          );
+          if (!backgroundsFetch$) {
+            console.log("No local backgrounds found, creating shared fetch observable...");
+            backgroundsFetch$ = HttpClient$.get<Background[]>("/api/DnDInfo/Backgrounds", {}).pipe(
+              take(1),
+              tap(response => console.log("API Response:", response)),
+              catchError((err) => {
+                console.error("Error fetching backgrounds:", err);
+                console.error("Status:", err.status);
+                console.error("Message:", err.message);
+                console.error("URL:", "/api/DnDInfo/Backgrounds");
+                // Single fallback attempt
+                return HttpClient$.get<Background[]>("/api/DnDInfo/Backgrounds").pipe(
+                  take(1),
+                  tap(response => console.log("Fallback Response:", response)),
+                  catchError(getErr => {
+                    console.error("Fallback also failed:", getErr);
+                    return of(null);
+                  })
+                );
+              }),
+              tap((b) => {
+                if (b) {
+                  console.log(`Storing ${b.length} backgrounds in local DB`);
+                  LocalSrdDB.backgrounds.bulkAdd(b);
+                }
+              }),
+              shareReplay(1)
+            );
+          }
+          return backgroundsFetch$;
         } else {
           return of(backgrounds);
         }

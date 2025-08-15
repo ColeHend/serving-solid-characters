@@ -2,43 +2,43 @@ import { Stats } from "../shared";
 import { FeatureDetail } from "./data";
 
 export class Character {
-    public name: string = '';
-	public get level() {
-		return this.levels.length;
-	};
-	public levels: CharacterLevel[] = [];
-	public spells: CharacterSpell[] = [];
-	public race: CharacterRace = {
-		species: "",
-		features: []
-	}
-	public className: string = '';
-	public subclass: string = '';
-	public background: string = '';
-	public alignment: string = '';
-	public proficiencies: CharacterProficiency = {
-		skills: {},
-		other: {}
-	};
-	public languages: string[] = [];
-	public health: CharacterHealth = {
-		max: 0,
-		current: 0,
-		temp: 0
-	};
-	public stats: Stats = {
-		str: 0,
-		dex: 0,
-		con: 0,
-		int: 0,
-		wis: 0,
-		cha: 0
-	}
-	public items: CharacterGear = {
-		inventory: [],
-		equipped: [],
-		attuned: []
-	}
+  public name: string = '';
+  public get level() {
+    return this.levels.length;
+  };
+  public levels: CharacterLevel[] = [];
+  public spells: CharacterSpell[] = [];
+  public race: CharacterRace = {
+    species: "",
+    features: []
+  }
+  public className: string = '';
+  public subclass: string = '';
+  public background: string = '';
+  public alignment: string = '';
+  public proficiencies: CharacterProficiency = {
+    skills: {},
+    other: {}
+  };
+  public languages: string[] = [];
+  public health: CharacterHealth = {
+    max: 0,
+    current: 0,
+    temp: 0
+  };
+  public stats: Stats = {
+    str: 0,
+    dex: 0,
+    con: 0,
+    int: 0,
+    wis: 0,
+    cha: 0
+  }
+  public items: CharacterGear = {
+    inventory: [],
+    equipped: [],
+    attuned: []
+  }
 }
 export interface CharacterProficiency {
 	skills: Record<string, CharacterSkillProficiency>
