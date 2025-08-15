@@ -33,7 +33,7 @@ const Navbar: Component<Props> = (props) => {
       <div  class={`${other.style ?? ''}`}>
         <span>
           <A href="/">
-            MySite
+            Arcane Dictionary
           </A>
         </span>
 
