@@ -1,8 +1,8 @@
 version: '3.9'
 services:
   web:
-  # REPO_OWNER expected already lowercase; enforce by transforming before passing if needed
-  image: ghcr.io/${REPO_OWNER:-colehend}/serving-solid-characters:${IMAGE_TAG:-latest}
+    # REPO_OWNER expected already lowercase; enforce by transforming before passing if needed
+    image: ghcr.io/${REPO_OWNER:-colehend}/serving-solid-characters:${IMAGE_TAG:-latest}
     container_name: serving-solid-characters
     restart: unless-stopped
     environment:

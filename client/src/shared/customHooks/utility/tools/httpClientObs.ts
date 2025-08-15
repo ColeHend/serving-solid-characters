@@ -8,7 +8,7 @@ interface HttpConfig {
 }
 
 class HttpClientObs {
-  private server = 'https://192.168.1.100:5000';
+  private server = window.location.origin;
 
   //–– Signals for auth headers and raw token
   private loggedInHeaders: Accessor<Record<string, string>>;
