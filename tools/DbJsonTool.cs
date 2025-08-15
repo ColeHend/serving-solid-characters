@@ -13,11 +13,37 @@ namespace sharpAngleTemplate.tools
     
     public class DbJsonService : IDbJsonService
     {
-        private DBCollection DatabaseCollection;
-        private string path = GetExecutingDirectory().ToString();
-        public DbJsonService()
+        private DBCollection DatabaseCollection = new DBCollection();
+        private readonly string path;
+        public string JsonRoot => path;
+
+        public DbJsonService(Microsoft.Extensions.Logging.ILogger<DbJsonService>? logger = null)
         {
-            DatabaseCollection = GetDB();
+            try
+            {
+                // Allow override via environment variable DB_JSON_ROOT
+                var baseAttempt = Environment.GetEnvironmentVariable("DB_JSON_ROOT")
+                                   ?? SafeBaseDirectory();
+                var candidate = baseAttempt;
+                if (!Directory.Exists(Path.Combine(candidate, "data")))
+                {
+                    // Try parent if not found
+                    var parent = Directory.GetParent(candidate)?.FullName;
+                    if (parent != null && Directory.Exists(Path.Combine(parent, "data")))
+                    {
+                        candidate = parent;
+                    }
+                }
+                path = candidate;
+                logger?.LogInformation("DbJsonService initialized. BasePath={Base} DataExists={Exists}", path, Directory.Exists(Path.Combine(path, "data")));
+                DatabaseCollection = GetDB();
+            }
+            catch (Exception ex)
+            {
+                path = AppContext.BaseDirectory;
+                logger?.LogError(ex, "DbJsonService failed during initialization. Falling back to {Path}", path);
+                // Keep DatabaseCollection empty rather than throw to avoid crashing every request
+            }
         }
         // ------- DatabaseCollection && DB JSON Interactions ---------
         /// <summary>
@@ -66,10 +92,30 @@ namespace sharpAngleTemplate.tools
                 return item;
             }
         }
-        public static DirectoryInfo GetExecutingDirectory()
+        private static string SafeBaseDirectory()
         {
-            var location = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase);
-            return new FileInfo(location.AbsolutePath).Directory.Parent.Parent.Parent;
+            try
+            {
+                // AppContext.BaseDirectory is stable for published apps
+                var baseDir = AppContext.BaseDirectory;
+                if (!string.IsNullOrWhiteSpace(baseDir)) return baseDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+            catch { }
+            try
+            {
+                var current = Directory.GetCurrentDirectory();
+                if (!string.IsNullOrWhiteSpace(current)) return current;
+            }
+            catch { }
+            // Last resort: assembly location
+            try
+            {
+                var asm = Assembly.GetExecutingAssembly();
+                var location = asm.Location;
+                if (!string.IsNullOrWhiteSpace(location)) return Path.GetDirectoryName(location) ?? ".";
+            }
+            catch { }
+            return ".";
         }
         public void SyncDatabaseJSON(){
             SaveJson("db",DatabaseCollection);
