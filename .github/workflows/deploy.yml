@@ -6,13 +6,20 @@ on:
     branches: [ "*" ]
   push:
     branches: [ "main" ]
+permissions:
+  contents: read
+  packages: read 
 
 jobs:
   # Job 1: CI - Build and test on PRs
   build_and_test:
     name: Build and Test (PR)
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'  # only run this job for PR events
+    if: github.event_name == 'pull_request'  
+    strategy:
+      matrix:
+        dotnet-version: ['8.0.x']
+        node-version: ['20.x']
     steps:
       - uses: actions/checkout@v4
 
