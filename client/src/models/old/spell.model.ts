@@ -1,20 +1,20 @@
 export interface Spell {
   name:             string;
-  desc:             string;
+  description:             string;
   duration:         string;
-  concentration:    boolean;
+  is_concentration:    boolean;
+  components: string;
   level:            string;
   range:            string;
-  ritual:           boolean;
+  is_ritual:           boolean;
   school:           string;
-  castingTime:      string;
-  damageType:       string;
+  casting_time:      string;
+  damage_type:       string;
   page:             string;
   isMaterial:       boolean;
   isSomatic:        boolean;
   isVerbal:         boolean;
   materials_Needed?: string;
-  higherLevel:      string;
   classes:          string[];
   subClasses:       string[];
 }

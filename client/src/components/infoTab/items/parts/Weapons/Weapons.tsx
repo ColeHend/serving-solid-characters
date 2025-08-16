@@ -5,6 +5,7 @@ import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { useNavigate } from "@solidjs/router";
 import { ItemType } from "../../../../../shared/customHooks/utility/tools/itemType";
 import { Table, Cell, Column, Header, Row, Button, Icon, Chip  } from "coles-solid-library"
+import { WeaponMenu } from "./weaponMenu/weaponMenu";
 
 interface props {
     weapons:Accessor<Weapon[]>;
@@ -17,27 +18,9 @@ const WeaponsView:Component<props> = (props) => {
   const [results,setResults] = createSignal<Weapon[]>([]);
 
   const displayResults = createMemo(()=>results().length > 0 ? results():SrdWeapons())
-    
-  const navigate = useNavigate();
 
-  const checkForHomebrew = (weapon:Weapon): boolean => {
-    const itemsHomebrew = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[1]);
-
-    itemsHomebrew.forEach((customWeapon) => {
-      if (customWeapon.name.toLowerCase() === weapon.name.toLowerCase()) {
-        return true 
-      }
-    })
-
-    return false
-  }
-
-  const menuItems = (weapon:Weapon) => ([
-    {
-      name: checkForHomebrew(weapon) ? "Edit" : "Clone & Edit",
-      action: ()=> navigate(`/homebrew/create/items?itemType=${weapon.equipmentCategory}&name=${weapon.name}`),
-    }
-  ])
+  
+ 
 
   createEffect(()=>console.log("weapons",props.weapons()));
 
@@ -70,12 +53,7 @@ const WeaponsView:Component<props> = (props) => {
         <Column name="options">
           <Header><></></Header>
           <Cell<Weapon>>
-            asdf
-            {/* { (weapon) => <span>
-              <Button enableBackgroundClick menuItems={menuItems(weapon)} class={`${styles.menuBtn}`}>
-                <SkinnySnowman />
-              </Button>
-            </span>} */}
+            { (weapon) => <WeaponMenu weapon={weapon}/>}
           </Cell>
         </Column>
 
