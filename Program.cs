@@ -13,6 +13,10 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using sharpAngleTemplate.models.repositories;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.HttpOverrides; // forwarded headers
+using Microsoft.AspNetCore.ResponseCompression; // compression
+using System.IO.Compression; // compression levels
+using System.Net; // proxy IPs
 
 var builder = WebApplication.CreateBuilder(args);
 var runningInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
@@ -77,6 +81,25 @@ builder.Services.AddSpaStaticFiles(config =>
     config.RootPath = "client/dist";
 });
 
+// Response compression (helps JSON/API; Cloudflare can still re-compress)
+builder.Services.AddResponseCompression(o =>
+{
+    o.EnableForHttps = true;
+    o.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<GzipCompressionProviderOptions>(o =>
+{
+    o.Level = CompressionLevel.Fastest;
+});
+
+// Forwarded headers (Cloudflare / reverse proxy)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Trust Docker bridge / reverse proxy IP if needed
+    options.KnownProxies.Add(IPAddress.Parse("172.17.0.1"));
+});
+
 // Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -98,25 +121,39 @@ builder.Services.AddSwaggerGen(c =>
 // In container we expose a simple HTTP port (8080) and rely on reverse proxy / platform TLS termination.
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
+    // Allow overriding port with PORT env (common in container platforms)
+    var portStr = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    if (!int.TryParse(portStr, out var port)) port = 8080;
+
     if (runningInContainer)
     {
-        options.ListenAnyIP(8080); // HTTP only inside container
+        // Only HTTP inside container (TLS handled by Cloudflare / reverse proxy)
+        options.ListenAnyIP(port);
     }
     else
     {
-        options.ListenLocalhost(5000, listenOptions =>
+        // Primary HTTPS listener for local development (shared mkcert cert)
+        var devCertPath = Path.Combine(Directory.GetCurrentDirectory(), "ssl", "dev-cert.pfx");
+        if (File.Exists(devCertPath))
         {
-            listenOptions.UseHttps("nethost.pfx", "password");
-        });
-        // If you need LAN access on a fixed IP locally keep this binding
-        options.Listen(System.Net.IPAddress.Parse("192.168.1.100"), 5000, listenOptions =>
+            options.ListenAnyIP(5000, listenOptions =>
+            {
+                listenOptions.UseHttps(devCertPath, ""); // empty password
+            });
+        }
+        else
         {
-            listenOptions.UseHttps("nethost.pfx", "password");
-        });
+            // Fallback: plain HTTP if certificate missing (logs a warning)
+            Console.WriteLine($"[warn] dev https certificate not found at {devCertPath} – starting HTTP on :5000");
+            options.ListenAnyIP(5000);
+        }
     }
 });
 
 var app = builder.Build();
+
+// Trust proxy headers early (before redirection, auth)
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline
 
@@ -129,20 +166,63 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    // Production hardening
+    app.UseResponseCompression();
+    app.UseHsts(); // instruct browsers to use HTTPS (works with Cloudflare forwarding)
+    app.Use(async (ctx, next) =>
+    {
+        ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
+        ctx.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+        ctx.Response.Headers["X-XSS-Protection"] = "0"; // modern browsers ignore; set for legacy completeness
+        await next();
+    });
+}
 
 // 3. Redirect HTTP to HTTPS (skip inside container when only HTTP is configured)
-if (!runningInContainer)
+// Only redirect locally where we terminate TLS ourselves
+if (!runningInContainer && app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
 // 4. Static file serving
 //    - first: any custom physical files
+// Dev: serve client/public first for freshest SW; Prod: dist is primary (public may be absent)
+var publicPath = Path.Combine(Directory.GetCurrentDirectory(), "client", "public");
+if (Directory.Exists(publicPath))
+{
+    Console.WriteLine($"Serving static public assets from: {publicPath}");
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(publicPath),
+        OnPrepareResponse = ctx =>
+        {
+            var headers = ctx.Context.Response.Headers;
+            if (ctx.File.Name == "claims-sw.js")
+            {
+                // Always fetch fresh SW in dev to detect updates
+                headers["Cache-Control"] = "no-store";
+            }
+            else
+            {
+                headers["Cache-Control"] = "public,max-age=3600"; // 1 hour for other public assets
+            }
+        }
+    });
+}
+
 string path = Path.Combine(Directory.GetCurrentDirectory(), "client", "dist");
-Console.WriteLine($"Serving static files from: {path}");
+Console.WriteLine($"Serving static dist files from: {path}");
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(path)
+    FileProvider = new PhysicalFileProvider(path),
+    OnPrepareResponse = ctx =>
+    {
+        var headers = ctx.Context.Response.Headers;
+        headers["Cache-Control"] = "public,max-age=604800"; // 7 days
+    }
 });
 //    - then: SPA static files
 app.UseSpaStaticFiles();
@@ -158,20 +238,35 @@ app.UseAuthorization();
 app.MapControllers();
 
 // 8. SPA fallback / proxy
-app.MapWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"), spaApp =>
+// Two dev modes:
+//   a) USE_VITE_PROXY=true -> proxy to running Vite dev server (:3000)
+//   b) (default)           -> serve pre-built static assets from client/dist on :5000
+if (app.Environment.IsDevelopment())
 {
-    spaApp.UseSpa(spa =>
+    var useViteProxy = Environment.GetEnvironmentVariable("USE_VITE_PROXY") == "true";
+    if (useViteProxy)
     {
-        spa.Options.SourcePath = "client";
-        if (app.Environment.IsDevelopment())
+        Console.WriteLine("[spa] Using Vite dev server proxy (https://localhost:3000)");
+        app.UseSpa(spa =>
         {
-            spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
-        }
-    });
-});
+            spa.Options.SourcePath = "client";
+            spa.UseProxyToSpaDevelopmentServer("https://localhost:3000");
+        });
+    }
+    else
+    {
+        Console.WriteLine("[spa] Serving built static assets from client/dist (set USE_VITE_PROXY=true to enable live dev proxy)");
+        app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
+    }
+}
+else
+{
+    // Production SPA fallback: serve pre-built index.html from client/dist
+    app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
+}
 
 
-// 9. (Optional) Fallback to index.html for client‐side routing
-// app.MapFallbackToFile("client/dist/index.html");
+// 9. Fallback to index.html for client‑side routing (after controllers). For production built assets.
+// Production fallback handled by UseSpa above (SpaDefaultPageMiddleware). No explicit MapFallbackToFile needed.
 
 app.Run();

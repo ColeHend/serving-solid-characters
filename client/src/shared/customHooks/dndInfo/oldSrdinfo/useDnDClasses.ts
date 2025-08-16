@@ -1,7 +1,7 @@
 import type { DnDClass } from "../../../../models/old/class.model";
 import type { Accessor } from "solid-js";
 import { createSignal, onMount } from "solid-js";
-import { catchError, concatMap, from, map, mergeMap, of, take, tap } from "rxjs";
+import { catchError, concatMap, from, map, mergeMap, of, take, tap, shareReplay, Observable } from "rxjs";
 import HttpClient$ from "../../utility/tools/httpClientObs";
 import LocalSrdDB from "../../utility/localDB/old/srdDBFile";
 import HomebrewManager from "../../homebrewManager";
@@ -12,6 +12,7 @@ const [classes, setClasses] = createSignal<DnDClass[]>([]);
 const [isLoading, setIsLoading] = createSignal(false);
 const [hasError, setHasError] = createSignal(false);
 const [errorMessage, setErrorMessage] = createSignal("");
+let classesFetch$: Observable<DnDClass[] | null> | undefined;
 
 export function useDnDClasses(): Accessor<DnDClass[]> {
   const LocalClasses = HttpClient$.toObservable(LocalSrdDB.classes.toArray());
@@ -28,7 +29,10 @@ export function useDnDClasses(): Accessor<DnDClass[]> {
       }),
       concatMap((classes)=>{
         if (classes.length === 0) {
-          return fetchClasses();
+          if (!classesFetch$) {
+            classesFetch$ = fetchClasses().pipe(shareReplay(1));
+          }
+          return classesFetch$;
         } else {
           return of(classes);
         }

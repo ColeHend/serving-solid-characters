@@ -7,3 +7,6 @@ wwwroot/
 client/dist
 client/dev-dist
 node_modules
+# SSL dev certs
+ssl/
+*.pem

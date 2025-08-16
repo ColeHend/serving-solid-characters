@@ -112,22 +112,21 @@ const masterSpells: Component = () => {
   }
 
   const checkForHomebrew = (spell:Spell):boolean => {
-    homebrewManager.spells().forEach(customSpell=>{
-      if (spell.name.toLowerCase() === customSpell.name.toLowerCase()) {
-        return true;
-      }
-    })
-
-    return false;
+    try {
+      return homebrewManager.spells().some(customSpell => customSpell.name.toLowerCase() === spell.name.toLowerCase());
+    } catch {
+      return false;
+    }
   };
 
 
 
   createEffect(() => {
-    setSearchParam({ name: currentSpell()?.name});
-
-    if(showSpell() === false) {
-      setSearchParam({name: ""})
+    const cur = currentSpell();
+    if (showSpell() && cur?.name) {
+      setSearchParam({ name: cur.name });
+    } else if (!showSpell()) {
+      setSearchParam({ name: "" });
     }
   });
 
