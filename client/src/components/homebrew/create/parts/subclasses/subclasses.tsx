@@ -1,11 +1,11 @@
-import { Component, For, Show, createMemo, createSignal } from "solid-js";
-import { homebrewManager, useDnDSpells, Option, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, Button, Chip, Input, Select, useDnDClasses, Body, FormField, TextArea } from "../../../../../shared";
+import { Component, For, Show, createMemo, createSignal, onMount, batch } from "solid-js";
+import { homebrewManager, useDnDSpells, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, useDnDClasses} from "../../../../../shared";
 import styles from './subclasses.module.scss';
-import { effect } from "solid-js/web";
-import { LevelEntity, Subclass } from "../../../../../models/old/class.model";
+import { Subclass } from "../../../../../models/old/class.model";
 import { Spell } from "../../../../../models/old/spell.model";
 import { useSearchParams } from "@solidjs/router";
 import { Feature } from "../../../../../models/old/core.model";
+import { Body, Select, Option, FormField, Checkbox, Input, TextArea, Button, Chip } from "coles-solid-library";
 export enum SpellsKnown {
     None = 0,
     Level = 1,
@@ -17,35 +17,47 @@ export enum SpellsKnown {
 }
 
 const Subclasses: Component = () => {
+  // URL params
   const [searchParam, setSearchParam] = useSearchParams();
+
+  // Source data hooks
   const allClasses = useDnDClasses();
-  const allClassNames = ()=> allClasses().map((c)=> c.name);
-  const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(0);
-  // ------------ spellcasting ------------
+  const allClassNames = () => allClasses().map(c => c.name);
   const allSpells = useDnDSpells();
+
+  // Core subclass granular state
+  const [subclassClass, setSubclassClass] = createSignal("");
+  const [subclassName, setSubclassName] = createSignal("");
+  const [subclassDesc, setSubclassDesc] = createSignal<string[]>([]);
+  const [subclassFeatures, setSubclassFeatures] = createSignal<Feature<string,string>[]>([]);
+  const [subclassSpells, setSubclassSpells] = createSignal<Spell[]>([]);
+
+  // Feature editing
+  const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(0);
+  const getLevelUpFeatures = (level:number) => subclassFeatures().filter(f => f.info.level === level);
+  const [showFeatureModal, setShowFeatureModal] = createSignal(false); // placeholder for future modal logic
+  const [editIndex, setEditIndex] = createSignal(-1);
+
+  // Spellcasting config
   const [hasCasting, setHasCasting] = createSignal(false);
+  const [casterType, setCasterType] = createSignal(""); // "half" | "third"
+  const [castingModifier, setCastingModifier] = createSignal(""); // stat string
+  const [spellsKnown, setSpellsKnown] = createSignal<SpellsKnown>(SpellsKnown.None);
   const [halfCasterRoundUp, setHalfCasterRoundUp] = createSignal(false);
-  const [spellsKnown, setSpellsKnown] = createSignal<SpellsKnown>(0);
-  const [casterType, setCasterType] = createSignal("");
-  const [hasRitualCasting, setHasRitualCasting] = createSignal(false);
-  const [castingModifier, setCastingModifier] = createSignal("");
   const [hasCantrips, setHasCantrips] = createSignal(false);
-  const [selectedSpell, setSelectedSpell] = createSignal<Spell>({} as Spell);
+  const [hasRitualCasting, setHasRitualCasting] = createSignal(false);
   const [spellsKnownPerLevel, setSpellsKnownPerLevel] = createSignal<{level:number,amount:number}[]>([]);
   const [toAddKnownLevel, setToAddKnownLevel] = createSignal(1);
   const [toAddKnownAmount, setToAddKnownAmount] = createSignal(0);
-  // ---------- subclass ------
-  const [currentSubclass, setCurrentSubclass] = createSignal<Subclass>({
-    id: 0,
-    name: "",
-    desc: [],
-    features: [],
-    class: "",
-    spells: []
-  });
-    // ---------- computed ----------
+  const [spellcastingInfo, setSpellcastingInfo] = createSignal<{name:string,desc:string[]}[]>([]);
+
+  // Spell selection (avoid JSON stringify churn)
+  const [selectedSpellName, setSelectedSpellName] = createSignal<string | undefined>(undefined);
+  const selectedSpell = createMemo(() => allSpells().find(s => s.name === selectedSpellName()));
+
+  // Derived: subclass levels for feature options
   const getSubclassLevels = createMemo(() => {
-    const className = currentSubclass().class.toLowerCase();
+    const className = subclassClass().toLowerCase();
     const [ currentClass ] = allClasses().filter((c)=> c.name?.toLowerCase() === className?.toLowerCase());
 				
         
@@ -83,143 +95,114 @@ const Subclasses: Component = () => {
     }
   });
 
-  const canAddSubclass = createMemo(()=>{
-    const currentSubclassCheck = allClasses().filter((c)=> c.name.toLowerCase() === currentSubclass().class.toLowerCase());
-    const theSubclass = currentSubclass();
-    return currentSubclassCheck.length === 1 && theSubclass.name.trim().length > 0 && !!theSubclass.desc.length;
+  // Derived spellcasting levels
+  const baseCastingLevels = createMemo(() => {
+    if (!hasCasting()) return [] as {level:number, spellcasting: Record<string,number>}[];
+    return Array.from({length:20}, (_,i)=>({
+      level: i+1,
+      spellcasting: getSpellcastingDictionary(i+1, casterType(), hasCantrips())
+    }));
   });
 
-  const getLevelUpFeatures = (level: number)=>{
-    return currentSubclass().features.filter((f)=> f.info.level === level);
-  }
-
-  const clearValues = ()=>{
-    setCurrentSubclass({
-      id: 0,
-      name: "",
-      subclassFlavor: "",
-      desc: [],
-      features: [],
-      class: "",
-      spells: []
+  // Apply custom spells known if "Other"
+  const mergedCastingLevels = createMemo(() => {
+    if (!hasCasting()) return [];
+    const useCustom = spellsKnown() === SpellsKnown.Other;
+    const map = spellsKnownPerLevel();
+    if (!useCustom) return baseCastingLevels();
+    return baseCastingLevels().map(l => {
+      const custom = map.find(x => x.level === l.level);
+      return custom ? { ...l, spellcasting: { ...l.spellcasting, spells_known: custom.amount } } : l;
     });
-    setToAddFeatureLevel(1);
-    setHasCasting(false);
-    setHalfCasterRoundUp(false);
-    setSpellsKnown(0);
-    setCasterType("");
-    setHasRitualCasting(false);
-    setCastingModifier("");
-    setSelectedSpell({} as Spell);
-  }
+  });
 
-  // ----  effects ---------- 
-  effect(()=>{
-    if (hasCasting()) {
-      setCurrentSubclass(old=>{
-        const newSubclass = {...old};
-        newSubclass.spellcasting = {
-          info: newSubclass.spellcasting?.info || [],
-          castingLevels: [],
-          name: newSubclass.name,
-          spellcastingAbility: castingModifier(),
-          casterType: casterType(),
-          spellsKnownCalc: spellsKnown(),
-          spellsKnownRoundup: halfCasterRoundUp(),
-        };
-        for (let i = 1; i <= 20; i++) {
-          newSubclass.spellcasting?.castingLevels.push({
-            level: i,
-            spellcasting: getSpellcastingDictionary(i, casterType(), hasCantrips())
-          })                 
-        }
-        return newSubclass;
-      })
-    } else { 
-      setCurrentSubclass(old=>{
-        const newSubclass = {...old};
-        delete newSubclass.spellcasting;
-        return newSubclass;
-      });
-    }
-  })
+  const spellcasting = createMemo(() => {
+    if (!hasCasting()) return undefined;
+    return {
+      info: spellcastingInfo(),
+      castingLevels: mergedCastingLevels(),
+      name: subclassName(),
+      spellcastingAbility: castingModifier(),
+      casterType: casterType(),
+      spellsKnownCalc: spellsKnown(),
+      spellsKnownRoundup: halfCasterRoundUp(),
+      ritualCasting: hasRitualCasting()
+    } as Subclass['spellcasting'];
+  });
 
-  effect(()=>{
-    if (spellsKnown() === SpellsKnown.Other && casterType().length > 0) {
-      setCurrentSubclass(old=>{
-        const newSubclass = {...old};
-        let newCastingLevels;
-        if (!!newSubclass.spellcasting && !!newSubclass.spellcasting.castingLevels) {
-          const spellsKnown = spellsKnownPerLevel();
-          newCastingLevels = newSubclass.spellcasting.castingLevels.map((x)=> {
-            x.spellcasting = getSpellcastingDictionary(x.level, casterType(), hasCantrips());
-            spellsKnown.forEach((y)=>{
-              if (y.level === x.level) {
-                x.spellcasting = {...x.spellcasting, spells_known: y.amount};
-              }
-            });
-            return x;
+  // Assembled subclass (pure)
+  const currentSubclass = createMemo<Subclass>(() => ({
+    id: 0,
+    name: subclassName(),
+    desc: subclassDesc(),
+    features: subclassFeatures(),
+    class: subclassClass(),
+    spells: subclassSpells(),
+    spellcasting: spellcasting()
+  } as Subclass));
+
+  const canAddSubclass = createMemo(() => {
+    if (!subclassClass() || !subclassName().trim() || subclassDesc().length === 0) return false;
+    return allClasses().some(c => c.name.toLowerCase() === subclassClass().toLowerCase());
+  });
+
+  const clearValues = () => {
+    batch(() => {
+      setSubclassClass("");
+      setSubclassName("");
+      setSubclassDesc([]);
+      setSubclassFeatures([]);
+      setSubclassSpells([]);
+      setHasCasting(false);
+      setCasterType("");
+      setCastingModifier("");
+      setSpellsKnown(SpellsKnown.None);
+      setHalfCasterRoundUp(false);
+      setHasCantrips(false);
+      setHasRitualCasting(false);
+      setSpellsKnownPerLevel([]);
+      setSpellcastingInfo([]);
+      setToAddFeatureLevel(0);
+      setSelectedSpellName(undefined);
+    });
+  };
+
+  // URL param hydration (one-time)
+  onMount(() => {
+    if (searchParam.name && searchParam.subclass) {
+      const [cls] = allClasses().filter(c => c.name.toLowerCase() === searchParam.name!.toLowerCase());
+      if (cls) {
+        const [sc] = cls.subclasses.filter(s => s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
+        if (sc) {
+          batch(() => {
+            setSubclassClass(cls.name);
+            setSubclassName(sc.name);
+            setSubclassDesc(sc.desc || []);
+            setSubclassFeatures(sc.features || []);
+            setSubclassSpells(sc.spells || []);
+            if (sc.spellcasting) {
+              setHasCasting(true);
+              setCasterType(sc.spellcasting.casterType || "");
+              setCastingModifier((sc.spellcasting.spellcastingAbility as unknown as string) || "");
+              setSpellsKnown(sc.spellcasting.spellsKnownCalc as SpellsKnown ?? SpellsKnown.None);
+              setHalfCasterRoundUp(!!sc.spellcasting.spellsKnownRoundup);
+              setSpellcastingInfo(sc.spellcasting.info || []);
+              // Custom known extraction
+              const custom = (sc.spellcasting.castingLevels || []).map(x => ({ level: x.level, amount: (x as any).spellcasting?.spells_known })).filter(x => typeof x.amount === 'number');
+              if (custom.length) setSpellsKnownPerLevel(custom as {level:number,amount:number}[]);
+            }
           });
-        } else {
-          newCastingLevels = newSubclass.spellcasting?.castingLevels || [];
-        }
-        newSubclass.spellcasting = {
-          info: newSubclass.spellcasting?.info || [],
-          castingLevels: newCastingLevels,
-          name: newSubclass.name,
-          spellcastingAbility: castingModifier(),
-          casterType: casterType(),
-          spellsKnownCalc: spellsKnown(),
-          spellsKnownRoundup: halfCasterRoundUp(),
-        };
-        return newSubclass;
-      });
-    }
-  })
-    
-  effect(()=>{
-    if (!!searchParam.name && !!searchParam.subclass) {
-      if (searchParam.name !== currentSubclass().class && searchParam.subclass !== currentSubclass().name) {
-        const [ currentClass ] = allClasses().filter((c)=> c.name.toLowerCase() === searchParam.name!.toLowerCase());
-        if (currentClass) {
-          const [ currentSubclass ] = currentClass.subclasses.filter((s)=> s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
-          setCurrentSubclass(currentSubclass);
         }
       }
-    } else {
-      setSearchParam({name: currentSubclass().class, subclass: currentSubclass().name});
     }
-  })
+  });
 
-  const [showFeatureModal, setShowFeatureModal] = createSignal(false);
-  const [editIndex, setEditIndex] = createSignal(-1);
-
-  const addFeature = (level: number, feature: Feature<string, string>) => {
-    const newSubclass = {...currentSubclass()};
-    const newFeatures = [...newSubclass.features];
-    newFeatures.push(feature);
-    newSubclass.features = newFeatures;
-    setCurrentSubclass(newSubclass);
-  }
-
-  const replaceFeature = (level: number, index: number, feature: Feature<string, string>) => {
-    const newSubclass = {...currentSubclass()};
-    const newFeatures = [...newSubclass.features];
-    newFeatures[index] = feature;
-    newSubclass.features = newFeatures;
-    setCurrentSubclass(newSubclass);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const getUnknownToString = (value: unknown) => {
-    if (typeof value === 'string') {
-      return value;
-    } else if (Array.isArray(value)) {
-      return value.join('\n');
-    } else {
-      return '';
+  // Helpers to mutate features
+  const updateParamsIfReady = () => {
+    if (subclassClass() && subclassName()) {
+      setSearchParam({ name: subclassClass(), subclass: subclassName() });
     }
-  }
+  };
 
   return (
     <>
@@ -228,11 +211,10 @@ const Subclasses: Component = () => {
         <div></div>
         <div>
           <h2>Choose a class</h2>
-          <Select transparent value={currentSubclass().class} onChange={(e)=>{
-            setCurrentSubclass(old=>({...old, class: e.currentTarget.value}));
-            if (getSubclassLevels().length > 0) {
-              setToAddFeatureLevel(+getSubclassLevels()[0]);
-            }
+          <Select transparent value={subclassClass()} onChange={(e)=>{
+            setSubclassClass(e);
+            if (getSubclassLevels().length > 0) setToAddFeatureLevel(+getSubclassLevels()[0]);
+            updateParamsIfReady();
           }}>
             <For each={allClassNames()}>{(className) => (
               <Option value={`${className}`}>{className}</Option>
@@ -241,59 +223,58 @@ const Subclasses: Component = () => {
         </div>
         <div style={{display:"flex","flex-direction":"column"}}>
           <FormField name="Subclass Name">
-            <Input transparent value={currentSubclass().name} 
-              onChange={(e)=> setCurrentSubclass(old=>({...old, name: e.currentTarget.value}))} />
+            <Input transparent value={subclassName()} 
+              onChange={(e)=> { setSubclassName(e.currentTarget.value); updateParamsIfReady(); }} />
           </FormField>
           <FormField class={`${styles.textArea}`}  name="Subclass Description">
             <TextArea 
               placeholder="Enter a Subclass description.." 
-              text={()=>currentSubclass().desc.join("\n")}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              setText={(e: any)=>setCurrentSubclass(old=>({...old, desc: e.split("\n")}))}
-              value={currentSubclass().desc.join("\n")} 
+              text={()=>subclassDesc().join("\n")}
+              setText={() => { /* no-op handled by onChange */ return; }}
+              value={subclassDesc().join("\n")} 
               transparent
-              onChange={(e)=> setCurrentSubclass(old=>({...old, desc: e.currentTarget.value.split("\n")}))} />
+              onChange={(e)=> setSubclassDesc(e.currentTarget.value.split("\n"))} />
           </FormField>
         </div>
-        <div>
-          <h2>Level up features</h2>
-          <Select value={toAddFeatureLevel()} transparent onChange={(e)=>{
-            const newLevel = parseInt(e.currentTarget.value);
-            setToAddFeatureLevel(newLevel);
-          }}>
-            <For each={getSubclassLevels()}>{(level) => (
-              <Option value={`${level}`}>{level}</Option>
+        <Show when={subclassClass().trim().length > 0}>
+          <div>
+            <h2>Level up features</h2>
+            <Select value={toAddFeatureLevel()} transparent onChange={(e)=>{
+              setToAddFeatureLevel(e);
+            }}>
+              <For each={getSubclassLevels()}>{(level) => (
+                <Option value={`${level}`}>{level}</Option>
+              )}</For>
+            </Select>
+            <Show when={toAddFeatureLevel() > 0}>
+              <Button onClick={()=>setShowFeatureModal(old=>!old)}>Add Feature (modal TBD)</Button>
+            </Show>
+            <For each={getLevelUpFeatures(toAddFeatureLevel())}>{(feature)=>(
+              <Button onClick={()=>{
+                setEditIndex(subclassFeatures().indexOf(feature));
+                setShowFeatureModal(true);
+              }}>{feature.name}</Button>
             )}</For>
-          </Select>
-          <Show when={toAddFeatureLevel() > 0}>
-                    	<Button onClick={()=>setShowFeatureModal(old=>!old)}>Add Feature</Button>
-          </Show>
-          <For each={getLevelUpFeatures(toAddFeatureLevel())}>{(feature)=>(
-            <Button onClick={()=>{
-              setEditIndex(currentSubclass().features.indexOf(feature));
-              setShowFeatureModal(true);
-            }}>{feature.name}</Button>
-          )}</For>
-        </div>
+          </div>
+        </Show>
         <div>
           <h2>Spellcasting</h2>
           <div>
             <div>
-              <label for="hasCasting">Has Spellcasting: </label>
-              <Input class={`${styles.checkBox}`} checked={hasCasting()} onChange={(e)=>setHasCasting(e.currentTarget.checked)} type="checkbox" name="hasCasting" />
+              <Checkbox checked={hasCasting()} onChange={(e)=>setHasCasting(e)} label="Has Spellcasting" />
             </div>
             <Show when={hasCasting()}>
               <div class={`${styles.castingRowOne}`}>
                 <span>
                   <label for="casterType">Caster Type:</label>
-                  <Select name="casterType" value={casterType()} onChange={(e)=>setCasterType(e.currentTarget.value)}>
+                  <Select value={casterType()} onChange={(e)=>setCasterType(e)}>
                     <Option value="half">Half Caster</Option>
                     <Option value="third">Third Caster</Option>
                   </Select>
                 </span>
                 <span>
                   <label for="castingStat">Casting Stat:</label>
-                  <Select name="castingStat" value={castingModifier()} onChange={(e)=>setCastingModifier(e.currentTarget.value)}>
+                  <Select value={castingModifier()} onChange={(e)=>setCastingModifier(e)}>
                     <For each={["Intelligence", "Wisdom", "Charisma"]}>
                       {(stat) => <Option value={stat}>{stat}</Option>}
                     </For>
@@ -302,7 +283,7 @@ const Subclasses: Component = () => {
               </div>
               <div>
                 <label for="spellsKnown">Spells Known: </label>
-                <Select name="spellsKnown" value={spellsKnown()} onChange={(e)=>setSpellsKnown(+e.currentTarget.value)} > 
+                <Select value={spellsKnown()} onChange={(e)=>setSpellsKnown(+e)} > 
                   <Option value="0">None</Option>
                   <Option value="1">Level</Option>
                   <Option value="2">Half Level</Option>
@@ -312,8 +293,7 @@ const Subclasses: Component = () => {
                   <Option value="6">Other</Option>
                 </Select>
                 <span>
-                  <label for="halfCasterRoundUp">Round Up: </label>
-                  <Input class={`${styles.checkBox}`} type="checkbox" name="halfCasterRoundUp" checked={halfCasterRoundUp()} onChange={(e)=>setHalfCasterRoundUp(e.currentTarget.checked)} />
+                  <Checkbox checked={halfCasterRoundUp()} onChange={(e)=>setHalfCasterRoundUp(e)} label="Half Caster Round Up" />
                 </span>
               </div>
               <Show when={spellsKnown() === SpellsKnown.Other}>
@@ -322,9 +302,7 @@ const Subclasses: Component = () => {
                   <h3>Spells Known </h3>
                   <div>
                     <label for="slotLevel">Class Level: </label>
-                    <Select name="slotLevel" disableUnselected={true} onChange={(e)=>{
-                      setToAddKnownLevel(+e.currentTarget.value);
-                    }}>
+                    <Select onChange={setToAddKnownLevel}>
                       <For each={getNumberArray(20)}>{(spell)=>(
                         <Option value={spell}>Level {spell}</Option>
                       )}</For>
@@ -352,26 +330,23 @@ const Subclasses: Component = () => {
                 </div>
               </Show>
               <div>
-                <label for="hasCantrips">Has Cantrips: </label>
-                <Input class={`${styles.checkBox}`} type="checkbox" name="hasCantrips" checked={hasCantrips()} onChange={(e)=>setHasCantrips(e.currentTarget.checked)} />
-                <label for="ritualCasting">Ritual Casting: </label>
-                <Input class={`${styles.checkBox}`} type="checkbox" name="ritualCasting" checked={hasRitualCasting()} onChange={(e)=>setHasRitualCasting(e.currentTarget.checked)}  />
+                <Checkbox checked={hasCantrips()} onChange={(e)=>setHasCantrips(e)} label="Has Cantrips" />
+                <Checkbox checked={hasRitualCasting()} onChange={(e)=>setHasRitualCasting(e)} label="Ritual Casting" />
               </div>
               <div>
                 <h3>Spells Table</h3>
                 <div>
-                  <Select value={JSON.stringify(selectedSpell())} onChange={(e)=>setSelectedSpell(JSON.parse(e.currentTarget.value))} >
+                  <Select value={selectedSpellName() || ""} onChange={(e)=>setSelectedSpellName(e)}>
                     <For each={allSpells()}>{(spell)=>(
-                      <Option value={JSON.stringify(spell)}>{spell.name}</Option>
+                      <Option value={spell.name}>{spell.name}</Option>
                     )}</For>
                   </Select>
-                  <Button onClick={()=>setCurrentSubclass(old=>({...old, spells: [...old.spells, selectedSpell()]}))}
-                  >Add Spell</Button>
+                  <Button onClick={()=>{ if (selectedSpell()) setSubclassSpells(old => old.some(s=>s.name===selectedSpell()!.name) ? old : [...old, selectedSpell()!]) }}>Add Spell</Button>
                 </div>
                 <div>
-                  <For each={currentSubclass().spells}>{(spell)=>(
+                  <For each={subclassSpells()}>{(spell)=>(
                     <Chip key={getAddNumberAccent(+spell.level)} value={spell.name} remove={()=>{
-                      setCurrentSubclass(old=>({...old, spells: old.spells.filter((x)=> x.name !== spell.name)}));
+                      setSubclassSpells(old => old.filter(x => x.name !== spell.name));
                     }} />
                   )}</For>
                 </div>
@@ -380,43 +355,35 @@ const Subclasses: Component = () => {
                 <h3>Spellcasting Info</h3>
                 <div>
                   <Button onClick={()=>{
-                    setCurrentSubclass((old)=>{
-                      const newInfo = [...old.spellcasting?.info || []];
-                      newInfo.push({name: "", desc: []});
-                      return {...old, spellcasting: {...old.spellcasting, info: newInfo}} as Subclass;
-                    })
+                    setSpellcastingInfo(info => [...info, { name: "", desc: [] }]);
                   }}>Add Info</Button>
                 </div>
                 <div>
-                  <For each={currentSubclass().spellcasting?.info || []}>{(info,i)=>(
+                  <For each={spellcastingInfo()}>{(info,i)=>(
                     <div>
                       <div>
                         <label for={`nameInput${i()}`}>Title: </label>
                         <Input name={`nameInput${i()}`} value={info.name} onChange={(e)=>{
-                          setCurrentSubclass((old) => {
-                            const newInfo = [...old.spellcasting?.info || []];
-                            newInfo[i()] = {...newInfo[i()], name: e.currentTarget.value};
-                            return {...old, spellcasting: {...old.spellcasting, info: newInfo}} as Subclass;
-                          })
+                          setSpellcastingInfo(arr => {
+                            const clone = [...arr];
+                            clone[i()] = { ...clone[i()], name: e.currentTarget.value };
+                            return clone;
+                          });
                         }} />
                       </div>
                       <div>
                         <label for={`descInput${i()}`}>Description: </label>
                         <textarea class={`${styles.textArea}`} name={`descInput${i()}`} value={info.desc.join("\n")} onChange={(e)=>{
-                          setCurrentSubclass((old) => {
-                            const newInfo = [...old.spellcasting?.info || []];
-                            newInfo[i()] = {...newInfo[i()], desc: e.currentTarget.value.split("\n")};
-                            return {...old, spellcasting: {...old.spellcasting, info: newInfo}} as Subclass;
-                          })
+                          setSpellcastingInfo(arr => {
+                            const clone = [...arr];
+                            clone[i()] = { ...clone[i()], desc: e.currentTarget.value.split("\n") };
+                            return clone;
+                          });
                         }} />
                       </div>
                       <div>
                         <Button onClick={()=>{
-                          setCurrentSubclass((old)=>{
-                            const newInfo = [...old.spellcasting?.info || []];
-                            newInfo.splice(i(), 1);
-                            return {...old, spellcasting: {...old.spellcasting, info: newInfo}} as Subclass;
-                          })
+                          setSpellcastingInfo(arr => arr.filter((_,idx)=> idx !== i()));
                         }}>Remove</Button>
                       </div>
                     </div>
@@ -427,9 +394,10 @@ const Subclasses: Component = () => {
             <div>
               <Show when={canAddSubclass()}>
                 <Button onClick={()=>{
-                  const updatedClass = allClasses().filter((c)=> c.name === currentSubclass().class)[0];
-                  updatedClass.subclasses = [...updatedClass.subclasses, currentSubclass()];
-                  homebrewManager.updateClass(updatedClass);
+                  const target = allClasses().find(c => c.name === subclassClass());
+                  if (!target) return;
+                  const cloned = { ...target, subclasses: [...target.subclasses, currentSubclass()] };
+                  homebrewManager.updateClass(cloned);
                   homebrewManager.updateClassesInDB();
                   clearValues();
                 }}>Save</Button>
