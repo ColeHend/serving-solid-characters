@@ -39,6 +39,7 @@ const featsList: Component = () => {
   
 
   effect(() => {
+    console.log("Feat: ", currentFeat())
     setSearchParam({ name: currentFeat()?.name });
   });
 
@@ -48,7 +49,6 @@ const featsList: Component = () => {
                 
       <div class={`${styles.searchDiv}`}>
         <SearchBar
-          placeholder="Search Feats..."
           dataSource={srdFeats}
           setResults={setSearchResult}
           searchFunction={(data,search)=>{

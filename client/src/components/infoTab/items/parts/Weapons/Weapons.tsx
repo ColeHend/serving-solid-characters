@@ -19,10 +19,7 @@ const WeaponsView:Component<props> = (props) => {
 
   const displayResults = createMemo(()=>results().length > 0 ? results():SrdWeapons())
 
-  
- 
 
-  createEffect(()=>console.log("weapons",props.weapons()));
 
   return <div>
 

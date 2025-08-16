@@ -47,6 +47,7 @@ export interface Subclass {
     id: number;
     name: string;
     desc: string[];
+    subclassFlavor: string;
     features: Feature<string, string>[];
     class: string;
     spells: Spell[];
