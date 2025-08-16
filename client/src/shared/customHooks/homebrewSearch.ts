@@ -30,12 +30,6 @@ class HomebrewSearch {
       closeTimeout:4000
     })
 
-        
-
-
-
-
-
     if (srdRaces.length > 0) {
       const SrdRaces = srdRaces.sort((a, b) => a.name.localeCompare(b.name))
 

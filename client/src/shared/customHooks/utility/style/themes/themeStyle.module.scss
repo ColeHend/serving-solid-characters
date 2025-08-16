@@ -85,3 +85,11 @@
     z-index: 1000;
     text-align: center;
 }
+
+.box {
+    background-color: var(--surface-color);
+    input::placeholder {
+        color: var(--on-background-color);
+    }
+    color: var(--on-background-color);
+}

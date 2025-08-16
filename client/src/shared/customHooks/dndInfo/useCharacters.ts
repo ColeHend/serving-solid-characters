@@ -1,5 +1,5 @@
 import { Accessor, Setter, createSignal } from "solid-js";
-import { Feature } from "../../models/core.model";
+import { Character } from "../../../models/character.model";
 
 export interface Stats {
   str: number;
@@ -9,80 +9,200 @@ export interface Stats {
   wis: number;
   cha: number;
 }
+const exampleCharacters: Character[] = [];
 
-interface CharacterSpells {
-    spellsKnown: string[];
-    spellsPrepared: string[];
-    alwaysPrepared: string[];
+function createExampleCharacter(character: Character) {
+  const newCharacter = new Character();
+
+  newCharacter.name = character.name;
+  newCharacter.levels = character.levels;
+  newCharacter.spells = character.spells;
+  newCharacter.race = character.race;
+  newCharacter.className = character.className;
+  newCharacter.subclass = character.subclass;
+  newCharacter.background = character.background;
+  newCharacter.alignment = character.alignment;
+  newCharacter.proficiencies = character.proficiencies;
+  newCharacter.languages = character.languages;
+  newCharacter.health = character.health;
+  newCharacter.stats = character.stats;
+  newCharacter.items = character.items;
+
+  exampleCharacters.push(newCharacter);
 }
-interface CharacterSkills {
-    proficient: string[];
-    expertise: string[];
-}
-export interface Character {
-  name: string;
-  race: string;
-  subrace?: string;
-  background: string;
-  level: number;
-  class: string;
-  subclass: string;
-  stats: Stats;
-  spells?: CharacterSpells;
-  skills?: CharacterSkills;
-  Features: Feature<string, string>[];
-}
-const exampleCharacters: Character[] = [
-  {
-    name: "Gandalf",
-    level: 1,
-    class: "Wizard",
-    race: "Elf",
-    subrace: "High Elf",
-    background: "Noble",
-    subclass: "Evocation",
-    stats: {
-      str: 8,
-      dex: 14,
-      con: 12,
-      int: 15,
-      wis: 13,
-      cha: 10,
+
+const Gandalf = createExampleCharacter({
+  name: "Gandalf",
+  level: 0,
+  levels: [
+    {
+      class: "Wizard",
+      subclass: "Evocation",
+      level: 1,
+      hitDie: 6,
+      features: []
     },
-    spells: {
-      spellsKnown: ["Fireball", "Mage Armor", "Magic Missile", "Shield"],
-      spellsPrepared: ["Fireball", "Shield", "Magic Missile"],
-      alwaysPrepared: [],
-    },
-    skills: {
-      proficient: ["Arcana", "History"],
-      expertise: ["Arcana"],
-    },
-    Features: [],
+    {
+      class: "Wizard",
+      subclass: "Evocation",
+      level: 1,
+      hitDie: 6,
+      features: []
+    }
+  ],
+  spells: [],
+  race: {
+    species: "elf",
+    subrace: "woodElf",
+    age: "200",
+    size: "Medium",
+    speed: "30ft",
+    features: []
   },
-  {
-    name: "Jorden",
-    level: 1,
-    class: "Fighter",
-    race: "Dwarf",
-    subrace: "Hill Dwarf",
-    background: "Soldier",
-    subclass: "Champion",
-    stats: {
-      str: 12,
-      dex: 15,
-      con: 14,
-      int: 10,
-      wis: 13,
-      cha: 8,
-    },
+  className: "Wizard",
+  subclass: "Evocation",
+  background: "Noble",
+  alignment: "neutral",
+  proficiencies: {
     skills: {
-      proficient: ["Athletics", "Survival"],
-      expertise: ["Athletics"],
+      "Acrobatics": {
+        stat: "dex",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Animal Handling": {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Arcana": {
+        stat: "int",
+        value: 10,
+        proficient: true,
+        expertise: true
+      },
+      "History": {
+        stat: "int",
+        value: 10,
+        proficient: true,
+        expertise: true  
+      },
+      "Athletics": {
+        stat: "str",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Deception": {
+        stat: "cha",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Insight": {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Intimidation": {
+        stat: "cha",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Investigation": {
+        stat: "int",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Medicine": {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Nature": {
+        stat: "int",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Perception": {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Performance": {
+        stat: "cha",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Persuasion": {
+        stat: "cha",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Religion": {
+        stat: "int",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Sleight Of Hand": {
+        stat: "dex",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Stealth": {
+        stat: "dex",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
+      "Survival": {
+        stat: "wis",
+        value: 0,
+        proficient: false,
+        expertise: false,
+      },
     },
-    Features: [],
+    other: {}
   },
-];
+  languages: [
+    "Common",
+    "elvish",
+    "draconic"
+  ],
+  health: {
+    max: 1,
+    current: 1,
+    temp: 10
+  },
+  stats: {
+    str: 8,
+    dex: 14,
+    con: 12,
+    int: 15,
+    wis: 13,
+    cha: 10,
+  },
+  items: {
+    inventory: [],
+    equipped: [],
+    attuned: []
+  }
+});
+
+
+
 const [characters, setCharacters] =
   createSignal<Character[]>(exampleCharacters);
 

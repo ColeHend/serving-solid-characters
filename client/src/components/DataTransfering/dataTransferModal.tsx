@@ -1,30 +1,30 @@
-import { Component, Setter, useContext } from "solid-js";
-import Modal from "../../shared/components/popup/popup.component";
+import { Accessor, Component, createSignal, Setter, Show, useContext } from "solid-js";
 import styles from "./dataTransferModal.module.scss";
-import { Tab, Tabs } from "../../shared";
 import Importing from "./Import/Importing";
 import Exporting from "./Export/Exporting";
 import { SharedHookContext } from "../rootApp";
+import { Modal, TabBar } from "coles-solid-library";
 
 interface props {
 
-    setBackClick: Setter<boolean>
+    show: [Accessor<boolean>, Setter<boolean>]
 }
 
 const DataTransferModal:Component<props> = (props) => {
   const sharedContext = useContext(SharedHookContext);
+  const [activeTab, setActiveTab] = createSignal<number>(1);
 
-  return <Modal title="File Exchange" setClose={props.setBackClick} width={sharedContext.isMobile()?`99%`:""} height={sharedContext.isMobile()?"95%":""}>
+  return <Modal title="File Exchange" show={props.show} width={sharedContext.isMobile()?`90%`:""} height={sharedContext.isMobile()?"80%":""}>
     <div class={`${styles.Wrapper}`}>
-      <Tabs transparent>
-        <Tab name="Import">
-          <Importing />
-        </Tab>
-        <Tab name="Export">
-          <Exporting />
-        </Tab>
-      </Tabs>
+      <TabBar tabs={["Import","Export"]} activeTab={activeTab()} onTabChange={(label,index)=>setActiveTab(index)}/>
 
+      <Show when={activeTab() === 0}>
+        <Importing />
+      </Show>
+
+      <Show when={activeTab() === 1}>
+        <Exporting />
+      </Show>
     </div>
   </Modal>
 }

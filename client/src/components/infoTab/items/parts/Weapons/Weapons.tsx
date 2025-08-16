@@ -1,11 +1,10 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For } from "solid-js";
-import { Button, Chip, homebrewManager, Paginator, SkinnySnowman, Weapon } from "../../../../../shared";
+import { homebrewManager, Paginator, SkinnySnowman, Weapon } from "../../../../../shared";
 import styles from "./weapons.module.scss";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
-import Table from "../../../../../shared/components/Table/table";
-import { Cell, Column, Header,Row, SecondRow } from "../../../../../shared/components/Table/innerTable";
 import { useNavigate } from "@solidjs/router";
 import { ItemType } from "../../../../../shared/customHooks/utility/tools/itemType";
+import { Table, Cell, Column, Header, Row, Button, Icon, Chip  } from "coles-solid-library"
 
 interface props {
     weapons:Accessor<Weapon[]>;
@@ -59,27 +58,29 @@ const WeaponsView:Component<props> = (props) => {
               {weapon.name}    
             </span>}
           </Cell>
+          <Cell<Weapon> rowNumber={2}>
+            { (weapon) => <span class={`${styles.tagRow}`}>
+              <For each={weapon.tags}>
+                { (tag) => <Chip key="" value={tag} /> }
+              </For>
+            </span>}
+          </Cell>
         </Column>
 
         <Column name="options">
           <Header><></></Header>
           <Cell<Weapon>>
-            { (weapon) => <span>
+            asdf
+            {/* { (weapon) => <span>
               <Button enableBackgroundClick menuItems={menuItems(weapon)} class={`${styles.menuBtn}`}>
                 <SkinnySnowman />
               </Button>
-            </span>}
+            </span>} */}
           </Cell>
         </Column>
 
         <Row />
-        <SecondRow<Weapon>>
-          { (weapon) => <span class={`${styles.tagRow}`}>
-            <For each={weapon.tags}>
-              { (tag) => <Chip key="" value={tag} /> }
-            </For>
-          </span>}
-        </SecondRow>
+        
 
       </Table>
     </div>

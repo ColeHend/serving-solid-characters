@@ -102,12 +102,12 @@ const App: Component = () => {
         <Container class={`${styles.body}`} theme='container'>
           <div class={`${styles.topRow}`}>
             <h1>Home</h1>
-            <Button 
+            {/* <Button 
               title='Import & Export' 
               class={`${styles.fabBtn}`} 
               onClick={() => setShowDataTransfer(!showDataTransfer())}>
               +
-            </Button>
+            </Button> */}
           </div>
           
           <div>
@@ -216,9 +216,9 @@ const App: Component = () => {
             </Switch>
           </div>
 
-          <Show when={showDataTransfer()}>
-            <DataTransferModal setBackClick={setShowDataTransfer} />
-          </Show>
+          {/* <Show when={showDataTransfer()}>
+            <DataTransferModal show={[showDataTransfer,setShowDataTransfer]} />
+          </Show> */}
 
         </Container>
       )}

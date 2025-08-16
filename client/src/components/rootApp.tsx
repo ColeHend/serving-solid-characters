@@ -13,7 +13,7 @@ import { UserSettings } from "../models/userSettings";
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
   showList: createSignal(false), 
-  useStyle: ()=>({body: "", primary: "", accent: "", tertiary: "", warn: "", hover: "", popup: "", table: ""}),
+  useStyle: ()=>({body: "", primary: "", accent: "", tertiary: "", warn: "", hover: "", popup: "", table: "", box: ""}),
   getMouse: ()=>({x: 0, y: 0})
 };
 export const SharedHookContext = createContext<HookContext>(defaultValue);
@@ -48,7 +48,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
       return useStyle(theme);
     } catch (error) {
       console.error("Failed to apply style:", error);
-      return {body: "", primary: "", accent: "", tertiary: "", warn: "", hover: "", popup: "", table: ""};
+      return {body: "", primary: "", accent: "", tertiary: "", warn: "", hover: "", popup: "", table: "", box: ""};
     }
   });
   

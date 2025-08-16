@@ -4,14 +4,13 @@ import styles from "./viewClasses.module.scss"
 import { useSearchParams, useNavigate } from "@solidjs/router";
 import { effect } from "solid-js/web";
 import type { DnDClass } from "../../../models";
-import Button from "../../../shared/components/Button/Button";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
-import { Body, homebrewManager, Paginator, SkinnySnowman } from "../../../shared";
-import Table from "../../../shared/components/Table/table";
-import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
+import { homebrewManager, Paginator } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import { Body, Cell, Column, Header, Icon, Button, Table  } from "coles-solid-library";
+import { ClassMenu } from "./classMenu/classMenu";
 
 
 const viewClasses: Component = () => {
@@ -24,34 +23,10 @@ const viewClasses: Component = () => {
   const [showClass, setShowClass] = createSignal<boolean>(false);
   const [results, setResults] = createSignal<DnDClass[]>([]);
 
-  //   const searchResults = createMemo(() =>
-  //   results().length > 0 ? results() : dndSrdClasses()
-  // )
-  const navigate = useNavigate();
+  const searchResults = createMemo(() =>
+    results().length > 0 ? results() : dndSrdClasses()
+  )
 
-  const checkForHomebrew = (dndClass:DnDClass):boolean => {
-      
-    homebrewManager.classes().forEach(customClass => {
-      if (dndClass.name.toLowerCase() === customClass.name.toLowerCase()) {
-        return true;
-      }
-    })
-
-    return false;
-  };
-
-  const menuButtons = (dndClass:DnDClass) => ([
-    {
-      name:checkForHomebrew(dndClass)?"Edit":"Clone and Edit",
-      action: () => {
-        navigate(`/homebrew/create/classes?name=${dndClass.name}`)
-      }
-    },
-    {
-      name: "Calculate Dmg",
-      action: () => {}
-    }
-  ])
 
   effect(() => {
     setSearchParam({ name: dndSrdClasses()?.length > 0 ? currentClass().name : "barbarian" })      
@@ -83,11 +58,9 @@ const viewClasses: Component = () => {
             }}>{x.name}</span>}</Cell>
           </Column>
           <Column name="menu">
-            <Header><span></span></Header>
+            <Header><></></Header>
             <Cell<DnDClass>>
-              {(dndClass) => <Button enableBackgroundClick menuItems={menuButtons(dndClass)} class={`${styles.menuBtn}`}>
-                <SkinnySnowman />  
-              </Button>}
+              {(dndClass) => <ClassMenu dndClass={dndClass} />}
             </Cell>
           </Column>
         </Table>
@@ -97,7 +70,7 @@ const viewClasses: Component = () => {
       </Show>
       <div class={`${styles.paginator}`}>
         <Paginator 
-          items={results} 
+          items={searchResults} 
           setPaginatedItems={setPaginatedClasses}/>
       </div>
     </Body>

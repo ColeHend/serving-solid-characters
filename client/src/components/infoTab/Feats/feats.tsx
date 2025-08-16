@@ -11,10 +11,10 @@ import { effect } from "solid-js/web";
 import useGetFeats from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetFeats";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import Table from "../../../shared/components/Table/table";
-import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
-import { Body, Button, homebrewManager, SkinnySnowman } from "../../../shared";
+import { homebrewManager } from "../../../shared";
 import FeatView from "../../../shared/components/modals/featModal/featView";
+import { Body,Button,Icon,Table,Row,Cell,Header, Column, Menu, MenuItem } from "coles-solid-library";
+import { FeatMenu } from "./featMenu/featMenu";
 
 const featsList: Component = () => {
   const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
@@ -32,30 +32,11 @@ const featsList: Component = () => {
     }
   )[0];
   const [currentFeat, setCurrentFeat] = createSignal<Feat>(selectedFeat);
-  const [showFeatModal,setShowFeatModal] = createSignal<boolean>(false)
+  const [showFeatModal,setShowFeatModal] = createSignal<boolean>(false);
 
   const navigate = useNavigate()
 
-  const checkForHomebrew = (feat:Feat):boolean => {
-    homebrewManager.feats().forEach(customFeat => {
-      if (feat.name.toLowerCase() === customFeat.name.toLowerCase()) {
-        return true
-      }  
-    })
-
-    return false;
-  }
-
-  const menuItems = (feat:Feat) => ([
-    {
-      name:checkForHomebrew(feat)?"Edit":"Clone and Edit",
-      action: () => {navigate(`/homebrew/create/feats?name=${feat.name}`)}
-    },
-    {
-      name: "Calculate Dmg",
-      action: () => {}
-    }
-  ]);
+  
 
   effect(() => {
     setSearchParam({ name: currentFeat()?.name });
@@ -92,11 +73,7 @@ const featsList: Component = () => {
           <Column name="options">
             <Header><></></Header>
             <Cell<Feat>>
-              { (feat) => <span>
-                <Button menuItems={menuItems(feat)} enableBackgroundClick class={`${styles.menuBtn}`}>
-                  <SkinnySnowman />
-                </Button>
-              </span>}
+              { (feat) => <FeatMenu feat={feat} />}
             </Cell>
           </Column>
 
@@ -105,7 +82,7 @@ const featsList: Component = () => {
       </div>
 
       <Show when={showFeatModal()}>
-        <FeatView feat={currentFeat} backgroundClick={[showFeatModal,setShowFeatModal]} width="40%" height="40%" />
+        <FeatView feat={currentFeat} show={[showFeatModal,setShowFeatModal]} width="40%" height="40%" />
       </Show>
                
       <div class={`${styles.paginator}`}>

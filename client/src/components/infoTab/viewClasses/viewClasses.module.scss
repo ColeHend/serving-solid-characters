@@ -25,14 +25,7 @@ $mobile: 768px;
         cursor: pointer;
     }
 
-    svg {
-        width: 55%;
-        height: 22%;
-
-        path {
-            fill: white;
-        }
-    }
+    fill: var(--on-background-color);
 
     @media screen and (max-width: $mobile) {
         width: 100%;

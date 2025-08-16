@@ -5,3 +5,71 @@
     padding: 10px;
 }
 
+.baseInfoBox {
+    display: flex;
+    width: 35%;
+    padding: 10px;
+    border: 1px solid;
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+
+.infoBox {
+    width: 33%;
+    
+}
+
+//level box styles
+
+.levelBox {
+    width: 25%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -5vw;
+    
+    div {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
+.levelInput {
+    width: 75%;
+}
+
+.expInput {
+    width: 50%;
+}
+
+.centerdInputBox {
+    display: flex;
+    flex-direction: column;
+    
+    input {
+        text-align: center;
+        -webkit-appearance: textfield;
+        
+    }
+}
+
+// ---------------
+
+.bigHR {
+    width: 75%;
+}
+
+.smallHR {
+    width: 50%;
+}
+
+.Divider {
+    width: 36.5%;
+    margin-left: 0;
+    color: inherit;
+}

@@ -3,39 +3,12 @@ import useStyles from "../../../../../shared/customHooks/utility/style/styleHook
 import styles from "./stat.module.scss";
 import { effect } from "solid-js/web";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
-
-interface SkillProficiency {
-    name: string;
-    proficient: boolean;
-    expertise: boolean;
-}
-
-const allSkills: SkillProficiency[] = [
-  { name: "Acrobatics", proficient: true, expertise: false },
-  { name: "Animal Handling", proficient: false, expertise: false },
-  { name: "Arcana", proficient: false, expertise: false },
-  { name: "Athletics", proficient: false, expertise: false },
-  { name: "Deception", proficient: false, expertise: false },
-  { name: "History", proficient: false, expertise: false },
-  { name: "Insight", proficient: false, expertise: false },
-  { name: "Intimidation", proficient: false, expertise: false },
-  { name: "Investigation", proficient: false, expertise: false },
-  { name: "Medicine", proficient: false, expertise: false },
-  { name: "Nature", proficient: false, expertise: false },
-  { name: "Perception", proficient: false, expertise: false },
-  { name: "Performance", proficient: false, expertise: false },
-  { name: "Persuasion", proficient: false, expertise: false },
-  { name: "Religion", proficient: false, expertise: false },
-  { name: "Sleight of Hand", proficient: false, expertise: false },
-  { name: "Stealth", proficient: false, expertise: false },
-  { name: "Survival", proficient: false, expertise: false },
-];
+import { CharacterSkillProficiency } from "../../../../../models/character.model";
 
 type Props = {
   stat: number;
   name: string;
-  skills: string[];
-  expertise?: string[];
+  skills: Record<string, CharacterSkillProficiency>;
   proficientMod: number;
 };
 
@@ -45,26 +18,12 @@ const StatBlock: Component<Props> = (props) => {
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
-  const [skills, setSkills] = createSignal<SkillProficiency[]>(allSkills);
-  
-  effect(()=>{
-    setSkills(allSkills.map((skill) => {
-      if (props.skills.includes(skill.name)) {
-        skill = { ...skill, proficient: true };
-      }
-      if (props.expertise?.includes(skill.name)) {
-        skill = { ...skill, proficient: true, expertise: true };
-      }
-      return skill;
-    }));
-  })
-
   const getSkills: (name: string) => string[] = (name) => {
     switch (name) {
     case "Strength":
       return ["Athletics"];
     case "Dexterity":
-      return ["Acrobatics", "Sleight of Hand", "Stealth"];
+      return ["Acrobatics", "Sleight Of Hand", "Stealth"];
     case "Constitution":
       return [];
     case "Intelligence":
@@ -83,7 +42,7 @@ const StatBlock: Component<Props> = (props) => {
       return [];
     }
   };
-  const calcSkillMod = (skill: SkillProficiency) => {
+  const calcSkillMod = (skill: CharacterSkillProficiency) => {
     let mod = getStatMod(props.stat);
     if (skill.proficient) {
       mod += props.proficientMod;
@@ -97,7 +56,7 @@ const StatBlock: Component<Props> = (props) => {
     <div class={`${styles.statStyle}`}>
       <div class={`${styles.stat}`}>
         <span>
-          <span class={`${stylin().accent}`}>{getStatMod(props.stat)}</span>
+          <span class={`${stylin().box}`}>{getStatMod(props.stat)}</span>
           <ul>
             <li>{props.stat}</li>
             <li>{props.name}</li>
@@ -108,17 +67,14 @@ const StatBlock: Component<Props> = (props) => {
         <ul>
           <li>{props.name} Saving Throw: </li>
           <For
-            each={skills().filter((skill) =>
-              getSkills(props.name).includes(skill.name)
-            )}
-          >
-            {(skill) => (
-              <li>
-                <span>{skill.proficient ? skill.expertise ? <u>✓✓ </u> : <u>✓_ </u> : <u>__</u>}</span>
-                <label for={skill.name}> {skill.name} </label>
-                <span><u>_{calcSkillMod(skill)}_</u></span>
+            each={getSkills(props.name)}>
+            {
+              (skillName) => <li>
+                <span>{props.skills[`${skillName}`].proficient ? props.skills[`${skillName}`].expertise ? <u>✓✓ </u> : <u>✓_ </u> : <u>__</u>}</span>
+                <label for={skillName}> {skillName} </label>
+                <span><u>_{calcSkillMod(props.skills[`${skillName}`])}_</u></span>
               </li>
-            )}
+            }
           </For>
         </ul>
       </div>
