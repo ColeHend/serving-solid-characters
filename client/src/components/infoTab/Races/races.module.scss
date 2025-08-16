@@ -16,6 +16,8 @@ $mobile: 768px;
     overflow-y: scroll;
     height: 49vh;
 
+    fill: var(--on-background-color);
+
     table {
         margin: 0 auto;
     }
@@ -37,15 +39,4 @@ $mobile: 768px;
 .header {
     margin: 0 auto;
     text-align: center;
-}
-
-.menuBtn {
-    background: inherit;
-
-    svg {
-
-        path {
-            fill: white;
-        }
-    }
 }

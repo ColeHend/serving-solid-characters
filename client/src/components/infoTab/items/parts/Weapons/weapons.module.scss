@@ -12,6 +12,8 @@
     overflow-x: hidden;
     padding: 0;
 
+    fill: var(--on-background-color);
+
     table {
         margin: 0 auto;
         padding: 0;
@@ -28,15 +30,4 @@
 .tagRow {
     display: flex;
     flex-direction: row;
-}
-
-.menuBtn {
-    background: inherit;
-
-    svg {
-
-        path {
-            fill: white;
-        }
-    }
 }

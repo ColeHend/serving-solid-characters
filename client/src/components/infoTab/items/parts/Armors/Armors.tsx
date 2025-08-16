@@ -1,11 +1,12 @@
-import { Accessor, Component, createSignal, Show } from "solid-js";
-import { Armor, Button, homebrewManager, Paginator, SkinnySnowman } from "../../../../../shared";
+import { Accessor, Component, createSignal, from, Show } from "solid-js";
+import { Armor, homebrewManager, Paginator, } from "../../../../../shared";
 import styles from "./Armors.module.scss";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
-import Table from "../../../../../shared/components/Table/table";
-import { Cell, Column, Header, Row } from "../../../../../shared/components/Table/innerTable";
 import { useNavigate } from "@solidjs/router";
 import { ItemType } from "../../../../../shared/customHooks/utility/tools/itemType";
+import { Table, Cell, Column, Header, Row, Icon, Button } from "coles-solid-library";
+import { ArmorMenu } from "./armorMenu/armorMenu";
+
 interface props {
     SrdArmors:Accessor<Armor[]>;
 }
@@ -16,27 +17,6 @@ const ArmorsView:Component<props> = (props) => {
 
   const [results,setResults] = createSignal<Armor[]>([]);
   const [paginated,setPaginated] = createSignal<Armor[]>([]);
-
-  const navigate = useNavigate()
-
-  const checkForHomebrew = (SrdArmor:Armor):boolean => {
-    const itemsHomebrew = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[2]);
-
-    itemsHomebrew.forEach(armor=>{
-      if (armor.name.toLowerCase() === SrdArmor.name.toLowerCase()) {
-        return true;
-      }
-    })
-
-    return false
-  }
-
-  const menuButtons = (armor:Armor) => ([
-    {
-      name:checkForHomebrew(armor)?"Edit":"Clone & Edit",
-      action: () => navigate(`/homebrew/create/items?itemType=${armor.equipmentCategory}&name=${armor.name}`)
-    }
-  ])
 
   return <div>
 
@@ -105,11 +85,7 @@ const ArmorsView:Component<props> = (props) => {
         <Column name="options">
           <Header><></></Header>
           <Cell<Armor>>
-            { (armor) => <span>
-              <Button enableBackgroundClick menuItems={menuButtons(armor)} class={`${styles.menuBtn}`}>
-                <SkinnySnowman />
-              </Button>
-            </span>}
+            { (armor) => <ArmorMenu armor={armor}/>}
           </Cell>
         </Column>
 

@@ -28,7 +28,7 @@ export const SpellMenu: Component<SpellMenuProps> = (props) => {
 
   return <>
     <Button class={`${styles.spellMenu}`} ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>
-      <Icon size={"medium"} name="menu" />
+      <Icon size={"medium"} name="more_vert" />
     </Button>    
 
     <Menu anchorElement={anchorEl} show={[showMenu, setShowMenu]}>

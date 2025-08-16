@@ -8,21 +8,15 @@
     width: 100%;
     height: 40vh;
     overflow-y: scroll;
+
+    fill: var(--on-background-color);
+
     table {
         margin: 0 auto;
         text-align: center;
     }
 }
 
-.menuBtn {
-    background: inherit;
-    svg {
-
-        path {
-            fill: white;
-        }
-    }
-}
 
 .paginator {
     width: min-content;

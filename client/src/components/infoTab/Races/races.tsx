@@ -4,13 +4,11 @@ import styles from "./races.module.scss";
 import { effect } from "solid-js/web";
 import { Race } from "../../../models/old/race.model";
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import Button from "../../../shared/components/Button/Button";
-import { Paginator, SkinnySnowman,homebrewManager } from "../../../shared";
+import { Paginator,homebrewManager } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import {Table} from "../../../shared/components/Table/table";
-import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
 import RaceView from "../../../shared/components/modals/raceView/raceView";
-import { Body } from "coles-solid-library";
+import { Body, Table, Cell, Column, Header, Icon, Button } from "coles-solid-library";
+import { RaceMenu } from "./raceMenu/raceMenu";
 
 const races: Component = () => {
   // import services ↓
@@ -30,27 +28,7 @@ const races: Component = () => {
 
   if(!searchParam.name) setSearchParam({name: currentRace()?.name});
   
-  const checkForHomebrew = (race: Race):boolean => {
-
-    homebrewManager.races().forEach(customRace=> {
-      if (customRace.name.toLowerCase() === race.name.toLowerCase()) {
-        return true
-      }
-    })
-
-    return false
-  }
-
-  const menuItems = (race:Race) => ([
-    {
-      name: checkForHomebrew(race) ? "Edit" : "Clone and Edit",
-      action: ()=> {navigate(`/homebrew/create/races?name=${race.name}`)}
-    },
-    {
-      name: "Calulate dmg",
-      action: ()=> {}
-    }
-  ])
+  
 
   effect(()=>{
     setSearchParam({name: dndSrdRaces().length > 0 ? currentRace()?.name : "Dragonborn"})
@@ -90,11 +68,7 @@ const races: Component = () => {
           <Header><></></Header>
 
           <Cell<Race>>
-            { (race) => <span>
-              <Button enableBackgroundClick menuItems={menuItems(race)} class={`${styles.menuBtn}`}>
-                <SkinnySnowman />
-              </Button>
-            </span>}
+            { (race) => <RaceMenu race={race} />}
           </Cell>
         </Column>
 

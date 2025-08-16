@@ -416,7 +416,7 @@ export const spellComponents = (spell:Spell) => {
   if(spell.isSomatic) components.push("S");
   if(spell.isMaterial) components.push("M");
   if (spell.materials_Needed) {
-    return [components.join(', '), spell.materials_Needed ?? null].join(', ')
+    return [...components, spell.materials_Needed ?? null].join(', ')
   }
   return components.join(', ')
 }

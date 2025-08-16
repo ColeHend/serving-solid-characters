@@ -22,8 +22,6 @@ const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
   const dndSrdSpells = useGetSpells();
 
-
-
   // search param stuff
 
   const [searchParam, setSearchParam] = useSearchParams();
@@ -133,6 +131,8 @@ const masterSpells: Component = () => {
   createEffect(() => {
     const allSpells = dndSrdSpells();
 
+    console.log("spells:", paginatedSpells())
+
     setTableData(allSpells);
   });
 
@@ -162,7 +162,7 @@ const masterSpells: Component = () => {
             }}>
               {spell.name}
             </span>}</Cell>
-            <Cell<Spell> rowNumber={2} colSpan={2}>{(spell) => (
+            {/* <Cell<Spell> rowNumber={2} colSpan={2}>{(spell) => (
               <div style={{border: "1px solid", padding: "5px", 'border-radius': "10px"}}>
                 <div>{spell?.range || "Loading..."}</div>
                 <Show when={spell.ritual}>
@@ -171,7 +171,7 @@ const masterSpells: Component = () => {
                 </Show>
 
               </div>
-            )}</Cell>
+            )}</Cell> */}
           </Column>
 
           <Column name="school">

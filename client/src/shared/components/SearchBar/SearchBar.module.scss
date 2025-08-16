@@ -14,19 +14,13 @@
         width: 100%;
         border: none;
         background-color: inherit;
+        color: black !important;
         &:focus {
             outline: none;
         }
 
     }
-    svg {
-        margin: auto 0;
-        margin-right: 5px;
-        max-height: 80%;
-        width: min-content;
-        max-width: 80%;
-        float: right;
-    }
+    
     button {
         background-color: inherit !important;
         border: none;
