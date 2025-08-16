@@ -1,24 +1,25 @@
 import { Accessor, Component, For, Match, Setter, Switch } from "solid-js";
-import Modal from "../../popup/popup.component";
+// import Modal from "../../popup/popup.component";
 import { Feat } from "../../../../models";
 import { FeatureTypes as PreReqType } from "../../../../models/old/core.model";
-import style from "./featView.module.scss"
+import style from "./featView.module.scss";
+import { Modal } from "coles-solid-library";
 
 interface props {
   feat: Accessor<Feat>;
-  backgroundClick: [Accessor<boolean>,Setter<boolean>];
+  show: [Accessor<boolean>,Setter<boolean>];
   width:string;
   height:string;
 }
 
 const FeatView: Component<props> = (props) => {
   const currentFeat = props.feat;
-  const [backClick,setBackClick] = props.backgroundClick;
+  const [showMenu,setShowMenu] = props.show;
 
   return (
     <Modal 
       title={currentFeat()?.name} 
-      backgroundClick={[backClick,setBackClick]}
+      show={[showMenu,setShowMenu]}
       width={props.width}
       height={props.height}>
 

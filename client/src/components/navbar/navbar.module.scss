@@ -26,9 +26,9 @@
             font-size: 1.5rem;
             font-weight: bold;
             margin: 15px 5%;
-            width: min-content;
+            width: 12%;
             a {
-                width: min-content;
+                width: 100%;
             }
             @media screen and (max-width: $mobile){
                 font-size: 1.2rem;
@@ -111,6 +111,7 @@
     button {
         border: none;
         background-color: inherit;
+        
         
         svg {
             width: 0.8rem;

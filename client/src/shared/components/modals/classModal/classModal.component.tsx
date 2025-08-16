@@ -20,13 +20,10 @@ import useGetClasses from "../../../customHooks/dndInfo/oldSrdinfo/data/useGetCl
 import getUserSettings from "../../../customHooks/userSettings";
 import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";
-import Paginator from "../../paginator/paginator";
 import { Feature } from "../../../../models/old/core.model";
-import Modal from "../../popup/popup.component";
-import ChipType from "../../../models/chip";
-import Chipbar from "../../Chipbar/chipbar";
 import Tabs, { Tab } from "../../Tabs/tabs";
 import { classFeatureNullCheck } from "../../../customHooks/utility/tools/Tools";
+import { Modal,TabBar } from "coles-solid-library";
 
 type props = {
   currentClass: Accessor<DnDClass>;
@@ -38,9 +35,10 @@ const ClassModal: Component<props> = (props) => {
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(() => useStyles(userSettings().theme));
-  const [paginatedFeatures, setPaginatedFeatures] = createSignal<
-    Feature<string, string>[]
-  >([]);
+  // const [paginatedFeatures, setPaginatedFeatures] = createSignal<
+  //   Feature<string, string>[]
+  // >([]);
+  const [activeTab,setActiveTab] = createSignal<number>(0);
 
   const currentSubclasses = createMemo(() =>
     props.currentClass().subclasses?.length > 0
@@ -61,12 +59,14 @@ const ClassModal: Component<props> = (props) => {
     return props.currentClass()?.startingEquipment?.[`choice${choiceNum}`];
   };
 
+  const subclassNames = currentSubclasses().flatMap((subclass)=>subclass.name);
+
   return (
     <Modal
       width={sharedHooks.isMobile() ? "100%": "90%"}
       height="90%"
       title={props.currentClass().name}
-      backgroundClick={[props.boolean, props.booleanSetter]}
+      show={[props.boolean, props.booleanSetter]}
     >
       <div class={`${stylin()?.primary} ${styles.CenterPage}`}>
         <div class={`${styles.eachPage}`}>
@@ -76,9 +76,13 @@ const ClassModal: Component<props> = (props) => {
           <FeatureTable DndClass={() => props.currentClass()} />
 
           <div class={`${styles.tabBar}`}>
-            <Tabs transparent>
-              <Tab name="Profs">
-                <span class={`${styles.left} ${styles.flexBoxColumn}`}>
+            <TabBar 
+            tabs={["Profs","Skills","Items","Features",...subclassNames]} 
+            activeTab={activeTab()} 
+            onTabChange={(label,index)=>setActiveTab(index)}/>
+
+            <Show when={activeTab() === 0}>
+               <span class={`${styles.left} ${styles.flexBoxColumn}`}>
                   <span>
                     Armor:{" "}
                     {props
@@ -166,9 +170,10 @@ const ClassModal: Component<props> = (props) => {
                     {props.currentClass().savingThrows.join(", ")}
                   </span>
                 </span>
-              </Tab>
-              <Tab name="Skills">
-                <div>
+            </Show>
+
+            <Show when={activeTab() === 1}>
+               <div>
                   <Show
                     when={props.currentClass().proficiencyChoices.length > 0}
                   >
@@ -194,8 +199,9 @@ const ClassModal: Component<props> = (props) => {
                     </For>
                   </Show>
                 </div>
-              </Tab>
-              <Tab name="items">
+            </Show>
+
+            <Show when={activeTab() === 2}>
                 <div>
                   <For each={[1, 2, 3, 4]}>
                     {(number, i) => (
@@ -243,8 +249,9 @@ const ClassModal: Component<props> = (props) => {
                     )}
                   </For>
                 </div>
-              </Tab>
-              <Tab name="Features">
+            </Show>
+
+            <Show when={activeTab() === 3}>
                 <div>
                   <For each={props?.currentClass()?.classLevels}>
                     {(classLevel, i) => (
@@ -266,11 +273,11 @@ const ClassModal: Component<props> = (props) => {
                     )}
                   </For>
                 </div>
-              </Tab>
-              {/* ▼ Subclasses ▼ */}
-              <For each={currentSubclasses()}>
-                {(subclass, i) => (
-                  <Tab name={subclass.name}>
+            </Show>
+
+            <For each={currentSubclasses()}>
+              {(subclass, i) => (
+                <Show when={activeTab() === i() + 3}>
                     <div>
                       <h3>{subclass.name}</h3>
                       <span>{subclass.desc?.join(" \n")}</span>
@@ -294,10 +301,10 @@ const ClassModal: Component<props> = (props) => {
                         </For>
                       </span>
                     </div>
-                  </Tab>
-                )}
-              </For>
-            </Tabs>
+                  </Show>
+              )}
+            </For>
+
           </div>
         </div>
       </div>

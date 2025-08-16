@@ -2,13 +2,12 @@ import { Component, createMemo, createSignal, Show } from "solid-js";
 import useGetBackgrounds from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetBackgrounds";
 import styles from "./backgrounds.module.scss";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import { useNavigate, useSearchParams } from "@solidjs/router";
+import { useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models";
-import Table from "../../../shared/components/Table/table";
-import { Cell, Column, Header } from "../../../shared/components/Table/innerTable";
-import {Button, homebrewManager, SkinnySnowman, Paginator } from "../../../shared";
+import { homebrewManager, Paginator } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
-import { Body, } from "coles-solid-library";
+import { Body, Table, Cell, Column, Header, Button } from "coles-solid-library";
+import { BackgroundMenu } from "./backgroundMenu/backgroundMenu";
 
 const Viewbackgrounds: Component = () => {
   const backgrounds = useGetBackgrounds();
@@ -24,27 +23,6 @@ const Viewbackgrounds: Component = () => {
   const [,setPaginatedBackgrounds] = createSignal<Background[]>([])
   const [showTheBackground,setShowTheBackground] = createSignal<boolean>(false);
 
-  const navigate = useNavigate();
-
-  const checkForHomebrew = (background: Background): boolean => {
-    homebrewManager.backgrounds().forEach(customBackground =>{
-      if (background.name.toLowerCase() === customBackground.name.toLowerCase()) {
-        return true
-      }
-    })
-
-    return false
-  }
-  const menuItems = (background:Background) => ([
-    {
-      name: checkForHomebrew(background) ? "Edit" :"Clone and Edit",
-      action: () => {navigate(`/homebrew/create/backgrounds?name=${background.name}`)}
-    },
-    {
-      name: "Calculate Dmg",
-      action: () => {}
-    }
-  ])
 
 
   return <Body>
@@ -77,11 +55,7 @@ const Viewbackgrounds: Component = () => {
           <Header><></></Header>
 
           <Cell<Background>>
-            { (background) => <span>
-              <Button enableBackgroundClick menuItems={menuItems(background)} class={`${styles.menuBtn}`}>
-                <SkinnySnowman />
-              </Button>
-            </span>}
+            { (background) => <BackgroundMenu background={background} />}
           </Cell>
         </Column>
       </Table>

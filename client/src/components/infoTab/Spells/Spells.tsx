@@ -11,26 +11,16 @@ import Paginator from "../../../shared/components/paginator/paginator";
 import { Spell } from "../../../models/old/spell.model";
 import SearchBar from "./searchBar/searchBar";
 import useGetSpells from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
-import { useNavigate, useSearchParams } from "@solidjs/router";
+import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
-import { Button } from "../../../shared/components";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
-import Table from "../../../shared/components/Table/table";
-import {Chip} from "../../../shared/components";
-import {
-  Column,
-  Header,
-  Cell,
-  Row,
-  SecondRow,
-} from "../../../shared/components/Table/innerTable";
-import { Clone, homebrewManager, SkinnySnowman } from "../../../shared";
-import { Body } from "coles-solid-library";
+import { Clone, homebrewManager } from "../../../shared";
+import { Body, Table, Chip, Icon, Column, Cell, Header,Menu, Row } from "coles-solid-library";
+import { SpellMenu } from "./spellMenu/spellMenu";
 
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
   const dndSrdSpells = useGetSpells();
-  const navigate = useNavigate();
 
 
 
@@ -55,6 +45,7 @@ const masterSpells: Component = () => {
     isAsc: boolean;
   }>({ sortKey: "level", isAsc: true });
   const [tableData, setTableData] = createSignal<Spell[]>([]);
+
 
   const paginateItems = createMemo(() =>
     searchResults().length > 0 ? searchResults() : dndSrdSpells()
@@ -130,16 +121,6 @@ const masterSpells: Component = () => {
     return false;
   };
 
-  const menuItems = (spell:Spell) => ([
-    {
-      name:checkForHomebrew(spell)?"Edit":"Clone and Edit",
-      action: () => {navigate(`/homebrew/create/spells?name=${spell.name}`)}
-    },
-    {
-      name: "Calculate Dmg",
-      action: () => {}
-    }
-  ])
 
 
   createEffect(() => {
@@ -159,7 +140,6 @@ const masterSpells: Component = () => {
   return (
     <Body>
       <h1 class={`${styles.header}`}>Spells</h1>
-      <br />
       <SearchBar
         searchResults={searchResults}
         setSearchResults={setSearchResults}
@@ -167,82 +147,63 @@ const masterSpells: Component = () => {
       ></SearchBar>
 
       <div class={`${styles.SpellsBody}`}>
-        <Table
-          data={paginatedSpells}
-          columns={["name","school","level","menu"]}
-          dropdown>
-          
+        <Table 
+          data={() => paginatedSpells()} 
+          columns={["name","school","level","menu"]}> 
           <Column name="name">
-            <Header>
-              <span onClick={() => dataSort("name")}>
-                <strong>Name</strong>
-                <Show when={currentSort().sortKey === "name"}>
-                  <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
-                </Show>
-              </span>
+            <Header onClick={()=>dataSort("name")}>
+              Name
+              <Show when={currentSort().sortKey === "name"}>
+                <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+              </Show>
             </Header>
-            <Cell<Spell> class={`${styles.center}`}>
-              {(spell) => (
-                <div>
-                  <span onClick={()=>setCurrentObj(spell)}>{spell.name}</span>
-                </div>
-              )}
-            </Cell>
+            <Cell<Spell>>{(spell) => <span onClick={() => {
+              setCurrentSpell(spell);
+              setShowSpell((old)=>!old)
+            }}>
+              {spell.name}
+            </span>}</Cell>
+            <Cell<Spell> rowNumber={2} colSpan={2}>{(spell) => (
+              <div style={{border: "1px solid", padding: "5px", 'border-radius': "10px"}}>
+                <div>{spell?.range || "Loading..."}</div>
+                <Show when={spell.ritual}>
+                  <Chip key="ritual" value="yes"></Chip>
+
+                </Show>
+
+              </div>
+            )}</Cell>
           </Column>
 
-          <Show when={!sharedHooks.isMobile()}>
-            <Column name="school">
-              <Header class={styles.clickyHeader}>
-                <span onClick={() => dataSort("school")}>
-                  <strong>School</strong>
-                  <Show when={currentSort().sortKey === "school"}>
-                    <span >{currentSort().isAsc ? "▲" : "▼"}</span>
-                  </Show>
-                </span>
-              </Header>
-              <Cell<Spell> class={`${styles.center}`}>{ (spell) => <div>
-                <span class={`${styles.small}`} onClick={()=>setCurrentObj(spell)}>{spell.school}</span>
-              </div>}</Cell>
-            </Column>
-          </Show>
+          <Column name="school">
+            <Header onClick={()=>dataSort("school")}>
+              School
+              <Show when={currentSort().sortKey === "school"}>
+                <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+              </Show>
+            </Header>
+            <Cell<Spell>>{(spell) => spell.school }</Cell>
+          </Column>
 
           <Column name="level">
-            <Header>
-              <span onClick={() => dataSort("level")}>
-                <strong>Level</strong>
-                <Show when={currentSort().sortKey === "level"}>
-                  <span class={`${styles.small}`} >{currentSort().isAsc ? "▲" : "▼"}</span>
-                </Show>
-              </span>
+            <Header onClick={()=>dataSort("level")}>
+              Level
+              <Show when={currentSort().sortKey === "level"}>
+                <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+              </Show>
             </Header>
-            <Cell<Spell> class={`${styles.center}`}>
-              {(spell) => <span onClick={()=>setCurrentObj(spell)}>{spell.level}</span>}
-            </Cell>
+            <Cell<Spell>>{(spell) => spell.level }</Cell>
           </Column>
-          
+
           <Column name="menu">
-            <Header><strong></strong></Header>
-
-            <Cell<Spell>>
-              { (spell) => <span>
-                <Button enableBackgroundClick menuItems={menuItems(spell)} class={`${styles.spellMenuBtn}`}>
-                  <SkinnySnowman />
-                </Button>
-              </span>}
-            </Cell>
+            <Header><></></Header>
+            <Cell<Spell>>{(spell) => <>
+              <SpellMenu spell={spell}/>
+            </> }</Cell>
           </Column>
 
-          <Row style={{width:"98%"}} />
-          <SecondRow<Spell>>
-            {(spell) => <div class={`${!sharedHooks.isMobile()?styles.flexRow:''}`}>
-              {spell.ritual? <Chip key="ritual" value="yes" /> : ""}
-              {spell.concentration ? <Chip key="concentration" value="yes" /> : ""}
-              {spell.damageType ? <Chip key="dmg-type" value={spell.damageType} /> : ""}
-              <Chip key="Comps" value={`${checkForComponents(spell).join(", ")}`} />
-            </div>
-            }
-          </SecondRow>
-          
+          <Row style={{height:"40px"}} isDropHeader={true} />
+          <Row rowNumber={2} isDropRow={true} />
         </Table>
       </div>
 

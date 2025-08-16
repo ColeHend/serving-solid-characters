@@ -1,6 +1,7 @@
 import { Component, createMemo, createSignal, For, Show } from "solid-js";
 import styles from "./Exporting.module.scss";
-import { Button, ExpansionPanel, homebrewManager, Input, isNullish } from "../../../shared";
+import { ExpansionPanel, homebrewManager, isNullish } from "../../../shared";
+import {Button,Input} from "coles-solid-library";
 import { Trade } from "../../../models/trade.model";
 import { createStore } from "solid-js/store";
 import Modal from "../../../shared/components/popup/popup.component";

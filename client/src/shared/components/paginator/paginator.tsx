@@ -1,11 +1,10 @@
-import { Accessor, Component, For, createSignal, createMemo, Setter, useContext } from "solid-js";
+import { Accessor, Component, For, createSignal, createMemo, Setter, useContext, createEffect } from "solid-js";
 import { Spell } from "../../../models/old/spell.model";
-import { effect } from "solid-js/web";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./paginator.module.scss";
-import Button from "../Button/Button";
 import { SharedHookContext } from "../../../components/rootApp";
-import { getUserSettings, Select } from "../..";
+import { getUserSettings } from "../..";
+import { Button, Select, Option } from "coles-solid-library";
 
 type Props<T> = {
     items: Accessor<T>;
@@ -31,26 +30,24 @@ const Paginator = <T,>(props: Props<T[]>) => {
 
   const ItemsPerPageArr = props.itemsPerPage ?? [10, 20, 50, 100];
 
-  effect(()=>{
+  createEffect(()=>{
     if(currentPage() > lastpage()){
       setCurrentPage(lastpage())
     }
+    props.setPaginatedItems(theItems());
   })
 
-  effect(() => {
-    props.setPaginatedItems(theItems());
-  });
     
   return (
-    <div class={`${stylin()?.accent} ${style.paginator} `}>
+    <div class={`${stylin()?.tertiary} ${style.paginator} `}>
       <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</Button>
       <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</Button>
-      <Select transparent value={itemsPerPage()} onChange={(x)=>setItemsPerPage(x)}>
+      <Select value={itemsPerPage()} onChange={(e)=>setItemsPerPage(e)}>
         <For each={ItemsPerPageArr}>
           {(item) => 
-            <option value={item}>
+            <Option value={item}>
               {item}
-            </option>
+            </Option>
           }
         </For>
       </Select>

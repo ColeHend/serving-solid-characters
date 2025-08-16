@@ -1,24 +1,21 @@
 import { Accessor, Component, For, Setter } from "solid-js";
 import { Background } from "../../../../models";
-import Modal from "../../popup/popup.component";
+// import Modal from "../../popup/popup.component";
+import { Modal } from "coles-solid-library";
 import styles from "./backgroundView.module.scss"
 import { Chip } from "../../..";
 
 interface props {
   background: Accessor<Background>;
-  backClick?: [Accessor<boolean>,Setter<boolean>];
+  backClick: [Accessor<boolean>,Setter<boolean>];
 }
 
 const BackgroundView: Component<props> = (props) => {
   const currentBackground = props.background;
 
   return (
-    <Modal title={currentBackground().name} backgroundClick={props.backClick}>
+    <Modal title={currentBackground().name} show={props.backClick}>
       <div class={`${styles.wrapper}`}>
-       
-        {currentBackground().name}
-      </div>
-      <div class={`${styles.body}`}>
         <h2>
           {currentBackground().name}
         </h2>

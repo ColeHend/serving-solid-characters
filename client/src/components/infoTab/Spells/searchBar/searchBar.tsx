@@ -2,8 +2,8 @@ import { Accessor, Component, For, Match, Setter, Show, Switch, createEffect, cr
 import { Spell } from "../../../../models/old/spell.model";
 import styles from "./searchBar.module.scss";
 import { beutifyChip } from "../../../../shared/customHooks/utility/tools/beautifyChip";
-import { Button, Input, Select, Option } from "../../../../shared/components";
-import Chipbar from "../../../../shared/components/Chipbar/chipbar";
+import { Button, Input, Icon, Checkbox, Chipbar } from "coles-solid-library";
+import { Select, Option } from "../../../../shared";
 import type ChipType from "../../../../shared/models/chip";
 
 type Props = { 
@@ -95,11 +95,7 @@ const SearchBar: Component<Props> = (props) => {
   })
 
   createEffect(()=>{
-    setChipBar((oldChips)=>searchChip().key ?[...oldChips, searchChip()] : oldChips);
-    setSearchValue("");
-    if (document.getElementById("searchBar") as HTMLSelectElement) {
-      (document.getElementById("searchBar") as HTMLInputElement).value = "";
-    }                                                                                          
+    setChipBar((oldChips)=>searchChip().key ?[...oldChips, searchChip()] : oldChips);                                                                                        
   })
     
 
@@ -115,30 +111,34 @@ const SearchBar: Component<Props> = (props) => {
   return (
     <div class={`${styles.overall}`}>
       <div class={`${styles.searchBar}`}>
-        <Button transparent={true} onClick={()=>setSearchChip(()=>({key: searchKey(), value: beutifyChip(searchValue())  }))} >
-          <SearchGlass />
+        <Button transparent onClick={()=>setSearchChip(()=>({key: searchKey(), value: beutifyChip(searchValue())  }))} >
+          <Icon name="search" size={"medium"}></Icon>
         </Button>
-        <Select transparent class={`${styles.all}`} value={searchKey()} onChange={(e)=>setSearchKey(e)} id="chipDropdown">
+        <select value={searchKey()} onChange={(e)=>setSearchKey(e.currentTarget.value)} id="chipDropdown">
           <For each={Object.keys(getFirstSpell()).filter(x=> !["materials_Needed","higherLevel","page"].includes(x) )}>{(key) => 
-            <Option value={key}>{beautifyKey(key)}</Option>
+            <option value={key}>{beautifyKey(key)}</option>
           }</For>
-        </Select>
+        </select>
         <Switch>
           <Match when={Array.isArray(getFirstSpell()[searchKey() as keyof Spell]) || ['damageType', 'castingTime', 'range', 'duration'].includes(searchKey())}>
-            <Select transparent value={searchValue()} onChange={(e) => setSearchValue(e)}>
+            <select value={searchValue()} onChange={setSearchValue}>
               <For each={getKeyOptions(searchKey() as keyof Spell)}>
                 {(option)=>
-                  <Option value={option}>{option}</Option>
+                  <option value={option}>{option}</option>
                 }
               </For>
-            </Select>
+            </select>
           </Match>
           <Match when={typeof getFirstSpell()[searchKey() as keyof Spell] === "boolean"}>
             <div class={`${styles.booleanSelect}`} id="booleanBar">
-              <Input type="checkbox" checked={ischecked()} id="booleanCheckbox" onchange={()=>{
+              {/* <Input type="checkbox" checked={ischecked()} id="booleanCheckbox" onchange={()=>{
                 setIsChecked(!ischecked())
                 setSearchValue(`${ischecked()}`)
-              }}/>
+              }}/> */}
+              <Checkbox checked={ischecked()} onChange={()=>{
+                setIsChecked(!ischecked())
+                setSearchValue(`${ischecked()}`)
+              }} />
               <label for="falsebox">
                 <Show when={!ischecked()}>
                                     false
@@ -164,12 +164,12 @@ const SearchBar: Component<Props> = (props) => {
 
             }>
               <Match when={["school", "level"].includes(searchKey())}> 
-                <Select transparent value={searchValue()} onChange={(e)=>setSearchValue(e)}>
+                <select value={searchValue()} onChange={(e)=>setSearchValue(e.currentTarget.value)}>
                   <Show when={searchKey() === "school"}>
                     <For each={spellSchools}>
                       {(school)=>
                         <>
-                          <Option value={school}>{school}</Option>
+                          <option value={school}>{school}</option>
                         </>
                       }
                     </For>
@@ -178,12 +178,12 @@ const SearchBar: Component<Props> = (props) => {
                     <For each={[0,1,2,3,4,5,6,7,8,9]}>
                       {(level)=>
                         <>
-                          <Option value={level}>{level}</Option>
+                          <option value={level}>{level}</option>
                         </>
                       }
                     </For>
                   </Show>
-                </Select>
+                </select>
               </Match>
             </Switch> 
           </Match>
@@ -194,13 +194,3 @@ const SearchBar: Component<Props> = (props) => {
   );
 };
 export default SearchBar;
-
-type SProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any  
-  [key: string]: any;
-}
-const SearchGlass: Component<SProps> = (props)=>{
-  return <svg {...props} xmlns="http://www.w3.org/2000/svg" x="0" y="0" width="100" height="100" viewBox="0 0 50 50">
-    <path d="M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z"></path>
-  </svg>
-}
