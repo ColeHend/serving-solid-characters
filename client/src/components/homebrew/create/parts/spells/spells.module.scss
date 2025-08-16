@@ -30,11 +30,16 @@
 	border: 1px solid;
 	padding: 5px;
 	text-overflow: ellipsis;
-	max-width: 20%;
+	max-width: 75%;
+	margin: 0 auto;
 	option {
 		max-width: 20%;
 		text-overflow: ellipsis;
 	}
+}
+.classes {
+	margin-top: 1rem;
+	width: 100%;
 }
 .field {
 	display: flex;

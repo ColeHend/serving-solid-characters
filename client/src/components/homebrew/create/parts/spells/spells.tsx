@@ -1,18 +1,7 @@
 import { Component, For, createSignal, createMemo, Show, createEffect, onMount } from "solid-js";
 import styles from './spells.module.scss';
-import FormField from "../../../../../shared/components/FormField/formField";
-import {
-  Input,
-  Button,
-  Select,
-  Option,
-  Chip,
-  useGetClasses,
-  Body,
-  getAddNumberAccent,
-  UniqueSet,
-  TextArea
-} from "../../../../../shared/";
+import { Input, Button, Select, Option, Chip, Body, TextArea, FormField, Checkbox } from "coles-solid-library";
+import { useGetClasses, getAddNumberAccent, UniqueSet } from "../../../../../shared/";
 import useGetSpells from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
 import { createStore } from "solid-js/store";
 import { Spell } from "../../../../../models";
@@ -127,26 +116,23 @@ const Spells: Component = () => {
           </p>
           <span class={`${styles.break}`} />
           <p>
-            <Input id="hasVerbal" type="checkbox"
-              class={`${styles.check}`}
+            <Checkbox label="has Verbal?"
               checked={currentSpell['isVerbal']}
-              onChange={(e) => setCurrentSpell({ isVerbal: e.currentTarget.checked })} />
-            <label for="hasVerbal">has Verbal?</label>
-            <Input id="hasSomatic" type="checkbox"
-              class={`${styles.check}`}
+              onChange={(e) => setCurrentSpell({ isVerbal: e })} />
+            <Checkbox label="has Somatic?"
               checked={currentSpell['isSomatic']}
-              onChange={(e) => setCurrentSpell({ isSomatic: e.currentTarget.checked })} />
-            <label for="hasSomatic">has Somatic?</label>
-            <Input checked={currentSpell['isMaterial']}
-              class={`${styles.check}`}
-              onclick={(e) => setCurrentSpell({ "isMaterial": e.currentTarget.checked })}
-              id="hasMaterial" type="checkbox" />
-            <label for="hasMaterial">has Material?</label>
+              onChange={(e) => setCurrentSpell({ isSomatic: e })} />
+            <Checkbox label="has Material?"
+              checked={currentSpell['isMaterial']}
+              onChange={(e) => setCurrentSpell({ isMaterial: e })} />
+            <Checkbox label="is Ritual?"
+              checked={currentSpell['ritual']}
+              onChange={(e) => setCurrentSpell({ ritual: e })} />
           </p>
           <span class={`${styles.break}`} />
           <Show when={currentSpell['isMaterial']}>
             <div>
-              <FormField class={`${styles.smallField}`} name="Material Components">
+              <FormField name="Material Components">
                 <Input transparent
                   value={currentSpell['materials_Needed']}
                   onChange={(e) => setCurrentSpell({ materials_Needed: e.currentTarget.value })} />
@@ -156,7 +142,7 @@ const Spells: Component = () => {
           <span class={`${styles.break}`} />
           <p class={`${styles.field}`}>
             <label>Level </label>
-            <Select class={`${styles.border}`} value={currentSpell["level"]} onChange={(e) => setCurrentSpell({ level: e.currentTarget.value })} transparent>
+            <Select class={`${styles.border}`} value={currentSpell["level"]} onChange={(e) => setCurrentSpell({ level: e })} transparent>
               <For each={spellLevels}>{(slotLevel) =>
                 <Option value={slotLevel.toString(10)} >
                   {getAddNumberAccent(slotLevel)}
@@ -168,7 +154,7 @@ const Spells: Component = () => {
             <label>School </label>
             <Select class={`${styles.border}`}
               value={currentSpell["school"]}
-              onChange={(e) => setCurrentSpell({ "school": e.currentTarget.value })} transparent>
+              onChange={(e) => setCurrentSpell({ "school": e})} transparent>
               <For each={getSchools()}>{(school) =>
                 <Option value={school} >
                   {school}
@@ -177,26 +163,21 @@ const Spells: Component = () => {
             </Select>
           </p>
           <span class={`${styles.break}`} />
-          <p class={`${styles.field}`}>
-            <label for="isRitual">is Ritual?</label>
-            <Input id="isRitual" type="checkbox"
-              checked={currentSpell['ritual']}
-              onChange={(e) => setCurrentSpell({ ritual: e.currentTarget.checked })} />
-          </p>
           <div class={`${styles.field}`}>
             <h4>Classes?</h4>
-            <Select class={`${styles.border}`} value={tempValue["currentClass"]} onChange={(e)=>setTempValue({"currentClass": e.currentTarget.value})} transparent>
+            <Select class={`${styles.border}`} value={tempValue["currentClass"]} onChange={(e)=>setTempValue({"currentClass": e})} transparent>
               <For each={ClassNames()}>{(className) =>
                 <Option value={className} >
                   {className}
                 </Option>
               }</For>
             </Select>
-            <Button disabled={currentSpell["classes"].includes(tempValue["currentClass"])} onClick={()=>{
-              setCurrentSpell({ classes: [...currentSpell["classes"], tempValue["currentClass"]] })
-            }}>Add</Button>
+            <span class={`${styles.classes}`}>
+              <Button disabled={currentSpell["classes"].includes(tempValue["currentClass"])} onClick={()=>{
+                setCurrentSpell({ classes: [...currentSpell["classes"], tempValue["currentClass"]] })
+              }}>Add</Button>
+            </span>
           </div>
-          <span class={`${styles.break}`} />
           <div class={`${styles.classList}`}>
             <For each={currentSpell["classes"]}>{(className) =>
               <Chip key="Class" value={className} remove={()=>{
@@ -216,7 +197,7 @@ const Spells: Component = () => {
               <label>Casting Time</label>
               <Select class={`${styles.border}`}
                 value={currentSpell["castingTime"]}
-                onChange={(e) => setCurrentSpell({ "castingTime": e.currentTarget.value })} transparent>
+                onChange={(e) => setCurrentSpell({ "castingTime": e})} transparent>
                 <For each={getCastingTimes()}>{(castingTime) =>
                   <Option value={castingTime} >
                     {castingTime}
@@ -228,7 +209,7 @@ const Spells: Component = () => {
               <FormField class={`${styles.smallField}`} name="Casting Time">
                 <Input transparent
                   value={currentSpell["castingTime"]}
-                  onChange={(e) => setCurrentSpell({ "castingTime": e.currentTarget.value })} />
+                  onChange={(e) => setCurrentSpell({ "castingTime": e.currentTarget.value})} />
               </FormField>
             </Show>
           </p>
@@ -243,7 +224,7 @@ const Spells: Component = () => {
               <label>Range</label>
               <Select class={`${styles.border}`} transparent
                 value={currentSpell['range']}
-                onChange={(e) => setCurrentSpell({ 'range': e.currentTarget.value })}>
+                onChange={(e) => setCurrentSpell({ 'range': e})}>
                 <For each={getRanges()}>{(range) =>
                   <Option value={range} >
                     {range}
@@ -254,7 +235,7 @@ const Spells: Component = () => {
             <Show when={showCustoms["range"]}>
               <FormField class={`${styles.smallField}`} name="Range">
                 <Input transparent value={currentSpell['range']}
-                  onChange={(e) => setCurrentSpell({ 'range': e.currentTarget.value })} />
+                  onChange={(e) => setCurrentSpell({ 'range': e.currentTarget.value})} />
               </FormField>
             </Show>
           </p>
@@ -262,23 +243,22 @@ const Spells: Component = () => {
           <span class={`${styles.break}`} />
           <p class={`${styles.field}`}>
             <span>
-              <label >Custom</label>
-              <Input type="checkbox" tooltip="Custom Input?" 
-                onClick={(e) => setShowCustoms({ "duration": e.currentTarget.checked })}
-                checked={showCustoms["duration"]} />
             </span>
             <span>
-              <label for="isConcentration">isConcentration?</label>
-              <Input id="isConcentration" type="checkbox" tooltip="Custom Input?"
-                class={`${styles.check}`}
-                onClick={(e) => setCurrentSpell({ "concentration": e.currentTarget.checked })}
-                checked={currentSpell["concentration"]} />
+              <Checkbox label="Custom Duration?" 
+                onChange={(e) => setShowCustoms({ "duration": e })}
+                checked={showCustoms["duration"]} />
+              <Checkbox label="is Concentration?"
+                checked={currentSpell['concentration']}
+                onChange={(e) => setCurrentSpell({ concentration: e })} />
+            </span>
+            <span class={`${styles.duration}`}>
               <Show when={!showCustoms["duration"]}>
                 <label>Duration</label>
                 <Select class={`${styles.border}`} transparent 
                   value={currentSpell["duration"]} 
                   onChange={(e)=>{
-                    setCurrentSpell({ duration: e.currentTarget.value })
+                    setCurrentSpell({ duration: e})
                   }}>
                   <For each={getDurations().filter((val) => currentSpell["concentration"] ? val.toLowerCase().includes("concentration") : !val.toLowerCase().includes("concentration"))}>{(duration) =>
                     <Option value={duration} >
@@ -291,7 +271,7 @@ const Spells: Component = () => {
                 <FormField class={`${styles.smallField}`} name="Duration">
                   <Input transparent
                     value={currentSpell['duration']}
-                    onChange={(e) => setCurrentSpell({ duration: e.currentTarget.value })} />
+                    onChange={(e) => setCurrentSpell({ duration: e.currentTarget.value})} />
                 </FormField>
               </Show>
             </span>
@@ -299,13 +279,13 @@ const Spells: Component = () => {
           <span class={`${styles.break}`} />
           <p>
             <FormField name="Description">
-              <TextArea transparent={true} text={spellDesc} setText={setSpellDesc} picToTextEnabled={true} />
+              <TextArea transparent={true} text={spellDesc} setText={setSpellDesc} />
             </FormField>
           </p>
           <span class={`${styles.break}`} />
           <p>
             <FormField name="Higher Levels">
-              <TextArea transparent={true} text={spellHigherLevel} setText={setSpellHigherLevel} picToTextEnabled={true} />
+              <TextArea transparent={true} text={spellHigherLevel} setText={setSpellHigherLevel} />
             </FormField>
           </p>
           <span class={`${styles.break}`} />
