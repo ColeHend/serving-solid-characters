@@ -189,14 +189,37 @@ if (!runningInContainer && app.Environment.IsDevelopment())
 
 // 4. Static file serving
 //    - first: any custom physical files
+// Dev: serve client/public first for freshest SW; Prod: dist is primary (public may be absent)
+var publicPath = Path.Combine(Directory.GetCurrentDirectory(), "client", "public");
+if (Directory.Exists(publicPath))
+{
+    Console.WriteLine($"Serving static public assets from: {publicPath}");
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(publicPath),
+        OnPrepareResponse = ctx =>
+        {
+            var headers = ctx.Context.Response.Headers;
+            if (ctx.File.Name == "claims-sw.js")
+            {
+                // Always fetch fresh SW in dev to detect updates
+                headers["Cache-Control"] = "no-store";
+            }
+            else
+            {
+                headers["Cache-Control"] = "public,max-age=3600"; // 1 hour for other public assets
+            }
+        }
+    });
+}
+
 string path = Path.Combine(Directory.GetCurrentDirectory(), "client", "dist");
-Console.WriteLine($"Serving static files from: {path}");
+Console.WriteLine($"Serving static dist files from: {path}");
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(path),
     OnPrepareResponse = ctx =>
     {
-        // Cache static assets (adjust duration as needed)
         var headers = ctx.Context.Response.Headers;
         headers["Cache-Control"] = "public,max-age=604800"; // 7 days
     }

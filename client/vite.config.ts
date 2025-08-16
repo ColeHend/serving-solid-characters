@@ -5,6 +5,7 @@ import devtools from 'solid-devtools/vite'
 import eslint from 'vite-plugin-eslint'
 import fs from 'node:fs'
 import path from 'node:path'
+import esbuild from 'esbuild'
 // eslint-disable-next-line
 const manifest: Partial<ManifestOptions> = require('./manifest.json');
 // const pwaOptions: Partial<VitePWAOptions>;
@@ -38,17 +39,21 @@ function resolveBackendTarget() {
   return httpsCert ? 'https://localhost:5000' : 'http://localhost:5000';
 }
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(process.env.GIT_COMMIT || process.env.npm_package_version || 'dev'),
+    'import.meta.env.VITE_BUILD_TIME': JSON.stringify(new Date().toISOString())
+  },
   plugins: [
     devtools({
       autoname: true, // e.g. enable autoname
     }),
     solidPlugin(),
-    VitePWA({
+  VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
-        enabled: true,
-        type: 'module',
-        navigateFallback: '/index.html',
+    enabled: false, // we'll manage dev SW manually
+    type: 'module',
+    navigateFallback: '/index.html'
       },
       includeAssets: ["**/*.{png,svg,ico,json,jpg}"],
       workbox: {
@@ -58,7 +63,8 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5020000
       },
       minify: true,
-      injectRegister: 'auto',
+  // We'll manually register in index.tsx to control timing
+  injectRegister: null,
       outDir: 'dist',
       strategies: 'injectManifest',
       // Change the filename to match what registerSW.js is looking for
@@ -66,7 +72,8 @@ export default defineConfig({
       injectManifest: {
         minify: false,
         enableWorkboxModulesLogs: true,
-        maximumFileSizeToCacheInBytes: 5000000
+        maximumFileSizeToCacheInBytes: 5000000,
+        swSrc: 'src/pwa/claims-sw.ts'
       },
       manifest: manifest,
     }),
@@ -111,6 +118,19 @@ export default defineConfig({
       }),
       apply: 'serve',
       enforce: 'post'
+    },
+    {
+      name: 'dev-sw-builder',
+      apply: 'serve',
+      async buildStart() {
+        await buildDevSw();
+      },
+      async handleHotUpdate(ctx) {
+        if (ctx.file.endsWith('src/pwa/claims-sw.ts')) {
+          await buildDevSw();
+          ctx.server.ws.send({type:'custom', event:'sw:rebuilt'});
+        }
+      }
     }
   ],
   server: {
@@ -138,3 +158,25 @@ export default defineConfig({
   }
 
 });
+
+async function buildDevSw() {
+  const src = path.resolve(__dirname, 'src/pwa/claims-sw.ts');
+  const out = path.resolve(__dirname, 'public/claims-sw.js');
+  try {
+    if (!fs.existsSync(src)) return;
+    const result = await esbuild.build({
+      entryPoints: [src],
+      bundle: true,
+      format: 'esm',
+      platform: 'browser',
+      sourcemap: true,
+      outfile: out,
+      define: {
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+      }
+    });
+    console.log('[dev-sw-builder] built claims-sw.js');
+  } catch (e) {
+    console.warn('[dev-sw-builder] failed', e);
+  }
+}

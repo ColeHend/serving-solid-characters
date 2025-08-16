@@ -1,7 +1,6 @@
 import { type Component, For, createResource, JSX, useContext, createMemo, createSignal, Show, Switch, Match, createEffect, ErrorBoundary, onMount } from 'solid-js';
 import { TextArea, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, Markdown, Clone } from './shared';
 import styles from './App.module.scss';
-import ReloadPrompt from './ReloadPrompt';
 import DataTransferModal from './components/DataTransfering/dataTransferModal';
 import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table, Checkbox } from 'coles-solid-library';
 import { DnDClass } from './models/old/class.model';
@@ -221,7 +220,6 @@ const App: Component = () => {
             <DataTransferModal setBackClick={setShowDataTransfer} />
           </Show>
 
-          <ReloadPrompt />
         </Container>
       )}
     </ErrorBoundary>
