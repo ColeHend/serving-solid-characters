@@ -14,7 +14,7 @@ const DataTransferModal:Component<props> = (props) => {
   const sharedContext = useContext(SharedHookContext);
   const [activeTab, setActiveTab] = createSignal<number>(1);
 
-  return <Modal title="File Exchange" show={props.show} width={sharedContext.isMobile()?`90%`:""} height={sharedContext.isMobile()?"80%":""}>
+  return <Modal title="File Exchange" show={props.show}>
     <div class={`${styles.Wrapper}`}>
       <TabBar tabs={["Import","Export"]} activeTab={activeTab()} onTabChange={(label,index)=>setActiveTab(index)}/>
 
