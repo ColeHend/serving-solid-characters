@@ -131,8 +131,6 @@ const masterSpells: Component = () => {
   createEffect(() => {
     const allSpells = dndSrdSpells();
 
-    console.log("spells:", paginatedSpells())
-
     setTableData(allSpells);
   });
 
