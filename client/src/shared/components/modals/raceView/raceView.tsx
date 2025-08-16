@@ -1,9 +1,11 @@
 import { Accessor, Component, For, Setter, Show, useContext } from "solid-js";
 import { Race } from "../../../../models";
-import Modal from "../../popup/popup.component";
+// import Modal from "../../popup/popup.component";
 import styles from "./raceView.module.scss";
 import Tabs, { Tab } from "../../Tabs/tabs";
 import { SharedHookContext } from "../../../../components/rootApp";
+import { Modal } from "coles-solid-library";
+
 
 interface props {
   currentRace: Accessor<Race>;
@@ -16,7 +18,7 @@ const RaceView: Component<props> = (props) => {
   const race = props.currentRace;
   const sharedHooks = useContext(SharedHookContext);
 
-  return <Modal title={race().name} backgroundClick={props.backClick} height={sharedHooks.isMobile()?"":props.height} width={sharedHooks.isMobile()?"": props.width}>
+  return <Modal title={race().name} show={props.backClick} height={sharedHooks.isMobile()?"":props.height} width={sharedHooks.isMobile()?"": props.width}>
     <div class={`${styles.raceWrapper}`}>
       <h1 class={`${styles.header}`}>{race().name}</h1>
 
