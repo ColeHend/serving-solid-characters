@@ -30,6 +30,8 @@ const viewClasses: Component = () => {
 
   effect(() => {
     setSearchParam({ name: dndSrdClasses()?.length > 0 ? currentClass().name : "barbarian" })      
+ 
+    console.log("Classes: ", dndSrdClasses())
   })
 
     

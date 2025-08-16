@@ -18,7 +18,7 @@ const RaceView: Component<props> = (props) => {
   const race = props.currentRace;
   const sharedHooks = useContext(SharedHookContext);
 
-  return <Modal title={race().name} show={props.backClick} height={sharedHooks.isMobile()?"":props.height} width={sharedHooks.isMobile()?"": props.width}>
+  return <Modal title={race().name} show={props.backClick}>
     <div class={`${styles.raceWrapper}`}>
       <h1 class={`${styles.header}`}>{race().name}</h1>
 

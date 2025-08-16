@@ -61,10 +61,10 @@ const ClassModal: Component<props> = (props) => {
 
   const subclassNames = currentSubclasses().flatMap((subclass)=>subclass.name);
 
+  console.log("currentSubclass: ",currentSubclasses())
+
   return (
     <Modal
-      width={sharedHooks.isMobile() ? "100%": "90%"}
-      height="90%"
       title={props.currentClass().name}
       show={[props.boolean, props.booleanSetter]}
     >
@@ -277,7 +277,7 @@ const ClassModal: Component<props> = (props) => {
 
             <For each={currentSubclasses()}>
               {(subclass, i) => (
-                <Show when={activeTab() === i() + 3}>
+                <Show when={activeTab() === i() + 4}>
                     <div>
                       <h3>{subclass.name}</h3>
                       <span>{subclass.desc?.join(" \n")}</span>

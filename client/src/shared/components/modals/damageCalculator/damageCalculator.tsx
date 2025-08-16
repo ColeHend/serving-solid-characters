@@ -1,5 +1,6 @@
 import { Accessor, Component, Setter, useContext } from "solid-js";
-import Modal from "../../popup/popup.component";
+// import Modal from "../../popup/popup.component";
+import { Modal } from "coles-solid-library";
 import { SharedHookContext } from "../../../../components/rootApp";
 import style from "./damageCalculator.module.scss"
 import Tabs, { Tab } from "../../Tabs/tabs";
@@ -16,9 +17,7 @@ const DamageCalulator:Component<Props> = (props) => {
 
   return <Modal 
     title="Damage Calculator"
-    width={sharedHooks.isMobile() ? "100%" : "50%"} // fuck with it
-    height={sharedHooks.isMobile() ? "100%" : "50%"}
-    backgroundClick={[props.accssor,props.setter]}>
+    show={[props.accssor,props.setter]}>
     <div class={`${style.wrapper}`}>
       <div class={`${style.header}`}>
                 
