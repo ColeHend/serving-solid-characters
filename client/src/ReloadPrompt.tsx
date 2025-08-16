@@ -1,43 +1,47 @@
 import type { Component } from 'solid-js'
-import { Show } from 'solid-js'
+import { Show, createSignal, createEffect } from 'solid-js'
 import styles from './ReloadPrompt.module.css'
 
 interface ReloadPromptProps {
   needRefresh?: boolean;
   offlineReady?: boolean;
   updateServiceWorker?: (reloadPage?: boolean) => Promise<void>;
+  version?: string;
 }
 
 const ReloadPrompt: Component<ReloadPromptProps> = (props) => {
-  // Use props if provided, otherwise fallback to empty functions/values
+  const [visible, setVisible] = createSignal(false);
   const needRefresh = () => props.needRefresh || false;
   const offlineReady = () => props.offlineReady || false;
+  const version = () => props.version || (import.meta as any).env?.VITE_APP_VERSION || 'dev';
   
   // If no updateServiceWorker provided, create a dummy function
   const updateServiceWorker = props.updateServiceWorker || (() => Promise.resolve());
 
-  const close = () => {
-    // Since we're now using props, we can't set the signals directly
-    // This will be handled by the parent component
-    console.log('Close clicked');
-  }
+  createEffect(() => {
+    if (needRefresh() || offlineReady()) setVisible(true);
+  });
+
+  const close = () => setVisible(false);
 
   return (
-    <div class={styles.Container}>
-      <Show when={offlineReady() || needRefresh()}>
-        <div class={styles.Toast}>
+    <div class={styles.Container} role="status" aria-live="polite">
+      <Show when={(offlineReady() || needRefresh()) && visible()}>
+        <div class={styles.Toast} role="dialog" aria-label="Application update notification">
           <div class={styles.Message}>
-            <Show
-              fallback={<span>New content available, click on reload button to update.</span>}
-              when={offlineReady()}
-            >
-              <span>App ready to work offline</span>
+            <Show when={needRefresh()}>
+              <span>New version available (v{version()}). Reload to update.</span>
+            </Show>
+            <Show when={!needRefresh() && offlineReady()}>
+              <span>App cached for offline use (v{version()}).</span>
             </Show>
           </div>
-          <Show when={needRefresh()}>
-            <button class={styles.ToastButton} onClick={() => updateServiceWorker(true)}>Reload</button>
-          </Show>
-          <button class={styles.ToastButton} onClick={() => close()}>Close</button>
+          <div style={{display:'flex','gap':'0.5rem'}}>
+            <Show when={needRefresh()}>
+              <button class={styles.ToastButton} onClick={() => updateServiceWorker(true)} aria-label="Reload to apply update">Reload</button>
+            </Show>
+            <button class={styles.ToastButton} onClick={() => close()} aria-label="Dismiss update notification">Close</button>
+          </div>
         </div>
       </Show>
     </div>

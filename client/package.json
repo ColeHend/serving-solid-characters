@@ -8,7 +8,8 @@
     "build": "vite build --emptyOutDir",
     "serve": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator",
-    "test": "vitest"
+    "test": "vitest",
+    "pwa:smoke": "node ./scripts/pwa-smoke.mjs"
   },
   "type": "module",
   "license": "MIT",
