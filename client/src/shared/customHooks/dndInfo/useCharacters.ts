@@ -40,24 +40,81 @@ const Gandalf = createExampleCharacter({
       subclass: "Evocation",
       level: 1,
       hitDie: 6,
-      features: []
+      features: [
+        {
+          name: "Spellcasting",
+          description: "You can cast wizard spells using your spellbook.",
+          metadata: {
+            category: "Class"
+          }
+        },
+      ]
     },
     {
       class: "Wizard",
       subclass: "Evocation",
-      level: 1,
+      level: 2,
       hitDie: 6,
-      features: []
+      features: [
+        {
+          name: "Arcane Recovery",
+          description: "You can recover some spell slots during a short rest.",
+          metadata: {
+            category: "Class"
+          }
+        }
+      ]
     }
   ],
-  spells: [],
+  spells: [
+    {
+      name: "Fireball",
+      prepared: true,
+    },
+    {
+      name: "Magic Missile",
+      prepared: true,
+    },
+    {
+      name: "Shield",
+      prepared: false,
+    },
+    {
+      name: "Mage Armor",
+      prepared: true,
+    },
+    {
+      name: "Detect Magic",
+      prepared: true,
+    },
+    {
+      name: "Identify",
+      prepared: false,
+    },
+    {
+      name: "Mending",
+      prepared: true,
+    },
+    {
+      name: "Light",
+      prepared: true,
+    }
+  ],
   race: {
     species: "elf",
     subrace: "woodElf",
     age: "200",
     size: "Medium",
     speed: "30ft",
-    features: []
+    features: [
+      {
+        name: "Darkvision",
+        description: "You can see in dim light within 60 feet as if it were bright light.",
+        metadata: {
+
+        }
+      }
+    ]
   },
   className: "Wizard",
   subclass: "Evocation",
@@ -195,9 +252,19 @@ const Gandalf = createExampleCharacter({
     cha: 10,
   },
   items: {
-    inventory: [],
-    equipped: [],
-    attuned: []
+    inventory: [
+      "Spellbook",
+      "Quarterstaff",
+      "Component Pouch",
+      "Explorer's Pack"
+    ],
+    equipped: [
+      "Quarterstaff",
+      "Spellbook"
+    ],
+    attuned: [
+      "Ring of Protection"
+    ]
   }
 });
 

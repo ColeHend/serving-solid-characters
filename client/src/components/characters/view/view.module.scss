@@ -1,26 +1,183 @@
+$mobile: 768px;
+.tabBar {
+    margin-bottom: 1rem;
+}
 .mainBody {
     width: 80%;
     margin: 20px auto;
     border-radius: 15px;
     padding: 10px;
+    @media screen and (max-width: $mobile) {
+        width: 90%;
+        margin-top: 5px;
+        font-size: 0.9rem;
+    }
+}
+.viewSheet {
+    display: flex;
+    flex-direction: row;
+    @media screen and (max-width: $mobile) {
+        flex-direction: column;
+    }
 }
 
-.baseInfoBox {
+.statHPColumn {
+    display:flex;
+    flex-direction: column;
+    @media screen and (min-width: $mobile) {
+        margin-left: 1rem;    
+    }
+}
+
+.featuresBox {
+    flex-basis: 90%;
+}
+
+.baseCharInfoBox {
     display: flex;
-    width: 35%;
+    flex-direction: column;
+    height: min-content;
+    width: 25%;
     padding: 10px;
+    @media screen and (max-width: $mobile) {
+        width: 95%;
+        padding: 0px;
+    }
     border: 1px solid;
     border-radius: 10px;
     flex-wrap: wrap;
+    margin-bottom: 1rem;
 }
-
-
+.innerBoxInfoRow {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    flex-wrap: wrap;
+    // height: 19vh;
+    height: min-content;
+    margin-top: 2%;
+    width: 100%;
+}
+.healDamageColumn {
+    display: flex;
+    flex-direction: column;
+    width: 45px;
+    input {
+        border: 1px solid;
+        border-radius: 8px;
+    }
+}
 .infoBox {
-    width: 33%;
-    
+    width: 30%;
+    text-align: center;
+}
+.infoBoxRow {
+    display: flex;
+    flex-direction: row !important;
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 1rem;
+    gap: 15px;
+    width: 200px;
+}
+.infoBoxMini {
+    width: 45px;
+    text-align: center;
+    margin-left: 1px;
 }
 
-//level box styles
+.lifeBox {
+    display: flex;
+    flex-direction: row;
+}
+.hpMaxTemp {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    @media screen and (max-width: $mobile) {
+        flex-direction: column;
+        width: 60%;
+    }
+}
+.hpBox {
+    width: 100%;
+}
+// ----- Death Save Box
+.deathSaveBox {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid;
+    border-radius: 11px;
+    width: min-content;
+    height: min-content;
+    margin-left: 1rem;
+}
+
+.deathSaveBoxName {
+    height: min-content;
+    text-align: center;
+    border-bottom: 1px solid;
+    padding: 2px;
+}
+.deathSaveBoxBody {
+    display: flex;
+    flex-direction: row;
+}
+.deathSaveBoxBodyColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 11px;
+    padding-top: 3px;
+    width: min-content;
+    gap: 2px;
+}
+.rightBorder {
+    border-right: 1px solid;
+}
+//  ---------------
+//Item Table
+.itemTable {
+    width: 100%;
+    table {
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+// Action Table
+.actionsBox {
+    text-align: center;
+    width: 100%;
+    table {
+        border: 1px solid;
+        border-radius: 10px;
+    }
+}
+.actionTable {
+    table {
+        margin: 0 auto;
+    }
+}
+.actionListContainer {
+    width: 23vw;
+    margin: 0 auto;
+    fill: var(--on-background-color);
+    @media screen and (max-width: $mobile) {
+        width: 100%;
+    }
+}
+.actionList {
+    margin-bottom: 1rem;
+}
+.actionButtonList {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
 
 .levelBox {
     width: 25%;
@@ -28,7 +185,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: -5vw;
     
     div {
         width: 90%;
@@ -50,7 +206,9 @@
 .centerdInputBox {
     display: flex;
     flex-direction: column;
-    
+    width: 25%;
+    text-align: center;
+    height: min-content;
     input {
         text-align: center;
         -webkit-appearance: textfield;

@@ -1,3 +1,4 @@
+$mobile: 768px;
 .statStyle {
     display: flex;
     flex-direction: row;
@@ -17,6 +18,10 @@
         max-height: 7rem;
         width: 7rem;
         margin-right: 10px;
+        @media screen and (max-width: $mobile) {
+            max-height: 4rem;
+            width: 4rem;
+        }
 
         span { // the modifier number
             border: 1px solid;
@@ -36,6 +41,10 @@
             margin: 0 auto;
             :first-child { // the stat num
                 padding: 20px;
+                @media screen and (max-width: $mobile) {
+                    padding: 10px;
+                    padding-left: 0px;
+                }
                 font-size: 1.2rem;
             }
             li { // stat name
