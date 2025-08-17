@@ -1,5 +1,6 @@
 import { Accessor, Component, For, Setter, Show } from "solid-js";
-import { Button, FormField, Input, Select, Weapon, Option, Chip, TextArea } from "../../../../../../../shared";
+import { Weapon } from "../../../../../../../shared";
+import { Button, FormField, Input, Select, Option, Chip, TextArea } from "coles-solid-library";
 import { SetStoreFunction } from "solid-js/store";
 
 interface props {
@@ -28,8 +29,7 @@ const WeaponCreate:Component<props> = (props) => {
       <Select
         transparent
         value={props.currentWeapon.weaponCategory}
-        onChange={(e)=>props.setCurrentWeapon("weaponCategory",e.currentTarget.value)}
-        disableUnselected
+        onChange={(e)=>props.setCurrentWeapon("weaponCategory",e)}
       >
         <For each={["Martial","Simple"]}>
           { (weaponType) => <Option value={weaponType}>{weaponType}</Option> }
@@ -39,8 +39,7 @@ const WeaponCreate:Component<props> = (props) => {
       <Select
         transparent
         value={props.currentWeapon.weaponRange}
-        onChange={(e)=>props.setCurrentWeapon("weaponRange",e.currentTarget.value)}
-        disableUnselected
+        onChange={(e)=>props.setCurrentWeapon("weaponRange",e)}
       >
         <For each={["Melee","Ranged"]}>
           { (weaponRange) => <Option value={weaponRange}>{weaponRange}</Option> }
@@ -66,7 +65,7 @@ const WeaponCreate:Component<props> = (props) => {
         />
         <Select
           transparent
-          onChange={(e)=>props.setDmgDice(`${props.diceNumber()}${e.currentTarget.value}`)}
+          onChange={(e)=>props.setDmgDice(`${props.diceNumber()}${e}`)}
         >
           <For each={["d4","d6","d8","d10","d12","d20"]}>
             { (dice)=> <Option value={dice}>{dice}</Option> }
@@ -79,7 +78,7 @@ const WeaponCreate:Component<props> = (props) => {
       <Select 
         transparent
         value={props.dmgType()}
-        onChange={(e)=>props.setDmgType(e.currentTarget.value)}
+        onChange={(e)=>props.setDmgType(e)}
       >
         <For each={props.damageTypes().filter(x=>x !== "")}>
           { (damageType) => <Option value={damageType}>{damageType}</Option> }

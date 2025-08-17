@@ -1,10 +1,11 @@
 import { Component, For, Match, Switch, createSignal, createMemo, Show, onMount } from "solid-js";
 import styles from "./feats.module.scss";
-import { useGetClasses, useGetFeats, Input, Select, Option, Chip, homebrewManager, Body, Button, TextArea } from "../../../../../shared/";
+import { useGetClasses, useGetFeats, homebrewManager, } from "../../../../../shared/";
+import { Input, Select, Option, Chip, Body, Button, TextArea, FormField} from "coles-solid-library";
 import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { effect } from "solid-js/web";
 import { Feat } from "../../../../../models/old/feat.model";
-import FormField from "../../../../../shared/components/FormField/formField";
+// import FormField from "../../../../../shared/components/FormField/formField";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
 
@@ -170,8 +171,7 @@ const Feats: Component = () => {
             <div>
               <Select
                 value={selectedType()}
-                onChange={(e) => setSelectedType(() => +e.currentTarget.value)}
-                disableUnselected={true}
+                onChange={(e) => setSelectedType(() => +e)}
                 transparent
               >
                 <Option value={FeatureTypes.AbilityScore}>Ability Score</Option>
@@ -181,7 +181,7 @@ const Feats: Component = () => {
               <Switch>
                 <Match when={selectedType() === FeatureTypes["AbilityScore"]}>
                   <div>
-                    <Select transparent disableUnselected={true} onChange={(e) => setKeyName(e.currentTarget.value)}>
+                    <Select transparent value={keyName()} onChange={(e) => setKeyName(e)}>
                       <Option value={"STR"}>Strength</Option>
                       <Option value={"DEX"}>Dexterity</Option>
                       <Option value={"CON"}>Constitution</Option>
@@ -205,7 +205,7 @@ const Feats: Component = () => {
                       value={keyName()}
                       onChange={(e) => {
                         setKeyName("Class");
-                        setKeyValue(e.currentTarget.value);
+                        setKeyValue(e);
                       }}
                     >
                       <For each={classes()}>
@@ -220,7 +220,7 @@ const Feats: Component = () => {
                   <div>
                     <Select transparent
                       value={keyName()} 
-                      onChange={(e) => setKeyName(e.currentTarget.value)}>
+                      onChange={(e) => setKeyName(e)}>
                       <For each={classes()}>
                         {(classObj) => (
                           <Option value={classObj.name}>{classObj.name}</Option>
@@ -262,7 +262,6 @@ const Feats: Component = () => {
                 name="featDescription"
                 text={featDescription}
                 setText={setFeatDescription}
-                picToTextEnabled={true}
                 transparent
               />
             </FormField>

@@ -1,5 +1,6 @@
 import { Accessor, Component, For, Setter, Show } from "solid-js";
-import { Armor, FormField, Input, Select,Option, TextArea } from "../../../../../../../shared";
+import { Armor } from "../../../../../../../shared";
+import { FormField, Input, Select,Option, TextArea } from "coles-solid-library";
 import { SetStoreFunction } from "solid-js/store";
 
 interface props {
@@ -22,7 +23,7 @@ const ArmorCreate:Component<props> = (props) => {
       <Select
         transparent
         value={props.armorCategory()}
-        onChange={(e)=>props.setArmorCategory(e.currentTarget.value)}
+        onChange={(e)=>props.setArmorCategory(e)}
       >
         <For each={["Light","Medium","Heavy","Shield","Other"]}>
           { (armorType) => <Option value={armorType}>{armorType}</Option>}

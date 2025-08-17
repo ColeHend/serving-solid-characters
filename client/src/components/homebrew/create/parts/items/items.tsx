@@ -8,25 +8,19 @@ import {
   onMount,
 } from "solid-js";
 import {
-  Body,
   Item,
   Weapon,
   Armor,
-  FormField,
-  Input,
-  Select,
-  Option,
-  Chip,
-  Button,
   UniqueStringArray,
   Clone,
   homebrewManager,
 } from "../../../../../shared/";
+import { Body, FormField, Input, Select, Option, Chip, Button, addSnackbar} from "coles-solid-library";
 import styles from "./items.module.scss";
 import { useSearchParams } from "@solidjs/router";
 import { ItemType } from "../../../../../shared/customHooks/utility/tools/itemType";
 import { createStore } from "solid-js/store";
-import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
+// import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Feature } from "../../../../../models/old/core.model";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import {useGetItems} from "../../../../../shared/";
@@ -94,7 +88,7 @@ const Items: Component = () => {
 
     weapons.forEach(y=>y.damage.forEach(z=>dmgTypes.push(z.damageType)));
 
-    allSpells().forEach(s=>dmgTypes.push(s.damageType));
+    allSpells().forEach(s=>dmgTypes.push(s.damage_type));
     
     return UniqueStringArray(dmgTypes)
   }
@@ -498,17 +492,16 @@ const Items: Component = () => {
           <Select
             transparent
             value={getItemObj().equipmentCategory}
-            onChange={(e) => {
-              setItemType(e.currentTarget.value);
-              clearInputs();
-              saveToObject();
-              addSnackbar({
-                message: "Cleared Inputs",
-                severity: "info",
-                closeTimeout: 3000,
-              });
-            }}
-            disableUnselected
+            // onChange={(e) => {
+            //   setItemType(e);
+            //   clearInputs();
+            //   saveToObject();
+            //   addSnackbar({
+            //     message: "Cleared Inputs",
+            //     severity: "info",
+            //     closeTimeout: 3000,
+            //   });
+            // }} 
           >
             <For each={["Item", "Weapon", "Armor"]}>
               {(typeOption) => <Option value={typeOption}>{typeOption}</Option>}
@@ -530,11 +523,10 @@ const Items: Component = () => {
               value={getItemObj().cost.quantity}
               onInput={(e) => setItemCost(parseInt(e.currentTarget.value))}
             />
-            <Select
+            <Select 
               transparent
               value={getItemObj().cost.unit}
-              onChange={(e) => setCostUnit(e.currentTarget.value)}
-              disableUnselected
+              onChange={(e) => setCostUnit(e)}
             >
               <For each={["PP", "GP", "SP", "CP", "other"]}>
                 {(unitOption) => <Option value={unitOption}>{unitOption !== "other" ? unitOption : "other"}</Option>}
@@ -613,8 +605,8 @@ const Items: Component = () => {
           <div>
             <Select
               transparent
-              value={getItemObj().tags}
-              onChange={(e) => setItemTag(e.currentTarget.value)}
+              value={getItemObj().tags[0]}
+              onChange={(e) => setItemTag(e)}
             >
               <For each={builtInTags()}>
                 {(tag) => <Option value={tag}>{tag}</Option>}
