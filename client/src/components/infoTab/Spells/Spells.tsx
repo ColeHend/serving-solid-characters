@@ -135,8 +135,8 @@ const masterSpells: Component = () => {
   });
 
   return (
-    <Body>
-      <h1 class={`${styles.header}`}>Spells</h1>
+    <Body class={`${styles.spellsBody}`}>
+      <h1>Spells</h1>
       <SearchBar
         searchResults={searchResults}
         setSearchResults={setSearchResults}

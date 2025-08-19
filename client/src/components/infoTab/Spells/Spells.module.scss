@@ -1,7 +1,9 @@
 $mobile: 768px;
 .SpellsBody{
     display: block;
-    width: 50%;
+    height: 49vh;
+    width: 35%;
+    
     margin: 0 auto;
     overflow-y: scroll;
     
@@ -43,33 +45,4 @@ $mobile: 768px;
     }
 }
 
-.spellChip {
-    // background: white;
-    color: white !important;
-    border: 2px solid white;
-    font-family: 'Bookinsanity';
-
-
-    :nth-child(n) {
-        color: white !important;
-    }
-}
-
-.flexRow {
-    display: flex;
-    flex-direction: row;
-}
-
-.header {
-    margin: 0 auto;
-    text-align: center;
-}
-
-.center {
-    text-align: center;
-    button {
-        display: block;
-        margin: 0 auto;
-    }
-}
 

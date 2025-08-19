@@ -3,7 +3,6 @@ import { Spell } from "../../../../models/old/spell.model";
 import styles from "./searchBar.module.scss";
 import { beutifyChip } from "../../../../shared/customHooks/utility/tools/beautifyChip";
 import { Button, Input, Icon, Checkbox, Chipbar } from "coles-solid-library";
-import { Select, Option } from "../../../../shared";
 import type ChipType from "../../../../shared/models/chip";
 
 type Props = { 
