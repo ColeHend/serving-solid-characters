@@ -20,21 +20,20 @@ const Spells: Component = () => {
   }
   const [currentSpell, setCurrentSpell] = createStore<Spell>({
     name: "",
-    desc: "",
+    description: "",
     duration: "",
-    concentration: false,
+    is_concentration: false,
     level: "0",
     range: "",
-    ritual: false,
+    is_ritual: false,
     school: "",
-    castingTime: "",
-    damageType: "",
+    casting_time: "",
+    damage_type: "",
     page: "",
     isMaterial: false,
     isSomatic: false,
     isVerbal: false,
-    materials_Needed: "",
-    higherLevel: "",
+    components: "",
     classes: [],
     subClasses: [],
   });
@@ -60,7 +59,7 @@ const Spells: Component = () => {
   };
   const getCastingTimes = () => {
     const castingTimes = new UniqueSet<string>();
-    allSpells().forEach(spell => castingTimes.add(spell.castingTime));
+    allSpells().forEach(spell => castingTimes.add(spell.casting_time));
     return castingTimes.value.sort()
   };
   const getRanges = () => {
@@ -80,13 +79,13 @@ const Spells: Component = () => {
 
     if(srdSpell) {
       setCurrentSpell(srdSpell);
-      setSpellDesc(srdSpell.desc);
-      setSpellHigherLevel(srdSpell.higherLevel);
+      setSpellDesc(srdSpell.description);
+      // setSpellHigherLevel(srdSpell.higherLevel);
     }
     if (spell) {
       setCurrentSpell(spell);
-      setSpellDesc(spell.desc);
-      setSpellHigherLevel(spell.higherLevel);
+      setSpellDesc(spell.description);
+      // setSpellHigherLevel(spell.higherLevel);
     };
   };
 
@@ -94,11 +93,11 @@ const Spells: Component = () => {
     if (searchParam.name) fillSpellInfo(true);
   })
   createEffect(() => {
-    setCurrentSpell({ 'desc': spellDesc() });
+    setCurrentSpell({ 'description': spellDesc() });
   });
-  createEffect(() => {
-    setCurrentSpell({ 'higherLevel': spellHigherLevel() });
-  });
+  // createEffect(() => {
+  //   setCurrentSpell({ 'higherLevel': spellHigherLevel() });
+  // });
 
   return (
     <>
@@ -126,8 +125,8 @@ const Spells: Component = () => {
               checked={currentSpell['isMaterial']}
               onChange={(e) => setCurrentSpell({ isMaterial: e })} />
             <Checkbox label="is Ritual?"
-              checked={currentSpell['ritual']}
-              onChange={(e) => setCurrentSpell({ ritual: e })} />
+              checked={currentSpell['is_ritual']}
+              onChange={(e) => setCurrentSpell({ is_ritual: e })} />
           </p>
           <span class={`${styles.break}`} />
           <Show when={currentSpell['isMaterial']}>
@@ -196,8 +195,8 @@ const Spells: Component = () => {
             <Show when={!showCustoms["castingTime"]}>
               <label>Casting Time</label>
               <Select class={`${styles.border}`}
-                value={currentSpell["castingTime"]}
-                onChange={(e) => setCurrentSpell({ "castingTime": e})} transparent>
+                value={currentSpell["casting_time"]}
+                onChange={(e) => setCurrentSpell({ "casting_time": e})} transparent>
                 <For each={getCastingTimes()}>{(castingTime) =>
                   <Option value={castingTime} >
                     {castingTime}
@@ -208,8 +207,8 @@ const Spells: Component = () => {
             <Show when={showCustoms["castingTime"]}>
               <FormField class={`${styles.smallField}`} name="Casting Time">
                 <Input transparent
-                  value={currentSpell["castingTime"]}
-                  onChange={(e) => setCurrentSpell({ "castingTime": e.currentTarget.value})} />
+                  value={currentSpell["casting_time"]}
+                  onChange={(e) => setCurrentSpell({ "casting_time": e.currentTarget.value})} />
               </FormField>
             </Show>
           </p>
@@ -249,8 +248,8 @@ const Spells: Component = () => {
                 onChange={(e) => setShowCustoms({ "duration": e })}
                 checked={showCustoms["duration"]} />
               <Checkbox label="is Concentration?"
-                checked={currentSpell['concentration']}
-                onChange={(e) => setCurrentSpell({ concentration: e })} />
+                checked={currentSpell['is_concentration']}
+                onChange={(e) => setCurrentSpell({ is_concentration: e })} />
             </span>
             <span class={`${styles.duration}`}>
               <Show when={!showCustoms["duration"]}>
@@ -260,7 +259,7 @@ const Spells: Component = () => {
                   onChange={(e)=>{
                     setCurrentSpell({ duration: e})
                   }}>
-                  <For each={getDurations().filter((val) => currentSpell["concentration"] ? val.toLowerCase().includes("concentration") : !val.toLowerCase().includes("concentration"))}>{(duration) =>
+                  <For each={getDurations().filter((val) => currentSpell["is_concentration"] ? val.toLowerCase().includes("concentration") : !val.toLowerCase().includes("concentration"))}>{(duration) =>
                     <Option value={duration} >
                       {duration}
                     </Option>
