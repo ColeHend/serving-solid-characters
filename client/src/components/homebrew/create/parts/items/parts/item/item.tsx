@@ -1,5 +1,6 @@
 import { Accessor, Component, Setter } from "solid-js";
-import { FormField, Input, Item, TextArea } from "../../../../../../../shared";
+import { Item } from "../../../../../../../shared";
+import { FormField, Input, TextArea } from "coles-solid-library";
 import { SetStoreFunction } from "solid-js/store";
 
 interface props {

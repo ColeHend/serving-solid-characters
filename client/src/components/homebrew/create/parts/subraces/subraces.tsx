@@ -1,6 +1,7 @@
 import { Component, createEffect, createSignal, For, onMount, Show } from "solid-js";
 import Style from "./subraces.module.scss";
-import { Body, homebrewManager, Select,Option, Chip, FormField, Input, Button, UniqueStringArray, Clone, TextArea } from "../../../../../shared";
+import { homebrewManager, UniqueStringArray, Clone } from "../../../../../shared";
+import { Body, Select, Option, Chip, FormField, Input, Button, TextArea } from "coles-solid-library";
 import { createStore } from "solid-js/store";
 import { Race, Subrace } from "../../../../../models/old/race.model";
 import { AbilityScores, Feature, FeatureTypes } from "../../../../../models/old/core.model";
@@ -346,9 +347,9 @@ const Subraces:Component = () => {
     <Select 
       transparent
       onChange={(e)=>{
-        const race = allRaces().find(x=>x.name === e.currentTarget.value)
+        const race = allRaces().find(x=>x.name === e)
                 
-        if (e.currentTarget.value !== "") {
+        if (e !== "") {
           if (race) setCurrentRace(race)
         } else {                    
           setCurrentRace({
@@ -472,7 +473,7 @@ const Subraces:Component = () => {
           <Select
             transparent
             value={newSizes()}
-            onChange={((e)=>setNewSizes(e.currentTarget.value))}
+            onChange={((e)=>setNewSizes(e))}
           >
             <For each={[
               "Tiny",
@@ -531,7 +532,7 @@ const Subraces:Component = () => {
               transparent
               value={selectedAbility()}
               onChange={(e)=> 
-                setSelectedAbility(parseInt(e.currentTarget.value))
+                setSelectedAbility(parseInt(e.toExponential()))
               }
             >
               <For each={[0, 1, 2, 3, 4, 5, 6]}>
@@ -562,7 +563,7 @@ const Subraces:Component = () => {
           <Select
             transparent
             value={newLanguage()}
-            onChange={(e)=>setNewLanguage(e.currentTarget.value)}
+            onChange={(e)=>setNewLanguage(e)}
           >
             <For each={allLanguages()}>
               { (language) => <Option value={language}>{language}</Option> }

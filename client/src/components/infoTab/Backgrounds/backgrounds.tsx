@@ -29,7 +29,6 @@ const Viewbackgrounds: Component = () => {
     <h1 class={`${styles.header}`}>Backgrounds</h1>
     <div class={`${styles.searchBar}`}>
       <SearchBar 
-        placeholder="Search Backgrounds..." 
         dataSource={backgrounds} 
         setResults={setSearchResult}
         searchFunction={(data,search)=>{

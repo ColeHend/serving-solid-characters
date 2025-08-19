@@ -8,18 +8,22 @@ import {
   onMount,
 } from "solid-js";
 import {
-  Body,
   homebrewManager,
-  FormField,
+  UniqueStringArray,
+  Clone,
+} from "../../../../../shared/";
+
+import {
   Input,
   Select,
   Option,
   Button,
   Chip,
-  Clone,
-  UniqueStringArray,
-  TextArea,
-} from "../../../../../shared/";
+  FormField,
+  Body,
+  TextArea
+} from "coles-solid-library"
+
 import styles from "./races.module.scss";
 import { Race } from "../../../../../models";
 import { createStore } from "solid-js/store";
@@ -386,7 +390,7 @@ const Races: Component = () => {
                 <Select
                   transparent
                   value={newSizes()}
-                  onChange={(e) => setNewSizes(e.currentTarget.value)}
+                  onChange={(e) => setNewSizes(e)}
                 >
                   <For
                     each={[
@@ -462,7 +466,7 @@ const Races: Component = () => {
                   transparent
                   value={selectedAbility()}
                   onChange={(e) =>
-                    setSelectedAbility(parseInt(e.currentTarget.value))
+                    setSelectedAbility(parseInt(e.toExponential()))
                   }
                 >
                   <For each={[0, 1, 2, 3, 4, 5, 6]}>
@@ -559,7 +563,7 @@ const Races: Component = () => {
                 <Select
                   transparent
                   value={newLanguage()}
-                  onChange={(e)=>setNewLanguage(e.currentTarget.value)}
+                  onChange={(e)=>setNewLanguage(e)}
                 >
                   <For each={allLanguages()}>
                     { (language) => <Option value={language}>{language}</Option> }

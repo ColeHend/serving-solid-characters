@@ -1,15 +1,15 @@
 import { Component, For, createSignal, createMemo, Show, onMount } from "solid-js";
-import { Body, Input, Select, Option, Button, TextArea, Chip, useGetItems, Weapon, Armor } from "../../../../../shared/";
+import { useGetItems, Weapon, Armor } from "../../../../../shared/";
+import {Body, Input, Select, Option, Button, TextArea, Chip, FormField, addSnackbar} from "coles-solid-library";
 import styles from './backgrounds.module.scss';
 import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { createStore } from "solid-js/store";
 import { Background } from "../../../../../models";
 import useGetBackgrounds from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetBackgrounds";
-import FormField from "../../../../../shared/components/FormField/formField";
+// import FormField from "../../../../../shared/components/FormField/formField";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { useSearchParams } from "@solidjs/router";
-import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 
 const Backgrounds: Component = () => {
   // eslint-disable-next-line
@@ -135,7 +135,7 @@ const Backgrounds: Component = () => {
                 <Select transparent
                   value={selectedSkill()}
                   onChange={(e) => {
-                    setSelectedSkill(e.currentTarget.value);
+                    setSelectedSkill(e);
                   }
                   }>
                   <For each={allSkills()}>{(skill) =>
@@ -168,7 +168,7 @@ const Backgrounds: Component = () => {
                 <Select transparent
                   value={selectedProficiency()}
                   onChange={(e) => {
-                    setSelectedProficiency(e.currentTarget.value);
+                    setSelectedProficiency(e);
                   }
                   }>
                   <For each={allSkills()}>{(skill) =>
@@ -199,7 +199,7 @@ const Backgrounds: Component = () => {
                 <Select transparent
                   value={selectedTool()}
                   onChange={(e) => {
-                    setSelectedTool(e.currentTarget.value);
+                    setSelectedTool(e);
                   }
                   }>
                   <For each={allTools()}>{(tool) =>
@@ -232,7 +232,7 @@ const Backgrounds: Component = () => {
                 <Select transparent
                   value={selectedLanguage()}
                   onChange={(e) => {
-                    setSelectedLanguage(e.currentTarget.value);
+                    setSelectedLanguage(e);
                   }
                   }>
                   <For each={getLanguages()}>{(lang) =>
@@ -254,10 +254,10 @@ const Backgrounds: Component = () => {
               <h4>Starting Equipment</h4>
               <div>
                 <span>
-                  <Select transparent disableUnselected
+                  <Select transparent
                     value={selectedItemType()}
                     onChange={(e) => {
-                      setSelectedItemType(e.currentTarget.value);
+                      setSelectedItemType(e);
                     }
                     }>
                     <Option value="Item">Item</Option>
@@ -270,7 +270,7 @@ const Backgrounds: Component = () => {
                     <Select transparent
                       value={selectedItem()}
                       onChange={(e) => {
-                        setSelectedItem(e.currentTarget.value);
+                        setSelectedItem(e);
                       }
                       }>
                       <For each={allOtherItems()}>{(item) =>
@@ -281,10 +281,8 @@ const Backgrounds: Component = () => {
                   <Show when={selectedItemType() === "Weapon"}>
                     <Select transparent
                       value={selectedItem()}
-                      onChange={(e) => {
-                        setSelectedItem(e.currentTarget.value);
-                      }
-                      }>
+                      onSelect={(e)=>setSelectedItem(e)}>
+                      
                       <For each={allWeapons()}>{(item) =>
                         <Option value={item.item}>{item.name}</Option>
                       }</For>
@@ -294,7 +292,7 @@ const Backgrounds: Component = () => {
                     <Select transparent
                       value={selectedItem()}
                       onChange={(e) => {
-                        setSelectedItem(e.currentTarget.value);
+                        setSelectedItem(e);
                       }
                       }>
                       <For each={allArmor()}>{(item) =>
@@ -325,10 +323,10 @@ const Backgrounds: Component = () => {
               <h4>Starting Equipment Choices</h4>
               <div>
                 <span>
-                  <Select transparent disableUnselected
+                  <Select transparent 
                     value={selectedChoicesItemType()}
                     onChange={(e) => {
-                      setSelectedChoiceItemType(e.currentTarget.value);
+                      setSelectedChoiceItemType(e);
                     }
                     }>
                     <Option value="Item">Item</Option>
@@ -341,7 +339,7 @@ const Backgrounds: Component = () => {
                     <Select transparent
                       value={selectedChoiceItem()}
                       onChange={(e) => {
-                        setSelectedChoiceItem(e.currentTarget.value);
+                        setSelectedChoiceItem(e);
                       }
                       }>
                       <For each={allOtherItems()}>{(item) =>
@@ -358,7 +356,7 @@ const Backgrounds: Component = () => {
                     <Select transparent
                       value={selectedChoiceItem()}
                       onChange={(e) => {
-                        setSelectedChoiceItem(e.currentTarget.value);
+                        setSelectedChoiceItem(e);
                       }
                       }>
                       <For each={allWeapons()}>{(item) =>
@@ -375,7 +373,7 @@ const Backgrounds: Component = () => {
                     <Select transparent
                       value={selectedChoiceItem()}
                       onChange={(e) => {
-                        setSelectedChoiceItem(e.currentTarget.value);
+                        setSelectedChoiceItem(e);    
                       }
                       }>
                       <For each={allArmor()}>{(item) =>

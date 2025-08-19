@@ -27,7 +27,7 @@ export const BackgroundMenu: Component<menuProps> = (props) => {
   }
 
   return <>
-    <Button ref={setAnchorEl}>
+    <Button ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>
       <Icon name="more_vert" />
     </Button>
 
