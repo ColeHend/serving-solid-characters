@@ -1,5 +1,5 @@
 import { type Component, For, createResource, JSX, useContext, createMemo, createSignal, Show, Switch, Match, createEffect, ErrorBoundary, onMount } from 'solid-js';
-import { TextArea, getUserSettings, useInjectServices, useDnDClasses, useDnDSpells, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, Markdown, Clone } from './shared';
+import { TextArea, getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, Markdown, Clone } from './shared';
 import styles from './App.module.scss';
 import DataTransferModal from './components/DataTransfering/dataTransferModal';
 import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table, Checkbox } from 'coles-solid-library';
@@ -7,6 +7,7 @@ import { DnDClass } from './models/old/class.model';
 import { useGetSRDClasses$ } from './shared/customHooks/api/useGetSrdClasses';
 import { combineLatest, concatMap, of } from 'rxjs';
 import { useTest } from './useTest';
+import { useDnDSpells } from './shared/customHooks/dndInfo/info/all/spells';
 
 const App: Component = () => {
   console.log("App component initializing");

@@ -5,14 +5,14 @@ import useGetClasses from "./oldSrdinfo/data/useGetClasses";
 import useGetFeats from "./oldSrdinfo/data/useGetFeats";
 import useGetItems from "./oldSrdinfo/data/useGetItems";
 import useGetRaces from "./oldSrdinfo/data/useGetRaces";
-import useGetSpells from "./oldSrdinfo/data/useGetSpells";
 import { Character } from "../../../models/character.model";
+import { useDnDSpells } from "./info/all/spells";
 
 const useExportFullStats = (currentCharacter: Accessor<Character>) => {
   
   const fullStats = createMemo(() => {
     const dndSrdClasses = useGetClasses();
-    const dndSrdSpells = useGetSpells();
+    const dndSrdSpells = useDnDSpells();
     const dndSrdFeats = useGetFeats();
     const dndSrdRaces = useGetRaces();
     const dndSrdItems = useGetItems();

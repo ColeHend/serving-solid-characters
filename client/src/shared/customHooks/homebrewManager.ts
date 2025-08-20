@@ -65,6 +65,15 @@ class HomebrewManager {
     ).subscribe();
   }
 
+  public resetSystem() {
+    this.setClasses([]);
+    this.setItems([]);
+    this.setFeats([]);
+    this.setSpells([]);
+    this.setBackgrounds([]);
+    this.setRaces([]);
+  }
+
   public addClass = (newClass: DnDClass) => {
     if(this.classes().findIndex((c) => c.name === newClass.name) !== -1){
       return null;
