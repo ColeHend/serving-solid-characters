@@ -5,21 +5,24 @@ import {
   createMemo,
   createSignal,
 } from "solid-js";
-import styles from "./feats.module.scss";
-// import { Feat } from "../../../models/old/feat.model";
-import Paginator from "../../../shared/components/paginator/paginator";
-import { effect } from "solid-js/web";
-import useGetFeats from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetFeats";
-import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import { useNavigate, useSearchParams } from "@solidjs/router";
-import { homebrewManager } from "../../../shared";
-import FeatView from "../../../shared/components/modals/featModal/featView";
-import { Body,Button,Icon,Table,Row,Cell,Header, Column, Menu, MenuItem } from "coles-solid-library";
+import { 
+  Body,
+  Table,
+  Cell,
+  Header,
+  Column, 
+} from "coles-solid-library";
+import { homebrewManager, Paginator } from "../../../shared";
+import { useSearchParams } from "@solidjs/router";
 import { FeatMenu } from "./featMenu/featMenu";
 import { useDnDFeats } from "../../../shared/customHooks/dndInfo/info/all/feats";
 import { Feat } from "../../../models/data";
+import FeatView from "../../../shared/components/modals/featModal/featView";
+import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import styles from "./feats.module.scss";
 
 const featsList: Component = () => {
+  const [currentFeat, setCurrentFeat] = createSignal<Feat | undefined>(undefined);
   const [showFeatModal,setShowFeatModal] = createSignal<boolean>(false);
   const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
   const [searchResult, setSearchResult] = createSignal<Feat[]>([]);
@@ -27,7 +30,6 @@ const featsList: Component = () => {
   
   const [searchParam, setSearchParam] = useSearchParams();
   const srdFeats = useDnDFeats();
-  const navigate = useNavigate()
   
   const displayResults = createMemo(() => searchResult().length > 0 ? searchResult() : srdFeats() );
   
@@ -48,9 +50,6 @@ const featsList: Component = () => {
     const target = (searchParam.name || list[0].details.name).toLowerCase();
     return list.find(f => f.details.name.toLowerCase() === target) || list[0];
   })
-  
-  
-  const [currentFeat, setCurrentFeat] = createSignal<Feat | undefined>(undefined);
   
   
   // Keep currentFeat in sync with derived selectedFeat
