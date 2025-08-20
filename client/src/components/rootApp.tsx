@@ -1,7 +1,7 @@
 import { RouteSectionProps } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
-import { getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDItems, useDnDRaces, useDnDSpells } from "../shared";
+import { getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDItems, useDnDRaces } from "../shared";
 import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
@@ -9,6 +9,7 @@ import { HookContext, ProviderProps } from "../models/hookContext";
 import NavMenu from "./navMenu/navMenu";
 import { addTheme, Container, SnackbarController } from "coles-solid-library";
 import { UserSettings } from "../models/userSettings";
+import { useDnDSpells } from "../shared/customHooks/dndInfo/info/all/spells";
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
@@ -29,7 +30,8 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
     theme: 'default',
     userId: 0,
     username: "",
-    email: ""
+    email: "",
+    dndSystem: '2024'
   });
   
   try {
@@ -60,7 +62,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
     defaultShowList()
     setDefaultIsMobile(mobileCheck());
   })
-  
+  useDnDSpells();
   const clickIntercept = () => {
     if (mobileCheck()) {
       setDefaultShowList(false);

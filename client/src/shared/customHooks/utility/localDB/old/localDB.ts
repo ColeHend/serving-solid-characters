@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { Spell } from "../../../../../models/old/spell.model";
+import { Spell } from "../../../../../models/data/spell";
 import { DnDClass } from "../../../../../models/old/class.model";
 import { Race } from "../../../../../models/old/race.model";
 import { Background } from "../../../../../models/old/background.model";

@@ -1,4 +1,8 @@
-namespace sharpAngleTemplate.models.DTO.Updated;
+using System.Text.Json.Serialization;
+
+using Newtonsoft.Json;
+namespace sharpAngleTemplate.models.DTO.Updated
+{
 
 /// <summary>Represents a discrete feat a character can gain.</summary>
 public class Feat
@@ -188,24 +192,27 @@ public class WeaponMastery
 
 public class Spell
 {
-  public string Name { get; set; } = null!;
-  public string Desc { get; set; } = null!;
-  public string Duration { get; set; } = null!;
-  public bool Concentration { get; set; }
-  public string Level { get; set; } = null!;
-  public string Range { get; set; } = null!;
-  public bool Ritual { get; set; }
-  public string School { get; set; } = null!;
-  public string CastingTime { get; set; } = null!;
-  public string DamageType { get; set; } = null!;
-  public string Page { get; set; } = null!;
-  public bool IsMaterial { get; set; }
-  public bool IsSomatic { get; set; }
-  public bool IsVerbal { get; set; }
-  public string? MaterialsNeeded { get; set; }
-  public string HigherLevel { get; set; } = null!;
-  public List<string> Classes { get; set; } = new();
-  public List<string> SubClasses { get; set; } = new();
+  // Keep C# names for internal code, but expose snake_case / expected client names via attributes
+  [JsonProperty("name")] public string Name { get; set; } = null!;
+  [JsonProperty("description")] public string Description { get; set; } = null!; // front-end expects 'description'
+  [JsonProperty("duration")] public string Duration { get; set; } = null!;
+  [JsonProperty("is_concentration")] public bool Concentration { get; set; }
+  [JsonProperty("components")] public string Components { get; set; }
+  [JsonProperty("level")] public string Level { get; set; } = null!; // JSON uses "" or number-like strings; keep string
+  [JsonProperty("range")] public string Range { get; set; } = null!;
+  [JsonProperty("is_ritual")] public bool Ritual { get; set; }
+  [JsonProperty("school")] public string School { get; set; } = null!;
+  [JsonProperty("casting_time")] public string CastingTime { get; set; } = null!;
+  [JsonProperty("damage_type")] public string DamageType { get; set; } = null!;
+  [JsonProperty("page")] public string Page { get; set; } = null!;
+  [JsonProperty("is_material")] public bool IsMaterial { get; set; }
+  [JsonProperty("is_somatic")] public bool IsSomatic { get; set; }
+  [JsonProperty("is_verbal")] public bool IsVerbal { get; set; }
+  [JsonProperty("materials_needed")] public string? MaterialsNeeded { get; set; }
+  // Source JSON has higher-level text embedded in description; keep nullable
+  [JsonProperty("higherLevel")] public string? HigherLevel { get; set; }
+  [JsonProperty("classes")] public List<string> Classes { get; set; } = new();
+  [JsonProperty("subclasses")] public List<string> SubClasses { get; set; } = new();
 }
 
 public class Background
@@ -356,4 +363,6 @@ public class TraitChoice
 {
   public int Amount { get; set; }
   public List<Feat> Choices { get; set; } = new();
+}
+
 }

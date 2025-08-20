@@ -8,7 +8,8 @@ const DEFAULT_SETTINGS: UserSettings = {
   theme: 'dark',
   userId: 0,
   username: "",
-  email: ""
+  email: "",
+  dndSystem: ''
 }
 // Initialize with default settings
 const [currentSettings, setCurrentSettings] = createSignal<UserSettings>({...DEFAULT_SETTINGS});

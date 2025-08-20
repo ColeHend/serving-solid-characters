@@ -4,7 +4,7 @@ import { DnDClass } from "./old/class.model";
 import { Feat } from "./old/feat.model";
 import { Item } from "./old/items.model";
 import { Race } from "./old/race.model";
-import { Spell } from "./old/spell.model";
+import { Spell } from "./data/spell";
 
 export interface Trade {
     spells: Spell[],

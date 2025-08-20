@@ -8,30 +8,49 @@ import {
 } from "solid-js";
 import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
-import { Spell } from "../../../models/old/spell.model";
 import SearchBar from "./searchBar/searchBar";
-import useGetSpells from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
 import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { Clone, homebrewManager } from "../../../shared";
 import { Body, Table, Chip, Icon, Column, Cell, Header,Menu, Row } from "coles-solid-library";
 import { SpellMenu } from "./spellMenu/spellMenu";
+import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
+import { Spell } from "../../../models";
 
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
-  const dndSrdSpells = useGetSpells();
+  const dndSrdSpells = useDnDSpells();
 
   // search param stuff
-
   const [searchParam, setSearchParam] = useSearchParams();
-  if (!searchParam.name) setSearchParam({ name: dndSrdSpells()[0]?.name });
-  const selectedSpell = dndSrdSpells().filter(
-    (x) =>
-      x.name?.toLowerCase() ===
-      (searchParam?.name || (dndSrdSpells()[0]?.name ?? "")).toLowerCase()
-  )[0];
-  const [currentSpell, setCurrentSpell] = createSignal<Spell>(selectedSpell);
+
+  // Ensure we always have a valid name param once spells load (or version changes)
+  createEffect(() => {
+    const list = dndSrdSpells();
+    if (list.length === 0) return;
+    const param = searchParam.name;
+    const found = param && list.some(s => s.name.toLowerCase() === param.toLowerCase());
+    if (!found) {
+      setSearchParam({ name: list[0].name });
+    }
+  });
+
+  // Reactive selected spell derived from spells + name param
+  const selectedSpell = createMemo(() => {
+    const list = dndSrdSpells();
+    if (list.length === 0) return undefined;
+    const target = (searchParam.name || list[0].name).toLowerCase();
+    return list.find(s => s.name.toLowerCase() === target) || list[0];
+  });
+
+  const [currentSpell, setCurrentSpell] = createSignal<Spell | undefined>(undefined);
+
+  // Keep currentSpell in sync with derived selectedSpell
+  createEffect(() => {
+    const sel = selectedSpell();
+    if (sel) setCurrentSpell(sel);
+  });
 
   //-------------
 
@@ -52,9 +71,9 @@ const masterSpells: Component = () => {
   const dataSort = (sortBy: keyof Spell) => {
     setCurrentSort((old) => {
       if (old.sortKey === sortBy) {
-        return Clone({ sortKey: sortBy, isAsc: !old.isAsc });
+        return Clone({ sortKey: sortBy as string, isAsc: !old.isAsc });
       } else {
-        return Clone({ sortKey: sortBy, isAsc: old.isAsc });
+        return Clone({ sortKey: sortBy as string, isAsc: old.isAsc });
       }
     });
     setTableData((old) => {
@@ -204,8 +223,8 @@ const masterSpells: Component = () => {
         </Table>
       </div>
 
-      <Show when={showSpell()}>
-        <SpellModal spell={currentSpell} backgroundClick={[showSpell,setShowSpell]}   />
+      <Show when={showSpell() && currentSpell()}>
+        <SpellModal spell={currentSpell as any} backgroundClick={[showSpell,setShowSpell]} />
       </Show>
     
       <div class={`${styles.paginator}`}>

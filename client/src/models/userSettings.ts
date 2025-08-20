@@ -4,4 +4,5 @@ export interface UserSettings {
     username: string;
     email: string;
     theme: string;
+    dndSystem: 'both' | '2014' | '2024' | string;
 }
