@@ -1,11 +1,12 @@
 import { Component, For, Show, createMemo, createSignal, onMount, batch } from "solid-js";
-import { homebrewManager, useDnDSpells, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, useDnDClasses} from "../../../../../shared";
+import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, useDnDClasses} from "../../../../../shared";
 import styles from './subclasses.module.scss';
 import { Subclass } from "../../../../../models/old/class.model";
-import { Spell } from "../../../../../models/old/spell.model";
 import { useSearchParams } from "@solidjs/router";
 import { Feature } from "../../../../../models/old/core.model";
 import { Body, Select, Option, FormField, Checkbox, Input, TextArea, Button, Chip } from "coles-solid-library";
+import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
+import { Spell } from "../../../../../models";
 export enum SpellsKnown {
     None = 0,
     Level = 1,

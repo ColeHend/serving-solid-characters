@@ -2,7 +2,7 @@ import { Component, For, createSignal, createMemo, Show, createEffect, onMount }
 import styles from './spells.module.scss';
 import { Input, Button, Select, Option, Chip, Body, TextArea, FormField, Checkbox } from "coles-solid-library";
 import { useGetClasses, getAddNumberAccent, UniqueSet } from "../../../../../shared/";
-import useGetSpells from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
+import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { createStore } from "solid-js/store";
 import { Spell } from "../../../../../models";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
@@ -19,6 +19,7 @@ const Spells: Component = () => {
     HomebrewManager.updateSpell(currentSpell);
   }
   const [currentSpell, setCurrentSpell] = createStore<Spell>({
+    id: "",
     name: "",
     description: "",
     duration: "",
@@ -27,18 +28,19 @@ const Spells: Component = () => {
     range: "",
     is_ritual: false,
     school: "",
-    casting_time: "",
-    damage_type: "",
+    castingTime: "",
+    damageType: "",
     page: "",
     isMaterial: false,
     isSomatic: false,
     isVerbal: false,
-    components: "",
+    materials_Needed: "",
+    higherLevel: "",
     classes: [],
     subClasses: [],
   });
   const spellLevels = Array.from({ length: 10 }, (_, i) => i);
-  const allSpells = useGetSpells();
+  const allSpells = useDnDSpells();
   const allClasses = useGetClasses();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParam, setSearchParam] = useSearchParams();
@@ -59,7 +61,7 @@ const Spells: Component = () => {
   };
   const getCastingTimes = () => {
     const castingTimes = new UniqueSet<string>();
-    allSpells().forEach(spell => castingTimes.add(spell.casting_time));
+    allSpells().forEach(spell => castingTimes.add(spell.castingTime));
     return castingTimes.value.sort()
   };
   const getRanges = () => {
@@ -80,7 +82,7 @@ const Spells: Component = () => {
     if(srdSpell) {
       setCurrentSpell(srdSpell);
       setSpellDesc(srdSpell.description);
-      // setSpellHigherLevel(srdSpell.higherLevel);
+      setSpellHigherLevel(srdSpell.higherLevel);
     }
     if (spell) {
       setCurrentSpell(spell);
@@ -180,7 +182,7 @@ const Spells: Component = () => {
           <div class={`${styles.classList}`}>
             <For each={currentSpell["classes"]}>{(className) =>
               <Chip key="Class" value={className} remove={()=>{
-                setCurrentSpell({ classes: currentSpell["classes"].filter((x)=>x !== className) })
+                setCurrentSpell({ classes: currentSpell["classes"].filter((x: string)=>x !== className) })
               }} />
             }</For>
           </div>
@@ -195,8 +197,8 @@ const Spells: Component = () => {
             <Show when={!showCustoms["castingTime"]}>
               <label>Casting Time</label>
               <Select class={`${styles.border}`}
-                value={currentSpell["casting_time"]}
-                onChange={(e) => setCurrentSpell({ "casting_time": e})} transparent>
+                value={currentSpell["castingTime"]}
+                onChange={(e) => setCurrentSpell({ "castingTime": e})} transparent>
                 <For each={getCastingTimes()}>{(castingTime) =>
                   <Option value={castingTime} >
                     {castingTime}
@@ -207,8 +209,8 @@ const Spells: Component = () => {
             <Show when={showCustoms["castingTime"]}>
               <FormField class={`${styles.smallField}`} name="Casting Time">
                 <Input transparent
-                  value={currentSpell["casting_time"]}
-                  onChange={(e) => setCurrentSpell({ "casting_time": e.currentTarget.value})} />
+                  value={currentSpell["castingTime"]}
+                  onChange={(e) => setCurrentSpell({ "castingTime": e.currentTarget.value})} />
               </FormField>
             </Show>
           </p>

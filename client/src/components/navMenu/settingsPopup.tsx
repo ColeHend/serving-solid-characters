@@ -4,6 +4,7 @@ import { UserSettings } from "../../models/userSettings";
 import styles from "./settingsPopup.module.scss";
 import getUserSettings, { saveUserSettings } from "../../shared/customHooks/userSettings";
 import { Select, Option, addSnackbar, Button, addTheme } from "coles-solid-library";
+import { homebrewManager } from "../../shared";
 interface Props {
     defaultUserSettings: Accessor<UserSettings>,
     setDefaultUserSettings: Setter<UserSettings>,
@@ -27,7 +28,21 @@ const SettingsPopup: Component<Props> = (props) => {
         <Switch>
           <Match when={currentTab() === "General"}>
             <div>
-              <h3>General</h3>  
+              <h3>General</h3>
+              <div>
+                <label for="dndSystem">D&D System Version: {userSettings().dndSystem}</label>
+                <Select<string> value={userSettings().dndSystem} onSelect={(e) => {
+                  setUserSettings(old => {
+                    old.dndSystem = e;
+                    homebrewManager.resetSystem();
+                    return Clone(old);
+                  });
+                }}>
+                  <Option value="2014">2014</Option>
+                  <Option value="2024">2024</Option>
+                  <Option value="both">Both</Option>
+                </Select>
+              </div>  
             </div>
           </Match>
           <Match when={currentTab() === "Theme"}>

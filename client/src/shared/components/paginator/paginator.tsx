@@ -1,5 +1,5 @@
 import { Accessor, Component, For, createSignal, createMemo, Setter, useContext, createEffect } from "solid-js";
-import { Spell } from "../../../models/old/spell.model";
+// Removed outdated Spell import (no direct usage)
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./paginator.module.scss";
 import { SharedHookContext } from "../../../components/rootApp";
@@ -30,12 +30,25 @@ const Paginator = <T,>(props: Props<T[]>) => {
 
   const ItemsPerPageArr = props.itemsPerPage ?? [10, 20, 50, 100];
 
-  createEffect(()=>{
-    if(currentPage() > lastpage()){
-      setCurrentPage(lastpage())
+  // Reset or clamp current page when data source changes (e.g., version switch)
+  let prevSignature = "";
+  createEffect(() => {
+    const list = props.items();
+    const signature = `${list.length}:${(list[0] as any)?.id ?? (list[0] as any)?.name ?? ""}`;
+    // If underlying collection identity changed, reset to first page
+    if (signature !== prevSignature) {
+      prevSignature = signature;
+      setCurrentPage(1);
+    }
+  });
+
+  createEffect(() => {
+    // Clamp page if items shrank
+    if (currentPage() > lastpage()) {
+      setCurrentPage(lastpage());
     }
     props.setPaginatedItems(theItems());
-  })
+  });
 
     
   return (

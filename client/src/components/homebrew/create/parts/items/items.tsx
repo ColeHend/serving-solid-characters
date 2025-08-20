@@ -24,7 +24,7 @@ import { createStore } from "solid-js/store";
 import { Feature } from "../../../../../models/old/core.model";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import {useGetItems} from "../../../../../shared/";
-import useGetSpells from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
+import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import ItemCreate from "./parts/item/item";
 import ArmorCreate from "./parts/armor/armor";
 import WeaponCreate from "./parts/weapon/weapon";
@@ -80,7 +80,7 @@ const Items: Component = () => {
   ];
 
   const damageTypes = () => {
-    const allSpells = useGetSpells()
+    const allSpells = useDnDSpells()
 
     const dmgTypes:string[] = []
 
@@ -88,7 +88,7 @@ const Items: Component = () => {
 
     weapons.forEach(y=>y.damage.forEach(z=>dmgTypes.push(z.damageType)));
 
-    allSpells().forEach(s=>dmgTypes.push(s.damage_type));
+    allSpells().forEach(s=>dmgTypes.push(s.damageType));
     
     return UniqueStringArray(dmgTypes)
   }

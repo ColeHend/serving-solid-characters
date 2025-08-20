@@ -9,15 +9,15 @@ import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option, Input, FormField, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, ExpansionPanel, Icon } from "coles-solid-library";
 import { Character, CharacterGear, CharacterSpell } from "../../../models/character.model";
-import useGetSpells from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetSpells";
 import { Item, Spell } from "../../../models";
 import { useGetItems } from "../../../shared";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
+import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 
 const CharacterView: Component = () => {
   // eslint-disable-next-line
   const [userSettings, setUserSettings] = getUserSettings();
-  const allSpells = useGetSpells();
+  const allSpells = useDnDSpells();
   const allItems = useGetItems();
   const getKnownSpells = (character: Character) => {
     return allSpells().filter(spell => character.spells.some(s => s.name === spell.name));

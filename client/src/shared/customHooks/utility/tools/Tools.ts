@@ -389,8 +389,9 @@ export const getSlotString = (slot: number) => slot === 0 ? "cantrips_known" : `
  * @param spellLevel - The spell level string to convert.
  * @returns The display value of the spell level.
  */
-export const spellLevel = (spellLevel: string) => { 
-  switch(spellLevel){
+export const spellLevel = (spellLevel: number) => { 
+  const stringLevel = (spellLevel).toString();
+  switch(stringLevel){
   case "0":
     return "Cantrip";
   case "1":
@@ -412,6 +413,7 @@ export const spellLevel = (spellLevel: string) => {
  */
 export const spellComponents = (spell:Spell) => {
   const components = []
+  if (spell.components) return spell.components;
   if(spell.isVerbal) components.push("V");
   if(spell.isSomatic) components.push("S");
   if(spell.isMaterial) components.push("M");
