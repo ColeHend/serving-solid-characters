@@ -1,10 +1,8 @@
-import { Accessor, Component, For, Setter, Show, useContext } from "solid-js";
+import { Accessor, Component, createSignal, For, Setter, Show, useContext } from "solid-js";
 import { Race } from "../../../../models";
-// import Modal from "../../popup/popup.component";
 import styles from "./raceView.module.scss";
-import Tabs, { Tab } from "../../Tabs/tabs";
 import { SharedHookContext } from "../../../../components/rootApp";
-import { Modal } from "coles-solid-library";
+import { Modal, TabBar } from "coles-solid-library";
 
 
 interface props {
@@ -17,6 +15,10 @@ interface props {
 const RaceView: Component<props> = (props) => {
   const race = props.currentRace;
   const sharedHooks = useContext(SharedHookContext);
+
+  const [activeTab, setActiveTab] = createSignal<number>(0);
+
+  const subraceNames = race().subRaces.flatMap((subrace) => subrace.name);
 
   return <Modal title={race().name} show={props.backClick}>
     <div class={`${styles.raceWrapper}`}>
@@ -80,10 +82,14 @@ const RaceView: Component<props> = (props) => {
 
       <Show when={race().subRaces.length > 0}>
         <div class={`${styles.subclassesTabRow}`}>
-          <Tabs transparent>
+            <TabBar tabs={subraceNames} activeTab={activeTab()} onTabChange={(label, index)=> setActiveTab(index)} colors={{
+              indicator: "#AA0505"
+            }} />
+
             <For each={race().subRaces}>
-              { (subrace, i) => <Tab name={subrace.name}>
-                <h3 class={`${styles.header}`}>Description</h3>
+              {
+                (subrace, i) => <Show when={i()}>
+                  <h3 class={`${styles.header}`}>Description</h3>
                 <span>{subrace.desc}</span>
                 <h3 class={`${styles.header}`}>Ability Score Increases: </h3>
                 <For each={subrace.abilityBonuses}>
@@ -115,11 +121,10 @@ const RaceView: Component<props> = (props) => {
 
                 </Show>
 
-
-              </Tab>}
+                </Show> 
+              }
             </For>
-              
-          </Tabs>
+
         </div>
       </Show>
 

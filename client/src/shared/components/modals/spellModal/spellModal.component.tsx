@@ -1,5 +1,4 @@
 import { Accessor, Component, createMemo, createSignal, Setter, Show, splitProps, useContext } from "solid-js";
-// import Modal from "../../popup/popup.component";
 import { Spell } from "../../../../models";
 import getUserSettings from "../../../customHooks/userSettings";
 import { SharedHookContext } from "../../../../components/rootApp";

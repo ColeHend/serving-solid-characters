@@ -5,10 +5,8 @@ import {
   toDisplayFormat,
 } from "../../../../customHooks/utility/tools/stringsHelper";
 import styles from "./featureTable.module.scss";
-import { Clone } from "../../../../customHooks";
-import { Feature } from "../../../../../models/old/core.model";
-import Table from "../../../Table/table";
-import { Cell, Column, Header } from "../../../Table/innerTable";
+import { Table, Cell, Column, Header, } from "coles-solid-library";
+
 type Props = {
   DndClass: Accessor<DnDClass>;
 };

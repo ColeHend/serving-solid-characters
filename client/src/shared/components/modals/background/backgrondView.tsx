@@ -1,9 +1,7 @@
 import { Accessor, Component, For, Setter } from "solid-js";
 import { Background } from "../../../../models";
-// import Modal from "../../popup/popup.component";
 import { Modal } from "coles-solid-library";
 import styles from "./backgroundView.module.scss"
-import { Chip } from "../../..";
 
 interface props {
   background: Accessor<Background>;

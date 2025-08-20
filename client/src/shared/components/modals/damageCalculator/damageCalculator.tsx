@@ -1,10 +1,7 @@
 import { Accessor, Component, Setter, useContext } from "solid-js";
-// import Modal from "../../popup/popup.component";
 import { Modal } from "coles-solid-library";
 import { SharedHookContext } from "../../../../components/rootApp";
 import style from "./damageCalculator.module.scss"
-import Tabs, { Tab } from "../../Tabs/tabs";
-import Button from "../../Button/Button";
 
 interface Props {
     setter: Setter<boolean>;
