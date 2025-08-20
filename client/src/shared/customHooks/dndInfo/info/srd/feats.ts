@@ -5,8 +5,6 @@ import { concatMap, of, take, tap } from "rxjs";
 import { createMemo, createSignal } from "solid-js";
 import { Feat } from "../../../../../models/data";
 
-const [feats, setFeats] = createSignal<Feat[]>([]);
-
 const [feats2014, setFeats2014] = createSignal<Feat[]>([]);
 const [feats2024, setFeats2024] = createSignal<Feat[]>([]);
 let loading2014 = false;
@@ -62,32 +60,6 @@ export function useGetSrdFeats(version: '2014' | '2024' | 'both' | string) {
 
     return feats2014().length ? feats2014() : feats2024()
   })
-
-
-
-  // if (feats().length === 0) {
-  //   LocalFeats.pipe(
-  //     take(1),
-  //     concatMap((feats) => {
-  //       if (feats.length > 0) {
-  //         return of(feats);
-  //       } else {
-  //         return of([])
-  //       }
-  //     }),
-  //     concatMap((feats) => {
-  //       if (feats.length === 0) {
-  //         return fetchFeats(version);
-  //       } else {
-  //         return of(feats);
-  //       }
-  //     }),
-  //     tap((feats) => !!feats && feats.length > 0 ? setFeats(feats) : null),
-  //   ).subscribe();
-  // }
-
-
-  return feats;
 }
 
 function fetchFeats(version: '2014' | '2024' ) {

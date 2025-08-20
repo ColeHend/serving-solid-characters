@@ -23,26 +23,13 @@ const featsList: Component = () => {
   const [showFeatModal,setShowFeatModal] = createSignal<boolean>(false);
   const [paginatedFeats, setPaginatedFeats] = createSignal<Feat[]>([]);
   const [searchResult, setSearchResult] = createSignal<Feat[]>([]);
-  const [currentFeat, setCurrentFeat] = createSignal<Feat | undefined>(undefined);
   const [tableData, setTableData] = createSignal<Feat[]>([]);
   
   const [searchParam, setSearchParam] = useSearchParams();
   const srdFeats = useDnDFeats();
   const navigate = useNavigate()
   
-  
-  const selectedFeat = createMemo(() => {
-    const list = srdFeats();
-    if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].details.name).toLowerCase();
-    return list.find(f => f.details.name.toLowerCase() === target) || list[0];
-  })
-  
   const displayResults = createMemo(() => searchResult().length > 0 ? searchResult() : srdFeats() );
-  
-  // if (!searchParam.name) setSearchParam({ name: srdFeats()[0]?.details.name });
-  
-  
   
   // Ensure we always have a valid name param once feats load (or version changes)
   createEffect(()=>{
@@ -54,14 +41,29 @@ const featsList: Component = () => {
       setSearchParam({ name: list[0].details.name});
     }
   });
-
+  
+  const selectedFeat = createMemo(() => {
+    const list = srdFeats();
+    if (list.length === 0) return undefined;
+    const target = (searchParam.name || list[0].details.name).toLowerCase();
+    return list.find(f => f.details.name.toLowerCase() === target) || list[0];
+  })
+  
+  
+  const [currentFeat, setCurrentFeat] = createSignal<Feat | undefined>(undefined);
+  
+  
   // Keep currentFeat in sync with derived selectedFeat
   createEffect(() => {
     const sel = selectedFeat();
     if (sel) setCurrentFeat(sel);
+  })
 
-    if(showFeatModal() && sel?.details.name) {
-      setSearchParam({ name: sel.details.name})
+  createEffect(()=>{
+    const cur = currentFeat();
+
+    if(showFeatModal() && cur?.details.name) {
+      setSearchParam({ name: cur.details.name})
     } else if (!showFeatModal()) {
       setSearchParam({ name: ""})
     }
@@ -93,7 +95,7 @@ const featsList: Component = () => {
             <Cell<Feat>>
               { (feat) => <span onClick={()=>{
                 setCurrentFeat(feat);
-                setShowFeatModal(!showFeatModal());
+                setShowFeatModal((old) => !old);
               }}>
                 {feat.details.name} 
               </span>}
@@ -111,7 +113,7 @@ const featsList: Component = () => {
       </div>
 
       <Show when={showFeatModal()}>
-        <FeatView feat={currentFeat} show={[showFeatModal,setShowFeatModal]} width="40%" height="40%" />
+        <FeatView feat={currentFeat as any} show={[showFeatModal,setShowFeatModal]} width="40%" height="40%" />
       </Show>
                
       <div class={`${styles.paginator}`}>
