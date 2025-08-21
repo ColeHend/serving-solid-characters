@@ -208,7 +208,6 @@ const masterSpells: Component = () => {
           <Row rowNumber={1} onClick={(e,spell)=>{
             setCurrentSpell(spell);
             setShowSpell((old)=>!old);
-            console.log(`Clicked on spell: ${JSON.stringify(spell)}`);
             
           }} style={{height:"40px"}}/>
         </Table>
