@@ -45,6 +45,8 @@ const ItemsViewTab:Component = () => {
   }
 
   return <Body>
+    <h1>Items</h1>
+    
     <Carousel 
       startingIndex={cantFind(startingIndex())} 
       currentIndex={[itemIndex,setItemIndex]} 

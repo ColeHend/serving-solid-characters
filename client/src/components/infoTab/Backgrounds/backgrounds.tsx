@@ -26,7 +26,7 @@ const Viewbackgrounds: Component = () => {
 
 
   return <Body>
-    <h1 class={`${styles.header}`}>Backgrounds</h1>
+    <h1>Backgrounds</h1>
     <div class={`${styles.searchBar}`}>
       <SearchBar 
         dataSource={backgrounds} 

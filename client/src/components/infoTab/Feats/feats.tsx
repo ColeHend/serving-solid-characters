@@ -75,7 +75,7 @@ const featsList: Component = () => {
 
   return (
     <Body class={`${styles.featWrapper}`}>
-      <h1 class={styles.header}>Feats</h1>
+      <h1>Feats</h1>
                 
       <div class={`${styles.searchDiv}`}>
         <SearchBar

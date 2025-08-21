@@ -1,17 +1,27 @@
-import { Component, Show, createMemo, createSignal } from "solid-js";
-import useGetRaces from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
-import styles from "./races.module.scss";
-import { effect } from "solid-js/web";
-import { Race } from "../../../models/old/race.model";
+import { 
+  Component,
+  Show,
+  createMemo,
+  createSignal 
+} from "solid-js";
+import { 
+  Body,
+  Table,
+  Cell, 
+  Column, 
+  Header, 
+} from "coles-solid-library";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Paginator,homebrewManager } from "../../../shared";
-import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import RaceView from "../../../shared/components/modals/raceView/raceView";
-import { Body, Table, Cell, Column, Header, Icon, Button } from "coles-solid-library";
+import { effect } from "solid-js/web";
+import { Race } from "../../../models/old/race.model";
 import { RaceMenu } from "./raceMenu/raceMenu";
+import useGetRaces from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
+import RaceView from "../../../shared/components/modals/raceView/raceView";
+import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import styles from "./races.module.scss";
 
 const races: Component = () => {
-  // import services ↓
   const dndSrdRaces = useGetRaces();
 
   const [searchParam,setSearchParam] = useSearchParams();
@@ -24,18 +34,15 @@ const races: Component = () => {
   
   const displayResults = createMemo(()=>results().length > 0?results():dndSrdRaces())
   
-  const navigate = useNavigate();
-
   if(!searchParam.name) setSearchParam({name: currentRace()?.name});
   
   
-
   effect(()=>{
     setSearchParam({name: dndSrdRaces().length > 0 ? currentRace()?.name : "Dragonborn"})
-    
   })
+
   return <Body>
-    <h1 class={`${styles.header}`}>Races</h1>
+    <h1>Races</h1>
 
     <div class={`${styles.searchBar}`}>
       <SearchBar 
