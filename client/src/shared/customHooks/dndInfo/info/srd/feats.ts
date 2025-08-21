@@ -34,6 +34,7 @@ export function useGetSrdFeats(version: '2014' | '2024' | 'both' | string) {
   }
 
   if ((version === '2024' || version === 'both') && feats2024().length === 0 && !loading2024) {
+    loading2024 = true;
     const srdDB2024$ = HttpClient$.toObservable(SrdDB2024.feats.toArray());
     srdDB2024$.pipe(
       take(1),

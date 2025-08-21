@@ -9,7 +9,7 @@ export function useDnDRaces() {
   
   return createMemo(() => {
     const version = userSettings().dndSystem || '2014';
-    const LocalRaces = useGetSrdRaces(ver);
+    const LocalRaces = useGetSrdRaces(version);
 
     return  [...LocalRaces(), ...HombrewRaces()]
   });

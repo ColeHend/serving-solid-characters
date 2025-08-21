@@ -1,6 +1,7 @@
 import { 
   Component,
   Show,
+  createEffect,
   createMemo,
   createSignal 
 } from "solid-js";
@@ -11,34 +12,63 @@ import {
   Column, 
   Header, 
 } from "coles-solid-library";
-import { useNavigate, useSearchParams } from "@solidjs/router";
-import { Paginator,homebrewManager } from "../../../shared";
-import { effect } from "solid-js/web";
-import { Race } from "../../../models/old/race.model";
+import { useSearchParams } from "@solidjs/router";
+import { Paginator } from "../../../shared";
+import { Race } from "../../../models/data";
+import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races";
 import { RaceMenu } from "./raceMenu/raceMenu";
-import useGetRaces from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
 import RaceView from "../../../shared/components/modals/raceView/raceView";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import styles from "./races.module.scss";
 
 const races: Component = () => {
-  const dndSrdRaces = useGetRaces();
-
-  const [searchParam,setSearchParam] = useSearchParams();
-  const [currentRace,setCurrentRace] = createSignal<Race>({} as Race);
-  const [results,setResults] = createSignal<Race[]>([]);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [paginatedRaces,setPaginatedRaces] = createSignal<Race[]>([]);
   const [showRace,setShowRace] = createSignal<boolean>(false);
+   
+  const [paginatedRaces,setPaginatedRaces] = createSignal<Race[]>([]);
+  const [currentRace,setCurrentRace] = createSignal<Race>({} as Race);
+  const [tableData, setTableData] = createSignal<Race[]>([]);
+  const [results,setResults] = createSignal<Race[]>([]);
   
-  const displayResults = createMemo(()=>results().length > 0?results():dndSrdRaces())
+  const srdRaces = useDnDRaces();
+  const [searchParam,setSearchParam] = useSearchParams();
+
+  const displayResults = createMemo(()=>results().length > 0?results():srdRaces())
+
+  createEffect(() => {
+    const list = srdRaces();
+    if (list.length === 0) return;
+    const param = searchParam.name;
+    const found = param && list.some(r => r.name.toLowerCase() === param.toLowerCase());
+    if (!found) {
+      setSearchParam({ name: list[0].name});
+    }
+  })
+
+  const selectedRace = createMemo(() => {
+    const list = srdRaces();
+    if (list.length === 0) return undefined;
+    const target = (searchParam.name || list[0].name).toLowerCase();
+    return list.find(r => r.name.toLowerCase() === target) || list[0];
+  })
   
-  if(!searchParam.name) setSearchParam({name: currentRace()?.name});
-  
-  
-  effect(()=>{
-    setSearchParam({name: dndSrdRaces().length > 0 ? currentRace()?.name : "Dragonborn"})
+  createEffect(() => {
+    const sel = selectedRace();
+    if (sel) setCurrentRace(sel);
+  })
+
+  createEffect(() => {
+    const cur = currentRace();
+
+    if (showRace() && cur?.name) {
+      setSearchParam({ name: cur.name})
+    } else if (!showRace()) {
+      setSearchParam({ name: ""})
+    }
+  })
+
+  createEffect(() => {
+    const list = srdRaces();
+    setTableData(list);
   })
 
   return <Body>
@@ -46,7 +76,7 @@ const races: Component = () => {
 
     <div class={`${styles.searchBar}`}>
       <SearchBar 
-        dataSource={dndSrdRaces} 
+        dataSource={tableData} 
         setResults={setResults}
         searchFunction={(data,search)=>{
           return data.name.toLowerCase() === search.toLowerCase();
@@ -54,7 +84,7 @@ const races: Component = () => {
     </div>
 
     <div class={`${styles.racesTable}`}>
-      <Table  data={displayResults} columns={["name","options"]}  >
+      <Table  data={paginatedRaces} columns={["name","options"]}  >
           
         <Column name="name">
           <Header><></></Header>
@@ -85,7 +115,7 @@ const races: Component = () => {
     </Show>
 
     <div class={`${styles.paginator}`}>
-      <Paginator items={results} setPaginatedItems={setPaginatedRaces} />
+      <Paginator items={displayResults} setPaginatedItems={setPaginatedRaces} />
     </div>
 
   </Body>
