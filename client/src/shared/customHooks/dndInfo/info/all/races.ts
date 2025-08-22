@@ -1,10 +1,18 @@
 import { useGetSrdRaces } from "../srd/races";
 import { useGetHombrewRaces } from "../homebrew/races";
-import { createMemo } from "solid-js";
+import { Race } from "../../../../../models/data";
+import { Accessor, createMemo } from "solid-js";
+import { getUserSettings } from "../../../userSettings";
 
-export function useDnDRaces() {
-  const LocalRaces = useGetSrdRaces();
-  const HombrewRaces = useGetHombrewRaces();
+type Year = "2014" | "2024";
+interface UseDnDRacesOptions { overrideVersion?: Year }
 
-  return createMemo(() => [...LocalRaces(), ...HombrewRaces()]);
+export function useDnDRaces(opts?: UseDnDRacesOptions): Accessor<Race[]> {
+  const [userSettings] = getUserSettings();
+  return createMemo<Race[]>(() => {
+    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
+    const srd = useGetSrdRaces(active);
+    const homebrew = useGetHombrewRaces();
+    return [...srd(), ...homebrew()];
+  });
 }

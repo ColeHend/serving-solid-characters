@@ -46,12 +46,7 @@ const ClassModal: Component<props> = (props) => {
       : ([] as Subclass[])
   );
 
-  const allFeatures = createMemo(() =>
-    props
-      .currentClass()
-      .classLevels.map((x) => x.features)
-      .flat()
-  );
+  // allFeatures previously used for pagination; retain computed pattern if needed later.
   // props to pass in
   // the current class
 
@@ -253,7 +248,7 @@ const ClassModal: Component<props> = (props) => {
 
             <Show when={activeTab() === 3}>
                 <div>
-                  <For each={props?.currentClass()?.classLevels}>
+                  <For each={props?.currentClass()?.classLevels || []}>
                     {(classLevel, i) => (
                       <>
                         <For each={classLevel.features}>

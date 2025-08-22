@@ -1,8 +1,7 @@
 import { Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { Button, Checkbox, FormGroup, Input, Menu, MenuItem, Modal, Radio, RadioGroup } from "coles-solid-library";
 import styles from "./classes.module.scss";
-import { Item } from "../../../../../models";
-import { Armor, Weapon } from "../../../../../shared";
+import { Item } from "../../../../../models/data/items";
 import { ClassForm } from "./classes";
 import { Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { AddItem } from "./items";
@@ -10,10 +9,10 @@ import { AddItem } from "./items";
 interface ItemMenuButtonProps {
   item?: Item;
   addItem: (item: AddItem) => void;
-  weapon?: Weapon;
-  addWeapon: (weapon: AddItem<Weapon>) => void;
-  armor?: Armor;
-  addArmor: (armor: AddItem<Armor>) => void;
+  weapon?: Item;
+  addWeapon: (weapon: AddItem<Item>) => void;
+  armor?: Item;
+  addArmor: (armor: AddItem<Item>) => void;
   formGroup: FormGroup<ClassForm>;
 }
 export const ItemMenuButton: Component<ItemMenuButtonProps> = (props) => {
@@ -204,14 +203,11 @@ export const ItemMenuButton: Component<ItemMenuButtonProps> = (props) => {
               <span>How many?</span>
               <Input type="number" min={1} value={multipleAmnt()} onChange={(e) => {
                 setMultipleAmnt(parseInt(e.target.value));
-                console.log('new Howmany: ', e);
                 
               }} />
             </div>
             <div>
               <Button onClick={() => {
-                console.log('itemAmnt: ',multipleAmnt());
-                console.log('choiceAmnt: ',showChoiceAmnt());
                 
                 if (props?.item) {
                   props.addItem({

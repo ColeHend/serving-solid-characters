@@ -3,6 +3,7 @@ import { defineConfig } from "vitest/config";
 import { useStyle } from "./src/shared";
 import devtools from 'solid-devtools/vite'
 import { ManifestOptions, VitePWAOptions, VitePWA } from "vite-plugin-pwa";
+import path from 'path';
 const manifest: Partial<ManifestOptions> = require('./manifest.json');
 const pwaOptions: Partial<VitePWAOptions> = //
 {
@@ -37,6 +38,12 @@ export default defineConfig({
         solidPlugin(),
         // VitePWA(pwaOptions)
     ],
+  resolve: {
+    alias: {
+      'coles-solid-library': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/index.tsx'),
+      'coles-solid-library/dist/components/Form/formHelp/models': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/dist/components/Form/formHelp/models.ts'),
+    }
+  },
     // resolve: {
     //     conditions: ["development", "browser"],
     // },

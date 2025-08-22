@@ -131,7 +131,7 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
                 }} />
               </span>
               <span>
-                <Button title="Add Feature" onClick={()=>{
+                <Button title="Add Feature" aria-label="Add feature to selected level" onClick={()=>{
                   setIsEditChoice(false);
                   setSelectedFeature('');
                   setShowAddFeature(true);
@@ -160,7 +160,7 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
                   <td  class={getColumnStyle(col)}>
                     <For each={row.features}>{(feature) => (
                       <span>
-                        <span class={styles.deleteFeature} onClick={()=>{
+                        <span class={styles.deleteFeature} role="button" aria-label={`Delete feature ${feature.name}`} onClick={()=>{
                           const newLevel = {...row};
                           newLevel.features = newLevel.features.filter(f => f.name !== feature.name);
                           props.setData((prev)=>([...prev.map(l => l.level === row.level ? newLevel : l)]));

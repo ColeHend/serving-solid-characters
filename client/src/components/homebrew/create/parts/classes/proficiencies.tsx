@@ -1,6 +1,7 @@
-import { Component, createSignal, For, Setter } from "solid-js";
+import { Component, createSignal, For, Setter, createMemo, createEffect } from "solid-js";
 import styles from "./classes.module.scss";
-import { useGetArmor, useGetItems, useGetWeapons } from "../../../../../shared";
+import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
+import { ItemType } from "../../../../../models/data/items";
 import { Stat } from "../../../../../shared/models/stats";
 import { Button, Chipbar, ChipType, FormField, FormGroup, Icon, Input, Modal, Option, Select } from "coles-solid-library";
 import { ClassForm, ProfStore } from "./classes";
@@ -58,11 +59,16 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
 
     }
   };
-  const allItems = useGetItems();
+  // Unified SRD+Homebrew items (auto-version via user settings)
+  const allItems = useDnDItems();
+  createEffect(()=>{
+    console.log('[homebrew-class] allItems:', allItems());
+    
+  })
+  const allWeapons = createMemo(() => allItems().filter(item => Object.keys(item?.properties ?? {}).includes('Damage')));
+  const allArmor = createMemo(() => allItems().filter(item => Object.keys(item?.properties ?? {}).includes('AC')));
   const [selectedItems, setSelectedItems] = createSignal<string[]>([]);
-  const allWeapons = useGetWeapons();
   const [selectedWeapons, setSelectedWeapons] = createSignal<string[]>([]);
-  const allArmor = useGetArmor();
   const [selectedArmor, setSelectedArmor] = createSignal<string[]>([]);
   return (
     <div class={`${styles.classSection}`}>
@@ -129,7 +135,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 props.setProfStore((prev) => ({ ...prev, tools: [...prev.tools || [], ...selectedItems()] }));
               }}><Icon name="add" /></Button>
               <Select multiple value={selectedItems()} onChange={setSelectedItems}>
-                <For each={allItems().filter((item) => item.equipmentCategory === "Tools")}>
+                <For each={allItems().filter(item => item.type === ItemType.Tool)}>
                   {(item) => <Option value={item.name}>{item.name}</Option>}
                 </For>
               </Select>

@@ -8,9 +8,7 @@
     "cost": "15 gp",
     "properties": {
       "Damage": "1d8 slashing (Versatile 1d10)",
-      "Properties": [
-        "Versatile"
-      ],
+  "Properties": "Versatile",
       "Mastery": "Sap (on hit, impose disadvantage on target’s next attack roll】"
     }
   },
@@ -23,10 +21,7 @@
     "cost": "25 gp",
     "properties": {
       "Damage": "1d6 piercing",
-      "Properties": [
-        "Two-Handed",
-        "Ammunition (range 80/320)"
-      ],
+  "Properties": "Two-Handed, Ammunition (range 80/320)",
       "Mastery": "Vex (on hit, gain advantage on next attack vs same target】"
     }
   },

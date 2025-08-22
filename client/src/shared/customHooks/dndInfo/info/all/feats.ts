@@ -1,10 +1,18 @@
 import { useGetSrdFeats } from "../srd/feats";
 import { useGetHombrewFeats } from "../homebrew/feat";
-import { createMemo } from "solid-js";
+import { Feat } from "../../../../../models/data";
+import { Accessor, createMemo } from "solid-js";
+import { getUserSettings } from "../../../userSettings";
 
-export function useDnDFeats() {
-  const LocalFeats = useGetSrdFeats();
-  const HombrewFeats = useGetHombrewFeats();
+type Year = "2014" | "2024";
+interface UseDnDFeatsOptions { overrideVersion?: Year }
 
-  return createMemo(() => [...LocalFeats(), ...HombrewFeats()]);
+export function useDnDFeats(opts?: UseDnDFeatsOptions): Accessor<Feat[]> {
+  const [userSettings] = getUserSettings();
+  return createMemo<Feat[]>(() => {
+    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
+    const srd = useGetSrdFeats(active);
+    const homebrew = useGetHombrewFeats();
+    return [...srd(), ...homebrew()];
+  });
 }

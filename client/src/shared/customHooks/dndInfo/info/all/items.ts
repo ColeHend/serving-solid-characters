@@ -1,10 +1,18 @@
 import { useGetSrdItems } from "../srd/items";
 import { useGetHombrewItems } from "../homebrew/items";
-import { createMemo } from "solid-js";
+import { Item } from "../../../../../models/data";
+import { Accessor, createMemo } from "solid-js";
+import { getUserSettings } from "../../../userSettings";
 
-export function useDnDItems() {
-  const LocalItems = useGetSrdItems();
-  const HombrewItems = useGetHombrewItems();
+type Year = "2014" | "2024";
+interface UseDnDItemsOptions { overrideVersion?: Year }
 
-  return createMemo(() => [...LocalItems(), ...HombrewItems()]);
+export function useDnDItems(opts?: UseDnDItemsOptions): Accessor<Item[]> {
+  const [userSettings] = getUserSettings();
+  return createMemo<Item[]>(() => {
+    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
+    const srd = useGetSrdItems(active);
+    const homebrew = useGetHombrewItems();
+    return [...srd(), ...homebrew()];
+  });
 }

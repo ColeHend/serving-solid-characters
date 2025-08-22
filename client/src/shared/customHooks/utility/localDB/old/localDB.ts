@@ -1,14 +1,11 @@
 import Dexie from 'dexie';
-import { Spell } from "../../../../../models/data/spell";
-import { DnDClass } from "../../../../../models/old/class.model";
-import { Race } from "../../../../../models/old/race.model";
-import { Background } from "../../../../../models/old/background.model";
-import { Item } from "../../../../../models/old/items.model";
-import { Feat } from "../../../../../models/old/feat.model";
+import { Item, Spell, Class5E, Race, Background, Feat } from '../../../../../models/data';
+
+
 
 class LocalDB extends Dexie {
   spells!: Dexie.Table<Spell, 'name'>;
-  classes!: Dexie.Table<DnDClass, 'name'>;
+  classes!: Dexie.Table<Class5E, 'name'>;
   races!: Dexie.Table<Race, 'name'>;
   backgrounds!: Dexie.Table<Background, 'name'>;
   items!: Dexie.Table<Item, 'name'>;

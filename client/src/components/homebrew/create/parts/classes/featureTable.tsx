@@ -1,6 +1,6 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, splitProps, Switch } from "solid-js";
 import { LevelEntity } from "../../../../../models/old/class.model";
-import { Table, Column, Row, Header, Cell, TabBar, FormGroup, FormField, Input, Icon, Button, Select, Option } from "coles-solid-library";
+import { Table, Column, Row, Header, Cell, TabBar, FormGroup, FormField, Input, Icon, Button, Select, Option, Checkbox } from "coles-solid-library";
 import styles from "./classes.module.scss";
 import { ClassForm } from "./classes";
 import { CasterType, FeatureTypes } from "../../../../../models/old/core.model";
@@ -35,10 +35,6 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
     return ["Level", "Features", ...classSpecificKeys()];
   });
   const casterType = createMemo(() => props.formGroup.get('casterType') ?? CasterType.None);
-
-  createEffect(() => {
-    console.log('Table Data:', tableData());
-  });
   
   return (
     <div class={`${styles.classSection}`}>
@@ -87,11 +83,8 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
                   </FormField>
                 </div>
                 <Show when={casterType() !== CasterType.None}>
-                  <FormField name="Has Cantrips?" formName="hasCantrips">
-                    <Select>
-                      <Option value={true}>Yes</Option>
-                      <Option value={false}>No</Option>
-                    </Select>
+                  <FormField name="Has Cantrips" formName="hasCantrips">
+                    <Checkbox />
                   </FormField>
                   <FormField name="Spell Level" formName="spellsLevel">
                     <Select>
@@ -102,18 +95,18 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
                   </FormField>
                   <FormField name="Spells Known" formName="spellsKnownCalc">
                     <Select>
-                      <Option value={0}>Number</Option>
-                      <Option value={1}>Formula</Option>
+                      <Option value={0 /* SpellsKnown.Number */}>Number</Option>
+                      <Option value={1 /* SpellsKnown.Formula */}>Formula</Option>
                     </Select>
                   </FormField>
                   <FormField name="Spellcasting Ability" formName="spellcastAbility">
                     <Select>
-                      <Option value={0}>Strength</Option>
-                      <Option value={1}>Dexterity</Option>
-                      <Option value={2}>Constitution</Option>
-                      <Option value={3}>Intelligence</Option>
-                      <Option value={4}>Wisdom</Option>
-                      <Option value={5}>Charisma</Option>
+                      <Option value={0 /* STR */}>Strength</Option>
+                      <Option value={1 /* DEX */}>Dexterity</Option>
+                      <Option value={2 /* CON */}>Constitution</Option>
+                      <Option value={3 /* INT */}>Intelligence</Option>
+                      <Option value={4 /* WIS */}>Wisdom</Option>
+                      <Option value={5 /* CHA */}>Charisma</Option>
                     </Select>
                   </FormField>
                 </Show>
