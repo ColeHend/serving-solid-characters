@@ -1,11 +1,10 @@
 $mobile: 768px;
 
 .CenterPage {
-    padding: 0;
+    // padding: 0;
     margin: 0 auto;
     width: 100%;
     text-align: center;
-	margin-top: 0.5%;
     background: none;
     background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
     border-radius: 15px;
@@ -44,6 +43,10 @@ $mobile: 768px;
         color: #000;
 		z-index: 1;
     }
+
+    @media screen and (max-width:$mobile)  {
+        font-size: .8em;
+    }
 }
 
 .eachPage {
@@ -52,6 +55,7 @@ $mobile: 768px;
 	flex-direction: column;
 	justify-content: center;
 	gap: 10px;
+    margin-top: 5%;
     table {
 		margin: 0 auto;
         thead {
@@ -78,14 +82,14 @@ $mobile: 768px;
             }
         }
     }
+
+    @media screen and (max-width:$mobile)  {
+        font-size: .8em;
+        overflow-y: scroll;
+        width: 90%;
+    }
 }
 
-
-.subClasses {
-    margin-top: 2%;
-    max-width: 80%;
-	margin: 0 auto;
-}
 
 .dropCard {
     width: 35%;
