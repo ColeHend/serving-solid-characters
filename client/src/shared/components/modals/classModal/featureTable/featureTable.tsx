@@ -1,5 +1,6 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
-import { DnDClass, LevelEntity } from "../../../../../models/old/class.model";
+// import { DnDClass, LevelEntity } from "../../../../../models/old/class.model";
+import { Class5E } from "../../../../../models/data";
 import {
   formatKeysForDisplay,
   toDisplayFormat,
@@ -8,7 +9,7 @@ import styles from "./featureTable.module.scss";
 import { Table, Cell, Column, Header, } from "coles-solid-library";
 
 type Props = {
-  DndClass: Accessor<DnDClass>;
+  DndClass: Accessor<Class5E>;
 };
 
 const FeatureTable: Component<Props> = (props) => {
@@ -31,60 +32,62 @@ const FeatureTable: Component<Props> = (props) => {
     }
     return keyArr;
   };
-  const highestClassSpecificKeyAmountFirstArr = () => {
-    const classSpecific = props.DndClass()?.classLevels;
-    const sorted = classSpecific?.sort(
-      (b, a) =>
-        Object.keys(a.classSpecific).length -
-        Object.keys(b.classSpecific).length
-    );
-    return sorted;
-  };
+  // const highestClassSpecificKeyAmountFirstArr = () => {
+  //   const classSpecific = props.DndClass()?.classLevels;
+  //   const sorted = classSpecific?.sort(
+  //     (b, a) =>
+  //       Object.keys(a.classSpecific).length -
+  //       Object.keys(b.classSpecific).length
+  //   );
+  //   return sorted;
+  // };
+  
   const [showFeature, setShowFeature] = createSignal<boolean>(false);
-  const [classLevel, setClassLevel] = createSignal<LevelEntity[]>(
-    Class().classLevels.sort((a, b) => a.info.level - b.info.level)
-  );
+  // const [classLevel, setClassLevel] = createSignal<LevelEntity[]>(
+  //   Class().classLevels.sort((a, b) => a.info.level - b.info.level)
+  // );
 
   return (
-    <Table
-      data={classLevel}
-      columns={["level", "profBonus", "features", "speific0","speific1","speific2","speific3","speific4","speific5","speific6"]}
-      class={styles.table}
-    >
-      <Column name="level">
-        <Header>level</Header>
-        <Cell<LevelEntity>>{(x, i) => x.info.level}</Cell>
-      </Column>
+    // <Table
+    //   data={classLevel}
+    //   columns={["level", "profBonus", "features", "speific0","speific1","speific2","speific3","speific4","speific5","speific6"]}
+    //   class={styles.table}
+    // >
+    //   <Column name="level">
+    //     <Header>level</Header>
+    //     <Cell<LevelEntity>>{(x, i) => x.info.level}</Cell>
+    //   </Column>
 
-      <Column name="profBonus">
-        <Header>PB</Header>
-        <Cell<LevelEntity>>{(x, i) => x.profBonus}</Cell>
-      </Column>
+    //   <Column name="profBonus">
+    //     <Header>PB</Header>
+    //     <Cell<LevelEntity>>{(x, i) => x.profBonus}</Cell>
+    //   </Column>
 
-      <Column name="features">
-        <Header>features</Header>
-        <Cell<LevelEntity> class={`${styles.feature}`}>
-          {(x, i) => x.features.map((x) => x.name).join(", ")}
-        </Cell>
-      </Column>
+    //   <Column name="features">
+    //     <Header>features</Header>
+    //     <Cell<LevelEntity> class={`${styles.feature}`}>
+    //       {(x, i) => x.features.map((x) => x.name).join(", ")}
+    //     </Cell>
+    //   </Column>
 
-      <For
-        each={fixedSorerer(
-          Object.keys(highestClassSpecificKeyAmountFirstArr()[0].classSpecific)
-        )}
-      >
-        {(Specifickey, i) => (
-          <Column name={`speific${i()}`}>
-            <Header class={`${styles.specificHeader} ${styles.small}`}>{toDisplayFormat(Specifickey)}</Header>
-            <Cell<LevelEntity>>
-              {(x, i) => (
-                <span>{fixedSelectValues(x.classSpecific[Specifickey])}</span>
-              )}
-            </Cell>
-          </Column>
-        )}
-      </For>
-    </Table>
+    //   <For
+    //     each={fixedSorerer(
+    //       Object.keys(highestClassSpecificKeyAmountFirstArr()[0].classSpecific)
+    //     )}
+    //   >
+    //     {(Specifickey, i) => (
+    //       <Column name={`speific${i()}`}>
+    //         <Header class={`${styles.specificHeader} ${styles.small}`}>{toDisplayFormat(Specifickey)}</Header>
+    //         <Cell<LevelEntity>>
+    //           {(x, i) => (
+    //             <span>{fixedSelectValues(x.classSpecific[Specifickey])}</span>
+    //           )}
+    //         </Cell>
+    //       </Column>
+    //     )}
+    //   </For>
+    // </Table>
+    <></>
   );
 };
 

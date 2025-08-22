@@ -10,23 +10,16 @@ import {
   useContext,
 } from "solid-js";
 import FeatureTable from "./featureTable/featureTable";
-import Carousel from "../../Carosel/Carosel";
-import ExpansionPanel from "../../expansion/expansion";
-import { DnDClass, Subclass } from "../../../../models/old/class.model";
-import { useSearchParams } from "@solidjs/router";
-import { effect } from "solid-js/web";
+import { Class5E, Subclass } from "../../../../models/data";
 import { SharedHookContext } from "../../../../components/rootApp";
-import useGetClasses from "../../../customHooks/dndInfo/oldSrdinfo/data/useGetClasses";
 import getUserSettings from "../../../customHooks/userSettings";
 import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";
-import { Feature } from "../../../../models/old/core.model";
-import Tabs, { Tab } from "../../Tabs/tabs";
 import { classFeatureNullCheck } from "../../../customHooks/utility/tools/Tools";
 import { Modal,TabBar } from "coles-solid-library";
 
 type props = {
-  currentClass: Accessor<DnDClass>;
+  currentClass: Accessor<Class5E>;
   boolean: Accessor<boolean>;
   booleanSetter: Setter<boolean>;
 };
@@ -35,33 +28,20 @@ const ClassModal: Component<props> = (props) => {
   const sharedHooks = useContext(SharedHookContext);
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(() => useStyles(userSettings().theme));
-  // const [paginatedFeatures, setPaginatedFeatures] = createSignal<
-  //   Feature<string, string>[]
-  // >([]);
   const [activeTab,setActiveTab] = createSignal<number>(0);
 
-  const currentSubclasses = createMemo(() =>
-    props.currentClass().subclasses?.length > 0
-      ? props.currentClass().subclasses
-      : ([] as Subclass[])
-  );
+  // const currentSubclasses = createMemo(() =>
+  //   props.currentClass().subclasses?.length > 0
+  //     ? props.currentClass().subclasses
+  //     : ([] as Subclass[])
+  // );
 
-  const allFeatures = createMemo(() =>
-    props
-      .currentClass()
-      .classLevels.map((x) => x.features)
-      .flat()
-  );
-  // props to pass in
-  // the current class
 
-  const getEquipmentChoice = (choiceNum: 1 | 2 | 3 | 4) => {
-    return props.currentClass()?.startingEquipment?.[`choice${choiceNum}`];
-  };
+  // const getEquipmentChoice = (choiceNum: 1 | 2 | 3 | 4) => {
+  //   return props.currentClass()?.startingEquipment?.[`choice${choiceNum}`];
+  // };
 
-  const subclassNames = currentSubclasses().flatMap((subclass)=>subclass.name);
-
-  console.log("currentSubclass: ",currentSubclasses())
+  // const subclassNames = currentSubclasses().flatMap((subclass)=>subclass.name);
 
   return (
     <Modal
@@ -73,106 +53,44 @@ const ClassModal: Component<props> = (props) => {
           {/* <h1>{props.currentClass().name}</h1> */}
 
           {/* the feature table */}
-          <FeatureTable DndClass={() => props.currentClass()} />
+          {/* <FeatureTable DndClass={() => props.currentClass()} /> */}
 
           <div class={`${styles.tabBar}`}>
             <TabBar 
-            tabs={["Profs","Skills","Items","Features",...subclassNames]} 
+            tabs={["Profs","Skills","Items","Features"]} 
             activeTab={activeTab()} 
             onTabChange={(label,index)=>setActiveTab(index)}/>
 
-            <Show when={activeTab() === 0}>
+           <Show when={activeTab() === 0}>
                <span class={`${styles.left} ${styles.flexBoxColumn}`}>
                   <span>
-                    Armor:{" "}
-                    {props
-                      .currentClass()
-                      .proficiencies.filter((x) =>
-                        x.toLowerCase().includes("armor")
-                      )
-                      .join(", ")}
+                    Armor{" "}
+                   
                   </span>
                   <span>
-                    <Show
-                      when={
-                        !!props
-                          .currentClass()
-                          .proficiencies.filter(
-                            (x) => x.toLowerCase() === "shields"
-                          ).length
-                      }
-                    >
-                      , Shields
-                    </Show>
+                   
                   </span>
 
                   <span>
-                    Weapons:{" "}
-                    {props
-                      .currentClass()
-                      .proficiencies.filter((x) =>
-                        x.toLowerCase().includes("weapons")
-                      )
-                      .join(", ")}{" "}
+                    Weapons:
+                    {props.currentClass().proficiencies.weapons.join(", ") ||
+                      "None"}
                   </span>
 
                   <span>
                     Tools:
-                    {/* I give up! heres my fix ↓ */}
-                    {/* if you want a tool to show up without the None */}
-                    <Show
-                      when={
-                        !props
-                          .currentClass()
-                          .proficiencies.map((x) => x.toLowerCase())
-                          .includes("tools") &&
-                        !props
-                          .currentClass()
-                          .proficiencies.map((x) => x.toLowerCase())
-                          .includes("kit")
-                      }
-                    >
-                      None
-                    </Show>
-                    <Show
-                      when={
-                        !props
-                          .currentClass()
-                          .proficiencies.map((x) => x.toLowerCase())
-                          .includes("kit")
-                      }
-                    >
-                      {props
-                        .currentClass()
-                        .proficiencies.filter((x) =>
-                          x.toLowerCase().includes("kit")
-                        )}
-                    </Show>
-                    <Show
-                      when={
-                        !props
-                          .currentClass()
-                          .proficiencies.map((x) => x.toLowerCase())
-                          .includes("tools")
-                      }
-                    >
-                      {props
-                        .currentClass()
-                        .proficiencies.filter((x) =>
-                          x.toLowerCase().includes("tools")
-                        )
-                        .join(", ")}
-                    </Show>
+                    {props.currentClass().proficiencies.tools.join(", ") || "None"}
                   </span>
 
                   <span>
                     Saving Throws:{" "}
-                    {props.currentClass().savingThrows.join(", ")}
+                    {/* {props.currentClass().saving_throws.join(", ") || "None"} */}
                   </span>
                 </span>
-            </Show>
+            </Show> 
+           
 
-            <Show when={activeTab() === 1}>
+            {/* <Show when={activeTab() === 1}>
                <div>
                   <Show
                     when={props.currentClass().proficiencyChoices.length > 0}
@@ -273,9 +191,9 @@ const ClassModal: Component<props> = (props) => {
                     )}
                   </For>
                 </div>
-            </Show>
+            </Show> */}
 
-            <For each={currentSubclasses()}>
+            {/* <For each={currentSubclasses()}>
               {(subclass, i) => (
                 <Show when={activeTab() === i() + 4}>
                     <div>
@@ -303,7 +221,7 @@ const ClassModal: Component<props> = (props) => {
                     </div>
                   </Show>
               )}
-            </For>
+            </For> */}
 
           </div>
         </div>
