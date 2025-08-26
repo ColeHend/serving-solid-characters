@@ -161,6 +161,9 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
               {props.children}
             </ErrorBoundary>
           </div>
+          <footer>
+            asfasdfasdfasdf
+          </footer>
         </div>
         <NavMenu
           anchorElement={menuAnchor} 
@@ -172,7 +175,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           defaultUserSettings={defaultUserSettings as any} 
           setDefaultUserSettings={setDefaultUserSettings as any} />
         <SnackbarController />
-      </Provider>
+      </Provider>      
     </ErrorBoundary>
   );
 };

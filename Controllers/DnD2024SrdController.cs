@@ -1,5 +1,7 @@
 
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using sharpAngleTemplate.models.DTO.Updated;
 using sharpAngleTemplate.models.repositories;
 
@@ -20,6 +22,10 @@ public class DnD2024Controller : ControllerBase
         try
         {
           var classes = srdInfoRepository.GetClasses("2024");
+
+          Console.WriteLine("Classes: ",JsonConvert.SerializeObject(classes));
+          Debug.WriteLine("Classes: ",JsonConvert.SerializeObject(classes));
+
           return Ok(classes);
         }
         catch (Exception ex)
