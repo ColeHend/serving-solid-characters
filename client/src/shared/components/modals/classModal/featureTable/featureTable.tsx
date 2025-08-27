@@ -147,7 +147,6 @@ const FeatureTable: Component<Props> = (props) => {
         <Cell<string>>
           {(level) => (
             <span class={`${styles.spellSlotsRow}`}>
-              
               <For each={getHighestSpellslots()}>
                 {(spellLevel) => <span>
                   <Show when={props.DndClass().spellcasting?.metadata.casterType !== CasterType.Pact}>
@@ -155,10 +154,9 @@ const FeatureTable: Component<Props> = (props) => {
                   </Show>
                 </span> }
               </For>
-                  <Show when={props.DndClass().spellcasting?.metadata.casterType === CasterType.Pact}>
-                    {getPactMagicSlots(+level)[1]} {getAddNumberAccent(getPactMagicSlots(+level)[0]) } level
-                  </Show>
-              
+              <Show when={props.DndClass().spellcasting?.metadata.casterType === CasterType.Pact}>
+                {getPactMagicSlots(+level)[1]} {getAddNumberAccent(getPactMagicSlots(+level)[0]) } level
+              </Show> 
             </span>
           )}
         </Cell>
