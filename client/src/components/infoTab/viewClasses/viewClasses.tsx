@@ -1,47 +1,89 @@
-import { Component, Show, createSignal, createMemo } from "solid-js";
-import useGetClasses from "../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetClasses";
+import { 
+  Component, 
+  Show, 
+  createSignal, 
+  createMemo, 
+  createEffect 
+} from "solid-js";
 import styles from "./viewClasses.module.scss"
-import { useSearchParams, useNavigate } from "@solidjs/router";
-import { effect } from "solid-js/web";
-import type { DnDClass } from "../../../models";
+import { useSearchParams } from "@solidjs/router";
+import { Class5E, Subclass } from "../../../models/data";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
-import { homebrewManager, Paginator } from "../../../shared";
+import { Paginator } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import { Body, Cell, Column, Header, Icon, Button, Table  } from "coles-solid-library";
+import { 
+  Body, 
+  Cell, 
+  Column, 
+  Header, 
+  Table 
+} from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
-
+import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
 
 const viewClasses: Component = () => {
   const [userSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
-  const dndSrdClasses = useGetClasses();
-  const [, setSearchParam] = useSearchParams();
-  const [paginatedClasses,setPaginatedClasses] = createSignal<DnDClass[]>([]);
-  const [currentClass, setCurrentClass] = createSignal<DnDClass>({} as DnDClass);
+  const srdClasses = useDnDClasses();
+  const [searchParam, setSearchParam] = useSearchParams();
+  const [paginatedClasses,setPaginatedClasses] = createSignal<Class5E[]>([]);
+  const [currentClass, setCurrentClass] = createSignal<Class5E>({} as Class5E);
   const [showClass, setShowClass] = createSignal<boolean>(false);
-  const [results, setResults] = createSignal<DnDClass[]>([]);
+  const [results, setResults] = createSignal<Class5E[]>([]);
+  const [tableData, setTableData] = createSignal<Class5E[]>([]);
 
   const searchResults = createMemo(() =>
-    results().length > 0 ? results() : dndSrdClasses()
+    results().length > 0 ? results() : srdClasses()
   )
 
-
-  effect(() => {
-    setSearchParam({ name: dndSrdClasses()?.length > 0 ? currentClass().name : "barbarian" })      
- 
-    console.log("Classes: ", dndSrdClasses())
+  createEffect(() => {
+    const list = srdClasses();
+    if (list.length === 0) return;
+    const param = searchParam.name;
+    const found = param && list.some(c => c.name.toLowerCase() === param.toLowerCase());
+    if (!found) {
+      setSearchParam({ name: list[0].name });
+    }
   })
 
+  const selectedClass = createMemo(() => {
+    const list = srdClasses();
+    if (list.length === 0) return undefined;
+    const target = (searchParam.name || list[0].name).toLowerCase();
+    return list.find(c => c.name.toLowerCase() === target) || list[0];
+  })
+
+  createEffect(() => {
+    const sel = selectedClass();
+    if (sel) setCurrentClass(sel);
+  })
+
+  createEffect(() => {
+    const cur = currentClass();
+
+    if (showClass() && cur.name) {
+      setSearchParam({ name: cur.name})
+    } else if (!showClass()) {
+      setSearchParam({ name: ""})
+    }
+  })
+
+  createEffect(() => {
+    const list = srdClasses();
+    setTableData(list);
+  })
     
   return (
     <Body class={`${stylin()?.primary}  ${styles.classesView}`}>
-      <h1>Classes</h1>
+      <div class={`${styles.headerBar}`}>
+        <h1>Classes</h1>
+      </div>
 
       <div class={`${styles.searchBar}`}>
         <SearchBar 
-          dataSource={dndSrdClasses} 
+          dataSource={tableData} 
           setResults={setResults}
           searchFunction={(data, search)=>{
             return data.name.toLowerCase() === search.toLowerCase();
@@ -53,7 +95,7 @@ const viewClasses: Component = () => {
         <Table data={paginatedClasses} columns={["name","menu"]}>
           <Column name="name">
             <Header><span></span></Header>
-            <Cell<DnDClass>>{(x) => <span onClick={() => {
+            <Cell<Class5E>>{(x) => <span onClick={() => {
               setCurrentClass(x);
               setSearchParam({ name: x.name });
               setShowClass(!showClass());
@@ -61,20 +103,22 @@ const viewClasses: Component = () => {
           </Column>
           <Column name="menu">
             <Header><></></Header>
-            <Cell<DnDClass>>
+            <Cell<Class5E>>
               {(dndClass) => <ClassMenu dndClass={dndClass} />}
             </Cell>
           </Column>
         </Table>
       </div>
-      <Show when={showClass()}>
-        <ClassModal boolean={showClass} booleanSetter={setShowClass} currentClass={currentClass} />
-      </Show>
+
       <div class={`${styles.paginator}`}>
         <Paginator 
           items={searchResults} 
           setPaginatedItems={setPaginatedClasses}/>
       </div>
+      
+      <Show when={showClass()}>
+        <ClassModal boolean={showClass} booleanSetter={setShowClass} currentClass={currentClass} />
+      </Show>
     </Body>
   )
 };

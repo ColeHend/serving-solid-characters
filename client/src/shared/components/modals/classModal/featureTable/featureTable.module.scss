@@ -13,3 +13,13 @@ $mobile-fontsize: .3rem;
         }
     }
 }
+
+
+.spellSlotsRow {
+    display: flex;
+    gap: 2px;
+    span {
+        width: 20px;
+        text-align: center;
+    }
+}

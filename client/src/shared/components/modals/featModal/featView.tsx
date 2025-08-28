@@ -1,7 +1,5 @@
 import { Accessor, Component, For, Match, Setter, Switch } from "solid-js";
-// import Modal from "../../popup/popup.component";
-import { Feat } from "../../../../models";
-import { FeatureTypes as PreReqType } from "../../../../models/old/core.model";
+import { Feat, PrerequisiteType } from "../../../../models/data";
 import style from "./featView.module.scss";
 import { Modal } from "coles-solid-library";
 
@@ -18,52 +16,29 @@ const FeatView: Component<props> = (props) => {
 
   return (
     <Modal 
-      title={currentFeat()?.name} 
+      title={currentFeat()?.details.name} 
       show={[showMenu,setShowMenu]}>
 
       <div class={`${style.featWrapper}`}>
-        <h1 class={`${style.nameHeader}`}>{currentFeat().name}</h1>
+        <h1 class={`${style.nameHeader}`}>{currentFeat().details.name}</h1>
 
         <div class={`${style.preRequisites}`}>
-          <For each={currentFeat().preReqs}>
+          <For each={currentFeat().prerequisites}>
             {(preReq) => (
               <div>
-                <Switch fallback={<div>Unknown requirement type</div>}>
-                  <Match when={preReq.info?.type === PreReqType.AbilityScore || preReq.info?.type.toString() === "AbilityScore"}>
-                    <div>Ability Score Requirement:</div>
-                    <span>
-                      {preReq.name} of {preReq.value}
-                    </span>
-                  </Match>
-                  <Match when={preReq.info?.type === PreReqType.Class || preReq.info?.type.toString() === "Class"}>
-                    <div>Class Requirement:</div>
-                    <span>
-                      {preReq.value}
-                    </span>
-                  </Match>
-                  <Match when={preReq.info?.type === PreReqType.CharacterLevel || preReq.info?.type.toString() === "CharacterLevel"}>
-                    <div>Class Level Requirement:</div>
-                    <span>
-                      {preReq.name} {preReq.value}
-                    </span>
-                  </Match>
-                  <Match when={preReq.info?.type === PreReqType.Classes || preReq.info?.type.toString() === "Classes"}>
-                    <div>Classes Requirement:</div>
-                    <span>
-                      {preReq.name}
-                    </span>
-                  </Match>
-                </Switch>
+                <div>{PrerequisiteType[`${preReq.type}`]}</div>
+                
+                <span>{preReq.value}</span>
               </div>
             )}
           </For>
         </div>
 
         <div class={`${style.description}`}>
-            {currentFeat().desc}
+            {currentFeat().details.description}
         </div>
       </div>
     </Modal>
   );
 };
-export default FeatView;
+export default FeatView; 

@@ -22,7 +22,7 @@
           "name": "Breath Weapon",
           "description": "You can replace one of your attacks (when you take the Attack action) with an exhalation of elemental energy. Your Breath Weapon is either a 15-foot cone or a 30-foot by 5-foot line (your choice each time) dealing damage of your Ancestry’s type. Creatures in the area must make a Dexterity save (DC = 8 + Con mod + Prof】, taking 1d10 damage on a failed save or half on success. This damage increases to 2d10 at 5th level, 3d10 at 11th, and 4d10 at 17th level. You can use this Breath Weapon a number of times equal to your proficiency bonus per Long Res】.",
           "metadata": {
-            "uses": "proficiency bonus"
+            "uses": 2
           }
         },
         "prerequisites": []
@@ -124,7 +124,7 @@
           "description": "You can touch stone and sense its secrets. As a Bonus Action, you gain Tremorsense out to 60 feet for 10 minutes, but you must be on a stone surface (natural or worked) to use this trai】. You can use this ability a number of times equal to your proficiency bonus per Long Rest.",
           "metadata": {
             "recharge": "long rest",
-            "uses": "proficiency bonus"
+            "uses": 2
           }
         },
         "prerequisites": []
@@ -330,7 +330,7 @@
             "description": "You inherit magical abilities from your gnome subrace. Choose one: **Forest Gnome** – You know the *Minor Illusion* cantrip. You can also cast *Speak with Animals* with this trait a number of times equal to your proficiency bonus per Long Rest (and you can use spell slots to cast it as well】. **Rock Gnome** – You know the *Mending* and *Prestidigitation* cantrips. Additionally, over 10 minutes you can use *Prestidigitation* to create a Tiny clockwork device (AC 5, 1 HP) that produces one minor effect (such as a small music box chime, a toy that emits a faint odor, etc.) resembling one of the cantrip’s effect】. You can have up to three such devices active at once, and each falls apart after 8 hours (or sooner if you dismantle it as an action).",
             "metadata": {
               "recharge": "long rest",
-              "uses": "proficiency bonus",
+              "uses": 2,
               "spells": [
                 "You"
               ]
@@ -409,7 +409,7 @@
             "description": "You have blood of giants running in your veins, granting you a supernatural boon. Choose one of the following benefits (you can use the chosen benefit a number of times equal to your proficiency bonus per Long Rest】:\n- **Cloud’s Jaunt (Cloud Giant):** As a Bonus Action, you magically teleport up to 30 feet to a visible unoccupied spac】.\n- **Fire’s Burn (Fire Giant):** When you hit a target with a melee attack, you can deal an extra 1d10 fire damage to i】.\n- **Frost’s Chill (Frost Giant):** When you hit a creature with an attack, you can also deal 1d6 cold damage and reduce its speed by 10 feet until your next turn.\n- **Stone’s Endurance (Stone Giant):** When you take damage, you can use your reaction to roll a d12. Subtract the number rolled + your Constitution modifier from the damage taken (once per rest use).\n- **Storm’s Thunder (Storm Giant):** When you take damage from a creature within 60 feet, you can use your reaction to deal 1d8 thunder damage back to that creature.\n*(These are example giant gifts; Cloud and Fire are explicitly mentioned in the SRD text.)*",
             "metadata": {
               "recharge": "long rest",
-              "uses": "proficiency bonus"
+              "uses": 2
             }
           },
           "prerequisites": []
@@ -580,7 +580,7 @@
           "description": "You can take the Dash action as a Bonus Action. When you do so, you gain temporary hit points equal to your proficiency bonu】. You can use this trait a number of times equal to your proficiency bonus per Long Rest. (This burst of adrenaline lets you surge forward in battle.)",
           "metadata": {
             "recharge": "long rest",
-            "uses": "proficiency bonus"
+            "uses": 2
           }
         },
         "prerequisites": []

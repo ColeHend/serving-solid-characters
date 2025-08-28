@@ -1,5 +1,5 @@
 import { Component, For, Show, createSignal } from "solid-js";
-import Modal from "../../../shared/components/popup/popup.component";
+import { Icon, Modal } from "coles-solid-library";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import menuStyles from "./navMenu.module.scss";
 
@@ -44,12 +44,10 @@ const NavMenu: Component = () => {
   return (
     <>
       <button type="button" class={`${stylin.accent} ${stylin.hover}`} onClick={()=>setShowMenu(old =>!old)}>
-        <svg width="32pt" height="32pt" version="1.1" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
-          <path d="m113.15 40.062c4.9922 0 8.5742-3.5859 8.5742-8.4492s-3.5859-8.7031-8.5742-8.7031h-98.176c-4.8633 0-8.7031 3.8398-8.7031 8.7031s3.8398 8.4492 8.7031 8.4492zm-98.176 47.875c-4.8633 0-8.7031 3.8398-8.7031 8.5742s3.8398 8.7031 8.7031 8.7031h98.305c4.9922 0 8.5742-3.9688 8.5742-8.7031s-3.5859-8.5742-8.5742-8.5742zm0-32.641c-4.8633 0-8.7031 3.8398-8.7031 8.7031s3.8398 8.7031 8.7031 8.7031h98.305c4.9922 0 8.5742-3.8398 8.5742-8.7031s-3.5859-8.7031-8.5742-8.7031z"/>
-        </svg>        
+        <Icon name="settings" />
       </button>
       <Show when={showMenu()}>
-        <Modal width="10%" height="25%" translate={{x:"36vw",y:"-40vh"}}  backgroundClick={[showMenu, setShowMenu]} >
+        <Modal title="menu" width="10%" height="25%" translate={{x:"36vw",y:"-40vh"}}  show={[showMenu, setShowMenu]} >
           <ul class={`${menuStyles.menuButtons}`}>
             <For each={menuButtons}>
               {(button) => (

@@ -5,12 +5,9 @@ $mobile: 768px;
 
     justify-content: center;
     align-items: center;
-}
-
-.paginator {
-    margin: 10px;
 
 }
+
 
 .classesTable {
     overflow-y: scroll;
@@ -35,12 +32,13 @@ $mobile: 768px;
 .searchBar {
     width: 35%; 
     height: 5vh;
+
     
     @media screen and (max-width: $mobile) {
         width: 100%;
     }
 }
 
-.menuBtn {
-    background: inherit;
+.headerBar {
+    width: 100%;
 }

@@ -1,9 +1,8 @@
-import { Accessor, Component, For, Setter } from "solid-js";
-import { Background } from "../../../../models";
-// import Modal from "../../popup/popup.component";
+import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
+// import { Background } from "../../../../models";
+import { Background } from "../../../../models/data";
 import { Modal } from "coles-solid-library";
 import styles from "./backgroundView.module.scss"
-import { Chip } from "../../..";
 
 interface props {
   background: Accessor<Background>;
@@ -13,93 +12,101 @@ interface props {
 const BackgroundView: Component<props> = (props) => {
   const currentBackground = props.background;
 
+  const languages = createMemo(() => currentBackground().languages?.options || []);
+  const features = createMemo(() => currentBackground().features || []);
+  const abilityOptions = createMemo(() => currentBackground().abilityOptions || []);
+  const proficiencies = createMemo(() => currentBackground().proficiencies || []);
+  const feat = createMemo(() => currentBackground().feat || "");
+  const itemOptionKeys = createMemo(() => currentBackground().startEquipment.flatMap(item => item.optionKeys || []));
+
   return (
     <Modal title={currentBackground().name} show={props.backClick}>
       <div class={`${styles.wrapper}`}>
-        <h2>
-          {currentBackground().name}
-        </h2>
 
-        <div>
-          <For each={currentBackground().feature}>
-            {(feature) =>
-              <>
-                <span>
+        <h3 class={`${styles.header}`}> Description </h3>
+        <span> {currentBackground().desc} </span>
+
+        <Show when={abilityOptions().length > 0}>
+          <h3 class={`${styles.header}`}> 
+            <div>Ability Score Increase</div> 
+            <div>Increase by 1:</div>
+          </h3>
+          <div class={`${styles.skillProfsBar}`}>
+            <For each={abilityOptions()}>
+              {(score) => <span>{score}</span>}
+            </For>
+          </div>
+        </Show>
+
+        <Show when={feat() !== ""}>
+          <h3 class={`${styles.header}`}> Suggested Feat </h3>
+          <div class={`${styles.info}`}>
+            {feat()}
+          </div>
+        </Show>
+
+        <Show when={features().length > 0}>
+          <div>
+            <For each={features()}>
+              {(feature) =>
+                <div class={`${styles.backgroundFeature}`}>
                   <h3>
                     {feature.name}
                   </h3>
-                  <br />
-                  <span class={`${styles.feature}`}>
-                    {feature.value}
+                  <span>
+                    {feature.description}
                   </span>
-                </span>
-                <br />
-              </>
-            }
-          </For>
-        </div>
+                </div>
+              }
+            </For>
+          </div>
+        </Show>
 
-        <h3>{currentBackground().languageChoice.type}</h3>
+        <Show when={languages().length > 0}>
+          <h3 class={`${styles.header}`}> Languages </h3>
 
-        <h3>choose: {currentBackground().languageChoice.choose}</h3>
+          <h3>Choose: { currentBackground().languages?.amount} </h3>
 
-        <div>
-          <For each={currentBackground().languageChoice.choices}>
-            {(choice) =>
-              <>
-                <span>{choice}</span>
-                <br />
-              </>
-            }
-          </For>
-        </div>
-
-        <br />
+          <div>
+            <For each={currentBackground().languages?.options }>
+              {(choice) =>
+                <div>
+                  <span>{choice}</span>
+                </div>
+              }
+            </For>
+          </div>
+        </Show>
 
         <h3>Starting Equipment</h3>
         <div>
-          <For each={currentBackground().startingEquipment}>
-            {(item) =>
-              <>
-                <span>{item.item}</span>
-                <br />
-              </>
+          <For each={currentBackground().startEquipment}>
+            {(item,i) =>
+              <div>
+                <span>{itemOptionKeys()[i()]}:</span>
+                <span>{item.items?.join(", ")}</span>
+              </div>
             }
           </For>
         </div>
 
-        <br />
-
-        <div>
-          <For each={currentBackground().startingEquipmentChoices}>
-            {(choice) =>
-              <>
-                <h3>Choose: {choice.choose}</h3>
-                <For each={choice.choices}>
-                  {(item) =>
-                    <>
-                      <span>{(item as any)?.quantity ?? ''}  {item.item}</span>
-                      <br />
-                    </>
-                  }
-                </For>
-              </>
-            }
-          </For>
+        <h3>Proficiencies</h3>
+        
+        <div class={`${styles.info}`}>
+          Armor : {proficiencies().armor.join(", ") || "None"}
         </div>
 
-        <h3>Skill Proficiencies</h3>
-        <div>
-          <For each={currentBackground().startingProficiencies}>
-            {(prof) =>
-              <>
-                <span>{prof.value}</span>
-                <br />
-              </>
-            }
-          </For>
+        <div class={`${styles.info}`}>
+          Weapons : {proficiencies().weapons.join(", ") || "None"}
         </div>
 
+        <div class={`${styles.info}`}>
+          Tools : {proficiencies().tools.join(", ") || "None"}
+        </div>
+
+        <div class={`${styles.info}`}>
+          Skills : {proficiencies().skills.join(", ") || "None"}
+        </div>
 
       </div>
     </Modal>

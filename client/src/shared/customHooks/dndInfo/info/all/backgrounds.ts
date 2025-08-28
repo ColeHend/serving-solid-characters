@@ -1,18 +1,17 @@
 import { useGetSrdBackgrounds } from "../srd/backgrounds";
 import { useGetHombrewBackgrounds } from "../homebrew/background";
-import { Background } from "../../../../../models/data";
-import { Accessor, createMemo } from "solid-js";
-import { getUserSettings } from "../../../userSettings";
+import { createMemo } from "solid-js";
+import getUserSettings from "../../../userSettings";
 
-type Year = "2014" | "2024";
-interface UseDnDBackgroundsOptions { overrideVersion?: Year }
-
-export function useDnDBackgrounds(opts?: UseDnDBackgroundsOptions): Accessor<Background[]> {
+export function useDnDBackgrounds() {
   const [userSettings] = getUserSettings();
-  return createMemo<Background[]>(() => {
-    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
-    const srd = useGetSrdBackgrounds(active);
-    const homebrew = useGetHombrewBackgrounds();
-    return [...srd(), ...homebrew()];
+  const HombrewBackgrounds = useGetHombrewBackgrounds();
+  
+
+  return createMemo(() => {
+    const version = userSettings().dndSystem || '2014';
+    const srd = useGetSrdBackgrounds(version);
+
+    return [...srd(), ...HombrewBackgrounds()];
   });
 }

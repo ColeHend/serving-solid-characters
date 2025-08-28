@@ -1,6 +1,5 @@
 import { useNavigate } from "@solidjs/router";
 import { Accessor, Component, createEffect, createSignal, For, Setter, Show, splitProps } from "solid-js";
-import Gear from "../../shared/svgs/gear";
 import { Style } from "../../shared/customHooks/utility/style/styleHook";
 import { UserSettings } from "../../models/userSettings";
 import { ExtendedTab } from "../../models/extendedTab";

@@ -112,22 +112,6 @@ const masterSpells: Component = () => {
 
   }
 
-  const checkForComponents = (spell: Spell) => {
-    const returnarr:string[] = [];
-    
-    if (spell.isSomatic) {
-      returnarr.push("S");
-    }
-    if (spell.isVerbal) {
-      returnarr.push("V");
-    }
-    if (spell.isMaterial) {
-      returnarr.push("M");
-    }
-
-    return returnarr;
-  }
-
   const checkForHomebrew = (spell:Spell):boolean => {
     try {
       return homebrewManager.spells().some(customSpell => customSpell.name.toLowerCase() === spell.name.toLowerCase());
@@ -135,7 +119,6 @@ const masterSpells: Component = () => {
       return false;
     }
   };
-
 
 
   createEffect(() => {
@@ -173,22 +156,9 @@ const masterSpells: Component = () => {
                 <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
               </Show>
             </Header>
-            <Cell<Spell>>{(spell) => <span onClick={() => {
-              setCurrentSpell(spell);
-              setShowSpell((old)=>!old)
-            }}>
+            <Cell<Spell> rowNumber={1}>{(spell) => <span>
               {spell.name}
             </span>}</Cell>
-            {/* <Cell<Spell> rowNumber={2} colSpan={2}>{(spell) => (
-              <div style={{border: "1px solid", padding: "5px", 'border-radius': "10px"}}>
-                <div>{spell?.range || "Loading..."}</div>
-                <Show when={spell.ritual}>
-                  <Chip key="ritual" value="yes"></Chip>
-
-                </Show>
-
-              </div>
-            )}</Cell> */}
           </Column>
 
           <Column name="school">
@@ -213,13 +183,16 @@ const masterSpells: Component = () => {
 
           <Column name="menu">
             <Header><></></Header>
-            <Cell<Spell>>{(spell) => <>
+            <Cell<Spell> onClick={(e)=>e.stopPropagation()}>{(spell) => <>
               <SpellMenu spell={spell}/>
             </> }</Cell>
           </Column>
 
-          <Row style={{height:"40px"}} isDropHeader={true} />
-          <Row rowNumber={2} isDropRow={true} />
+          <Row rowNumber={1} onClick={(e,spell)=>{
+            setCurrentSpell(spell);
+            setShowSpell((old)=>!old);
+            
+          }} style={{height:"40px"}}/>
         </Table>
       </div>
 

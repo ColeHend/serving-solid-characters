@@ -2,7 +2,8 @@ import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { Component, createSignal } from "solid-js";
 import styles from "./featMenu.module.scss";
-import { Feat } from "../../../../models";
+// import { Feat } from "../../../../models";
+import { Feat } from "../../../../models/data";
 import { homebrewManager } from "../../../../shared";
 
 interface menuProps {
@@ -17,7 +18,7 @@ export const FeatMenu:Component<menuProps> = (props) => {
 
   const checkForHomebrew = (feat:Feat):boolean => {
     homebrewManager.feats().forEach(customFeat => {
-      if (feat.name.toLowerCase() === customFeat.name.toLowerCase()) {
+      if (feat.details.name.toLowerCase() === customFeat.name.toLowerCase()) {
         return true
       }  
     })
@@ -34,7 +35,7 @@ export const FeatMenu:Component<menuProps> = (props) => {
       anchorElement={anchorEl} 
       show={[showMenu, setShowMenu]}>
       <MenuItem onClick={
-        ()=>navigate(`/homebrew/create/feats?name=${props.feat.name}`)
+        ()=>navigate(`/homebrew/create/feats?name=${props.feat.details.name}`)
       }>
         {checkForHomebrew(props.feat)?"Edit":"Clone and Edit"}
       </MenuItem>
