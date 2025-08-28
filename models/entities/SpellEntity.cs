@@ -7,8 +7,7 @@ namespace sharpAngleTemplate.models.entities
   public class SpellEntity {
         public string Name { get; set; } = string.Empty;
         
-        [JsonPropertyName("description")]
-        public string Description { get; set; } = string.Empty;
+        [JsonPropertyName("description")] public string Description { get; set; } = string.Empty;
         public string Duration { get; set; } = string.Empty;
         public string? Level { get; set; } = string.Empty;
         public string Range { get; set; } = string.Empty;

@@ -1,4 +1,5 @@
 using CoreModels;
+using sharpAngleTemplate.models.DTO.Updated;
 
 namespace ClassesEntity
 {
@@ -122,10 +123,12 @@ namespace ClassesEntity
         public string Name { get; set; }
         public int Level { get; set; }
         public string SpellcastingAbility { get; set; }
-				public string CasterType { get; set; }
-				public bool SpellsKnownRoundup { get; set; }
-				public string SpellsKnownCalc { get; set; }
+        public string CasterType { get; set; }
+        public bool SpellsKnownRoundup { get; set; }
+        public string SpellsKnownCalc { get; set; }
         public List<InfoDto> Info { get; set; }
+
+        public SpellcastingMetadata Metadata { get; set; }
 
     }
     

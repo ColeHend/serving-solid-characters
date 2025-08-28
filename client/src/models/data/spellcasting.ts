@@ -11,17 +11,16 @@ export interface SpellcastingMetadata {
 }
 
 export interface Spellslots {
-  cantrips_known?: number;
-  spell_slots_level_0?: number;
-  spell_slots_level_1?: number;
-  spell_slots_level_2?: number;
-  spell_slots_level_3?: number;
-  spell_slots_level_4?: number;
-  spell_slots_level_5?: number;
-  spell_slots_level_6?: number;
-  spell_slots_level_7?: number;
-  spell_slots_level_8?: number;
-  spell_slots_level_9?: number;
+  cantripsKnown?: number;
+  spellSlotsLevel1?: number;
+  spellSlotsLevel_2?: number;
+  spellSlotsLevel_3?: number;
+  spellSlotsLevel_4?: number;
+  spellSlotsLevel_5?: number;
+  spellSlotsLevel_6?: number;
+  spellSlotsLevel_7?: number;
+  spellSlotsLevel_8?: number;
+  spellSlotsLevel_9?: number;
 };
 
 export interface SpellCalc {
