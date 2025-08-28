@@ -61,10 +61,6 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
   };
   // Unified SRD+Homebrew items (auto-version via user settings)
   const allItems = useDnDItems();
-  createEffect(()=>{
-    console.log('[homebrew-class] allItems:', allItems());
-    
-  })
   const allWeapons = createMemo(() => allItems().filter(item => Object.keys(item?.properties ?? {}).includes('Damage')));
   const allArmor = createMemo(() => allItems().filter(item => Object.keys(item?.properties ?? {}).includes('AC')));
   const [selectedItems, setSelectedItems] = createSignal<string[]>([]);
