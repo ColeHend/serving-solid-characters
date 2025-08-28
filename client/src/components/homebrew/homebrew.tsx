@@ -1,5 +1,5 @@
 import { Component } from "solid-js";
-import { Carousel, Body} from "../../shared/";
+import { Carousel, Body} from "coles-solid-library";
 
 const Homebrew: Component = () => {
   const elements = [

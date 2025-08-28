@@ -1,8 +1,8 @@
 import { type Component, For, createResource, JSX, useContext, createMemo, createSignal, Show, Switch, Match, createEffect, ErrorBoundary, onMount } from 'solid-js';
-import { TextArea, getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, Markdown, Clone } from './shared';
+import { getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, Markdown, Clone } from './shared';
 import styles from './App.module.scss';
 import DataTransferModal from './components/DataTransfering/dataTransferModal';
-import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table, Checkbox } from 'coles-solid-library';
+import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table, Checkbox, TextArea } from 'coles-solid-library';
 import { DnDClass } from './models/old/class.model';
 import { useGetSRDClasses$ } from './shared/customHooks/api/useGetSrdClasses';
 import { combineLatest, concatMap, of } from 'rxjs';
@@ -129,13 +129,16 @@ const App: Component = () => {
                     Welcome to my app. This is a work in progress.
                   </div>
                   <div>
-                    <TextArea 
-                      readOnly={true} 
-                      transparent={true} 
-                      tooltip='Testing' 
-                      text={bannerText} 
-                      setText={setBannerText} 
-                    />
+                    <FormField name="">
+                      <TextArea 
+                        readOnly={true} 
+                        transparent={true} 
+                        tooltip='Testing' 
+                        text={bannerText} 
+                        setText={setBannerText} 
+                      />
+
+                    </FormField>
                   </div>
                 </ExpansionPanel>
                 <Checkbox checked={isNewChoice()} onChange={setIsNewChoice} />
@@ -176,16 +179,16 @@ const App: Component = () => {
                     {/* <Markdown text={testText()} /> */}
                   </div>
                   <div style={{width:"100%", height: "max-content", "min-height": "200px"}}>
-                    <TextArea 
-                      buttons={{styleType: "tertiary"}} 
-                      picToTextEnabled={true} 
-                      onChange={(e) => setTestText(e.currentTarget.value)} 
-                      readOnly={false} 
-                      transparent={false} 
-                      tooltip='Testing' 
-                      text={testText} 
-                      setText={setTestText} 
-                    />
+                    <FormField name=''>
+                      <TextArea 
+                        onChange={(e) => setTestText(e.currentTarget.value)} 
+                        readOnly={false} 
+                        transparent={false} 
+                        tooltip='Testing' 
+                        text={testText} 
+                        setText={setTestText} 
+                      />
+                    </FormField>
                   </div>
                 </div>
               </Match>

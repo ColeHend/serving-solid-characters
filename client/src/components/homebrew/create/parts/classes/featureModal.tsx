@@ -1,9 +1,10 @@
-import { Button, FormGroup, Input, Modal, Select, Option, Checkbox } from "coles-solid-library";
+import { Button, FormGroup, Input, Modal, Select, Option, Checkbox, TextArea, FormField } from "coles-solid-library";
 import { Accessor, Component, createEffect, createSignal, Setter, Switch, Match, Show, For } from "solid-js";
 import { ClassForm } from "./classes";
 import { CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { LevelEntity } from "../../../../../models/old/class.model";
-import { Clone, TextArea } from "../../../../../shared";
+import { Clone } from "../../../../../shared";
+
 interface FeatureModalProps {
   showAddFeature: Accessor<boolean>;
   setShowAddFeature: Setter<boolean>;
@@ -96,11 +97,13 @@ export const FeatureModal: Component<FeatureModalProps> = (props) => {
 
         <div>
           <h3>Description</h3>
-          <TextArea
-            text={description}
-            setText={setDescription}
-            placeholder="Enter feature description"
-          />
+          <FormField name="">
+            <TextArea
+              text={description}
+              setText={setDescription}
+              placeholder="Enter feature description"
+            />
+          </FormField>
         </div>
 
         <div style={{ 'margin-top': '20px', display: 'flex', gap: '10px', 'justify-content': 'flex-end' }}>

@@ -27,6 +27,7 @@ import Subclasses from "./components/homebrew/create/parts/subclasses/subclasses
 import RootApp from "./components/rootApp";
 import ItemsViewTab from "./components/infoTab/items/item";
 import Subraces from "./components/homebrew/create/parts/subraces/subraces";
+import { aboutPage } from "./components/aboutPage/about";
 
 console.log("Application initializing...");
 
@@ -103,6 +104,7 @@ if (root) {
             </Route>
             <Route path="/*any" component={View} />
           </Route>
+          <Route path="/about" component={aboutPage}></Route>
         </Router>
       </ErrorBoundary>
     ), root);

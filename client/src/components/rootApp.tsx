@@ -1,4 +1,4 @@
-import { RouteSectionProps } from "@solidjs/router";
+import { RouteSectionProps, useNavigate } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
 import { getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDItems, useDnDRaces } from "../shared";
@@ -7,7 +7,7 @@ import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
 import NavMenu from "./navMenu/navMenu";
-import { addTheme, Container, SnackbarController } from "coles-solid-library";
+import { addTheme, Button, Container, SnackbarController } from "coles-solid-library";
 import { UserSettings } from "../models/userSettings";
 import { useDnDSpells } from "../shared/customHooks/dndInfo/info/all/spells";
 
@@ -122,6 +122,8 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   
   const [menuAnchor, setMenuAnchor] = createSignal<HTMLElement | undefined>();
   
+  const navigate = useNavigate();
+
   return (
     <ErrorBoundary fallback={(err) => {
       console.error("Error in RootApp render:", err);
@@ -163,7 +165,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           </div>
           <footer
             style={{
-              opacity: "55%",
+              opacity: "25%",
               width: "70%",
               // border: "2px solid",
               // "border-radius": "9px",
@@ -171,13 +173,11 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
               bottom: 0,
               "margin-left": "15%",
               
+              
             }}
 
           >
-            <h6>Atributations</h6>
-            <p>
-              Dnd 5e Srd
-            </p>
+            <Button onClick={()=>navigate("/about")}>About</Button>
           </footer>
         </div>
         <NavMenu
