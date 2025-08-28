@@ -29,11 +29,15 @@ const ClassModal: Component<props> = (props) => {
   const stylin = createMemo(() => useStyles(userSettings().theme));
   const [activeTab,setActiveTab] = createSignal<number>(0);
 
-  const starting_equipment = createMemo(() => props.currentClass().starting_equipment || [])
-  const startingItemsOptionKeys = createMemo(()=>starting_equipment().flatMap(x=>x.optionKeys || []))
-  const startItems = createMemo(()=>starting_equipment().flatMap(x=>x.items || []))
-  const classLevels = createMemo(() => Object.keys(props.currentClass().features || {}))
-  const features = createMemo(() => props.currentClass().features || [])
+  const starting_equipment = createMemo(() => props.currentClass().starting_equipment || []);
+  const startingItemsOptionKeys = createMemo(()=>starting_equipment().flatMap(x=>x.optionKeys || []));
+  const startItems = createMemo(()=>starting_equipment().flatMap(x=>x.items || []));
+  const classLevels = createMemo(() => Object.keys(props.currentClass().features || {}));
+  const features = createMemo(() => props.currentClass().features || []);
+  const choices = createMemo(() => props.currentClass().choices || {});
+  const choiceKeys = createMemo(() => Object.keys(props.currentClass().choices || {}));
+
+  console.log("x:", choiceKeys())
 
   return (
     <Modal
@@ -103,6 +107,49 @@ const ClassModal: Component<props> = (props) => {
                     </span>}
                 </For>
               </span>
+
+              <Show when={choices().starting_equipment && choiceKeys().length !== 0}>
+                <For each={choiceKeys()}>
+                  { (choiceKey) => <span>
+                  <div>
+                    {choiceKey}:
+                  </div> 
+                  
+                  <div>
+                    Choose: { choices()[`${choiceKey}`].amount }
+                  </div>
+                  
+                  <div>
+                    <Show when={choices()[`${choiceKey}`].options.length < 3} fallback={
+                      <For each={choices()[`${choiceKey}`].options || []}>
+                        { (option,i) => <span>
+                          {option}<Show when={i() !== choices()[`${choiceKey}`].options.length - 1}>, </Show>
+                        </span>}
+                      </For>
+                    }>
+                      <span>
+                        A:{
+                          choices()[`${choiceKey}`].options[0]
+                        } 
+                      </span>
+                      <br />
+                      <span>
+                        B:{
+                          choices()[`${choiceKey}`].options[1]
+                        }
+                      </span>
+                    </Show>
+
+                    
+
+
+                  </div>
+                </span>
+
+                  }
+                </For>
+              </Show>
+              
             </Show>
 
             <Show when={activeTab() === 2}>

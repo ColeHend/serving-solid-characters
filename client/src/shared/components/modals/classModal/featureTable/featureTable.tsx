@@ -68,7 +68,8 @@ const FeatureTable: Component<Props> = (props) => {
     return columns;
   }
 
-  console.log("x",classSpecificKeys());
+  console.log("x",props.DndClass());
+  
   
 
   return (
