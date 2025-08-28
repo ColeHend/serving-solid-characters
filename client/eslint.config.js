@@ -8,7 +8,7 @@ export default [
   {languageOptions: { globals: globals.browser }},
   {
     rules: {
-      "indent": ["warn", 2],
+      "indent": "off",
       "constructor-super": "error",
       "for-direction": "error",
       "getter-return": "error",

@@ -2,11 +2,8 @@ import { Accessor, Component, Show, createSignal, Setter, createMemo, splitProps
 import navStyles from './navbar.module.scss';
 import {  effect, style } from "solid-js/web";
 import { A } from "@solidjs/router";
-import BarMenu from "../../shared/svgs/barMenu";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
-import { Calculator } from "../../shared/svgs/calulator";
-import DamageCalulator from "../../shared/components/modals/damageCalculator/damageCalculator";
 import { Button, Container, Icon } from "coles-solid-library";
 import DataTransferModal from "../DataTransfering/dataTransferModal";
 

@@ -23,11 +23,7 @@ $mobial-size:768px;
     margin: 0 auto;
     width: 35%; 
     height: 5vh;
-
-    svg {
-        height: 60%;
-    }
-
+    
     @media screen and (max-width:$mobial-size) {
         width: 100%;
         margin: 0;

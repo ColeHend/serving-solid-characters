@@ -37,7 +37,9 @@ const viewClasses: Component = () => {
     
   return (
     <Body class={`${stylin()?.primary}  ${styles.classesView}`}>
-      <h1>Classes</h1>
+      <div class={`${styles.headerBar}`}>
+        <h1>Classes</h1>
+      </div>
 
       <div class={`${styles.searchBar}`}>
         <SearchBar 
@@ -67,14 +69,16 @@ const viewClasses: Component = () => {
           </Column>
         </Table>
       </div>
-      <Show when={showClass()}>
-        <ClassModal boolean={showClass} booleanSetter={setShowClass} currentClass={currentClass} />
-      </Show>
+
       <div class={`${styles.paginator}`}>
         <Paginator 
           items={searchResults} 
           setPaginatedItems={setPaginatedClasses}/>
       </div>
+      
+      <Show when={showClass()}>
+        <ClassModal boolean={showClass} booleanSetter={setShowClass} currentClass={currentClass} />
+      </Show>
     </Body>
   )
 };

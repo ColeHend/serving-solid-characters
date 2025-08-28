@@ -70,7 +70,7 @@ const ClassModal: Component<props> = (props) => {
     >
       <div class={`${stylin()?.primary} ${styles.CenterPage}`}>
         <div class={`${styles.eachPage}`}>
-          <h1>{props.currentClass().name}</h1>
+          {/* <h1>{props.currentClass().name}</h1> */}
 
           {/* the feature table */}
           <FeatureTable DndClass={() => props.currentClass()} />

@@ -1,10 +1,16 @@
 import { useGetSrdRaces } from "../srd/races";
 import { useGetHombrewRaces } from "../homebrew/races";
 import { createMemo } from "solid-js";
+import getUserSettings from "../../../userSettings";
 
 export function useDnDRaces() {
-  const LocalRaces = useGetSrdRaces();
   const HombrewRaces = useGetHombrewRaces();
+  const [userSettings] = getUserSettings();
+  
+  return createMemo(() => {
+    const version = userSettings().dndSystem || '2014';
+    const LocalRaces = useGetSrdRaces(version);
 
-  return createMemo(() => [...LocalRaces(), ...HombrewRaces()]);
+    return  [...LocalRaces(), ...HombrewRaces()]
+  });
 }

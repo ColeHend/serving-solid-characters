@@ -112,22 +112,6 @@ const masterSpells: Component = () => {
 
   }
 
-  const checkForComponents = (spell: Spell) => {
-    const returnarr:string[] = [];
-    
-    if (spell.isSomatic) {
-      returnarr.push("S");
-    }
-    if (spell.isVerbal) {
-      returnarr.push("V");
-    }
-    if (spell.isMaterial) {
-      returnarr.push("M");
-    }
-
-    return returnarr;
-  }
-
   const checkForHomebrew = (spell:Spell):boolean => {
     try {
       return homebrewManager.spells().some(customSpell => customSpell.name.toLowerCase() === spell.name.toLowerCase());
@@ -135,7 +119,6 @@ const masterSpells: Component = () => {
       return false;
     }
   };
-
 
 
   createEffect(() => {

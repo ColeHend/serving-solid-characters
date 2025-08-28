@@ -1,10 +1,9 @@
-import { Accessor, Component, For, Setter, Show, useContext } from "solid-js";
-import { Race } from "../../../../models";
-// import Modal from "../../popup/popup.component";
+import { Accessor, Component, createSignal, For, Setter, Show, useContext } from "solid-js";
+// import { Race } from "../../../../models";
+import { AbilityScores, Race } from "../../../../models/data";
 import styles from "./raceView.module.scss";
-import Tabs, { Tab } from "../../Tabs/tabs";
 import { SharedHookContext } from "../../../../components/rootApp";
-import { Modal } from "coles-solid-library";
+import { Modal, TabBar } from "coles-solid-library";
 
 
 interface props {
@@ -18,32 +17,33 @@ const RaceView: Component<props> = (props) => {
   const race = props.currentRace;
   const sharedHooks = useContext(SharedHookContext);
 
+  const [activeTab, setActiveTab] = createSignal<number>(0);
+
+  // const subraceNames = race()..flatMap((subrace) => subrace.name);
+
   return <Modal title={race().name} show={props.backClick}>
     <div class={`${styles.raceWrapper}`}>
       <h1 class={`${styles.header}`}>{race().name}</h1>
 
-      <h3 class={`${styles.header}`}>Ability Score Increases: </h3>
-          
-      <div class={`${styles.startingProfsRow}`}>
-        <For each={race().abilityBonuses}>
-          {(bonus) => <span class={`${styles.info}`}>
-            <span>{bonus.name}</span> by <span>{bonus.value}</span>   
-          </span>}
-        </For>
+      <Show when={race().descriptions}>
+        <div class={`${styles.info}`}>{race().descriptions?.physical}</div>
 
-      </div>
+        <div class={`${styles.info}`}>{race().descriptions?.abilities}</div>
+      </Show>
+        
+      
 
-      <h3 class={`${styles.header}`}>Age:</h3>
-
-      <span class={`${styles.info}`}>{race()?.age}</span>
-
-      <h3 class={`${styles.header}`}>Alignment:</h3>
-
-      <span class={`${styles.info}`}>{race()?.alignment}</span>
-
-      <h3 class={`${styles.header}`}>Size:</h3>
-
-      <span class={`${styles.info}`}>{race()?.sizeDescription}</span>
+      <Show when={race().abilityBonuses.length !== 0}>
+        <h3 class={`${styles.header}`}>Ability Score Increases: </h3>
+        
+        <div class={`${styles.startingProfsRow}`}>
+          <For each={race().abilityBonuses}>
+            {(bonus) => <span class={`${styles.info}`}>
+              <span>{AbilityScores[`${bonus.stat}`]}</span> by <span>{bonus.value}</span>   
+            </span>}
+          </For>
+        </div>
+      </Show>
 
       <h3 class={`${styles.header}`}>Speed:</h3>
 
@@ -55,35 +55,32 @@ const RaceView: Component<props> = (props) => {
         <span>
           <For each={race()?.traits}>
             {(trait) =><div>
-              <h3 class={`${styles.header}`}>{trait?.name}:{" "}</h3>
-              <For each={trait?.value}>
-                {(value) => <span class={`${styles.info}`}>{value}</span>}
+              <h3 class={`${styles.header}`}>{trait?.details.name}:{" "}</h3>
+              <For each={trait?.prerequisites}>
+                {(value) => <span class={`${styles.info}`}>{value.value}</span>}
               </For>
+
+              <div class={`${styles.info}`}>{trait.details.description}</div>
             </div>}
           </For>
         </span>
       </Show>
-      <Show when={race().startingProficencies.length > 0}>
-        <h3 class={`${styles.header}`}>Proficiencies:</h3>
-        <span class={`${styles.info}`}>
-          {race()
-            ?.startingProficencies?.map((x) => x?.value)
-            ?.join("\n")}
-        </span>
-
-      </Show>
 
       <h3 class={`${styles.header}`}>Languages:</h3>
         
-      <span class={`${styles.info}`}>{race()?.languageDesc}</span>
+      <span class={`${styles.info}`}>{race()?.languages.join(", ")}</span>
 
 
-      <Show when={race().subRaces.length > 0}>
+      {/* <Show when={race()..length > 0}>
         <div class={`${styles.subclassesTabRow}`}>
-          <Tabs transparent>
+            <TabBar tabs={subraceNames} activeTab={activeTab()} onTabChange={(label, index)=> setActiveTab(index)} colors={{
+              indicator: "#AA0505"
+            }} />
+
             <For each={race().subRaces}>
-              { (subrace, i) => <Tab name={subrace.name}>
-                <h3 class={`${styles.header}`}>Description</h3>
+              {
+                (subrace, i) => <Show when={i()}>
+                  <h3 class={`${styles.header}`}>Description</h3>
                 <span>{subrace.desc}</span>
                 <h3 class={`${styles.header}`}>Ability Score Increases: </h3>
                 <For each={subrace.abilityBonuses}>
@@ -115,13 +112,12 @@ const RaceView: Component<props> = (props) => {
 
                 </Show>
 
-
-              </Tab>}
+                </Show> 
+              }
             </For>
-              
-          </Tabs>
+
         </div>
-      </Show>
+      </Show> */}
 
     </div>
   </Modal>
