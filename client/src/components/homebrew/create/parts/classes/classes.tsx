@@ -133,12 +133,6 @@ export const Classes: Component = () => {
   const [resetNonce, setResetNonce] = createSignal(0);
   const resetForm = () => {
     // Clear values succinctly (no reset API on FormGroup yet)
-    const clearList: (keyof ClassForm)[] = [
-      'name','description','hitDie','primaryStat','savingThrows','armorProficiencies','weaponProficiencies','toolProficiencies',
-      'armorStart','weaponStart','itemStart','armorProfChoices','weaponProfChoices','toolProfChoices','skills','skillChoiceNum','skillChoices',
-      'startingEquipment','spellCasting','castingStat','casterType','classSpecificValues','subclasses','metadataSubclassLevels','metadataSubclassName',
-      'metadataSubclassPos','classLevels','spellcastName','spellsKnownCalc','spellcastAbility','spellsKnownRoundup','spellsInfo','spellsLevel','hasCantrips'
-    ];
     // Reapply primitives
     ClassFormGroup.set('name','' as any);
     ClassFormGroup.set('description','' as any);
