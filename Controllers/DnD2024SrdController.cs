@@ -22,10 +22,6 @@ public class DnD2024Controller : ControllerBase
         try
         {
           var classes = srdInfoRepository.GetClasses("2024");
-
-          Console.WriteLine("Classes: ",JsonConvert.SerializeObject(classes));
-          Debug.WriteLine("Classes: ",JsonConvert.SerializeObject(classes));
-
           return Ok(classes);
         }
         catch (Exception ex)
