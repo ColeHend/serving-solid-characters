@@ -1,6 +1,6 @@
 import { Race } from "../../../../../models/data";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
-import { concat, concatMap, of, take, tap } from "rxjs";
+import { concatMap, of, take, tap } from "rxjs";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import { createMemo, createSignal } from "solid-js";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
@@ -89,15 +89,16 @@ export function useGetSrdRaces(version: '2014' | '2024' | "both" | string) {
   // }
 
   // return races
+// };
+
+//   return createMemo<Race[]>(() => {
+//     if (version === '2014') return races2014();
+//     if (version === '2024') return races2024();
+//     if (version === 'both') return [...races2014(), ...races2024()];
+//     return races2014().length ? races2014() : races2024();
+//   });
 };
 
-function fetchRaces(version: '2014' | '2024' = '2014') {
-  return HttpClient$.get<Race[]>(`/api/${version}/Races`).pipe(
-    take(1),
-    tap((races) => {
-      if (races) {
-        SrdDB.races.bulkAdd(races);
-      }
-    })
-  )
+function fetchRaces(version: '2014' | '2024') {
+  return HttpClient$.get<Race[]>(`/api/${version}/Races`).pipe(take(1));
 }

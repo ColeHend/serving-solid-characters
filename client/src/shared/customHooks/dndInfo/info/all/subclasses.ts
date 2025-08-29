@@ -1,10 +1,18 @@
 import { useGetSrdSubclasses } from "../srd/subclasses";
 import { useGetHombrewSubclasses } from "../homebrew/subclasses";
-import { createMemo } from "solid-js";
+import { Subclass } from "../../../../../models/data";
+import { Accessor, createMemo } from "solid-js";
+import { getUserSettings } from "../../../userSettings";
 
-export function useDnDSubclasses(version: "2014" | "2024" = "2014") {
-  const LocalSubclasses = useGetSrdSubclasses(version);
-  const HombrewSubclasses = useGetHombrewSubclasses();
+type Year = "2014" | "2024";
+interface UseDnDSubclassesOptions { overrideVersion?: Year; }
 
-  return createMemo(() => [...LocalSubclasses(), ...HombrewSubclasses()]);
+export function useDnDSubclasses(opts?: UseDnDSubclassesOptions): Accessor<Subclass[]> {
+  const [userSettings] = getUserSettings();
+  return createMemo<Subclass[]>(() => {
+    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
+    const srd = useGetSrdSubclasses(active);
+    const homebrew = useGetHombrewSubclasses();
+    return [...srd(), ...homebrew()];
+  });
 }

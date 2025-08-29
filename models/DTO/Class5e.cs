@@ -34,34 +34,6 @@ public class Prerequisite
   public string Value { get; set; } = null!;
 }
 
-public enum PrerequisiteType
-{
-  String,
-  Level,
-  Class,
-  Subclass,
-  Feat,
-  Race,
-  Item,
-  Stat
-}
-
-public enum FeatureTypes
-{
-  Class = 0,
-  Subclass,
-  Feat,
-  Race,
-  Background,
-  Language,
-  AbilityScore,
-  CharacterLevel,
-  Classes,
-  Item,
-  Weapon,
-  Armor,
-  Subrace
-}
 
 public class Choices : Dictionary<string, ChoiceDetail> { }
 
@@ -71,63 +43,7 @@ public class ChoiceDetail
   public int Amount { get; set; }
 }
 
-public enum CharacterChangeTypes
-{
-  AbilityScore = 0,
-  HP,
-  Speed,
-  AC,
-  Initiative,
-  Save,
-  AttackRoll,
-  Spell,
-  SpellSlot
-}
 
-public enum SetMethod
-{
-  Set,
-  Add,
-  Subtract,
-  Multiply,
-  Divide
-}
-
-public enum IncreaseMethod
-{
-  Number,
-  Die,
-  Stat
-}
-
-public enum AbilityScores
-{
-  STR = 0,
-  DEX,
-  CON,
-  INT,
-  WIS,
-  CHA,
-  CHOICE,
-  ALL
-}
-
-public enum TypeRestrictions
-{
-  SpellOnly = 0,
-  MeleeOnly,
-  RangedOnly,
-  RangeReduced
-}
-
-public enum MovementTypes
-{
-  Walk = 0,
-  Swim,
-  Fly,
-  Climb,
-  Burrow
-}
 
 public class StatBonus
 {
@@ -169,14 +85,6 @@ public class Item
   public double Weight { get; set; }
   public string Cost { get; set; } = null!;
   public Dictionary<string, string> Properties { get; set; } = new();
-}
-
-public enum ItemType
-{
-  Weapon,
-  Armor,
-  Tool,
-  Item
 }
 
 public class ItemProperties : Dictionary<string, object?> { }
@@ -259,17 +167,27 @@ public class Subclass
 
 public class Class5E
 {
-  public int Id { get; set; }
-  public string Name { get; set; } = null!;
-  public string HitDie { get; set; } = null!;
-  public string PrimaryAbility { get; set; } = null!;
-  public List<string> SavingThrows { get; set; } = new();
-  public List<StartingEquipment> StartingEquipment { get; set; } = new();
-  public Proficiencies Proficiencies { get; set; } = new();
-  public Spellcasting? Spellcasting { get; set; }
-  public Dictionary<int, List<FeatureDetail>>? Features { get; set; }
-  public Choices? Choices { get; set; }
-  public Dictionary<string, Dictionary<int, string>>? ClassSpecific { get; set; }
+  [JsonProperty("id")] public int Id { get; set; }
+  [JsonProperty("name")] public string Name { get; set; } = null!;
+  [JsonProperty("hit_die")] public string HitDie { get; set; } = null!;
+  [JsonProperty("primary_ability")] public string PrimaryAbility { get; set; } = null!;
+  [JsonProperty("saving_throws")] public List<string> SavingThrows { get; set; } = new();
+  [JsonProperty("starting_equipment")] public List<StartingEquipment> StartingEquipment { get; set; } = new();
+  [JsonProperty("proficiencies")] public Proficiencies Proficiencies { get; set; } = new();
+  [JsonProperty("spellcasting")] public Spellcasting? Spellcasting { get; set; }
+  [JsonProperty("start_choices")] public ClassStartChoices StartChoices { get; set; } = new();
+  [JsonProperty("features")] public Dictionary<int, List<FeatureDetail>>? Features { get; set; }
+  [JsonProperty("choices")] public Choices? Choices { get; set; }
+  [JsonProperty("classSpecific")] public Dictionary<string, Dictionary<int, string>>? ClassSpecific { get; set; }
+}
+
+  public class ClassStartChoices
+  {
+    public string? weapon { get; set; }
+    public string? armor { get; set; }
+    public string? skills { get; set; }
+    public string? tools { get; set; }
+    public string? equipment { get; set; }
 }
 
 /// <summary>Represents a group of proficiency lists.</summary>
@@ -326,29 +244,6 @@ public class SpellCalc
   public string Stat { get; set; } = null!;   // e.g. "INT", "WIS"
   public SpellCalcLevel Level { get; set; }   // "full" or "half"
   public bool? RoundUp { get; set; }
-}
-
-/* ───────────── Enums ───────────── */
-
-public enum CasterType
-{
-  None,
-  Third,
-  Half,
-  Full,
-  Pact
-}
-
-public enum SpellKnownType   // maps the literal union "number" | "calc"
-{
-  Number,
-  Calc
-}
-
-public enum SpellCalcLevel   // maps the literal union "full" | "half"
-{
-  Full,
-  Half
 }
 
 /// <summary>Helper types used inside <see cref="Race"/> / <see cref="Subrace"/>.</summary>

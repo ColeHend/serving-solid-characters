@@ -1,10 +1,11 @@
 import { Component, createMemo, createSignal, For, Setter } from "solid-js";
 import styles from "./classes.module.scss";
-import { Armor, Clone, Item, useGetArmor, useGetItems, useGetWeapons, Weapon } from "../../../../../shared";
+import { Armor, Clone, useGetArmor, useDnDItems, useGetWeapons, Weapon } from "../../../../../shared";
 import { Modal, Select, Option, Input, FormField, Table, Column, Header, Cell, Row, FormGroup, Button, Icon } from "coles-solid-library";
 import { ClassForm } from "./classes";
 import { Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { ItemMenuButton } from "./itemMenuButton";
+import { Item } from "../../../../../models/data";
 
 export interface AddItem<T=Item> {
   item: T;
@@ -26,9 +27,16 @@ export const Items: Component<ItemProps> = (props) => {
   
   const [modalColumns, setModalColumns] = createSignal<string[]>(['name', 'description', 'weight', 'cost']);
   const [empty,] = createSignal<Item[]>([]);
-  const allItems = useGetItems();
-  const allWeapons = useGetWeapons();
-  const allArmor = useGetArmor();
+  const allItems = useDnDItems();
+  const allWeapons = createMemo(() => allItems().filter(item => {
+    return Object.keys(item?.properties ?? {}).includes('Damage');
+  }));
+  const allArmor = createMemo(() => allItems().filter(item => {
+    return Object.keys(item?.properties ?? {}).includes('AC');
+  }));
+
+  // const allWeapons = useGetWeapons();
+  // const allArmor = useGetArmor();
   const currentData = createMemo(() => {
     if (modalShown() === 'items') {
       return allItems();
@@ -219,6 +227,8 @@ export const Items: Component<ItemProps> = (props) => {
           </div>
           <div>
             <Table data={currentData} columns={modalColumns()}>
+              <Row header />
+              <Row />
               <Column name="name">
                 <Header>Item</Header>
                 <Cell<Item> >{(item)=> item.name}</Cell>
@@ -229,7 +239,7 @@ export const Items: Component<ItemProps> = (props) => {
               </Column>
               <Column name="cost">
                 <Header>Cost</Header>
-                <Cell<Item> >{(item)=> <>{`${item.cost.quantity} ${item.cost.unit}`}</>}</Cell>
+                <Cell<Item> >{(item)=> <>{`${item.cost}`}</>}</Cell>
               </Column>
               <Column name="description">
                 <Header>Description</Header>
@@ -274,7 +284,6 @@ export const Items: Component<ItemProps> = (props) => {
                     formGroup={props.formGroup} 
                     item={modalShown() === 'items' ? item : undefined}
                     addItem={(item)=>{
-                      console.log('item', item);
                       
                       const choice = item?.choice;
                       const amnt = item?.choiceAmnt ?? 1;
@@ -302,9 +311,8 @@ export const Items: Component<ItemProps> = (props) => {
                         props.formGroup.set('itemStart', items);
                       }
                     }}
-                    weapon={modalShown() === 'weapons' ? item as Weapon : undefined}
+                    weapon={modalShown() === 'weapons' ? item : undefined}
                     addWeapon={(weapon)=>{
-                      console.log('weapon', weapon);
                       const toAddAmount = weapon.itemAmnt ?? 1;
                       const choice = weapon.choice;
                       const amnt = weapon.choiceAmnt ?? 1;
@@ -330,9 +338,8 @@ export const Items: Component<ItemProps> = (props) => {
                         props.formGroup.set('weaponStart', items);
                       }
                     }}
-                    armor={modalShown() === 'armor' ? item as Armor : undefined}
+                    armor={modalShown() === 'armor' ? item : undefined}
                     addArmor={(armor)=>{
-                      console.log('armor', armor);
                       const toAddAmount = armor?.itemAmnt ?? 1;
                       const choice = armor?.choice;
                       const amnt = armor?.choiceAmnt ?? 1;

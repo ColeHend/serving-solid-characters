@@ -54,7 +54,13 @@ public class SrdInfoRepository : ISrdInfoRepository
     {
       throw new ArgumentException($"Version must be 2014 or 2024 but was {versionInt}");
     }
-    var json = jsonService.GetJson<Item[]>($"srd/{version}/items");
+    Item[] json = jsonService.GetJson<Item[]>($"srd/{version}/items") ?? Array.Empty<Item>();
+    if (versionInt == 2014)
+    {
+      var weapons = jsonService.GetJson<Item[]>($"srd/{version}/weapons") ?? Array.Empty<Item>();
+      var armor = jsonService.GetJson<Item[]>($"srd/{version}/armor") ?? Array.Empty<Item>();
+      json = json.Concat(weapons).Concat(armor).ToArray();
+    }
     json ??= Array.Empty<Item>();
     return json.ToList();
   }

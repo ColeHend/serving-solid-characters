@@ -1,9 +1,9 @@
-import { Button, FormGroup, Input, Modal, Select, Option, Checkbox } from "coles-solid-library";
+import { Button, FormGroup, Input, Modal, Select, Option, Checkbox, TextArea } from "coles-solid-library";
 import { Accessor, Component, createEffect, createSignal, Setter, Switch, Match, Show, For } from "solid-js";
 import { ClassForm } from "./classes";
 import { CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { LevelEntity } from "../../../../../models/old/class.model";
-import { Clone, TextArea } from "../../../../../shared";
+import { Clone } from "../../../../../shared";
 interface FeatureModalProps {
   showAddFeature: Accessor<boolean>;
   setShowAddFeature: Setter<boolean>;
@@ -75,7 +75,6 @@ export const FeatureModal: Component<FeatureModalProps> = (props) => {
       level?.features.push(feature);
     }
     const newLevels = [...levels.map(l => l.level === level?.level ? level : l)];
-    console.log('New Levels:', newLevels);
     
     props.setTableData(newLevels);
     props.formGroup.set('classLevels', Clone(newLevels));
