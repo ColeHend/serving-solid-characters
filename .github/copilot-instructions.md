@@ -59,3 +59,23 @@ Practical rules to be instantly productive in this ASP.NET 8 API + SolidJS/Vite 
 Search for an existing pattern (e.g. add new entity like `Feats`) and mirror repository method + controller action style; keep version validation + try/catch structure.
 
 Feedback: Highlight unclear areas (e.g. desire for caching layer, auth re‑enable plan) so this guide can iterate.
+
+### 11. `coles-solid-library` Reference
+A lightweight internal SolidJS utility/component library (`coles-solid-library`) is installed via `node_modules`. It ships with an in-repo usage document at:
+
+`node_modules/coles-solid-library/USAGE.html`
+
+Before creating new shared frontend helpers or components, open that HTML file (can be viewed directly in VS Code or a browser) to:
+1. Review existing primitives (hooks, stores, UI atoms) and avoid duplicating logic.
+2. Follow documented patterns (naming, signal vs store choices, error handling conventions).
+3. Copy only the public usage patterns—do NOT inline or fork internal implementation unless absolutely required.
+
+If you extend the library (e.g. by updating the package version or adding new exported APIs):
+- Update `USAGE.html` within the library package (or contribute upstream if it is a separately published package).
+- Note any new initialization requirements here if they affect app bootstrap.
+
+When unsure whether to add a helper locally vs. to the library:
+- Add to the library if it is generic across feature areas and has no backend coupling.
+- Keep local if it is highly feature/domain specific to this app.
+
+Reminder for future automation: Code generation or refactors that touch shared UI logic should first scan `coles-solid-library` exports to reuse rather than recreate.

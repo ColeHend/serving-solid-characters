@@ -1,10 +1,18 @@
 import { useGetSrdMagicItems } from "../srd/magicItems";
 import { useGetHombrewMagicItems } from "../homebrew/magicItem";
-import { createMemo } from "solid-js";
+import { MagicItem } from "../../../../../models/data";
+import { Accessor, createMemo } from "solid-js";
+import { getUserSettings } from "../../../userSettings";
 
-export function useDnDMagicItems() {
-  const LocalMagicItems = useGetSrdMagicItems();
-  const HombrewMagicItems = useGetHombrewMagicItems();
+type Year = "2014" | "2024";
+interface UseDnDMagicItemsOptions { overrideVersion?: Year }
 
-  return createMemo(() => [...LocalMagicItems(), ...HombrewMagicItems()]);
+export function useDnDMagicItems(opts?: UseDnDMagicItemsOptions): Accessor<MagicItem[]> {
+  const [userSettings] = getUserSettings();
+  return createMemo<MagicItem[]>(() => {
+    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
+    const srd = useGetSrdMagicItems(active);
+    const homebrew = useGetHombrewMagicItems();
+    return [...srd(), ...homebrew()];
+  });
 }

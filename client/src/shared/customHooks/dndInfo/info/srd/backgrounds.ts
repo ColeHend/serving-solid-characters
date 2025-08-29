@@ -64,13 +64,6 @@ export function useGetSrdBackgrounds(version: '2014' | '2024' | 'both' | string)
   })
 }
 
-function fetchBackgrounds(version: '2014' | '2024' = '2014') {
-  return HttpClient$.get<Background[]>(`/api/${version}/Backgrounds`).pipe(
-    take(1),
-    tap((backgrounds) => {
-      if (backgrounds) {
-        SrdDB.backgrounds.bulkAdd(backgrounds);
-      }
-    })
-  )
+function fetchBackgrounds(version: '2014' | '2024') {
+  return HttpClient$.get<Background[]>(`/api/${version}/Backgrounds`).pipe(take(1));
 }

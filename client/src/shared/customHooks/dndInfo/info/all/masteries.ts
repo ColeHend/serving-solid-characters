@@ -1,10 +1,19 @@
 import { useGetSrdMasteries } from "../srd/masteries";
 import { useGetHombrewWeaponMastery } from "../homebrew/masteries";
-import { createMemo } from "solid-js";
+import { WeaponMastery } from "../../../../../models/data";
+import { Accessor, createMemo } from "solid-js";
+import { getUserSettings } from "../../../userSettings";
 
-export function useDnDMasteries() {
-  const LocalMasteries = useGetSrdMasteries();
-  const HombrewMasteries = useGetHombrewWeaponMastery();
+type Year = "2014" | "2024";
+interface UseDnDMasteriesOptions { overrideVersion?: Year }
 
-  return createMemo(() => [...LocalMasteries(), ...HombrewMasteries()]);
+export function useDnDMasteries(opts?: UseDnDMasteriesOptions): Accessor<WeaponMastery[]> {
+  const [userSettings] = getUserSettings();
+  return createMemo<WeaponMastery[]>(() => {
+    // Masteries only exist in 2024 currently; honor override for future-proofing
+    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2024");
+    const srd = useGetSrdMasteries(active);
+    const homebrew = useGetHombrewWeaponMastery();
+    return [...srd(), ...homebrew()];
+  });
 }

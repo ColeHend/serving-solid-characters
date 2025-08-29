@@ -2,7 +2,7 @@ import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 import { catchError, of, take, tap, concatMap, shareReplay, Observable } from "rxjs";
 import HttpClient$ from "../../utility/tools/httpClientObs";
-import { Item } from "../../../../models/old/items.model";
+import { Item } from "../../../../models/data/items";
 import LocalSrdDB from "../../utility/localDB/old/srdDBFile";
 
 const [items, setItems] = createSignal<Item[]>([]);

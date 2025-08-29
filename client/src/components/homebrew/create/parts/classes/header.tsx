@@ -1,9 +1,12 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, createEffect } from "solid-js";
 import styles from "./classes.module.scss";
 import { FieldError, FormField, Input, TextArea } from "coles-solid-library";
 
-export const Header: Component = () => {
+interface HeaderProps { resetNonce?: number }
+export const Header: Component<HeaderProps> = (props) => {
   const [desc, setDesc] = createSignal<string>("");
+  // When reset nonce changes, clear local description state
+  createEffect(() => { props.resetNonce; setDesc(""); });
   return (
     <div class={`${styles.header}`}>
       <div class={`${styles.fieldSizeLg}`}>
