@@ -71,10 +71,6 @@ const FeatureTable: Component<Props> = (props) => {
     return columns;
   };
 
-  console.log("x",props.DndClass());
-  
-  
-
   return (
     <Table
       data={classLevels}

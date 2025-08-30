@@ -174,7 +174,6 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
     spellcasting,
     choices: Object.keys(choices).length ? choices : undefined,
   } as Class5EPayload;
-  console.log('toClass5E payload:', payload);
   
   return payload;
 }

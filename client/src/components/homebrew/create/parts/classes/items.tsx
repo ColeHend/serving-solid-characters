@@ -46,8 +46,6 @@ export const Items: Component<ItemProps> = (props) => {
     if (modalShown() === 'items') {
       return allItems();
     } else if (modalShown() === 'weapons') {
-      console.log(allItems());
-      
       return allWeapons();
     } else if (modalShown() === 'armor') {
       return allArmor();
