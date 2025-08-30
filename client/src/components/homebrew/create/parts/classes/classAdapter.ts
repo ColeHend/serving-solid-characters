@@ -157,10 +157,15 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
     };
   }
 
+  // primaryStat now an array -> join into comma-separated string of abbreviations
+  const primaryAbility = Array.isArray(form.primaryStat)
+    ? form.primaryStat.map(statName).filter(Boolean).join(',')
+    : statName(form.primaryStat as any);
+
   const payload: Class5EPayload = {
     name: form.name?.trim(),
     hit_die,
-    primary_ability: statName(form.primaryStat),
+    primary_ability: primaryAbility,
     saving_throws: (form.savingThrows || []).map(statName),
     starting_equipment,
     proficiencies,
@@ -169,6 +174,7 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
     spellcasting,
     choices: Object.keys(choices).length ? choices : undefined,
   } as Class5EPayload;
-
+  console.log('toClass5E payload:', payload);
+  
   return payload;
 }

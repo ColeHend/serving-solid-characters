@@ -1,11 +1,12 @@
 import { Component, createMemo, createSignal, For, Setter } from "solid-js";
 import styles from "./classes.module.scss";
-import { Armor, Clone, useGetArmor, useDnDItems, useGetWeapons, Weapon } from "../../../../../shared";
+import { Armor, Clone, useGetArmor,  useGetWeapons, Weapon } from "../../../../../shared";
 import { Modal, Select, Option, Input, FormField, Table, Column, Header, Cell, Row, FormGroup, Button, Icon } from "coles-solid-library";
 import { ClassForm } from "./classes";
 import { Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { ItemMenuButton } from "./itemMenuButton";
 import { Item } from "../../../../../models/data";
+import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
 
 export interface AddItem<T=Item> {
   item: T;
@@ -29,10 +30,14 @@ export const Items: Component<ItemProps> = (props) => {
   const [empty,] = createSignal<Item[]>([]);
   const allItems = useDnDItems();
   const allWeapons = createMemo(() => allItems().filter(item => {
-    return Object.keys(item?.properties ?? {}).includes('Damage');
+    const allKeys = Object.keys(item?.properties ?? {});
+    const allMinKeys = allKeys.map(k => k.toLowerCase());
+    return allMinKeys.includes('damage');
   }));
   const allArmor = createMemo(() => allItems().filter(item => {
-    return Object.keys(item?.properties ?? {}).includes('AC');
+    const allKeys = Object.keys(item?.properties ?? {});
+    const allMinKeys = allKeys.map(k => k.toLowerCase());
+    return allMinKeys.includes('ac');
   }));
 
   // const allWeapons = useGetWeapons();
@@ -41,6 +46,8 @@ export const Items: Component<ItemProps> = (props) => {
     if (modalShown() === 'items') {
       return allItems();
     } else if (modalShown() === 'weapons') {
+      console.log(allItems());
+      
       return allWeapons();
     } else if (modalShown() === 'armor') {
       return allArmor();
@@ -231,51 +238,51 @@ export const Items: Component<ItemProps> = (props) => {
               <Row />
               <Column name="name">
                 <Header>Item</Header>
-                <Cell<Item> >{(item)=> item.name}</Cell>
+                <Cell<Item> >{(item)=> item?.name ?? ''}</Cell>
               </Column>
               <Column name="weight">
                 <Header>Weight</Header>
-                <Cell<Item> >{(item)=> item.weight}</Cell>
+                <Cell<Item> >{(item)=> item?.weight ?? ''}</Cell>
               </Column>
               <Column name="cost">
                 <Header>Cost</Header>
-                <Cell<Item> >{(item)=> <>{`${item.cost}`}</>}</Cell>
+                <Cell<Item> >{(item)=> <>{item?.cost !== undefined ? `${item.cost}` : ''}</>}</Cell>
               </Column>
               <Column name="description">
                 <Header>Description</Header>
-                <Cell<Item> >{(item)=> <>{item.desc}</>}</Cell>
+                <Cell<Item> >{(item)=> <>{item?.desc ?? ''}</>}</Cell>
               </Column>
 
               <Column name="damage">
                 <Header>Damage</Header>
                 <Cell<Weapon> >{(weapon)=><>
-                  {weapon.damage?.map((d)=>`${d.damageDice}${d.damageBonus ? `+ ${d.damageBonus}` : ''}${' ' + d.damageType}`).join(',\n')}
+                  {weapon?.damage?.map((d)=>`${d.damageDice}${d.damageBonus ? `+ ${d.damageBonus}` : ''}${' ' + d.damageType}`).join(',\n')}
                 </>}</Cell>
               </Column>
               <Column name="range">
                 <Header>Range</Header>
-                <Cell<Weapon> >{(item)=> <>{item.weaponRange}</>}</Cell>
+                <Cell<Weapon> >{(item)=> <>{item?.weaponRange ?? ''}</>}</Cell>
               </Column>
               <Column name="weaponCategory">
                 <Header>Weapon Category</Header>
-                <Cell<Weapon> >{(item)=> <>{item.weaponCategory}</>}</Cell>
+                <Cell<Weapon> >{(item)=> <>{item?.weaponCategory ?? ''}</>}</Cell>
               </Column>
 
               <Column name="armorClass">
                 <Header>Armor Class</Header>
-                <Cell<Armor> >{(item)=> <>{item.armorClass}</>}</Cell>
+                <Cell<Armor> >{(item)=> <>{item?.armorClass ?? ''}</>}</Cell>
               </Column>
               <Column name="armorDisadv">
                 <Header>Stealth DisAdv</Header>
-                <Cell<Armor> >{(item)=> <>{item.stealthDisadvantage}</>}</Cell>
+                <Cell<Armor> >{(item)=> <>{item?.stealthDisadvantage ?? ''}</>}</Cell>
               </Column>
               <Column name="armorType">
                 <Header>Min STR</Header>
-                <Cell<Armor> >{(item)=> <>{item.strMin > 0 ? item.strMin : '-'}</>}</Cell>
+                <Cell<Armor> >{(item)=> <>{item?.strMin && item.strMin > 0 ? item.strMin : '-'}</>}</Cell>
               </Column>
               <Column name="armorCategory">
                 <Header>Armor Category</Header>
-                <Cell<Armor> >{(item)=> <>{item.armorCategory}</>}</Cell>
+                <Cell<Armor> >{(item)=> <>{item?.armorCategory ?? ''}</>}</Cell>
               </Column>
 
               <Column name="menu">
