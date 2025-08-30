@@ -82,7 +82,7 @@ const ClassModal: Component<props> = (props) => {
                 </Show>
                 <Show when={props.currentClass().primary_ability}>
                   <span>
-                    Primay Abilty: 
+                    Primary Ability: 
 
                     {props.currentClass().primary_ability}
                   </span>

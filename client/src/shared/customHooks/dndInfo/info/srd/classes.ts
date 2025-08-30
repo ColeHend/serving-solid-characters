@@ -36,7 +36,7 @@ export function useGetSrdClasses(version: '2014' | '2024' | "both" | string) {
   }
 
   if ((version === '2024' || version === 'both') && classes2024().length === 0) {
-    const srdDB2024$ = HttpClient$.toObservable(SrdDB.classes.toArray());
+    const srdDB2024$ = HttpClient$.toObservable(SrdDB2024.classes.toArray());
     
     srdDB2024$.pipe(
       take(1),
