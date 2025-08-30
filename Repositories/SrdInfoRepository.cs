@@ -71,7 +71,7 @@ public class SrdInfoRepository : ISrdInfoRepository
       if (System.IO.File.Exists(full))
       {
         var raw = System.IO.File.ReadAllText(full);
-        throw new Exception($"Failed to deserialize {pathKey}: {jex.Message}. Raw head: {raw.Substring(0, Math.Min(400, raw.Length)).Replace("\n"," ")}");
+        throw new Exception($"Failed to deserialize {pathKey}: {jex.Message}. Raw head: {raw?.Substring(0, Math.Min(400, raw?.Length ?? 0)).Replace("\n"," ") ?? ""}");
       }
       throw;
     }
