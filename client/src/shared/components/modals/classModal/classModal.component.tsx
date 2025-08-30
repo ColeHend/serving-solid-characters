@@ -45,12 +45,8 @@ const ClassModal: Component<props> = (props) => {
   const choices = createMemo(() => props.currentClass().choices || {});
   const choiceKeys = createMemo(() => Object.keys(props.currentClass().choices || {}));
   const currentSubclasses = createMemo<Subclass[]>(() => {
-    console.log("all:", allSubclasses());
-    
     return allSubclasses().filter(s => s.parent_class === props.currentClass().name);
   });
-
-  console.log("x:", choiceKeys())
 
   return (
     <Modal
