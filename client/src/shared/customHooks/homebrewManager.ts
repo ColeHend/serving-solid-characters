@@ -209,6 +209,7 @@ class HomebrewManager {
     if (this._subclasses().some(s => (s as any).storage_key === storage_key)) return null;
     return new Promise(res => this.addSubclassToDB(Clone(subclass)).subscribe({ complete: () => res(), error: () => res() }));
   }
+  private addSubclassToDB = (subclass: Subclass) => {
     let error = false;
     return httpClient$
       .toObservable(HombrewDB.subclasses.add(subclass as any))
