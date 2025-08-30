@@ -1,5 +1,5 @@
 import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, Show } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { Item, ItemType } from "../../../../../models/data";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { Clone, Paginator } from "../../../../../shared";
@@ -21,7 +21,7 @@ export const ItemsView:Component<viewProps> = (props) => {
   const [currentSort,setCurrentSort] = createSignal<{
     sortKey: string;
     isAsc: boolean;
-  }>({ sortKey: "name", isAsc: true});
+  }>({ sortKey: "cost", isAsc: false});
   
   const searchResults = createMemo(() => searchResult().length ? searchResult() : props.items());
 
@@ -65,29 +65,9 @@ export const ItemsView:Component<viewProps> = (props) => {
   createEffect(()=>{
     const list = props.items();
     setTableData(list);
+
   });
 
-  /* 
-    function costToCopper(cost: string): number {
-    if (!cost) return 0;
-    const match = cost.match(/^(\d+)\s*(CP|SP|GP)$/i);
-    if (!match) return 0;
-    const value = parseInt(match[1], 10);
-    const unit = match[2].toUpperCase();
-    switch (unit) {
-      case "GP":
-        return value * 100;
-      case "SP":
-        return value * 10;
-      case "CP":
-        return value;
-      default:
-        return 0;
-    }
-  }
-
-  
-  */
 
   // Normalize cost string: keep only the first number + coin type (CP|SP|GP), ignore trailing text
   const normalizeCost = (cost: string): string => {
@@ -157,6 +137,10 @@ export const ItemsView:Component<viewProps> = (props) => {
       return sorted;
     });
   };
+
+  onMount(() => {
+    dataSort("cost");
+  })
 
   console.log("items: ", props.items());
   
