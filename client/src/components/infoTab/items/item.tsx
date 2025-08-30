@@ -2,14 +2,18 @@ import {
   Component, 
   createEffect, 
   createMemo, 
-  createSignal 
+  createSignal, 
+  lazy
 } from "solid-js";
 import { useSearchParams } from "@solidjs/router";
 import { Body, Carousel, CarouselElement } from "coles-solid-library";
-import { ItemsView } from "./parts/items/itemsView";
 import { Item, ItemType } from "../../../models/data";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
+import { ItemsView } from "./parts/items/itemsView";
+import { WeaponsView } from "./parts/weapon/weaponView";
 
+// const ItemsView = lazy(() => import("./parts/items/itemsView").then(mod => ({ default: mod.ItemsView })));
+// const WeaponsView = lazy(() => import("./parts/weapon/weaponView").then(mod => ({ default: mod.WeaponsView })));
 
 const ItemsViewTab:Component = () => {
   // all off the items
@@ -24,9 +28,8 @@ const ItemsViewTab:Component = () => {
   const srdEquipment = createMemo<Item[]>(() => [...srdItems(),...srdTools()]);
 
   const elementMemo = createMemo<CarouselElement[]>(()=>([
-    // {name: "Weapons", element:  <WeaponsView weapons={SrdWeapons} />  },
-    // {name: "Armors", element: <ArmorsView SrdArmors={SrdArmors} /> },
-    {name: "Equipment", element: <ItemsView items={srdEquipment} /> }
+    {name: "Equipment", element: <ItemsView items={srdEquipment} /> },
+    {name: "Weapons", element:  <WeaponsView items={srdWeapons} />  }
   ]));  
 
   if (!searchParam.itemType) setSearchParam({itemType: elementMemo()[0].name })
@@ -45,7 +48,7 @@ const ItemsViewTab:Component = () => {
   }
 
   createEffect(()=>{
-    setSearchParam({itemType: elementMemo()[itemIndex()]?.name ?? "Weapons"})
+    setSearchParam({itemType: elementMemo()[itemIndex()]?.name ?? "Equipment"})
   })
 
   return <Body>

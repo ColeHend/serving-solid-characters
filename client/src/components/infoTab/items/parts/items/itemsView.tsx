@@ -5,6 +5,7 @@ import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { Clone, Paginator } from "../../../../../shared";
 import { useSearchParams } from "@solidjs/router";
 import styles from "./itemsView.module.scss";
+import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
 
 interface viewProps {
   items: Accessor<Item[]>;
@@ -140,10 +141,7 @@ export const ItemsView:Component<viewProps> = (props) => {
 
   onMount(() => {
     dataSort("cost");
-  })
-
-  console.log("items: ", props.items());
-  
+  })  
 
   return <Body class={`${styles.itemsBody}`}>
     <div class={`${styles.searchBar}`}>
@@ -213,5 +211,9 @@ export const ItemsView:Component<viewProps> = (props) => {
         setPaginatedItems={setPaginatedItems}
       />
     </div>
+
+    <Show when={showItem() && currentItem()}>
+        <ItemPopup show={[showItem, setShowItem]} item={currentItem as any} />
+    </Show>
   </Body>
 }
