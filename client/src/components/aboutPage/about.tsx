@@ -2,13 +2,15 @@ import { Body, Container, Icon } from "coles-solid-library";
 import { Component } from "solid-js";
 import styles from "./about.module.scss";
 
+import Li_Icon from "../../assets/LI-In-Bug.png";
+
 export const aboutPage:Component = () => {
 
   return <Body class={`${styles.aboutBody}`}>
     <h1>About Us</h1>
     <h2>
       <a href="https://www.linkedin.com/in/coleahenderson/" target="_blank" class={`${styles.Icon}`}>
-        <img src="/src/assets/LI-In-Bug.png" alt="Linkedin" />
+        <img src={`${Li_Icon}`} alt="Linkedin" />
       </a>    
       <span>Cole H. </span>
     </h2>
@@ -20,7 +22,7 @@ export const aboutPage:Component = () => {
 
     <h2>
       <a href="https://www.linkedin.com/in/slade-anderson-b17826324/" target="_blank" class={`${styles.Icon}`}>
-        <img src="/src/assets/LI-In-Bug.png" alt="Linkedin" />
+        <img src={`${Li_Icon}`} alt="Linkedin" />
       </a>
       <span>Slade A.</span>
     </h2>

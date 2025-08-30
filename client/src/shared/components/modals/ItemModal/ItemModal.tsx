@@ -7,7 +7,7 @@ interface modalProps {
     show: [Accessor<boolean>, Setter<boolean>];
 }
 
-const itemPopup:Component<modalProps> = (props) => {
+export const itemPopup:Component<modalProps> = (props) => {
     const currentItem = props.item();
 
     
