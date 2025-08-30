@@ -95,7 +95,10 @@ const NavMenu: Component<Props> = (props) => {
             <Show when={menuItem.Name !== "Homebrew"}>
               <MenuDropdown header={()=><><span class={`${styles.linkFix}`}  onClick={(e)=>Navigate(menuItem.Link)}>{menuItem.Name}</span></>} >
                 <For each={menuItem?.children ?? []}>{(child)=>(
-                  <MenuItem onClick={()=>Navigate(child.Link)} class={`${styles.menuItem}`}>
+                  <MenuItem onClick={()=>{
+                    Navigate(child.Link);
+                    props.setDefaultShowList(false);
+                  }} class={`${styles.menuItem}`}>
                     <span class={`${styles.linkFix}`} onClick={()=>Navigate(child.Link)}>
                       {child.Name}
                     </span>
@@ -108,10 +111,16 @@ const NavMenu: Component<Props> = (props) => {
                 <For each={menuItem?.children ?? []}>{(child)=>(
                   <MenuItem class={`${styles.menuItem}`}>
                     <span>{child.Name}</span>
-                    <Button transparent onClick={()=>Navigate(child.Link)} >
+                    <Button transparent onClick={()=>{
+                      Navigate(child.Link);
+                      props.setDefaultShowList(false);
+                    }} >
                       <Icon name="visibility" size={'small'} />
                     </Button>
-                    <Button transparent onClick={()=>Navigate(convertHombrewViewToCreate(child.Link))}>
+                    <Button transparent onClick={()=>{
+                      Navigate(convertHombrewViewToCreate(child.Link));
+                      props.setDefaultShowList(false);
+                    }}>
                       <Icon name="edit" size={'small'} />
                     </Button>
                   </MenuItem>

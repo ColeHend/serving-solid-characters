@@ -34,7 +34,7 @@ const View: Component = () => {
     {
       name: "Classes", element: <Table
         data={homebrewManager.classes()}
-        keys={["name", "hitDie"]}
+        keys={["name", "hit_die"]}
         paginator={[5, 10, 25, 50, 100]}
         button={{
           backgroundClick: true,

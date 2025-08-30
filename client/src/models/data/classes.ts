@@ -9,6 +9,7 @@ export interface Class5E {
   hit_die: string;
   primary_ability: string;
   saving_throws: string[];
+  startChoices?: StartChoices;
   starting_equipment: StartingEquipment[];
   proficiencies: Proficiencies;
   spellcasting?: Spellcasting;
@@ -17,6 +18,14 @@ export interface Class5E {
   classSpecific?: {
     [key: string]: Record<number, string>;
   }
+}
+
+export interface StartChoices {
+  weapon?: string;
+  armor?: string;
+  tool?: string;
+  skill?: string[];
+  equipment?: string;
 }
 
 export interface Proficiencies {

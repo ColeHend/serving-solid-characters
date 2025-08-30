@@ -17,8 +17,8 @@ export const Stats: Component = () => {
         </FormField>
       </div>
       <div class={`${styles.fieldSizeLg}`}>
-        <FormField name="Primary Stat" formName="primaryStat">
-          <Select>
+        <FormField name="Primary Stat(s)" formName="primaryStat">
+          <Select multiple>
             <Option value={Stat.STR}>Strength</Option>
             <Option value={Stat.DEX}>Dexterity</Option>
             <Option value={Stat.CON}>Constitution</Option>
