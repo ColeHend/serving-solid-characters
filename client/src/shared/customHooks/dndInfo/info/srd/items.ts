@@ -59,7 +59,7 @@ export function useGetSrdItems(version: '2014' | '2024' | "both" | string) {
     if (version === "2024") return items2024();
     if (version === "both") return [...items2014(),...items2024()]
     return items2014().length ? items2014() : items2024();
-  })
+  });
 }
 
 function fetchItems(version: '2014' | '2024') {
