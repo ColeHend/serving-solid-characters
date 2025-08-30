@@ -45,3 +45,10 @@
         margin-right: 10px;
     }
 }
+
+.slotTable {
+    border-collapse: collapse;
+    margin-top: 10px;
+    th, td { border: 1px solid var(--border-color, #444); padding: 2px 4px; font-size: 0.75rem; text-align: center; }
+    thead { background: rgba(255,255,255,0.08); }
+}

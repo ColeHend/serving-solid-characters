@@ -160,9 +160,18 @@ public class Subrace : Race
 
 public class Subclass
 {
+  [JsonProperty("name")]
+  [JsonPropertyName("name")]
   public string Name { get; set; } = null!;
+
+  [JsonProperty("parent_class")]
+  [JsonPropertyName("parent_class")]
   public string ParentClass { get; set; } = null!;
+
+  [JsonProperty("description")]
+  [JsonPropertyName("description")]
   public string Description { get; set; } = null!;
+
   public Dictionary<int, List<FeatureDetail>> Features { get; set; } = new();
   public Choices? Choices { get; set; }
   public Spellcasting? Spellcasting { get; set; } = null!;
