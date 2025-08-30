@@ -57,7 +57,7 @@ const FeatureTable: Component<Props> = (props) => {
       columns = columns.filter((x) => x !== "spells")
     }
 
-    if (!props.DndClass().spellcasting?.metadata.slots?.[19].cantripsKnown) {
+    if (!props.DndClass().spellcasting?.metadata.slots?.[19]?.cantripsKnown) {
       columns = columns.filter((x) => x !== "Cantrips")
     }
 
@@ -135,7 +135,7 @@ const FeatureTable: Component<Props> = (props) => {
         <Cell<String>>
           { (level) =>
             <span>
-              {props.DndClass().spellcasting?.metadata.slots?.[+level].cantripsKnown}
+              {props.DndClass().spellcasting?.metadata.slots?.[+level]?.cantripsKnown || 0}
             </span>
           }
         </Cell>

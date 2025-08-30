@@ -21,11 +21,12 @@ const ItemsViewTab:Component = () => {
   const srdArmors = createMemo<Item[]>(() => SrdItems().filter(item => item.type === ItemType.Armor));
   const srdWeapons = createMemo<Item[]>(() => SrdItems().filter(item => item.type === ItemType.Weapon));
   const srdTools = createMemo<Item[]>(() => SrdItems().filter(item => item.type === ItemType.Tool));
+  const srdEquipment = createMemo<Item[]>(() => [...srdItems(),...srdTools()]);
 
   const elementMemo = createMemo<CarouselElement[]>(()=>([
     // {name: "Weapons", element:  <WeaponsView weapons={SrdWeapons} />  },
     // {name: "Armors", element: <ArmorsView SrdArmors={SrdArmors} /> },
-    {name: "Equipment", element: <ItemsView items={[...srdItems(),...srdTools()]} /> }
+    {name: "Equipment", element: <ItemsView items={srdEquipment} /> }
   ]));  
 
   if (!searchParam.itemType) setSearchParam({itemType: elementMemo()[0].name })
