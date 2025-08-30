@@ -380,7 +380,7 @@ export const Classes: Component = () => {
       ClassFormGroup.set('spellCasting', false as any);
       ClassFormGroup.set('castingStat', undefined as any);
       ClassFormGroup.set('spellcastAbility', undefined as any);
-      ClassFormGroup.set('casterType', CasterType.None)
+      ClassFormGroup.set('casterType', CasterType.None);
     }
 
     setResetNonce(n => n + 1);
