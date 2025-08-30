@@ -84,10 +84,13 @@ public class Item
   public ItemType Type { get; set; }
   public double Weight { get; set; }
   public string Cost { get; set; } = null!;
-  public Dictionary<string, string> Properties { get; set; } = new();
+  // Some item JSON entries have mixed value types (string vs array) under properties (e.g. "Properties": ["Light"]).
+  // Use object to tolerate strings, numbers, arrays without custom converters.
+  [JsonProperty("properties")]
+  [JsonPropertyName("properties")]
+  public Dictionary<string, object> Properties { get; set; } = new();
 }
-
-public class ItemProperties : Dictionary<string, object?> { }
+// Removed ItemProperties wrapper to prevent nested path like properties.Properties during deserialization
 
 public class WeaponMastery
 {
@@ -105,7 +108,7 @@ public class Spell
   [JsonProperty("description")] public string Description { get; set; } = null!; // front-end expects 'description'
   [JsonProperty("duration")] public string Duration { get; set; } = null!;
   [JsonProperty("is_concentration")] public bool Concentration { get; set; }
-  [JsonProperty("components")] public string Components { get; set; }
+  [JsonProperty("components")] public string Components { get; set; } = string.Empty;
   [JsonProperty("level")] public string Level { get; set; } = null!; // JSON uses "" or number-like strings; keep string
   [JsonProperty("range")] public string Range { get; set; } = null!;
   [JsonProperty("is_ritual")] public bool Ritual { get; set; }

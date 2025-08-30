@@ -23,6 +23,13 @@ const Table = <T,>(props: TableProps<T>) => {
   const [paginated, setPaginated] = createSignal<T[]>(props.data);
   const paginatedMemo = createMemo(()=>paginated());
   const menuItems = createMemo(()=>props.button ? paginatedMemo().map(x=>props.button!.generateMenuButtons(x)) : []);
+
+  const safeDisplay = (value: T, key: keyof T) => {
+    if (value && typeof value === 'object' && value !== null && key in value) {
+      return value[key];
+    }
+    return '';
+  }
   return (
     <>
       <table>
@@ -42,7 +49,7 @@ const Table = <T,>(props: TableProps<T>) => {
           <For each={paginatedMemo()}>
             {(child, i) => <tr>
               <For each={props.keys}>
-                {(key) => <td>{`${child[key]}`}</td>}
+                {(key) => <td>{`${safeDisplay(child, key)}`}</td>}
               </For>
               <Show when={props.button}>
                 <Button 

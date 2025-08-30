@@ -1,5 +1,6 @@
 using sharpAngleTemplate.models.DTO.Updated;
 using sharpAngleTemplate.tools;
+using Newtonsoft.Json;
 
 namespace sharpAngleTemplate.models.repositories;
 
@@ -54,11 +55,32 @@ public class SrdInfoRepository : ISrdInfoRepository
     {
       throw new ArgumentException($"Version must be 2014 or 2024 but was {versionInt}");
     }
-    Item[] json = jsonService.GetJson<Item[]>($"srd/{version}/items") ?? Array.Empty<Item>();
+    // Fully qualify DTO type to avoid accidental resolution to entity Items.Item
+    var pathKey = $"srd/{version}/items";
+    sharpAngleTemplate.models.DTO.Updated.Item[] json = Array.Empty<sharpAngleTemplate.models.DTO.Updated.Item>();
+    try
+    {
+      json = jsonService.GetJson<sharpAngleTemplate.models.DTO.Updated.Item[]>(pathKey) 
+        ?? Array.Empty<sharpAngleTemplate.models.DTO.Updated.Item>();
+    }
+    catch (JsonReaderException jex)
+    {
+      // Re-read raw file for diagnostics
+      var basePath = (jsonService as DbJsonService)?.JsonRoot ?? AppContext.BaseDirectory;
+      var full = System.IO.Path.Combine(basePath, "data", pathKey + ".json");
+      if (System.IO.File.Exists(full))
+      {
+        var raw = System.IO.File.ReadAllText(full);
+        throw new Exception($"Failed to deserialize {pathKey}: {jex.Message}. Raw head: {raw?.Substring(0, Math.Min(400, raw?.Length ?? 0)).Replace("\n"," ") ?? ""}");
+      }
+      throw;
+    }
     if (versionInt == 2014)
     {
-      var weapons = jsonService.GetJson<Item[]>($"srd/{version}/weapons") ?? Array.Empty<Item>();
-      var armor = jsonService.GetJson<Item[]>($"srd/{version}/armor") ?? Array.Empty<Item>();
+      var weapons = jsonService.GetJson<sharpAngleTemplate.models.DTO.Updated.Item[]>($"srd/{version}/weapons") 
+        ?? Array.Empty<sharpAngleTemplate.models.DTO.Updated.Item>();
+      var armor = jsonService.GetJson<sharpAngleTemplate.models.DTO.Updated.Item[]>($"srd/{version}/armor") 
+        ?? Array.Empty<sharpAngleTemplate.models.DTO.Updated.Item>();
       json = json.Concat(weapons).Concat(armor).ToArray();
     }
     json ??= Array.Empty<Item>();

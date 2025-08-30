@@ -86,11 +86,14 @@ export const FeatureModal: Component<FeatureModalProps> = (props) => {
       <div style={{ padding: '20px', display: 'flex', 'flex-direction': 'column', gap: '15px' }}>
         <div>
           <h3>Feature Name</h3>
-          <Input
-            value={name()}
-            onChange={(e) => setName(e.currentTarget.value)}
-            placeholder="Enter feature name"
-          />
+          <FormField name="">
+            <Input
+              style={{ border: 'none'}}
+              value={name()}
+              onChange={(e) => setName(e.currentTarget.value)}
+              placeholder="Enter feature name"
+            />
+          </FormField>
         </div>
 
         <div>

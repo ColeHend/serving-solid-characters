@@ -52,13 +52,16 @@ const FeatureTable: Component<Props> = (props) => {
 
   const sortTableColumns = () => {
     let columns = ["level", "profBonus", "features", "Cantrips", ...classSpecificKeys(), "spells"];
-    
-    if (!props.DndClass().spellcasting) {
-      columns = columns.filter((x) => x !== "spells")
+
+    const spellcasting = props.DndClass().spellcasting;
+    if (!spellcasting) {
+      columns = columns.filter((x) => x !== "spells");
     }
 
-    if (!props.DndClass().spellcasting?.metadata.slots?.[19]?.cantripsKnown) {
-      columns = columns.filter((x) => x !== "Cantrips")
+
+    const hasCantrips = !!Object.values(spellcasting?.metadata.slots || {}).some((slot: any) => slot?.cantripsKnown !== undefined);
+    if (!hasCantrips) {
+      columns = columns.filter((x) => x !== "Cantrips");
     }
 
     if (classSpecificKeys().length === 0) {
@@ -66,11 +69,7 @@ const FeatureTable: Component<Props> = (props) => {
     }
 
     return columns;
-  }
-
-  console.log("x",props.DndClass());
-  
-  
+  };
 
   return (
     <Table
@@ -135,7 +134,7 @@ const FeatureTable: Component<Props> = (props) => {
         <Cell<String>>
           { (level) =>
             <span>
-              {props.DndClass().spellcasting?.metadata.slots?.[+level]?.cantripsKnown || 0}
+              {props.DndClass().spellcasting?.metadata.slots?.[+level]?.cantripsKnown ?? "-"}
             </span>
           }
         </Cell>

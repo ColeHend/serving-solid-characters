@@ -15,15 +15,10 @@ export const ClassMenu: Component<menuProps> = (props) => {
 
   const navigate = useNavigate();
 
-  const checkForHomebrew = (dndClass:Class5E):boolean => {
-          
-    homebrewManager.classes().forEach(customClass => {
-      if (dndClass.name.toLowerCase() === customClass.name.toLowerCase()) {
-        return true;
-      }
-    })
-
-    return false;
+  const checkForHomebrew = (dndClass: Class5E): boolean => {
+    return homebrewManager
+      .classes()
+      .some(customClass => (customClass.name || '').toLowerCase() === (dndClass.name || '').toLowerCase());
   };
 
   return <>
@@ -33,7 +28,9 @@ export const ClassMenu: Component<menuProps> = (props) => {
 
     <Menu anchorElement={anchorEl} show={[showMenu, setShowMenu]}>
       <MenuItem onClick={() => {
-        navigate(`/homebrew/create/classes?name=${props.dndClass.name}`)
+        // Encode in case of spaces / special chars
+        const encoded = encodeURIComponent(props.dndClass.name);
+        navigate(`/homebrew/create/classes?name=${encoded}`);
       }}>
         {checkForHomebrew(props.dndClass)?"Edit":"Clone and Edit"}
       </MenuItem>
