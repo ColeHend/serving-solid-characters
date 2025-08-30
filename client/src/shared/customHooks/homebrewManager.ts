@@ -209,8 +209,24 @@ class HomebrewManager {
     if (this._subclasses().some(s => (s as any).storage_key === storage_key)) return null;
     return new Promise(res => this.addSubclassToDB(Clone(subclass)).subscribe({ complete: () => res(), error: () => res() }));
   }
-  private addSubclassToDB = (subclass: Subclass) => {
-  let error = false; return httpClient$.toObservable(HombrewDB.subclasses.add(subclass as any)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error adding subclass", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setSubclasses(o => [...o, subclass]); addSnackbar({ message: "Subclass added", severity: "success" }); } }))
+    let error = false;
+    return httpClient$
+      .toObservable(HombrewDB.subclasses.add(subclass as any))
+      .pipe(
+        take(1),
+        catchError(err => {
+          console.error(err);
+          error = true;
+          addSnackbar({ message: "Error adding subclass", severity: "error" });
+          return of(null);
+        }),
+        finalize(() => {
+          if (!error) {
+            this._setSubclasses(o => [...o, subclass]);
+            addSnackbar({ message: "Subclass added", severity: "success" });
+          }
+        })
+      );
   }
   public updateSubclass = (subclass: Subclass): Promise<void> | void => {
   const storage_key = `${subclass.parent_class.toLowerCase()}__${subclass.name.toLowerCase()}`;
