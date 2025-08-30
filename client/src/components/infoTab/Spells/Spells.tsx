@@ -18,6 +18,7 @@ import { SpellMenu } from "./spellMenu/spellMenu";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../models";
 
+
 const masterSpells: Component = () => {
   const sharedHooks = useContext(SharedHookContext);
   const dndSrdSpells = useDnDSpells();
