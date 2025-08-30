@@ -79,9 +79,9 @@ export enum WeaponTypes {}
 
 export interface Feature<T, K> {
     info:  Info<K>;
-		metadata: FeatureMetadata
+	metadata: FeatureMetadata
     name:  string;
-		choices?: Choice<T>[];
+	choices?: Choice<T>[];
     value: T;
 }
 

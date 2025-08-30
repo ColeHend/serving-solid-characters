@@ -1,5 +1,6 @@
 import { For } from "solid-js";
 import { Select, Option, FormGroup } from "coles-solid-library";
+import Styles from "./classSelection.module.scss";
 
 interface ClassSelectionProps<T extends { parent_class: string }> {
   form: FormGroup<T>;
@@ -10,7 +11,7 @@ interface ClassSelectionProps<T extends { parent_class: string }> {
 }
 
 export const ClassSelection = <T extends { parent_class: string }>(p: ClassSelectionProps<T>) => (
-  <div>
+  <div class={Styles.lineUp}>
     <h2>Choose a class</h2>
     <Select
       transparent

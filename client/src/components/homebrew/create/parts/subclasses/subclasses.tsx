@@ -1,8 +1,8 @@
-import { Component, createMemo, createSignal, onMount, batch } from "solid-js";
+import { Component, createMemo, createSignal, onMount, batch, Show } from "solid-js";
 import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, useDnDClasses } from "../../../../../shared";
 import { Subclass as OldSubclass } from "../../../../../models/old/class.model";
 import { useSearchParams } from "@solidjs/router";
-import { Feature } from "../../../../../models/old/core.model";
+// Removed old Feature generic import; now using new data FeatureDetail shape directly
 import { Body, FormGroup, Validators } from "coles-solid-library";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../../../models";
@@ -12,6 +12,14 @@ import { ClassSelection } from './ClassSelection';
 import { CoreFields } from './CoreFields';
 import { FeaturesSection } from './FeaturesSection';
 import { SpellcastingSection } from './SpellcastingSection';
+import { FeatureDetail } from "../../../../../models/data";
+
+export interface FeatureDetailLevel extends FeatureDetail {
+  info: {
+    level: number;
+    [key: string]: any;
+  }
+}
 
 const Subclasses: Component = () => {
   // URL params
@@ -27,7 +35,7 @@ const Subclasses: Component = () => {
     parent_class: string;
     name: string;
     description: string; // newline separated
-    features: Feature<string,string>[];
+    features: FeatureDetailLevel[];
     subclassSpells: Spell[];
     hasCasting: boolean;
     casterType: string; // half | third
@@ -66,8 +74,7 @@ const Subclasses: Component = () => {
 
   // Feature editing (ephemeral UI state not yet in form)
   const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(0);
-  const getLevelUpFeatures = (level:number) => ((SubclassFormGroup.get('features') as Feature<string,string>[])||[]).filter(f => f.info.level === level);
-  const [showFeatureModal, setShowFeatureModal] = createSignal(false); // placeholder for future modal logic
+  const getLevelUpFeatures = (level:number) => ((SubclassFormGroup.get('features') as FeatureDetailLevel[])||[]).filter(f => f.info.level === level);
   const [editIndex, setEditIndex] = createSignal(-1);
 
   // Custom spells known temp inputs (not persisted directly in form group)
@@ -159,11 +166,11 @@ const Subclasses: Component = () => {
 
   // Adapter to new data model Subclass (models/data) for persistence
   const toDataSubclass = () => {
-    const featuresArr = (SubclassFormGroup.get('features') as Feature<string,string>[] ) || [];
+    const featuresArr = (SubclassFormGroup.get('features') as FeatureDetailLevel[] ) || [];
     const features = featuresArr.reduce<Record<number, any[]>>((acc, f) => {
-      const lvl = f.info.level || 0;
+      const lvl = f.info?.level || 0;
       if (!acc[lvl]) acc[lvl] = [];
-      acc[lvl].push({ name: f.name, description: f.value });
+      acc[lvl].push({ name: f.name, description: f.description });
       return acc;
     }, {});
     const uiSpellcasting = spellcasting();
@@ -219,9 +226,9 @@ const Subclasses: Component = () => {
           SubclassFormGroup.set('description', (stored.description || '') as any);
           // features record -> flat feature array not reconstructed (left minimal)
           if (stored.features) {
-            const feats: any[] = [];
+            const feats: FeatureDetailLevel[] = [];
             Object.entries(stored.features).forEach(([lvl, arr]) => {
-              (arr as any[]).forEach(f => feats.push({ name: f.name, value: f.description, info: { level: +lvl } }));
+              (arr as any[]).forEach(f => feats.push({ name: f.name, description: f.description, info: { level: +lvl } }));
             });
             SubclassFormGroup.set('features', feats as any);
           }
@@ -244,7 +251,13 @@ const Subclasses: Component = () => {
             SubclassFormGroup.set('parent_class', cls.name as any);
             SubclassFormGroup.set('name', sc.name as any);
             SubclassFormGroup.set('description', (sc.desc || []).join('\n') as any);
-            SubclassFormGroup.set('features', (sc.features || []) as any);
+            // Legacy features -> convert old Feature<T,K> with value -> FeatureDetailLevel using description
+            const legacyFeats = (sc.features || []).map((f: any) => ({
+              name: f.name,
+              description: f.value ?? f.description ?? '',
+              info: { level: f.info?.level ?? 0 }
+            }));
+            SubclassFormGroup.set('features', legacyFeats as any);
             SubclassFormGroup.set('subclassSpells', (sc.spells || []) as any);
             if (sc.spellcasting) {
               SubclassFormGroup.set('hasCasting', true as any);
@@ -274,37 +287,46 @@ const Subclasses: Component = () => {
       <h1>Subclass Homebrew</h1>
       <ClassSelection form={SubclassFormGroup as any} allClassNames={allClassNames} getSubclassLevels={getSubclassLevels} setToAddFeatureLevel={setToAddFeatureLevel} updateParamsIfReady={updateParamsIfReady} />
       <CoreFields form={SubclassFormGroup as any} updateParamsIfReady={updateParamsIfReady} />
-      <FeaturesSection form={SubclassFormGroup as any} getSubclassLevels={getSubclassLevels} toAddFeatureLevel={toAddFeatureLevel} setToAddFeatureLevel={setToAddFeatureLevel} getLevelUpFeatures={getLevelUpFeatures} setEditIndex={setEditIndex} setShowFeatureModal={setShowFeatureModal} />
-      <SpellcastingSection
-        form={SubclassFormGroup as any}
-        toAddKnownLevel={toAddKnownLevel}
-        setToAddKnownLevel={setToAddKnownLevel}
-        toAddKnownAmount={toAddKnownAmount}
-        setToAddKnownAmount={setToAddKnownAmount}
-        mergedCastingLevels={mergedCastingLevels as any}
-        allSpells={allSpells}
-        getAddNumberAccent={getAddNumberAccent}
-        getNumberArray={getNumberArray}
-        onSave={() => {
-          const dataSubclass = toDataSubclass();
-          const existing = homebrewManager.subclasses().find(s => s.name.toLowerCase() === dataSubclass.name.toLowerCase() && s.parent_class.toLowerCase() === dataSubclass.parent_class.toLowerCase());
-          if (existing) homebrewManager.updateSubclass(dataSubclass as any); else homebrewManager.addSubclass(dataSubclass as any);
-          clearValues();
-        }}
-        canSave={canAddSubclass}
-        setSubclassSpells={(fn)=>{
-          const next = fn(((SubclassFormGroup.get('subclassSpells') as Spell[])||[]));
-          SubclassFormGroup.set('subclassSpells', next as any);
-        }}
-        setSpellcastingInfo={(fn)=>{
-          const next = fn(((SubclassFormGroup.get('spellcastingInfo') as any[])||[]));
-          SubclassFormGroup.set('spellcastingInfo', next as any);
-        }}
-        setSpellsKnownPerLevel={(fn)=>{
-          const next = fn(((SubclassFormGroup.get('spellsKnownPerLevel') as any[])||[]));
-          SubclassFormGroup.set('spellsKnownPerLevel', next as any);
-        }}
-      />
+      <Show when={SubclassFormGroup.get('parent_class') && SubclassFormGroup.get('name')}>
+        <FeaturesSection 
+          form={SubclassFormGroup as any} 
+          getSubclassLevels={getSubclassLevels} 
+          toAddFeatureLevel={toAddFeatureLevel} 
+          setToAddFeatureLevel={setToAddFeatureLevel} 
+          getLevelUpFeatures={getLevelUpFeatures} 
+          setEditIndex={setEditIndex}
+          getEditIndex={editIndex} />
+        <SpellcastingSection
+          form={SubclassFormGroup as any}
+          toAddKnownLevel={toAddKnownLevel}
+          setToAddKnownLevel={setToAddKnownLevel}
+          toAddKnownAmount={toAddKnownAmount}
+          setToAddKnownAmount={setToAddKnownAmount}
+          mergedCastingLevels={mergedCastingLevels as any}
+          allSpells={allSpells}
+          getAddNumberAccent={getAddNumberAccent}
+          getNumberArray={getNumberArray}
+          onSave={() => {
+            const dataSubclass = toDataSubclass();
+            const existing = homebrewManager.subclasses().find(s => s.name.toLowerCase() === dataSubclass.name.toLowerCase() && s.parent_class.toLowerCase() === dataSubclass.parent_class.toLowerCase());
+            if (existing) homebrewManager.updateSubclass(dataSubclass as any); else homebrewManager.addSubclass(dataSubclass as any);
+            clearValues();
+          }}
+          canSave={canAddSubclass}
+          setSubclassSpells={(fn)=>{
+            const next = fn(((SubclassFormGroup.get('subclassSpells') as Spell[])||[]));
+            SubclassFormGroup.set('subclassSpells', next as any);
+          }}
+          setSpellcastingInfo={(fn)=>{
+            const next = fn(((SubclassFormGroup.get('spellcastingInfo') as any[])||[]));
+            SubclassFormGroup.set('spellcastingInfo', next as any);
+          }}
+          setSpellsKnownPerLevel={(fn)=>{
+            const next = fn(((SubclassFormGroup.get('spellsKnownPerLevel') as any[])||[]));
+            SubclassFormGroup.set('spellsKnownPerLevel', next as any);
+          }}
+        />
+      </Show>
     </Body>
   );
 }
