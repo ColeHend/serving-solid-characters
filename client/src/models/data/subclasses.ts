@@ -9,6 +9,11 @@ export interface Subclass {
   features: Record<number, FeatureDetail[]>;
   choices?: Choices;
   spellcasting?: Spellcasting;
+  /**
+   * Internal persistence key combining parent class + name (lowercased) to guarantee uniqueness.
+   * Added in DB schema v2. Not part of exported payloads.
+   */
+  storage_key?: string;
  }
  
  

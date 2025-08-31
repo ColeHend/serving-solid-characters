@@ -17,6 +17,7 @@ import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";
 import { classFeatureNullCheck } from "../../../customHooks/utility/tools/Tools";
 import { Modal,TabBar } from "coles-solid-library";
+import { useDnDSubclasses } from "../../../customHooks/dndInfo/info/all/subclasses";
 
 type props = {
   currentClass: Accessor<Class5E>;
@@ -24,11 +25,18 @@ type props = {
   booleanSetter: Setter<boolean>;
 };
 
+enum ClassModalTabs {
+  Core = 0,
+  Items = 1,
+  Features = 2
+}
+
 const ClassModal: Component<props> = (props) => {
   const [userSettings,] = getUserSettings();
   const stylin = createMemo(() => useStyles(userSettings().theme));
   const [activeTab,setActiveTab] = createSignal<number>(0);
 
+  const allSubclasses = useDnDSubclasses();
   const starting_equipment = createMemo(() => props.currentClass().starting_equipment || []);
   const startingItemsOptionKeys = createMemo(()=>starting_equipment().flatMap(x=>x.optionKeys || []));
   const startItems = createMemo(()=>starting_equipment().flatMap(x=>x.items || []));
@@ -36,8 +44,9 @@ const ClassModal: Component<props> = (props) => {
   const features = createMemo(() => props.currentClass().features || []);
   const choices = createMemo(() => props.currentClass().choices || {});
   const choiceKeys = createMemo(() => Object.keys(props.currentClass().choices || {}));
-
-  console.log("x:", choiceKeys())
+  const currentSubclasses = createMemo<Subclass[]>(() => {
+    return allSubclasses().filter(s => s.parent_class === props.currentClass().name);
+  });
 
   return (
     <Modal
@@ -53,11 +62,11 @@ const ClassModal: Component<props> = (props) => {
 
           <div class={`${styles.tabBar}`}>
             <TabBar 
-            tabs={["Core","Items","Features"]} 
+            tabs={["Core","Items","Features", ...currentSubclasses().map(s=>s.name)]} 
             activeTab={activeTab()} 
             onTabChange={(label,index)=>setActiveTab(index)}/>
 
-           <Show when={activeTab() === 0}>
+           <Show when={activeTab() === ClassModalTabs.Core}>
               <span class={`${styles.left} ${styles.flexBoxColumn}`}>
                 <Show when={props.currentClass().hit_die}>
                   <span>
@@ -99,7 +108,7 @@ const ClassModal: Component<props> = (props) => {
               </span>
             </Show> 
 
-            <Show when={activeTab() === 1}>
+            <Show when={activeTab() === ClassModalTabs.Items}>
               <span>
                 <For each={startItems()}>
                     { (item) => <span>
@@ -152,7 +161,7 @@ const ClassModal: Component<props> = (props) => {
               
             </Show>
 
-            <Show when={activeTab() === 2}>
+            <Show when={activeTab() === ClassModalTabs.Features}>
               <span>
                 <For each={classLevels()}>
                   { (level) => <span>
@@ -168,6 +177,28 @@ const ClassModal: Component<props> = (props) => {
                 </For>
               </span>   
             </Show>
+
+            <For each={currentSubclasses()}>{(subclass)=>{
+              return <Show when={activeTab() === currentSubclasses().indexOf(subclass) + 3}>
+                <span class={`${styles.flexBoxColumn}`}>
+                  <h2>{subclass.name}</h2>
+                  <span>{subclass.description}</span>
+                  <Show when={subclass.features && Object.keys(subclass.features).length > 0}>
+                    <For each={Object.keys(subclass.features || {})}>
+                      { (level) => <span>
+                        <h3>Level {level} Features:</h3>
+                        <For each={subclass.features?.[+level]}>
+                          { (feature) => <span>
+                            <h4>{feature.name}</h4>
+                            <span>{feature.description}</span>
+                          </span>}
+                        </For>
+                      </span>}
+                    </For>
+                  </Show>
+                </span>
+              </Show>
+            }}</For>
            
           </div>
         </div>

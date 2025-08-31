@@ -167,13 +167,9 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
             style={{
               opacity: "25%",
               width: "70%",
-              // border: "2px solid",
-              // "border-radius": "9px",
-              position: "absolute",
+              "margin-top": "8px",
               bottom: 0,
               "margin-left": "15%",
-              
-              
             }}
 
           >

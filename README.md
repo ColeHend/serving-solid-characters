@@ -36,6 +36,13 @@
 
 Write about 1-2 paragraphs describing the purpose of your project.
 
+## Coding Rules<a name = "coding"></a>
+
+1. Things should ideally always work offline without internet.
+2. Try and use coles-solid-library for components and formgroups.
+3. Try and keep components small and readable.
+4. Try and write unit tests for implemented stuff.
+
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
