@@ -82,7 +82,8 @@ const View: Component = () => {
       />
     },
     {
-      name: "Races", element: <Table data={homebrewManager.races()} keys={["name"]}
+      // Added size column so homebrew race size edits are visible in the view tab
+      name: "Races", element: <Table data={homebrewManager.races()} keys={["name","size"]}
         button={{
           backgroundClick: true,
           generateMenuButtons: (data) => ([
@@ -93,7 +94,8 @@ const View: Component = () => {
       />
     },
     {
-      name: "Subraces", element: <Table data={homebrewManager.races().flatMap(x => x.subRaces)} keys={["name"]}
+      // Show size for subraces as well when present
+      name: "Subraces", element: <Table data={homebrewManager.races().flatMap(x => x.subRaces)} keys={["name","size"]}
         button={{
           backgroundClick: true,
           generateMenuButtons: (data) => ([

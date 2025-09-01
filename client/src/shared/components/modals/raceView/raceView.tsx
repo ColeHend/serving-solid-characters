@@ -49,6 +49,11 @@ const RaceView: Component<props> = (props) => {
 
       <span class={`${styles.info}`}>{race()?.speed}ft</span>
 
+      <Show when={!!race()?.size}>
+        <h3 class={`${styles.header}`}>Size:</h3>
+        <span class={`${styles.info}`}>{race()?.size}</span>
+      </Show>
+
       <Show when={race().traits.length > 0}>
         <h3 class={`${styles.header}`}>Race Specific Traits:</h3>
 
