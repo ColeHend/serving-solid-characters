@@ -182,7 +182,8 @@ export const SpellcastingSection = <T extends {
                     <textarea class={styles.textArea} name={`descInput${i()}`} value={info.desc.join("\n")} onChange={(e)=> p.setSpellcastingInfo(arr => { const clone = [...arr]; clone[i()] = { ...clone[i()], desc: e.currentTarget.value.split("\n") }; return clone; })} />
                   </div>
                   <div>
-                    <Button onClick={()=> p.setSpellcastingInfo(arr => arr.filter((_,idx)=> idx !== i()))}>Remove</Button>
+                    <Button 
+                    onClick={()=> p.setSpellcastingInfo(arr => arr.filter((_,idx)=> idx !== i()))}>Remove</Button>
                   </div>
                 </div>
               );
@@ -191,9 +192,10 @@ export const SpellcastingSection = <T extends {
         </div>
       </Show>
       <div>
-        <Show when={p.canSave()}>
-          <Button onClick={p.onSave}>Save</Button>
-        </Show>
+        <Button 
+          title={`${p.canSave() ? "Save":"Disabled"}`} 
+          disabled={p.canSave()} 
+          onClick={p.onSave}>Save</Button>
       </div>
     </div>
   );

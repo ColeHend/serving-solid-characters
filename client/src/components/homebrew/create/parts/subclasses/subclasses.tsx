@@ -187,8 +187,7 @@ const Subclasses: Component = () => {
   };
 
   const canAddSubclass = createMemo(() => {
-    if (!subclassClass() || !subclassName().trim() || !(SubclassFormGroup.get('description'))) return false;
-    return allClasses().some(c => c.name.toLowerCase() === subclassClass().toLowerCase());
+    return !SubclassFormGroup.get('parent_class') || !SubclassFormGroup.get('name');
   });
 
   const clearValues = () => {

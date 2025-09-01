@@ -36,8 +36,18 @@ export const ExpansionPanel = passthrough('ExpansionPanel');
 export const FormField = passthrough('FormField');
 export const FieldError = passthrough('FieldError');
 export const Checkbox: Component<AnyProps> = (p) => <input type="checkbox" data-mock="Checkbox" {...p} />;
-export const Select = passthrough('Select');
-export const Option = passthrough('Option');
+export const Select: Component<AnyProps> = (p) => {
+  const [local, rest] = splitProps(p, ['children', 'onChange', 'value']);
+  return (
+    <select
+      data-mock="Select"
+      value={local.value as any}
+      onChange={(e) => local.onChange && local.onChange(e.currentTarget.value)}
+      {...rest}
+    >{local.children}</select>
+  );
+};
+export const Option: Component<AnyProps> = (p) => <option data-mock="Option" value={p.value}>{p.children}</option>;
 export const Input: Component<AnyProps> = (p) => <input data-mock="Input" {...p} />;
 export const TextArea: Component<AnyProps> = (p) => <textarea data-mock="TextArea" {...p} />;
 
