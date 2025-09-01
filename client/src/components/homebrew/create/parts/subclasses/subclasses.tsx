@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, onMount, batch, Show } from "solid-js";
+import { Component, createMemo, createSignal, onMount, batch, Show, createEffect, For } from "solid-js";
 import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared";
 import { Subclass as OldSubclass } from "../../../../../models/old/class.model";
 import { useSearchParams } from "@solidjs/router";
@@ -187,8 +187,114 @@ const Subclasses: Component = () => {
     };
   };
 
-  const canAddSubclass = createMemo(() => {
-    return !SubclassFormGroup.get('parent_class') || !SubclassFormGroup.get('name');
+  // Save enabled only when required fields populated
+  const canAddSubclass = createMemo(() => !!SubclassFormGroup.get('parent_class') && !!SubclassFormGroup.get('name'));
+
+  // Editing state ----------------------------------------------------------
+  const [activeKey, setActiveKey] = createSignal<string>("__new__"); // storage_key or __new__
+  // Maintain a reactive local copy so UI updates when items are added/updated (test env lacks reactive manager)
+  const [homebrewList, setHomebrewList] = createSignal<any[]>([...homebrewManager.subclasses()]);
+  const refreshHomebrewList = () => setHomebrewList([...homebrewManager.subclasses()]);
+  const storageKeyFor = (s: any) => (s?.storage_key) ? s.storage_key : `${(s?.parent_class||'').toLowerCase()}__${(s?.name||'').toLowerCase()}`;
+  const existsInHomebrew = createMemo(()=> !!homebrewList().some(s => (s as any).storage_key === `${(SubclassFormGroup.get('parent_class')||'').toLowerCase()}__${(SubclassFormGroup.get('name')||'').toLowerCase()}`));
+
+  // Track original snapshot for change detection when editing
+  const [originalSnapshot, setOriginalSnapshot] = createSignal<any | null>(null);
+  // Force recomputation of draft when any relevant field changes (ensures reactivity across nested structures)
+  const [formVersion, setFormVersion] = createSignal(0);
+  createEffect(() => {
+    // Track primitive & array refs
+    SubclassFormGroup.get('parent_class');
+    SubclassFormGroup.get('name');
+    SubclassFormGroup.get('description');
+    SubclassFormGroup.get('features');
+    SubclassFormGroup.get('subclassSpells');
+    SubclassFormGroup.get('spellcastingInfo');
+    SubclassFormGroup.get('spellsKnownPerLevel');
+    SubclassFormGroup.get('hasCasting');
+    SubclassFormGroup.get('casterType');
+    SubclassFormGroup.get('castingModifier');
+    SubclassFormGroup.get('spellsKnownCalc');
+    SubclassFormGroup.get('halfCasterRoundUp');
+    SubclassFormGroup.get('hasCantrips');
+    // Increment version when any dependency above changes
+    setFormVersion(v => v + 1);
+  });
+  const currentDataDraft = createMemo(()=> { formVersion(); return toDataSubclass(); });
+  // Explicit effect-based modified tracking
+  const [isModifiedFlag, setIsModifiedFlag] = createSignal(false);
+  const [userDirty, setUserDirty] = createSignal(false);
+  const [loadingEdit, setLoadingEdit] = createSignal(false);
+  const nameDescChanged = createMemo(() => {
+    const orig = originalSnapshot();
+    if (!orig) return false;
+    const nameChanged = (subclassName() || '').toLowerCase() !== (orig.name || '').toLowerCase();
+    const descCurrent = (SubclassFormGroup.get('description') as any) || '';
+    const descOrig = (orig.description || '');
+    return nameChanged || descCurrent !== descOrig;
+  });
+  createEffect(() => {
+    // depend on draft recomputation & snapshot
+    const draft = currentDataDraft();
+    const orig = originalSnapshot();
+    if (!orig) { setIsModifiedFlag(false); return; }
+    setIsModifiedFlag(JSON.stringify(orig) !== JSON.stringify(draft));
+  });
+
+  function beginNewDraft() {
+    // Assumes activeKey already '__new__' (do NOT setActiveKey here to avoid effect recursion)
+    clearValues();
+    setOriginalSnapshot(null);
+    setUserDirty(false);
+  }
+
+  function loadSubclassForEdit(storage_key: string) {
+  const found = homebrewList().find(s => storageKeyFor(s) === storage_key);
+    if (!found) return;
+    setLoadingEdit(true);
+    batch(()=> {
+      SubclassFormGroup.set('parent_class', found.parent_class as any);
+      SubclassFormGroup.set('name', found.name as any);
+      SubclassFormGroup.set('description', (found.description||'') as any);
+      // features record -> flat list
+      const feats: FeatureDetailLevel[] = [];
+      if ((found as any).features) {
+        Object.entries((found as any).features).forEach(([lvl, arr]: any) => {
+          (arr as any[]).forEach(f => feats.push({ name: f.name, description: f.description, info: { level: +lvl } }));
+        });
+      }
+      SubclassFormGroup.set('features', feats as any);
+      if ((found as any).spellcasting) {
+        const parsed = parseDataSpellcasting((found as any).spellcasting);
+        SubclassFormGroup.set('hasCasting', !!parsed as any);
+        SubclassFormGroup.set('casterType', (parsed?.casterTypeString||'') as any);
+        SubclassFormGroup.set('spellsKnownCalc', (parsed?.spellsKnownCalc ?? SpellsKnown.None) as any);
+        if (parsed?.customKnown?.length) SubclassFormGroup.set('spellsKnownPerLevel', parsed.customKnown as any);
+        if (parsed?.castingModifier) SubclassFormGroup.set('castingModifier', parsed.castingModifier as any);
+        if (parsed?.roundUp !== undefined) SubclassFormGroup.set('halfCasterRoundUp', parsed.roundUp as any);
+        if (parsed?.hasCantrips !== undefined) SubclassFormGroup.set('hasCantrips', parsed.hasCantrips as any);
+      }
+      if ((found as any).spells) SubclassFormGroup.set('subclassSpells', ((found as any).spells||[]) as any);
+      if ((found as any).spellcasting?.info) SubclassFormGroup.set('spellcastingInfo', ((found as any).spellcasting.info)||[] as any);
+    });
+    setOriginalSnapshot(toDataSubclass());
+  setUserDirty(false);
+  setLoadingEdit(false);
+  }
+
+  // When activeKey changes (dropdown selection) load or reset
+  const [prevActiveKey, setPrevActiveKey] = createSignal<string>('__new__');
+  createEffect(()=> {
+    const key = activeKey();
+    const prev = prevActiveKey();
+    if (key === '__new__') {
+      if (prev !== '__new__') {
+        beginNewDraft();
+      }
+    } else if (key && key !== prev) {
+      loadSubclassForEdit(key);
+    }
+    setPrevActiveKey(key);
   });
 
   const clearValues = () => {
@@ -242,36 +348,6 @@ const Subclasses: Component = () => {
         });
         return;
       }
-      // Legacy hydration fallback
-      const [cls] = allClasses().filter(c => c.name.toLowerCase() === searchParam.name!.toLowerCase());
-      if (cls) {
-        // const [sc] = cls.subclasses.filter(s => s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
-        // if (sc) {
-        //   batch(() => {
-        //     SubclassFormGroup.set('parent_class', cls.name as any);
-        //     SubclassFormGroup.set('name', sc.name as any);
-        //     SubclassFormGroup.set('description', (sc.desc || []).join('\n') as any);
-        //     // Legacy features -> convert old Feature<T,K> with value -> FeatureDetailLevel using description
-        //     const legacyFeats = (sc.features || []).map((f: any) => ({
-        //       name: f.name,
-        //       description: f.value ?? f.description ?? '',
-        //       info: { level: f.info?.level ?? 0 }
-        //     }));
-        //     SubclassFormGroup.set('features', legacyFeats as any);
-        //     SubclassFormGroup.set('subclassSpells', (sc.spells || []) as any);
-        //     if (sc.spellcasting) {
-        //       SubclassFormGroup.set('hasCasting', true as any);
-        //       SubclassFormGroup.set('casterType', (sc.spellcasting.casterType || '') as any);
-        //       SubclassFormGroup.set('castingModifier', (sc.spellcasting.spellcastingAbility as unknown as string) as any);
-        //       SubclassFormGroup.set('spellsKnownCalc', (sc.spellcasting.spellsKnownCalc as SpellsKnown ?? SpellsKnown.None) as any);
-        //       SubclassFormGroup.set('halfCasterRoundUp', (!!sc.spellcasting.spellsKnownRoundup) as any);
-        //       SubclassFormGroup.set('spellcastingInfo', (sc.spellcasting?.info || []) as any);
-        //       const custom = (sc.spellcasting.castingLevels || []).map(x => ({ level: x.level, amount: (x as any).spellcasting?.spells_known })).filter(x => typeof x.amount === 'number');
-        //       if (custom.length) SubclassFormGroup.set('spellsKnownPerLevel', custom as any);
-        //     }
-        //   });
-        // }
-      }
     }
   });
 
@@ -282,11 +358,49 @@ const Subclasses: Component = () => {
     }
   };
 
+  // Main persist handler
+  const persistSubclass = () => {
+    const dataSubclass = toDataSubclass();
+    if (activeKey() === '__new__') {
+      homebrewManager.addSubclass(dataSubclass as any);
+      refreshHomebrewList();
+      setOriginalSnapshot(toDataSubclass());
+      setActiveKey((dataSubclass as any).storage_key);
+      setUserDirty(false);
+    } else {
+      homebrewManager.updateSubclass(dataSubclass as any);
+      refreshHomebrewList();
+      setOriginalSnapshot(toDataSubclass());
+      setUserDirty(false);
+    }
+  };
+
+  // Track user edits for dirty state via explicit listeners (avoid monkey-patching FormGroup)
+  const markDirty = () => { if (!loadingEdit() && activeKey() !== '__new__') setUserDirty(true); };
+
   return (
     <Body>
       <h1>Subclass Homebrew</h1>
+      <div style={{ 'margin-bottom': '1rem', display: 'flex', 'flex-direction': 'column', gap: '0.5rem', 'max-width': '620px' }}>
+        <label style={{ display: 'flex', 'flex-direction': 'column', gap: '0.25rem' }}>
+          <span style={{ 'font-weight': 600 }}>Select Existing or Create New</span>
+          <select
+            value={activeKey()}
+            onChange={e => setActiveKey(e.currentTarget.value)}
+            style={{ padding: '0.45rem 0.65rem', 'background-color': 'var(--panel-bg,#1b1d22)', color: 'var(--text,#e6e6e6)', 'border-radius': '6px', border: '1px solid var(--border,#333)' }}
+          >
+            <option value="__new__">+ New Subclass</option>
+            <For each={homebrewList()}>{(s: any) => <option value={storageKeyFor(s)}>{s.parent_class} / {s.name}</option>}</For>
+          </select>
+        </label>
+        <Show when={activeKey() !== '__new__'}>
+          <div style={{ 'font-size': '0.75rem', color: 'var(--text-subtle,#999)' }}>
+            Editing existing subclass. {(isModifiedFlag() || userDirty()) ? 'Unsaved changes' : 'No changes yet.'}
+          </div>
+        </Show>
+      </div>
       <ClassSelection form={SubclassFormGroup as any} allClassNames={allClassNames} getSubclassLevels={getSubclassLevels} setToAddFeatureLevel={setToAddFeatureLevel} updateParamsIfReady={updateParamsIfReady} />
-      <CoreFields form={SubclassFormGroup as any} updateParamsIfReady={updateParamsIfReady} />
+  <CoreFields form={SubclassFormGroup as any} updateParamsIfReady={updateParamsIfReady} onNameInput={markDirty} onDescriptionInput={markDirty} />
       <Show when={SubclassFormGroup.get('parent_class') && SubclassFormGroup.get('name')}>
         <FeaturesSection 
           form={SubclassFormGroup as any} 
@@ -296,7 +410,7 @@ const Subclasses: Component = () => {
           getLevelUpFeatures={getLevelUpFeatures} 
           setEditIndex={setEditIndex}
           getEditIndex={editIndex} />
-        <SpellcastingSection
+  <SpellcastingSection
           form={SubclassFormGroup as any}
           toAddKnownLevel={toAddKnownLevel}
           setToAddKnownLevel={setToAddKnownLevel}
@@ -306,13 +420,8 @@ const Subclasses: Component = () => {
           allSpells={allSpells}
           getAddNumberAccent={getAddNumberAccent}
           getNumberArray={getNumberArray}
-          onSave={() => {
-            const dataSubclass = toDataSubclass();
-            const existing = homebrewManager.subclasses().find(s => s.name.toLowerCase() === dataSubclass.name.toLowerCase() && s.parent_class.toLowerCase() === dataSubclass.parent_class.toLowerCase());
-            if (existing) homebrewManager.updateSubclass(dataSubclass as any); else homebrewManager.addSubclass(dataSubclass as any);
-            clearValues();
-          }}
-          canSave={canAddSubclass}
+           onSave={persistSubclass}
+           canSave={createMemo(()=> canAddSubclass() && (activeKey()==='__new__' ? true : (isModifiedFlag() || userDirty())))}
           setSubclassSpells={(fn)=>{
             const next = fn(((SubclassFormGroup.get('subclassSpells') as Spell[])||[]));
             SubclassFormGroup.set('subclassSpells', next as any);
@@ -326,6 +435,20 @@ const Subclasses: Component = () => {
             SubclassFormGroup.set('spellsKnownPerLevel', next as any);
           }}
         />
+        <div style={{ display: 'flex', 'gap': '0.75rem', 'margin-top': '0.75rem', 'flex-wrap':'wrap' }}>
+          <button
+            disabled={!canAddSubclass() || (activeKey() !== '__new__' && !(isModifiedFlag() || userDirty()))}
+            onClick={persistSubclass}
+            style={{ padding: '0.55rem 0.9rem', 'background-color':'var(--accent,#3a6ff7)', color:'#fff', border:'none', 'border-radius':'6px', cursor:'pointer', 'font-weight':600 }}
+          >{activeKey()==='__new__' ? 'Save Subclass' : 'Update Subclass'}</button>
+          <Show when={activeKey() !== '__new__' && (isModifiedFlag() || userDirty())}>
+            <button
+              onClick={()=> loadSubclassForEdit(activeKey())}
+              style={{ padding: '0.55rem 0.9rem', 'background-color':'#333', color:'#fff', border:'1px solid #444', 'border-radius':'6px', cursor:'pointer' }}
+            >Reset Changes</button>
+          </Show>
+          <Show when={isModifiedFlag() || userDirty()}><span style={{ 'align-self': 'center', 'font-size':'0.7rem', 'letter-spacing': '0.5px', 'background':'#444', color:'#fff', padding:'0.25rem 0.5rem', 'border-radius':'4px' }}>Modified</span></Show>
+        </div>
       </Show>
     </Body>
   );
