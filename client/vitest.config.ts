@@ -38,6 +38,9 @@ export default defineConfig({
         solidPlugin(),
         // VitePWA(pwaOptions)
     ],
+  define: {
+    'process.env.SASS_SILENCE_DEPRECATIONS': JSON.stringify('legacy-js-api')
+  },
   resolve: {
     alias: {
       'coles-solid-library': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/index.tsx'),
@@ -50,6 +53,7 @@ export default defineConfig({
     test: {
         "setupFiles": [
             "fake-indexeddb/auto",
+            "./vitest.setup.ts"
         ],
         typecheck: {
             allowJs: true,
