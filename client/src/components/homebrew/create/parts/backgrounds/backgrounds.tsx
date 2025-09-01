@@ -1,598 +1,286 @@
-import { Component, For, createSignal, createMemo, Show, onMount } from "solid-js";
-import {  Weapon, Armor } from "../../../../../shared/";
-import {Body, Input, Select, Option, Button, TextArea, Chip, FormField, addSnackbar} from "coles-solid-library";
+import { Component, For, createSignal, createMemo, Show, createEffect } from "solid-js";
+import { Body, Input, Select, Option, Button, FormField } from "coles-solid-library";
 import styles from './backgrounds.module.scss';
 import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { createStore } from "solid-js/store";
-import { Background } from "../../../../../models";
-// import useGetBackgrounds from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetBackgrounds";
-// import FormField from "../../../../../shared/components/FormField/formField";
-import { LevelEntity } from "../../../../../models/old/class.model";
-import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
-import { useSearchParams } from "@solidjs/router";
+import { Background } from "../../../../../models/data";
+import type { FeatureDetail } from "../../../../../models/data/features";
 import { useDnDBackgrounds } from "../../../../../shared/customHooks/dndInfo/info/all/backgrounds";
-import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
+import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/feats";
+import { backgroundsStore } from "../../../../../shared/stores/backgroundsStore";
+import { candidateEquipmentItems } from './constants';
+import AbilitiesSection from './sections/AbilitiesSection';
+import EquipmentSection from './sections/EquipmentSection';
+import FeatSection from './sections/FeatSection';
+import ProficienciesSection from './sections/ProficienciesSection';
+import ProficienciesModal from './sections/ProficienciesModal';
+import LanguagesModal from './sections/LanguagesModal';
+import LanguagesSection from './sections/LanguagesSection';
+import FeaturesSection from './sections/FeaturesSection';
+import { validate, fieldError as fieldErrHelper } from './validation';
 
 const Backgrounds: Component = () => {
-  // eslint-disable-next-line
-  const [searchParams, setSearchParams] = useSearchParams();
   const allBackgrounds = useDnDBackgrounds();
-  const allItemsTypes = useDnDItems();
-  // const allOtherItems = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory !== "Weapon" && item.equipmentCategory !== "Armor"));
-  // const allWeapons = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory === "Weapon") as Weapon[]);
-  // const allArmor = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory === "Armor") as Armor[]);
-  const [showFeatureModal, setShowFeatureModal] = createSignal(false);
-  const [editIndex, setEditIndex] = createSignal(-1);
-  const [featureDesc, setFeatureDesc] = createSignal("");
-	
-  const [selectedSkill, setSelectedSkill] = createSignal("");
-	
-  const [selectedTool, setSelectedTool] = createSignal("");
-	
-  const [selectedLanguage, setSelectedLanguage] = createSignal("");
-	
-  const [selectedProficiency, setSelectedProficiency] = createSignal("");
-	
-  const [selectedItem, setSelectedItem] = createSignal("");
-  const [selectedItemAmnt, setSelectedItemAmnt] = createSignal(1);
-  const [selectedItemType, setSelectedItemType] = createSignal("Item");
+  const allFeats = useDnDFeats();
 
-  const [selectedChoiceItem, setSelectedChoiceItem] = createSignal("");
-  const [selectedChoices, setSelectedChoices] = createSignal<string[]>([]);
-  // eslint-disable-next-line
-  const [selectedChoiceItemAmnt, setSelectedChoiceItemAmnt] = createSignal(1);
-  const [selectedChoicesItemType, setSelectedChoiceItemType] = createSignal("Item");
+  // ---------------- NEW DATA FORMAT SECTION (incremental migration) ----------------
+  const bStore = backgroundsStore; // alias
+  const selectedFeat = createMemo(() => bStore.state.form.feat);
 
+  const canAddAbility = createMemo(() => bStore.state.form.abilityChoices.length < 3);
+  const remainingAbilityPicks = createMemo(() => 3 - bStore.state.form.abilityChoices.length);
 
-  const [currentBackground, setCurrentBackground] = createStore<Background>({
-    name: "",
-    desc: "",
-    startingProficiencies: [],
-    languageChoice: { choose: 0, type: FeatureTypes.Language, choices: [] },
-    startingEquipment: [],
-    startingEquipmentChoices: [],
-    feature: []
+  function handleAddAbility(a: string) {
+    if (!a) return;
+    bStore.addAbilityChoice(a);
+  }
+
+  function handleSelectBackground(name: string) {
+    bStore.selectBackground(name);
+  }
+
+  function handleSelectFeat(feat: string) {
+    bStore.setFeat(feat);
+  }
+
+  function saveNewFormat(update = false) {
+    const active = bStore.activeBackground();
+    if (!active) return;
+  if (!isValid()) { showSnackbar('Cannot save: fix validation errors', 'error'); return; }
+    const draft: Background = { ...active } as Background;
+    if (bStore.state.form.abilityChoices.length) draft.abilityOptions = [...bStore.state.form.abilityChoices];
+    draft.feat = bStore.state.form.feat || undefined;
+    // apply any staged edits from edit buffers
+    if (editedProfs.armor.length || editedProfs.weapons.length || editedProfs.skills.length || editedProfs.tools.length) {
+      draft.proficiencies = { ...editedProfs };
+    }
+    draft.languages = { amount: languageAmount(), options: [...languageOptions()] };
+  draft.startEquipment = [...equipmentGroups()];
+  draft.features = [...featuresList()];
+  if (update) { HomebrewManager.updateBackground(draft); showSnackbar('Background updated','success'); }
+  else { HomebrewManager.addBackground(draft); showSnackbar('Background saved','success'); }
+  }
+
+  // ----- Editing state for new panel additions -----
+  const [editedProfs, setEditedProfs] = createStore({ armor: [] as string[], weapons: [] as string[], tools: [] as string[], skills: [] as string[] });
+  const [languageAmount, setLanguageAmount] = createSignal(0);
+  const [languageOptions, setLanguageOptions] = createSignal<string[]>([]);
+  const [equipmentGroups, setEquipmentGroups] = createSignal<{ optionKeys?: string[]; items?: string[] }[]>([]);
+  // pending equipment items (controlled external state for EquipmentSection)
+  const [pendingEquipItems, setPendingEquipItems] = createSignal<string[]>([]);
+  const addPendingEquipItem = (it: string) => { const v = it.trim(); if (!v) return; setPendingEquipItems(list => list.includes(v) ? list : [...list, v]); };
+  const removePendingEquipItem = (it: string) => setPendingEquipItems(list => list.filter(v => v !== it));
+  const clearPendingEquip = () => setPendingEquipItems([]);
+  // equipment group editing (modal logic moved into EquipmentSection)
+  // section collapse state
+  const [collapsed, setCollapsed] = createStore<Record<string, boolean>>({});
+  const toggle = (k: string) => setCollapsed(k, v => !v);
+  const [featuresList, setFeaturesList] = createSignal<FeatureDetail[]>([]);
+
+  function syncActiveToEditors() {
+    const active = bStore.activeBackground();
+    if (!active) return;
+    setEditedProfs({ ...active.proficiencies });
+    setLanguageAmount(active.languages?.amount || 0);
+    setLanguageOptions([...(active.languages?.options || [])]);
+  setEquipmentGroups([...(active.startEquipment || [])]);
+  setFeaturesList([...(active.features || [])]);
+  }
+
+  createMemo(() => { // run when selection changes
+    bStore.state.selection.activeName; // dependency
+    syncActiveToEditors();
   });
-  const addFeature = (level: number, feature: Feature<string, string>) => {
-    const newFeature: Feature<string[], string> = {
-      name: feature.name,
-      value: [feature.value],
-      info: feature.info,
-      metadata: feature.metadata
-    };
-    setCurrentBackground({ feature: [...currentBackground.feature, newFeature] });
-  };
 
-   
-  const replaceFeature = (level: number, index: number, feature: Feature<string, string>) => {
-    const newFeatures = [...currentBackground.feature];
-    newFeatures[index] = {
-      name: feature.name,
-      value: [feature.value],
-      info: feature.info,
-      metadata: feature.metadata
-    };
-    setCurrentBackground({ feature: newFeatures });
-  };
+  function removeLanguage(lang: string) { setLanguageOptions(o => o.filter(l => l !== lang)); }
 
-  const fillBackground = (search?:boolean) => {
-    const searchName = search ? searchParams.name : currentBackground.name
-    const background = homebrewManager.backgrounds().find((x)=>x.name === searchName);
-    const srdBackground = allBackgrounds().find((x)=>x.name === searchName);
+  function pushProf(category: keyof typeof editedProfs, value: string) {
+    if (!value) return; setEditedProfs(category, arr => arr.includes(value) ? arr : [...arr, value]); }
+  function removeProf(category: keyof typeof editedProfs, value: string) { setEditedProfs(category, arr => arr.filter(v => v !== value)); }
 
-		 if (background) {
-      setCurrentBackground(background);
-		 }
+  const existsInHomebrew = createMemo(() => {
+    const active = bStore.activeBackground();
+    if (!active) return false;
+    if (bStore.state.selection.activeName === '__new__') return false;
+    return homebrewManager.backgrounds().some(b => b.name === active.name);
+  });
 
-		 if (srdBackground) {
-      setCurrentBackground(srdBackground);
-		 }
+  // change detection for polish
+  const isModified = createMemo(() => {
+    const active = bStore.activeBackground();
+    if (!active) return false;
+    const abilityChanged = JSON.stringify(active.abilityOptions || []) !== JSON.stringify(bStore.state.form.abilityChoices);
+    const featChanged = (active.feat || '') !== (bStore.state.form.feat || '');
+    const profChanged = JSON.stringify(active.proficiencies || {}) !== JSON.stringify(editedProfs);
+    const langChanged = JSON.stringify(active.languages || { amount:0, options:[] }) !== JSON.stringify({ amount: languageAmount(), options: languageOptions() });
+  const equipChanged = JSON.stringify(active.startEquipment || []) !== JSON.stringify(equipmentGroups());
+  const featuresChanged = JSON.stringify(active.features || []) !== JSON.stringify(featuresList());
+  return abilityChanged || featChanged || profChanged || langChanged || equipChanged || featuresChanged;
+  });
 
-  }
+  // Validation rules
+  const validationErrors = createMemo(() => {
+    const active = bStore.activeBackground();
+    if (!active) return [] as string[];
+    return validate({
+      isNew: bStore.state.selection.activeName === '__new__',
+      name: active.name || '',
+      languageAmount: languageAmount(),
+      languageOptions: languageOptions(),
+      features: featuresList(),
+      abilityChoices: bStore.state.form.abilityChoices,
+      abilityBaseline: active.abilityOptions?.length || 0,
+      equipmentGroups: equipmentGroups()
+    });
+  });
+  const isValid = createMemo(() => validationErrors().length === 0);
 
-  const doesExist = ()=> {
-    return homebrewManager.backgrounds().findIndex(x=>x.name === currentBackground.name) > -1
-  }
+  // Inline error helpers: map field -> first relevant error
+  const fieldError = (field: string) => fieldErrHelper(validationErrors(), field);
 
-  onMount(()=>{
-    if (searchParams.name) fillBackground(true)
-  })
+  // Snackbar state
+  const [snackbar, setSnackbar] = createSignal<{ msg: string; type: 'success' | 'error'; ts: number } | null>(null);
+  function showSnackbar(msg: string, type: 'success'|'error'='success') { setSnackbar({ msg, type, ts: Date.now() }); }
+  createEffect(() => { if (snackbar()) { const t = setTimeout(()=> setSnackbar(null), SNACKBAR_TIMEOUT_MS); return () => clearTimeout(t); } });
 
   return (
     <>
-      {/* <Body>
-        <h1>backgrounds</h1>
-        <div>
-          <div class={`${styles.name}`}>
-            <FormField name="Background Name">
-              <Input
-                min={1}
-                value={currentBackground.name}
-                onChange={(e) => setCurrentBackground({ name: e.currentTarget.value })} transparent />
+      <Body>
+        <h1>Backgrounds</h1>
+        <div class={styles.newPanel}>
+          <h2>SRD / Homebrew Background Editor</h2>
+          <div class={styles.rowWrap}>
+            <FormField name="Select Background (2024)">
+              <Select transparent value={bStore.state.selection.activeName || ''} onChange={(val) => { if (val === '__new__') bStore.selectNew(); else handleSelectBackground(val); }}>
+                <Option value="">-- choose --</Option>
+                <Option value="__new__">+ New Background</Option>
+                <For each={bStore.state.order}>{name => <Option value={name}>{name}</Option>}</For>
+              </Select>
             </FormField>
-						
-            <Show when={doesExist()}>
-              <Button onClick={()=>fillBackground()}>Fill Info</Button>
-              <Button onClick={()=>{
-                const areSure = confirm("are you sure");
-
-                if (areSure) homebrewManager.removeBackground(currentBackground.name)
-              }}>Delete</Button>
+            <Show when={bStore.activeBackground()}>
+              <div class={styles.description} style={{ width: '100%' }}>
+                <Show
+                  when={bStore.state.selection.activeName === '__new__'}
+                  fallback={<div>
+                    <h3>{bStore.activeBackground()?.name}</h3>
+                    <p>{bStore.activeBackground()?.desc}</p>
+                  </div>}
+                >
+                  <div>
+                    <FormField name="Name">
+                      <Input transparent value={bStore.activeBackground()?.name || ''} onInput={e => bStore.updateBlankDraft('name', e.currentTarget.value)} />
+                    </FormField>
+                    <FormField name="Description">
+                      <Input transparent value={bStore.activeBackground()?.desc || ''} onInput={e => bStore.updateBlankDraft('desc', e.currentTarget.value)} />
+                    </FormField>
+                  </div>
+                </Show>
+              </div>
             </Show>
           </div>
-          <div class={`${styles.description}`}>
-            <h4>Background Description</h4>
-            <FormField name="Description">
-              <TextArea
-                transparent
-                onChange={(e) => setCurrentBackground({ desc: e.currentTarget.value })}
-                text={featureDesc}
-                setText={setFeatureDesc} />
-            </FormField>
-          </div>
-          <div class={`${styles.addition}`}>
-            <div class={`${styles.skills}`}>
-              <h4>Skill Proficiencies</h4>
-              <div>
-                <Select transparent
-                  value={selectedSkill()}
-                  onChange={(e) => {
-                    setSelectedSkill(e);
-                  }
-                  }>
-                  <For each={allSkills()}>{(skill) =>
-                    <Option value={skill}>{skill}</Option>
-                  }</For>
-                </Select>
-                <Button onClick={() => {
-                  setCurrentBackground({
-                    startingProficiencies: [...currentBackground.startingProficiencies,
-                      {
-                        info: {
-                          className: '',
-                          subclassName: '',
-                          level: 0,
-                          type: FeatureTypes.Background,
-                          other: ''
-                        },
-                        metadata: {},
-                        name: 'Skill Proficiency',
-                        value: selectedSkill()
-                      }
-                    ]
-                  })
-                }}>Add Proficiency</Button>
-              </div>
-            </div>
-            <div class={`${styles.proficiencies}`}>
-              <h4>Starting Proficiencies</h4>
-              <div>
-                <Select transparent
-                  value={selectedProficiency()}
-                  onChange={(e) => {
-                    setSelectedProficiency(e);
-                  }
-                  }>
-                  <For each={allSkills()}>{(skill) =>
-                    <Option value={skill}>{skill}</Option>
-                  }</For>
-                </Select>
-                <Button onClick={() => {
-                  setCurrentBackground({
-                    startingProficiencies: [...currentBackground.startingProficiencies, {
-                      info: {
-                        className: '',
-                        subclassName: '',
-                        level: 0,
-                        type: FeatureTypes.Background,
-                        other: ''
-                      },
-                      name: 'Skill Proficiency',
-                      value: selectedProficiency(),
-                      metadata: {}
-                    }]
-                  });
-                }}>Add Proficiency</Button>
-              </div>
-            </div>
-            <div class={`${styles.tools}`}>
-              <h4>Tool Proficiencies</h4>
-              <div>
-                <Select transparent
-                  value={selectedTool()}
-                  onChange={(e) => {
-                    setSelectedTool(e);
-                  }
-                  }>
-                  <For each={allTools()}>{(tool) =>
-                    <Option value={tool}>{tool}</Option>
-                  }</For>
-                </Select>
-                <Button onClick={() => {
-                  setCurrentBackground({
-                    startingProficiencies: [...currentBackground.startingProficiencies, {
-                      info: {
-                        className: '',
-                        subclassName: '',
-                        level: 0,
-                        type: FeatureTypes.Background,
-                        other: ''
-                      },
-                      name: 'Tool Proficiency',
-                      value: selectedTool(),
-                      metadata: {}
-                    }]
-                  });
-                }}>Add Proficiency</Button>
-              </div>
-            </div>
-            <div class={`${styles.languages}`}>
-              <div>
-                <h4>Languages</h4>
-              </div>
-              <div>
-                <Select transparent
-                  value={selectedLanguage()}
-                  onChange={(e) => {
-                    setSelectedLanguage(e);
-                  }
-                  }>
-                  <For each={getLanguages()}>{(lang) =>
-                    <Option value={lang}>{lang}</Option>
-                  }</For>
-                  <Option value="Custom">Custom</Option>
-                </Select>
-                <Button onClick={() => {
-                  setCurrentBackground({
-                    languageChoice: {
-                      ...currentBackground.languageChoice,
-                      choices: [...currentBackground.languageChoice.choices, selectedLanguage()]
-                    }
-                  });
-                }}>Add Language</Button>
-              </div>
-            </div>
-            <div class={`${styles.startEquip}`}>
-              <h4>Starting Equipment</h4>
-              <div>
-                <span>
-                  <Select transparent
-                    value={selectedItemType()}
-                    onChange={(e) => {
-                      setSelectedItemType(e);
-                    }
-                    }>
-                    <Option value="Item">Item</Option>
-                    <Option value="Weapon">Weapon</Option>
-                    <Option value="Armor">Armor</Option>
-                  </Select>
-                </span>
-                <span>
-                  <Show when={selectedItemType() === "Item"}>
-                    <Select transparent
-                      value={selectedItem()}
-                      onChange={(e) => {
-                        setSelectedItem(e);
-                      }
-                      }>
-                      <For each={allOtherItems()}>{(item) =>
-                        <Option value={item.item}>{item.name}</Option>
-                      }</For>
-                    </Select>
+          <Show when={bStore.activeBackground()}>
+            <div class={styles.sectionList}>
+              <AbilitiesSection
+                collapsed={collapsed.abilities}
+                toggle={toggle}
+                abilityChoices={bStore.state.form.abilityChoices}
+                abilityOptions={bStore.abilityOptions()}
+                remaining={remainingAbilityPicks()}
+                onAddAbility={(val) => handleAddAbility(val)}
+                onRemoveAbility={(i) => bStore.removeAbilityChoice(i)}
+                onEdit={() => {}}
+                onReset={() => { bStore.state.form.abilityChoices.slice().forEach((_,i)=>bStore.removeAbilityChoice(0)); }}
+              />
+              <EquipmentSection
+                collapsed={collapsed.equipment}
+                toggle={toggle}
+                groups={equipmentGroups()}
+                activeKey={bStore.state.form.equipmentOptionKey}
+                optionKeys={bStore.equipmentOptionKeys()}
+                selectedItems={bStore.selectedEquipmentItems()}
+                onSelectKey={(k) => bStore.setEquipmentOptionKey(k)}
+                onCommitGroup={(keys, items) => setEquipmentGroups(list => [...list, { optionKeys: keys, items }])}
+                candidateItems={candidateEquipmentItems(backgroundsStore.state.entities as any)}
+                addPendingItem={addPendingEquipItem}
+                pendingItems={pendingEquipItems()}
+                removePendingItem={removePendingEquipItem}
+                clearPending={clearPendingEquip}
+                error={!!fieldError('equipment')}
+              />
+              <FeatSection
+                collapsed={collapsed.feat}
+                toggle={toggle}
+                feats={allFeats()}
+                value={selectedFeat() || ''}
+                onChange={handleSelectFeat}
+                onClear={() => bStore.setFeat(undefined as unknown as string)}
+              />
+              <ProficienciesSection
+                collapsed={collapsed.profs}
+                toggle={toggle}
+                profs={editedProfs as any}
+                onEdit={() => {}}
+              />
+              <ProficienciesModal
+                profs={editedProfs as any}
+                push={(cat,val)=> pushProf(cat,val)}
+                remove={(cat,val)=> removeProf(cat,val)}
+              />
+              <LanguagesSection
+                collapsed={collapsed.langs}
+                toggle={toggle}
+                amount={languageAmount()}
+                options={languageOptions()}
+                onEdit={() => {}}
+                error={!!fieldError('languages')}
+              />
+              <LanguagesModal
+                amount={languageAmount()}
+                setAmount={(n)=> setLanguageAmount(n)}
+                options={languageOptions()}
+                addLanguage={(l)=> setLanguageOptions(o => [...o, l])}
+                removeLanguage={(l)=> removeLanguage(l)}
+              />
+              <FeaturesSection
+                collapsed={collapsed.features}
+                toggle={toggle}
+                features={featuresList()}
+                onChange={(fs)=> setFeaturesList(fs)}
+                error={!!fieldError('features')}
+              />
+              {/* Validation Messages */}
+              <Show when={validationErrors().length}>
+                <div class={styles.validationBox}>
+                  <For each={validationErrors()}>{e => <div class={styles.validationItem}>{e}</div>}</For>
+                </div>
+              </Show>
+              {/* Persist */}
+              <div class={styles.flatSection}>
+                <div class={styles.sectionHeader}><h4>💾 Persist</h4></div>
+                <div class={styles.chipsRow}>
+                  <Button disabled={!bStore.activeBackground() || !isValid()} onClick={() => saveNewFormat(false)}>Save As Homebrew</Button>
+                  <Show when={existsInHomebrew()}>
+                    <Button disabled={!bStore.activeBackground() || !isModified() || !isValid()} onClick={() => saveNewFormat(true)}>Update Homebrew</Button>
                   </Show>
-                  <Show when={selectedItemType() === "Weapon"}>
-                    <Select transparent
-                      value={selectedItem()}
-                      onSelect={(e)=>setSelectedItem(e)}>
-                      
-                      <For each={allWeapons()}>{(item) =>
-                        <Option value={item.item}>{item.name}</Option>
-                      }</For>
-                    </Select>
-                  </Show>
-                  <Show when={selectedItemType() === "Armor"}>
-                    <Select transparent
-                      value={selectedItem()}
-                      onChange={(e) => {
-                        setSelectedItem(e);
-                      }
-                      }>
-                      <For each={allArmor()}>{(item) =>
-                        <Option value={item.item}>{item.name}</Option>
-                      }</For>
-                    </Select>
-                  </Show>
-                </span>
-                <div>
-									Amount: 
-                  <Input type="number" transparent
-                    style={{ width: "75px" }}
-                    value={selectedItemAmnt()}
-                    onChange={(e) => { 
-                      setSelectedItemAmnt(parseInt(e.currentTarget.value));
-                    }} />
-                  <Button onClick={() => {
-                    const item = allItemsTypes().find((i) => i.item === selectedItem());
-                    if (!item) return;
-                    setCurrentBackground((old)=>({
-                      startingEquipment: [...old.startingEquipment, item]
-                    }));
-                  }}>Add Equipment</Button>
+                  <Show when={isModified()}><span class={styles.modifiedBadge}>Modified</span></Show>
                 </div>
               </div>
             </div>
-            <div class={`${styles.startEquipChoices}`}>
-              <h4>Starting Equipment Choices</h4>
-              <div>
-                <span>
-                  <Select transparent 
-                    value={selectedChoicesItemType()}
-                    onChange={(e) => {
-                      setSelectedChoiceItemType(e);
-                    }
-                    }>
-                    <Option value="Item">Item</Option>
-                    <Option value="Weapon">Weapon</Option>
-                    <Option value="Armor">Armor</Option>
-                  </Select>
-                </span>
-                <span>
-                  <Show when={selectedChoicesItemType() === "Item"}>
-                    <Select transparent
-                      value={selectedChoiceItem()}
-                      onChange={(e) => {
-                        setSelectedChoiceItem(e);
-                      }
-                      }>
-                      <For each={allOtherItems()}>{(item) =>
-                        <Option value={item.name}>{item.name}</Option>
-                      }</For>
-                    </Select>
-                    <Button onClick={()=>{
-                      const item = allOtherItems().find((i) => i.name === selectedChoiceItem());
-                      if (!item) return;
-                      setSelectedChoices(old=>[...old, item.name]);
-                    }} >Add To Choice</Button>
-                  </Show>
-                  <Show when={selectedChoicesItemType() === "Weapon"}>
-                    <Select transparent
-                      value={selectedChoiceItem()}
-                      onChange={(e) => {
-                        setSelectedChoiceItem(e);
-                      }
-                      }>
-                      <For each={allWeapons()}>{(item) =>
-                        <Option value={item.name}>{item.name}</Option>
-                      }</For>
-                    </Select>
-                    <Button onClick={()=>{
-                      const item = allWeapons().find((i) => i.name === selectedChoiceItem());
-                      if (!item) return;
-                      setSelectedChoices(old=>[...old, item.name]);
-                    }} >Add To Choice</Button>
-                  </Show>
-                  <Show when={selectedChoicesItemType() === "Armor"}>
-                    <Select transparent
-                      value={selectedChoiceItem()}
-                      onChange={(e) => {
-                        setSelectedChoiceItem(e);    
-                      }
-                      }>
-                      <For each={allArmor()}>{(item) =>
-                        <Option value={item.name}>{item.name}</Option>
-                      }</For>
-                    </Select>
-                    <Button onClick={()=>{
-                      const item = allArmor().find((i) => i.name === selectedChoiceItem());
-                      if (!item) return;
-                      setSelectedChoices(old=>[...old, item.name]);
-                    }} >Add To Choice</Button>
-                  </Show>
-                </span>
-                <Show when={selectedChoices().length > 0}>
-                  <div>
-                    {selectedChoices().join(', ')}
-                  </div>
-                </Show>
-                <div>
-                  <Button disabled={selectedChoices().length === 0} onClick={() => {
-                    setCurrentBackground((old)=>({
-                      startingEquipmentChoices: [...old.startingEquipmentChoices, {
-                        choose: selectedChoiceItemAmnt(),
-                        type: FeatureTypes.Background,
-                        choices: selectedChoices().map((c)=>allItemsTypes().find((i)=>i.name === c || i.item === c) ?? undefined).filter((i)=>!!i)
-                      }]
-                    }));
-                    setSelectedChoices([]);
-                  }
-                  }>Add Equipment Choice</Button>
-                </div> 
-              </div>
-            </div>
-
-          </div>
-          <div class={`${styles.visual}`}>
-            <div class={`${styles.angle}`}>
-              <h5>Proficiencies</h5>
-              <div style={{display: 'flex', 'flex-wrap':'wrap'}}>
-                <For each={currentBackground.startingProficiencies}>{(prof) => <>
-                  <Chip value={prof.value} remove={() => {
-                    setCurrentBackground({ startingProficiencies: currentBackground.startingProficiencies.filter((p) => p !== prof) });
-                  }} />
-                </>}</For>
-                <Show when={currentBackground.startingProficiencies.length === 0}>
-                  <Chip value="None" />
-                </Show>
-              </div>
-            </div>
-            <div class={`${styles.angle}`}>
-              <h5>Languages</h5>
-              <div>
-                <span>Choose:</span>
-                <Input type="number" transparent
-                  style={{ width: "min-content" }}
-                  value={currentBackground.languageChoice.choose}
-                  onChange={(e) => setCurrentBackground({
-                    languageChoice: {
-                      ...currentBackground.languageChoice,
-                      choose: parseInt(e.currentTarget.value)
-                    }
-                  })} />
-              </div>
-              <div style={{display: 'flex', 'flex-wrap':'wrap'}}>
-                <For each={currentBackground.languageChoice.choices}>{(lang) => <>
-                  <Chip value={lang} remove={() => {
-                    setCurrentBackground({
-                      languageChoice: {
-                        ...currentBackground.languageChoice,
-                        choices: currentBackground.languageChoice.choices.filter((l) => l !== lang)
-                      }
-                    });
-                  }} />
-                </>}</For>
-                <Show when={currentBackground.languageChoice.choices.length === 0}>
-                  <Chip value="None" />
-                </Show>
-              </div>
-            </div>
-            <div class={`${styles.angle}`}>
-              <h5>Starting Equipment</h5>
-              <div>
-                <For each={currentBackground.startingEquipment}>{(equip) => <>
-                  <Chip value={equip.item} remove={() => {
-                    setCurrentBackground({ startingEquipment: currentBackground.startingEquipment.filter((e) => e !== equip) });
-                  }} />
-                </>}</For>
-                <Show when={currentBackground.startingEquipment.length === 0}>
-                  <Chip value="None" />
-                </Show>
-              </div>
-            </div>
-            <div class={`${styles.angle}`}>
-              <h5>Starting Equipment Choices</h5>
-              <div>
-                <For each={currentBackground.startingEquipmentChoices}>{(choice) => <>
-                  <Chip key={`Choose ${choice.choose}`} value={choice.choices.map((c) => c?.item ?? c?.name).join(', ')} remove={() => {
-                    setCurrentBackground({
-                      startingEquipmentChoices: currentBackground.startingEquipmentChoices.filter((c) => c !== choice)
-                    });
-                  }} />
-                </>}</For>
-                <Show when={currentBackground.startingEquipmentChoices.length === 0}>
-                  <Chip value="None" />
-                </Show>
-              </div>
-            </div>
-          </div>
-          <div class={`${styles.features}`}>
-            <h4>Features</h4>
-            <Button onClick={() => {
-              setShowFeatureModal(true);
-              setEditIndex(-1);
-            }}>Add Feature</Button>
-            <For each={currentBackground.feature}>{(f, index) =>
-              <Button onClick={() => {
-                setShowFeatureModal(true);
-                setEditIndex(index);
-              }}>{f.name}</Button>
-            }</For>
-          </div>
-          <div>
-            <Show when={!!doesExist()}>
-              <Button onClick={()=>{
-                const result = HomebrewManager.updateBackground(currentBackground);
-                if (result) {
-                  addSnackbar({
-                    message: `Updated Background: ${currentBackground.name}`,
-                    severity: "success"
-                  });
-                } else {
-                  addSnackbar({
-                    message: `Failed to update Background: ${currentBackground.name}`,
-                    severity: "error"
-                  });
-                }
-              }} >Edit</Button>
-            </Show>
-            <Show when={!doesExist()}>
-              <Button onClick={()=>{
-                HomebrewManager.addBackground(currentBackground);
-              }}>Save</Button>
-            </Show>
-          </div>
+          </Show>
+          <Show when={snackbar()}>
+            <div class={styles.snackbar} data-type={snackbar()!.type}>{snackbar()!.msg}</div>
+          </Show>
+          <Show when={bStore.state.status === 'loading'}>
+            <div>Loading backgrounds...</div>
+          </Show>
+          <Show when={bStore.state.status === 'error'}>
+            <div style={{ color: 'red' }}>Failed to load backgrounds: {bStore.state.error}</div>
+          </Show>
         </div>
-        </Body> */}
+        </Body> 
       
     </>
   );
 }
+export const SNACKBAR_TIMEOUT_MS = 3200; // exported for tests
 export default Backgrounds;
-
-const getLanguages = () => {
-  return [
-    'Abyssal',
-    'Aquan',
-    'Auran',
-    'Celestial',
-    'Draconic',
-    'Dwarvish',
-    'Elvish',
-    'Giant',
-    'Gnomish',
-    'Goblin',
-    'Halfling',
-    'Infernal',
-    'Orc',
-    'Sylvan',
-    'Undercommon'
-  ]
-}
-
-const allSkills = () => [
-  'Acrobatics',
-  'Animal Handling',
-  'Arcana',
-  'Athletics',
-  'Deception',
-  'History',
-  'Insight',
-  'Intimidation',
-  'Investigation',
-  'Medicine',
-  'Nature',
-  'Perception',
-  'Performance',
-  'Persuasion',
-  'Religion',
-  'Sleight of Hand',
-  'Stealth',
-  'Survival'
-];
-const allTools = () => [
-  'Artisan\'s Tools',
-  "Smith's Tools",
-  "Brewer's Supplies",
-  "Calligrapher's Supplies",
-  "Carpenter's Tools",
-  "Cobbler's Tools",
-  "Cook's Utensils",
-  "Glassblower's Tools",
-  "Jeweler's Tools",
-  "Leatherworker's Tools",
-  "Mason's Tools",
-  "Painter's Supplies",
-  "Potter's Tools",
-  "Tinker's Tools",
-  "Weaver's Tools",
-  "Woodcarver's Tools",
-  'Disguise Kit',
-  'Forgery Kit',
-  'Gaming Set',
-  'Herbalism Kit',
-  'Musical Instrument',
-  'Navigator\'s Tools',
-  'Poisoner\'s Kit',
-  'Thieves\' Tools',
-  'Vehicles (Land)',
-  'Vehicles (Water)',
-];
