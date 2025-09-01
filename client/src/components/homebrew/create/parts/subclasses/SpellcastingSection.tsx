@@ -192,9 +192,7 @@ export const SpellcastingSection = <T extends {
         </div>
       </Show>
       <div>
-        <Button 
-          title={`${p.canSave() ? "Save":"Disabled"}`} 
-          disabled={p.canSave()} 
+          disabled={!p.canSave()} 
           onClick={p.onSave}>Save</Button>
       </div>
     </div>
