@@ -1,15 +1,12 @@
 import { Component, createEffect, createSignal, For, onMount, Show } from "solid-js";
 import Style from "./subraces.module.scss";
 import { homebrewManager, UniqueStringArray, Clone } from "../../../../../shared";
-import { Body, Select, Option, Chip, FormField, Input, Button, TextArea } from "coles-solid-library";
+import { Body, Select, Option, Chip, FormField, Input, Button, TextArea, addSnackbar } from "coles-solid-library";
 import { createStore } from "solid-js/store";
 import { Race, Subrace } from "../../../../../models/old/race.model";
 import { AbilityScores, Feature, FeatureTypes } from "../../../../../models/old/core.model";
 // import useGetRaces from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
-import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
-import { LevelEntity } from "../../../../../models/old/class.model";
-import StartingProf from "../races/startingProfs/startingProfs";
 
 const Subraces:Component = () => {
 

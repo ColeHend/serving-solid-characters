@@ -21,7 +21,8 @@ import {
   Chip,
   FormField,
   Body,
-  TextArea
+  TextArea,
+  addSnackbar
 } from "coles-solid-library"
 
 import styles from "./races.module.scss";
@@ -35,7 +36,6 @@ import {
 import { LevelEntity } from "../../../../../models/old/class.model";
 // import useGetRaces from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
-import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import StartingProf from "./startingProfs/startingProfs";
 import HomebrewSearch from "../../../../../shared/customHooks/homebrewSearch";
 

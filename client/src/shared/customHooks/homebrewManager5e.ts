@@ -3,7 +3,7 @@ import { Class5E } from "../../models/data/classes";
 import HombrewDB from "./utility/localDB/new/homebrewDB";
 import httpClient$ from "./utility/tools/httpClientObs";
 import { catchError, finalize, of, take, tap } from "rxjs";
-import addSnackbar from "../components/Snackbar/snackbar";
+import {addSnackbar} from "coles-solid-library";
 
 class HomebrewManager5e {
   public classes: Accessor<Class5E[]>;

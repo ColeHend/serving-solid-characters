@@ -1,10 +1,9 @@
 import { Component, createMemo, createSignal, For, Show } from "solid-js";
 import styles from "./Exporting.module.scss";
-import { ExpansionPanel, homebrewManager, isNullish } from "../../../shared";
-import {Button,Input} from "coles-solid-library";
+import { homebrewManager, isNullish } from "../../../shared";
+import {Button,Input,ExpansionPanel,Modal} from "coles-solid-library";
 import { Trade } from "../../../models/trade.model";
 import { createStore } from "solid-js/store";
-import Modal from "../../../shared/components/popup/popup.component";
 import { downloadObjectAsJson } from "../../../shared/customHooks/utility/tools/downloadObjectAsJson";
 
 const Exporting:Component = () => {
@@ -625,7 +624,7 @@ const Exporting:Component = () => {
     </div>
 
     <Show when={showConfirm()}>
-      <Modal title="Confirm & Name" setClose={setShowConfirm} height="15%" width="25%">
+      <Modal title="Confirm & Name" show={[showConfirm,setShowConfirm]} height="15%" width="25%">
         <div class={`${styles.confirmContent}`}>
           <Input id="confirm-name" type="text" /> <Button onClick={exportToObject} type="submit">Confirm</Button>   
         </div>

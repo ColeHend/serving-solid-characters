@@ -1,5 +1,5 @@
 import { Trade } from "../../../../models/trade.model";
-import addSnackbar from "../../../components/Snackbar/snackbar";
+import {addSnackbar} from "coles-solid-library";
 import homebrewManager from "../../homebrewManager";
 
 export function importJsonObject(data: Trade) {

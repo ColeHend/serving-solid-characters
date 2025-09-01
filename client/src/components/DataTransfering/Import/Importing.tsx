@@ -1,8 +1,7 @@
 import { Component } from "solid-js";
 import { importJsonObject } from "../../../shared/customHooks/utility/tools/importJsonObject";
 import { Trade } from "../../../models/trade.model";
-import addSnackbar from "../../../shared/components/Snackbar/snackbar";
-import { Input } from "coles-solid-library";
+import { Input, addSnackbar } from "coles-solid-library";
 import styles from "./importing.module.scss"
 
 const Importing:Component = () => {

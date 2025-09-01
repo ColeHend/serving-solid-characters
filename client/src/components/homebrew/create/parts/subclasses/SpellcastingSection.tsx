@@ -1,7 +1,7 @@
 import { For, Show } from "solid-js";
 import { Checkbox, Select, Option, Input, Button, Chip, FormGroup } from "coles-solid-library";
 import styles from './subclasses.module.scss';
-import { Spell } from "../../../../../models";
+import { Spell } from "../../../../../models/data";
 import { SpellsKnown } from './SpellsKnown';
 
 interface SpellcastingSectionProps<T extends {

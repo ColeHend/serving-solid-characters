@@ -10,8 +10,3 @@ export * from "./svgs/skinnySnowman";
 export * from "./svgs/camera";
 export * from "../models/old/items.model";
 export * from "../shared/components/index";
-export * from "../shared/components/Tabs/tabs";
-export * from "../shared/components/Tabs/tab";
-export * from "../shared/components/FormField/formField";
-export * from "../shared/components/Select/select.component";
-export * from "../shared/components/Select/option.component";

@@ -146,7 +146,7 @@ export const ItemsView:Component<viewProps> = (props) => {
   return <Body class={`${styles.itemsBody}`}>
     <div class={`${styles.searchBar}`}>
       <SearchBar 
-        dataSource={tableData}
+        dataSource={props.items}
         setResults={setSearchResult}
         searchFunction={(item,search) =>{
           return item.name.toLowerCase() === search.toLowerCase();
