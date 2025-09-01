@@ -33,14 +33,14 @@ import {
   Feature,
 } from "../../../../../models/old/core.model";
 import { LevelEntity } from "../../../../../models/old/class.model";
-import useGetRaces from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
+// import useGetRaces from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
 import { useSearchParams } from "@solidjs/router";
 import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import StartingProf from "./startingProfs/startingProfs";
 import HomebrewSearch from "../../../../../shared/customHooks/homebrewSearch";
 
 const Races: Component = () => {
-  const allRaces = useGetRaces();
+  // const allRaces = useGetRaces();
   const [searchParam, setSearchParam] = useSearchParams();
   // -------------------- Signals/State
   const [selectedAbility, setSelectedAbility] = createSignal<AbilityScores>(0);
@@ -49,7 +49,7 @@ const Races: Component = () => {
   const [abilityIncrease,setAbilityIncrease] = createSignal<number>(0);
   const [startProfPopup,setStartProfPopup] = createSignal<boolean>(false);
 
-  const allraceNames = createMemo(()=>allRaces().flatMap(x=>x.name));
+  // const allraceNames = createMemo(()=>allRaces().flatMap(x=>x.name));
   
   // ------- Store
   const [currentRace, setCurrentRace] = createStore<Race>({
@@ -144,58 +144,58 @@ const Races: Component = () => {
 
   // --------- Functions 
 
-  const isSrd = () => {
-    let srdraces:Race[] = [];
+  // const isSrd = () => {
+  //   let srdraces:Race[] = [];
 
-    homebrewManager.races().forEach(homeRace => {
-      srdraces = allRaces().filter(x=>x.name !== homeRace.name)
-    })
+  //   homebrewManager.races().forEach(homeRace => {
+  //     srdraces = allRaces().filter(x=>x.name !== homeRace.name)
+  //   })
 
-    return srdraces.findIndex(r=>r.id === currentRace.id) > -1
-  }
+  //   return srdraces.findIndex(r=>r.id === currentRace.id) > -1
+  // }
 
-  const fillRacesInfo = async (search?:boolean) => {
-    const searchName = search ? searchParam.name: currentRace.name;
-    const homebrewSearch = new HomebrewSearch(searchName ?? "");
+  // const fillRacesInfo = async (search?:boolean) => {
+  //   const searchName = search ? searchParam.name: currentRace.name;
+  //   const homebrewSearch = new HomebrewSearch(searchName ?? "");
 
-    const allRace = await homebrewSearch.races();
+  //   const allRace = await homebrewSearch.races();
 
-    if (allRace) {
-      setCurrentRace('id',allRace.id);
-      setCurrentRace("name",allRace.name);
-      setCurrentRace("size",allRace.size);
-      setCurrentRace("sizeDescription",allRace.sizeDescription);
-      setSizeDesc(allRace.sizeDescription);
-      setCurrentRace("speed",allRace.speed);
-      setCurrentRace("abilityBonuses",allRace.abilityBonuses);
-      setCurrentRace("abilityBonusChoice",allRace.abilityBonusChoice);
-      setCurrentRace("alignment",allRace.alignment);
-      setAlignTextarea(allRace.alignment);
-      setCurrentRace("languages",allRace.languages);
-      setCurrentRace("languageDesc",allRace.languageDesc);
-      setLanguageDesc(allRace.languageDesc);
-      setCurrentRace("languageChoice",allRace.languageChoice); 
-      setCurrentRace("age",allRace.age);
-      setAgeDesc(allRace.age);
-      setCurrentRace("startingProficencies",allRace.startingProficencies);
-      setCurrentRace("startingProficiencyChoices",allRace.startingProficiencyChoices);
-      setCurrentRace("traitChoice",allRace.traitChoice);
-      setCurrentRace("traits",allRace.traits);
-      setCurrentRace("subRaces",allRace.subRaces);
+  //   if (allRace) {
+  //     setCurrentRace('id',allRace.id);
+  //     setCurrentRace("name",allRace.name);
+  //     setCurrentRace("size",allRace.size);
+  //     setCurrentRace("sizeDescription",allRace.sizeDescription);
+  //     setSizeDesc(allRace.sizeDescription);
+  //     setCurrentRace("speed",allRace.speed);
+  //     setCurrentRace("abilityBonuses",allRace.abilityBonuses);
+  //     setCurrentRace("abilityBonusChoice",allRace.abilityBonusChoice);
+  //     setCurrentRace("alignment",allRace.alignment);
+  //     setAlignTextarea(allRace.alignment);
+  //     setCurrentRace("languages",allRace.languages);
+  //     setCurrentRace("languageDesc",allRace.languageDesc);
+  //     setLanguageDesc(allRace.languageDesc);
+  //     setCurrentRace("languageChoice",allRace.languageChoice); 
+  //     setCurrentRace("age",allRace.age);
+  //     setAgeDesc(allRace.age);
+  //     setCurrentRace("startingProficencies",allRace.startingProficencies);
+  //     setCurrentRace("startingProficiencyChoices",allRace.startingProficiencyChoices);
+  //     setCurrentRace("traitChoice",allRace.traitChoice);
+  //     setCurrentRace("traits",allRace.traits);
+  //     setCurrentRace("subRaces",allRace.subRaces);
   
-      if (isSrd()){
+  //     if (isSrd()){
         
   
-        allraceNames().forEach((name,i)=>{
-          if (name === currentRace.name) {
-            setCurrentRace("name",old=>`${old}${i + 1}`)
-          }
-        })
-      }
+  //       allraceNames().forEach((name,i)=>{
+  //         if (name === currentRace.name) {
+  //           setCurrentRace("name",old=>`${old}${i + 1}`)
+  //         }
+  //       })
+  //     }
 
-    }
+  //   }
   
-  }
+  // }
 
   const addAbiliyScore = () => {
     const abilityScore:Feature<number, string> = {} as Feature<number,string>;
@@ -222,39 +222,39 @@ const Races: Component = () => {
     }
   }
   
-  const allLanguages = ():string[] => {
-    return UniqueStringArray(allRaces().flatMap(x=>x.languages))
-  }
+  // const allLanguages = ():string[] => {
+  //   return UniqueStringArray(allRaces().flatMap(x=>x.languages))
+  // }
 
-  const doesExist = () => {
-    return homebrewManager.races().findIndex((x)=> x.id.trim() === currentRace.id.trim()) > -1
-  }
+  // const doesExist = () => {
+  //   return homebrewManager.races().findIndex((x)=> x.id.trim() === currentRace.id.trim()) > -1
+  // }
 
-  const createRace = () => {
-    setCurrentRace("id","");
-    setCurrentRace("id",crypto.randomUUID());
+  // const createRace = () => {
+  //   setCurrentRace("id","");
+  //   setCurrentRace("id",crypto.randomUUID());
 
-    allraceNames().forEach((name) => {
-      if (currentRace.name === name) {
-        addSnackbar({
-          severity:"error",
-          message:"Name must be unique",
-          closeTimeout: 4000,
-        })
-        return;
+  //   allraceNames().forEach((name) => {
+  //     if (currentRace.name === name) {
+  //       addSnackbar({
+  //         severity:"error",
+  //         message:"Name must be unique",
+  //         closeTimeout: 4000,
+  //       })
+  //       return;
         
-      }
-    });
+  //     }
+  //   });
 
 
-    homebrewManager.addRace(currentRace);
-    clearFields()
-  }
+  //   homebrewManager.addRace(currentRace);
+  //   clearFields()
+  // }
 
-  const updateRace = () => {
-    homebrewManager.updateRace(currentRace);
-    clearFields()
-  }
+  // const updateRace = () => {
+  //   homebrewManager.updateRace(currentRace);
+  //   clearFields()
+  // }
 
   const clearFields = () => {
     setCurrentRace({
@@ -335,9 +335,9 @@ const Races: Component = () => {
     setSearchParam({name: currentRace.name})
   })
 
-  onMount(() => {
-    if (searchParam.name) fillRacesInfo(true)
-  })
+  // onMount(() => {
+  //   if (searchParam.name) fillRacesInfo(true)
+  // })
 
   // setting values for textareas
 
@@ -352,10 +352,10 @@ const Races: Component = () => {
 
   return (
     <>
-      <Body>
+      {/* 
+        <Body>
         <h1>Races</h1>
         <div class={`${styles.wrapper}`}>
-          {/* first colunm */}
           <div>
 
             <div>
@@ -545,7 +545,7 @@ const Races: Component = () => {
 
           </div> 
           
-          {/* second column */}
+
           <div>
             <div>
               <FormField name="alignment desc">
@@ -634,6 +634,7 @@ const Races: Component = () => {
           <Button onClick={updateRace}>Update</Button>
         </Show>
       </Body>
+      */}
     </>
   );
 };

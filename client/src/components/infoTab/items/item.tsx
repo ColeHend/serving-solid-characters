@@ -16,7 +16,7 @@ import { WeaponsView } from "./parts/weapon/weaponView";
 // const WeaponsView = lazy(() => import("./parts/weapon/weaponView").then(mod => ({ default: mod.WeaponsView })));
 
 const ItemsViewTab:Component = () => {
-  // all off the items
+  
   const SrdItems = useDnDItems();
   const [searchParam,setSearchParam] = useSearchParams();
   
@@ -30,32 +30,36 @@ const ItemsViewTab:Component = () => {
   const elementMemo = createMemo<CarouselElement[]>(()=>([
     {name: "Equipment", element: <ItemsView items={srdEquipment} /> },
     {name: "Weapons", element:  <WeaponsView items={srdWeapons} />  }
-  ]));  
-
+  ]));
+  
   if (!searchParam.itemType) setSearchParam({itemType: elementMemo()[0].name })
+
+  const startingIndex = createMemo(()=>{
+    const target = elementMemo().findIndex((x)=>x.name.toLowerCase() === searchParam.itemType?.toLowerCase());
     
-  const startingIndex = createMemo(()=>elementMemo().findIndex((x)=>x.name.toLowerCase() === searchParam.itemType?.toLowerCase()) ?? 0);
+    if (target === -1) return 0;
+    return target;
+  });
 
-  const [itemIndex,setItemIndex] = createSignal<number>(startingIndex());
+  const [itemIndex,setItemIndex] = createSignal<number>(startingIndex() ?? 0);
 
-  function cantFind(number:number) {
-    if (startingIndex() === -1) {
+  // function cantFind(number:number) {
+  //   if (startingIndex() === -1) {
+  //     return 0 
+  //   }
 
-      return 0
-    }
-
-    return number
-  }
+  //   return number
+  // }
 
   createEffect(()=>{
-    setSearchParam({itemType: elementMemo()[itemIndex()]?.name ?? "Equipment"})
+    setSearchParam({itemType: elementMemo()[itemIndex()].name})
   })
 
   return <Body>
     <h1>Items</h1>
     
     <Carousel 
-      startingIndex={cantFind(startingIndex())} 
+      startingIndex={startingIndex()} 
       currentIndex={[itemIndex,setItemIndex]} 
       elements={elementMemo()} />
   </Body>

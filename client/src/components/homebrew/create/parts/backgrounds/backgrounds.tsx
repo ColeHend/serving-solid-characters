@@ -1,24 +1,26 @@
 import { Component, For, createSignal, createMemo, Show, onMount } from "solid-js";
-import { useGetItems, Weapon, Armor } from "../../../../../shared/";
+import {  Weapon, Armor } from "../../../../../shared/";
 import {Body, Input, Select, Option, Button, TextArea, Chip, FormField, addSnackbar} from "coles-solid-library";
 import styles from './backgrounds.module.scss';
 import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { createStore } from "solid-js/store";
 import { Background } from "../../../../../models";
-import useGetBackgrounds from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetBackgrounds";
+// import useGetBackgrounds from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetBackgrounds";
 // import FormField from "../../../../../shared/components/FormField/formField";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { useSearchParams } from "@solidjs/router";
+import { useDnDBackgrounds } from "../../../../../shared/customHooks/dndInfo/info/all/backgrounds";
+import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
 
 const Backgrounds: Component = () => {
   // eslint-disable-next-line
   const [searchParams, setSearchParams] = useSearchParams();
-  const allBackgrounds = useGetBackgrounds();
-  const allItemsTypes = useGetItems();
-  const allOtherItems = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory !== "Weapon" && item.equipmentCategory !== "Armor"));
-  const allWeapons = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory === "Weapon") as Weapon[]);
-  const allArmor = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory === "Armor") as Armor[]);
+  const allBackgrounds = useDnDBackgrounds();
+  const allItemsTypes = useDnDItems();
+  // const allOtherItems = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory !== "Weapon" && item.equipmentCategory !== "Armor"));
+  // const allWeapons = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory === "Weapon") as Weapon[]);
+  // const allArmor = createMemo(()=>allItemsTypes().filter((item)=>item.equipmentCategory === "Armor") as Armor[]);
   const [showFeatureModal, setShowFeatureModal] = createSignal(false);
   const [editIndex, setEditIndex] = createSignal(-1);
   const [featureDesc, setFeatureDesc] = createSignal("");
@@ -98,7 +100,7 @@ const Backgrounds: Component = () => {
 
   return (
     <>
-      <Body>
+      {/* <Body>
         <h1>backgrounds</h1>
         <div>
           <div class={`${styles.name}`}>
@@ -519,7 +521,8 @@ const Backgrounds: Component = () => {
             </Show>
           </div>
         </div>
-      </Body>
+        </Body> */}
+      
     </>
   );
 }

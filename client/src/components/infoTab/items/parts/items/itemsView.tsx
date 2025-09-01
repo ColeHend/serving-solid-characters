@@ -24,7 +24,7 @@ export const ItemsView:Component<viewProps> = (props) => {
     isAsc: boolean;
   }>({ sortKey: "cost", isAsc: false});
   
-  const searchResults = createMemo(() => searchResult().length ? searchResult() : props.items());
+  const searchResults = createMemo(() => searchResult().length > 0 ? searchResult() : props.items());
 
   createEffect(()=>{
     const list = props.items();
@@ -133,7 +133,7 @@ export const ItemsView:Component<viewProps> = (props) => {
       );
 
       // Also update paginatedItems to trigger UI update
-      setPaginatedItems(sorted);
+      setSearchResult((old) => sorted);
 
       return sorted;
     });
@@ -149,7 +149,7 @@ export const ItemsView:Component<viewProps> = (props) => {
         dataSource={tableData}
         setResults={setSearchResult}
         searchFunction={(item,search) =>{
-          return item.name === search.toLowerCase();
+          return item.name.toLowerCase() === search.toLowerCase();
         }}
       />
     </div>

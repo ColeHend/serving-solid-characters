@@ -3,7 +3,6 @@ import { Accessor, Setter, createSignal } from "solid-js";
 import { Clone } from "./utility/tools/Tools";
 import { Background, DnDClass, Feat, Item, Race, Spell } from "../../models";
 import homebrewManager from "./homebrewManager";
-import useGetRaces from "./dndInfo/oldSrdinfo/data/useGetRaces";
 import addSnackbar from "../components/Snackbar/snackbar";
 
 class HomebrewSearch {
@@ -18,9 +17,9 @@ class HomebrewSearch {
 
     let srdRaces:Race[] = [];
 
-    homebrewManager.races().forEach(homerace => {
-      srdRaces = Clone(useGetRaces()()).filter(x=>x.name !== homerace.name);
-    })
+    // homebrewManager.races().forEach(homerace => {
+    //   srdRaces = Clone(useGetRaces()()).filter(x=>x.name !== homerace.name);
+    // })
     
 
 
