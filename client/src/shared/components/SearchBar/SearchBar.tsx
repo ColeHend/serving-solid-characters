@@ -2,8 +2,7 @@ import { Accessor, Component, createSignal, JSX, Setter, splitProps } from "soli
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./SearchBar.module.scss";
 import { Clone } from "../../customHooks";
-import addSnackbar from "../Snackbar/snackbar";
-import { Button, Icon, Input } from "coles-solid-library";
+import { Button, Icon, Input, addSnackbar } from "coles-solid-library";
 interface Props<T> {
     dataSource: Accessor<T[]>,
     setResults: Setter<T[]>,
@@ -47,10 +46,10 @@ const SearchBar = <T,>(props: Props<T>) => {
       <Input
         transparent
         type="text"
+        value={searchValue()}
         onChange={(e) => setSearchValue(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && searchClick()}
-        value={searchValue()}
-        // onSubmit={()=>searchClick()}
+        onSubmit={()=>searchClick()}
         {...props}
         class={`${style.input} ${(props.class ?? "")}`}
       />

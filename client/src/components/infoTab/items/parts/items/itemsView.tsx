@@ -5,6 +5,7 @@ import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { Clone, Paginator } from "../../../../../shared";
 import { useSearchParams } from "@solidjs/router";
 import styles from "./itemsView.module.scss";
+import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
 
 interface viewProps {
   items: Accessor<Item[]>;
@@ -23,7 +24,7 @@ export const ItemsView:Component<viewProps> = (props) => {
     isAsc: boolean;
   }>({ sortKey: "cost", isAsc: false});
   
-  const searchResults = createMemo(() => searchResult().length ? searchResult() : props.items());
+  const searchResults = createMemo(() => searchResult().length > 0 ? searchResult() : props.items());
 
   createEffect(()=>{
     const list = props.items();
@@ -132,7 +133,7 @@ export const ItemsView:Component<viewProps> = (props) => {
       );
 
       // Also update paginatedItems to trigger UI update
-      setPaginatedItems(sorted);
+      setSearchResult((old) => sorted);
 
       return sorted;
     });
@@ -140,10 +141,7 @@ export const ItemsView:Component<viewProps> = (props) => {
 
   onMount(() => {
     dataSort("cost");
-  })
-
-  console.log("items: ", props.items());
-  
+  })  
 
   return <Body class={`${styles.itemsBody}`}>
     <div class={`${styles.searchBar}`}>
@@ -151,7 +149,7 @@ export const ItemsView:Component<viewProps> = (props) => {
         dataSource={tableData}
         setResults={setSearchResult}
         searchFunction={(item,search) =>{
-          return item.name === search.toLowerCase();
+          return item.name.toLowerCase() === search.toLowerCase();
         }}
       />
     </div>
@@ -213,5 +211,9 @@ export const ItemsView:Component<viewProps> = (props) => {
         setPaginatedItems={setPaginatedItems}
       />
     </div>
+
+    <Show when={showItem() && currentItem()}>
+        <ItemPopup show={[showItem, setShowItem]} item={currentItem as any} />
+    </Show>
   </Body>
 }

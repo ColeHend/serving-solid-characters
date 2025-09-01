@@ -277,7 +277,8 @@ const Backgrounds: Component = () => {
             <div style={{ color: 'red' }}>Failed to load backgrounds: {bStore.state.error}</div>
           </Show>
         </div>
-      </Body>
+        </Body> 
+      
     </>
   );
 }

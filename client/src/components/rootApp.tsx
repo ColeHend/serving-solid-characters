@@ -1,7 +1,7 @@
 import { RouteSectionProps, useNavigate } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
-import { getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDItems, useDnDRaces } from "../shared";
+import { getUserSettings, useInjectServices } from "../shared";
 import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
@@ -88,17 +88,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
 
   onMount(() => {
     console.log("RootApp mounted");
-    try {
-      console.log("Loading DnD data...");
-      useDnDClasses();
-      useDnDSpells();
-      useDnDFeats();
-      useDnDRaces();
-      useDnDItems();
-      console.log("DnD data loaded successfully");
-    } catch (error) {
-      console.error("Failed to load DnD data:", error);
-    }
+   
     
     window.addEventListener('mousemove', mouseCapture)
   })

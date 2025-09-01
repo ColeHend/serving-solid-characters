@@ -23,7 +23,7 @@ import { createStore } from "solid-js/store";
 // import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
 import { Feature } from "../../../../../models/old/core.model";
 import { LevelEntity } from "../../../../../models/old/class.model";
-import {useGetItems} from "../../../../../shared/";
+// import {useGetItems} from "../../../../../shared/";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import ItemCreate from "./parts/item/item";
 import ArmorCreate from "./parts/armor/armor";
@@ -32,7 +32,7 @@ import WeaponCreate from "./parts/weapon/weapon";
 const Items: Component = () => {
   // state
   const [searchParams, setSearchParams] = useSearchParams();
-  const allItems = useGetItems()
+  // const allItems = useGetItems()
 
   // shared info on the items
   const [itemName, setItemName] = createSignal<string>("");
@@ -84,9 +84,9 @@ const Items: Component = () => {
 
     const dmgTypes:string[] = []
 
-    const weapons = allItems().filter(x=>x.equipmentCategory === ItemType[1]) as Weapon[]
+    // const weapons = allItems().filter(x=>x.equipmentCategory === ItemType[1]) as Weapon[]
 
-    weapons.forEach(y=>y.damage.forEach(z=>dmgTypes.push(z.damageType)));
+    // weapons.forEach(y=>y.damage.forEach(z=>dmgTypes.push(z.damageType)));
 
     allSpells().forEach(s=>dmgTypes.push(s.damageType));
     
@@ -361,115 +361,115 @@ const Items: Component = () => {
     }
   }
 
-  const saveItem = () => {
-    saveToObject()
-    switch (itemType()) {
-    case "Weapon":
-      homebrewManager.addItem(currentWeapon)
-      clearInputs(true);
-      break;
+  // const saveItem = () => {
+  //   saveToObject()
+  //   switch (itemType()) {
+  //   case "Weapon":
+  //     homebrewManager.addItem(currentWeapon)
+  //     clearInputs(true);
+  //     break;
 
-    case "Armor":
-      homebrewManager.addItem(currentArmor)
-      clearInputs(true);
-      break;
+  //   case "Armor":
+  //     homebrewManager.addItem(currentArmor)
+  //     clearInputs(true);
+  //     break;
 
-    case "Item":
-      homebrewManager.addItem(currentItem);
-      clearInputs(true);
-      break;
-    }
-  }
+  //   case "Item":
+  //     homebrewManager.addItem(currentItem);
+  //     clearInputs(true);
+  //     break;
+  //   }
+  // }
 
-  const editItem = () => {
-    saveToObject()
-    switch (itemType()) {
-    case "Weapon":
-      homebrewManager.updateItem(currentWeapon);
-      clearInputs();
-      break;
+  // const editItem = () => {
+  //   saveToObject()
+  //   switch (itemType()) {
+  //   case "Weapon":
+  //     homebrewManager.updateItem(currentWeapon);
+  //     clearInputs();
+  //     break;
 
-    case "Armor":
-      homebrewManager.updateItem(currentArmor);
-      clearInputs();
-      break;
+  //   case "Armor":
+  //     homebrewManager.updateItem(currentArmor);
+  //     clearInputs();
+  //     break;
 
-    case "Item":
-      homebrewManager.updateItem(currentItem);
-      clearInputs();
-      break;
-    }
+  //   case "Item":
+  //     homebrewManager.updateItem(currentItem);
+  //     clearInputs();
+  //     break;
+  //   }
 
-  }
+  // }
 
-  const fillInfo = (search?:boolean) => {
-    const searchName = search ? searchParams.name : getItemObj().name;
-    const item = homebrewManager.items().find(x=>x.name === searchName);
-    const allItem = allItems().find(x=>x.name === searchName);
+  // const fillInfo = (search?:boolean) => {
+  //   const searchName = search ? searchParams.name : getItemObj().name;
+  //   const item = homebrewManager.items().find(x=>x.name === searchName);
+  //   const allItem = allItems().find(x=>x.name === searchName);
 
-    if (item) {
-      switch (item.equipmentCategory) {
-      case "Item":
-        setItemType(item.equipmentCategory);
-        setItemName(item.name);
-        setItemCost(item.cost.quantity);
-        setCostUnit(item.cost.unit);
-        setItemDesc(item.desc.join(""));
-        setCurrentItem(item);
-        break;
+  //   if (item) {
+  //     switch (item.equipmentCategory) {
+  //     case "Item":
+  //       setItemType(item.equipmentCategory);
+  //       setItemName(item.name);
+  //       setItemCost(item.cost.quantity);
+  //       setCostUnit(item.cost.unit);
+  //       setItemDesc(item.desc.join(""));
+  //       setCurrentItem(item);
+  //       break;
         
-      case "Armor":
-        setItemType(item.equipmentCategory);
-        setItemName(item.name);
-        setItemCost(item.cost.quantity);
-        setCostUnit(item.cost.unit);
-        setItemDesc(item.desc.join(""));
-        setCurrentArmor(item);
-        break;
+  //     case "Armor":
+  //       setItemType(item.equipmentCategory);
+  //       setItemName(item.name);
+  //       setItemCost(item.cost.quantity);
+  //       setCostUnit(item.cost.unit);
+  //       setItemDesc(item.desc.join(""));
+  //       setCurrentArmor(item);
+  //       break;
 
-      case "Weapon":
-        setItemType(item.equipmentCategory);
-        setItemName(item.name);
-        setItemCost(item.cost.quantity);
-        setCostUnit(item.cost.unit);
-        setItemDesc(item.desc.join(""));
-        setCurrentWeapon(item);
-        break;
-      }
-    }
+  //     case "Weapon":
+  //       setItemType(item.equipmentCategory);
+  //       setItemName(item.name);
+  //       setItemCost(item.cost.quantity);
+  //       setCostUnit(item.cost.unit);
+  //       setItemDesc(item.desc.join(""));
+  //       setCurrentWeapon(item);
+  //       break;
+  //     }
+  //   }
 
-    if (allItem) {
-      switch (allItem.equipmentCategory) {
-      case "Item":
-        setItemType(allItem.equipmentCategory);
-        setItemName(allItem.name);
-        setItemCost(allItem.cost.quantity);
-        setCostUnit(allItem.cost.unit);
-        setItemDesc(allItem.desc.join(""));
-        setCurrentItem(allItem);
-        break;
+  //   if (allItem) {
+  //     switch (allItem.equipmentCategory) {
+  //     case "Item":
+  //       setItemType(allItem.equipmentCategory);
+  //       setItemName(allItem.name);
+  //       setItemCost(allItem.cost.quantity);
+  //       setCostUnit(allItem.cost.unit);
+  //       setItemDesc(allItem.desc.join(""));
+  //       setCurrentItem(allItem);
+  //       break;
         
-      case "Armor":
-        setItemType(allItem.equipmentCategory);
-        setItemName(allItem.name);
-        setItemCost(allItem.cost.quantity);
-        setCostUnit(allItem.cost.unit);
-        setItemDesc(allItem.desc.join(""));
-        setCurrentArmor(allItem);
-        break;
+  //     case "Armor":
+  //       setItemType(allItem.equipmentCategory);
+  //       setItemName(allItem.name);
+  //       setItemCost(allItem.cost.quantity);
+  //       setCostUnit(allItem.cost.unit);
+  //       setItemDesc(allItem.desc.join(""));
+  //       setCurrentArmor(allItem);
+  //       break;
 
-      case "Weapon":
-        setItemType(allItem.equipmentCategory);
-        setItemName(allItem.name);
-        setItemCost(allItem.cost.quantity);
-        setCostUnit(allItem.cost.unit);
-        setItemDesc(allItem.desc.join(""));
-        setCurrentWeapon(allItem);
-        break;
-      }
-    }
+  //     case "Weapon":
+  //       setItemType(allItem.equipmentCategory);
+  //       setItemName(allItem.name);
+  //       setItemCost(allItem.cost.quantity);
+  //       setCostUnit(allItem.cost.unit);
+  //       setItemDesc(allItem.desc.join(""));
+  //       setCurrentWeapon(allItem);
+  //       break;
+  //     }
+  //   }
 
-  }
+  // }
 
   // ▼ when things change ▼
 
@@ -478,13 +478,13 @@ const Items: Component = () => {
     saveToObject();
   });
 
-  onMount(()=>{
-    if (!!searchParams.name && !!searchParams.itemType) fillInfo(true)
-  })
+  // onMount(()=>{
+  //   if (!!searchParams.name && !!searchParams.itemType) fillInfo(true)
+  // })
 
   return (
     <>
-      <Body>
+      {/* <Body>
         <h1>Items</h1>
 
         <h2>Item Type</h2>
@@ -730,7 +730,7 @@ const Items: Component = () => {
             <Button onClick={saveItem}>Save</Button>
           </Show>
         </div>
-      </Body>
+      </Body> */}
     </>
   );
 };

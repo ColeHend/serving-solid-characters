@@ -1,19 +1,11 @@
-.searchBar {
-
-}
-
-.table {
-
-}
-
-.paginator {
-
-
-}
-
 .itemsBody {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.table {
+    height: 49vh;
+    overflow-y: scroll;
 }

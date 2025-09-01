@@ -1,6 +1,6 @@
 import { Component, For, Match, Switch, createSignal, createMemo, Show, onMount } from "solid-js";
 import styles from "./feats.module.scss";
-import { useGetClasses, useGetFeats, homebrewManager, } from "../../../../../shared/";
+import { homebrewManager, } from "../../../../../shared/";
 import { Input, Select, Option, Chip, Body, Button, TextArea, FormField} from "coles-solid-library";
 import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { effect } from "solid-js/web";
@@ -8,11 +8,13 @@ import { Feat } from "../../../../../models/old/feat.model";
 // import FormField from "../../../../../shared/components/FormField/formField";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
+import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
+import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/feats";
 
 
 const Feats: Component = () => {
-  const classes = useGetClasses();
-  const feats = useGetFeats();
+  const classes = useDnDClasses();
+  const feats = useDnDFeats();
   const [preReqs, setPreReqs] = createSignal<Feature<string, string>[]>([]);
   const [selectedType, setSelectedType] = createSignal<number>(0);
   const [featName, setFeatName] = createSignal<string>("");
@@ -128,11 +130,11 @@ const Feats: Component = () => {
     return HomebrewManager.feats().findIndex((x) => x.name === featName()) !== -1;
   });
   const addFeat = () => {
-    homebrewManager.addFeat(currentFeat());
+    homebrewManager.addFeat(currentFeat() as any);
     clearFields();
   };
   const updateFeat = () => {
-    homebrewManager.updateFeat(currentFeat());
+    homebrewManager.updateFeat(currentFeat() as any);
     clearFields();
   }
   return (
@@ -151,7 +153,7 @@ const Feats: Component = () => {
                 onChange={(e) => setFeatName(e.currentTarget.value)}
               />
             </FormField>
-            <Show when={featExists()}>
+            {/* <Show when={featExists()}>
               <Button onClick={()=>{
                 const feat = HomebrewManager.feats().find((x) => x.name === featName());
                 const srdFeat = feats().find((x) => x.name === featName());
@@ -164,7 +166,7 @@ const Feats: Component = () => {
                   setFeatDescription(srdFeat.desc[0]);
                 }
               }}>Fill</Button>
-            </Show>
+            </Show> */}
           </div>
           <div class={`${styles.preRequisites}`}>
             <h2>Add Pre-Requisites</h2>

@@ -1,5 +1,5 @@
 import { Component, createMemo, createSignal, onMount, batch, Show } from "solid-js";
-import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDictionary, useDnDClasses } from "../../../../../shared";
+import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared";
 import { Subclass as OldSubclass } from "../../../../../models/old/class.model";
 import { useSearchParams } from "@solidjs/router";
 // Removed old Feature generic import; now using new data FeatureDetail shape directly
@@ -13,6 +13,7 @@ import { CoreFields } from './CoreFields';
 import { FeaturesSection } from './FeaturesSection';
 import { SpellcastingSection } from './SpellcastingSection';
 import { FeatureDetail } from "../../../../../models/data";
+import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 
 export interface FeatureDetailLevel extends FeatureDetail {
   info: {
@@ -90,38 +91,38 @@ const Subclasses: Component = () => {
     const [ currentClass ] = allClasses().filter((c)=> c.name?.toLowerCase() === className?.toLowerCase());
 				
         
-    if (!!currentClass && !!currentClass.classMetadata?.subclassLevels?.length) {
-      return currentClass.classMetadata.subclassLevels.map(x=>`${x}`);
-    } else {
-      switch (className) {
-      case 'cleric':
-        return ["1", "2", "6", "8", "17"];
-      case 'druid':
-      case 'wizard':
-        return ["2", "6", "10", "14"];
-      case 'barbarian':
-        return ["3", "6", "10", "14"];
-      case 'monk':
-        return ["3", "6", "11", "17"];
-      case 'bard':
-        return ["3", "6", "14"];
-      case 'sorcerer':
-      case 'warlock':
-        return ["1", "6", "14", "18"];
-      case 'fighter':
-        return ["3", "7", "10", "15", "18"];
-      case 'paladin':
-        return ["3", "7", "15", "20"];
-      case 'ranger':
-        return ["3", "7", "11", "15"];
-      case 'rogue':
-        return ["3", "9", "13", "17"];
-      case 'forgemaster':
-        return ["3", "7", "11", "15", "20"];
-      default:
-        return [];
-      }
+    switch (className) {
+    case 'cleric':
+      return ["1", "2", "6", "8", "17"];
+    case 'druid':
+    case 'wizard':
+      return ["2", "6", "10", "14"];
+    case 'barbarian':
+      return ["3", "6", "10", "14"];
+    case 'monk':
+      return ["3", "6", "11", "17"];
+    case 'bard':
+      return ["3", "6", "14"];
+    case 'sorcerer':
+    case 'warlock':
+      return ["1", "6", "14", "18"];
+    case 'fighter':
+      return ["3", "7", "10", "15", "18"];
+    case 'paladin':
+      return ["3", "7", "15", "20"];
+    case 'ranger':
+      return ["3", "7", "11", "15"];
+    case 'rogue':
+      return ["3", "9", "13", "17"];
+    case 'forgemaster':
+      return ["3", "7", "11", "15", "20"];
+    default:
+      return [];
     }
+    // if (!!currentClass && !!currentClass.classMetadata?.subclassLevels?.length) {
+    //   return currentClass.classMetadata.subclassLevels.map(x=>`${x}`);
+    // } else {
+    // }
   });
 
   // Derived spellcasting levels
@@ -244,32 +245,32 @@ const Subclasses: Component = () => {
       // Legacy hydration fallback
       const [cls] = allClasses().filter(c => c.name.toLowerCase() === searchParam.name!.toLowerCase());
       if (cls) {
-        const [sc] = cls.subclasses.filter(s => s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
-        if (sc) {
-          batch(() => {
-            SubclassFormGroup.set('parent_class', cls.name as any);
-            SubclassFormGroup.set('name', sc.name as any);
-            SubclassFormGroup.set('description', (sc.desc || []).join('\n') as any);
-            // Legacy features -> convert old Feature<T,K> with value -> FeatureDetailLevel using description
-            const legacyFeats = (sc.features || []).map((f: any) => ({
-              name: f.name,
-              description: f.value ?? f.description ?? '',
-              info: { level: f.info?.level ?? 0 }
-            }));
-            SubclassFormGroup.set('features', legacyFeats as any);
-            SubclassFormGroup.set('subclassSpells', (sc.spells || []) as any);
-            if (sc.spellcasting) {
-              SubclassFormGroup.set('hasCasting', true as any);
-              SubclassFormGroup.set('casterType', (sc.spellcasting.casterType || '') as any);
-              SubclassFormGroup.set('castingModifier', (sc.spellcasting.spellcastingAbility as unknown as string) as any);
-              SubclassFormGroup.set('spellsKnownCalc', (sc.spellcasting.spellsKnownCalc as SpellsKnown ?? SpellsKnown.None) as any);
-              SubclassFormGroup.set('halfCasterRoundUp', (!!sc.spellcasting.spellsKnownRoundup) as any);
-              SubclassFormGroup.set('spellcastingInfo', (sc.spellcasting?.info || []) as any);
-              const custom = (sc.spellcasting.castingLevels || []).map(x => ({ level: x.level, amount: (x as any).spellcasting?.spells_known })).filter(x => typeof x.amount === 'number');
-              if (custom.length) SubclassFormGroup.set('spellsKnownPerLevel', custom as any);
-            }
-          });
-        }
+        // const [sc] = cls.subclasses.filter(s => s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
+        // if (sc) {
+        //   batch(() => {
+        //     SubclassFormGroup.set('parent_class', cls.name as any);
+        //     SubclassFormGroup.set('name', sc.name as any);
+        //     SubclassFormGroup.set('description', (sc.desc || []).join('\n') as any);
+        //     // Legacy features -> convert old Feature<T,K> with value -> FeatureDetailLevel using description
+        //     const legacyFeats = (sc.features || []).map((f: any) => ({
+        //       name: f.name,
+        //       description: f.value ?? f.description ?? '',
+        //       info: { level: f.info?.level ?? 0 }
+        //     }));
+        //     SubclassFormGroup.set('features', legacyFeats as any);
+        //     SubclassFormGroup.set('subclassSpells', (sc.spells || []) as any);
+        //     if (sc.spellcasting) {
+        //       SubclassFormGroup.set('hasCasting', true as any);
+        //       SubclassFormGroup.set('casterType', (sc.spellcasting.casterType || '') as any);
+        //       SubclassFormGroup.set('castingModifier', (sc.spellcasting.spellcastingAbility as unknown as string) as any);
+        //       SubclassFormGroup.set('spellsKnownCalc', (sc.spellcasting.spellsKnownCalc as SpellsKnown ?? SpellsKnown.None) as any);
+        //       SubclassFormGroup.set('halfCasterRoundUp', (!!sc.spellcasting.spellsKnownRoundup) as any);
+        //       SubclassFormGroup.set('spellcastingInfo', (sc.spellcasting?.info || []) as any);
+        //       const custom = (sc.spellcasting.castingLevels || []).map(x => ({ level: x.level, amount: (x as any).spellcasting?.spells_known })).filter(x => typeof x.amount === 'number');
+        //       if (custom.length) SubclassFormGroup.set('spellsKnownPerLevel', custom as any);
+        //     }
+        //   });
+        // }
       }
     }
   });

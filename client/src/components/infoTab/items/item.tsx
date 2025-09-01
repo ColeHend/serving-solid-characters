@@ -2,17 +2,21 @@ import {
   Component, 
   createEffect, 
   createMemo, 
-  createSignal 
+  createSignal, 
+  lazy
 } from "solid-js";
 import { useSearchParams } from "@solidjs/router";
 import { Body, Carousel, CarouselElement } from "coles-solid-library";
-import { ItemsView } from "./parts/items/itemsView";
 import { Item, ItemType } from "../../../models/data";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
+import { ItemsView } from "./parts/items/itemsView";
+import { WeaponsView } from "./parts/weapon/weaponView";
 
+// const ItemsView = lazy(() => import("./parts/items/itemsView").then(mod => ({ default: mod.ItemsView })));
+// const WeaponsView = lazy(() => import("./parts/weapon/weaponView").then(mod => ({ default: mod.WeaponsView })));
 
 const ItemsViewTab:Component = () => {
-  // all off the items
+  
   const SrdItems = useDnDItems();
   const [searchParam,setSearchParam] = useSearchParams();
   
@@ -24,35 +28,38 @@ const ItemsViewTab:Component = () => {
   const srdEquipment = createMemo<Item[]>(() => [...srdItems(),...srdTools()]);
 
   const elementMemo = createMemo<CarouselElement[]>(()=>([
-    // {name: "Weapons", element:  <WeaponsView weapons={SrdWeapons} />  },
-    // {name: "Armors", element: <ArmorsView SrdArmors={SrdArmors} /> },
-    {name: "Equipment", element: <ItemsView items={srdEquipment} /> }
-  ]));  
-
+    {name: "Equipment", element: <ItemsView items={srdEquipment} /> },
+    {name: "Weapons", element:  <WeaponsView items={srdWeapons} />  }
+  ]));
+  
   if (!searchParam.itemType) setSearchParam({itemType: elementMemo()[0].name })
+
+  const startingIndex = createMemo(()=>{
+    const target = elementMemo().findIndex((x)=>x.name.toLowerCase() === searchParam.itemType?.toLowerCase());
     
-  const startingIndex = createMemo(()=>elementMemo().findIndex((x)=>x.name.toLowerCase() === searchParam.itemType?.toLowerCase()) ?? 0);
+    if (target === -1) return 0;
+    return target;
+  });
 
-  const [itemIndex,setItemIndex] = createSignal<number>(startingIndex());
+  const [itemIndex,setItemIndex] = createSignal<number>(startingIndex() ?? 0);
 
-  function cantFind(number:number) {
-    if (startingIndex() === -1) {
+  // function cantFind(number:number) {
+  //   if (startingIndex() === -1) {
+  //     return 0 
+  //   }
 
-      return 0
-    }
-
-    return number
-  }
+  //   return number
+  // }
 
   createEffect(()=>{
-    setSearchParam({itemType: elementMemo()[itemIndex()]?.name ?? "Weapons"})
+    setSearchParam({itemType: elementMemo()[itemIndex()].name})
   })
 
   return <Body>
     <h1>Items</h1>
     
     <Carousel 
-      startingIndex={cantFind(startingIndex())} 
+      startingIndex={startingIndex()} 
       currentIndex={[itemIndex,setItemIndex]} 
       elements={elementMemo()} />
   </Body>

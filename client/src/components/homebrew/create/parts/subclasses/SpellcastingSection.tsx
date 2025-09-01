@@ -192,6 +192,7 @@ export const SpellcastingSection = <T extends {
         </div>
       </Show>
       <div>
+        <Button
           disabled={!p.canSave()} 
           onClick={p.onSave}>Save</Button>
       </div>

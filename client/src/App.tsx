@@ -1,32 +1,14 @@
-import { type Component, For, createResource, JSX, useContext, createMemo, createSignal, Show, Switch, Match, createEffect, ErrorBoundary, onMount } from 'solid-js';
-import { getUserSettings, useInjectServices, useDnDClasses, useDnDFeats, useDnDRaces, useDnDBackgrounds, useDnDItems, Markdown, Clone } from './shared';
+import { type Component, createSignal, createEffect, ErrorBoundary } from 'solid-js';
+import { getUserSettings, } from './shared';
+import { Button, Container } from 'coles-solid-library';
 import styles from './App.module.scss';
-import DataTransferModal from './components/DataTransfering/dataTransferModal';
-import { Button, Cell, Column, Container, ExpansionPanel, Header, Input, Row, Select, TabBar, Option, FormField, Table, Checkbox, TextArea } from 'coles-solid-library';
-import { DnDClass } from './models/old/class.model';
-import { useGetSRDClasses$ } from './shared/customHooks/api/useGetSrdClasses';
-import { combineLatest, concatMap, of } from 'rxjs';
-import { useTest } from './useTest';
-import { useDnDSpells } from './shared/customHooks/dndInfo/info/all/spells';
 
 const App: Component = () => {
   console.log("App component initializing");
   
   // Initialize state with safe defaults
-  const [testText, setTestText] = createSignal("This **is** _a_ \n# test");
-  const [bannerText, setBannerText] = createSignal("It'll be great eventually.");
-  const [testFieldText, setTestFieldText] = createSignal("");
-  const [showDataTransfer, setShowDataTransfer] = createSignal(false);
-  const [testValues, setTestValues] = createSignal<string[]>(["one", "two", "three"]);
-  const [testSelect, setTestSelect] = createSignal<string>();
-  const [activeTab, setActiveTab] = createSignal(0);
-  const [isTableRowOpen, setIsTableRowOpen] = createSignal<boolean[]>([]);
-  const [isNewChoice, setIsNewChoice] = createSignal<boolean>(false);
   const [userSettings, setUserSettings] = createSignal({ theme: 'dark' });
-  const [dndClasses, setDndClasses] = createSignal<DnDClass[]>([]);
   const [isLoading, setIsLoading] = createSignal(true);
-  const [hasError, setHasError] = createSignal(false);
-  const [errorMessage, setErrorMessage] = createSignal("");
 
   try {
     // Safely get user settings
@@ -44,40 +26,6 @@ const App: Component = () => {
   } catch (error) {
     console.error("Failed to initialize user settings:", error);
   }
-
-  // ---- DnD Data (initialize exactly once) ----
-  let dataInitDone = false; // guards multiple executions (e.g. HMR / hot reload)
-  onMount(() => {
-    if (dataInitDone) return;
-    try {
-      const dnClassesAccessor = useDnDClasses();
-      createEffect(() => {
-        try {
-          const classes = dnClassesAccessor();
-          if (classes && classes.length > 0) {
-            console.log(`[dnd-init] Loaded ${classes.length} classes`);
-            setDndClasses(classes);
-            setIsTableRowOpen(Array(classes.length).fill(false));
-          }
-        } catch (err) {
-          console.error("Failed processing DnD classes:", err);
-        }
-      });
-
-      // Fire & forget other datasets; each hook internally de-dupes
-      try { useDnDSpells(); } catch (e) { console.error("Spells load failed", e); }
-      try { useDnDFeats(); } catch (e) { console.error("Feats load failed", e); }
-      try { useDnDRaces(); } catch (e) { console.error("Races load failed", e); }
-      try { useDnDItems(); } catch (e) { console.error("Items load failed", e); }
-      try { useDnDBackgrounds(); } catch (e) { console.error("Backgrounds load failed", e); }
-    } catch (err) {
-      console.error("Failed initializing DnD data hooks:", err);
-      setHasError(true);
-      setErrorMessage("Failed to load game data. Please refresh the page.");
-    } finally {
-      dataInitDone = true;
-    }
-  });
 
   // Mark loading as complete after a short delay to ensure UI renders
   setTimeout(() => {
@@ -112,118 +60,42 @@ const App: Component = () => {
           </div>
           
           <div>
-            <TabBar 
-              activeTab={activeTab()} 
-              tabs={['Welcome', 'Table', 'Markdown', 'Field Test']} 
-              onTabChange={(label, i) => {
-                setActiveTab(i);
-              }} 
-            />
+
+            <div style={{
+              display: 'flex',
+              "flex-direction": 'row',
+              gap: "10%"
+            }}>
+              <span>
+                <h2>Completed Features</h2>
+
+                <ul>
+                  <li>Dark Mode & Theming</li>
+                  
+                  <li>Info Viewer & Pop ups</li>
+                  <li>Homebrew Content Support</li>
+                  <li>Search, Pagination, Filtering</li>
+                  <li>PWA/Offline Support</li>
+                </ul>
+              </span>
+
+              <span>
+                <h2>Upcoming Features</h2>
+
+                <ul>
+                  <li>Character Builder & Viewer</li> 
+                  <li>Deeper Homebrew Management (create/edit/share)</li>
+                  <li>Admin/GM Tools</li>
+                  <li>Accessibility & Mobile UI Improvements</li>
+                  <li>Expanded Test Coverage</li>
+                </ul>
+              </span>
+
+            </div>
+
           </div>
           
-          <div>
-            <Switch>
-              <Match when={activeTab() === 0}>
-                <ExpansionPanel>
-                  <div>
-                    Welcome to my app. This is a work in progress.
-                  </div>
-                  <div>
-                    <FormField name="">
-                      <TextArea 
-                        readOnly={true} 
-                        transparent={true} 
-                        tooltip='Testing' 
-                        text={bannerText} 
-                        setText={setBannerText} 
-                      />
-
-                    </FormField>
-                  </div>
-                </ExpansionPanel>
-                <Checkbox checked={isNewChoice()} onChange={setIsNewChoice} />
-                <Checkbox />
-              </Match>
-              
-              <Match when={activeTab() === 1}>
-                <div>
-                  <Table data={() => dndClasses()} columns={['hitDie', "className", 'saves']}>
-                    <Column name='className'>
-                      <Header>Class Name</Header>
-                      <Cell<DnDClass>>{(x) => x?.name || 'Loading...'}</Cell>
-                    </Column>
-                    <Column name='hitDie'>
-                      <Header>Hit Die</Header>
-                      <Cell<DnDClass>>{(x) => x?.hitDie || 'Loading...'}</Cell>
-                      <Cell<DnDClass> rowNumber={2}>{(item) => (
-                        <div style={{border: "1px solid", padding: "5px", 'border-radius': "10px"}}>
-                          <div>{item?.name || 'Loading...'}</div>
-                          <div>{item?.hitDie || 'Loading...'}</div>
-                          <span>{item?.spellcasting?.spellcastingAbility || 'N/A'}</span>
-                        </div>
-                      )}</Cell> 
-                    </Column>
-                    <Column name='saves'>
-                      <Header>Saves</Header>
-                      <Cell<DnDClass>>{(x) => x?.savingThrows?.join(', ') || 'Loading...'}</Cell> 
-                    </Column>
-                    <Row style={{height:"40px"}} isDropHeader />
-                    <Row rowNumber={2} isDropRow />
-                  </Table>
-                </div>
-              </Match>
-              
-              <Match when={activeTab() === 2}>
-                <div style={{height:"100%"}}>
-                  <div style={{width: "100%", height: "max-content !important"}}>
-                    {/* <Markdown text={testText()} /> */}
-                  </div>
-                  <div style={{width:"100%", height: "max-content", "min-height": "200px"}}>
-                    <FormField name=''>
-                      <TextArea 
-                        onChange={(e) => setTestText(e.currentTarget.value)} 
-                        readOnly={false} 
-                        transparent={false} 
-                        tooltip='Testing' 
-                        text={testText} 
-                        setText={setTestText} 
-                      />
-                    </FormField>
-                  </div>
-                </div>
-              </Match>
-              
-              <Match when={activeTab() === 3}>
-                <div style={{display:"flex", "flex-direction":"row","flex-wrap": "wrap"}}>
-                  <FormField name='Input Test' style={{height: 'min-content'}}>
-                    <Input 
-                      type='text' 
-                      value={testFieldText()} 
-                      onChange={(e) => setTestFieldText(e.currentTarget.value)}  
-                      width={700} 
-                      style={{"max-width" : "800px !important"}} 
-                    />
-                  </FormField>
-                  <FormField name='TextArea Test'>
-                    <TextArea text={testFieldText} setText={setTestFieldText} />
-                  </FormField>
-                  <Select 
-                    multiple={false} 
-                    value={testSelect()}
-                    onChange={setTestSelect}>
-                    <For each={testValues()}>{(item) => {
-                      return <Option value={item}>{item}</Option>
-                    }}</For>
-                  </Select>
-                </div>
-              </Match>
-            </Switch>
-          </div>
-
-          {/* <Show when={showDataTransfer()}>
-            <DataTransferModal show={[showDataTransfer,setShowDataTransfer]} />
-          </Show> */}
-
+    
         </Container>
       )}
     </ErrorBoundary>

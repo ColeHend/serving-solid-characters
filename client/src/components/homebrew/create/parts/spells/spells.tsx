@@ -1,12 +1,13 @@
 import { Component, For, createSignal, createMemo, Show, createEffect, onMount } from "solid-js";
 import styles from './spells.module.scss';
 import { Input, Button, Select, Option, Chip, Body, TextArea, FormField, Checkbox } from "coles-solid-library";
-import { useGetClasses, getAddNumberAccent, UniqueSet } from "../../../../../shared/";
+import { getAddNumberAccent, UniqueSet } from "../../../../../shared/";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { createStore } from "solid-js/store";
 import { Spell } from "../../../../../models";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
+import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 
 const Spells: Component = () => {
   const doesExist = ()=>{
@@ -24,7 +25,7 @@ const Spells: Component = () => {
     description: "",
     duration: "",
     is_concentration: false,
-    level: "0",
+    level: 0,
     range: "",
     is_ritual: false,
     school: "",
@@ -38,10 +39,11 @@ const Spells: Component = () => {
     higherLevel: "",
     classes: [],
     subClasses: [],
+    components:"", 
   });
   const spellLevels = Array.from({ length: 10 }, (_, i) => i);
   const allSpells = useDnDSpells();
-  const allClasses = useGetClasses();
+  const allClasses = useDnDClasses();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParam, setSearchParam] = useSearchParams();
   const ClassNames = createMemo(()=> allClasses().map((x) => x.name));

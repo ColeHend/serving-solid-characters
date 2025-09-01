@@ -1,22 +1,21 @@
 import { Accessor, createMemo } from "solid-js";
 import { Stats } from "./useCharacters";
-import useGetBackgrounds from "./oldSrdinfo/data/useGetBackgrounds";
-import useGetClasses from "./oldSrdinfo/data/useGetClasses";
-import useGetFeats from "./oldSrdinfo/data/useGetFeats";
-import useGetItems from "./oldSrdinfo/data/useGetItems";
-import useGetRaces from "./oldSrdinfo/data/useGetRaces";
+// import useGetBackgrounds from "./oldSrdinfo/data/useGetBackgrounds";
+// import useGetClasses from "./oldSrdinfo/data/useGetClasses";
+// import useGetFeats from "./oldSrdinfo/data/useGetFeats";
+// import useGetItems from "./oldSrdinfo/data/useGetItems";
+// import useGetRaces from "./oldSrdinfo/data/useGetRaces";
 import { Character } from "../../../models/character.model";
 import { useDnDSpells } from "./info/all/spells";
+import { useDnDRaces } from "./info/all/races";
+import { AbilityScores } from "../../../models/data";
 
 const useExportFullStats = (currentCharacter: Accessor<Character>) => {
   
   const fullStats = createMemo(() => {
-    const dndSrdClasses = useGetClasses();
-    const dndSrdSpells = useDnDSpells();
-    const dndSrdFeats = useGetFeats();
-    const dndSrdRaces = useGetRaces();
-    const dndSrdItems = useGetItems();
-    const dndSrdBackgrounds = useGetBackgrounds();
+
+    const dndSrdRaces = useDnDRaces();
+
 
     const race = dndSrdRaces().filter(
       (x) => x.name.toLowerCase() === currentCharacter()?.race.species.toLowerCase()
@@ -33,7 +32,7 @@ const useExportFullStats = (currentCharacter: Accessor<Character>) => {
     if (!!race && race.abilityBonuses.length > 0) {
       race.abilityBonuses.forEach((bonus) => {
         Object.keys(fullStats).forEach((key) => {
-          if (bonus.name.toLowerCase() === key) {
+          if (AbilityScores[bonus.stat].toLowerCase() === key) {
             fullStats[key as keyof Stats] += bonus.value;
           }
         });
