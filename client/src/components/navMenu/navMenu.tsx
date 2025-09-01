@@ -50,14 +50,14 @@ const NavMenu: Component<Props> = (props) => {
       Link: "/homebrew",
       isOpen: false,
       children: [
-        { Name: "Spells", Link: "/homebrew/view?name=spells", isOpen: false },
-        { Name: "Feats", Link: "/homebrew/view?name=feats", isOpen: false },
         { Name: "Classes", Link: "/homebrew/view?name=classes", isOpen: false },
         { Name: "Subclasses", Link: "/homebrew/view?name=subclasses", isOpen: false },
         { Name: "Backgrounds", Link: "/homebrew/view?name=backgrounds", isOpen: false },
-        { Name: "Items", Link: "/homebrew/view?name=items", isOpen: false },
         { Name: "Races", Link: "/homebrew/view?name=races", isOpen: false },
-        { Name: "Subraces", Link: "/homebrew/view?name=subraces",isOpen: false}
+        { Name: "Subraces", Link: "/homebrew/view?name=subraces",isOpen: false},
+        { Name: "Spells", Link: "/homebrew/view?name=spells", isOpen: false },
+        { Name: "Feats", Link: "/homebrew/view?name=feats", isOpen: false },
+        { Name: "Items", Link: "/homebrew/view?name=items", isOpen: false }
       ]
     }
   ].sort((a, b) => a.Name > b.Name ? 1 : -1));

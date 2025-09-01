@@ -156,7 +156,6 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true
   }
-
 });
 
 async function buildDevSw() {
