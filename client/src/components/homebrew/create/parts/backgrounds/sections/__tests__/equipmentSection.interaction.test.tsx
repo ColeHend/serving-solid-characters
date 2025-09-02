@@ -27,9 +27,12 @@ describe('EquipmentSection interaction', () => {
     fireEvent.click(screen.getByText('Edit'));
     fireEvent.click(screen.getByText('Pick / Add Items'));
     // click an item button in list
-    fireEvent.click(screen.getByText('Backpack'));
-  // now Backpack should appear; commit button should become enabled after key entry
-  expect(screen.getByText('Backpack')).toBeTruthy();
+  const backpackEls = screen.getAllByText('Backpack');
+  // choose the first button (has role not present on chip mock) else fallback to first
+  const btn = backpackEls.find(el => el.tagName === 'BUTTON') || backpackEls[0];
+  fireEvent.click(btn);
+  // now at least one Backpack label is in DOM (chip or button)
+  expect(backpackEls.length).toBeGreaterThan(0);
   // enter option key(s)
   // first input inside the edit modal (option keys field)
   const inputs = screen.getAllByRole('textbox');

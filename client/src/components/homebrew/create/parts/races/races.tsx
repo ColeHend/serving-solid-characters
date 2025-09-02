@@ -1,641 +1,125 @@
-import {
-  Component,
-  For,
-  createSignal,
-  createMemo,
-  createEffect,
-  Show,
-  onMount,
-} from "solid-js";
-import {
-  homebrewManager,
-  UniqueStringArray,
-  Clone,
-} from "../../../../../shared/";
-
-import {
-  Input,
-  Select,
-  Option,
-  Button,
-  Chip,
-  FormField,
-  Body,
-  TextArea
-} from "coles-solid-library"
-
-import styles from "./races.module.scss";
-import { Race } from "../../../../../models";
-import { createStore } from "solid-js/store";
-import {
-  FeatureTypes,
-  AbilityScores,
-  Feature,
-} from "../../../../../models/old/core.model";
-import { LevelEntity } from "../../../../../models/old/class.model";
-// import useGetRaces from "../../../../../shared/customHooks/dndInfo/oldSrdinfo/data/useGetRaces";
-import { useSearchParams } from "@solidjs/router";
-import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
-import StartingProf from "./startingProfs/startingProfs";
-import HomebrewSearch from "../../../../../shared/customHooks/homebrewSearch";
+import { Component, For, Show, createMemo, createSignal } from 'solid-js';
+import { createStore } from 'solid-js/store';
+import { Body, Select, Option, FormField, Button } from 'coles-solid-library';
+import { racesStore } from './racesStore';
+import IdentitySection from './sections/IdentitySection';
+import AbilityBonusesSection from './sections/AbilityBonusesSection';
+import LanguagesSection from './sections/LanguagesSection';
+import TraitsSection from './sections/TraitsSection';
+import SaveBar from './sections/SaveBar';
+import { validateRace } from './validation';
+import { homebrewManager } from '../../../../../shared';
+import styles from './races.module.scss';
 
 const Races: Component = () => {
-  // const allRaces = useGetRaces();
-  const [searchParam, setSearchParam] = useSearchParams();
-  // -------------------- Signals/State
-  const [selectedAbility, setSelectedAbility] = createSignal<AbilityScores>(0);
-  const [newSizes, setNewSizes] = createSignal<string>("Tiny");
-  const [newLanguage,setNewLanguage] = createSignal<string>("common");
-  const [abilityIncrease,setAbilityIncrease] = createSignal<number>(0);
-  const [startProfPopup,setStartProfPopup] = createSignal<boolean>(false);
-
-  // const allraceNames = createMemo(()=>allRaces().flatMap(x=>x.name));
-  
-  // ------- Store
-  const [currentRace, setCurrentRace] = createStore<Race>({
-    id: "",
-    name: "",
-    speed: 30, 
-    age: "", 
-    alignment: "", 
-    size: "", 
-    sizeDescription: "", 
-    languages: [], 
-    languageChoice: { 
-      choose: 0, 
-      choices: [], 
-      type: FeatureTypes.Language 
-    },
-    languageDesc: "", 
-    traits: [], 
-    traitChoice: { 
-      choose: 0, 
-      choices: [], 
-      type: FeatureTypes.Race 
-    }, 
-    startingProficencies: [], 
-    startingProficiencyChoices: {
-      choose: 0,
-      choices: [],
-      type: FeatureTypes.Race,
-    },
-    abilityBonuses: [],
-    abilityBonusChoice: {
-      choose: 0,
-      choices: [],
-      type: FeatureTypes.AbilityScore,
-    },
-    subRaces: [],
-  });
-
-  if (!searchParam.name) setSearchParam({name: currentRace.name ?? ""})
-
-  // --------- Feature Modal
-  const [editIndex, setEditIndex] = createSignal<number>(-1);
-  const [showFeatureModal, setShowFeatureModal] = createSignal<boolean>(false);
-  const addFeature = (level: number, feature: Feature<string, string>) => {
-    const newFeature: Feature<string[], string> = {
-      name: feature.name,
-      value: [feature.value],
-      info: feature.info,
-      metadata: feature.metadata,
-    };
-    const newTraits = Clone(currentRace.traits);
-    newTraits.push(newFeature);
-    setCurrentRace("traits", newTraits);
-    setShowFeatureModal(false);
+  const store = racesStore;
+  const validationErrors = createMemo(() => validateRace({ isNew: store.state.selection.activeName === '__new__', draft: store.activeRace() }));
+  const isValid = createMemo(() => validationErrors().length === 0);
+  const [snackbar, setSnackbar] = createSignal<{ msg: string; type: 'success' | 'error'; ts: number } | null>(null);
+  const showSnackbar = (msg: string, type: 'success' | 'error' = 'success') => setSnackbar({ msg, type, ts: Date.now() });
+  // collapsed section state (mirrors backgrounds UX)
+  const [collapsed, setCollapsed] = createStore<Record<string, boolean>>({});
+  const toggle = (k: string) => setCollapsed(k, v => !v);
+  const homebrewNames = createMemo(() => (homebrewManager.races() || []).map((r: any) => r.name).filter(Boolean).sort());
+  const srdNames = createMemo(() => store.state.order.filter(n => !homebrewNames().includes(n)));
+  const handleSelect = (val: string) => {
+    if (!val || val === '__divider_homebrew__') return;
+    if (val === '__new__') { store.selectNew(); return; }
+    if (homebrewNames().includes(val)) store.selectHomebrewRace(val); else store.selectSrdRace(val);
   };
-  const replaceFeature = (
-    level: number,
-    index: number,
-    feature: Feature<string, string>
-  ) => {
-    const newFeature: Feature<string[], string> = {
-      name: feature.name,
-      value: [feature.value],
-      info: {
-        className: feature.info.className,
-        subclassName: feature.info.subclassName,
-        level: feature.info.level,
-        type: feature.info.type,
-        other: feature.info.other,
-      },
-      metadata: feature.metadata,
-    };
-    const newTraits = Clone(currentRace.traits);
-    newTraits[index] = newFeature;
-    setCurrentRace("traits", newTraits);
-    setShowFeatureModal(false);
-  };
-
-  const [newProficeny,setNewProficeny] = createStore<Feature<string,string>>({
-    info: {
-      className: "",
-      subclassName: "",
-      level:0,
-      type: FeatureTypes.Race,
-      other: ""
-    },
-    metadata: {},
-    name: "",
-    choices: [],
-    value: ""
-  });
-
-  // --------- Functions 
-
-  // const isSrd = () => {
-  //   let srdraces:Race[] = [];
-
-  //   homebrewManager.races().forEach(homeRace => {
-  //     srdraces = allRaces().filter(x=>x.name !== homeRace.name)
-  //   })
-
-  //   return srdraces.findIndex(r=>r.id === currentRace.id) > -1
-  // }
-
-  // const fillRacesInfo = async (search?:boolean) => {
-  //   const searchName = search ? searchParam.name: currentRace.name;
-  //   const homebrewSearch = new HomebrewSearch(searchName ?? "");
-
-  //   const allRace = await homebrewSearch.races();
-
-  //   if (allRace) {
-  //     setCurrentRace('id',allRace.id);
-  //     setCurrentRace("name",allRace.name);
-  //     setCurrentRace("size",allRace.size);
-  //     setCurrentRace("sizeDescription",allRace.sizeDescription);
-  //     setSizeDesc(allRace.sizeDescription);
-  //     setCurrentRace("speed",allRace.speed);
-  //     setCurrentRace("abilityBonuses",allRace.abilityBonuses);
-  //     setCurrentRace("abilityBonusChoice",allRace.abilityBonusChoice);
-  //     setCurrentRace("alignment",allRace.alignment);
-  //     setAlignTextarea(allRace.alignment);
-  //     setCurrentRace("languages",allRace.languages);
-  //     setCurrentRace("languageDesc",allRace.languageDesc);
-  //     setLanguageDesc(allRace.languageDesc);
-  //     setCurrentRace("languageChoice",allRace.languageChoice); 
-  //     setCurrentRace("age",allRace.age);
-  //     setAgeDesc(allRace.age);
-  //     setCurrentRace("startingProficencies",allRace.startingProficencies);
-  //     setCurrentRace("startingProficiencyChoices",allRace.startingProficiencyChoices);
-  //     setCurrentRace("traitChoice",allRace.traitChoice);
-  //     setCurrentRace("traits",allRace.traits);
-  //     setCurrentRace("subRaces",allRace.subRaces);
-  
-  //     if (isSrd()){
-        
-  
-  //       allraceNames().forEach((name,i)=>{
-  //         if (name === currentRace.name) {
-  //           setCurrentRace("name",old=>`${old}${i + 1}`)
-  //         }
-  //       })
-  //     }
-
-  //   }
-  
-  // }
-
-  const addAbiliyScore = () => {
-    const abilityScore:Feature<number, string> = {} as Feature<number,string>;
-
-    // set ability score information
-    abilityScore.name = AbilityScores[selectedAbility()];
-    abilityScore.value = abilityIncrease();
-
-    // add new ability score to race
-    setCurrentRace("abilityBonuses",(old)=>([...old,abilityScore]))
-  }
-
-  const removeAbilityScore = (abilityScore: Feature<number,string>) => {
-    const searchAbility = createMemo(()=>currentRace.abilityBonuses.find(x=>x.name === abilityScore.name))
-
-    if(searchAbility()) {
-      setCurrentRace("abilityBonuses",currentRace.abilityBonuses.filter(x=>x.name !== searchAbility()?.name))
-
-      addSnackbar({
-        message:"removed Ability",
-        severity:"success",
-        closeTimeout:4000
-      })
-    }
-  }
-  
-  // const allLanguages = ():string[] => {
-  //   return UniqueStringArray(allRaces().flatMap(x=>x.languages))
-  // }
-
-  // const doesExist = () => {
-  //   return homebrewManager.races().findIndex((x)=> x.id.trim() === currentRace.id.trim()) > -1
-  // }
-
-  // const createRace = () => {
-  //   setCurrentRace("id","");
-  //   setCurrentRace("id",crypto.randomUUID());
-
-  //   allraceNames().forEach((name) => {
-  //     if (currentRace.name === name) {
-  //       addSnackbar({
-  //         severity:"error",
-  //         message:"Name must be unique",
-  //         closeTimeout: 4000,
-  //       })
-  //       return;
-        
-  //     }
-  //   });
-
-
-  //   homebrewManager.addRace(currentRace);
-  //   clearFields()
-  // }
-
-  // const updateRace = () => {
-  //   homebrewManager.updateRace(currentRace);
-  //   clearFields()
-  // }
-
-  const clearFields = () => {
-    setCurrentRace({
-      id:"",
-      name: "",
-      speed: 30, 
-      age: "", 
-      alignment: "", 
-      size: "", 
-      sizeDescription: "", 
-      languages: [], 
-      languageChoice: { 
-        choose: 0, 
-        choices: [], 
-        type: FeatureTypes.Language 
-      },
-      languageDesc: "", 
-      traits: [], 
-      traitChoice: { 
-        choose: 0, 
-        choices: [], 
-        type: FeatureTypes.Race 
-      }, 
-      startingProficencies: [], 
-      startingProficiencyChoices: {
-        choose: 0,
-        choices: [],
-        type: FeatureTypes.Race,
-      },
-      abilityBonuses: [],
-      abilityBonusChoice: {
-        choose: 0,
-        choices: [],
-        type: FeatureTypes.AbilityScore,
-      },
-      subRaces: [],
-    })
-    setSelectedAbility(0);
-    setNewSizes("");
-    setNewLanguage("");
-    setAbilityIncrease(0);
-    setAlignTextarea("");
-    setLanguageDesc("");
-    setSizeDesc("");
-    setAgeDesc("")
-
-  }
-
-  function addProfiencey() {
-
-    setCurrentRace("startingProficencies",(old)=>([...old,Clone(newProficeny)]))
-
-    setNewProficeny({
-      info: {
-        className: "",
-        subclassName: "",
-        level:0,
-        type: FeatureTypes.Race,
-        other: ""
-      },
-      metadata: {},
-      name: "",
-      choices: [],
-      value: ""
-    })
-  }
-
-  // other state for text areas
-
-  const [alignTextarea,setAlignTextarea] = createSignal<string>("");
-  const [languageDesc,setLanguageDesc] = createSignal<string>("");
-  const [sizeDesc,setSizeDesc] = createSignal<string>("");
-  const [ageDesc,setAgeDesc] = createSignal<string>("");
-
-  // when the component first loads ▼
-    
-  createEffect(()=>{
-    setSearchParam({name: currentRace.name})
-  })
-
-  // onMount(() => {
-  //   if (searchParam.name) fillRacesInfo(true)
-  // })
-
-  // setting values for textareas
-
-  createEffect(()=>{
-    setCurrentRace("alignment",alignTextarea());
-    setCurrentRace("sizeDescription",sizeDesc());
-    setCurrentRace("languageDesc",languageDesc());
-    setCurrentRace("age",ageDesc())
-  })
-
-
 
   return (
-    <>
-      {/* 
-        <Body>
-        <h1>Races</h1>
-        <div class={`${styles.wrapper}`}>
-          <div>
-
-            <div>
-              <FormField name="Name">
-                <Input
-                  type="text"
-                  transparent
-                  value={currentRace.name}
-                  onInput={(e) => setCurrentRace("name", e.currentTarget.value)}
-                />
-              </FormField>
-            </div>
-
-
-            <div>
-              <Show when={doesExist()}>
-                <Button onClick={()=>fillRacesInfo()}>Fill Info</Button>
-                <Button onClick={()=>{
-                  const areSure = confirm("are you sure");
-
-                  if (areSure) {
-                    homebrewManager.removeRace(currentRace.name)
-                  }
-
-                }}>Delete</Button>
+    <Body>
+      <h1>Races</h1>
+      <div class={styles.newPanel || ''}>
+        <div style={{ display: 'flex', gap: '1rem', 'flex-wrap': 'wrap' }}>
+            <FormField name="Select Race (2024)">
+            <Select transparent value={store.state.selection.activeName || ''} onChange={handleSelect}>
+              <Option value="">-- choose --</Option>
+              <Option value="__new__">+ New Race</Option>
+              <For each={srdNames()}>{name => <Option value={name}>{name}</Option>}</For>
+              <Show when={homebrewNames().length}>
+                <Option value="__divider_homebrew__">-- Homebrew --</Option>
+                <For each={homebrewNames()}>{name => <Option value={name}>{`${name} [HB]`}</Option>}</For>
               </Show>
-            </div>
-
-            <div>
-              <h2>Size</h2>
-              <div>
-                <Select
-                  transparent
-                  value={newSizes()}
-                  onChange={(e) => setNewSizes(e)}
-                >
-                  <For
-                    each={[
-                      "Tiny",
-                      "Small",
-                      "Medium",
-                      "Large",
-                      "Huge",
-                      "Gargantuan",
-                    ]}
-                  >
-                    {(size) => <Option value={size}>{size}</Option>}
-                  </For>
-                </Select>
-                <Button
-                  onClick={() => {
-                    const selSize = currentRace.size.split(",");
-                    const newArray = [...selSize, newSizes().trim()]
-                      .map((s) => s.trim())
-                      .filter((s) => !!s.length);
-                    setCurrentRace("size", newArray.join(", "));
-                  }}
-                >
-                  Add Size Option
-                </Button>
-              </div>
-              
-              <div style={{ display: "flex" }}>
-                <Show when={!!currentRace.size}>
-                  <For each={currentRace.size.split(", ")}>
-                    {(size, i) => (
-                      <Chip
-                        value={size}
-                        remove={() => {
-                          const newSizes = currentRace.size.split(", ");
-                          newSizes.splice(i(), 1);
-                          setCurrentRace("size", newSizes.join(", "));
-                        }}
-                      />
-                    )}
-                  </For>
-                </Show>
-                <Show when={!currentRace.size}>
-                  <Chip value="None" />
-                </Show>
-              </div>
-              
-              <div>
-                <FormField name="Size Description">
-                  <TextArea transparent text={sizeDesc} setText={setSizeDesc} />
-                </FormField>
-              </div>
-            </div>
-            
-            <div>
-              <h2>Speed</h2>
-              <FormField name="Speed">
-                <Input
-                  type="number"
-                  transparent
-                  value={currentRace.speed}
-                  onInput={(e) =>
-                    setCurrentRace("speed", parseInt(e.currentTarget.value))
-                  }
-                />
-              </FormField>
-            </div>
-
-            <div>
-              <h2>Ability Scores</h2> 
-              <div class={styles.abilityScoreInput}>
-                <Select
-                  transparent
-                  value={selectedAbility()}
-                  onChange={(e) =>
-                    setSelectedAbility(parseInt(e.toExponential()))
-                  }
-                >
-                  <For each={[0, 1, 2, 3, 4, 5, 6]}>
-                    {(ability) => (
-                      <Option value={ability}>{AbilityScores[ability]}</Option>
-                    )}
-                  </For>
-                </Select>
-                <Input type="number"
-                  transparent
-                  min={0}
-                  value={abilityIncrease()}
-                  onInput={(e)=>setAbilityIncrease(parseInt(e.currentTarget.value))}
-                />
-                <Button onClick={addAbiliyScore}>Add Ability Score</Button>
-              </div>
-
-              <Show when={currentRace.abilityBonuses.length > 0}>
-                <div class={`${styles.abilityScoreRow}`}>
-                  <For each={currentRace.abilityBonuses}>
-                    { (abilityScore) => 
-                      <Chip remove={()=>removeAbilityScore(abilityScore)} key={abilityScore.name} value={`${abilityScore.value}`} /> 
-                    }
-                  </For>
+            </Select>
+          </FormField>
+          <Show when={store.activeRace()}>
+            <div class={styles.sectionList} style={{ flex: 1, 'min-width': '320px' }}>
+              <div class={styles.flatSection} data-section="identity" data-collapsed={collapsed.identity ? 'true' : undefined}>
+                <div class={styles.sectionHeader}>
+                  <div class={styles.titleWithIcon}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+                    <h4>Identity</h4>
+                  </div>
+                  <button type="button" class={styles.collapseBtn} onClick={() => toggle('identity')}>{collapsed.identity ? 'Expand' : 'Collapse'}</button>
                 </div>
-              </Show>
-            </div>
-
-            <div>
-              <h2>Age</h2>
-
-              <FormField name="age desc">
-                <TextArea 
-                  transparent 
-                  text={ageDesc}
-                  setText={setAgeDesc}
-                />
-              </FormField>
-            </div>
-
-            <div>
-              <h2>Features</h2>
-
-              <div style={{ display: "flex" }}>
-
-                <Button onClick={() => setShowFeatureModal(true)}>
-                  Add Feature
-                </Button>
-
-                <span>
-                  
-                  <Show when={currentRace.traits.length > 0} fallback={<Chip value="None" />}>
-                    <For each={currentRace.traits}>
-                      {(trait, i) => (
-                        <Chip
-                          value={trait.name}
-                          onClick={() => {
-                            setEditIndex(i);
-                            setShowFeatureModal(true);
-                          }}
-                          remove={() => {
-                            const newTraits = Clone(currentRace.traits);
-                            newTraits.splice(i(), 1);
-                            setCurrentRace("traits", newTraits);
-                            setShowFeatureModal(false);
-                          }}
-                        />
-                      )}
-                    </For>                  
-                  </Show>
-                </span>
-
+                <div class={styles.sectionContent}><IdentitySection errors={validationErrors()} /></div>
               </div>
-
-            </div>
-
-          </div> 
-          
-
-          <div>
-            <div>
-              <FormField name="alignment desc">
-                <TextArea 
-                  text={alignTextarea} 
-                  setText={setAlignTextarea}
-                  transparent
-                />
-              </FormField>
-            </div>
-
-            <div>
-              <h2>languages</h2>
-              <div>
-                <Select
-                  transparent
-                  value={newLanguage()}
-                  onChange={(e)=>setNewLanguage(e)}
-                >
-                  <For each={allLanguages()}>
-                    { (language) => <Option value={language}>{language}</Option> }
-                  </For>
-                </Select>
-
-                <Button
-                  onClick={()=>{
-                    setCurrentRace("languages",(old)=>([...old,newLanguage()]))
-                  }}
-                >
-                    Add Language
-                </Button>
-              </div>
-              <div>
-                <Show when={currentRace.languages.length > 0}>
-                  <For each={currentRace.languages}>
-                    { (language) => <Chip value={language} remove={()=>setCurrentRace("languages",(old)=>([...old.filter((l)=>l !== language)]))} /> }
-                  </For>
-                </Show>
-                <Show when={currentRace.languages.length === 0}>
-                  <Chip key="" value="None" />
-                </Show>
-              </div>
-              <div>
-                <FormField name="Language Description">
-                  <TextArea 
-                    transparent
-                    text={languageDesc}
-                    setText={setLanguageDesc}
-                  />
-                </FormField>
-              </div>
-            </div>
-
-            <div>
-              <h2>Starting Proficencies</h2>
-              
-              <div class={styles.startingProficencies}>
-                <div>
-                  <Show when={currentRace.startingProficencies.length > 0}>
-                    <For each={currentRace.startingProficencies}>
-                      { (startingProf) => <Chip key={startingProf.name} value={startingProf.value} /> }
-                    </For>
-                  </Show>
-                  <Show when={currentRace.startingProficencies.length === 0}>
-                    <Chip value="None"></Chip>
-                  </Show>
+              <div class={styles.flatSection} data-section="abilities" data-collapsed={collapsed.abilities ? 'true' : undefined}>
+                <div class={styles.sectionHeader}>
+                  <div class={styles.titleWithIcon}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="10" width="4" height="11" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="7" width="4" height="14" rx="1"/></svg>
+                    <h4>Ability Bonuses</h4>
+                  </div>
+                  <button type="button" class={styles.collapseBtn} onClick={() => toggle('abilities')}>{collapsed.abilities ? 'Expand' : 'Collapse'}</button>
                 </div>
-
-                <Button onClick={()=>setStartProfPopup(!startProfPopup())}>
-                  Add Proficency
-                </Button>
+                <div class={styles.sectionContent} data-wide="true"><AbilityBonusesSection /></div>
               </div>
-          
-              <Show when={startProfPopup()}>
-                <StartingProf setClose={setStartProfPopup} addProfiencey={addProfiencey} newProficeny={newProficeny} setNewProficeny={setNewProficeny} />
-              </Show>
+              <div class={styles.flatSection} data-section="langs" data-collapsed={collapsed.langs ? 'true' : undefined}>
+                <div class={styles.sectionHeader}>
+                  <div class={styles.titleWithIcon}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v9H5.5L4 14.5V4z"/><path d="M9 8h6"/><path d="M12 21c4.5 0 8-3 8-7v-1"/></svg>
+                    <h4>Languages</h4>
+                  </div>
+                  <button type="button" class={styles.collapseBtn} onClick={() => toggle('langs')}>{collapsed.langs ? 'Expand' : 'Collapse'}</button>
+                </div>
+                <div class={styles.sectionContent}><LanguagesSection /></div>
+              </div>
+              <div class={styles.flatSection} data-section="traits" data-collapsed={collapsed.traits ? 'true' : undefined}>
+                <div class={styles.sectionHeader}>
+                  <div class={styles.titleWithIcon}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.2 22 12 18.56 5.8 22 7 14.14l-5-4.87 7.1-1.01z"/></svg>
+                    <h4>Traits</h4>
+                  </div>
+                  <button type="button" class={styles.collapseBtn} onClick={() => toggle('traits')}>{collapsed.traits ? 'Expand' : 'Collapse'}</button>
+                </div>
+                <div class={styles.sectionContent} data-wide="true"><TraitsSection /></div>
+              </div>
+              <div class={styles.flatSection} data-section="save">
+                <div class={styles.sectionHeader}>
+                  <div class={styles.titleWithIcon}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 2h11l5 5v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M5 7h14"/><path d="M12 2v5"/><rect x="9" y="13" width="6" height="6" rx="1"/></svg>
+                    <h4>Save</h4>
+                  </div>
+                </div>
+                <div class={styles.sectionContent}><SaveBar onNotify={showSnackbar} /></div>
+              </div>
             </div>
-
-          </div>
+          </Show>
         </div>
-
-        <Show when={!doesExist()}>
-          <Button onClick={createRace}>Create</Button>
+        <Show when={validationErrors().length}>
+          <div style={{ 'margin-top': '1rem', 'background': 'rgba(255,0,0,0.1)', padding: '0.5rem 0.75rem', 'border-radius': '4px', 'font-size': '0.9rem' }}>
+            <For each={validationErrors()}>{e => <div>{e}</div>}</For>
+          </div>
         </Show>
-        <Show when={!!doesExist()}>
-          <Button onClick={updateRace}>Update</Button>
+        <Show when={store.state.selection.activeName === '__new__'}>
+          <div style={{ 'margin-top': '1rem' }}>
+            <Button disabled={!isValid()} onClick={() => { if (!isValid()) { showSnackbar('Fix validation errors','error'); return; } showSnackbar('Save not yet implemented'); }}>Save (WIP)</Button>
+          </div>
         </Show>
-      </Body>
-      */}
-    </>
+        <Show when={snackbar()}>
+          <div style={{ position: 'fixed', bottom: '1rem', right: '1rem', padding: '0.75rem 1rem', 'border-radius': '6px', background: snackbar()!.type === 'success' ? '#2d7' : '#d55', color: '#111', 'box-shadow': '0 2px 6px rgba(0,0,0,0.3)' }}>{snackbar()!.msg}</div>
+        </Show>
+        <Show when={store.state.status === 'loading'}>
+          <div>Loading races...</div>
+        </Show>
+        <Show when={store.state.status === 'error'}>
+          <div style={{ color: 'red' }}>Failed to load races: {store.state.error}</div>
+        </Show>
+      </div>
+    </Body>
   );
 };
+
 export default Races;

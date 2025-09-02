@@ -108,20 +108,37 @@ export const FeaturesSection = <T extends { parent_class: string; features: Feat
       </For>
     </div>
     <Modal title={`Feature ${p.getEditIndex() >= 0 ? 'Edit' : 'Add'}`} show={[showFeatureModal, setShowFeatureModal]}>
-      <div>
-        <strong>Name</strong>
-        <Input value={featureName()} onInput={e => setFeatureName(e.currentTarget.value)} placeholder="Feature name" />
-      </div>
-      <div style={{ 'margin-top': '0.75rem' }}>
-        <strong>Description</strong>
-        <TextArea 
-          text={featureDescription} 
-          setText={setFeatureDescription} 
-          placeholder="Feature description" />
-      </div>
-      <div style={{ display: 'flex', 'justify-content': 'flex-end', 'gap': '0.5rem', 'margin-top': '0.75rem' }}>
-        <Button onClick={() => { p.setEditIndex(-1); setShowFeatureModal(false); }}>Cancel</Button>
-        <Button disabled={!featureName().trim()} onClick={saveFeature}>{p.getEditIndex() >= 0 ? 'Save Changes' : 'Add Feature'}</Button>
+      <div style={{ display: 'flex', 'flex-direction': 'column', 'gap': '0.85rem', 'min-width': 'min(520px, 90vw)' }}>
+        <div>
+          <div style={{ 'margin-bottom': '0.25rem', 'font-size': '0.85rem', color: 'var(--text-subtle)' }}>{p.getEditIndex() >= 0 ? 'Update the fields below then save your changes.' : 'Provide a clear name & description for the new feature.'}</div>
+          <div style={{ display: 'flex', 'flex-direction': 'column', 'gap': '0.75rem' }}>
+            <label style={{ display: 'flex', 'flex-direction': 'column', 'gap': '0.25rem' }}>
+              <span style={{ 'font-weight': 600 }}>Feature Name</span>
+              <Input
+                value={featureName()}
+                onInput={e => setFeatureName(e.currentTarget.value)}
+                placeholder="e.g. Arcane Echoes"
+                transparent
+              />
+            </label>
+            <label style={{ display: 'flex', 'flex-direction': 'column', 'gap': '0.25rem' }}>
+              <span style={{ 'font-weight': 600 }}>Description</span>
+              <TextArea
+                text={featureDescription}
+                setText={setFeatureDescription}
+                placeholder="Detail what this feature grants, its mechanics, limits, and any scaling."
+                transparent
+              />
+            </label>
+          </div>
+        </div>
+        <div style={{ display: 'flex', 'justify-content': 'space-between', 'align-items': 'center', 'margin-top': '0.25rem' }}>
+          <span style={{ 'font-size': '0.7rem', color: 'var(--text-subtle)' }}>{featureDescription().length} chars</span>
+          <div style={{ display: 'flex', 'gap': '0.5rem' }}>
+            <Button onClick={() => { p.setEditIndex(-1); setShowFeatureModal(false); }}>Cancel</Button>
+            <Button disabled={!featureName().trim()} onClick={saveFeature}>{p.getEditIndex() >= 0 ? 'Save Changes' : 'Add Feature'}</Button>
+          </div>
+        </div>
       </div>
     </Modal>
   </div>

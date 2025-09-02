@@ -120,10 +120,14 @@ export function parseDataSpellcasting(data: NewSpellcasting | undefined) {
   // Derive UI spellsKnownCalc classification (approximation)
   let spellsKnownCalc: OldSpellsKnown = OldSpellsKnown.None;
   let customKnown: { level:number; amount:number }[] = [];
+  let castingModifier: string | undefined;
+  let roundUp = false;
   if (data.known_type === 'calc') {
     // Distinguish full vs half -> reuse Level vs HalfLevel
     const calc = data.spells_known as SpellCalc;
     spellsKnownCalc = calc.level === 'full' ? OldSpellsKnown.Level : OldSpellsKnown.HalfLevel;
+    castingModifier = (calc.stat || '').toUpperCase();
+    roundUp = !!calc.roundUp;
   } else {
     const nums = data.spells_known as Record<number, number>;
     if (Object.keys(nums).length) {
@@ -133,5 +137,7 @@ export function parseDataSpellcasting(data: NewSpellcasting | undefined) {
       spellsKnownCalc = OldSpellsKnown.None;
     }
   }
-  return { casterTypeString, castingLevels, spellsKnownCalc, customKnown };
+  // Quick heuristic for hasCantrips based on level1 cantripsKnown
+  const hasCantrips = castingLevels.some(l => Object.keys(l.spellcasting).some(k => k.toLowerCase().includes('cantrips') && (l.spellcasting as any)[k] > 0));
+  return { casterTypeString, castingLevels, spellsKnownCalc, customKnown, castingModifier, roundUp, hasCantrips };
 }
