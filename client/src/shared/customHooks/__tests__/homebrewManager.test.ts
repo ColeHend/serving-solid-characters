@@ -83,6 +83,18 @@ describe('homebrewManager (5E internal types)', () => {
     expect(homebrewManager.feats().find(f => f.details.name === 'Alert')?.details.description).toContain('really');
   });
 
+  it('handles legacy feat shape without details', async () => {
+    await homebrewManager.resetSystem();
+    // Simulate directly inserting a legacy feat object (as older code might have stored)
+    const legacyFeat: any = { name: 'Legacy Feat', desc: ['Legacy description'], prerequisites: [] };
+    // Bypass addFeat (which expects details) by pushing into internal signal via addFeat then manual replace
+    await homebrewManager.addFeat({ details: { name: 'Temp', description: 'x'}, prerequisites: [] } as any);
+    // Replace stored feat with legacy shape
+    (homebrewManager as any)._setFeats([legacyFeat]);
+    const found = homebrewManager.feats().find(f => f.details?.name === 'Legacy Feat');
+    expect(found?.details.description).toContain('Legacy');
+  });
+
   it('adds, updates & removes a spell', async () => {
     await homebrewManager.addSpell(sampleSpell());
     expect(homebrewManager.spells().some(s => s.name === 'Zap')).toBe(true);

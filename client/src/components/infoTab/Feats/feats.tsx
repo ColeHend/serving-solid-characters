@@ -30,25 +30,46 @@ const featsList: Component = () => {
   
   const [searchParam, setSearchParam] = useSearchParams();
   const srdFeats = useDnDFeats();
+  // Create a unified list including homebrew feats; normalize any legacy feats missing details
+  const allFeats = createMemo<Feat[]>(() => {
+    const base = srdFeats() || [];
+    const homebrew = (homebrewManager.feats() || []).map((f: any) => {
+      if (!f.details) {
+        f.details = { name: f.name || '', description: Array.isArray(f.desc) ? f.desc[0] : (f.desc || '') };
+      }
+      return f as Feat;
+    });
+    // Avoid duplicates by name (prefer homebrew override)
+    const seen = new Set<string>();
+    const merged: Feat[] = [];
+    [...base, ...homebrew].forEach(f => {
+      const key = f.details?.name || (f as any).name;
+      if (!key) return;
+      if (seen.has(key.toLowerCase())) return;
+      seen.add(key.toLowerCase());
+      merged.push(f);
+    });
+    return merged;
+  });
   
-  const displayResults = createMemo(() => searchResult().length > 0 ? searchResult() : srdFeats() );
+  const displayResults = createMemo(() => searchResult().length > 0 ? searchResult() : allFeats() );
   
   // Ensure we always have a valid name param once feats load (or version changes)
   createEffect(()=>{
-    const list = srdFeats();
+    const list = allFeats();
     if (list.length === 0) return;
     const param = searchParam.name;
-    const found = param && list.some(f => f.details.name.toLowerCase() === param.toLowerCase());
+    const found = param && list.some(f => f.details?.name && f.details.name.toLowerCase() === param.toLowerCase());
     if (!found) {
-      setSearchParam({ name: list[0].details.name});
+      setSearchParam({ name: list[0].details?.name || ''});
     }
   });
   
   const selectedFeat = createMemo(() => {
-    const list = srdFeats();
+  const list = allFeats();
     if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].details.name).toLowerCase();
-    return list.find(f => f.details.name.toLowerCase() === target) || list[0];
+  const target = (searchParam.name || list[0].details?.name || '').toLowerCase();
+  return list.find(f => f.details?.name && f.details.name.toLowerCase() === target) || list[0];
   })
   
   
@@ -61,7 +82,7 @@ const featsList: Component = () => {
   createEffect(()=>{
     const cur = currentFeat();
 
-    if(showFeatModal() && cur?.details.name) {
+    if(showFeatModal() && cur?.details?.name) {
       setSearchParam({ name: cur.details.name})
     } else if (!showFeatModal()) {
       setSearchParam({ name: ""})
@@ -69,8 +90,8 @@ const featsList: Component = () => {
   })
 
   createEffect(()=>{
-    const list = srdFeats();
-    setTableData(list);
+  const list = allFeats();
+  setTableData(list.filter(f => f?.details?.name));
   })
 
   return (
@@ -96,7 +117,7 @@ const featsList: Component = () => {
                 setCurrentFeat(feat);
                 setShowFeatModal((old) => !old);
               }}>
-                {feat.details.name} 
+                {feat.details?.name || (feat as any).name || ''} 
               </span>}
             </Cell>
           </Column>
