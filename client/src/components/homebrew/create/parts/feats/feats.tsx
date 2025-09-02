@@ -1,133 +1,152 @@
-import { Component, For, Match, Switch, createSignal, createMemo, Show, onMount } from "solid-js";
+import { Component, For, Match, Switch, createSignal, createMemo, Show, onMount, createEffect } from "solid-js";
 import styles from "./feats.module.scss";
 import { homebrewManager, } from "../../../../../shared/";
 import { Input, Select, Option, Chip, Body, Button, TextArea, FormField} from "coles-solid-library";
-import { Feature, FeatureTypes } from "../../../../../models/old/core.model";
 import { effect } from "solid-js/web";
-import { Feat } from "../../../../../models/old/feat.model";
-// import FormField from "../../../../../shared/components/FormField/formField";
+import { Feat, Prerequisite, PrerequisiteType } from "../../../../../models/data";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/feats";
+import { useDnDSubclasses } from "../../../../../shared/customHooks/dndInfo/info/all/subclasses";
+import { useDnDRaces } from "../../../../../shared/customHooks/dndInfo/info/all/races";
+import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
 
 
 const Feats: Component = () => {
   const classes = useDnDClasses();
   const feats = useDnDFeats();
-  const [preReqs, setPreReqs] = createSignal<Feature<string, string>[]>([]);
-  const [selectedType, setSelectedType] = createSignal<number>(0);
+  const subclasses = useDnDSubclasses();
+  const races = useDnDRaces();
+  const items = useDnDItems();
+  // local prerequisite representation is the new data model Prerequisite[]
+  const [prerequisites, setPrerequisites] = createSignal<Prerequisite[]>([]);
+  const [selectedType, setSelectedType] = createSignal<PrerequisiteType>(PrerequisiteType.Stat);
   const [featName, setFeatName] = createSignal<string>("");
   const [keyName, setKeyName] = createSignal<string>("str");
   const [keyValue, setKeyValue] = createSignal<string>("0");
   const [featDescription, setFeatDescription] = createSignal<string>("");
+  const [classLevel, setClassLevel] = createSignal<string>("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
   const clearFields = () => {
-    setPreReqs([]);
-    setSelectedType(FeatureTypes.AbilityScore);
+    setPrerequisites([]);
+  setSelectedType(PrerequisiteType.Stat);
     setFeatName("");
     setKeyName("str");
     setKeyValue("0");
     setFeatDescription("");
+  setClassLevel("");
   };
 
   const addPreReq = () => {
-    switch (selectedType()) {
-    case 7: // Ability Score
-      setPreReqs((old) => [
-        ...old,
-        {
-          info: {
-            className: "",
-            subclassName: "",
-            level: 0,
-            type: FeatureTypes.AbilityScore,
-            other: "",
-          },
-          name: keyName(),
-          value: keyValue(),
-          metadata: {}
-        },
-      ]);
-      break;
-    case 0: // Class
-      setPreReqs((old) => [
-        ...old,
-        {
-          info: {
-            className: "",
-            subclassName: "",
-            level: 0,
-            type: FeatureTypes.Class,
-            other: "",
-          },
-          name: keyName(),
-          value: keyValue(),
-          metadata: {}
-        },
-      ]);
-      break;
-    case 8: // Class Level
-      setPreReqs((old) => [
-        ...old,
-        {
-          info: {
-            className: "",
-            subclassName: "",
-            level: 0,
-            type: FeatureTypes.CharacterLevel,
-            other: "",
-          },
-          name: keyName(),
-          value: keyValue(),
-          metadata: {}
-        },
-      ]);
-      break;
-    default:
-      break;
+  const type = selectedType();
+  if (type === PrerequisiteType.Stat) {
+      setPrerequisites(old => [...old, { type: PrerequisiteType.Stat, value: `${keyName().toUpperCase()} ${keyValue()}` }]);
+  } else if (type === PrerequisiteType.Class) {
+  const lvl = classLevel();
+  const base = keyValue();
+  const val = lvl && /^\d+$/.test(lvl) ? `${base} ${lvl}` : base;
+  setPrerequisites(old => [...old, { type: PrerequisiteType.Class, value: val }]);
+  } else if (type === PrerequisiteType.Level) {
+      setPrerequisites(old => [...old, { type: PrerequisiteType.Level, value: keyValue() }]);
+    } else if (type === PrerequisiteType.String) {
+      if (keyValue().trim()) setPrerequisites(old => [...old, { type: PrerequisiteType.String, value: keyValue().trim() }]);
+    } else if (type === PrerequisiteType.Subclass) {
+      setPrerequisites(old => [...old, { type: PrerequisiteType.Subclass, value: keyValue() }]);
+    } else if (type === PrerequisiteType.Feat) {
+      setPrerequisites(old => [...old, { type: PrerequisiteType.Feat, value: keyValue() }]);
+    } else if (type === PrerequisiteType.Race) {
+      setPrerequisites(old => [...old, { type: PrerequisiteType.Race, value: keyValue() }]);
+    } else if (type === PrerequisiteType.Item) {
+      setPrerequisites(old => [...old, { type: PrerequisiteType.Item, value: keyValue() }]);
     }
+  };
+
+  const prefillFromQuery = (featNameParam: string) => {
+    if (!featNameParam) return;
+    // Prefer homebrew feat; fallback to SRD feats hook
+    const hb = HomebrewManager.feats().find((x:any) => x.details?.name === featNameParam || x.name === featNameParam);
+    const srd = feats().find((x:any) => x.details?.name === featNameParam || x.name === featNameParam);
+    const chosen: any = hb || srd;
+    if (!chosen) return;
+    if (Array.isArray(chosen.prerequisites)) setPrerequisites(chosen.prerequisites);
+    else if (Array.isArray(chosen.preReqs)) {
+      // Legacy mapping
+      const mapped = chosen.preReqs.map((f:any): Prerequisite => {
+        const raw = (f?.value || f?.name || '').toString();
+        if (/^(STR|DEX|CON|INT|WIS|CHA)\s+\d+$/i.test(raw)) return { type: PrerequisiteType.Stat, value: raw.toUpperCase() };
+        if (/^\d+$/.test(raw)) return { type: PrerequisiteType.Level, value: raw };
+        return { type: PrerequisiteType.Class, value: raw };
+      });
+      setPrerequisites(mapped);
+    } else setPrerequisites([]);
+    setFeatDescription(chosen.details?.description || (Array.isArray(chosen.desc) ? chosen.desc[0] : chosen.desc) || '');
+    setFeatName(chosen.details?.name || chosen.name || '');
   };
 
   effect(() => {
     switch (selectedType()) {
-    case 0: // Ability Score
-      setKeyName("STR");
-      setKeyValue("0");
-      break;
-    case 1: // Class
-      setKeyName("Class");
-      setKeyValue("Barbarian");
-      break;
-    case 2: // Class Level
-      setKeyName("Barbarian");
-      setKeyValue("0");
-      break;
-    default:
-      break;
+      case PrerequisiteType.Stat:
+        setKeyName("STR");
+        setKeyValue("10");
+        break;
+      case PrerequisiteType.Class:
+        setKeyName("Class");
+        setKeyValue(classes()[0]?.name || "Barbarian");
+        setClassLevel("");
+        break;
+      case PrerequisiteType.Level:
+        setKeyName("Level");
+        setKeyValue("1");
+        break;
+      case PrerequisiteType.Subclass: {
+        const sc = subclasses()[0];
+        setKeyName("Subclass");
+        setKeyValue(sc ? `${sc.parent_class}:${sc.name}` : "");
+        break;
+      }
+      case PrerequisiteType.Feat: {
+        const f = feats()[0];
+        setKeyName("Feat");
+        setKeyValue(f ? (f as any).details?.name || (f as any).name || "" : "");
+        break;
+      }
+      case PrerequisiteType.Race: {
+        const r:any = races()[0];
+        setKeyName("Race");
+        setKeyValue(r ? r.name : "");
+        break;
+      }
+      case PrerequisiteType.Item: {
+        const it:any = items()[0];
+        setKeyName("Item");
+        setKeyValue(it ? it.name : "");
+        break;
+      }
+      case PrerequisiteType.String:
+        setKeyName("Text");
+        setKeyValue("");
+        break;
+      default:
+        break;
     }
   });
 
   const currentFeat = createMemo(()=>{
-    const newFeat: Feat = {} as Feat;
-    newFeat.name = featName();
-    newFeat.preReqs = preReqs();
-    newFeat.desc = [featDescription()];
-    return newFeat;
+    const newFeat: any = {
+      // Root fields required by Dexie schema ('name') & legacy mapping
+      name: featName(),
+      desc: [featDescription()],
+      details: { name: featName(), description: featDescription() },
+      prerequisites: prerequisites()
+    } as Feat & { name: string; desc: string[] };
+    return newFeat as Feat;
   });
-  onMount(()=>{
-    if (searchParams.name) {
-      const feat = HomebrewManager.feats().find((x) => x.name === searchParams.name);
-      if (feat) {
-        setPreReqs(feat.preReqs);
-        setFeatDescription(feat.desc[0]);
-        setFeatName(feat.name);
-      }
-    }
-  })
+  onMount(() => { if (searchParams.name) prefillFromQuery(searchParams.name); });
+  createEffect(() => { const qp = searchParams.name; if (qp) prefillFromQuery(qp); });
   const featExists = createMemo(()=>{
-    return HomebrewManager.feats().findIndex((x) => x.name === featName()) !== -1;
+    return HomebrewManager.feats().findIndex((x) => (x as any).details?.name === featName() || x.name === featName()) !== -1;
   });
   const addFeat = () => {
     homebrewManager.addFeat(currentFeat() as any);
@@ -151,37 +170,59 @@ const Feats: Component = () => {
                 id="featName"
                 value={featName()}
                 onChange={(e) => setFeatName(e.currentTarget.value)}
+                onInput={(e) => setFeatName((e.target as HTMLInputElement).value)}
               />
             </FormField>
-            {/* <Show when={featExists()}>
+            <Show when={featExists()}>
               <Button onClick={()=>{
-                const feat = HomebrewManager.feats().find((x) => x.name === featName());
-                const srdFeat = feats().find((x) => x.name === featName());
-                if (feat) {
-                  setPreReqs(feat.preReqs);
-                  setFeatDescription(feat.desc[0]);
-                }
-                if (srdFeat) {
-                  setPreReqs(srdFeat.preReqs);
-                  setFeatDescription(srdFeat.desc[0]);
+                const feat = HomebrewManager.feats().find((x:any) => x.details?.name === featName() || x.name === featName());
+                const srdFeat = feats().find((x:any) => x.details?.name === featName() || x.name === featName());
+                const chosen: any = feat || srdFeat;
+                if (chosen) {
+                  // Prefer new model prerequisites
+                  if (Array.isArray(chosen.prerequisites)) {
+                    setPrerequisites(chosen.prerequisites);
+                  } else if (Array.isArray(chosen.preReqs)) {
+                    // Map legacy Feature<string,string>[] into Prerequisite[] best-effort
+                    // Heuristic: if value looks like STAT + number use Stat, if numeric only -> Level, else Class
+                    const mapped = chosen.preReqs.map((f:any): Prerequisite => {
+                      const raw = (f?.value || f?.name || '').toString();
+                      if (/^(STR|DEX|CON|INT|WIS|CHA)\s+\d+$/i.test(raw)) {
+                        return { type: PrerequisiteType.Stat, value: raw.toUpperCase() };
+                      }
+                      if (/^\d+$/.test(raw)) {
+                        return { type: PrerequisiteType.Level, value: raw };
+                      }
+                      return { type: PrerequisiteType.Class, value: raw };
+                    });
+                    setPrerequisites(mapped);
+                  } else {
+                    setPrerequisites([]);
+                  }
+                  setFeatDescription(chosen.details?.description || (Array.isArray(chosen.desc) ? chosen.desc[0] : chosen.desc) || '');
                 }
               }}>Fill</Button>
-            </Show> */}
+            </Show>
           </div>
           <div class={`${styles.preRequisites}`}>
             <h2>Add Pre-Requisites</h2>
             <div>
               <Select
                 value={selectedType()}
-                onChange={(e) => setSelectedType(() => +e)}
+                onChange={(e) => setSelectedType(() => +e as PrerequisiteType)}
                 transparent
               >
-                <Option value={FeatureTypes.AbilityScore}>Ability Score</Option>
-                <Option value={FeatureTypes.Class}>Class</Option>
-                <Option value={FeatureTypes.CharacterLevel}>Class Level</Option>
+                <Option value={PrerequisiteType.Stat}>Ability Score</Option>
+                <Option value={PrerequisiteType.Class}>Class</Option>
+                <Option value={PrerequisiteType.Level}>Level</Option>
+                <Option value={PrerequisiteType.Subclass}>Subclass</Option>
+                <Option value={PrerequisiteType.Feat}>Feat</Option>
+                <Option value={PrerequisiteType.Race}>Race</Option>
+                <Option value={PrerequisiteType.Item}>Item</Option>
+                <Option value={PrerequisiteType.String}>Other / Text</Option>
               </Select>
               <Switch>
-                <Match when={selectedType() === FeatureTypes["AbilityScore"]}>
+                <Match when={selectedType() === PrerequisiteType.Stat}>
                   <div>
                     <Select transparent value={keyName()} onChange={(e) => setKeyName(e)}>
                       <Option value={"STR"}>Strength</Option>
@@ -201,7 +242,7 @@ const Feats: Component = () => {
                     </FormField>
                   </div>
                 </Match>
-                <Match when={selectedType() === FeatureTypes["Class"]}>
+                <Match when={selectedType() === PrerequisiteType.Class}>
                   <div>
                     <Select transparent 
                       value={keyName()}
@@ -216,41 +257,109 @@ const Feats: Component = () => {
                         )}
                       </For>
                     </Select>
+                    <FormField name="Level (optional)">
+                      <Input
+                        id="classLevelInput"
+                        type="number"
+                        min="1"
+                        value={classLevel()}
+                        placeholder="Any level"
+                        onChange={(e) => setClassLevel(e.currentTarget.value)}
+                        transparent
+                      />
+                    </FormField>
                   </div>
                 </Match>
-                <Match when={selectedType() === FeatureTypes["CharacterLevel"]}>
+                <Match when={selectedType() === PrerequisiteType.Level}>
                   <div>
-                    <Select transparent
-                      value={keyName()} 
-                      onChange={(e) => setKeyName(e)}>
-                      <For each={classes()}>
-                        {(classObj) => (
-                          <Option value={classObj.name}>{classObj.name}</Option>
-                        )}
-                      </For>
-                    </Select>
-                    <Input
-                      type="number"
+                    <FormField name="Level">
+                      <Input
+                        type="number"
+                        min="1"
+                        value={keyValue()}
+                        onChange={(e) => setKeyValue(e.currentTarget.value)}
+                      />
+                    </FormField>
+                  </div>
+                </Match>
+                <Match when={selectedType() === PrerequisiteType.Subclass}>
+                  <div>
+                    <Select
+                      transparent
                       value={keyValue()}
-                      onChange={(e) => setKeyValue(e.currentTarget.value)}
-                    />
+                      onChange={(e) => setKeyValue(e)}
+                    >
+                      <For each={subclasses()}>{sc => (
+                        <Option value={`${sc.parent_class}:${sc.name}`}>{sc.parent_class} / {sc.name}</Option>
+                      )}</For>
+                    </Select>
+                  </div>
+                </Match>
+                <Match when={selectedType() === PrerequisiteType.Feat}>
+                  <div>
+                    <Select
+                      transparent
+                      value={keyValue()}
+                      onChange={(e) => setKeyValue(e)}
+                    >
+                      <For each={feats()}>{f => {
+                        const nm = (f as any).details?.name || (f as any).name;
+                        return <Option value={nm}>{nm}</Option>;
+                      }}</For>
+                    </Select>
+                  </div>
+                </Match>
+                <Match when={selectedType() === PrerequisiteType.Race}>
+                  <div>
+                    <Select
+                      transparent
+                      value={keyValue()}
+                      onChange={(e) => setKeyValue(e)}
+                    >
+                      <For each={races()}>{r => (
+                        <Option value={(r as any).name}>{(r as any).name}</Option>
+                      )}</For>
+                    </Select>
+                  </div>
+                </Match>
+                <Match when={selectedType() === PrerequisiteType.Item}>
+                  <div>
+                    <Select
+                      transparent
+                      value={keyValue()}
+                      onChange={(e) => setKeyValue(e)}
+                    >
+                      <For each={items()}>{it => (
+                        <Option value={(it as any).name}>{(it as any).name}</Option>
+                      )}</For>
+                    </Select>
+                  </div>
+                </Match>
+                <Match when={selectedType() === PrerequisiteType.String}>
+                  <div>
+                    <FormField name="Text">
+                      <Input
+                        type="text"
+                        value={keyValue()}
+                        onChange={(e) => setKeyValue(e.currentTarget.value)}
+                        placeholder="Enter prerequisite text"
+                        transparent
+                      />
+                    </FormField>
                   </div>
                 </Match>
               </Switch>
-              <Button disabled={preReqs().length >= 10} onClick={addPreReq}>
+              <Button disabled={prerequisites().length >= 10} onClick={addPreReq}>
                 Add
               </Button>
             </div>
             <div class={`${styles.chipBar}`}>
-              <Chip key={keyName()} value={keyValue()} />
-              <For each={preReqs()}>
-                {(preReq, i) => (
+              <For each={prerequisites()}>
+                {(pre, i) => (
                   <Chip
-                    key={preReq.name}
-                    value={preReq.value}
-                    remove={() =>
-                      setPreReqs((old) => old.filter((x, ind) => ind !== i()))
-                    }
+                    key={`${PrerequisiteType[pre.type]}`}
+                    value={pre.value}
+                    remove={() => setPrerequisites(old => old.filter((_, ind) => ind !== i()))}
                   />
                 )}
               </For>
@@ -273,7 +382,7 @@ const Feats: Component = () => {
               class={`${styles.addButton}`}
               onClick={addFeat}
             >
-							Add Feat
+						Save Feat
             </Button>
           </Show>
           <Show when={featExists()}>
@@ -281,7 +390,7 @@ const Feats: Component = () => {
               class={`${styles.addButton}`}
               onClick={updateFeat}
             >
-							Update Feat
+						Update Feat
             </Button>
           </Show>
         </div>

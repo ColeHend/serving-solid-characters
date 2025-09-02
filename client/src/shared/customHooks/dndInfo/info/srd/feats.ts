@@ -23,7 +23,9 @@ export function useGetSrdFeats(version: '2014' | '2024' | 'both' | string) {
       }),
       tap(list => {
         if (list?.length) {
-          SrdDB.feats.bulkPut(list).catch(err => console.error('Error saving 2014 feats:', err));
+          // Ensure each feat object has a root name (Dexie primary key) without mutating originals
+          const stored = list.map(f => (f as any).name ? f : { ...(f as any), name: f.details?.name });
+          SrdDB.feats.bulkPut(stored as any).catch(err => console.error('Error saving 2014 feats:', err));
         }
       })
     ).subscribe({
@@ -44,7 +46,8 @@ export function useGetSrdFeats(version: '2014' | '2024' | 'both' | string) {
       }),
       tap(list => {
         if (list?.length) {
-          SrdDB2024.feats.bulkPut(list).catch(err => console.error('Error saving 2024 feats:', err));
+          const stored = list.map(f => (f as any).name ? f : { ...(f as any), name: f.details?.name });
+          SrdDB2024.feats.bulkPut(stored as any).catch(err => console.error('Error saving 2024 feats:', err));
         }
       })
     ).subscribe({
@@ -64,12 +67,6 @@ export function useGetSrdFeats(version: '2014' | '2024' | 'both' | string) {
 }
 
 function fetchFeats(version: '2014' | '2024' ) {
-  return HttpClient$.get<Feat[]>(`/api/${version}/Feats`).pipe(
-    take(1),
-    tap((feats) => {
-      if (feats) {
-        SrdDB.feats.bulkAdd(feats);
-      }
-    })
-  )
+  // Pure fetch: persistence handled by caller so we can write to correct versioned DB with mapping
+  return HttpClient$.get<Feat[]>(`/api/${version}/Feats`).pipe(take(1));
 }
