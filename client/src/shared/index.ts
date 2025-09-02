@@ -8,6 +8,7 @@ export * from "./svgs/gear";
 export * from "./svgs/pencil";
 export * from "./svgs/skinnySnowman";
 export * from "./svgs/camera";
+export * from "./constants/homebrew";
 export * from "../models/old/items.model";
 export * from "../shared/components/index";
 export * from "../shared/components/Tabs/tabs";
