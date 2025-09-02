@@ -44,3 +44,39 @@
     gap: 5px;
     align-items: center;
 }
+
+// New panel styles (refactored UX)
+.newPanel { display:flex; flex-direction:column; gap:1rem; }
+.sectionList { display:flex; flex-direction:column; gap:1rem; }
+.flatSection { border:1px solid var(--border-color,#333); border-radius:6px; padding:0.75rem 1rem; background:rgba(255,255,255,0.03); }
+.sectionHeader { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; gap:0.5rem; }
+.sectionContent { display:flex; flex-direction:column; gap:0.75rem; }
+.modifiedBadge { background:#ffbb33; color:#222; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.7rem; letter-spacing:0.5px; }
+.validationBox { background:rgba(255,0,0,0.08); border:1px solid rgba(255,0,0,0.4); padding:0.5rem 0.75rem; border-radius:4px; font-size:0.75rem; }
+.snackbar { position:fixed; bottom:1rem; right:1rem; padding:0.6rem 0.9rem; border-radius:6px; background:#2d7; color:#111; box-shadow:0 2px 6px rgba(0,0,0,0.4); }
+.snackbar[data-type="error"] { background:#d55; }
+
+/* Collapsible enhancements aligned with races/backgrounds */
+.flatSection { position:relative; padding-top:.55rem; }
+.flatSection[data-collapsed='true'] .sectionContent { display:none; }
+.flatSection[data-collapsed='true'] h4 { opacity:.75; }
+.collapseBtn { background:none; border:none; font-size:.7rem; opacity:.7; cursor:pointer; padding:.2rem .45rem; border-radius:4px; }
+.collapseBtn:hover { opacity:1; background:rgba(255,255,255,0.05); }
+.titleWithIcon { display:flex; align-items:center; gap:.5rem; }
+.titleWithIcon svg { width:20px; height:20px; stroke-width:1.5; }
+/* Accent bars */
+.flatSection::before { content:''; position:absolute; left:0; top:6px; bottom:6px; width:4px; border-radius:2px; background:linear-gradient(var(--clr-primary,#5af), transparent); opacity:.55; }
+.flatSection[data-section='weapon']::before { background:linear-gradient(var(--clr-warning,#fa5), transparent); }
+.flatSection[data-section='armor']::before { background:linear-gradient(var(--clr-success,#5fa), transparent); }
+.flatSection[data-section='tags']::before { background:linear-gradient(var(--clr-magenta,#a5f), transparent); }
+.flatSection[data-section='features']::before { background:linear-gradient(var(--clr-purple,#b5f), transparent); }
+.flatSection[data-section='save']::before { background:linear-gradient(var(--clr-accent,#4af), transparent); }
+.flatSection[data-section='identity'] .titleWithIcon svg { color:var(--clr-primary,#5af); }
+.flatSection[data-section='weapon'] .titleWithIcon svg { color:var(--clr-warning,#fa5); }
+.flatSection[data-section='armor'] .titleWithIcon svg { color:var(--clr-success,#5fa); }
+.flatSection[data-section='tags'] .titleWithIcon svg { color:var(--clr-magenta,#a5f); }
+.flatSection[data-section='features'] .titleWithIcon svg { color:var(--clr-purple,#b5f); }
+.flatSection[data-section='save'] .titleWithIcon svg { color:var(--clr-accent,#4af); }
+
+@media (min-width: 980px) { .sectionContent { max-width:640px; } }
+@media (min-width: 1300px) { .sectionContent { max-width:720px; } }
