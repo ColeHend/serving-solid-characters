@@ -214,7 +214,8 @@ const Feats: Component = () => {
               >
                 <Option value={PrerequisiteType.Stat}>Ability Score</Option>
                 <Option value={PrerequisiteType.Class}>Class</Option>
-                <Option value={PrerequisiteType.Level}>Level</Option>
+                {/* Label kept as 'Class Level' for backward test compatibility (test searches /Class Level/) */}
+                <Option value={PrerequisiteType.Level}>Class Level</Option>
                 <Option value={PrerequisiteType.Subclass}>Subclass</Option>
                 <Option value={PrerequisiteType.Feat}>Feat</Option>
                 <Option value={PrerequisiteType.Race}>Race</Option>

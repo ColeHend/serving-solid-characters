@@ -1,7 +1,7 @@
 import { createStore } from 'solid-js/store';
 import { createMemo } from 'solid-js';
 import { homebrewManager } from '../../../../../shared';
-import type { Item as DataItem, ItemType, ItemProperties } from '../../../../../models/data/items';
+import type { Item as DataItem, ItemProperties } from '../../../../../models/data/items';
 import { ItemType as DataItemTypeEnum } from '../../../../../models/data/items';
 import { Feature } from '../../../../../models/old/core.model';
 import { useGetSrdItems } from '../../../../../shared/customHooks/dndInfo/info/srd/items';
@@ -148,7 +148,8 @@ function toDraft(entity: any): DraftItem {
     if (entity.damage) {
       base.damage = (entity.damage || []).map((d: any) => ({ dice: d.damageDice || d.dice, type: d.damageType, bonus: d.damageBonus ?? d.bonus }));
     } else if (entity.properties?.DamageEntries) {
-      try { base.damage = JSON.parse(entity.properties.DamageEntries); } catch {}
+      try { base.damage = JSON.parse(entity.properties.DamageEntries); }
+      catch { /* swallow malformed DamageEntries JSON; will fall back below */ }
     } else if (props.Damage) {
       // parse pattern like "1d8 slashing (Versatile 1d10)" -> first token dice, second type
       const txt = String(props.Damage);
@@ -362,10 +363,14 @@ function mutate(mutator: (draft: DraftItem) => void) {
   setState('form', d => {
     let copy: DraftItem;
     try {
-      // structuredClone preserves nested objects & arrays immutably
-      // @ts-ignore structuredClone available in modern environments
-      copy = typeof structuredClone === 'function' ? structuredClone(d) : JSON.parse(JSON.stringify(d));
-    } catch { copy = JSON.parse(JSON.stringify(d)); }
+  // structuredClone preserves nested objects & arrays immutably; fall back if unavailable
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore intentional optional use if TS lib doesn't include structuredClone
+  copy = typeof structuredClone === 'function' ? structuredClone(d) : JSON.parse(JSON.stringify(d));
+    } catch {
+      // Fallback deep clone path (JSON) when structuredClone not available
+      copy = JSON.parse(JSON.stringify(d));
+    }
     mutator(copy);
     return copy;
   });
