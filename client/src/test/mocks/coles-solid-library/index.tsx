@@ -28,7 +28,16 @@ export const Menu = passthrough('Menu');
 export const MenuItem = passthrough('MenuItem');
 export const Carousel = passthrough('Carousel');
 export const CarouselElement = passthrough('CarouselElement');
-export const Chip = passthrough('Chip');
+export const Chip: Component<AnyProps> = (p) => {
+  const [local, rest] = splitProps(p, ['value','children','remove']);
+  return (
+    <div
+      data-mock="Chip"
+      data-value={local.value}
+      {...rest}
+    >{local.children || String(local.value || '')}</div>
+  );
+};
 export const Chipbar = passthrough('Chipbar');
 export const Modal = passthrough('Modal');
 export const TabBar = passthrough('TabBar');
@@ -49,7 +58,12 @@ export const Select: Component<AnyProps> = (p) => {
 };
 export const Option: Component<AnyProps> = (p) => <option data-mock="Option" value={p.value}>{p.children}</option>;
 export const Input: Component<AnyProps> = (p) => <input data-mock="Input" {...p} />;
-export const TextArea: Component<AnyProps> = (p) => <textarea data-mock="TextArea" {...p} />;
+export const TextArea: Component<AnyProps> = (p) => {
+  const [local, rest] = splitProps(p, ['text','setText','value']);
+  const getter = typeof local.text === 'function' ? local.text as () => string : undefined;
+  const set = typeof local.setText === 'function' ? local.setText as (v:string)=>void : undefined;
+  return <textarea data-mock="TextArea" value={getter ? getter() : (local.value ?? '')} onInput={e => set && set(e.currentTarget.value)} {...rest}/>;
+};
 
 // Form utilities (very small mock)
 type ControlConfig<T> = [T, any[]];

@@ -83,11 +83,12 @@ const App: Component = () => {
                 <h2>Upcoming Features</h2>
 
                 <ul>
-                  <li>Character Builder & Viewer</li> 
-                  <li>Deeper Homebrew Management (create/edit/share)</li>
-                  <li>Admin/GM Tools</li>
                   <li>Accessibility & Mobile UI Improvements</li>
-                  <li>Expanded Test Coverage</li>
+                  <li>Deeper Homebrew Management (create/edit/share)</li>
+                  <li>Character Builder & Viewer</li> 
+                  <li>Generate a Filled Character sheet PDF</li>
+                  <li>Generate Homebrew with AI</li>
+                  <li>Admin/GM Tools</li>
                 </ul>
               </span>
 

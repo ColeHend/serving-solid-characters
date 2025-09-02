@@ -9,7 +9,20 @@ import {addSnackbar} from "coles-solid-library";
 
 // Mapping helpers to expose legacy-ish shapes (hitDie, name, desc at root) if UI still expects them.
 const mapClass = (c: Class5E) => ({ ...c, hitDie: c.hit_die?.startsWith('d') ? Number(c.hit_die.slice(1)) : undefined });
-const mapFeat = (f: Feat) => ({ ...f, name: f.details.name, desc: f.details.description });
+// Feats may exist in legacy stored shape without a nested details object (e.g. { name, desc:[...] })
+const mapFeat = (f: any) => {
+  const details = f?.details ? f.details : {
+    name: f?.name || '',
+    description: Array.isArray(f?.desc) ? f.desc[0] : (typeof f?.desc === 'string' ? f.desc : ''),
+  };
+  return {
+    ...f,
+    details,
+    // Maintain legacy convenience fields
+    name: details.name,
+    desc: details.description,
+  };
+};
 const mapItem = (i: Item) => ({ ...i });
 const mapBackground = (b: Background) => ({ ...b, startingEquipment: b.startEquipment });
 const mapRace = (r: Race) => ({ ...r });
@@ -140,10 +153,43 @@ class HomebrewManager {
   private updateItemInDB = (item: Item) => { let error = false; return httpClient$.toObservable(HombrewDB.items.put(item)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating item", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setItems(list => list.map(i => i.name === item.name ? item : i)); addSnackbar({ message: "Item updated", severity: "success" }); } })) }
 
   // Feats
-  public addFeat = (feat: Feat): Promise<void> | null => { if (this._feats().some(f => f.details.name === feat.details.name)) return null; return new Promise(res => this.addFeatToDB(Clone(feat)).subscribe({ complete: () => res(), error: () => res() })); }
-  private addFeatToDB = (feat: Feat) => { let error = false; return httpClient$.toObservable(HombrewDB.feats.add(feat)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error adding feat", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setFeats(o => [...o, feat]); addSnackbar({ message: "Feat added", severity: "success" }); } })) }
-  public updateFeat = (feat: Feat): Promise<void> | void => { if (!this._feats().some(f => f.details.name === feat.details.name)) return; return new Promise(res => this.updateFeatInDB(Clone(feat)).subscribe({ complete: () => res(), error: () => res() })); }
-  private updateFeatInDB = (feat: Feat) => { let error = false; return httpClient$.toObservable(HombrewDB.feats.put(feat)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating feat", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setFeats(list => list.map(f => f.details.name === feat.details.name ? feat : f)); addSnackbar({ message: "Feat updated", severity: "success" }); } })) }
+  public addFeat = (feat: Feat): Promise<void> | null => {
+    // Normalize any legacy feats missing details before comparison
+    this._setFeats(list => list.map(f => {
+      if (!(f as any).details) {
+        const name = (f as any).name || '';
+        const desc = Array.isArray((f as any).desc) ? (f as any).desc[0] : (f as any).desc || '';
+        (f as any).details = { name, description: desc };
+      }
+      return f;
+    }));
+    if (this._feats().some(f => (f as any).details?.name === feat.details.name || (f as any).name === feat.details.name)) return null;
+    // ensure root name + desc array for legacy consumers & Dexie PK
+    const toStore: any = { ...Clone(feat) };
+    if (!toStore.name) toStore.name = feat.details.name;
+    if (!toStore.desc) toStore.desc = [feat.details.description];
+    return new Promise(res => this.addFeatToDB(toStore).subscribe({ complete: () => res(), error: () => res() }));
+  }
+  private addFeatToDB = (feat: any) => {
+    let error = false; return httpClient$.toObservable(HombrewDB.feats.add(feat)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error adding feat", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setFeats(o => [...o, feat]); addSnackbar({ message: "Feat added", severity: "success" }); } }))
+  }
+  public updateFeat = (feat: Feat): Promise<void> | void => {
+    // Normalize legacy feats missing details
+    this._setFeats(list => list.map(f => {
+      if (!(f as any).details) {
+        const name = (f as any).name || '';
+        const desc = Array.isArray((f as any).desc) ? (f as any).desc[0] : (f as any).desc || '';
+        (f as any).details = { name, description: desc };
+      }
+      return f;
+    }));
+    if (!this._feats().some(f => (f as any).details?.name === feat.details.name || (f as any).name === feat.details.name)) return;
+    const toStore: any = { ...Clone(feat) };
+    if (!toStore.name) toStore.name = feat.details.name;
+    if (!toStore.desc) toStore.desc = [feat.details.description];
+    return new Promise(res => this.updateFeatInDB(toStore).subscribe({ complete: () => res(), error: () => res() }));
+  }
+  private updateFeatInDB = (feat: any) => { let error = false; return httpClient$.toObservable(HombrewDB.feats.put(feat)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating feat", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setFeats(list => list.map(f => f.details.name === feat.details.name ? feat : f)); addSnackbar({ message: "Feat updated", severity: "success" }); } })) }
 
   // Spells
   public addSpell = (spell: Spell): Promise<void> | null => { if (this._spells().some(s => s.name === spell.name)) return null; return new Promise(res => this.addSpellToDB(Clone(spell)).subscribe({ complete: () => res(), error: () => res() })); }
@@ -196,8 +242,13 @@ class HomebrewManager {
   public removeBackground = (name: string): Promise<void> | void => { if (!this._backgrounds().some(b => b.name === name)) return; const updated = this._backgrounds().filter(b => b.name !== name); return new Promise(res => { httpClient$.toObservable(HombrewDB.backgrounds.clear()).pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.backgrounds.bulkAdd(updated)))).subscribe({ error: err => { console.error(err); addSnackbar({ message: "Error removing background", severity: "error" }); res(); }, complete: () => { this._setBackgrounds(updated); addSnackbar({ message: "Background removed", severity: "success" }); res(); } }); }); }
 
   // Races
-  public addRace = (race: Race): Promise<void> | void => { if (this._races().some(r => r.name === race.name)) return; return new Promise(res => this.addRaceToDB(Clone(race)).subscribe({ complete: () => res(), error: () => res() })); }
-  private addRaceToDB = (race: Race) => { let error = false; return httpClient$.toObservable(HombrewDB.races.add(race)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error adding race", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setRaces(o => [...o, race]); addSnackbar({ message: "Race added", severity: "success" }); } })) }
+  public addRace = (race: Race): void => {
+    if (this._races().some(r => r.name === race.name)) return;
+    // optimistic update so UI/tests see it immediately
+    this._setRaces(o => [...o, race]);
+    this.addRaceToDB(Clone(race)).subscribe();
+  }
+  private addRaceToDB = (race: Race) => { let error = false; return httpClient$.toObservable(HombrewDB.races.add(race)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error adding race", severity: "error" }); return of(null) }), finalize(() => { if (!error) { addSnackbar({ message: "Race added", severity: "success" }); } })) }
   public updateRace = (race: Race): Promise<void> | void => { if (!this._races().some(r => r.name === race.name)) return; return new Promise(res => this.updateRacesInDB(race).subscribe({ complete: () => res(), error: () => res() })); }
   private updateRacesInDB = (race: Race) => { const updated = this._races().map(r => r.name === race.name ? race : r); let error = false; return this.homebrewRaces$.pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.races.bulkPut(updated))), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating races", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setRaces(updated); addSnackbar({ message: "Races updated", severity: "success" }); } })); }
   public removeRace = (name: string): Promise<void> | void => { if (!this._races().some(r => r.name === name)) return; const rest = this._races().filter(r => r.name !== name); return new Promise(res => { httpClient$.toObservable(HombrewDB.races.clear()).pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.races.bulkAdd(rest)))).subscribe({ error: err => { console.error(err); addSnackbar({ message: "Error removing race", severity: "error" }); res(); }, complete: () => { this._setRaces(rest); addSnackbar({ message: "Race removed", severity: "success" }); res(); } }); }); }

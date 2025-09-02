@@ -1,737 +1,113 @@
-import {
-  Component,
-  For,
-  createSignal,
-  createMemo,
-  createEffect,
-  Show,
-  onMount,
-} from "solid-js";
-import {
-  Item,
-  Weapon,
-  Armor,
-  UniqueStringArray,
-  Clone,
-  homebrewManager,
-} from "../../../../../shared/";
-import { Body, FormField, Input, Select, Option, Chip, Button, addSnackbar} from "coles-solid-library";
-import styles from "./items.module.scss";
-import { useSearchParams } from "@solidjs/router";
-import { ItemType } from "../../../../../shared/customHooks/utility/tools/itemType";
-import { createStore } from "solid-js/store";
-// import addSnackbar from "../../../../../shared/components/Snackbar/snackbar";
-import { Feature } from "../../../../../models/old/core.model";
-import { LevelEntity } from "../../../../../models/old/class.model";
-// import {useGetItems} from "../../../../../shared/";
-import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
-import ItemCreate from "./parts/item/item";
-import ArmorCreate from "./parts/armor/armor";
-import WeaponCreate from "./parts/weapon/weapon";
+import { Component, For, Show, Switch, Match, createSignal, onMount } from 'solid-js';
+import { createStore } from 'solid-js/store';
+import { Body, FormField, Select, Option } from 'coles-solid-library';
+import styles from './items.module.scss';
+import { itemsStore } from './itemsStore';
+import { useSearchParams } from '@solidjs/router';
+import IdentitySection from './IdentitySection';
+import WeaponSection from './WeaponSection';
+import ArmorSection from './ArmorSection';
+import TagsSection from './TagsSection';
+import FeaturesSection from './FeaturesSection';
+import SaveSection from './SaveSection';
 
 const Items: Component = () => {
-  // state
+  const store = itemsStore;
   const [searchParams, setSearchParams] = useSearchParams();
-  // const allItems = useGetItems()
+  const [snackbar, setSnackbar] = createSignal<{ msg: string; type: 'success' | 'error'; ts: number } | null>(null);
+  const notify = (msg: string, type: 'success' | 'error' = 'success') => setSnackbar({ msg, type, ts: Date.now() });
 
-  // shared info on the items
-  const [itemName, setItemName] = createSignal<string>("");
-  const [itemType, setItemType] = createSignal<string>("Item");
-  const [itemCost, setItemCost] = createSignal<number>(0);
-  const [costUnit, setCostUnit] = createSignal<string>("PP");
-  const [otherUnit, setOtherUnit] = createSignal<string>("");
-  const [itemTag, setItemTag] = createSignal<string>("Versatile");
-  const [otherTag, setOtherTag] = createSignal<string>("");
-  const [itemDesc,setItemDesc] = createSignal<string>("");
+  // initial load
+  store.loadSrdOnce();
 
-  // feature modal
-  const [showFeatureModal,setShowFeatureModal] = createSignal<boolean>(false);
-  const [editIndex,setEditIndex] = createSignal<number>(-1);
+  // One-time deep link selection (avoid continuous effect causing re-select loops)
+  onMount(() => {
+    const initial = searchParams.name;
+    if (initial && initial !== store.state.selection.activeName) {
+      store.select(initial);
+      if ((window as any)?.DEBUG_ITEMS) console.debug('[items] mount select param', initial);
+    }
+  });
 
-  // weapon
-  const [dmgDice,setDmgDice] = createSignal<string>("");
-  const [dmgType,setDmgType] = createSignal<string>("");
-  const [dmgBonus,setDmgBonus] = createSignal<number>(0);
-  const [diceNumber,setDiceNumber] = createSignal<number>(0);
+  // collapsed section state (mirrors races/backgrounds UX)
+  const [collapsed, setCollapsed] = createStore<Record<string, boolean>>({});
+  const toggle = (k: string) => setCollapsed(k, v => !v);
 
-  // armor
-  const [armorCategory,setArmorCategory] = createSignal<string>("")
-  const [otherCategory,setOtherCategory] = createSignal<string>("");
-
-  // search paramaters 
-  if (!searchParams.Name) setSearchParams({ Name: itemName() });
-
-  // stores & base info 
-
-  const builtInTags = () => [
-    "Versatile",
-    "Ammunition",
-    "Loading",
-    "Light",
-    "Two-Handed",
-    "Finesse",
-    "Thrown",
-    "Monk",
-    "Heavy",
-    "Reach",
-    "Special",
-    "Consumable",
-    "Other",
-  ];
-
-  const damageTypes = () => {
-    const allSpells = useDnDSpells()
-
-    const dmgTypes:string[] = []
-
-    // const weapons = allItems().filter(x=>x.equipmentCategory === ItemType[1]) as Weapon[]
-
-    // weapons.forEach(y=>y.damage.forEach(z=>dmgTypes.push(z.damageType)));
-
-    allSpells().forEach(s=>dmgTypes.push(s.damageType));
-    
-    return UniqueStringArray(dmgTypes)
+  // Option building
+  const srdNames = () => Object.keys(store.state.srd).sort();
+  const homebrewNames = () => Object.keys(store.state.homebrew).sort();
+  (window as any).DEBUG_ITEMS = true;
+  function handleSelect(val: string) {
+    if (!val) return;
+    if (val === '__new__') { store.selectNew(); return; }
+    if (val === '__divider_homebrew__') return; // inert
+  // Update URL param first so auto-select effect (if it fires) reinforces new selection, not the previous one.
+  if (searchParams.name !== val) setSearchParams({ name: val });
+  store.select(val);
   }
 
-  const [currentItem, setCurrentItem] = createStore<Item>({
-    name: "",
-    equipmentCategory: "",
-    cost: {
-      quantity: 0,
-      unit: "",
-    },
-    weight: 0,
-    tags: [],
-    desc: [],
-    item: "",
-    features: [],
-  });
+  // Tag and weapon helpers moved into section components
 
-  const [currentWeapon, setCurrentWeapon] = createStore<Weapon>({
-    name: "",
-    equipmentCategory: "",
-    cost: {
-      quantity: 0,
-      unit: "",
-    },
-    weight: 0,
-    tags: [], 
-    desc: [], 
-    item: "", // depricated
-    features: [],
-    weaponCategory: "",
-    weaponRange: "",
-    categoryRange: "",
-    damage: [],
-    range: { 
-      normal: 0,
-      long: 0,
-    },
-  });
+  // Feature modal moved into FeaturesSection
 
-  const [currentArmor, setCurrentArmor] = createStore<Armor>({
-    name: "",
-    equipmentCategory: "",
-    cost: {
-      quantity: 0,
-      unit: "",
-    },
-    weight: 0,
-    tags: [],
-    desc: [],
-    item: "",
-    features: [],
-    armorCategory: "",
-    armorClass: {
-      base: 0,
-      dexBonus: false,
-      maxBonus: 0,
-    },
-    strMin: 0,
-    stealthDisadvantage: false,
-  });
-
-  const getItemObj = createMemo(() => {
-    switch (itemType()) {
-    case "Item":
-      return currentItem;
-    case "Weapon":
-      return currentWeapon;
-    case "Armor":
-      return currentArmor;
-    default:
-      return currentItem;
-    }
-  });
-
-  //  ----------- functions -----------  \\
-
-  const saveToObject = () => {
-    switch (itemType()) {
-    case "Weapon":
-      setCurrentWeapon("name", itemName());
-      setCurrentWeapon("equipmentCategory", itemType());
-      setCurrentWeapon("cost", {
-        quantity: itemCost(),
-        unit: costUnit() !== "other" ? costUnit() : otherUnit(),
-      });
-      setCurrentWeapon("categoryRange",`${currentWeapon.weaponCategory}${currentWeapon.weaponRange}`)
-      setCurrentWeapon("desc",itemDesc())
-
-      break;
-
-    case "Armor":
-      setCurrentArmor("name", itemName());
-      setCurrentArmor("equipmentCategory", itemType());
-      setCurrentArmor("cost", {
-        quantity: itemCost(),
-        unit: costUnit() !== "other" ? costUnit() : otherUnit(),
-      });
-      setCurrentArmor("desc",itemDesc())
-        
-      if (armorCategory() === "Other") {
-        setCurrentArmor("armorCategory",otherCategory());
-      } else {
-        setCurrentArmor("armorCategory",armorCategory());
-      }
-      break;
-
-    case "Item":
-      setCurrentItem("name", itemName());
-      setCurrentItem("equipmentCategory", itemType());
-      setCurrentItem("cost", {
-        quantity: itemCost(),
-        unit: costUnit() !== "other" ? costUnit() : otherUnit(),
-      });
-      setCurrentItem("desc",itemDesc())
-
-      break;
-    }
-  };
-
-  const clearInputs = (isSaving?: boolean) => {
-    setCurrentArmor({
-      name: "",
-      equipmentCategory: "",
-      cost: {
-        quantity: 0,
-        unit: "",
-      },
-      weight: 0,
-      tags: [],
-      desc: [],
-      item: "",
-      features: [],
-      armorCategory: "",
-      armorClass: {
-        base: 0,
-        dexBonus: false,
-        maxBonus: 0,
-      },
-      strMin: 0,
-      stealthDisadvantage: false,
-    });
-    setCurrentItem({
-      name: "",
-      equipmentCategory: "",
-      cost: {
-        quantity: 0,
-        unit: "",
-      },
-      weight: 0,
-      tags: [],
-      desc: [],
-      item: "",
-      features: [],
-    });
-    setCurrentWeapon({
-      name: "",
-      equipmentCategory: "",
-      cost: {
-        quantity: 0,
-        unit: "",
-      },
-      weight: 0,
-      tags: [],
-      desc: [],
-      item: "",
-      features: [],
-      weaponCategory: "",
-      weaponRange: "",
-      categoryRange: "",
-      damage: [],
-      range: {
-        normal: 0,
-        long: 0,
-      },
-    });
-    setItemName("");
-    setItemCost(0);
-    setCostUnit("PP");
-    setOtherUnit("");
-    setItemTag("Versatile");
-    setOtherTag("");
-    setDmgDice("");
-    setDmgType("");
-    setDmgBonus(0);
-    setDiceNumber(0);
-    if (isSaving) setItemType("Item");
-  };
-
-  // feature modal
-
-  const addFeature = (level: number, feature: Feature<string, string>) => {
-    const newFeature: Feature<string, string> = {
-      name: feature.name,
-      value: feature.value,
-      info: {
-        className: feature.info.className,
-        subclassName: feature.info.subclassName,
-        level: feature.info.level,
-        type: feature.info.type,
-        other: feature.info.other
-      },
-      metadata: feature.metadata
-    }
-    const newFeatures = Clone(getItemObj().features)
-    newFeatures?.push(newFeature);
-
-    switch(itemType()){
-    case "Item":
-      setCurrentItem("features",newFeatures);
-      break;
-    case "Armor":
-      setCurrentArmor("features",newFeatures);
-      break;
-    case "Weapon":
-      setCurrentWeapon("features",newFeatures);
-      break
-    }
-
-    setShowFeatureModal(false);
+  function save() {
+    const res = store.persist();
+    if (!res.ok) { notify(res.errs![0] || 'Validation failed', 'error'); return; }
+    notify('Saved','success');
   }
 
-  const replaceFeature = (level: number,index: number,feature: Feature<string, string>) => {
-    const newFeature: Feature<string, string> = {
-      name: feature.name,
-      value: feature.value,
-      info: {
-        className: feature.info.className,
-        subclassName: feature.info.subclassName,
-        level: feature.info.level,
-        type: feature.info.type,
-        other: feature.info.other
-      },
-      metadata: feature.metadata
-    }
-    const newFeatures = Clone(getItemObj().features)
-    if (newFeatures) newFeatures[index] = newFeature;
-
-    switch(itemType()){
-    case "Item":
-      setCurrentItem("features",newFeatures);
-      break;
-    case "Armor":
-      setCurrentArmor("features",newFeatures);
-      break;
-    case "Weapon":
-      setCurrentWeapon("features",newFeatures);
-      break
-    }
-
-    setShowFeatureModal(false);
-  }
-
-  // -------------
-
-  const doesExist = () => {
-    const homebrewItems = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[0])
-    const homewbrewWeapons = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[1]) as Weapon[];
-    const homebrewArmor = homebrewManager.items().filter(x=>x.equipmentCategory === ItemType[2]) as Armor[];
-
-    switch (itemType()) {
-    case "Armor":
-      return homebrewArmor.findIndex((x)=>x.name === currentArmor.name) > -1;
-
-    case "Weapon":
-      return homewbrewWeapons.findIndex((x)=>x.name === currentWeapon.name) > -1;
-
-    case "Item":
-      return homebrewItems.findIndex((x)=>x.name === currentItem.name) > -1;
-    }
-  }
-
-  // const saveItem = () => {
-  //   saveToObject()
-  //   switch (itemType()) {
-  //   case "Weapon":
-  //     homebrewManager.addItem(currentWeapon)
-  //     clearInputs(true);
-  //     break;
-
-  //   case "Armor":
-  //     homebrewManager.addItem(currentArmor)
-  //     clearInputs(true);
-  //     break;
-
-  //   case "Item":
-  //     homebrewManager.addItem(currentItem);
-  //     clearInputs(true);
-  //     break;
-  //   }
-  // }
-
-  // const editItem = () => {
-  //   saveToObject()
-  //   switch (itemType()) {
-  //   case "Weapon":
-  //     homebrewManager.updateItem(currentWeapon);
-  //     clearInputs();
-  //     break;
-
-  //   case "Armor":
-  //     homebrewManager.updateItem(currentArmor);
-  //     clearInputs();
-  //     break;
-
-  //   case "Item":
-  //     homebrewManager.updateItem(currentItem);
-  //     clearInputs();
-  //     break;
-  //   }
-
-  // }
-
-  // const fillInfo = (search?:boolean) => {
-  //   const searchName = search ? searchParams.name : getItemObj().name;
-  //   const item = homebrewManager.items().find(x=>x.name === searchName);
-  //   const allItem = allItems().find(x=>x.name === searchName);
-
-  //   if (item) {
-  //     switch (item.equipmentCategory) {
-  //     case "Item":
-  //       setItemType(item.equipmentCategory);
-  //       setItemName(item.name);
-  //       setItemCost(item.cost.quantity);
-  //       setCostUnit(item.cost.unit);
-  //       setItemDesc(item.desc.join(""));
-  //       setCurrentItem(item);
-  //       break;
-        
-  //     case "Armor":
-  //       setItemType(item.equipmentCategory);
-  //       setItemName(item.name);
-  //       setItemCost(item.cost.quantity);
-  //       setCostUnit(item.cost.unit);
-  //       setItemDesc(item.desc.join(""));
-  //       setCurrentArmor(item);
-  //       break;
-
-  //     case "Weapon":
-  //       setItemType(item.equipmentCategory);
-  //       setItemName(item.name);
-  //       setItemCost(item.cost.quantity);
-  //       setCostUnit(item.cost.unit);
-  //       setItemDesc(item.desc.join(""));
-  //       setCurrentWeapon(item);
-  //       break;
-  //     }
-  //   }
-
-  //   if (allItem) {
-  //     switch (allItem.equipmentCategory) {
-  //     case "Item":
-  //       setItemType(allItem.equipmentCategory);
-  //       setItemName(allItem.name);
-  //       setItemCost(allItem.cost.quantity);
-  //       setCostUnit(allItem.cost.unit);
-  //       setItemDesc(allItem.desc.join(""));
-  //       setCurrentItem(allItem);
-  //       break;
-        
-  //     case "Armor":
-  //       setItemType(allItem.equipmentCategory);
-  //       setItemName(allItem.name);
-  //       setItemCost(allItem.cost.quantity);
-  //       setCostUnit(allItem.cost.unit);
-  //       setItemDesc(allItem.desc.join(""));
-  //       setCurrentArmor(allItem);
-  //       break;
-
-  //     case "Weapon":
-  //       setItemType(allItem.equipmentCategory);
-  //       setItemName(allItem.name);
-  //       setItemCost(allItem.cost.quantity);
-  //       setCostUnit(allItem.cost.unit);
-  //       setItemDesc(allItem.desc.join(""));
-  //       setCurrentWeapon(allItem);
-  //       break;
-  //     }
-  //   }
-
-  // }
-
-  // ▼ when things change ▼
-
-  createEffect(() => {
-    setSearchParams({ itemType: itemType(), name: itemName() });
-    saveToObject();
-  });
-
-  // onMount(()=>{
-  //   if (!!searchParams.name && !!searchParams.itemType) fillInfo(true)
-  // })
+  // Built-in tags now encapsulated in TagsSection
 
   return (
-    <>
-      {/* <Body>
-        <h1>Items</h1>
-
-        <h2>Item Type</h2>
-        <div>
-          <Select
-            transparent
-            value={getItemObj().equipmentCategory}
-            // onChange={(e) => {
-            //   setItemType(e);
-            //   clearInputs();
-            //   saveToObject();
-            //   addSnackbar({
-            //     message: "Cleared Inputs",
-            //     severity: "info",
-            //     closeTimeout: 3000,
-            //   });
-            // }} 
-          >
-            <For each={["Item", "Weapon", "Armor"]}>
-              {(typeOption) => <Option value={typeOption}>{typeOption}</Option>}
-            </For>
+    <Body>
+      <h1>Items</h1>
+      <div class={styles.newPanel || ''}>
+        <FormField name="Select Item (SRD 2024/Homebrew)">
+          <Select transparent value={store.state.selection.activeName || ''} onChange={handleSelect}>
+            <Option value="">-- choose --</Option>
+            <Option value="__new__">+ New Item</Option>
+            <For each={srdNames()}>{n => <Option value={n}>{n}</Option>}</For>
+            <Show when={homebrewNames().length}>
+              <Option value="__divider_homebrew__">-- Homebrew --</Option>
+              <For each={homebrewNames()}>{n => <Option value={n}>{n} [HB]</Option>}</For>
+            </Show>
           </Select>
-
-          <p>
-            Please choose the item type first. It clears the inputs every time
-            it changes
-          </p>
-        </div>
-
-        <h2>Cost</h2>
-        <div>
-          <FormField class={`${styles.cost}`} name="cost">
-            <Input
-              type="number"
-              transparent
-              value={getItemObj().cost.quantity}
-              onInput={(e) => setItemCost(parseInt(e.currentTarget.value))}
-            />
-            <Select 
-              transparent
-              value={getItemObj().cost.unit}
-              onChange={(e) => setCostUnit(e)}
-            >
-              <For each={["PP", "GP", "SP", "CP", "other"]}>
-                {(unitOption) => <Option value={unitOption}>{unitOption !== "other" ? unitOption : "other"}</Option>}
-              </For>
-            </Select>
-          </FormField>
-        </div>
-
-        <Show when={costUnit() === "other"}>
-          <FormField name="other unit">
-            <Input
-              type="text"
-              transparent
-              value={otherUnit()}
-              onInput={(e) => setOtherUnit(e.currentTarget.value)}
-            />
-          </FormField>
-        </Show>
-
-        <h2>Name</h2>
-        <FormField name="Item name">
-          <Input
-            type="text"
-            transparent
-            value={getItemObj().name}
-            onInput={(e) => setItemName(e.currentTarget.value)}
-          />
         </FormField>
 
-        <div>
-          <Show when={itemType() === "Weapon"}>
-            <WeaponCreate 
-              currentWeapon={currentWeapon}
-              setCurrentWeapon={setCurrentWeapon}
-              styles={styles}
-              dmgDice={dmgDice}
-              setDmgDice={setDmgDice}
-              dmgType={dmgType}
-              setDmgType={setDmgType}
-              dmgBonus={dmgBonus}
-              setDmgBonus={setDmgBonus}
-              diceNumber={diceNumber}
-              setDiceNumber={setDiceNumber}
-              damageTypes={damageTypes}
-              desc={itemDesc}
-              setDesc={setItemDesc}
-            />
-          </Show>
+    <Show when={store.state.form} keyed>
+      <div class={styles.sectionList} data-selver={store.state.selectionVersion} data-kind={store.state.form?.kind}>
+            <IdentitySection collapsed={collapsed.identity} toggle={() => toggle('identity')} />
 
-          <Show when={itemType() === "Armor"}>
-            <ArmorCreate 
-              currentArmor={currentArmor}
-              setCurrentArmor={setCurrentArmor}
-              armorCategory={armorCategory}
-              setArmorCategory={setArmorCategory}
-              otherCategory={otherCategory}
-              setOtherCategory={setOtherCategory}
-              styles={styles}
-              desc={itemDesc}
-              setDesc={setItemDesc}
-            />
-          </Show>
+            <Switch>
+              <Match when={store.state.form!.kind === 'Weapon'}>
+                <WeaponSection collapsed={collapsed.weapon} toggle={() => toggle('weapon')} selectionVersion={store.state.selectionVersion} />
+              </Match>
+              <Match when={store.state.form!.kind === 'Armor'}>
+                <ArmorSection collapsed={collapsed.armor} toggle={() => toggle('armor')} selectionVersion={store.state.selectionVersion} />
+              </Match>
+            </Switch>
 
-          <Show when={itemType() === "Item"}>
-            <ItemCreate 
-              currentItem={currentItem}
-              setCurrentItem={setCurrentItem}
-              desc={itemDesc}
-              setDesc={setItemDesc}
-            />
-          </Show>
-        </div>
+            <TagsSection collapsed={collapsed.tags} toggle={() => toggle('tags')} />
 
-        <h2>Tags</h2>
-        <div>
-          <div>
-            <Select
-              transparent
-              value={getItemObj().tags[0]}
-              onChange={(e) => setItemTag(e)}
-            >
-              <For each={builtInTags()}>
-                {(tag) => <Option value={tag}>{tag}</Option>}
-              </For>
-            </Select>
+            <FeaturesSection collapsed={collapsed.features} toggle={() => toggle('features')} />
 
-            <Show when={itemTag() === "Other"}>
-              <Input
-                type="text"
-                transparent
-                value={otherTag()}
-                onInput={(e) => setOtherTag(e.currentTarget.value)}
-              />
+            {/* Validation */}
+            <Show when={store.errors().length}>
+              <div class={styles.validationBox}>
+                <For each={store.errors()}>{e => <div>{e}</div>}</For>
+              </div>
             </Show>
 
-            <Button
-              onClick={() => {
-                switch (getItemObj().equipmentCategory) {
-                case "Item":
-                  if (itemTag() === "Other") {
-                    setCurrentItem("tags", (old) => [...old, otherTag()]);
-                  } else {
-                    setCurrentItem("tags", (old) => [...old, itemTag()]);
-                  }
-                  break;
-
-                case "Weapon":
-                  if (itemTag() === "Other") {
-                    setCurrentWeapon("tags", (old) => [...old, otherTag()]);
-                  } else {
-                    setCurrentWeapon("tags", (old) => [...old, itemTag()]);
-                  }
-                  break;
-
-                case "Armor":
-                  if (itemTag() === "Other") {
-                    setCurrentArmor("tags", (old) => [...old, otherTag()]);
-                  } else {
-                    setCurrentArmor("tags", (old) => [...old, itemTag()]);
-                  }
-                  break;
-                }
-              }}
-            >
-              Add Tag
-            </Button>
+            <SaveSection collapsed={collapsed.save} toggle={() => toggle('save')} onSave={save} />
           </div>
+        </Show>
 
-          <div>
-            <Show when={getItemObj()?.tags?.length > 0}>
-              <For each={UniqueStringArray(getItemObj()?.tags)}>
-                {(tag) => (
-                  <Chip
-                    value={tag}
-                    remove={() => {
-                      switch (getItemObj().equipmentCategory) {
-                      case "Item":
-                        setCurrentItem("tags", (old) => [
-                          ...old.filter((x) => x !== tag),
-                        ]);
-                        break;
-                      case "Weapon":
-                        setCurrentWeapon("tags", (old) => [
-                          ...old.filter((x) => x !== tag),
-                        ]);
-                        break;
-                      case "Armor":
-                        setCurrentArmor("tags", (old) => [
-                          ...old.filter((x) => x !== tag),
-                        ]);
-                        break;
-                      }
-                    }}
-                  />
-                )}
-              </For>
-            </Show>
-          </div>
-        </div>
-
-        <h2>Features</h2>
-        <div>
-          <Button onClick={()=>setShowFeatureModal(!showFeatureModal())}>
-              Add A Feature
-          </Button>
-
-          <span>
-            <Show when={(getItemObj().features ?? []).length > 0} >
-              <For each={getItemObj().features}>
-                { (feature) => <Chip value={feature.name} remove={()=>{
-                  switch(getItemObj().equipmentCategory){
-                  case "Item":
-                    setCurrentItem("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
-                    break
-
-                  case "Weapon":
-                    setCurrentWeapon("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
-                    break;
-
-                  case "Armor":
-                    setCurrentArmor("features",old=>([...(old ?? []).filter(x=>x.name !== feature.name)]))
-                    break;
-                  }
-                }} /> }
-              </For>
-            </Show>
-            <Show when={getItemObj().features?.length === 0}>
-              <Chip value="None" />
-            </Show>
-          </span>
-        </div>
-
-        
-        <hr />
-
-        <div>
-          <Show when={doesExist()}>
-            <Button onClick={editItem}>Edit</Button>
-          </Show>
-          <Show when={!doesExist()}>
-            <Button onClick={saveItem}>Save</Button>
-          </Show>
-        </div>
-      </Body> */}
-    </>
+        <Show when={store.state.status === 'loading'}><div>Loading SRD items...</div></Show>
+        <Show when={store.state.status === 'error'}><div style={{ color:'red' }}>Failed to load items: {store.state.error}</div></Show>
+      </div>
+  <Show when={snackbar()}><div class={styles.snackbar} data-type={snackbar()!.type}>{snackbar()!.msg}</div></Show>
+    </Body>
   );
 };
+
 export default Items;

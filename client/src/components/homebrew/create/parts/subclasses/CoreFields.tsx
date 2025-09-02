@@ -4,6 +4,8 @@ import styles from './subclasses.module.scss';
 interface CoreFieldsProps<T extends { name: string; description: string }> {
   form: FormGroup<T>;
   updateParamsIfReady: () => void;
+  onNameInput?: () => void;
+  onDescriptionInput?: () => void;
 }
 
 export const CoreFields = <T extends { name: string; description: string }>(p: CoreFieldsProps<T>) => (
@@ -15,6 +17,7 @@ export const CoreFields = <T extends { name: string; description: string }>(p: C
         onChange={e => {
           p.form.set('name', e.currentTarget.value as any);
           p.updateParamsIfReady();
+          p.onNameInput?.();
         }}
       />
     </FormField>
@@ -22,10 +25,10 @@ export const CoreFields = <T extends { name: string; description: string }>(p: C
       <TextArea
         placeholder="Enter a Subclass description.."
         text={() => (p.form.get('description') as any) || ''}
-        setText={v => p.form.set('description', v as any)}
+  setText={v => { p.form.set('description', v as any); p.onDescriptionInput?.(); }}
         value={(p.form.get('description') as any) || ''}
         transparent
-        onChange={e => p.form.set('description', e.currentTarget.value as any)}
+  onChange={e => { p.form.set('description', e.currentTarget.value as any); p.onDescriptionInput?.(); }}
       />
     </FormField>
   </div>
