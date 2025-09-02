@@ -56,7 +56,7 @@ function mapRaceToDraft(r: Race): RaceDraft {
   function parseSizes(raw: string): string[] {
     if (!raw) return [];
     // Normalize separators (commas, slashes, 'or')
-    const replaced = raw.replace(/\bor\b/gi, ',').replace(/[\/]/g, ',');
+  const replaced = raw.replace(/\bor\b/gi, ',').replace(/\//g, ',');
     const parts = replaced.split(',').map(p => p.trim());
     const found: string[] = [];
     for (const part of parts) {

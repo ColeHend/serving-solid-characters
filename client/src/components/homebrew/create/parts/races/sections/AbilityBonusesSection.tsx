@@ -4,9 +4,8 @@ import { racesStore } from '../racesStore';
 
 const ABILITIES = ['STR','DEX','CON','INT','WIS','CHA'];
 
-interface Props {}
-
-const AbilityBonusesSection: Component<Props> = () => {
+// No props currently required
+const AbilityBonusesSection: Component = () => {
   const store = racesStore;
   const [ability, setAbility] = createSignal('');
   const [value, setValue] = createSignal(1);
