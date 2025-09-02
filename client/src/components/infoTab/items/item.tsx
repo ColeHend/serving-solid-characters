@@ -11,9 +11,34 @@ import { Item, ItemType } from "../../../models/data";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { ItemsView } from "./parts/items/itemsView";
 import { WeaponsView } from "./parts/weapon/weaponView";
+import { ArmorView } from "./parts/armor/armorView";
 
 // const ItemsView = lazy(() => import("./parts/items/itemsView").then(mod => ({ default: mod.ItemsView })));
 // const WeaponsView = lazy(() => import("./parts/weapon/weaponView").then(mod => ({ default: mod.WeaponsView })));
+
+// Normalize cost string: keep only the first number + coin type (CP|SP|GP), ignore trailing text
+const normalizeCost = (cost: string): string => {
+  const match = cost.match(/^(\d+)\s*(CP|SP|GP)/i);
+  return match ? `${match[1]} ${match[2].toUpperCase()}` : cost;
+}
+
+const costToCopper = (cost: string): number => {
+  const normalized = normalizeCost(cost);
+  const match = normalized.match(/^(\d+)\s*(CP|SP|GP)$/i);
+  if (!match) return 0;
+  const value = parseInt(match[1], 10);
+  const unit = match[2].toUpperCase();
+  switch (unit) {
+    case "GP":
+      return value * 100;
+    case "SP":
+      return value * 10;
+    case "CP":
+      return value;
+    default:
+      return 0;
+  }
+}
 
 const ItemsViewTab:Component = () => {
   
@@ -29,7 +54,8 @@ const ItemsViewTab:Component = () => {
 
   const elementMemo = createMemo<CarouselElement[]>(()=>([
     {name: "Equipment", element: <ItemsView items={srdEquipment} /> },
-    {name: "Weapons", element:  <WeaponsView items={srdWeapons} />  }
+    {name: "Weapons", element:  <WeaponsView items={srdWeapons} />  },
+    {name: "Armor", element: <ArmorView items={srdArmors} />}
   ]));
   
   if (!searchParam.itemType) setSearchParam({itemType: elementMemo()[0].name })
@@ -64,5 +90,6 @@ const ItemsViewTab:Component = () => {
       elements={elementMemo()} />
   </Body>
 }
+export {normalizeCost,costToCopper}
 export default ItemsViewTab;
 

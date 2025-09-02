@@ -1,6 +1,6 @@
 import { Modal } from "coles-solid-library";
 import { Component,Accessor, Setter, createMemo, For, Show } from "solid-js";
-import { Item } from "../../../../models/data";
+import { Item, ItemProperties } from "../../../../models/data";
 import styles from "./itemsModal.module.scss";
 
 
@@ -13,6 +13,10 @@ export const ItemPopup:Component<modalProps> = (props) => {
     const currentItem = props.item();
     const propertieKeys = createMemo(()=> {
         return Object.keys(props.item().properties);
+    })
+
+    const properties = createMemo<ItemProperties>(()=>{
+        return props.item().properties ?? {}
     })
 
     return <Modal title={`${currentItem.name}`} show={props.show}>
@@ -40,7 +44,17 @@ export const ItemPopup:Component<modalProps> = (props) => {
                         {(key) => <div class={`${styles.properties}`}>
                             <h3 class={`${styles.header}`}>{key}</h3>
                             <span class={`${styles.info}`}>
-                                {props.item().properties[key]}
+                                <Show 
+                                when={
+                                    Array.isArray(typeof props.item().properties[key]) 
+                                }
+                                fallback={props.item().properties[key]}>
+                                    <For each={Array.from(props.item().properties[key])}>
+                                        { (key) => 
+                                            key
+                                        }
+                                    </For>
+                                </Show>
                             </span>
                         </div>}
                     </For>
