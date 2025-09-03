@@ -11,14 +11,10 @@ interface modalProps {
 
 export const ItemPopup:Component<modalProps> = (props) => {
     const currentItem = props.item();
-    const propertieKeys = createMemo(()=> {
+    const propertieKeys = createMemo<Array<keyof ItemProperties>>(()=> {
         return Object.keys(props.item().properties);
     })
-
-    const properties = createMemo<ItemProperties>(()=>{
-        return props.item().properties ?? {}
-    })
-
+    
     return <Modal title={`${currentItem.name}`} show={props.show}>
         <div class={`${styles.itemWrapper}`}>
             <span class={`${styles.info} ${styles.push}`}>
@@ -46,14 +42,10 @@ export const ItemPopup:Component<modalProps> = (props) => {
                             <span class={`${styles.info}`}>
                                 <Show 
                                 when={
-                                    Array.isArray(typeof props.item().properties[key]) 
+                                    Array.isArray(props.item().properties[key]) 
                                 }
                                 fallback={props.item().properties[key]}>
-                                    <For each={Array.from(props.item().properties[key])}>
-                                        { (key) => 
-                                            key
-                                        }
-                                    </For>
+                                    {Array.from(props.item().properties[key]).join(" ")}
                                 </Show>
                             </span>
                         </div>}

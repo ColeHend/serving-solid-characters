@@ -90,8 +90,8 @@ export const ArmorView:Component<viewProps> = (props) => {
             aSort = costToCopper(a.cost);
             bSort = costToCopper(b.cost);
           } else if (sortBy === "properties") {
-            aSort = a.properties?.AC
-            bSort = b.properties?.AC
+            aSort = a.properties?.AC ?? ""
+            bSort = b.properties?.AC ?? ""
           } else {
             aSort = typeof a?.[sortBy] === "string"
               ? a?.[sortBy].replaceAll(" ", "")
@@ -154,7 +154,7 @@ export const ArmorView:Component<viewProps> = (props) => {
                     </Header>
                     <Cell<Item>>
                     {(item)=><span>
-                        {item.properties?.AC?.slice(-3,10)}
+                        {item.properties?.AC}
                     </span>}
                     </Cell>
                 </Column>
