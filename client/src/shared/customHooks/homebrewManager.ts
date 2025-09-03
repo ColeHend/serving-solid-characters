@@ -187,6 +187,11 @@ class HomebrewManager {
     const toStore: any = { ...Clone(feat) };
     if (!toStore.name) toStore.name = feat.details.name;
     if (!toStore.desc) toStore.desc = [feat.details.description];
+    // Optimistic in‑memory update so UI/tests see new description immediately (Dexie 4 put may resolve on later microtask)
+    this._setFeats(list => list.map(f => {
+      const fname = (f as any).details?.name || (f as any).name;
+      return fname === feat.details.name ? toStore : f;
+    }));
     return new Promise(res => this.updateFeatInDB(toStore).subscribe({ complete: () => res(), error: () => res() }));
   }
   private updateFeatInDB = (feat: any) => { let error = false; return httpClient$.toObservable(HombrewDB.feats.put(feat)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating feat", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setFeats(list => list.map(f => f.details.name === feat.details.name ? feat : f)); addSnackbar({ message: "Feat updated", severity: "success" }); } })) }
