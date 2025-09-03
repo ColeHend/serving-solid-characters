@@ -6,9 +6,9 @@ import { Spellcasting } from "./spellcasting";
 export interface Class5E {
   id: number;
   name: string;
-  hit_die: string;
-  primary_ability: string;
-  saving_throws: string[];
+  hitDie: string;
+  primaryAbility: string;
+  savingThrows: string[];
   startChoices?: StartChoices;
   starting_equipment: StartingEquipment[];
   proficiencies: Proficiencies;
@@ -23,8 +23,8 @@ export interface Class5E {
 export interface StartChoices {
   weapon?: string;
   armor?: string;
-  tool?: string;
-  skill?: string[];
+  tools?: string;
+  skills?: string;
   equipment?: string;
 }
 
