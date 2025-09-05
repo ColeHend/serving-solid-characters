@@ -4,15 +4,19 @@ import { Subclass } from "../../../../../models/data";
 import { Accessor, createMemo } from "solid-js";
 import { getUserSettings } from "../../../userSettings";
 
-type Year = "2014" | "2024";
-interface UseDnDSubclassesOptions { overrideVersion?: Year; }
 
-export function useDnDSubclasses(opts?: UseDnDSubclassesOptions): Accessor<Subclass[]> {
+
+export function useDnDSubclasses(): Accessor<Subclass[]> {
   const [userSettings] = getUserSettings();
+  const homebrew = useGetHombrewSubclasses();
+  
   return createMemo<Subclass[]>(() => {
-    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
+    const active = (userSettings().dndSystem|| "2014");
     const srd = useGetSrdSubclasses(active);
-    const homebrew = useGetHombrewSubclasses();
+  
+    console.log("cashed: ", srd());
+    
+    
     return [...srd(), ...homebrew()];
   });
 }

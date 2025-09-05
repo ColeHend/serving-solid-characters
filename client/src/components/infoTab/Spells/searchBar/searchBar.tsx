@@ -1,9 +1,26 @@
-import { Accessor, Component, For, Match, Setter, Show, Switch, createEffect, createSignal } from "solid-js";
-import { Spell } from "../../../../models/data/spell";
-import styles from "./searchBar.module.scss";
+import { 
+  Accessor, 
+  Component, 
+  For, 
+  Match, 
+  Setter, 
+  Show, 
+  Switch, 
+  createEffect, 
+  createSignal 
+} from "solid-js";
+import { 
+  Button, 
+  Input, 
+  Icon, 
+  Checkbox, 
+  Chipbar, 
+  ChipType 
+} from "coles-solid-library";
 import { beutifyChip } from "../../../../shared/customHooks/utility/tools/beautifyChip";
-import { Button, Input, Icon, Checkbox, Chipbar } from "coles-solid-library";
-import type ChipType from "../../../../shared/models/chip";
+import { Spell } from "../../../../models/data";
+import styles from "./searchBar.module.scss";
+
 
 type Props = { 
     searchResults: Accessor<Spell[]>; 

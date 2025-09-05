@@ -268,3 +268,16 @@ $mobile: 768px;
 .smallerFont { 
     font-size: .8em;
 }
+
+.leftAlignText {
+    text-align: left;
+    // width: 100%;
+    display: block;
+    // white-space: wrap;
+    // word-wrap:break-word;
+    padding-left: 8px;
+}
+
+.itemList {
+    list-style: upper-alpha;
+}

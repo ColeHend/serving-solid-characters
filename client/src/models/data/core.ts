@@ -3,14 +3,14 @@ export interface Prerequisite {
 	value: string;
 }
 export enum PrerequisiteType {
-  String,
+  String = 0,
   Level,
   Class,
   Subclass,
   Feat,
   Race,
   Item,
-	Stat
+  Stat
 }
 
 export enum FeatureTypes {

@@ -1,9 +1,11 @@
-import { Accessor, Component, createSignal, For, Setter, Show, useContext } from "solid-js";
+import { Accessor, Component, createMemo, createSignal, For, Setter, Show, useContext } from "solid-js";
 // import { Race } from "../../../../models";
-import { AbilityScores, Race } from "../../../../models/data";
+import { AbilityScores, PrerequisiteType, Race } from "../../../../models/data";
 import styles from "./raceView.module.scss";
 import { SharedHookContext } from "../../../../components/rootApp";
-import { Modal, TabBar } from "coles-solid-library";
+import { Modal, TabBar, TextArea } from "coles-solid-library";
+import { useDnDSubraces } from "../../../customHooks/dndInfo/info/all/subraces";
+import Markdown from "../../MarkDown/MarkDown";
 
 
 interface props {
@@ -15,115 +17,155 @@ interface props {
 
 const RaceView: Component<props> = (props) => {
   const race = props.currentRace;
-  const sharedHooks = useContext(SharedHookContext);
+  const allSubraces = useDnDSubraces();
+
+  // console.log("subraces:",allSubraces());
+
+  const currentSubraces = createMemo(()=>allSubraces().filter(sr=> sr.parentRace === race().id));
 
   const [activeTab, setActiveTab] = createSignal<number>(0);
 
-  // const subraceNames = race()..flatMap((subrace) => subrace.name);
+  const currentSubraceNames = createMemo(()=>currentSubraces().flatMap(x=>x.name));
+
+
+  const getDescription = (descriptions: any ) => {
+    const keys = Object.keys(descriptions);
+
+    const descArr:string[] = [];
+
+    keys.forEach((key) => {
+      descArr.push(descriptions[key]);  
+    })
+
+    if (descArr.length === 0) return [];
+
+    return descArr;
+  }
 
   return <Modal title={race().name} show={props.backClick}>
     <div class={`${styles.raceWrapper}`}>
       <h1 class={`${styles.header}`}>{race().name}</h1>
 
       <Show when={race().descriptions}>
-        <div class={`${styles.info}`}>{race().descriptions?.physical}</div>
-
-        <div class={`${styles.info}`}>{race().descriptions?.abilities}</div>
+        <div class={`${styles.info}`}><Markdown text={getDescription(race().descriptions).join(" ")} /></div>
       </Show>
         
-      
+      <div class={`${styles.flexBoxRow}`}>
+        <div class={`${styles.flexBoxColumn}`}>
+          <Show when={race().abilityBonuses.length !== 0}>
+            <h3 class={`${styles.header}`}>Ability Score Increases: </h3>
+            
+            <div class={`${styles.startingProfsRow}`}>
+              <For each={race().abilityBonuses}>
+                {(bonus) => <span class={`${styles.info}`}>
+                  <span>{AbilityScores[`${bonus.stat}`]}</span> by <span>{bonus.value}</span>   
+                </span>}
+              </For>
+            </div>
+          </Show>
+    
+          <h3 class={`${styles.header}`}>Speed:</h3>
+    
+          <span class={`${styles.info}`}>{race()?.speed}ft</span>
 
-      <Show when={race().abilityBonuses.length !== 0}>
-        <h3 class={`${styles.header}`}>Ability Score Increases: </h3>
-        
-        <div class={`${styles.startingProfsRow}`}>
-          <For each={race().abilityBonuses}>
-            {(bonus) => <span class={`${styles.info}`}>
-              <span>{AbilityScores[`${bonus.stat}`]}</span> by <span>{bonus.value}</span>   
-            </span>}
-          </For>
         </div>
-      </Show>
+        <div class={`${styles.flexBoxColumn}`}>
+          <Show when={!!race()?.size}>
+            <h3 class={`${styles.header}`}>Size:</h3>
+            <span class={`${styles.info}`}>{race()?.size}</span>
+          </Show>
 
-      <h3 class={`${styles.header}`}>Speed:</h3>
+          <h3 class={`${styles.header}`}>Languages:</h3>
+            
+          <span class={`${styles.info}`}>{race()?.languages.join(", ")}</span>
 
-      <span class={`${styles.info}`}>{race()?.speed}ft</span>
+        </div>
+      </div>      
 
-      <Show when={!!race()?.size}>
-        <h3 class={`${styles.header}`}>Size:</h3>
-        <span class={`${styles.info}`}>{race()?.size}</span>
-      </Show>
 
       <Show when={race().traits.length > 0}>
-        <h3 class={`${styles.header}`}>Race Specific Traits:</h3>
+        <TabBar 
+          tabs={["Features",...currentSubraceNames()]}
+          activeTab={activeTab()}
+          onTabChange={(label,index)=>setActiveTab(index)}
+          colors={{
+            indicator: "#AA0505"
+          }}
+        />
+      </Show>
 
+      <Show when={activeTab() === 0}>
         <span>
           <For each={race()?.traits}>
             {(trait) =><div>
-              <h3 class={`${styles.header}`}>{trait?.details.name}:{" "}</h3>
+              <h3 class={`${styles.header} ${styles.leftAlignHeader}`}>{trait?.details.name}:{" "}</h3>
               <For each={trait?.prerequisites}>
                 {(value) => <span class={`${styles.info}`}>{value.value}</span>}
               </For>
 
-              <div class={`${styles.info}`}>{trait.details.description}</div>
+              <div class={`${styles.info} ${styles.leftAlignInfo}`}><Markdown text={trait.details.description}/></div>
             </div>}
           </For>
         </span>
       </Show>
 
-      <h3 class={`${styles.header}`}>Languages:</h3>
-        
-      <span class={`${styles.info}`}>{race()?.languages.join(", ")}</span>
+      <For each={currentSubraces()}>
+        {(subRace,i) => <Show when={activeTab() === currentSubraces().indexOf(subRace) + 1}>
 
 
-      {/* <Show when={race()..length > 0}>
-        <div class={`${styles.subclassesTabRow}`}>
-            <TabBar tabs={subraceNames} activeTab={activeTab()} onTabChange={(label, index)=> setActiveTab(index)} colors={{
-              indicator: "#AA0505"
-            }} />
+            <span class={`${styles.info}`}>{getDescription(subRace.descriptions)}</span>
 
-            <For each={race().subRaces}>
-              {
-                (subrace, i) => <Show when={i()}>
-                  <h3 class={`${styles.header}`}>Description</h3>
-                <span>{subrace.desc}</span>
-                <h3 class={`${styles.header}`}>Ability Score Increases: </h3>
-                <For each={subrace.abilityBonuses}>
-                  { (abilityIncrease, i) => <>
-                    <span>{abilityIncrease.name}</span> by <span>{abilityIncrease.value}</span>
-                  </>
+            <div class={`${styles.flexBoxRow}`}>
+              <div class={`${styles.flexBoxColumn}`}>
+                <Show when={subRace.abilityBonuses.length > 0}>
+                  <h3 class={`${styles.header}`}>Ability Score Increases</h3>
 
-                  }
-                </For>
-                    
-                <Show when={subrace.traits.length > 0}>
-                  <For each={subrace.traits}>
-                    { (trait, i) => <>
-                      <h3 class={`${styles.header}`}>{trait.name}: </h3><span class={`${styles.info}`}>{trait.value}</span>
-                    </>
-
-                    }
-                  </For>
-                </Show>
-
-                <Show when={!!subrace.startingProficencies && subrace.startingProficencies.length > 0}>
-                  <h3 class={`${styles.header}`}>Proficences: </h3>
-                  <span class={`${styles.info}`}>{subrace.startingProficencies?.map(x=>x.value).join(", ")}</span>  
-                </Show>
-
-                <Show when={subrace.languages.length > 0}>
-                  <h3 class={`${styles.header}`}>extra languages: </h3>
-                  <span class={`${styles.info}`}>{subrace.languages.join(", ")}</span>
+                  <div class={`${styles.startingProfsRow}`}>
+                    <For each={subRace.abilityBonuses}>
+                      {(score) => <span class={`${styles.info}`}>
+                        <span>{ AbilityScores[score.stat] }</span> by <span>{ score.value }</span>  
+                      </span>}
+                    </For>
+                  </div>
 
                 </Show>
 
-                </Show> 
-              }
-            </For>
+                <h3 class={`${styles.header}`}>Speed: </h3>
 
-        </div>
-      </Show> */}
+                <span class={`${styles.info}`}>{ subRace.speed }ft</span>
+              </div>
+              <div class={`${styles.flexBoxColumn}`}>
+                <h3 class={`${styles.header}`}>Size:</h3>
 
+                <span class={`${styles.info}`}>{ subRace.size }</span>
+
+                <Show when={subRace.languages.length > 0}>
+                  <h3 class={`${styles.header}`}>Languages:</h3>
+
+                  <span class={`${styles.info}`}>{ subRace.languages.join(", ") }</span>
+                </Show>
+              </div>
+            </div>
+
+            <div class={`${styles.flexBoxColumn}`}>
+              <For each={subRace.traits}>
+                {(trait)=><div>
+                  <h3 class={`${styles.header} ${styles.leftAlignHeader}`}>{trait.details.name}</h3>
+                  
+                  <div class={`${styles.flexBoxRow}`}>
+                    <For each={trait.prerequisites}>
+                      {(prerequisite)=><div>
+                        {PrerequisiteType[prerequisite.type]} {prerequisite.value}
+                      </div>}
+                    </For>
+                  </div>
+
+                  <span class={`${styles.info} ${styles.leftAlignInfo}`}><Markdown text={trait.details.description} /></span>  
+                </div>}
+              </For>
+            </div>
+        </Show>}
+      </For>
     </div>
   </Modal>
 };

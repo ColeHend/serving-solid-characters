@@ -7,12 +7,14 @@ import { getUserSettings } from "../../../userSettings";
 type Year = "2014" | "2024";
 interface UseDnDSubracesOptions { overrideVersion?: Year }
 
-export function useDnDSubraces(opts?: UseDnDSubracesOptions): Accessor<Subrace[]> {
+export function useDnDSubraces(): Accessor<Subrace[]> {
   const [userSettings] = getUserSettings();
+  const homebrew = useGetHombrewSubraces();
+  
   return createMemo<Subrace[]>(() => {
-    const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
+    const active = (userSettings().dndSystem || "2014");
     const srd = useGetSrdSubraces(active);
-    const homebrew = useGetHombrewSubraces();
+    
     return [...srd(), ...homebrew()];
   });
 }

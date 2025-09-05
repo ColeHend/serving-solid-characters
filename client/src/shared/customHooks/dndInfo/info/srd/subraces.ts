@@ -13,7 +13,7 @@ let loading2024 = false;
 export function useGetSrdSubraces(version: '2014' | '2024' | 'both' | string): Accessor<Subrace[]> {
   if ((version === '2014' || version === 'both') && subraces2014().length === 0 && !loading2014) {
     loading2014 = true;
-    const local$ = HttpClient$.toObservable(SrdDB.subraces.toArray());
+    const local$ = HttpClient$.toObservable(SrdDB.subraces?.toArray());
     local$.pipe(
       take(1),
       concatMap(cached => cached.length ? of(cached) : fetchSubraces('2014')),
@@ -27,7 +27,7 @@ export function useGetSrdSubraces(version: '2014' | '2024' | 'both' | string): A
 
   if ((version === '2024' || version === 'both') && subraces2024().length === 0 && !loading2024) {
     loading2024 = true;
-    const local$ = HttpClient$.toObservable(SrdDB2024.subraces.toArray());
+    const local$ = HttpClient$.toObservable(SrdDB2024.subraces?.toArray());
     local$.pipe(
       take(1),
       concatMap(cached => cached.length ? of(cached) : fetchSubraces('2024')),

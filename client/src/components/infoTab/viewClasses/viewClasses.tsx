@@ -22,12 +22,15 @@ import {
 } from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
+import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/subclasses";
 
 const viewClasses: Component = () => {
   const [userSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
   const srdClasses = useDnDClasses();
   const [searchParam, setSearchParam] = useSearchParams();
+  const allSubclasses = useDnDSubclasses();
+
   const [paginatedClasses,setPaginatedClasses] = createSignal<Class5E[]>([]);
   const [currentClass, setCurrentClass] = createSignal<Class5E>({} as Class5E);
   const [showClass, setShowClass] = createSignal<boolean>(false);
@@ -98,7 +101,7 @@ const viewClasses: Component = () => {
             <Cell<Class5E>>{(x) => <span onClick={() => {
               setCurrentClass(x);
               setSearchParam({ name: x.name });
-              setShowClass(!showClass());
+              setShowClass(old => !old);
             }}>{x.name}</span>}</Cell>
           </Column>
           <Column name="menu">
@@ -117,7 +120,12 @@ const viewClasses: Component = () => {
       </div>
       
       <Show when={showClass()}>
-        <ClassModal boolean={showClass} booleanSetter={setShowClass} currentClass={currentClass} />
+        <ClassModal 
+          boolean={showClass} 
+          booleanSetter={setShowClass} 
+          currentClass={currentClass} 
+          subclasses={allSubclasses}
+        />
       </Show>
     </Body>
   )

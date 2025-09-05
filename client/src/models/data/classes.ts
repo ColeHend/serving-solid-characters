@@ -10,7 +10,7 @@ export interface Class5E {
   primaryAbility: string;
   savingThrows: string[];
   startChoices?: StartChoices;
-  starting_equipment: StartingEquipment[];
+  startingEquipment: StartingEquipment[];
   proficiencies: Proficiencies;
   spellcasting?: Spellcasting;
   features?: Record<number, FeatureDetail[]>;

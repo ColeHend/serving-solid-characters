@@ -11,7 +11,6 @@ let loading2014 = false;
 let loading2024 = false;
 
 export function useGetSrdRaces(version: '2014' | '2024' | "both" | string) {
-  const LocalRaces = HttpClient$.toObservable(SrdDB.races.toArray());
 
   if ((version === '2014' || version === 'both') && races2014().length === 0 && !loading2014) {
     loading2014 = true;
