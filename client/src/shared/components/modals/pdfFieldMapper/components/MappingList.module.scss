@@ -1,0 +1,27 @@
+/* Root container inherits sizing/padding from outer layout */
+.mappingRoot {
+  width: 340px;
+  overflow-y: auto;
+  border-left: 1px solid var(--border, #444);
+  padding: 0.5rem;
+  background: var(--panel-bg2, rgba(0,0,0,0.15));
+}
+
+.mappingTitle { margin-top: 0; }
+
+.mappingItem {
+  border: 1px solid #555;
+  padding: 4px;
+  margin: 4px 0;
+  font-size: 0.75rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.selected { background: rgba(0, 183, 255, 0.12); }
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

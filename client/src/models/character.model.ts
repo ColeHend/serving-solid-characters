@@ -1,8 +1,11 @@
 import { Stats } from "../shared";
+import { useDnDRaces } from "../shared/customHooks/dndInfo/info/all/races";
 import { FeatureDetail } from "./data";
 
 export class Character {
   public name: string = '';
+  public experience: number = 0;
+  public ac: number = 10;
   public get level() {
     return this.levels.length;
   };
@@ -16,6 +19,7 @@ export class Character {
   public subclass: string = '';
   public background: string = '';
   public alignment: string = '';
+  public speed: number = 30;
   public proficiencies: CharacterProficiency = {
     skills: {},
     other: {}
@@ -24,7 +28,8 @@ export class Character {
   public health: CharacterHealth = {
     max: 0,
     current: 0,
-    temp: 0
+    temp: 0,
+    hitDie: { total: 0, die: 0, used: 0 }
   };
   public stats: Stats = {
     str: 0,
@@ -38,6 +43,23 @@ export class Character {
     inventory: [],
     equipped: [],
     attuned: []
+  }
+  public initiative: number = 0;
+
+  public get size(): string {
+    const races = useDnDRaces();
+    const race = races().find(r => r.name === this.race.species);
+    return race?.size || "Medium";
+  }
+
+  public get profiencyBonus(): number {
+    const lvl = this.level;
+    if (lvl >= 17) return 6;
+    if (lvl >= 13) return 5;
+    if (lvl >= 9) return 4;
+    if (lvl >= 5) return 3;
+    if (lvl >= 1) return 2;
+    return 0;
   }
 }
 export interface CharacterProficiency {
@@ -62,6 +84,11 @@ export interface CharacterHealth {
 	max: number;
 	current: number;
 	temp: number;
+  hitDie: {
+    total: number;
+    die: number;
+    used: number;
+  }
 }
 export interface CharacterSpell {
 	name: string;

@@ -1,0 +1,13 @@
+.editPanel {
+  border: 1px solid #666;
+  padding: 6px;
+  margin: 0 0 8px;
+}
+
+.editTitle { margin: 0 0 4px; }
+
+.editFields {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

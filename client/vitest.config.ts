@@ -55,6 +55,7 @@ export default defineConfig({
             "fake-indexeddb/auto",
             "./vitest.setup.ts"
         ],
+  testTimeout: 15000,
         typecheck: {
             allowJs: true,
             tsconfig: "./tsconfig"

@@ -30,8 +30,9 @@ const masterSpells: Component = () => {
   createEffect(() => {
     const list = dndSrdSpells();
     if (list.length === 0) return;
-    const param = searchParam.name;
-    const found = param && list.some(s => s.name.toLowerCase() === param.toLowerCase());
+  const raw = searchParam.name;
+  const param = Array.isArray(raw) ? raw[0] : raw;
+  const found = param && list.some(s => s.name.toLowerCase() === param.toLowerCase());
     if (!found) {
       setSearchParam({ name: list[0].name });
     }
@@ -41,7 +42,9 @@ const masterSpells: Component = () => {
   const selectedSpell = createMemo(() => {
     const list = dndSrdSpells();
     if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].name).toLowerCase();
+  const raw = searchParam.name;
+  const targetParam = Array.isArray(raw) ? raw[0] : raw;
+  const target = (targetParam || list[0].name).toLowerCase();
     return list.find(s => s.name.toLowerCase() === target) || list[0];
   });
 
@@ -101,8 +104,6 @@ const masterSpells: Component = () => {
           return 0;
         })
       );
-
-      return old;
     });
   };
 

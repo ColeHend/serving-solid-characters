@@ -1,0 +1,218 @@
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0.5rem;
+}
+
+.loadingStatus {
+  font-size: 0.65rem;
+  min-height: 1em;
+  padding: 0 0.5rem;
+}
+
+.errorBox {
+  background: #5d1111;
+  color: #fff;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #a33;
+  font-size: 0.7rem;
+  border-radius: 3px;
+  margin: 0 0.5rem;
+}
+
+.contentArea {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 0.75rem;
+}
+
+/* Optional wrapper if canvas needs centering / scroll containment */
+.canvasWrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* inner elements manage their own scroll */
+}
+
+.sidePanel {
+  width: 340px;
+  overflow-y: auto;
+  border-left: 1px solid var(--border, #444);
+  padding: 0.5rem;
+  background: var(--panel-bg2, rgba(0, 0, 0, 0.15));
+}
+
+.sideItem {
+  max-height: 50%;
+  overflow-y: auto;
+}
+.sideItemFull {
+  max-height: 100%;
+  overflow-y: auto;
+}
+/* Test-mode specific helpers */
+.testToolbar {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.4rem;
+}
+
+.testLayout {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.testCanvasWrapper { flex: 1 1 auto; }
+
+.testCanvas {
+  border: 1px solid #999;
+}
+
+.testMappingList {
+  width: 320px;
+  font-size: 0.75rem;
+}
+
+.testMappingItem {
+  border: 1px solid #555;
+  margin: 4px 0;
+  cursor: pointer;
+  background: transparent;
+  padding: 2px 4px;
+}
+
+.selectedItem {
+  background: rgba(0, 183, 255, 0.12);
+}
+
+.errorBoundary {
+  background-color: #5d1111;
+  border: 1px solid #a33;
+  border-radius: 4px;
+  color: #fff;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.errorBoundary h3 {
+  margin-top: 0;
+}
+
+.errorBoundary button {
+  margin-top: 12px;
+  padding: 6px 12px;
+  background: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.errorBoundary button:hover {
+  background: #e5e5e5;
+}
+
+.errorDetails {
+  background-color: #370a0a;
+  border: 1px solid #832828;
+  border-radius: 3px;
+  color: #eee;
+  font-size: 12px;
+  margin: 10px 0;
+  max-height: 100px;
+  overflow-y: auto;
+  padding: 8px;
+  text-align: left;
+}
+
+.errorDetails pre {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ------------------------------ */
+/* Mobile / Narrow Layout Support */
+/* ------------------------------ */
+@media (max-width: 860px) {
+  .contentArea {
+    flex-direction: column;
+  }
+  .sidePanel {
+    width: auto;
+    max-height: 45vh; /* allow canvas area to remain visible */
+    border-left: none;
+    border-top: 1px solid var(--border, #444);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .sideItem, .sideItemFull {
+    max-height: none; /* allow natural height; sidePanel scrolls */
+  }
+  .modalContent {
+    gap: 0.4rem;
+  }
+  .loadingStatus {
+    font-size: 0.6rem;
+  }
+  .testLayout {
+    flex-direction: column;
+  }
+  .testMappingList, .testCanvasWrapper {
+    width: 100%;
+  }
+  .testMappingList {
+    order: 2;
+  }
+}
+
+/* Extra-small devices refinement */
+@media (max-width: 520px) {
+  .sidePanel {
+    max-height: 50vh; /* a bit more room for scrolling lists */
+    padding: 0.4rem;
+  }
+  .errorBox {
+    font-size: 0.6rem;
+  }
+  .testToolbar {
+    gap: 0.35rem;
+  }
+}
+
+/* -------------------------------- */
+/* Tablet (retain row, adjust widths)*/
+/* -------------------------------- */
+@media (min-width: 861px) and (max-width: 1199px) {
+  .sidePanel {
+    width: 300px; /* slightly narrower for mid-size screens */
+  }
+  .contentArea {
+    gap: 0.85rem;
+  }
+  .modalContent {
+    gap: 0.55rem;
+  }
+}
+
+/* ------------------------------ */
+/* Desktop / Wide Enhancements    */
+/* ------------------------------ */
+@media (min-width: 1200px) {
+  .sidePanel {
+    width: 380px; /* more room for field editing */
+  }
+  .contentArea {
+    gap: 1rem;
+  }
+  .sideItem { max-height: 55%; }
+  .sideItemFull { max-height: 100%; }
+}
+

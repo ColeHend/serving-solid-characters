@@ -1708,13 +1708,13 @@ var Router = class {
    * the event's request.
    */
   addFetchListener() {
-    self.addEventListener("fetch", (event) => {
+    self.addEventListener("fetch", ((event) => {
       const { request } = event;
       const responsePromise = this.handleRequest({ request, event });
       if (responsePromise) {
         event.respondWith(responsePromise);
       }
-    });
+    }));
   }
   /**
    * Adds a message event listener for URLs to cache from the window.
@@ -1739,7 +1739,7 @@ var Router = class {
    * ```
    */
   addCacheListener() {
-    self.addEventListener("message", (event) => {
+    self.addEventListener("message", ((event) => {
       if (event.data && event.data.type === "CACHE_URLS") {
         const { payload } = event.data;
         if (true) {
@@ -1757,7 +1757,7 @@ var Router = class {
           void requestPromises.then(() => event.ports[0].postMessage(true));
         }
       }
-    });
+    }));
   }
   /**
    * Apply the routing rules to a FetchEvent object to get a Response from an
@@ -2148,7 +2148,7 @@ var deleteOutdatedCaches = async (currentPrecacheName, substringToFind = SUBSTRI
 
 // node_modules/workbox-precaching/cleanupOutdatedCaches.js
 function cleanupOutdatedCaches() {
-  self.addEventListener("activate", (event) => {
+  self.addEventListener("activate", ((event) => {
     const cacheName = cacheNames.getPrecacheName();
     event.waitUntil(deleteOutdatedCaches(cacheName).then((cachesDeleted) => {
       if (true) {
@@ -2157,7 +2157,7 @@ function cleanupOutdatedCaches() {
         }
       }
     }));
-  });
+  }));
 }
 
 // node_modules/workbox-precaching/createHandlerBoundToURL.js

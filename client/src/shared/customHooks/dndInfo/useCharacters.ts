@@ -11,7 +11,7 @@ export interface Stats {
 }
 const exampleCharacters: Character[] = [];
 
-function createExampleCharacter(character: Character) {
+export function createExampleCharacter(character: Exclude<Character, 'proficiencyBonus' & 'size'>): Character {
   const newCharacter = new Character();
 
   newCharacter.name = character.name;
@@ -29,10 +29,13 @@ function createExampleCharacter(character: Character) {
   newCharacter.items = character.items;
 
   exampleCharacters.push(newCharacter);
+  return newCharacter;
 }
 
 const Gandalf = createExampleCharacter({
   name: "Gandalf",
+  experience: 2000,
+  ac: 12,
   level: 0,
   levels: [
     {
@@ -110,9 +113,7 @@ const Gandalf = createExampleCharacter({
       {
         name: "Darkvision",
         description: "You can see in dim light within 60 feet as if it were bright light.",
-        metadata: {
-
-        }
+        metadata: {}
       }
     ]
   },
@@ -144,7 +145,7 @@ const Gandalf = createExampleCharacter({
         stat: "int",
         value: 10,
         proficient: true,
-        expertise: true  
+        expertise: true
       },
       "Athletics": {
         stat: "str",
@@ -241,7 +242,8 @@ const Gandalf = createExampleCharacter({
   health: {
     max: 1,
     current: 1,
-    temp: 10
+    temp: 10,
+    hitDie: { total: 2, die: 6, used: 0 }
   },
   stats: {
     str: 8,
@@ -265,7 +267,11 @@ const Gandalf = createExampleCharacter({
     attuned: [
       "Ring of Protection"
     ]
-  }
+  },
+  speed: 0,
+  initiative: 0,
+  size: "",
+  profiencyBonus: 0
 });
 
 

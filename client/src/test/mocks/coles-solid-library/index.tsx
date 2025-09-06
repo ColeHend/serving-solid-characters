@@ -1,5 +1,5 @@
 /** @jsxImportSource solid-js */
-// Minimal test stub for 'coles-solid-library'
+// Minimal test stub for 'coles-solid-library'. The pragma ensures Solid's JSX runtime is used.
 import { JSX, Component, splitProps } from 'solid-js';
 
 type AnyProps = { [k: string]: any } & { children?: any };

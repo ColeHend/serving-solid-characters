@@ -3,6 +3,8 @@ import { effect, render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
 import { lazy, Show, ErrorBoundary } from "solid-js";
 import "./index.scss";
+// Import PDF.js global configuration first
+import './pdf-config';
 import App from "./App";
 import 'solid-devtools';
 const Characters = lazy(() => import("./components/characters/characters"));

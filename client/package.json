@@ -57,6 +57,7 @@
     "scss": "^0.2.4",
     "solid-click-outside": "^0.0.1",
     "solid-js": "^1.9.9",
-  "tesseract.js": "^6.0.1"
+  "tesseract.js": "^6.0.1",
+  "pdfjs-dist": "^4.8.69"
   }
 }
