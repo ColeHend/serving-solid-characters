@@ -37,7 +37,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
             </div>
             <Show when={!isAlwaysOpen()}>
                 <Button borderTheme="none" onClick={()=>setShowCard(old=>!old)}>
-                    {showCard() ? "Expand" : "Collapse"}
+                    {!showCard() ? "Expand" : "Collapse"}
                 </Button>
             </Show>
         </div>
