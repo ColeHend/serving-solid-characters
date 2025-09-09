@@ -14,18 +14,18 @@ public class Feat
 /// <summary>Describes a feature selectable by class, race, feat, etc.</summary>
 public class FeatureDetail
 {
-  public string Name { get; set; } = null!;
-  public string Description { get; set; } = null!;
-  public string? ChoiceKey { get; set; }
-  public FeatureMetadata? Metadata { get; set; }
+  [JsonProperty("name")] public string Name { get; set; } = null!;
+  [JsonProperty("description")] public string Description { get; set; } = null!;
+  [JsonProperty("choiceKey")] public string? ChoiceKey { get; set; }
+  [JsonProperty("metadata")] public FeatureMetadata? Metadata { get; set; }
 }
 
 public class FeatureMetadata
 {
-  public int? Uses { get; set; }
-  public string? Recharge { get; set; }
-  public List<string>? Spells { get; set; }
-  public string? Category { get; set; }
+  [JsonProperty("uses")] public int? Uses { get; set; }
+  [JsonProperty("recharge")] public string? Recharge { get; set; }
+  [JsonProperty("spells")] public List<string>? Spells { get; set; }
+  [JsonProperty("category")] public string? Category { get; set; }
 }
 
 public class Prerequisite
@@ -39,8 +39,8 @@ public class Choices : Dictionary<string, ChoiceDetail> { }
 
 public class ChoiceDetail
 {
-  public List<string> Options { get; set; } = new();
-  public int Amount { get; set; }
+  [JsonProperty("options")] public List<string> Options { get; set; } = new();
+  [JsonProperty("amount")] public int Amount { get; set; }
 }
 
 
@@ -160,21 +160,15 @@ public class Subrace : Race
 
 public class Subclass
 {
-  [JsonProperty("name")]
-  [JsonPropertyName("name")]
-  public string Name { get; set; } = null!;
+  [JsonProperty("name")] public string Name { get; set; } = null!;
 
-  [JsonProperty("parent_class")]
-  [JsonPropertyName("parent_class")]
-  public string ParentClass { get; set; } = null!;
+  [JsonProperty("parent_class")] public string ParentClass { get; set; } = null!;
 
-  [JsonProperty("description")]
-  [JsonPropertyName("description")]
-  public string Description { get; set; } = null!;
+  [JsonProperty("description")] public string Description { get; set; } = null!;
 
-  public Dictionary<int, List<FeatureDetail>> Features { get; set; } = new();
-  public Choices? Choices { get; set; }
-  public Spellcasting? Spellcasting { get; set; } = null!;
+  [JsonProperty("features")] public Dictionary<int, List<FeatureDetail>> Features { get; set; } = new();
+  [JsonProperty("choices")] public Choices? Choices { get; set; }
+  [JsonProperty("spellcasting")] public Spellcasting? Spellcasting { get; set; } = null!;
 }
 
 public class Class5E
@@ -217,10 +211,10 @@ public class Spellcasting
   [JsonProperty("metadata")] public SpellcastingMetadata Metadata { get; set; } = null!;
 
   /// <summary>“number” or “calc” in the source JSON.</summary>
-  public SpellKnownType KnownType { get; set; }
+  [JsonProperty("known_type")] public SpellKnownType KnownType { get; set; }
 
   /// <remarks>Present when <see cref="KnownType"/> is <see cref="SpellKnownType.Number"/>.</remarks>
-  public Dictionary<int, int>? SpellsKnown { get; set; }
+  [JsonProperty("spells_known")] public Dictionary<int, int>? SpellsKnown { get; set; }
 
   /// <remarks>Present when <see cref="KnownType"/> is <see cref="SpellKnownType.Calc"/>.</remarks>
   public SpellCalc? SpellsKnownCalc { get; set; }

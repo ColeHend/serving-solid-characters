@@ -7,7 +7,6 @@ import {
 } from "solid-js";
 import styles from "./viewClasses.module.scss"
 import { useSearchParams } from "@solidjs/router";
-import { Class5E, Subclass } from "../../../models/data";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
@@ -21,6 +20,7 @@ import {
   Table 
 } from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
+import { Class5E, Subclass } from "../../../models/data";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
 import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/subclasses";
 
