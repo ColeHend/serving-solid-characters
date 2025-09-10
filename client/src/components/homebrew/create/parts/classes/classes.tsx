@@ -19,6 +19,7 @@ import { SpellsKnown } from "../../../../../shared/models/casting";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { Class5E } from "../../../../../models/data/classes";
 import { beutifyChip } from "../../../../../shared";
+import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
 interface ClassSpecificValue {
   key: string;
@@ -197,12 +198,12 @@ export const Classes: Component = () => {
     // Basic fields
     ClassFormGroup.set('name', (cls.name || '') as any);
     // No description field in Class5E currently; leave blank
-    const dieNum = typeof cls.hit_die === 'string' ? parseInt(cls.hit_die.replace(/^[dD]/, '') || '0') : (cls as any).hitDie || 0;
+    const dieNum = typeof cls.hitDie === 'string' ? parseInt(cls.hitDie.replace(/^[dD]/, '') || '0') : (cls as any).hitDie || 0;
     ClassFormGroup.set('hitDie', dieNum as any);
     // Map string stats (e.g. 'INT') to Stat enum values expected by form controls
     const statMap: Record<string, Stat> = { 'STR': Stat.STR, 'DEX': Stat.DEX, 'CON': Stat.CON, 'INT': Stat.INT, 'WIS': Stat.WIS, 'CHA': Stat.CHA };
     // Primary ability can be a comma separated list in source -> map each to Stat enum
-    const primaryRaw = (cls.primary_ability || (cls as any).primaryAbility || '').toUpperCase();
+    const primaryRaw = (cls.primaryAbility || (cls as any).primaryAbility || '').toUpperCase();
     if (primaryRaw) {
       const parts: string[] = primaryRaw.split(',').map((p: string) => p.trim().slice(0, 3)).filter(Boolean);
       const mapped: Stat[] = parts.map((p: string) => statMap[p]).filter((v: Stat | undefined): v is Stat => v !== undefined);
@@ -210,7 +211,7 @@ export const Classes: Component = () => {
       
       if (mapped.length) ClassFormGroup.set('primaryStat', mapped as any);
     }
-    const saves = cls.saving_throws || (cls as any).savingThrows || [];
+    const saves = cls.savingThrows || (cls as any).savingThrows || [];
     const savingThrowEnums = saves.map(st => statMap[st.toUpperCase()] ?? st).filter(v => v !== undefined);
     ClassFormGroup.set('savingThrows', savingThrowEnums);
 
@@ -228,7 +229,7 @@ export const Classes: Component = () => {
     ClassFormGroup.set('skills', (profs.skills || []) as any);
 
     // Starting equipment (attempt to pull names)
-  const startingEquipNames = (cls.starting_equipment || []).map((e: any) => e?.item?.name || e?.name || '').filter(Boolean);
+  const startingEquipNames = (cls.startingEquipment || []).map((e: any) => e?.item?.name || e?.name || '').filter(Boolean);
   // The UI displays weaponStart / armorStart / itemStart; without item classification, default all to itemStart
   ClassFormGroup.set('itemStart', startingEquipNames as any);
   // Keep legacy field in case other code reads it
@@ -309,7 +310,7 @@ export const Classes: Component = () => {
         });
 
         // Additionally, walk starting_equipment.optionKeys to make sure referenced choices are present
-        (cls.starting_equipment || []).forEach((se: any) => {
+        (cls.startingEquipment || []).forEach((se: any) => {
           (se?.optionKeys || []).forEach((k: string) => {
             const cval = allChoices[k];
             if (!cval) return;
@@ -390,7 +391,13 @@ export const Classes: Component = () => {
   const [prefilled, setPrefilled] = createSignal(false);
   createEffect(() => {
     if (prefilled()) return; 
-    const className = searchParams.name?.toLowerCase();
+    let className: string;
+    if (typeof searchParams.name === "string" ) {
+      className = searchParams.name?.toLowerCase();
+    } else {
+      className = searchParams.name?.join(" ").toLowerCase() || "";
+    }
+    
     if (!className) return;
     const hb = homebrewManager.classes();
     const srd = srdClasses();
@@ -414,7 +421,7 @@ export const Classes: Component = () => {
     };
     const adapted = toClass5E(fullData, profStore(), classLevels());
     // Simple duplicate guard
-    if (homebrewManager.classes().some(c => c.name.toLowerCase() === (adapted.name || '').toLowerCase() && searchParams.name?.toLowerCase() !== (adapted.name || '').toLowerCase())) {
+    if (homebrewManager.classes().some(c => c.name.toLowerCase() === (adapted.name || '').toLowerCase() && (typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "")?.toLowerCase() !== (adapted.name || '').toLowerCase())) {
       addSnackbar({ message: 'Class name already exists', severity: 'warning' });
       return;
     }
@@ -459,16 +466,32 @@ export const Classes: Component = () => {
       data-item-start={debugSnapshot().itemStart}
     >
       <Form data={ClassFormGroup} onSubmit={onSubmit}>
-        <div class={`${styles.body}`}>
-          <Header resetNonce={resetNonce()} />
-          <Stats />
-          <Proficiencies setProfStore={setProfStore} formGroup={ClassFormGroup} />
-          <Items formGroup={ClassFormGroup} />
-          <FeatureTable tableData={classLevels} setTableData={setClassLevels} formGroup={ClassFormGroup} />
+        <div >
+          <FlatCard icon="identity_platform" headerName="Identity" startOpen={true}>
+            <div class={styles.body}>
+              <Header resetNonce={resetNonce()} />
+              <Stats />
+            </div>
+          </FlatCard>
+          <FlatCard icon="deployed_code" headerName="Proficiencies">
+            <Proficiencies setProfStore={setProfStore} formGroup={ClassFormGroup} />
+          </FlatCard>
+          <FlatCard icon="home_repair_service" headerName="Starting Equipment">
+            <Items formGroup={ClassFormGroup} />
+          </FlatCard>
+          <FlatCard icon="star" headerName="Features">
+            <FeatureTable tableData={classLevels} setTableData={setClassLevels} formGroup={ClassFormGroup} />
+          </FlatCard>
         </div>
-        <Button type="submit" aria-label="Save Class">
-          Submit
-        </Button>
+        <FlatCard
+          icon="save"
+          headerName="Save"
+          alwaysOpen={true}
+        >
+          <Button type="submit" aria-label="Save Class">
+            Submit
+          </Button>
+        </FlatCard>
       </Form>
     </Container>
   );

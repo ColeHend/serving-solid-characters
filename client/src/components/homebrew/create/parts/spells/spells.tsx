@@ -8,6 +8,7 @@ import { Spell } from "../../../../../models";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
+import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
 const Spells: Component = () => {
   const doesExist = ()=>{
@@ -89,7 +90,7 @@ const Spells: Component = () => {
     if (spell) {
       setCurrentSpell(spell);
       setSpellDesc(spell.description);
-      // setSpellHigherLevel(spell.higherLevel);
+      setSpellHigherLevel(spell.higherLevel);
     };
   };
 
@@ -99,49 +100,62 @@ const Spells: Component = () => {
   createEffect(() => {
     setCurrentSpell({ 'description': spellDesc() });
   });
-  // createEffect(() => {
-  //   setCurrentSpell({ 'higherLevel': spellHigherLevel() });
-  // });
+  createEffect(() => {
+    setCurrentSpell({ 'higherLevel': spellHigherLevel() });
+  });
 
-  return (
-    <>
-      <Body>
-        <h1>Spells</h1>
-        <div class={`${styles.wrapper}`}>
-          <p>
-            <FormField class={`${styles.smallField}`} name="Spell Name">
-              <Input transparent value={currentSpell['name']} onInput={(e) => setCurrentSpell({ name: e.currentTarget.value })} />
-            </FormField>
-            <Show when={doesExist()}>
-              <Button onClick={()=>fillSpellInfo()}>Fill Info</Button>
-              <Button onClick={() => HomebrewManager.removeSpell(currentSpell.name)}>Delete</Button>
-            </Show>
-          </p>
-          <span class={`${styles.break}`} />
-          <p>
-            <Checkbox label="has Verbal?"
-              checked={currentSpell['isVerbal']}
-              onChange={(e) => setCurrentSpell({ isVerbal: e })} />
-            <Checkbox label="has Somatic?"
-              checked={currentSpell['isSomatic']}
-              onChange={(e) => setCurrentSpell({ isSomatic: e })} />
-            <Checkbox label="has Material?"
-              checked={currentSpell['isMaterial']}
-              onChange={(e) => setCurrentSpell({ isMaterial: e })} />
-            <Checkbox label="is Ritual?"
-              checked={currentSpell['is_ritual']}
-              onChange={(e) => setCurrentSpell({ is_ritual: e })} />
-          </p>
-          <span class={`${styles.break}`} />
-          <Show when={currentSpell['isMaterial']}>
-            <div>
-              <FormField name="Material Components">
-                <Input transparent
-                  value={currentSpell['materials_Needed']}
-                  onChange={(e) => setCurrentSpell({ materials_Needed: e.currentTarget.value })} />
-              </FormField>
-            </div>
+  return <Body>
+    <h1>Spells</h1>
+    <div class={`${styles.wrapper}`}>
+      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true}>
+        <p>
+          <FormField class={`${styles.smallField}`} name="Spell Name">
+            <Input transparent value={currentSpell['name']} onInput={(e) => setCurrentSpell({ name: e.currentTarget.value })} />
+          </FormField>
+          <Show when={doesExist()}>
+            <Button onClick={()=>fillSpellInfo()}>Fill Info</Button>
+            <Button onClick={() => HomebrewManager.removeSpell(currentSpell.name)}>Delete</Button>
           </Show>
+        </p>
+        <p>
+          <FormField name="Description">
+            <TextArea transparent={true} text={spellDesc} setText={setSpellDesc} />
+          </FormField>
+        </p>
+        <span class={`${styles.break}`} />
+        <p>
+          <FormField name="Higher Levels">
+            <TextArea transparent={true} text={spellHigherLevel} setText={setSpellHigherLevel} />
+          </FormField>
+        </p>
+      </FlatCard>
+      <FlatCard icon="candle" headerName="Components">
+        <span class={`${styles.break}`} />
+        <p>
+          <Checkbox label="has Verbal?"
+            checked={currentSpell['isVerbal']}
+            onChange={(e) => setCurrentSpell({ isVerbal: e })} />
+          <Checkbox label="has Somatic?"
+            checked={currentSpell['isSomatic']}
+            onChange={(e) => setCurrentSpell({ isSomatic: e })} />
+          <Checkbox label="has Material?"
+            checked={currentSpell['isMaterial']}
+            onChange={(e) => setCurrentSpell({ isMaterial: e })} />
+          <Checkbox label="is Ritual?"
+            checked={currentSpell['is_ritual']}
+            onChange={(e) => setCurrentSpell({ is_ritual: e })} />
+        </p>
+        <span class={`${styles.break}`} />
+        <Show when={currentSpell['isMaterial']}>
+          <div>
+            <FormField name="Material Components">
+              <Input transparent
+                value={currentSpell['materials_Needed']}
+                onChange={(e) => setCurrentSpell({ materials_Needed: e.currentTarget.value })} />
+            </FormField>
+          </div>
+        </Show>
+        <div class={`${styles.flexBoxRow}`}>
           <span class={`${styles.break}`} />
           <p class={`${styles.field}`}>
             <label>Level </label>
@@ -165,6 +179,10 @@ const Spells: Component = () => {
               }</For>
             </Select>
           </p>
+        </div>
+      </FlatCard>
+      <FlatCard icon="deployed_code" headerName="properties">
+        <div class={`${styles.flexBoxRow}`}>
           <span class={`${styles.break}`} />
           <div class={`${styles.field}`}>
             <h4>Classes?</h4>
@@ -241,8 +259,7 @@ const Spells: Component = () => {
                   onChange={(e) => setCurrentSpell({ 'range': e.currentTarget.value})} />
               </FormField>
             </Show>
-          </p>
-					
+          </p>     
           <span class={`${styles.break}`} />
           <p class={`${styles.field}`}>
             <span>
@@ -280,29 +297,21 @@ const Spells: Component = () => {
             </span>
           </p>
           <span class={`${styles.break}`} />
-          <p>
-            <FormField name="Description">
-              <TextArea transparent={true} text={spellDesc} setText={setSpellDesc} />
-            </FormField>
-          </p>
-          <span class={`${styles.break}`} />
-          <p>
-            <FormField name="Higher Levels">
-              <TextArea transparent={true} text={spellHigherLevel} setText={setSpellHigherLevel} />
-            </FormField>
-          </p>
-          <span class={`${styles.break}`} />
-          <p>
-            <Show when={!doesExist()}>
-              <Button onClick={createSpell}>Create</Button>
-            </Show>
-            <Show when={doesExist()}>
-              <Button onClick={updateSpell}>Update</Button>
-            </Show>
-          </p>
         </div>
-      </Body>
-    </>
-  );
+        
+      </FlatCard>
+      <FlatCard icon="save" headerName="Saving" alwaysOpen>
+        <span class={`${styles.break}`} />
+        <p>
+          <Show when={!doesExist()}>
+            <Button onClick={createSpell}>Create</Button>
+          </Show>
+          <Show when={doesExist()}>
+            <Button onClick={updateSpell}>Update</Button>
+          </Show>
+        </p>
+      </FlatCard>
+    </div>
+  </Body>
 }
 export default Spells;

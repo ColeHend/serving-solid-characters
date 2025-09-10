@@ -8,6 +8,7 @@ interface FlatCardProps extends JSX.HTMLAttributes<HTMLDivElement> {
     children: JSX.Element;
     alwaysOpen?: boolean;
     startOpen?: boolean;
+    extraHeaderJsx?: JSX.Element;
 }
 
 export const FlatCard:Component<FlatCardProps> = (props) => {
@@ -17,6 +18,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
         "children",
         "alwaysOpen",
         "startOpen",
+        "extraHeaderJsx"
     ])
 
     const [showCard,setShowCard] = createSignal<boolean>(local.startOpen !== undefined ? local.startOpen : false);
@@ -35,11 +37,14 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
                 <Icon name={local.icon} />
                 <h4>{local.headerName}</h4>
             </div>
-            <Show when={!isAlwaysOpen()}>
-                <Button borderTheme="none" onClick={()=>setShowCard(old=>!old)}>
-                    {!showCard() ? "Expand" : "Collapse"}
-                </Button>
-            </Show>
+            <div>
+                {local.extraHeaderJsx}
+                <Show when={!isAlwaysOpen()}>
+                    <Button borderTheme="none" onClick={()=>setShowCard(old=>!old)}>
+                        {!showCard() ? "Expand" : "Collapse"}
+                    </Button>
+                </Show>
+            </div>
         </div>
         <Show when={showCard()}>
             <div class={`${styles.cardContent}`}>{local.children}</div>

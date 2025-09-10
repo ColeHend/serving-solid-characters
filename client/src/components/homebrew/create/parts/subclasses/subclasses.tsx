@@ -14,6 +14,7 @@ import { FeaturesSection } from './FeaturesSection';
 import { SpellcastingSection } from './SpellcastingSection';
 import { FeatureDetail } from "../../../../../models/data";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
+import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
 export interface FeatureDetailLevel extends FeatureDetail {
   info: {
@@ -399,56 +400,64 @@ const Subclasses: Component = () => {
           </div>
         </Show>
       </div>
-      <ClassSelection form={SubclassFormGroup as any} allClassNames={allClassNames} getSubclassLevels={getSubclassLevels} setToAddFeatureLevel={setToAddFeatureLevel} updateParamsIfReady={updateParamsIfReady} />
-  <CoreFields form={SubclassFormGroup as any} updateParamsIfReady={updateParamsIfReady} onNameInput={markDirty} onDescriptionInput={markDirty} />
+      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true}>
+        <ClassSelection form={SubclassFormGroup as any} allClassNames={allClassNames} getSubclassLevels={getSubclassLevels} setToAddFeatureLevel={setToAddFeatureLevel} updateParamsIfReady={updateParamsIfReady} />
+        <CoreFields form={SubclassFormGroup as any} updateParamsIfReady={updateParamsIfReady} onNameInput={markDirty} onDescriptionInput={markDirty} />
+      </FlatCard>
       <Show when={SubclassFormGroup.get('parent_class') && SubclassFormGroup.get('name')}>
-        <FeaturesSection 
-          form={SubclassFormGroup as any} 
-          getSubclassLevels={getSubclassLevels} 
-          toAddFeatureLevel={toAddFeatureLevel} 
-          setToAddFeatureLevel={setToAddFeatureLevel} 
-          getLevelUpFeatures={getLevelUpFeatures} 
-          setEditIndex={setEditIndex}
-          getEditIndex={editIndex} />
-  <SpellcastingSection
-          form={SubclassFormGroup as any}
-          toAddKnownLevel={toAddKnownLevel}
-          setToAddKnownLevel={setToAddKnownLevel}
-          toAddKnownAmount={toAddKnownAmount}
-          setToAddKnownAmount={setToAddKnownAmount}
-          mergedCastingLevels={mergedCastingLevels as any}
-          allSpells={allSpells}
-          getAddNumberAccent={getAddNumberAccent}
-          getNumberArray={getNumberArray}
-           onSave={persistSubclass}
-           canSave={createMemo(()=> canAddSubclass() && (activeKey()==='__new__' ? true : (isModifiedFlag() || userDirty())))}
-          setSubclassSpells={(fn)=>{
-            const next = fn(((SubclassFormGroup.get('subclassSpells') as Spell[])||[]));
-            SubclassFormGroup.set('subclassSpells', next as any);
-          }}
-          setSpellcastingInfo={(fn)=>{
-            const next = fn(((SubclassFormGroup.get('spellcastingInfo') as any[])||[]));
-            SubclassFormGroup.set('spellcastingInfo', next as any);
-          }}
-          setSpellsKnownPerLevel={(fn)=>{
-            const next = fn(((SubclassFormGroup.get('spellsKnownPerLevel') as any[])||[]));
-            SubclassFormGroup.set('spellsKnownPerLevel', next as any);
-          }}
-        />
-        <div style={{ display: 'flex', 'gap': '0.75rem', 'margin-top': '0.75rem', 'flex-wrap':'wrap' }}>
-          <button
-            disabled={!canAddSubclass() || (activeKey() !== '__new__' && !(isModifiedFlag() || userDirty()))}
-            onClick={persistSubclass}
-            style={{ padding: '0.55rem 0.9rem', 'background-color':'var(--accent,#3a6ff7)', color:'#fff', border:'none', 'border-radius':'6px', cursor:'pointer', 'font-weight':600 }}
-          >{activeKey()==='__new__' ? 'Save Subclass' : 'Update Subclass'}</button>
-          <Show when={activeKey() !== '__new__' && (isModifiedFlag() || userDirty())}>
+        <FlatCard icon="star" headerName="Features">
+          <FeaturesSection 
+            form={SubclassFormGroup as any} 
+            getSubclassLevels={getSubclassLevels} 
+            toAddFeatureLevel={toAddFeatureLevel} 
+            setToAddFeatureLevel={setToAddFeatureLevel} 
+            getLevelUpFeatures={getLevelUpFeatures} 
+            setEditIndex={setEditIndex}
+            getEditIndex={editIndex} />
+        </FlatCard>
+        <FlatCard icon="equalizer" headerName="Spellcasting">
+          <SpellcastingSection
+            form={SubclassFormGroup as any}
+            toAddKnownLevel={toAddKnownLevel}
+            setToAddKnownLevel={setToAddKnownLevel}
+            toAddKnownAmount={toAddKnownAmount}
+            setToAddKnownAmount={setToAddKnownAmount}
+            mergedCastingLevels={mergedCastingLevels as any}
+            allSpells={allSpells}
+            getAddNumberAccent={getAddNumberAccent}
+            getNumberArray={getNumberArray}
+            onSave={persistSubclass}
+            canSave={createMemo(()=> canAddSubclass() && (activeKey()==='__new__' ? true : (isModifiedFlag() || userDirty())))}
+            setSubclassSpells={(fn)=>{
+              const next = fn(((SubclassFormGroup.get('subclassSpells') as Spell[])||[]));
+              SubclassFormGroup.set('subclassSpells', next as any);
+            }}
+            setSpellcastingInfo={(fn)=>{
+              const next = fn(((SubclassFormGroup.get('spellcastingInfo') as any[])||[]));
+              SubclassFormGroup.set('spellcastingInfo', next as any);
+            }}
+            setSpellsKnownPerLevel={(fn)=>{
+              const next = fn(((SubclassFormGroup.get('spellsKnownPerLevel') as any[])||[]));
+              SubclassFormGroup.set('spellsKnownPerLevel', next as any);
+            }}
+          />
+        </FlatCard>
+        <FlatCard icon="save" headerName="save" alwaysOpen>
+          <div style={{ display: 'flex', 'gap': '0.75rem', 'margin-top': '0.75rem', 'flex-wrap':'wrap' }}>
             <button
-              onClick={()=> loadSubclassForEdit(activeKey())}
-              style={{ padding: '0.55rem 0.9rem', 'background-color':'#333', color:'#fff', border:'1px solid #444', 'border-radius':'6px', cursor:'pointer' }}
-            >Reset Changes</button>
-          </Show>
-          <Show when={isModifiedFlag() || userDirty()}><span style={{ 'align-self': 'center', 'font-size':'0.7rem', 'letter-spacing': '0.5px', 'background':'#444', color:'#fff', padding:'0.25rem 0.5rem', 'border-radius':'4px' }}>Modified</span></Show>
-        </div>
+              disabled={!canAddSubclass() || (activeKey() !== '__new__' && !(isModifiedFlag() || userDirty()))}
+              onClick={persistSubclass}
+              style={{ padding: '0.55rem 0.9rem', 'background-color':'var(--accent,#3a6ff7)', color:'#fff', border:'none', 'border-radius':'6px', cursor:'pointer', 'font-weight':600 }}
+            >{activeKey()==='__new__' ? 'Save Subclass' : 'Update Subclass'}</button>
+            <Show when={activeKey() !== '__new__' && (isModifiedFlag() || userDirty())}>
+              <button
+                onClick={()=> loadSubclassForEdit(activeKey())}
+                style={{ padding: '0.55rem 0.9rem', 'background-color':'#333', color:'#fff', border:'1px solid #444', 'border-radius':'6px', cursor:'pointer' }}
+              >Reset Changes</button>
+            </Show>
+            <Show when={isModifiedFlag() || userDirty()}><span style={{ 'align-self': 'center', 'font-size':'0.7rem', 'letter-spacing': '0.5px', 'background':'#444', color:'#fff', padding:'0.25rem 0.5rem', 'border-radius':'4px' }}>Modified</span></Show>
+          </div>
+        </FlatCard>
       </Show>
     </Body>
   );

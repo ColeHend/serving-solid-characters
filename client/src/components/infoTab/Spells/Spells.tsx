@@ -31,7 +31,7 @@ const masterSpells: Component = () => {
     const list = dndSrdSpells();
     if (list.length === 0) return;
     const param = searchParam.name;
-    const found = param && list.some(s => s.name.toLowerCase() === param.toLowerCase());
+    const found = param && list.some(s => s.name.toLowerCase() === (typeof param === "string" ? param.toLowerCase() : param.join(" ").toLowerCase() ));
     if (!found) {
       setSearchParam({ name: list[0].name });
     }
@@ -41,7 +41,7 @@ const masterSpells: Component = () => {
   const selectedSpell = createMemo(() => {
     const list = dndSrdSpells();
     if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].name).toLowerCase();
+    const target = (typeof searchParam.name === "string" ? searchParam.name :searchParam.name?.join(" ")  || list[0].name).toLowerCase();
     return list.find(s => s.name.toLowerCase() === target) || list[0];
   });
 

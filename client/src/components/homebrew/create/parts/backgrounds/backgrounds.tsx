@@ -18,6 +18,7 @@ import LanguagesModal from './sections/LanguagesModal';
 import LanguagesSection from './sections/LanguagesSection';
 import FeaturesSection from './sections/FeaturesSection';
 import { validate, fieldError as fieldErrHelper } from './validation';
+import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
 const Backgrounds: Component = () => {
   const allBackgrounds = useDnDBackgrounds();
@@ -149,35 +150,37 @@ const Backgrounds: Component = () => {
         <h1>Backgrounds</h1>
         <div class={styles.newPanel}>
           <h2>SRD / Homebrew Background Editor</h2>
-          <div class={styles.rowWrap}>
-            <FormField name="Select Background (2024)">
-              <Select transparent value={bStore.state.selection.activeName || ''} onChange={(val) => { if (val === '__new__') bStore.selectNew(); else handleSelectBackground(val); }}>
-                <Option value="">-- choose --</Option>
-                <Option value="__new__">+ New Background</Option>
-                <For each={bStore.state.order}>{name => <Option value={name}>{name}</Option>}</For>
-              </Select>
-            </FormField>
-            <Show when={bStore.activeBackground()}>
-              <div class={styles.description} style={{ width: '100%' }}>
-                <Show
-                  when={bStore.state.selection.activeName === '__new__'}
-                  fallback={<div>
-                    <h3>{bStore.activeBackground()?.name}</h3>
-                    <p>{bStore.activeBackground()?.desc}</p>
-                  </div>}
-                >
-                  <div>
-                    <FormField name="Name">
-                      <Input transparent value={bStore.activeBackground()?.name || ''} onInput={e => bStore.updateBlankDraft('name', e.currentTarget.value)} />
-                    </FormField>
-                    <FormField name="Description">
-                      <Input transparent value={bStore.activeBackground()?.desc || ''} onInput={e => bStore.updateBlankDraft('desc', e.currentTarget.value)} />
-                    </FormField>
-                  </div>
-                </Show>
-              </div>
-            </Show>
-          </div>
+          <FlatCard icon="identity_platform" headerName="Identity" alwaysOpen>
+            <div class={styles.rowWrap}>
+              <FormField name="Select Background (2024)">
+                <Select transparent value={bStore.state.selection.activeName || ''} onChange={(val) => { if (val === '__new__') bStore.selectNew(); else handleSelectBackground(val); }}>
+                  <Option value="">-- choose --</Option>
+                  <Option value="__new__">+ New Background</Option>
+                  <For each={bStore.state.order}>{name => <Option value={name}>{name}</Option>}</For>
+                </Select>
+              </FormField>
+              <Show when={bStore.activeBackground()}>
+                <div class={styles.description} style={{ width: '100%' }}>
+                  <Show
+                    when={bStore.state.selection.activeName === '__new__'}
+                    fallback={<div>
+                      <h3>{bStore.activeBackground()?.name}</h3>
+                      <p>{bStore.activeBackground()?.desc}</p>
+                    </div>}
+                  >
+                    <div>
+                      <FormField name="Name">
+                        <Input transparent value={bStore.activeBackground()?.name || ''} onInput={e => bStore.updateBlankDraft('name', e.currentTarget.value)} />
+                      </FormField>
+                      <FormField name="Description">
+                        <Input transparent value={bStore.activeBackground()?.desc || ''} onInput={e => bStore.updateBlankDraft('desc', e.currentTarget.value)} />
+                      </FormField>
+                    </div>
+                  </Show>
+                </div>
+              </Show>
+            </div>
+          </FlatCard>
           <Show when={bStore.activeBackground()}>
             <div class={styles.sectionList}>
               <AbilitiesSection
@@ -255,8 +258,7 @@ const Backgrounds: Component = () => {
                 </div>
               </Show>
               {/* Persist */}
-              <div class={styles.flatSection}>
-                <div class={styles.sectionHeader}><h4>💾 Persist</h4></div>
+              <FlatCard icon="save" headerName="Saving" alwaysOpen>
                 <div class={styles.chipsRow}>
                   <Button disabled={!bStore.activeBackground() || !isValid()} onClick={() => saveNewFormat(false)}>Save As Homebrew</Button>
                   <Show when={existsInHomebrew()}>
@@ -264,7 +266,7 @@ const Backgrounds: Component = () => {
                   </Show>
                   <Show when={isModified()}><span class={styles.modifiedBadge}>Modified</span></Show>
                 </div>
-              </div>
+              </FlatCard>
             </div>
           </Show>
           <Show when={snackbar()}>

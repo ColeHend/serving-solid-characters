@@ -18,7 +18,7 @@ export const AbilitySection: Component<Props> = (p) => {
     toggle,
   } = p.api;
   return (
-    <FlatCard icon="equalizer" headerName="Ability Bonus">
+    <FlatCard icon="electric_bolt" headerName="Ability Bonus">
       <div class="inlineRow inlineDense" style={{ "margin-top": ".25rem" }}>
         <FormField name="Ability">
           <Select

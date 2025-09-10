@@ -48,7 +48,7 @@ const Races: Component = () => {
               <FlatCard icon='identity_platform' headerName='Identity' startOpen={true}>
                 <IdentitySection errors={validationErrors()} />
               </FlatCard>
-              <FlatCard icon='equalizer' headerName='Ability Bonuses'>
+              <FlatCard icon='electric_bolt' headerName='Ability Bonuses'>
                 <AbilityBonusesSection />
               </FlatCard>
               <FlatCard icon='chat' headerName='Languages' >
