@@ -1,7 +1,7 @@
 {
   "name": "vite-template-solid",
-  "version": "0.0.0",
-  "description": "Updated dependencies to latest versions (2025-09)",
+  "version": "0.5.0",
+  "description": "update 0.5.0",
   "scripts": {
     "start": "vite --host",
     "dev": "vite",
