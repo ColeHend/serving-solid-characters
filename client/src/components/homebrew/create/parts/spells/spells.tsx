@@ -11,9 +11,10 @@ import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/al
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
 const Spells: Component = () => {
-  const doesExist = ()=>{
-    return HomebrewManager.spells().findIndex((x) => x.name === currentSpell.name) > -1;
-  }
+  // const doesExist = ()=>{
+  //   return HomebrewManager.spells().findIndex((x) => x.name.toLowerCase() === currentSpell.name.toLowerCase()) > -1;
+  // }
+  const doesExist = createMemo(()=>HomebrewManager.spells().findIndex((x) => x.name.toLowerCase() === currentSpell.name.toLowerCase()) > -1)
   const createSpell = () => {
     HomebrewManager.addSpell(currentSpell);
   }

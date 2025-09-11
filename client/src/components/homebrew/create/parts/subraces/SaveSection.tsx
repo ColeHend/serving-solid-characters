@@ -13,7 +13,7 @@ export const SaveSection: Component<Props> = (p) => {
   return <FlatCard icon="save" headerName="Save" alwaysOpen>
     <div class="inlineRow" style={{ "margin-top": ".5rem" }}>
         <Button disabled={!!validationErrors().length} onClick={save}>
-          {state.editingExisting ? "Update Subrace" : "Save Subrace"}
+          {state.editingExisting ? "Update Subrace" : "Create Subrace"}
         </Button>
         <Show when={state.editingExisting}>
           <Button onClick={deleteCurrent}>Delete</Button>

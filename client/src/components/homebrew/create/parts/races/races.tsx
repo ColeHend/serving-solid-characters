@@ -21,10 +21,19 @@ const Races: Component = () => {
 
   const homebrewNames = createMemo(() => (homebrewManager.races() || []).map((r: any) => r.name).filter(Boolean).sort());
   const srdNames = createMemo(() => store.state.order.filter(n => !homebrewNames().includes(n)));
+  let runOnce = true;
   const handleSelect = (val: string) => {
-    if (!val || val === '__divider_homebrew__') return;
-    if (val === '__new__') { store.selectNew(); return; }
-    if (homebrewNames().includes(val)) store.selectHomebrewRace(val); else store.selectSrdRace(val);
+    if (runOnce) {
+      if (!val || val === '__divider_homebrew__') return;
+      if (val === '__new__') { 
+        store.selectNew(); 
+        runOnce = false;
+        return; 
+      }
+      if (homebrewNames().includes(val)) store.selectHomebrewRace(val); else store.selectSrdRace(val);
+     
+
+    }
   };
 
   return (

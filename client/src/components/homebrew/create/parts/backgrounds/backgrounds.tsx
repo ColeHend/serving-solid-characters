@@ -260,7 +260,9 @@ const Backgrounds: Component = () => {
               {/* Persist */}
               <FlatCard icon="save" headerName="Saving" alwaysOpen>
                 <div class={styles.chipsRow}>
-                  <Button disabled={!bStore.activeBackground() || !isValid()} onClick={() => saveNewFormat(false)}>Save As Homebrew</Button>
+                  <Show when={!existsInHomebrew()} >
+                   <Button disabled={!bStore.activeBackground() || !isValid()} onClick={() => saveNewFormat(false)}>Save As Homebrew</Button>
+                  </Show>
                   <Show when={existsInHomebrew()}>
                     <Button disabled={!bStore.activeBackground() || !isModified() || !isValid()} onClick={() => saveNewFormat(true)}>Update Homebrew</Button>
                   </Show>
