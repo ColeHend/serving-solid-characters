@@ -22,7 +22,7 @@ const Items: Component = () => {
 
   // One-time deep link selection (avoid continuous effect causing re-select loops)
   onMount(() => {
-    const initial = searchParams.name;
+    const initial = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ");
     if (initial && initial !== store.state.selection.activeName) {
       store.select(initial);
       if ((window as any)?.DEBUG_ITEMS) console.debug('[items] mount select param', initial);

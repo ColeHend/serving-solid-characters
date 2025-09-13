@@ -1,7 +1,7 @@
 import { createMemo, createSignal, onCleanup } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useSearchParams } from "@solidjs/router";
-import { homebrewManager, SIZE_TOKENS } from "../../../../../shared";
+import { Clone, homebrewManager, SIZE_TOKENS } from "../../../../../shared";
 import {
   SubraceDraft,
   blankDraft,
@@ -99,15 +99,19 @@ export function useSubraceEditor() {
     setState({ draft, editingExisting: true });
   }
   function selectParent(p: string) {
-    setState({ selection: { race: p, subrace: "" }, editingExisting: false });
+    setState((old)=>({ selection: { race: p, subrace: old.selection?.subrace ?? '' }, editingExisting: false }));
     ensureDraft(p);
-    setParams({ race: p, subrace: "" });
+    setParams({ race: p, subrace: state.selection.subrace ?? '' });
   }
   function selectSubrace(name: string) {
-    if (!state.selection.race) return;
-    loadExisting(state.selection.race, name);
-    setState("selection", { race: state.selection.race, subrace: name });
-    setParams({ race: state.selection.race, subrace: name });
+    const newState = Clone(state);
+    // const pass = window.location.href.includes(`subrace=${name}`) === false;
+    const pass = !!parent() && !!subraceName()
+    
+    if (!newState.selection.race || pass) return;
+    loadExisting(newState.selection.race, name);
+    setState("selection", { race: newState.selection.race, subrace: name });
+    setParams({ race: newState.selection.race, subrace: name });
   }
   function updateDraft<K extends keyof SubraceDraft>(
     key: K,
@@ -268,8 +272,8 @@ export function useSubraceEditor() {
     setParams({ race: state.selection.race || "" });
   }
 
-  const parent = () => state.selection.race;
-  const subraceName = () => state.selection.subrace;
+  const parent = createMemo(() => state.selection.race);
+  const subraceName = createMemo(() => state.selection.subrace);
   const draft = () => state.draft;
   if (state.status === "idle") {
     if (parent()) ensureDraft(parent()!);

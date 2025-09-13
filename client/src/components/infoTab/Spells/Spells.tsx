@@ -8,7 +8,7 @@ import {
 } from "solid-js";
 import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
-import SearchBar from "./searchBar/searchBar";
+// import SearchBar from "./searchBar/searchBar";
 import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
@@ -17,6 +17,7 @@ import { Body, Table, Chip, Icon, Column, Cell, Header,Menu, Row } from "coles-s
 import { SpellMenu } from "./spellMenu/spellMenu";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../models";
+import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 
 
 const masterSpells: Component = () => {
@@ -140,12 +141,18 @@ const masterSpells: Component = () => {
   return (
     <Body class={`${styles.spellsBody}`}>
       <h1>Spells</h1>
-      <SearchBar
+      {/* <SearchBar
         searchResults={searchResults}
         setSearchResults={setSearchResults}
         spellsSrd={tableData}
-      ></SearchBar>
-
+      ></SearchBar> */}
+      <div class={`${styles.searchBar}`}>
+        <SearchBar 
+          setResults={setSearchResults}
+          dataSource={tableData}
+          searchFunction={(spell,search)=>spell.name.toLowerCase() === search.toLowerCase()}
+        />
+      </div>
       <div class={`${styles.SpellsBody}`}>
         <Table 
           data={() => paginatedSpells()} 

@@ -37,7 +37,7 @@ const races: Component = () => {
   createEffect(() => {
     const list = srdRaces();
     if (list.length === 0) return;
-    const param = searchParam.name;
+    const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
     const found = param && list.some(r => r.name.toLowerCase() === param.toLowerCase());
     if (!found) {
       setSearchParam({ name: list[0].name});
@@ -47,7 +47,8 @@ const races: Component = () => {
   const selectedRace = createMemo(() => {
     const list = srdRaces();
     if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].name).toLowerCase();
+    const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
+    const target = (param|| list[0].name).toLowerCase();
     return list.find(r => r.name.toLowerCase() === target) || list[0];
   })
   

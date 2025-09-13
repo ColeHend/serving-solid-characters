@@ -61,7 +61,8 @@ const ItemsViewTab:Component = () => {
   if (!searchParam.itemType) setSearchParam({itemType: elementMemo()[0].name })
 
   const startingIndex = createMemo(()=>{
-    const target = elementMemo().findIndex((x)=>x.name.toLowerCase() === searchParam.itemType?.toLowerCase());
+    const param = typeof searchParam.itemType === "string" ? searchParam.itemType : searchParam.itemType?.join(" ");
+    const target = elementMemo().findIndex((x)=>x.name.toLowerCase() === param?.toLowerCase());
     
     if (target === -1) return 0;
     return target;

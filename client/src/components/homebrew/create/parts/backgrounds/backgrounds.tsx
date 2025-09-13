@@ -19,10 +19,12 @@ import LanguagesSection from './sections/LanguagesSection';
 import FeaturesSection from './sections/FeaturesSection';
 import { validate, fieldError as fieldErrHelper } from './validation';
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
+import { useSearchParams } from "@solidjs/router";
 
 const Backgrounds: Component = () => {
   const allBackgrounds = useDnDBackgrounds();
   const allFeats = useDnDFeats();
+  const [searchParams,setSearchParams] = useSearchParams();
 
   // ---------------- NEW DATA FORMAT SECTION (incremental migration) ----------------
   const bStore = backgroundsStore; // alias
@@ -143,6 +145,22 @@ const Backgrounds: Component = () => {
   const [snackbar, setSnackbar] = createSignal<{ msg: string; type: 'success' | 'error'; ts: number } | null>(null);
   function showSnackbar(msg: string, type: 'success'|'error'='success') { setSnackbar({ msg, type, ts: Date.now() }); }
   createEffect(() => { if (snackbar()) { const t = setTimeout(()=> setSnackbar(null), SNACKBAR_TIMEOUT_MS); return () => clearTimeout(t); } });
+
+  // Search Params
+
+  if (searchParams.name === "" && bStore.activeBackground()) {
+    setSearchParams({ name: bStore.activeBackground()?.name})
+  } else {
+    setSearchParams({ name: bStore.state.order[0]})
+  }
+
+  createEffect(()=>{
+    if (searchParams.name && typeof searchParams.name === "string") {
+      handleSelectBackground(searchParams.name)
+    } else if (Array.isArray(searchParams.name)) {
+      handleSelectBackground(searchParams.name?.join(" "))
+    }
+  })
 
   return (
     <>

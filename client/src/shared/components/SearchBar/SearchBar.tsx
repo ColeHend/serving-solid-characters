@@ -58,7 +58,7 @@ const SearchBar = <T,>(props: Props<T>) => {
         {...props}
         class={`${style.input} ${(props.class ?? "")}`}
       />
-      <Button onClick={searchClick} title={local.tooltip ?? "Search!"}><Icon name="search" /></Button>
+      <Button onClick={searchClick} title={local.tooltip ?? "Search!"}><Icon name="search" size={"medium"} /></Button>
     </div>
   )
 }

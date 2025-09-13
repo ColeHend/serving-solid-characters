@@ -18,8 +18,10 @@
         &:focus {
             outline: none;
         }
-
+        
     }
+
+    
     
     button {
         background-color: inherit !important;
@@ -27,6 +29,11 @@
         margin: 0;
         padding: 0;
         border-radius: 30px;
+
+        svg {
+            fill: #000000 !important;
+        }
+
         &:hover {
             cursor: pointer;
         }

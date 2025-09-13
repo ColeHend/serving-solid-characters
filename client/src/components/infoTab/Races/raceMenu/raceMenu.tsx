@@ -6,7 +6,7 @@ import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 
 interface menuProps {
-    race: Race
+  race: Race
 }
 
 export const RaceMenu:Component<menuProps> = (props) => {

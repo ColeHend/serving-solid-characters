@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo, createSignal } from 'solid-js';
+import { Component, For, Show, createEffect, createMemo, createSignal } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Body, Select, Option, FormField, Button, addSnackbar, Container } from 'coles-solid-library';
 import { racesStore } from './racesStore';
@@ -11,6 +11,7 @@ import { validateRace } from './validation';
 import { homebrewManager } from '../../../../../shared';
 import styles from './races.module.scss';
 import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
+import { useSearchParams } from '@solidjs/router';
 
 const Races: Component = () => {
   const store = racesStore;
@@ -18,6 +19,7 @@ const Races: Component = () => {
   const isValid = createMemo(() => validationErrors().length === 0);
   const showSnackbar = (msg: string, type: 'success' | 'error' = 'success') => addSnackbar({ message:msg, severity:type, closeTimeout: 500  });
 
+  const [searchParams,setSearchParams] = useSearchParams();
 
   const homebrewNames = createMemo(() => (homebrewManager.races() || []).map((r: any) => r.name).filter(Boolean).sort());
   const srdNames = createMemo(() => store.state.order.filter(n => !homebrewNames().includes(n)));
@@ -30,11 +32,33 @@ const Races: Component = () => {
         runOnce = false;
         return; 
       }
-      if (homebrewNames().includes(val)) store.selectHomebrewRace(val); else store.selectSrdRace(val);
+      if (homebrewNames().includes(val)) {
+        store.selectHomebrewRace(val);
+      } else {
+        store.selectSrdRace(val);
+      }
      
 
     }
   };
+
+  // search Params
+
+  if (searchParams.name === "" && store.activeRace()) {
+    setSearchParams({ name: store.activeRace()?.name})
+  } else {
+    setSearchParams({ name: store.state.order[0]})
+  }
+
+  createEffect(() => {
+    const target = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ")
+    if (searchParams.name !== "" && homebrewNames().includes(searchParams.name)) {
+      store.selectHomebrewRace(target ?? "")
+    } else {
+      store.selectSrdRace(target ?? "")
+    }
+    store.state.selection.activeName == target
+  })
 
   return (
     <Body>
