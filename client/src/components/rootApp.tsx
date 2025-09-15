@@ -2,7 +2,7 @@ import { RouteSectionProps, useNavigate } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
 import { getUserSettings, useInjectServices } from "../shared";
-import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary } from "solid-js";
+import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
@@ -114,6 +114,15 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   
   const navigate = useNavigate();
 
+  const quickLinks = createMemo<{
+    name: string;
+    link: string;
+  }[]>(()=>[
+    {name:"characters", link:"/characters"},
+    {name:"create Characters", link:"/characters/create"},
+    {name:"spells", link:"/info/spells?name=Acid+Arrow"}
+  ])
+
   return (
     <ErrorBoundary fallback={(err) => {
       console.error("Error in RootApp render:", err);
@@ -139,7 +148,14 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
             isMobile={isMobile()} 
             style={"margin-bottom: 15px;"} 
             list={[defaultShowList, setDefaultShowList]} />
-          <Container theme="subheader" style={{"margin-bottom": '8px'}} ><></></Container>
+          <Container theme="subheader" style={{"margin-bottom": '8px',display:"flex",gap:"1%"}} >
+            <span></span> {/* empty span to push buttons over */}
+            <For each={quickLinks()}>
+              {(quickLink)=><Button transparent onClick={()=>navigate(quickLink.link)}>
+                {quickLink.name}
+              </Button>}
+            </For>
+          </Container>
           <div class="body">
             <ErrorBoundary fallback={(err) => {
               console.error("Error in route content:", err);
