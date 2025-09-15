@@ -38,11 +38,15 @@ const Items: Component = () => {
   const homebrewNames = () => Object.keys(store.state.homebrew).sort();
   (window as any).DEBUG_ITEMS = true;
   function handleSelect(val: string) {
+    
     if (!val) return;
     if (val === '__new__') { store.selectNew(); return; }
     if (val === '__divider_homebrew__') return; // inert
   // Update URL param first so auto-select effect (if it fires) reinforces new selection, not the previous one.
   if (searchParams.name !== val) setSearchParams({ name: val });
+  if (searchParams.name && typeof searchParams.name === "string") {
+    store.select(searchParams.name);
+  }
   store.select(val);
   }
 

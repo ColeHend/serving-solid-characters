@@ -11,6 +11,7 @@ export function useDnDClasses() {
   return createMemo(() => {
     const version = userSettings().dndSystem || '2014';
     const srd = useGetSrdClasses(version);
+    
 
     return [...srd(), ...HombrewClasses()]
   });

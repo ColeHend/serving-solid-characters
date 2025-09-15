@@ -82,7 +82,7 @@ const masterSpells: Component = () => {
       const currentSorting = currentSort();
       const shouldAce = currentSorting.isAsc;
 
-      return Clone(
+      const sorted = Clone(
         old.sort((a, b) => {
           const aSort =
             typeof a?.[sortBy] === "string"
@@ -103,7 +103,9 @@ const masterSpells: Component = () => {
         })
       );
 
-      return old;
+      setSearchResults(sorted);
+
+      return sorted;
     });
   };
 

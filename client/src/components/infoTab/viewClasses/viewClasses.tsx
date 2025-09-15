@@ -44,7 +44,7 @@ const viewClasses: Component = () => {
   createEffect(() => {
     const list = srdClasses();
     if (list.length === 0) return;
-    const param = searchParam.name;
+    const param = typeof searchParam.itemType === "string" ? searchParam.itemType : searchParam.itemType?.join(" ");
     const found = param && list.some(c => c.name.toLowerCase() === param.toLowerCase());
     if (!found) {
       setSearchParam({ name: list[0].name });
@@ -53,8 +53,9 @@ const viewClasses: Component = () => {
 
   const selectedClass = createMemo(() => {
     const list = srdClasses();
+    const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
     if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].name).toLowerCase();
+    const target = (param || list[0].name).toLowerCase();
     return list.find(c => c.name.toLowerCase() === target) || list[0];
   })
 
@@ -76,6 +77,11 @@ const viewClasses: Component = () => {
   createEffect(() => {
     const list = srdClasses();
     setTableData(list);
+  
+    console.log("tabledata, ",list);
+    
+    console.log("x, ",paginatedClasses());
+    
   })
     
   return (

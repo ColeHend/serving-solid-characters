@@ -7,6 +7,8 @@ import { costToCopper } from "../../item";
 import { Clone, Paginator } from "../../../../../shared";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
+import { ItemsMenu } from "../itemsMenu/itemsMenu";
+
 interface viewProps {
     items: Accessor<Item[]>;
 }
@@ -30,7 +32,7 @@ export const ArmorView:Component<viewProps> = (props) => {
       createEffect(()=>{
         const list = props.items();
         if (list.length === 0) return;
-        const param = searchParam.name;
+        const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
         const found = param && list.some(i => i.name.toLowerCase() === param.toLowerCase())
         if ((!param || !found) && list[0].name === param) {
           setSearchParam({ name: list[0].name});
@@ -39,8 +41,9 @@ export const ArmorView:Component<viewProps> = (props) => {
     
       const selectedItem = createMemo(() => {
         const list = props.items();
+        const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
         if (list.length === 0) return undefined;
-        const target = (searchParam.name || list[0].name).toLowerCase();
+        const target = (param || list[0].name).toLowerCase();
         return list.find(i => i.name.toLowerCase() === target) || list[0];
       })
     
@@ -130,7 +133,7 @@ export const ArmorView:Component<viewProps> = (props) => {
         </div>
         
         <div class={`${style.table}`}>
-            <Table columns={["name","props","cost"]} data={()=>paginatedItems()}>
+            <Table columns={["name","props","cost","menu"]} data={()=>paginatedItems()}>
                 <Column name="name">
                     <Header onClick={()=>dataSort("name")}>
                     Name
@@ -171,6 +174,13 @@ export const ArmorView:Component<viewProps> = (props) => {
                         {(item.cost)}
                     </span>}
                     </Cell>
+                </Column>
+
+                <Column name="menu">
+                  <Header><></></Header>
+                  <Cell<Item> onClick={(e)=>e.stopPropagation()}>
+                    {(item)=><ItemsMenu item={item} />}
+                  </Cell>
                 </Column>
                     
                 <Row rowNumber={1} onClick={(e, Item)=>{

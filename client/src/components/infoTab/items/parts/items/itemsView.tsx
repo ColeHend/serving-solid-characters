@@ -7,6 +7,7 @@ import { useSearchParams } from "@solidjs/router";
 import styles from "./itemsView.module.scss";
 import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
 import { costToCopper } from "../../item";
+import { ItemsMenu } from "../itemsMenu/itemsMenu";
 
 interface viewProps {
   items: Accessor<Item[]>;
@@ -29,8 +30,8 @@ export const ItemsView:Component<viewProps> = (props) => {
 
   createEffect(()=>{
     const list = props.items();
+    const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
     if (list.length === 0) return;
-    const param = searchParam.name;
     const found = param && list.some(i => i.name.toLowerCase() === param.toLowerCase())
     if ((!param || !found) && list[0].name === param) {
       setSearchParam({ name: list[0].name});
@@ -39,8 +40,9 @@ export const ItemsView:Component<viewProps> = (props) => {
 
   const selectedItem = createMemo(() => {
     const list = props.items();
+    const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
     if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].name).toLowerCase();
+    const target = (param || list[0].name).toLowerCase();
     return list.find(i => i.name.toLowerCase() === target) || list[0];
   })
 
@@ -130,7 +132,7 @@ export const ItemsView:Component<viewProps> = (props) => {
     </div>
 
     <div class={`${styles.table}`}>
-      <Table columns={["name","type","cost"]} data={()=>paginatedItems()}>
+      <Table columns={["name","type","cost","menu"]} data={()=>paginatedItems()}>
         <Column name="name">
           <Header onClick={()=>dataSort("name")}>
             Name
@@ -170,6 +172,13 @@ export const ItemsView:Component<viewProps> = (props) => {
             {(item)=><span>
               {(item.cost)}
             </span>}
+          </Cell>
+        </Column>
+
+        <Column name="menu">
+          <Header><></></Header>
+          <Cell<Item> onClick={(e)=>e.stopPropagation()}>
+            {(item)=><ItemsMenu item={item} />}
           </Cell>
         </Column>
           
