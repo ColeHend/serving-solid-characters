@@ -5,3 +5,11 @@
     border-radius: 15px;
     padding: 10px;
 }
+
+.menuButton {
+    button {
+        svg {
+            fill: var(--on-background-color) !important
+        }
+    }
+}

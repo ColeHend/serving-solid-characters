@@ -1,6 +1,6 @@
 import { Component, For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import styles from "./view.module.scss";
-import useCharacters from "../../../shared/customHooks/dndInfo/useCharacters";
+import useCharacters from "../../../shared/customHooks/dndInfo/useExampleChars";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
@@ -33,7 +33,7 @@ const CharacterView: Component = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [characters, setCharacters] = useCharacters();
   if (!searchParam.name) setSearchParam({ name: characters()[0].name });
-  const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (searchParam.name || characters()[0].name).toLowerCase())[0];
+  const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ") || characters()[0].name).toLowerCase())[0];
 
   const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
   const [activeMobileTab, setActiveMobileTab] = createSignal(0);

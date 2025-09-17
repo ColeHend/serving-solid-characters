@@ -2,7 +2,7 @@ import { RouteSectionProps, useNavigate } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
 import { getUserSettings, useInjectServices } from "../shared";
-import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For } from "solid-js";
+import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For, Show } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
@@ -114,13 +114,14 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   
   const navigate = useNavigate();
 
+  // --------quickLinks Memo---------
   const quickLinks = createMemo<{
     name: string;
     link: string;
   }[]>(()=>[
-    {name:"characters", link:"/characters"},
-    {name:"create Characters", link:"/characters/create"},
-    {name:"spells", link:"/info/spells?name=Acid+Arrow"}
+    {name:"Characters", link:"/characters"},
+    {name:"Create Characters", link:"/characters/create"},
+    {name:"Spells", link:"/info/spells"}
   ])
 
   return (
@@ -151,9 +152,15 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           <Container theme="subheader" style={{"margin-bottom": '8px',display:"flex",gap:"1%"}} >
             <span></span> {/* empty span to push buttons over */}
             <For each={quickLinks()}>
-              {(quickLink)=><Button transparent onClick={()=>navigate(quickLink.link)}>
-                {quickLink.name}
-              </Button>}
+              {(quickLink,i)=><>
+                <Button style={{color: "white","border-right":"1px solid","padding-right":"8px","border-radius":"0"}} transparent onClick={()=>navigate(quickLink.link)}>
+                  {quickLink.name}
+                  
+                </Button>
+                {/* <Show when={quickLinks().length !== i()}>
+                  
+                </Show> */}
+                </>}
             </For>
           </Container>
           <div class="body">

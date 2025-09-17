@@ -1,9 +1,9 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
 import styles from "./characters.module.scss";
-import useCharacters from "../../shared/customHooks/dndInfo/useCharacters";
+import useCharacters from "../../shared/customHooks/dndInfo/useExampleChars";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
-import { Body, Button, Menu, MenuItem } from "coles-solid-library";
+import { Body, Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { Character } from "../../models/character.model";
 
 
@@ -41,9 +41,9 @@ const Characters: Component = () => {
                 <td>{character.level}</td>
                 <td>{character.className}</td>
                 <td>{character.subclass}</td>
-                <td>
+                <td class={`${styles.menuButton}`} >
                   <Button ref={setAnchorEle} onClick={()=>setShowMenu((old)=>!old)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+                    <Icon name="more_vert"/>
                   </Button>
                   <Menu  anchorElement={anchorEle} show={[showMenu,setShowMenu]} position="left" >
                     <MenuItem onClick={() => {window.location.href = `/characters/view?name=${character.name}`}}>
