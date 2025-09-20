@@ -30,7 +30,7 @@ const CharacterView: Component = () => {
 
 
   const [searchParam, setSearchParam] = useSearchParams();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const [characters, setCharacters] = createSignal(characterManager.characters());
   if (!searchParam.name) setSearchParam({ name: characters()[0].name });
   const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ") || characters()[0].name).toLowerCase())[0];
