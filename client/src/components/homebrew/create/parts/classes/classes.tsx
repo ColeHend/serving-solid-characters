@@ -420,8 +420,9 @@ export const Classes: Component = () => {
       classLevels: classLevels(),
     };
     const adapted = toClass5E(fullData, profStore(), classLevels());
+    const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
     // Simple duplicate guard
-    if (homebrewManager.classes().some(c => c.name.toLowerCase() === (adapted.name || '').toLowerCase() && (typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "")?.toLowerCase() !== (adapted.name || '').toLowerCase())) {
+    if (homebrewManager.classes().some(c => c.name.toLowerCase() === (adapted.name || '').toLowerCase() && param?.toLowerCase() !== (adapted.name || '').toLowerCase())) {
       addSnackbar({ message: 'Class name already exists', severity: 'warning' });
       return;
     }
@@ -486,7 +487,7 @@ export const Classes: Component = () => {
         <FlatCard
           icon="save"
           headerName="Save"
-          alwaysOpen={true}
+          alwaysOpen
         >
           <Button type="submit" aria-label="Save Class">
             Submit

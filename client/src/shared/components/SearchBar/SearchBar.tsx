@@ -1,4 +1,4 @@
-import { Accessor, Component, createSignal, JSX, Setter, splitProps } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, JSX, Setter, splitProps } from "solid-js";
 import style from "./SearchBar.module.scss";
 import { Clone } from "../../customHooks";
 import { Button, Icon, Input, addSnackbar } from "coles-solid-library";
@@ -45,7 +45,10 @@ const SearchBar = <T,>(props: Props<T>) => {
       props.setResults(props.dataSource());
     }
   }, 0);
-  props.setResults(props.dataSource());
+
+  createEffect(()=>{
+    props.setResults(props.dataSource());
+  })
   return (
     <div class={`${style.searchBar}`}>
       <Input

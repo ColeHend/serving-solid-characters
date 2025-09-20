@@ -1,6 +1,5 @@
 import { Component, For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import styles from "./view.module.scss";
-import useCharacters from "../../../shared/customHooks/dndInfo/useExampleChars";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
@@ -14,6 +13,7 @@ import { Item, Spell } from "../../../models";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
+import { characterManager } from "../../../shared";
 
 const CharacterView: Component = () => {
   // eslint-disable-next-line
@@ -31,7 +31,7 @@ const CharacterView: Component = () => {
 
   const [searchParam, setSearchParam] = useSearchParams();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [characters, setCharacters] = useCharacters();
+  const [characters, setCharacters] = createSignal(characterManager.characters());
   if (!searchParam.name) setSearchParam({ name: characters()[0].name });
   const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ") || characters()[0].name).toLowerCase())[0];
 
@@ -81,6 +81,7 @@ const CharacterView: Component = () => {
     const listener = (e: MediaQueryListEvent) => apply(e);
     mq.addEventListener("change", listener);
     onCleanup(() => mq.removeEventListener("change", listener));
+    setCharacters(characterManager.characters());
   });
 
   type ActionRow = { name: string; range: string; damage: string };

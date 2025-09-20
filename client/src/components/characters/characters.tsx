@@ -1,10 +1,11 @@
-import { Component, For, createMemo, createSignal } from "solid-js";
+import { Component, For, createMemo, createSignal, onMount } from "solid-js";
 import styles from "./characters.module.scss";
-import useCharacters from "../../shared/customHooks/dndInfo/useExampleChars";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
 import { Body, Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { Character } from "../../models/character.model";
+import { characterManager } from "../../shared";
+import { useNavigate } from "@solidjs/router";
 
 
 const Characters: Component = () => {
@@ -12,10 +13,15 @@ const Characters: Component = () => {
   const [userSettings, setUserSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
-  // eslint-disable-next-line
-  const [characters, setCharacters] = useCharacters();
+  const navigate = useNavigate();
+   
+  const [characters, setCharacters] = createSignal(characterManager.characters());
   const [showMenu,setShowMenu] = createSignal<boolean>(false);
   const [anchorEle,setAnchorEle] = createSignal<HTMLElement | undefined>();
+
+  onMount(()=>{
+    setCharacters(characterManager.characters());
+  })
   return (
     <Body class={`${stylin().accent} ${styles.mainBody}`}>
       <h1 style={{margin: "0 auto", width: "min-content"}}>Characters</h1>
@@ -48,6 +54,9 @@ const Characters: Component = () => {
                   <Menu  anchorElement={anchorEle} show={[showMenu,setShowMenu]} position="left" >
                     <MenuItem onClick={() => {window.location.href = `/characters/view?name=${character.name}`}}>
                       View Character
+                    </MenuItem>
+                    <MenuItem onClick={() => navigate(`/characters/create?name=${character.name}`)}>
+                      Edit
                     </MenuItem>
                   </Menu>
                 </td>

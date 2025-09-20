@@ -4,23 +4,25 @@ import { Character } from "../../../models/character.model";
 const exampleCharacters: Character[] = [];
 
 function createExampleCharacter(character: Character) {
-//   const newCharacter = new Character();
+  const newCharacter = new Character();
 
-//   newCharacter.name = character.name;
-//   newCharacter.levels = character.levels;
-//   newCharacter.spells = character.spells;
-//   newCharacter.race = character.race;
-//   newCharacter.className = character.className;
-//   newCharacter.subclass = character.subclass;
-//   newCharacter.background = character.background;
-//   newCharacter.alignment = character.alignment;
-//   newCharacter.proficiencies = character.proficiencies;
-//   newCharacter.languages = character.languages;
-//   newCharacter.health = character.health;
-//   newCharacter.stats = character.stats;
-//   newCharacter.items = character.items;
+  newCharacter.name = character.name;
+  newCharacter.levels = character.levels;
+  newCharacter.spells = character.spells;
+  newCharacter.race = character.race;
+  newCharacter.className = character.className;
+  newCharacter.subclass = character.subclass;
+  newCharacter.background = character.background;
+  newCharacter.alignment = character.alignment;
+  newCharacter.proficiencies = character.proficiencies;
+  newCharacter.languages = character.languages;
+  newCharacter.health = character.health;
+  newCharacter.stats = character.stats;
+  newCharacter.items = character.items;
 
-  exampleCharacters.push(character);
+  exampleCharacters.push(newCharacter);
+
+  return newCharacter;
 }
 
 const Gandalf = createExampleCharacter({
