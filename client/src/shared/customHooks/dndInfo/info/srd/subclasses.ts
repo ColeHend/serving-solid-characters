@@ -16,8 +16,12 @@ export function useGetSrdSubclasses(version: '2014' | '2024' | 'both' | string):
     const local$ = HttpClient$.toObservable(SrdDB.subclasses.toArray());
     local$.pipe(
       take(1),
-      concatMap(cached => cached.length ? of(cached) : fetchSubclasses('2014')),
-      tap(list => { if (list?.length) SrdDB.subclasses.bulkPut(list).catch(err => console.error('Error saving 2014 subclasses:', err)); })
+      concatMap(cached => cached.length > 0 ? of(cached) : fetchSubclasses('2014')),
+      tap(list => { 
+        if (list?.length) {
+          SrdDB.subclasses.bulkPut(list).catch(err => console.error('Error saving 2014 subclasses:', err));
+        } 
+      })
     ).subscribe({
       next: list => setSubclasses2014(list),
       error: e => console.error('2014 subclasses load error', e),

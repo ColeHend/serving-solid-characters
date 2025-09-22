@@ -11,6 +11,7 @@ import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/
 import { useDnDSubclasses } from "../../../../../shared/customHooks/dndInfo/info/all/subclasses";
 import { useDnDRaces } from "../../../../../shared/customHooks/dndInfo/info/all/races";
 import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
+import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
 
 const Feats: Component = () => {
@@ -143,8 +144,8 @@ const Feats: Component = () => {
     } as Feat & { name: string; desc: string[] };
     return newFeat as Feat;
   });
-  onMount(() => { if (searchParams.name) prefillFromQuery(searchParams.name); });
-  createEffect(() => { const qp = searchParams.name; if (qp) prefillFromQuery(qp); });
+  onMount(() => { if (searchParams.name && typeof searchParams.name === "string") prefillFromQuery(searchParams.name); });
+  createEffect(() => { const qp = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" "); if (qp) prefillFromQuery(qp); });
   const featExists = createMemo(()=>{
     return HomebrewManager.feats().findIndex((x) => (x as any).details?.name === featName() || x.name === featName()) !== -1;
   });
@@ -161,239 +162,248 @@ const Feats: Component = () => {
       <Body>
         <h1>Feats</h1>
         <div class="featHomebrew">
-          <div class={`${styles.name}`}>
-            <h2>Add Name</h2>
-            <FormField name="Add Name">
-              <Input
-                type="text"
-                transparent
-                id="featName"
-                value={featName()}
-                onChange={(e) => setFeatName(e.currentTarget.value)}
-                onInput={(e) => setFeatName((e.target as HTMLInputElement).value)}
-              />
-            </FormField>
-            <Show when={featExists()}>
-              <Button onClick={()=>{
-                const feat = HomebrewManager.feats().find((x:any) => x.details?.name === featName() || x.name === featName());
-                const srdFeat = feats().find((x:any) => x.details?.name === featName() || x.name === featName());
-                const chosen: any = feat || srdFeat;
-                if (chosen) {
-                  // Prefer new model prerequisites
-                  if (Array.isArray(chosen.prerequisites)) {
-                    setPrerequisites(chosen.prerequisites);
-                  } else if (Array.isArray(chosen.preReqs)) {
-                    // Map legacy Feature<string,string>[] into Prerequisite[] best-effort
-                    // Heuristic: if value looks like STAT + number use Stat, if numeric only -> Level, else Class
-                    const mapped = chosen.preReqs.map((f:any): Prerequisite => {
-                      const raw = (f?.value || f?.name || '').toString();
-                      if (/^(STR|DEX|CON|INT|WIS|CHA)\s+\d+$/i.test(raw)) {
-                        return { type: PrerequisiteType.Stat, value: raw.toUpperCase() };
-                      }
-                      if (/^\d+$/.test(raw)) {
-                        return { type: PrerequisiteType.Level, value: raw };
-                      }
-                      return { type: PrerequisiteType.Class, value: raw };
-                    });
-                    setPrerequisites(mapped);
-                  } else {
-                    setPrerequisites([]);
+          <FlatCard icon="identity_platform" headerName="Identity" startOpen={true}>
+            <div class={`${styles.name}`}>
+              <h2>Add Name</h2>
+              <FormField name="Add Name">
+                <Input
+                  type="text"
+                  transparent
+                  id="featName"
+                  value={featName()}
+                  onChange={(e) => setFeatName(e.currentTarget.value)}
+                  onInput={(e) => setFeatName((e.target as HTMLInputElement).value)}
+                />
+              </FormField>
+              <Show when={featExists()}>
+                <Button onClick={()=>{
+                  const feat = HomebrewManager.feats().find((x:any) => x.details?.name === featName() || x.name === featName());
+                  const srdFeat = feats().find((x:any) => x.details?.name === featName() || x.name === featName());
+                  const chosen: any = feat || srdFeat;
+                  if (chosen) {
+                    // Prefer new model prerequisites
+                    if (Array.isArray(chosen.prerequisites)) {
+                      setPrerequisites(chosen.prerequisites);
+                    } else if (Array.isArray(chosen.preReqs)) {
+                      // Map legacy Feature<string,string>[] into Prerequisite[] best-effort
+                      // Heuristic: if value looks like STAT + number use Stat, if numeric only -> Level, else Class
+                      const mapped = chosen.preReqs.map((f:any): Prerequisite => {
+                        const raw = (f?.value || f?.name || '').toString();
+                        if (/^(STR|DEX|CON|INT|WIS|CHA)\s+\d+$/i.test(raw)) {
+                          return { type: PrerequisiteType.Stat, value: raw.toUpperCase() };
+                        }
+                        if (/^\d+$/.test(raw)) {
+                          return { type: PrerequisiteType.Level, value: raw };
+                        }
+                        return { type: PrerequisiteType.Class, value: raw };
+                      });
+                      setPrerequisites(mapped);
+                    } else {
+                      setPrerequisites([]);
+                    }
+                    setFeatDescription(chosen.details?.description || (Array.isArray(chosen.desc) ? chosen.desc[0] : chosen.desc) || '');
                   }
-                  setFeatDescription(chosen.details?.description || (Array.isArray(chosen.desc) ? chosen.desc[0] : chosen.desc) || '');
-                }
-              }}>Fill</Button>
-            </Show>
-          </div>
-          <div class={`${styles.preRequisites}`}>
-            <h2>Add Pre-Requisites</h2>
-            <div>
-              <Select
-                value={selectedType()}
-                onChange={(e) => setSelectedType(() => +e as PrerequisiteType)}
-                transparent
+                }}>Fill</Button>
+              </Show>
+            </div>
+          </FlatCard>
+          <FlatCard icon="deployed_code" headerName="Prerequisites">
+            <div class={`${styles.preRequisites}`}>
+              
+              <h2>Add Pre-Requisites</h2>
+              <div>
+                <Select
+                  value={selectedType()}
+                  onChange={(e) => setSelectedType(() => +e as PrerequisiteType)}
+                  transparent
+                >
+                  <Option value={PrerequisiteType.Stat}>Ability Score</Option>
+                  <Option value={PrerequisiteType.Class}>Class</Option>
+                  {/* Label kept as 'Class Level' for backward test compatibility (test searches /Class Level/) */}
+                  <Option value={PrerequisiteType.Level}>Class Level</Option>
+                  <Option value={PrerequisiteType.Subclass}>Subclass</Option>
+                  <Option value={PrerequisiteType.Feat}>Feat</Option>
+                  <Option value={PrerequisiteType.Race}>Race</Option>
+                  <Option value={PrerequisiteType.Item}>Item</Option>
+                  <Option value={PrerequisiteType.String}>Other / Text</Option>
+                </Select>
+                <Switch>
+                  <Match when={selectedType() === PrerequisiteType.Stat}>
+                    <div>
+                      <Select transparent value={keyName()} onChange={(e) => setKeyName(e)}>
+                        <Option value={"STR"}>Strength</Option>
+                        <Option value={"DEX"}>Dexterity</Option>
+                        <Option value={"CON"}>Constitution</Option>
+                        <Option value={"INT"}>Intelligence</Option>
+                        <Option value={"WIS"}>Wisdom</Option>
+                        <Option value={"CHA"}>Charisma</Option>
+                      </Select>
+                      <FormField name="Amount">
+                        <Input
+                          transparent
+                          type="number"
+                          value={keyValue()}
+                          onChange={(e) => setKeyValue(e.currentTarget.value)}
+                        />
+                      </FormField>
+                    </div>
+                  </Match>
+                  <Match when={selectedType() === PrerequisiteType.Class}>
+                    <div>
+                      <Select transparent 
+                        value={keyName()}
+                        onChange={(e) => {
+                          setKeyName("Class");
+                          setKeyValue(e);
+                        }}
+                      >
+                        <For each={classes()}>
+                          {(classObj) => (
+                            <Option value={classObj.name}>{classObj.name}</Option>
+                          )}
+                        </For>
+                      </Select>
+                      <FormField name="Level (optional)">
+                        <Input
+                          id="classLevelInput"
+                          type="number"
+                          min="1"
+                          value={classLevel()}
+                          placeholder="Any level"
+                          onChange={(e) => setClassLevel(e.currentTarget.value)}
+                          transparent
+                        />
+                      </FormField>
+                    </div>
+                  </Match>
+                  <Match when={selectedType() === PrerequisiteType.Level}>
+                    <div>
+                      <FormField name="Level">
+                        <Input
+                          type="number"
+                          min="1"
+                          value={keyValue()}
+                          onChange={(e) => setKeyValue(e.currentTarget.value)}
+                        />
+                      </FormField>
+                    </div>
+                  </Match>
+                  <Match when={selectedType() === PrerequisiteType.Subclass}>
+                    <div>
+                      <Select
+                        transparent
+                        value={keyValue()}
+                        onChange={(e) => setKeyValue(e)}
+                      >
+                        <For each={subclasses()}>{sc => (
+                          <Option value={`${sc.parent_class}:${sc.name}`}>{sc.parent_class} / {sc.name}</Option>
+                        )}</For>
+                      </Select>
+                    </div>
+                  </Match>
+                  <Match when={selectedType() === PrerequisiteType.Feat}>
+                    <div>
+                      <Select
+                        transparent
+                        value={keyValue()}
+                        onChange={(e) => setKeyValue(e)}
+                      >
+                        <For each={feats()}>{f => {
+                          const nm = (f as any).details?.name || (f as any).name;
+                          return <Option value={nm}>{nm}</Option>;
+                        }}</For>
+                      </Select>
+                    </div>
+                  </Match>
+                  <Match when={selectedType() === PrerequisiteType.Race}>
+                    <div>
+                      <Select
+                        transparent
+                        value={keyValue()}
+                        onChange={(e) => setKeyValue(e)}
+                      >
+                        <For each={races()}>{r => (
+                          <Option value={(r as any).name}>{(r as any).name}</Option>
+                        )}</For>
+                      </Select>
+                    </div>
+                  </Match>
+                  <Match when={selectedType() === PrerequisiteType.Item}>
+                    <div>
+                      <Select
+                        transparent
+                        value={keyValue()}
+                        onChange={(e) => setKeyValue(e)}
+                      >
+                        <For each={items()}>{it => (
+                          <Option value={(it as any).name}>{(it as any).name}</Option>
+                        )}</For>
+                      </Select>
+                    </div>
+                  </Match>
+                  <Match when={selectedType() === PrerequisiteType.String}>
+                    <div>
+                      <FormField name="Text">
+                        <Input
+                          type="text"
+                          value={keyValue()}
+                          onChange={(e) => setKeyValue(e.currentTarget.value)}
+                          placeholder="Enter prerequisite text"
+                          transparent
+                        />
+                      </FormField>
+                    </div>
+                  </Match>
+                </Switch>
+                <Button disabled={prerequisites().length >= 10} onClick={addPreReq}>
+                  Add
+                </Button>
+              </div>
+              <div class={`${styles.chipBar}`}>
+                <For each={prerequisites()}>
+                  {(pre, i) => (
+                    <Chip
+                      key={`${PrerequisiteType[pre.type]}`}
+                      value={pre.value}
+                      remove={() => setPrerequisites(old => old.filter((_, ind) => ind !== i()))}
+                    />
+                  )}
+                </For>
+              </div>
+            </div>
+          </FlatCard>
+          <FlatCard icon="equalizer" headerName="Description">
+            <div class={`${styles.Description}`}>
+              <h2>Description</h2>
+              <FormField name="Description">
+                <TextArea
+                  id="featDescription"
+                  name="featDescription"
+                  text={featDescription}
+                  setText={setFeatDescription}
+                  transparent
+                />
+              </FormField>
+            </div>
+          </FlatCard>
+          <FlatCard icon="save" headerName="Saving" alwaysOpen>
+            <Show when={!featExists()}>
+              <Button
+                class={`${styles.addButton}`}
+                onClick={addFeat}
               >
-                <Option value={PrerequisiteType.Stat}>Ability Score</Option>
-                <Option value={PrerequisiteType.Class}>Class</Option>
-                {/* Label kept as 'Class Level' for backward test compatibility (test searches /Class Level/) */}
-                <Option value={PrerequisiteType.Level}>Class Level</Option>
-                <Option value={PrerequisiteType.Subclass}>Subclass</Option>
-                <Option value={PrerequisiteType.Feat}>Feat</Option>
-                <Option value={PrerequisiteType.Race}>Race</Option>
-                <Option value={PrerequisiteType.Item}>Item</Option>
-                <Option value={PrerequisiteType.String}>Other / Text</Option>
-              </Select>
-              <Switch>
-                <Match when={selectedType() === PrerequisiteType.Stat}>
-                  <div>
-                    <Select transparent value={keyName()} onChange={(e) => setKeyName(e)}>
-                      <Option value={"STR"}>Strength</Option>
-                      <Option value={"DEX"}>Dexterity</Option>
-                      <Option value={"CON"}>Constitution</Option>
-                      <Option value={"INT"}>Intelligence</Option>
-                      <Option value={"WIS"}>Wisdom</Option>
-                      <Option value={"CHA"}>Charisma</Option>
-                    </Select>
-                    <FormField name="Amount">
-                      <Input
-                        transparent
-                        type="number"
-                        value={keyValue()}
-                        onChange={(e) => setKeyValue(e.currentTarget.value)}
-                      />
-                    </FormField>
-                  </div>
-                </Match>
-                <Match when={selectedType() === PrerequisiteType.Class}>
-                  <div>
-                    <Select transparent 
-                      value={keyName()}
-                      onChange={(e) => {
-                        setKeyName("Class");
-                        setKeyValue(e);
-                      }}
-                    >
-                      <For each={classes()}>
-                        {(classObj) => (
-                          <Option value={classObj.name}>{classObj.name}</Option>
-                        )}
-                      </For>
-                    </Select>
-                    <FormField name="Level (optional)">
-                      <Input
-                        id="classLevelInput"
-                        type="number"
-                        min="1"
-                        value={classLevel()}
-                        placeholder="Any level"
-                        onChange={(e) => setClassLevel(e.currentTarget.value)}
-                        transparent
-                      />
-                    </FormField>
-                  </div>
-                </Match>
-                <Match when={selectedType() === PrerequisiteType.Level}>
-                  <div>
-                    <FormField name="Level">
-                      <Input
-                        type="number"
-                        min="1"
-                        value={keyValue()}
-                        onChange={(e) => setKeyValue(e.currentTarget.value)}
-                      />
-                    </FormField>
-                  </div>
-                </Match>
-                <Match when={selectedType() === PrerequisiteType.Subclass}>
-                  <div>
-                    <Select
-                      transparent
-                      value={keyValue()}
-                      onChange={(e) => setKeyValue(e)}
-                    >
-                      <For each={subclasses()}>{sc => (
-                        <Option value={`${sc.parent_class}:${sc.name}`}>{sc.parent_class} / {sc.name}</Option>
-                      )}</For>
-                    </Select>
-                  </div>
-                </Match>
-                <Match when={selectedType() === PrerequisiteType.Feat}>
-                  <div>
-                    <Select
-                      transparent
-                      value={keyValue()}
-                      onChange={(e) => setKeyValue(e)}
-                    >
-                      <For each={feats()}>{f => {
-                        const nm = (f as any).details?.name || (f as any).name;
-                        return <Option value={nm}>{nm}</Option>;
-                      }}</For>
-                    </Select>
-                  </div>
-                </Match>
-                <Match when={selectedType() === PrerequisiteType.Race}>
-                  <div>
-                    <Select
-                      transparent
-                      value={keyValue()}
-                      onChange={(e) => setKeyValue(e)}
-                    >
-                      <For each={races()}>{r => (
-                        <Option value={(r as any).name}>{(r as any).name}</Option>
-                      )}</For>
-                    </Select>
-                  </div>
-                </Match>
-                <Match when={selectedType() === PrerequisiteType.Item}>
-                  <div>
-                    <Select
-                      transparent
-                      value={keyValue()}
-                      onChange={(e) => setKeyValue(e)}
-                    >
-                      <For each={items()}>{it => (
-                        <Option value={(it as any).name}>{(it as any).name}</Option>
-                      )}</For>
-                    </Select>
-                  </div>
-                </Match>
-                <Match when={selectedType() === PrerequisiteType.String}>
-                  <div>
-                    <FormField name="Text">
-                      <Input
-                        type="text"
-                        value={keyValue()}
-                        onChange={(e) => setKeyValue(e.currentTarget.value)}
-                        placeholder="Enter prerequisite text"
-                        transparent
-                      />
-                    </FormField>
-                  </div>
-                </Match>
-              </Switch>
-              <Button disabled={prerequisites().length >= 10} onClick={addPreReq}>
-                Add
+              Save Feat
               </Button>
-            </div>
-            <div class={`${styles.chipBar}`}>
-              <For each={prerequisites()}>
-                {(pre, i) => (
-                  <Chip
-                    key={`${PrerequisiteType[pre.type]}`}
-                    value={pre.value}
-                    remove={() => setPrerequisites(old => old.filter((_, ind) => ind !== i()))}
-                  />
-                )}
-              </For>
-            </div>
-          </div>
-          <div class={`${styles.Description}`}>
-            <h2>Description</h2>
-            <FormField name="Description">
-              <TextArea
-                id="featDescription"
-                name="featDescription"
-                text={featDescription}
-                setText={setFeatDescription}
-                transparent
-              />
-            </FormField>
-          </div>
-          <Show when={!featExists()}>
-            <Button
-              class={`${styles.addButton}`}
-              onClick={addFeat}
-            >
-						Save Feat
-            </Button>
-          </Show>
-          <Show when={featExists()}>
-            <Button
-              class={`${styles.addButton}`}
-              onClick={updateFeat}
-            >
-						Update Feat
-            </Button>
-          </Show>
+            </Show>
+            <Show when={featExists()}>
+              <Button
+                class={`${styles.addButton}`}
+                onClick={updateFeat}
+              >
+              Update Feat
+              </Button>
+            </Show>
+          </FlatCard>
         </div>
       </Body>
     </>

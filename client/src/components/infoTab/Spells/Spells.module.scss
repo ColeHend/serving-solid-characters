@@ -45,4 +45,11 @@ $mobile: 768px;
     }
 }
 
+.searchBar {
+    margin: 0 auto;
+    width: 30%;
 
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
+}

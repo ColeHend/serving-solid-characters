@@ -1,15 +1,16 @@
-import { Background } from "./old/background.model";
+import { Background } from "./data";
 import { Character } from "./character.model";
-import { DnDClass } from "./old/class.model";
-import { Feat } from "./old/feat.model";
-import { Item } from "./old/items.model";
-import { Race } from "./old/race.model";
-import { Spell } from "./data/spell";
+import { Spell } from "./data";
+import { Feat } from "./data";
+import { Class5E } from "./data";
+import { Item } from "./data";
+import { Race } from "./data";
+
 
 export interface Trade {
     spells: Spell[],
     feats: Feat[],
-    srdclasses: DnDClass[],
+    srdclasses: Class5E[],
     backgrounds: Background[],
     items: Item[],
     races: Race[],

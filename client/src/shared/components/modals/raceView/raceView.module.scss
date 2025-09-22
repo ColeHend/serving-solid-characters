@@ -5,6 +5,9 @@
     overflow-y: scroll;
     overflow-x: hidden;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 1%;
 
 }
 
@@ -30,14 +33,39 @@
     align-items: center;
 }
 
-.subclassesTabRow {
+// .subclassesTabRow {
+//     display: flex;
+//     flex-direction: column;
+    
+//     div {
+//         font-family: 'Bookinsanity';
+//         font-weight: 100;
+//         color: #000;
+
+//     }
+// }
+
+.leftAlignHeader {
+    text-align: left;
+    display: block;
+}
+
+.leftAlignInfo {
+    text-align: left;
+    display: block;
+    margin-left: 8px;
+}
+
+.flexBoxRow {
+    display: flex;
+    flex-direction: row;
+    // width: 50%;
+    margin: 0 auto;
+    gap:5%
+    
+} 
+
+.flexBoxColumn {
     display: flex;
     flex-direction: column;
-    
-    div {
-        font-family: 'Bookinsanity';
-        font-weight: 100;
-        color: #000;
-
-    }
 }

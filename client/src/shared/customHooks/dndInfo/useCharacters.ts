@@ -1,5 +1,18 @@
 import { Accessor, Setter, createSignal } from "solid-js";
-import { Character } from "../../../models/character.model";
+import { Character, CharacterSpell } from "../../../models/character.model";
+import httpClient$ from "../utility/tools/httpClientObs";
+import CharacterDB from "../utility/localDB/new/charactersDB";
+import {
+  catchError,
+  concatMap,
+  finalize,
+  Observable,
+  of,
+  take,
+  tap,
+} from "rxjs";
+import { addSnackbar } from "coles-solid-library";
+import { Clone } from "../utility/tools/Tools";
 
 export interface Stats {
   str: number;
@@ -9,273 +22,213 @@ export interface Stats {
   wis: number;
   cha: number;
 }
-const exampleCharacters: Character[] = [];
 
-function createExampleCharacter(character: Character) {
-  const newCharacter = new Character();
+class CharacterManager {
+  private _characters: Accessor<Character[]>;
+  private _setCharacters: Setter<Character[]>;
 
-  newCharacter.name = character.name;
-  newCharacter.levels = character.levels;
-  newCharacter.spells = character.spells;
-  newCharacter.race = character.race;
-  newCharacter.className = character.className;
-  newCharacter.subclass = character.subclass;
-  newCharacter.background = character.background;
-  newCharacter.alignment = character.alignment;
-  newCharacter.proficiencies = character.proficiencies;
-  newCharacter.languages = character.languages;
-  newCharacter.health = character.health;
-  newCharacter.stats = character.stats;
-  newCharacter.items = character.items;
+  public characters: Accessor<Character[]>;
 
-  exampleCharacters.push(newCharacter);
-}
+  private localCharacters$: Observable<Character[]> = httpClient$.toObservable(
+    CharacterDB.characters.toArray()
+  );
 
-const Gandalf = createExampleCharacter({
-  name: "Gandalf",
-  level: 0,
-  levels: [
-    {
-      class: "Wizard",
-      subclass: "Evocation",
-      level: 1,
-      hitDie: 6,
-      features: [
-        {
-          name: "Spellcasting",
-          description: "You can cast wizard spells using your spellbook.",
-          metadata: {
-            category: "Class"
-          }
-        },
-      ]
-    },
-    {
-      class: "Wizard",
-      subclass: "Evocation",
-      level: 2,
-      hitDie: 6,
-      features: [
-        {
-          name: "Arcane Recovery",
-          description: "You can recover some spell slots during a short rest.",
-          metadata: {
-            category: "Class"
-          }
-        }
-      ]
-    }
-  ],
-  spells: [
-    {
-      name: "Fireball",
-      prepared: true,
-    },
-    {
-      name: "Magic Missile",
-      prepared: true,
-    },
-    {
-      name: "Shield",
-      prepared: false,
-    },
-    {
-      name: "Mage Armor",
-      prepared: true,
-    },
-    {
-      name: "Detect Magic",
-      prepared: true,
-    },
-    {
-      name: "Identify",
-      prepared: false,
-    },
-    {
-      name: "Mending",
-      prepared: true,
-    },
-    {
-      name: "Light",
-      prepared: true,
-    }
-  ],
-  race: {
-    species: "elf",
-    subrace: "woodElf",
-    age: "200",
-    size: "Medium",
-    speed: "30ft",
-    features: [
-      {
-        name: "Darkvision",
-        description: "You can see in dim light within 60 feet as if it were bright light.",
-        metadata: {
+  constructor(characters: Character[] = []) {
+    [this._characters, this._setCharacters] = createSignal(characters);
 
-        }
-      }
-    ]
-  },
-  className: "Wizard",
-  subclass: "Evocation",
-  background: "Noble",
-  alignment: "neutral",
-  proficiencies: {
-    skills: {
-      "Acrobatics": {
-        stat: "dex",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Animal Handling": {
-        stat: "wis",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Arcana": {
-        stat: "int",
-        value: 10,
-        proficient: true,
-        expertise: true
-      },
-      "History": {
-        stat: "int",
-        value: 10,
-        proficient: true,
-        expertise: true  
-      },
-      "Athletics": {
-        stat: "str",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Deception": {
-        stat: "cha",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Insight": {
-        stat: "wis",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Intimidation": {
-        stat: "cha",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Investigation": {
-        stat: "int",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Medicine": {
-        stat: "wis",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Nature": {
-        stat: "int",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Perception": {
-        stat: "wis",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Performance": {
-        stat: "cha",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Persuasion": {
-        stat: "cha",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Religion": {
-        stat: "int",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Sleight Of Hand": {
-        stat: "dex",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Stealth": {
-        stat: "dex",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-      "Survival": {
-        stat: "wis",
-        value: 0,
-        proficient: false,
-        expertise: false,
-      },
-    },
-    other: {}
-  },
-  languages: [
-    "Common",
-    "elvish",
-    "draconic"
-  ],
-  health: {
-    max: 1,
-    current: 1,
-    temp: 10
-  },
-  stats: {
-    str: 8,
-    dex: 14,
-    con: 12,
-    int: 15,
-    wis: 13,
-    cha: 10,
-  },
-  items: {
-    inventory: [
-      "Spellbook",
-      "Quarterstaff",
-      "Component Pouch",
-      "Explorer's Pack"
-    ],
-    equipped: [
-      "Quarterstaff",
-      "Spellbook"
-    ],
-    attuned: [
-      "Ring of Protection"
-    ]
+    this.characters = () => this._characters().map((char) => char);
+
+    this.localCharacters$
+      .pipe(
+        take(1),
+        tap((c) => this._setCharacters((old) => [...old, ...c]))
+      )
+      .subscribe();
   }
-});
+
+  // ------create------
+
+  public createCharacter(character: Character) {
+    if (this._characters().some((c) => c.name === character.name)) return;
+    this.addCharacterToDB(Clone(character));
+  }
+
+  private addCharacterToDB(newCharacter: Character) {
+    let failed = false;
+    return httpClient$
+      .toObservable(CharacterDB.characters.add(newCharacter))
+      .pipe(
+        take(1),
+        catchError((err) => {
+          console.error(err);
+          failed = true;
+          addSnackbar({
+            message: `Error adding character to database`,
+            severity: "error",
+          });
+          return of(null);
+        }),
+        finalize(() => {
+          if (!failed) {
+            this._setCharacters((o) => [...o, newCharacter]);
+            addSnackbar({
+              message: "Character succsessfuly added",
+              severity: "success",
+            });
+          }
+        })
+      );
+  }
+
+  // ------Read------
+
+  public getCharacter(name: string) {
+    return this._characters().find((character) => character.name === name);
+  }
+
+  // ------Update------
+
+  public updateCharacter(character: Character) {
+    if (!this.characters().some(c => c.name === character.name)) return;
+    this.updateCharInDB(character);
+  }
+
+  public updateCharSpell(characterName: string,newSpell: CharacterSpell) {
+    const character = this.getCharacter(characterName);
+
+    if (character) {
+      
+      const spells = character.spells.filter(s => s.name !== newSpell.name);
+
+      spells.push(newSpell);
+
+      this.updateCharacter({
+        name: character.name,
+        level: character.level,
+        levels: character.levels,
+        race: character.race,
+        className: character.className,
+        subclass: character.subclass,
+        background: character.background,
+        alignment: character.alignment,
+        proficiencies: character.proficiencies,
+        languages: character.languages,
+        health: character.health,
+        stats: character.stats,
+        items: character.items,
+        spells: spells
+      })
+      addSnackbar({
+        message: `Added ${newSpell.name} to ${characterName}`,
+        severity: "success"
+      })
+      return;
+      
+    } else {
+      addSnackbar({
+        message: "Coundn't find character",
+        severity: "error"
+      })
+    }
+
+  }
+
+  private updateCharInDB(updated: Character) {
+    let failed = false;
+    return httpClient$.toObservable(CharacterDB.characters.put(updated)).pipe(
+      take(1),
+      catchError(err => {
+        console.error(err);
+        failed = true;
+        addSnackbar({
+          message: "Error updating character in database",
+          severity: "error"
+        });
+
+        return of(null);
+      }),
+      finalize(() => {
+        if (!failed) {
+          this._setCharacters(list => list.map(c => c.name === updated.name ? updated : c));
+          addSnackbar({
+            message: "Character updated successfully",
+            severity: "success"
+          });
+        }
+      })
+    );
+  }
+
+
+  // ------Delete------
+
+  public deleteCharacter(name: string) {
+    if (!this.characters().some(c => c.name === name)) return;
+    const rest = this._characters().filter(c => c.name !== name);
+    
+    httpClient$.toObservable(CharacterDB.characters.clear()).pipe(
+      take(1),
+      concatMap(() => 
+        httpClient$.toObservable(CharacterDB.characters.bulkAdd(rest))
+      )
+    ).subscribe({
+      error: err => {
+        console.error(err);
+        addSnackbar({
+          message: "Error removing character",
+          severity: "error"
+        })
+        
+      },
+      complete: () => {
+        this._setCharacters(rest);
+        addSnackbar({
+          message: "Character Removed",
+          severity: "success"
+        });
+      }
+    })
+  }
+
+  public deleteCharSpell(characterName: string,spellName: string) {
+    const character = this.getCharacter(characterName);
+
+    if (character) {
+      this.updateCharacter({
+        name: character.name,
+        level: character.level,
+        levels: character.levels,
+        race: character.race,
+        className: character.className,
+        subclass: character.subclass,
+        background: character.background,
+        alignment: character.alignment,
+        proficiencies: character.proficiencies,
+        languages: character.languages,
+        health: character.health,
+        stats: character.stats,
+        items: character.items,
+        spells: character.spells.filter(s => s.name !== spellName)
+      })
+      addSnackbar({
+        message: `deleted ${spellName} from ${characterName}`,
+        severity: "success"
+      })
+      return;
+      
+    } else {
+      addSnackbar({
+        message: "Coundn't find character",
+        severity: "error"
+      })
+      return;
+    }
+  }
 
 
 
-const [characters, setCharacters] =
-  createSignal<Character[]>(exampleCharacters);
-
-export default function useCharacters(): [
-  Accessor<Character[]>,
-  Setter<Character[]>
-  ] {
-  return [characters, setCharacters];
 }
+
+const characterManager = new CharacterManager();
+export { characterManager };
+export default characterManager;

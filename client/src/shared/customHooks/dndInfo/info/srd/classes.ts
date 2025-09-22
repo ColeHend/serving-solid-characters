@@ -68,12 +68,5 @@ export function useGetSrdClasses(version: '2014' | '2024' | "both" | string) {
 }
 
 function fetchClasses(version: '2014' | '2024') {
-  return HttpClient$.get<Class5E[]>(`/api/${version}/Classes`).pipe(
-    take(1),
-    tap((classes) => {
-      if (classes) {
-        SrdDB.classes.bulkAdd(classes);
-      }
-    })
-  )
+  return HttpClient$.get<Class5E[]>(`/api/${version}/Classes`).pipe(take(1))
 }

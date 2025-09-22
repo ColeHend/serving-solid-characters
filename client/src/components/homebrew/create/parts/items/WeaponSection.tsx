@@ -1,7 +1,7 @@
 import { Component, For, Show } from 'solid-js';
 import { FormField, Input, Button } from 'coles-solid-library';
 import { itemsStore } from './itemsStore';
-import Section from './Section';
+import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; selectionVersion: number; }
 
@@ -15,13 +15,10 @@ export const WeaponSection: Component<Props> = (p) => {
   function removeDamage(i: number) { store.mutate(d => { if (!d.damage) return; d.damage = d.damage.filter((_,idx)=>idx!==i); }); }
 
   return (
-    <Section
-      id="weapon"
-      title="Weapon Data"
-      collapsed={p.collapsed}
-      onToggle={p.toggle}
-      accentData={{ 'data-kind-render':'weapon', 'data-version': String(p.selectionVersion) }}
-      icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 17l6-6"/><path d="M3 21l3-3"/><path d="M12 4l8 8"/><path d="M7 11l6 6"/><path d="M14 7l3-3 3 3-3 3"/></svg>}
+    <FlatCard
+     icon='swords'
+     headerName='Weapon Data'
+     startOpen={true}
     >
       <div style={{ display:'flex', gap:'0.75rem', 'flex-wrap':'wrap' }}>
         <FormField name="Weapon Category"><Input transparent value={store.state.form!.weaponCategory || ''} onInput={e=>store.updateField('weaponCategory', e.currentTarget.value)} /></FormField>
@@ -46,7 +43,7 @@ export const WeaponSection: Component<Props> = (p) => {
         </Show>
         <Show when={!store.state.form!.damage || store.state.form!.damage.length === 0}><div style={{ 'font-size':'0.8rem', opacity:0.7 }}>No damage entries</div></Show>
       </div>
-    </Section>
+    </FlatCard>
   );
 };
 

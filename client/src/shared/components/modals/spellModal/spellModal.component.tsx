@@ -6,6 +6,7 @@ import { useUserStyles } from "../../../customHooks/utility/style/styleHook";
 import style from "./spellModal.module.scss";
 import { spellLevel, spellComponents } from "../../../customHooks/utility/tools/Tools";
 import { Modal } from "coles-solid-library";
+import Markdown from "../../MarkDown/MarkDown";
 
 type props = {
   spell: Accessor<Spell>;
@@ -26,19 +27,29 @@ const SpellModal: Component<props> = (props) => {
         {/* <h1>{props.spell().name}</h1> */}
 
         <h2>
-          {spellLevel(props.spell().level)} {props.spell().school}
+          <span>
+            {spellLevel(props.spell().level)} {props.spell().school}
+          </span>
         </h2>
 
-  <h2>Casting time: {props.spell().castingTime} </h2>
+        <h2>Casting time: <span>
+          {props.spell().castingTime}  
+        </span> </h2>
 
         <Show when={props.spell().range !== ""}>
-          <h2>Range: {props.spell().range} </h2>
+          <h2>Range: <span>
+            {props.spell().range}
+          </span> </h2>
         </Show>
 
-  <h2>Components: {spellComponents(props.spell())}</h2>
+        <h2>Components: <span>
+          {spellComponents(props.spell())}
+        </span></h2>
 
         <Show when={props.spell().duration !== ""}>
-          <h2>Duration: {props.spell().duration}</h2>
+          <h2>Duration: <span>
+            {props.spell().duration}
+          </span></h2>
         </Show>
 
         <Show when={props.spell().classes.length !== 0}>
@@ -49,7 +60,12 @@ const SpellModal: Component<props> = (props) => {
           <h2>SubClasses: {props.spell().subClasses.join(", ")}</h2>
         </Show>
 
-        <span>{props.spell().description}</span>
+        <span>
+          <Markdown 
+            text={props.spell().description}
+            class={`${style.desc}`}
+          />
+        </span>
 
       </div>
     </Modal>

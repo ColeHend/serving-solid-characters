@@ -1,84 +1,13 @@
 /* Races editor styling aligned with backgrounds component */
 
-.newPanel {
-    margin-bottom: 2rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--border-color, #444);
-    border-radius: 8px;
-    background: var(--panel-bg, rgba(255,255,255,0.02));
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 1100px;
-    margin-inline: auto;
-}
-
 .sectionList { display: flex; flex-direction: column; gap: 1.1rem; width: 100%; }
-
-.flatSection {
-    display: flex;
-    flex-direction: column;
-    gap: .4rem;
-    padding: .25rem .25rem .75rem;
-    border-bottom: 1px solid var(--border-color,#333);
-    position: relative;
-    padding-left: .85rem;
-}
-.flatSection:last-child { border-bottom: none; }
-.flatSection::before { content:''; position:absolute; left:0; top:4px; bottom:6px; width:4px; border-radius:2px; background: linear-gradient(var(--clr-primary,#5af), transparent); opacity:.6; }
-.flatSection[data-error="true"]::before { box-shadow:0 0 0 1px rgba(255,0,0,0.4),0 0 6px rgba(255,0,0,0.5); opacity:.9; }
-
-.sectionHeader { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
-.sectionHeader h4 { margin:0; font-size:1rem; font-weight:600; }
-
-.chipsRow { display:flex; flex-wrap:wrap; gap:.5rem; }
-
-.snackbar { position:fixed; bottom:1rem; left:50%; transform:translateX(-50%); background:var(--panel-bg,#111a); backdrop-filter:blur(6px); padding:.55rem .9rem; border-radius:8px; font-size:.75rem; box-shadow:0 4px 18px -4px rgba(0,0,0,.5); animation:fadeSlide .25s ease; border:1px solid rgba(255,255,255,.1); }
-.snackbar[data-type="success"] { border-color: var(--clr-success,#4fa); color: var(--clr-success,#4fa); }
-.snackbar[data-type="error"] { border-color: var(--clr-error,#f66); color: var(--clr-error,#f66); }
-@keyframes fadeSlide { from { opacity:0; transform:translate(-50%,10px);} to { opacity:1; transform:translate(-50%,0);} }
 
 .validationBox { background:rgba(255,0,0,0.07); border:1px solid rgba(255,0,0,0.25); padding:.4rem .6rem; border-radius:6px; font-size:.7rem; display:flex; flex-direction:column; gap:.25rem; }
 .validationItem { color: var(--clr-error,#f66); }
 
-/* Accent bars per section */
-.flatSection[data-section="identity"]::before { background: linear-gradient(var(--clr-accent, var(--clr-primary,#5af)), transparent); }
-.flatSection[data-section="abilities"]::before { background: linear-gradient(var(--clr-success,#5fa), transparent); }
-.flatSection[data-section="langs"]::before { background: linear-gradient(var(--clr-magenta,#a5f), transparent); }
-.flatSection[data-section="traits"]::before { background: linear-gradient(var(--clr-purple,#b5f), transparent); }
-.flatSection[data-section="save"]::before { background: linear-gradient(var(--clr-warning,#fa5), transparent); }
-
 .inlineMeta { font-size:.7rem; opacity:.65; display:flex; gap:.6rem; }
 
 .modifiedBadge { background: var(--accent-color,#4a8); color:#000; font-size:.65rem; padding:.15rem .45rem; border-radius:999px; text-transform:uppercase; letter-spacing:.05em; font-weight:600; align-self:center; }
-
-/* Icon + title header */
-.sectionHeader { padding:.1rem 0 .25rem; }
-.titleWithIcon { display:flex; align-items:center; gap:.55rem; line-height:1; }
-.titleWithIcon svg { width:22px; height:22px; stroke-width:1.5; flex-shrink:0; }
-.flatSection[data-section="identity"] .titleWithIcon svg { color: var(--clr-primary,#5af); }
-.flatSection[data-section="abilities"] .titleWithIcon svg { color: var(--clr-success,#5fa); }
-.flatSection[data-section="langs"] .titleWithIcon svg { color: var(--clr-magenta,#a5f); }
-.flatSection[data-section="traits"] .titleWithIcon svg { color: var(--clr-purple,#b5f); }
-.flatSection[data-section="save"] .titleWithIcon svg { color: var(--clr-warning,#fa5); }
-
-/* Collapsible controls */
-.collapseBtn { background:none; border:none; font-size:.7rem; opacity:.7; cursor:pointer; padding:.2rem .45rem; border-radius:4px; }
-.collapseBtn:hover { opacity:1; background:rgba(255,255,255,0.05); }
-.flatSection[data-collapsed='true'] .sectionContent { display:none; }
-.flatSection[data-collapsed='true'] h4 { opacity:.75; }
-
-/* Constrain inner content width on larger screens for better readability */
-.sectionContent { width:100%; }
-@media (min-width: 980px) {
-    .sectionContent { max-width: 640px; }
-}
-@media (min-width: 1300px) {
-    .sectionContent { max-width: 720px; }
-}
-
-/* Allow ability bonuses / traits lists to stretch if they set data-wide */
-.sectionContent[data-wide="true"] { max-width: 100% !important; }
 
 /* Compact field grids for desktop */
 .compactFields { display:grid; gap:.65rem .9rem; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); align-items: start; }

@@ -1,6 +1,5 @@
 import { Component, For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import styles from "./view.module.scss";
-import useCharacters from "../../../shared/customHooks/dndInfo/useCharacters";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
 import { effect } from "solid-js/web";
@@ -14,6 +13,8 @@ import { Item, Spell } from "../../../models";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
+import { characterManager, Clone } from "../../../shared";
+import { SpellTable } from "./SpellTable/SpellTable";
 
 const CharacterView: Component = () => {
   // eslint-disable-next-line
@@ -22,7 +23,7 @@ const CharacterView: Component = () => {
   const allItems = useDnDItems();
   const getKnownSpells = (character: Character) => {
     return allSpells().filter(spell => character.spells.some(s => s.name === spell.name));
-  };
+  }
   const getCurrentItems = (items: string[]) => {
     return allItems().filter(item => items.includes(item.name));
   }
@@ -30,10 +31,10 @@ const CharacterView: Component = () => {
 
 
   const [searchParam, setSearchParam] = useSearchParams();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [characters, setCharacters] = useCharacters();
+   
+  const [characters, setCharacters] = createSignal(characterManager.characters());
   if (!searchParam.name) setSearchParam({ name: characters()[0].name });
-  const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (searchParam.name || characters()[0].name).toLowerCase())[0];
+  const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ") || characters()[0].name).toLowerCase())[0];
 
   const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
   const [activeMobileTab, setActiveMobileTab] = createSignal(0);
@@ -81,6 +82,7 @@ const CharacterView: Component = () => {
     const listener = (e: MediaQueryListEvent) => apply(e);
     mq.addEventListener("change", listener);
     onCleanup(() => mq.removeEventListener("change", listener));
+    setCharacters(characterManager.characters());
   });
 
   type ActionRow = { name: string; range: string; damage: string };
@@ -91,6 +93,24 @@ const CharacterView: Component = () => {
   const showActions = () => !isMobile() || activeMobileTab() === 0;
   const showStats = () => !isMobile() || activeMobileTab() === 1;
   const showFeatures = () => !isMobile() || activeMobileTab() === 2;
+
+  const sortSpellsByLevel = (knSpells: Spell[], level: number) => {
+    
+    const toReturn = Clone(knSpells).filter(spell => +spell.level === level);
+
+    return toReturn;
+  }
+
+  const cantrips = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 0));
+  const firstLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 1));
+  const secondLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 2));
+  const thirdLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 3));
+  const fourthLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 4));
+  const fifthLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 5));
+  const sixthLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 6));
+  const seventhLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 7));
+  const eighthLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 8));
+  const ninthLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 9));
 
   effect(() => {
     setSearchParam({ name: currentCharacter().name })
@@ -271,31 +291,89 @@ const CharacterView: Component = () => {
                   </div>
                 </Show>
                 <Show when={activeActionTab() === 1}>
-                  <div>
-                    <Table<Spell> columns={["level","name", "duration", "range", "menu"]} data={(()=>getKnownSpells(currentCharacter()))}>
-                      <Column name="level">
-                        <Header>Level</Header>
-                        <Cell<Spell>>{(spell) => spell.level}</Cell>
-                      </Column>
-                      <Column name="name">
-                        <Header>Spell</Header>
-                        <Cell<CharacterSpell>>{(spell) => spell.name}</Cell>
-                      </Column>
-                      <Column name="duration">
-                        <Header>Duration</Header>
-                        <Cell<Spell>>{(spell) => spell.duration}</Cell>
-                      </Column>
-                      <Column name="range">
-                        <Header>Range</Header>
-                        <Cell<Spell>>{(spell) => spell.range}</Cell>
-                      </Column>
-                      <Column name="menu">
-                        <Cell<Spell>>{(spell) => (
-                          <Button onClick={() => showSpellModalHandler(spell)}><Icon name="visibility" size={16}/></Button>
-                        )}</Cell>
-                      </Column>
-                      <Row  />
-                    </Table>
+                  <div class={`${styles.spellTables}`}>
+                    <Show when={cantrips().length >= 1}>
+                      <SpellTable 
+                        spells={cantrips}
+                        show={showSpellModalHandler}
+                        currentCharacter={currentCharacter} 
+                        />
+                    </Show>
+                
+                    <Show when={firstLevelSpells().length > 0}>
+                      <SpellTable 
+                        spells={firstLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                        />
+                    </Show>
+
+                    <Show when={secondLevelSpells().length > 0}>
+                      <SpellTable 
+                        spells={secondLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                        />
+                    </Show>
+
+                    <Show when={thirdLevelSpells().length > 0}>
+                      <SpellTable 
+                        spells={thirdLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                        />
+                    </Show>
+
+                    <Show when={fourthLevelSpells().length > 0}>
+                      <SpellTable 
+                        spells={fourthLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                      />
+                    
+                    </Show>
+
+                    <Show when={fifthLevelSpells().length > 0}>
+                      <SpellTable 
+                        spells={firstLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                      />  
+                    </Show>
+
+                    <Show when={sixthLevelSpells().length >  0}>
+                      <SpellTable 
+                        spells={sixthLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                      />
+                    </Show>
+
+                    <Show when={seventhLevelSpells().length > 0}>
+                      <SpellTable 
+                        spells={seventhLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                      />
+                    </Show>
+
+                    <Show when={eighthLevelSpells().length > 0}>
+                      <SpellTable 
+                        spells={eighthLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                      />
+                    </Show>
+
+                    <Show when={ninthLevelSpells().length > 0}>
+                      <SpellTable 
+                        spells={ninthLevelSpells}
+                        show={showSpellModalHandler} 
+                        currentCharacter={currentCharacter}
+                      />
+                    </Show>
+                    
+
                     <SpellModal spell={currentSelectedSpell} backgroundClick={[showSpellModal, setShowSpellModal]} />
                   </div>
                 </Show>

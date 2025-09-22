@@ -145,6 +145,7 @@ function createRacesStore() {
     // If a previous non-new selection exists, seed draft from it (prefill descriptions & core fields)
     const prev = state.selection.activeName && state.selection.activeName !== '__new__' ? state.selection.activeName : state.selection.prevName;
     if (prev && state.entities[prev]) {
+      
       setState({ selection: { activeName: '__new__', prevName: prev }, blankDraft: mapRaceToDraft(state.entities[prev]) });
     } else {
       setState({ selection: { activeName: '__new__', prevName: state.selection.activeName }, blankDraft: blankDraft() });

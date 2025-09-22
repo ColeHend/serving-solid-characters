@@ -3,7 +3,7 @@ import { Accessor, Setter, createSignal } from "solid-js";
 import { Clone } from "./utility/tools/Tools";
 import { Background, DnDClass, Feat, Item, Race, Spell } from "../../models";
 import homebrewManager from "./homebrewManager";
-import addSnackbar from "../components/Snackbar/snackbar";
+import {addSnackbar} from "coles-solid-library";
 
 class HomebrewSearch {
   public searchName: string;

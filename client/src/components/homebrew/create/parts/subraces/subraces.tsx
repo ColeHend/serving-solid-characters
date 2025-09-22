@@ -1,5 +1,5 @@
 import { Component, For, Show } from 'solid-js';
-import { Body, Select, Option, FormField } from 'coles-solid-library';
+import { Body, Select, Option, FormField, Container } from 'coles-solid-library';
 import styles from './subraces.module.scss';
 import { useSubraceEditor } from './useSubraceEditor';
 import { IdentitySection } from './IdentitySection';
@@ -18,7 +18,7 @@ const Subraces: Component = () => {
   return (
     <Body>
       <h1>Subraces</h1>
-      <div class={styles.newPanel}>
+      <Container theme="surface">
         <div style={{ display: "flex", gap: "1rem", "flex-wrap": "wrap" }}>
           <FormField name="Parent Race">
             <Select
@@ -68,7 +68,7 @@ const Subraces: Component = () => {
           </div>
         </Show>
         <Show when={api.state.snackbar}><div class={styles.snackbar} data-type={api.state.snackbar!.type}>{api.state.snackbar!.msg}</div></Show>
-      </div>
+      </Container>
     </Body>
   );
 };

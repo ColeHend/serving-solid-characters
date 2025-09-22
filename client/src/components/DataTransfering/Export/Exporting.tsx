@@ -1,11 +1,13 @@
 import { Component, createMemo, createSignal, For, Show } from "solid-js";
 import styles from "./Exporting.module.scss";
-import { ExpansionPanel, homebrewManager, isNullish } from "../../../shared";
-import {Button,Input} from "coles-solid-library";
+import { characterManager, homebrewManager, isNullish, spellComponents } from "../../../shared";
+import {Button,Input,ExpansionPanel,Modal, Checkbox} from "coles-solid-library";
 import { Trade } from "../../../models/trade.model";
 import { createStore } from "solid-js/store";
-import Modal from "../../../shared/components/popup/popup.component";
 import { downloadObjectAsJson } from "../../../shared/customHooks/utility/tools/downloadObjectAsJson";
+import { Spell } from "../../../models";
+import { Background, Class5E, Feat, Item, Race } from "../../../models/data";
+import { Character } from "../../../models/character.model";
 
 const Exporting:Component = () => {
 
@@ -83,11 +85,46 @@ const Exporting:Component = () => {
   }
 
   const isInExport = <T extends keyof Trade,>(key: T, data: Trade[T][number])=>{
-    return !!exportObject[key].find((d)=>d.name === data.name)
+    switch (key) { 
+      case "feats":
+        return !!exportObject[key].find((d)=>{
+          const Data = d as any as Feat;
+          const incomingData = data as any as Feat;
+          // if (Object.keys(d).includes("spells")) return d.name === data.name
+          return Data.details.name === incomingData.details.name
+        });
+      
+      default: 
+        return !!exportObject[key].find((d)=>{
+          const Data = d as any;
+          const incomingData = data as any;
+
+          return Data.name === incomingData.name
+        });
+    }
+
+  
   }
 
   const isInRemoveObj = <T extends keyof Trade,>(key: T, data: Trade[T][number])=>{
-    return !!toRemove[key].find((d)=>d.name === data.name)
+    switch (key){
+      case "feats":
+        return !!toRemove[key].find((d)=>{
+          const data = d as any as Feat;
+          const incomingData = data as any as Feat;
+          
+          return data.details.name === incomingData.details.name
+        })
+      
+      default:
+        return !!toRemove[key].find((d)=>{
+          const data = d as any;
+          const incomingData = data as any;
+
+          return data.name === incomingData.name;
+        })
+    }
+    
   }
 
   const exportToObject = ()=> {
@@ -104,6 +141,7 @@ const Exporting:Component = () => {
   const AvalableBackground = createMemo(()=>homebrewManager.backgrounds().filter(b=>!isInExport("backgrounds",b)));
   const AvalableItems = createMemo(()=>homebrewManager.items().filter(i=>!isInExport("items",i)));
   const AvalableRaces = createMemo(()=>homebrewManager.races().filter(r=>!isInExport("races",r)));
+  const AvalableChars = createMemo(()=>characterManager.characters().filter(char=>!isInExport("characters",char)));
 
   const [showConfirm,setShowConfirm] = createSignal<boolean>(false);
 
@@ -115,43 +153,42 @@ const Exporting:Component = () => {
       <div class={`${styles.innerRow}`}>
         <ul class={`${styles.list}`}>
           {/*---------- ▼  Gamesystems ▼ ----------
-                        **  An Expanstion panel goes here  **
+            **  An Expanstion panel goes here  **
                         
-                        ▲ ----------    ---------- ▲ */ }
+           ▲ ----------    ---------- ▲ */ }
 
           {/*---------- ▼ spells ▼ ----------*/}
           <Show when={AvalableSpells().length > 0}>
             <ExpansionPanel>
 
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allSpells" 
-                  type="checkbox" 
+                <Checkbox 
+                  label="Spells"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToAddLists({spells:[...homebrewManager.spells()]})
                     } else {
                       setToAddLists({spells:[]})
                     }
                   }} 
-                  checked={homebrewManager.spells().length === toAddLists.spells.length}  /> <label for="allSpells">Spells</label>
+                  checked={homebrewManager.spells().length === toAddLists.spells.length}
+                />
               </div>
 
               <div class={`${styles.innerList}`}>
                 <For each={AvalableSpells()}>
                   { (spell) =><Show when={!exportObject.spells.includes(spell)}><li>
-                    <Input 
-                      type="checkbox" 
-                      name={spell.name}
+                    <Checkbox 
+                      label={`${spell.name}`}
                       checked={!!toAddLists.spells.find(s=>s.name === spell.name)}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToAddLists(old=>({spells:[...old.spells,spell]}))
                         } else {    
                           setToAddLists(old=>({spells:[...old.spells.filter(s=>s.name !== spell.name)]}))
                         }
-                      }}/> 
-                    <label for={spell.name}>{spell.name}</label>    
+                      }}
+                    />
                   </li></Show>}
                 </For>
               </div>
@@ -164,35 +201,33 @@ const Exporting:Component = () => {
             <ExpansionPanel>
 
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allFeats" 
-                  type="checkbox" 
+                <Checkbox 
+                  label="Feats"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToAddLists({feats:[...homebrewManager.feats()]})
                     } else {
                       setToAddLists({feats: []})
                     }
                   }}
                   checked={homebrewManager.feats().length === toAddLists.feats.length}
-                /> <label for="allFeats">Feats</label>
+                />
               </div>
 
               <div class={`${styles.innerList}`}>
                 <For each={AvalableFeats()}>
                   { (feat) => <Show when={!exportObject.feats.includes(feat)}><li>
-                    <Input 
-                      name={feat.name} 
-                      type="checkbox" 
+                    <Checkbox
+                      label={`${feat.name}`} 
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToAddLists(old=>({feats:[...old.feats,feat]}))
                         } else {
-                          setToAddLists(old=>({feats:[...old.feats.filter(s=>s.name !== feat.name)]}))
+                          setToAddLists(old=>({feats:[...old.feats.filter(s=>s.details.name !== feat.details.name)]}))
                         }
                       }}
-                      checked={!!toAddLists.feats.find(s=>s.name === feat.name)}
-                    /> <label for={feat.name}>{feat.name}</label>    
+                      checked={!!toAddLists.feats.find(s=>s.details.name === feat.details.name)}
+                    />    
                   </li></Show>}
                 </For>
               </div>
@@ -204,35 +239,32 @@ const Exporting:Component = () => {
           <Show when={AvalableClasses().length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allClasses" 
-                  type="checkbox" 
+                <Checkbox 
+                  label="Classes"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToAddLists({srdclasses: [...homebrewManager.classes()]})
                     } else {
                       setToAddLists({srdclasses:[]})
                     }
                   }}
                   checked={homebrewManager.classes().length === toAddLists.srdclasses.length}
-                /> <label for="allClasses">Classes</label>
+                />
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={AvalableClasses()}>
                   { (dndClass) => <Show when={!exportObject.srdclasses.includes(dndClass)}><li>
-                    <Input 
-                      name={dndClass.name} 
-                      type="checkbox"
+                    <Checkbox 
+                      label={`${dndClass.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToAddLists(old=>({srdclasses:[...old.srdclasses,dndClass]}))
                         } else {
                           setToAddLists(old=>({srdclasses:[...old.srdclasses.filter(s=>s.name !== dndClass.name)]}))
                         }
                       }}
                       checked={!!toAddLists.srdclasses.find(s=>s.name === dndClass.name)}
-                    /> 
-                    <label for={dndClass.name}>{dndClass.name}</label>
+                    />
                   </li></Show>}
                 </For>
               </div>
@@ -243,34 +275,32 @@ const Exporting:Component = () => {
           <Show when={AvalableBackground().length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allBackgrounds" 
-                  type="checkbox"
+                <Checkbox
+                  label="Backgrounds"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
-                      setToAddLists({backgrounds:[...homebrewManager.backgrounds()]})
-                    } else {
-                      setToAddLists({srdclasses:[]})
-                    }
-                  }}
+                      if (e) {
+                        setToAddLists({backgrounds:[...homebrewManager.backgrounds()]})
+                      } else {
+                        setToAddLists({srdclasses:[]})
+                      }
+                    }}
                   checked={homebrewManager.backgrounds().length === toAddLists.backgrounds.length}
-                /> <label for="allBackgrounds">Backgrounds</label>
+                />
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={AvalableBackground()}>
                   { (background) => <Show when={!exportObject.backgrounds.includes(background)}><li>
-                    <Input 
-                      name={background.name} 
-                      type="checkbox" 
+                    <Checkbox 
+                      label={`${background.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToAddLists(old=>({backgrounds:[...old.backgrounds,background]}))
                         } else {
                           setToAddLists(old=>({backgrounds:[...old.backgrounds.filter(s=>s.name === background.name)]}))
                         }
                       }}
                       checked={!!toAddLists.backgrounds.find(s=>s.name === background.name)}
-                    /> <label for={background.name}>{background.name}</label>    
+                    />  
                   </li></Show>}
                 </For>
               </div>
@@ -282,34 +312,32 @@ const Exporting:Component = () => {
           <Show when={AvalableItems().length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allItems" 
-                  type="checkbox" 
+                <Checkbox
+                  label="Items"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToAddLists({items:[...homebrewManager.items()]})
                     } else {
                       setToAddLists({items: []})
                     }
                   }}
                   checked={homebrewManager.items().length === toAddLists.items.length}
-                /> <label for="allItems">Items</label>
+                />
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={AvalableItems()}>
                   { (item) => <Show when={!exportObject.items.includes(item)}><li>
-                    <Input 
-                      name={item.item} 
-                      type="checkbox" 
+                    <Checkbox 
+                      label={`${item.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToAddLists(old=>({items:[...old.items,item]}))
                         } else {
-                          setToAddLists(old=>({items:[...old.items.filter(s=>s.item !== item.item)]}))
+                          setToAddLists(old=>({items:[...old.items.filter(s=>s.name !== item.name)]}))
                         }
                       }}
-                      checked={!!toAddLists.items.find(s=>s.item === item.item)}
-                    /> <label for={item.item}>{item.item}</label>
+                      checked={!!toAddLists.items.find(s=>s.name === item.name)}
+                    />
                   </li></Show>}
                 </For>
               </div>
@@ -321,43 +349,74 @@ const Exporting:Component = () => {
           <Show when={AvalableRaces().length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allRaces" 
-                  type="checkbox" 
+                <Checkbox 
+                  label="Races"
                   onChange={(e)=>{
-                    if (e.currentTarget.value) {
+                    if (e) {
                       setToAddLists({races:[...homebrewManager.races()]})
                     } else {
                       setToAddLists({races: []})
                     }
                   }}
                   checked={homebrewManager.races().length === toAddLists.feats.length}
-                /> <label for="allRaces">Races</label>
+                />
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={AvalableRaces()}>
                   { (race) => <Show when={!exportObject.races.includes(race)}><li>
-                    <Input 
-                      name={race.name}  
-                      type="checkbox" 
+                    <Checkbox 
+                      label={`${race.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToAddLists(old=>({races:[...old.races,race]}))
                         } else {
-                          setToAddLists(old=>({races:[...old.races.filter(s=>s.name === race.name)]}))
+                          setToAddLists(old=>({races:[...old.races.filter(s=>s.name !== race.name)]}))
                         }
                       }}
-                    /> <label for={race.name}>{race.name}</label>
+                      checked={!!toAddLists.races.find(s => s.name === race.name)}
+                    />
                   </li></Show>}
                 </For>
               </div>
             </ExpansionPanel>
           </Show>
 
-          {/*---------- ▼ characters ▼ ----------
-                        **  An Expanstion panel goes here  **
+          {/*---------- ▼ characters ▼ ----------*/}
+          <Show when={AvalableChars().length > 0}>
+            <ExpansionPanel>
+              <div class={`${styles.optionHeader}`}>
+                <Checkbox 
+                  label="Characters"
+                  onChange={(e)=>{
+                    if (e) {
+                      setToAddLists({characters:[...characterManager.characters()]})
+                    } else {
+                      setToAddLists({characters: []})
+                    }
                     
-                        ▲ ----------    ---------- ▲ */}
+                  }}
+                  checked={characterManager.characters().length === toAddLists.characters.length}
+                />
+              </div>
+              <div class={`${styles.innerList}`}>
+                  <For each={AvalableChars()}>
+                    { (character) => <li><Show when={!exportObject.characters.includes(character)}>
+                      <Checkbox 
+                        label={`${character.name}`}
+                        onChange={(e)=>{
+                          if (e) {
+                            setToAddLists(old => ({characters: [...old.characters,character]}))
+                          } else {
+                            setToAddLists(old => ({characters: [...old.characters.filter(c => c.name !== character.name)]}))
+                          }
+                        }}
+                        checked={!!toAddLists.characters.find(c => c.name === character.name)}
+                      />  
+                    </Show></li>}
+                  </For>
+              </div>
+            </ExpansionPanel>
+          </Show>
         </ul> 
 
         <div class={`${styles.switchBtns}`}>
@@ -366,12 +425,9 @@ const Exporting:Component = () => {
         </div>
       </div>
 
-            
     </div>
 
-    <div class={`${styles.divider}`}>
-
-    </div>
+    <div class={`${styles.divider}`} />
 
     <div class={`${styles.rightList}`}>
       <h2>Active Options</h2>
@@ -380,43 +436,41 @@ const Exporting:Component = () => {
                 
         <ul class={`${styles.list}`}>
           {/*---------- ▼  Gamesystems ▼ ----------
-                        **  An Expanstion panel goes here  **
-                        
-                        ▲ ----------    ---------- ▲ */ }
+            **  An Expanstion panel goes here  **
+            
+            ▲ ----------    ---------- ▲ */ }
                     
 
           <Show when={exportObject.spells.length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allAddedSpells"
-                  type="checkbox"
+                <Checkbox 
+                  label="Spells"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToRemove({spells:[...exportObject.spells]})
                     } else {
                       setToRemove({spells:[]})
                     }
                   }} 
                   checked={toRemove.spells.length === exportObject.spells.length}
-                /> <label>Spells</label>
+                />
               </div>
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.spells}>
                   { (spell) => <li>
-                    <Input
-                      name={spell.name} 
-                      type="checkbox"
+                    <Checkbox 
+                      label={`${spell.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToRemove(old=>({spells:[...old.spells,spell]}))
                         } else {
                           setToRemove(old=>({spells:[...old.spells.filter(s=>s.name !== spell.name)]}))
                         }
                       }}
                       checked={!!toRemove.spells.find(s=>s.name === spell.name)}
-                    /> <label>{spell.name}</label>
+                    />
                   </li>}
                 </For>
               </div>
@@ -426,35 +480,33 @@ const Exporting:Component = () => {
           <Show when={exportObject.feats.length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input
-                  name="allAddedFeats"
-                  type="checkbox" 
+                <Checkbox 
+                  label="Feats"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToRemove({feats:[...exportObject.feats]})
                     } else {
                       setToRemove({feats:[]})
                     }
                   }}
                   checked={toRemove.feats.length === exportObject.feats.length}
-                /> <label>Feats</label>
+                />
               </div>
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.feats}>
                   { (feat) => <li>
-                    <Input 
-                      name={feat.name}
-                      type="checkbox"
+                    <Checkbox 
+                      label={`${feat.details.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToRemove(old=>({feats:[...old.feats,feat]}));
                         } else {
-                          setToRemove(old=>({feats:[...old.feats.filter(f=>f.name !== feat.name)]}));
+                          setToRemove(old=>({feats:[...old.feats.filter(f=>f.details.name !== feat.details.name)]}));
                         }
                       }}
-                      checked={!!toRemove.feats.find(f=>f.name === feat.name)}
-                    /> <label>{feat.name}</label>
+                      checked={!!toRemove.feats.find(f=>f.details.name === feat.details.name)}
+                    />
                   </li>}
                 </For>
               </div>
@@ -464,33 +516,33 @@ const Exporting:Component = () => {
           <Show when={exportObject.srdclasses.length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allAddedClasses"
-                  type="checkbox"
+                <Checkbox 
+                  label="Classes"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToRemove({srdclasses:[...exportObject.srdclasses]})
                     } else {
                       setToRemove({srdclasses:[]})
                     }
                   }}
-                /> <label>Classes</label>
+                  checked={toRemove.srdclasses.length === exportObject.srdclasses.length}
+
+                />
               </div>
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.srdclasses}>
                   { (dndclass) => <li>
-                    <Input 
-                      name={dndclass.name}
-                      type="checkbox"
+                    <Checkbox 
+                      label={`${dndclass.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToRemove(old=>({srdclasses:[...old.srdclasses,dndclass]}))
                         } else {
                           setToRemove(old=>({srdclasses:[...old.srdclasses.filter(c=>c.name !== dndclass.name)]}))
                         }
                       }}
                       checked={!!toRemove.srdclasses.find(c=>c.name === dndclass.name)}
-                    /> <label>{dndclass.name}</label>
+                    />
                   </li>}
                 </For>
               </div>
@@ -500,35 +552,33 @@ const Exporting:Component = () => {
           <Show when={exportObject.backgrounds.length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allAddedClasses"
-                  type="checkbox"
+                <Checkbox 
+                  label="Backgrounds"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToRemove({backgrounds:[...exportObject.backgrounds]})
                     } else {
                       setToRemove({backgrounds:[]})
                     }
                   }}
                   checked={toRemove.backgrounds.length === exportObject.backgrounds.length}
-                /> <label>Classes</label>
+                />
               </div>
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.backgrounds}>
                   { (background) => <li>
-                    <Input 
-                      name={background.name}
-                      type="checkbox"
+                    <Checkbox 
+                      label={`${background.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToRemove(old=>({backgrounds:[...old.backgrounds,background]}))
                         } else {
                           setToRemove(old=>({backgrounds:[...old.backgrounds.filter(b=>b.name !== background.name)]}))
                         }
                       }}
                       checked={!!toRemove.backgrounds.find(b=>b.name === background.name)}
-                    /> <label>{background.name}</label>
+                    />
                   </li>}
                 </For>
               </div>
@@ -538,35 +588,33 @@ const Exporting:Component = () => {
           <Show when={exportObject.items.length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input 
-                  name="allAddedItems"
-                  type="checkbox"
+                <Checkbox 
+                  label="Items"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToRemove({items:[...exportObject.items]})
                     } else {
                       setToRemove({items:[]})
                     }
                   }}
                   checked={toRemove.items.length === exportObject.items.length}
-                /> <label>Items</label>
+                />
               </div>
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.items}>
                   { (item) => <li>
-                    <Input 
-                      name={item.item}
-                      type="checkbox"
-                      onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                    <Checkbox 
+                      label={`${item.name}`}
+                       onChange={(e)=>{
+                        if (e) {
                           setToRemove(old=>({items:[...old.items,item]}))
                         } else {
-                          setToRemove(old=>({items:[...old.items.filter(i=>i.item !== item.item)]}))
+                          setToRemove(old=>({items:[...old.items.filter(i=>i.name !== item.name)]}))
                         }
                       }}
-                      checked={!!toRemove.items.find(i=>i.item === item.item)}
-                    /> <label>{item.item}</label>
+                      checked={!!toRemove.items.find(i=>i.name === item.name)}
+                    />
                   </li>}
                 </For>
               </div>
@@ -576,39 +624,73 @@ const Exporting:Component = () => {
           <Show when={exportObject.races.length > 0}>
             <ExpansionPanel>
               <div class={`${styles.optionHeader}`}>
-                <Input  
-                  name="allAddedRaces"
-                  type="checkbox"
+                <Checkbox 
+                  label="Races"
                   onChange={(e)=>{
-                    if (e.currentTarget.checked) {
+                    if (e) {
                       setToRemove({races:[...exportObject.races]})
                     } else {
                       setToRemove({races:[]})
                     }
                   }}
                   checked={toRemove.races.length === exportObject.races.length}
-                /> <label>Races</label>
+                />
               </div>
 
               <div class={`${styles.innerList}`}>
                 <For each={exportObject.races}>
                   { (race) => <li>
-                    <Input 
-                      name={race.name}
-                      type="checkbox"
+                    <Checkbox 
+                      label={`${race.name}`}
                       onChange={(e)=>{
-                        if (e.currentTarget.checked) {
+                        if (e) {
                           setToRemove(old=>({races:[...old.races,race]}))
                         } else {
                           setToRemove(old=>({races:[...old.races.filter(r=>r.name !== race.name)]}))
                         }
                       }}
                       checked={!!toRemove.races.find(r=>r.name === race.name)}
-                    /> <label>{race.name}</label>
+                    />
                   </li>}
                 </For>
               </div>
             </ExpansionPanel>
+          </Show>
+
+          <Show when={exportObject.characters.length > 0}>
+            <ExpansionPanel>
+              <div class={`${styles.optionHeader}`}>
+                <Checkbox 
+                  label="Characters"
+                  onChange={(e)=>{
+                    if (e) {
+                      setToRemove({characters: [...exportObject.characters]})
+                    } else {
+                      setToRemove({characters: []})
+                    }
+                  }}
+                  checked={toRemove.characters.length === exportObject.characters.length}
+                />
+              </div>
+              <div class={`${styles.innerList}`}>
+                <For each={exportObject.characters}>
+                  { (character) => <li>
+                    <Checkbox 
+                      label={`${character.name}`}
+                      onChange={(e)=>{
+                        if (e) {
+                          setToRemove(old => ({characters: [...old.characters, character]}))
+                        } else {
+                          setToRemove(old => ({characters: [...old.characters.filter(c => c.name !== character.name)]}))
+                        }
+                      }}
+                      checked={!!toRemove.characters.find(c => c.name === character.name)}
+                    />
+                  </li>}
+                </For>
+              </div>
+            </ExpansionPanel>
+
           </Show>
 
 
@@ -625,7 +707,7 @@ const Exporting:Component = () => {
     </div>
 
     <Show when={showConfirm()}>
-      <Modal title="Confirm & Name" setClose={setShowConfirm} height="15%" width="25%">
+      <Modal title="Confirm & Name" show={[showConfirm,setShowConfirm]} height="15%" width="25%">
         <div class={`${styles.confirmContent}`}>
           <Input id="confirm-name" type="text" /> <Button onClick={exportToObject} type="submit">Confirm</Button>   
         </div>

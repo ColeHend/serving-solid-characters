@@ -7,7 +7,6 @@ import {
 } from "solid-js";
 import styles from "./viewClasses.module.scss"
 import { useSearchParams } from "@solidjs/router";
-import { Class5E, Subclass } from "../../../models/data";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
@@ -21,13 +20,17 @@ import {
   Table 
 } from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
+import { Class5E, Subclass } from "../../../models/data";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
+import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/subclasses";
 
 const viewClasses: Component = () => {
   const [userSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
   const srdClasses = useDnDClasses();
   const [searchParam, setSearchParam] = useSearchParams();
+  const allSubclasses = useDnDSubclasses();
+
   const [paginatedClasses,setPaginatedClasses] = createSignal<Class5E[]>([]);
   const [currentClass, setCurrentClass] = createSignal<Class5E>({} as Class5E);
   const [showClass, setShowClass] = createSignal<boolean>(false);
@@ -41,7 +44,7 @@ const viewClasses: Component = () => {
   createEffect(() => {
     const list = srdClasses();
     if (list.length === 0) return;
-    const param = searchParam.name;
+    const param = typeof searchParam.itemType === "string" ? searchParam.itemType : searchParam.itemType?.join(" ");
     const found = param && list.some(c => c.name.toLowerCase() === param.toLowerCase());
     if (!found) {
       setSearchParam({ name: list[0].name });
@@ -50,8 +53,9 @@ const viewClasses: Component = () => {
 
   const selectedClass = createMemo(() => {
     const list = srdClasses();
+    const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
     if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].name).toLowerCase();
+    const target = (param || list[0].name).toLowerCase();
     return list.find(c => c.name.toLowerCase() === target) || list[0];
   })
 
@@ -72,7 +76,7 @@ const viewClasses: Component = () => {
 
   createEffect(() => {
     const list = srdClasses();
-    setTableData(list);
+    setTableData(list);    
   })
     
   return (
@@ -98,7 +102,7 @@ const viewClasses: Component = () => {
             <Cell<Class5E>>{(x) => <span onClick={() => {
               setCurrentClass(x);
               setSearchParam({ name: x.name });
-              setShowClass(!showClass());
+              setShowClass(old => !old);
             }}>{x.name}</span>}</Cell>
           </Column>
           <Column name="menu">
@@ -117,7 +121,12 @@ const viewClasses: Component = () => {
       </div>
       
       <Show when={showClass()}>
-        <ClassModal boolean={showClass} booleanSetter={setShowClass} currentClass={currentClass} />
+        <ClassModal 
+          boolean={showClass} 
+          booleanSetter={setShowClass} 
+          currentClass={currentClass} 
+          subclasses={allSubclasses}
+        />
       </Show>
     </Body>
   )

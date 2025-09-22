@@ -75,7 +75,8 @@ const NavMenu: Component<Props> = (props) => {
         position="right"
         style={{width: '180px'}}
         show={[props.defaultShowList, props.setDefaultShowList]} 
-        anchorElement={props.anchorElement} >
+        anchorElement={props.anchorElement} 
+        class={`${styles.navMenu}`}>
         <MenuItem class={`${styles.headerItem}`}>
           <h3 onClick={()=>Navigate("/")}>Navigation</h3>
           <Button transparent onClick={(e) => {

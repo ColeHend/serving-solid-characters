@@ -2,8 +2,8 @@ import { Component, For, Show, createSignal } from 'solid-js';
 import { Chip, Button, FormField, Input, TextArea, Modal } from 'coles-solid-library';
 import { Feature, FeatureTypes } from '../../../../../models/old/core.model';
 import { itemsStore } from './itemsStore';
-import Section from './Section';
 import styles from './items.module.scss';
+import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; }
 
@@ -53,7 +53,7 @@ export const FeaturesSection: Component<Props> = (p) => {
 
   return (
     <>
-      <Section id="features" title="Features" collapsed={p.collapsed} onToggle={p.toggle} icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.2 22 12 18.56 5.8 22 7 14.14l-5-4.87 7.1-1.01z"/></svg>}>
+      <FlatCard icon='star' headerName='Features'>
         <div style={{ display:'flex', gap:'.5rem', 'align-items':'center' }}>
           <Button onClick={startAdd}>+ Feature</Button>
           <Show when={editIndex()>=0}><span style={{ 'font-size':'.7rem', opacity:0.65 }}>Editing: {featureName()}</span></Show>
@@ -67,7 +67,7 @@ export const FeaturesSection: Component<Props> = (p) => {
             )}</For>
           </Show>
         </div>
-      </Section>
+      </FlatCard>
       <Modal title={editIndex()>=0? 'Edit Feature' : 'Add Feature'} show={[showFeatureModal, setShowFeatureModal]} width="520px">
         <div style={{ padding: '0.75rem 1rem 1rem', display:'flex', 'flex-direction':'column', gap:'0.85rem' }}>
           <FormField name="Name" required>
