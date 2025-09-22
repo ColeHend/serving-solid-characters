@@ -52,7 +52,5 @@ export function useGetSrdSubclasses(version: '2014' | '2024' | 'both' | string):
 }
 
 function fetchSubclasses(version: '2014' | '2024') {
-  console.log("ran");
-  
   return HttpClient$.get<Subclass[]>(`/api/${version}/Subclasses`).pipe(take(1));
 }

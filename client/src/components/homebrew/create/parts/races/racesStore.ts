@@ -147,10 +147,8 @@ function createRacesStore() {
     if (prev && state.entities[prev]) {
       
       setState({ selection: { activeName: '__new__', prevName: prev }, blankDraft: mapRaceToDraft(state.entities[prev]) });
-      console.log("set state: ",state);
     } else {
       setState({ selection: { activeName: '__new__', prevName: state.selection.activeName }, blankDraft: blankDraft() });
-      console.log("set state: ",state);
     }
   }
 

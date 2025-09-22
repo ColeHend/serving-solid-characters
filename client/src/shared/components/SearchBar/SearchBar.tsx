@@ -24,11 +24,7 @@ const SearchBar = <T,>(props: Props<T>) => {
       if(search.trim().length === 0) return true;
       return JSON.stringify(item).toLowerCase().includes(search);
     });
-    console.log('results', results);
-    console.log(`searching for "${search}" in ${props.dataSource().length} items, found ${results.length}`);
     
-    
-
     if (results.length >= 1) {
       addSnackbar({
         message:`Found: ${results.length}!`,

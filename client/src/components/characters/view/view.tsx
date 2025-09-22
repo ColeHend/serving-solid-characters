@@ -95,12 +95,8 @@ const CharacterView: Component = () => {
   const showFeatures = () => !isMobile() || activeMobileTab() === 2;
 
   const sortSpellsByLevel = (knSpells: Spell[], level: number) => {
-    console.log(knSpells);
     
     const toReturn = Clone(knSpells).filter(spell => +spell.level === level);
-
-    console.log(toReturn);
-    
 
     return toReturn;
   }

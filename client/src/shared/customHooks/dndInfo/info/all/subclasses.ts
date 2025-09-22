@@ -13,10 +13,7 @@ export function useDnDSubclasses(): Accessor<Subclass[]> {
   return createMemo<Subclass[]>(() => {
     const active = (userSettings().dndSystem|| "2014");
     const srd = useGetSrdSubclasses(active);
-  
-    console.log("cashed: ", srd());
-    
-    
+        
     return [...srd(), ...homebrew()];
   });
 }

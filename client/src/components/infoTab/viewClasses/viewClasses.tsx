@@ -76,12 +76,7 @@ const viewClasses: Component = () => {
 
   createEffect(() => {
     const list = srdClasses();
-    setTableData(list);
-  
-    console.log("tabledata, ",list);
-    
-    console.log("x, ",paginatedClasses());
-    
+    setTableData(list);    
   })
     
   return (
