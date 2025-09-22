@@ -1,6 +1,7 @@
 import { Trade } from "../../../../models/trade.model";
 import {addSnackbar} from "coles-solid-library";
 import homebrewManager from "../../homebrewManager";
+import characterManager from "../../dndInfo/useCharacters";
 
 export function importJsonObject(data: Trade) {
   addSnackbar({
@@ -61,14 +62,14 @@ export function importJsonObject(data: Trade) {
     data.srdclasses.forEach(srdClass => homebrewManager.addClass(srdClass));
   }
     
-  //   if (data.characters.length > 0) {
-  //    addSnackbar({
-  //         severity:"info",
-  //         message:`Importing ${data.characters.length} Characters`,
-  //         closeTimeout:4000,
-  //     })
-  //    data.characters.forEach(character => homebrewManager.addCharacter(character));
-  //   }
+    if (data.characters.length > 0) {
+     addSnackbar({
+          severity:"info",
+          message:`Importing ${data.characters.length} Characters`,
+          closeTimeout:4000,
+      })
+     data.characters.forEach(character => characterManager.createCharacter(character));
+    }
     
 
 }

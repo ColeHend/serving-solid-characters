@@ -177,7 +177,9 @@ const CharacterCreate: Component = () => {
             "flex-direction": "row"
           }}>
             <FormField name="Name" formName="name">
-              <Input value={characterName()} onInput={(e)=>setCharacterName(e.currentTarget.value)}/>
+              <Input 
+              value={characterName()} 
+              onInput={(e)=>setCharacterName(e.currentTarget.value)}/>
             </FormField>
 
             <FormField name="Class" formName="className">

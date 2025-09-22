@@ -4,7 +4,7 @@ export interface Spell {
   description:             string;
   duration:         string;
   is_concentration:    boolean;
-  level:            number;
+  level:            string;
   range:            string;
   is_ritual:           boolean;
   school:           string;

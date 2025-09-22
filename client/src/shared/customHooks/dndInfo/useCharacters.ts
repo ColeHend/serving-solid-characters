@@ -1,5 +1,5 @@
 import { Accessor, Setter, createSignal } from "solid-js";
-import { Character } from "../../../models/character.model";
+import { Character, CharacterSpell } from "../../../models/character.model";
 import httpClient$ from "../utility/tools/httpClientObs";
 import CharacterDB from "../utility/localDB/new/charactersDB";
 import {
@@ -93,6 +93,46 @@ class CharacterManager {
     this.updateCharInDB(character);
   }
 
+  public updateCharSpell(characterName: string,newSpell: CharacterSpell) {
+    const character = this.getCharacter(characterName);
+
+    if (character) {
+      
+      const spells = character.spells.filter(s => s.name !== newSpell.name);
+
+      spells.push(newSpell);
+
+      this.updateCharacter({
+        name: character.name,
+        level: character.level,
+        levels: character.levels,
+        race: character.race,
+        className: character.className,
+        subclass: character.subclass,
+        background: character.background,
+        alignment: character.alignment,
+        proficiencies: character.proficiencies,
+        languages: character.languages,
+        health: character.health,
+        stats: character.stats,
+        items: character.items,
+        spells: spells
+      })
+      addSnackbar({
+        message: `Added ${newSpell.name} to ${characterName}`,
+        severity: "success"
+      })
+      return;
+      
+    } else {
+      addSnackbar({
+        message: "Coundn't find character",
+        severity: "error"
+      })
+    }
+
+  }
+
   private updateCharInDB(updated: Character) {
     let failed = false;
     return httpClient$.toObservable(CharacterDB.characters.put(updated)).pipe(
@@ -118,6 +158,7 @@ class CharacterManager {
       })
     );
   }
+
 
   // ------Delete------
 
@@ -147,6 +188,41 @@ class CharacterManager {
         });
       }
     })
+  }
+
+  public deleteCharSpell(characterName: string,spellName: string) {
+    const character = this.getCharacter(characterName);
+
+    if (character) {
+      this.updateCharacter({
+        name: character.name,
+        level: character.level,
+        levels: character.levels,
+        race: character.race,
+        className: character.className,
+        subclass: character.subclass,
+        background: character.background,
+        alignment: character.alignment,
+        proficiencies: character.proficiencies,
+        languages: character.languages,
+        health: character.health,
+        stats: character.stats,
+        items: character.items,
+        spells: character.spells.filter(s => s.name !== spellName)
+      })
+      addSnackbar({
+        message: `deleted ${spellName} from ${characterName}`,
+        severity: "success"
+      })
+      return;
+      
+    } else {
+      addSnackbar({
+        message: "Coundn't find character",
+        severity: "error"
+      })
+      return;
+    }
   }
 
 

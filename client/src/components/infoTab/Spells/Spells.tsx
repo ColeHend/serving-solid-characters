@@ -12,7 +12,7 @@ import Paginator from "../../../shared/components/paginator/paginator";
 import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
-import { Clone, homebrewManager } from "../../../shared";
+import { characterManager, Clone, homebrewManager } from "../../../shared";
 import { Body, Table, Chip, Icon, Column, Cell, Header,Menu, Row } from "coles-solid-library";
 import { SpellMenu } from "./spellMenu/spellMenu";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
@@ -64,6 +64,7 @@ const masterSpells: Component = () => {
     isAsc: boolean;
   }>({ sortKey: "level", isAsc: true });
   const [tableData, setTableData] = createSignal<Spell[]>([]);
+  const [lastChar, setLastChar] = createSignal<string>("");
 
 
   const paginateItems = createMemo(() =>
@@ -194,7 +195,9 @@ const masterSpells: Component = () => {
           <Column name="menu">
             <Header><></></Header>
             <Cell<Spell> onClick={(e)=>e.stopPropagation()}>{(spell) => <>
-              <SpellMenu spell={spell}/>
+              <SpellMenu 
+                spell={spell}
+                lastChar={[lastChar, setLastChar]}/>
             </> }</Cell>
           </Column>
 
@@ -209,6 +212,8 @@ const masterSpells: Component = () => {
       <Show when={showSpell() && currentSpell()}>
         <SpellModal spell={currentSpell as any} backgroundClick={[showSpell,setShowSpell]} />
       </Show>
+
+      
     
       <div class={`${styles.paginator}`}>
         <Paginator

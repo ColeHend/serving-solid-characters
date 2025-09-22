@@ -27,7 +27,7 @@ const Spells: Component = () => {
     description: "",
     duration: "",
     is_concentration: false,
-    level: 0,
+    level: "0",
     range: "",
     is_ritual: false,
     school: "",

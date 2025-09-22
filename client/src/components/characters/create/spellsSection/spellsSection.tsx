@@ -30,7 +30,7 @@ export const SpellsSection:Component<SectionProps> = (props) => {
         description: "",
         duration: "",
         is_concentration: false,
-        level: 0,
+        level: "0",
         range: "",
         is_ritual: false,
         school: "",
@@ -100,7 +100,7 @@ export const SpellsSection:Component<SectionProps> = (props) => {
 
     const currentClass = createMemo(()=>props.selectedClass());
 
-    const filterdSpells = createMemo(()=>srdSpells().filter(s => s.classes.includes(currentClass())).sort((a,b)=>a.level - b.level));
+    const filterdSpells = createMemo(()=>srdSpells().filter(s => s.classes.includes(currentClass())).sort((a,b)=>+a.level - +b.level));
     
     let prev:string;
     createEffect(()=>{
@@ -132,7 +132,8 @@ export const SpellsSection:Component<SectionProps> = (props) => {
                             setSelectedSpell(Spell);
                             setShowSpellModal(old => !old);
                         }
-                    })}/>}
+                    })}
+                    remove={()=>setKnownSpells(old => old.filter(s => s !== spell))}/>}
                 </For>
             </div>
         </FlatCard>
@@ -178,7 +179,7 @@ export const SpellsSection:Component<SectionProps> = (props) => {
                         </Header>
                         <Cell<Spell>>
                             {(spell)=><span>
-                                <span>{spellLevel(spell.level)}</span>
+                                <span>{spellLevel(+spell.level)}</span>
                             </span>}
                         </Cell>
                     </Column>

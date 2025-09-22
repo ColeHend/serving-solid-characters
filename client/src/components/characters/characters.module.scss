@@ -13,3 +13,19 @@
         }
     }
 }
+
+.allCharsTables {
+
+    table {
+        width: 50%;
+        margin: 0 auto;
+
+        tr {
+            
+            &:hover {
+                cursor: pointer;
+               
+            }
+        }
+    }
+}
