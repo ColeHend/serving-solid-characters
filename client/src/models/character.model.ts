@@ -106,3 +106,5 @@ export interface CharacterGear {
 	equipped: string[];
 	attuned: string[];
 }
+
+export type CharacterForm = Omit<Character,"levels"|"spells"|"race"|"proficiencies"|"health"|"stats"|"items"|"level">

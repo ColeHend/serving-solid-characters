@@ -57,13 +57,13 @@ const Navbar: Component<Props> = (props) => {
             transparent
             title='Import & Export'  
             onClick={() => setShowDataTransfer(!showDataTransfer())}>
-            <Icon color="white" name="file_export" size="large"></Icon>
+            <Icon name="file_export" size="large"></Icon>
           </Button>
 
         
 
           <Button transparent ref={props.setAnchor} onClick={()=>(local.list[1](true))} >
-            <Icon  color="white" name="menu" size="large" />
+            <Icon name="menu" size="large" />
           </Button>
         </div>
                 

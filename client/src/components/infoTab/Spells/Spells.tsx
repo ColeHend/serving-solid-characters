@@ -8,15 +8,16 @@ import {
 } from "solid-js";
 import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
-import SearchBar from "./searchBar/searchBar";
+// import SearchBar from "./searchBar/searchBar";
 import { useSearchParams } from "@solidjs/router";
 import { SharedHookContext } from "../../rootApp";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
-import { Clone, homebrewManager } from "../../../shared";
+import { characterManager, Clone, homebrewManager } from "../../../shared";
 import { Body, Table, Chip, Icon, Column, Cell, Header,Menu, Row } from "coles-solid-library";
 import { SpellMenu } from "./spellMenu/spellMenu";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../models";
+import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 
 
 const masterSpells: Component = () => {
@@ -30,9 +31,8 @@ const masterSpells: Component = () => {
   createEffect(() => {
     const list = dndSrdSpells();
     if (list.length === 0) return;
-  const raw = searchParam.name;
-  const param = Array.isArray(raw) ? raw[0] : raw;
-  const found = param && list.some(s => s.name.toLowerCase() === param.toLowerCase());
+    const param = searchParam.name;
+    const found = param && list.some(s => s.name.toLowerCase() === (typeof param === "string" ? param.toLowerCase() : param.join(" ").toLowerCase() ));
     if (!found) {
       setSearchParam({ name: list[0].name });
     }
@@ -42,9 +42,7 @@ const masterSpells: Component = () => {
   const selectedSpell = createMemo(() => {
     const list = dndSrdSpells();
     if (list.length === 0) return undefined;
-  const raw = searchParam.name;
-  const targetParam = Array.isArray(raw) ? raw[0] : raw;
-  const target = (targetParam || list[0].name).toLowerCase();
+    const target = (typeof searchParam.name === "string" ? searchParam.name :searchParam.name?.join(" ")  || list[0].name).toLowerCase();
     return list.find(s => s.name.toLowerCase() === target) || list[0];
   });
 
@@ -66,6 +64,7 @@ const masterSpells: Component = () => {
     isAsc: boolean;
   }>({ sortKey: "level", isAsc: true });
   const [tableData, setTableData] = createSignal<Spell[]>([]);
+  const [lastChar, setLastChar] = createSignal<string>("");
 
 
   const paginateItems = createMemo(() =>
@@ -84,7 +83,7 @@ const masterSpells: Component = () => {
       const currentSorting = currentSort();
       const shouldAce = currentSorting.isAsc;
 
-      return Clone(
+      const sorted = Clone(
         old.sort((a, b) => {
           const aSort =
             typeof a?.[sortBy] === "string"
@@ -104,6 +103,10 @@ const masterSpells: Component = () => {
           return 0;
         })
       );
+
+      setSearchResults(sorted);
+
+      return sorted;
     });
   };
 
@@ -141,12 +144,18 @@ const masterSpells: Component = () => {
   return (
     <Body class={`${styles.spellsBody}`}>
       <h1>Spells</h1>
-      <SearchBar
+      {/* <SearchBar
         searchResults={searchResults}
         setSearchResults={setSearchResults}
         spellsSrd={tableData}
-      ></SearchBar>
-
+      ></SearchBar> */}
+      <div class={`${styles.searchBar}`}>
+        <SearchBar 
+          setResults={setSearchResults}
+          dataSource={tableData}
+          searchFunction={(spell,search)=>spell.name.toLowerCase() === search.toLowerCase()}
+        />
+      </div>
       <div class={`${styles.SpellsBody}`}>
         <Table 
           data={() => paginatedSpells()} 
@@ -186,7 +195,9 @@ const masterSpells: Component = () => {
           <Column name="menu">
             <Header><></></Header>
             <Cell<Spell> onClick={(e)=>e.stopPropagation()}>{(spell) => <>
-              <SpellMenu spell={spell}/>
+              <SpellMenu 
+                spell={spell}
+                lastChar={[lastChar, setLastChar]}/>
             </> }</Cell>
           </Column>
 
@@ -201,6 +212,8 @@ const masterSpells: Component = () => {
       <Show when={showSpell() && currentSpell()}>
         <SpellModal spell={currentSpell as any} backgroundClick={[showSpell,setShowSpell]} />
       </Show>
+
+      
     
       <div class={`${styles.paginator}`}>
         <Paginator

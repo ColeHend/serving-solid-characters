@@ -1,6 +1,7 @@
-import { Component, For, Show } from 'solid-js';
-import { Button, Chip } from 'coles-solid-library';
-import styles from '../backgrounds.module.scss';
+import { Component, For, Show } from "solid-js";
+import { Button, Chip } from "coles-solid-library";
+import styles from "../backgrounds.module.scss";
+import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 
 interface Props {
   collapsed: boolean | undefined;
@@ -11,17 +12,25 @@ interface Props {
   error?: boolean;
 }
 
-const LanguagesSection: Component<Props> = (p) => (
-  <div class={styles.flatSection} data-collapsed={p.collapsed} data-section="langs" data-error={p.error || false}>
-    <div class={styles.sectionHeader}>
-      <h4>🗣️ Languages</h4>
-      <div class={styles.inlineMeta}>
-        <span>Allow {p.amount}</span>
-        <button class={styles.collapseBtn} onClick={() => p.toggle('langs')}>{p.collapsed ? 'Expand' : 'Collapse'}</button>
-        <Button onClick={p.onEdit}>Edit</Button>
+const LanguagesSection: Component<Props> = (p) => {
+  return (
+    <FlatCard
+      icon="chat"
+      headerName="Languages"
+      extraHeaderJsx={
+        <div class={styles.inlineMeta}>
+          <div><span>Allow</span> <span>{p.amount}</span></div>
+          <Button onClick={p.onEdit}>Edit</Button>
+        </div>
+      }
+    >
+      <div class={!p.collapsed ? styles.chipsRow : styles.collapsedContent}>
+        <For each={p.options}>{(l) => <Chip value={l} />}</For>
+        <Show when={!p.options.length}>
+          <Chip value="None" />
+        </Show>
       </div>
-    </div>
-    <div class={!p.collapsed ? styles.chipsRow : styles.collapsedContent}><For each={p.options}>{l => <Chip value={l} />}</For><Show when={!p.options.length}><Chip value="None" /></Show></div>
-  </div>
-);
+    </FlatCard>
+  );
+};
 export default LanguagesSection;

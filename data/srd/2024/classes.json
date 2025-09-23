@@ -2703,6 +2703,11 @@
         {
           "name": "Thieves’ Cant",
           "description": "You know Thieves’ Cant, a secret mix of dialect, jargon, and code that allows you to hide messages in normal conversation and understand similar hidden messages."
+        },
+        {
+          "name": "Expertise",
+          "description": "You gain Expertise in two of your skill proficiencies of your choice. Sleight of Hand and Stealth are recommended if you have proficiency in them.\n At Rogue level 6, you gain Expertise in two more of your skill proficiencies of your choice",
+          "choiceKey": "expertise"
         }
       ],
       "2": [

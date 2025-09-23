@@ -5,10 +5,10 @@ import { Class5E, Item, Feat, Spell, Background, Race, Subclass } from "../../mo
 import HombrewDB from "./utility/localDB/new/homebrewDB";
 import httpClient$ from "./utility/tools/httpClientObs";
 import { Clone } from "./utility/tools/Tools";
-import addSnackbar from "../components/Snackbar/snackbar";
+import {addSnackbar} from "coles-solid-library";
 
 // Mapping helpers to expose legacy-ish shapes (hitDie, name, desc at root) if UI still expects them.
-const mapClass = (c: Class5E) => ({ ...c, hitDie: c.hit_die?.startsWith('d') ? Number(c.hit_die.slice(1)) : undefined });
+const mapClass = (c: Class5E) => ({ ...c, hitDie: c.hitDie?.startsWith('d') ? Number(c.hitDie.slice(1)) : undefined });
 // Feats may exist in legacy stored shape without a nested details object (e.g. { name, desc:[...] })
 const mapFeat = (f: any) => {
   const details = f?.details ? f.details : {

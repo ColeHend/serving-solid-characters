@@ -22,7 +22,7 @@ const Items: Component = () => {
 
   // One-time deep link selection (avoid continuous effect causing re-select loops)
   onMount(() => {
-    const initial = searchParams.name;
+    const initial = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ");
     if (initial && initial !== store.state.selection.activeName) {
       store.select(initial);
       if ((window as any)?.DEBUG_ITEMS) console.debug('[items] mount select param', initial);
@@ -38,11 +38,15 @@ const Items: Component = () => {
   const homebrewNames = () => Object.keys(store.state.homebrew).sort();
   (window as any).DEBUG_ITEMS = true;
   function handleSelect(val: string) {
+    
     if (!val) return;
     if (val === '__new__') { store.selectNew(); return; }
     if (val === '__divider_homebrew__') return; // inert
   // Update URL param first so auto-select effect (if it fires) reinforces new selection, not the previous one.
   if (searchParams.name !== val) setSearchParams({ name: val });
+  if (searchParams.name && typeof searchParams.name === "string") {
+    store.select(searchParams.name);
+  }
   store.select(val);
   }
 

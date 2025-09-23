@@ -1,34 +1,37 @@
-import {Component, createSignal, For, Setter, Show } from "solid-js";
-import Modal from "../../../../../../shared/components/popup/popup.component";
+import {Accessor, Component, createSignal, For, Setter, Show } from "solid-js";
+// import Modal from "../../../../../../shared/components/popup/popup.component";
 import {
   FormField,
   Input,
   Select,
   Option,
   Button,
-  useGetItems,
-  Tabs,
-  Tab,
-} from "../../../../../../shared";
-import { ItemType } from "../../../../../../shared/customHooks/utility/tools/itemType";
+  TabBar,
+  Modal
+} from "coles-solid-library";
+// import { ItemType } from "../../../../../../shared/customHooks/utility/tools/itemType";
 import { SetStoreFunction } from "solid-js/store";
 import { Feature } from "../../../../../../models/old/core.model";
+import { useDnDItems } from "../../../../../../shared/customHooks/dndInfo/info/all/items";
+import { ItemType } from "../../../../../../models/data";
 
 interface props {
-    setClose: Setter<boolean>;
+    show: [Accessor<boolean>,Setter<boolean>];
     addProfiencey: ()=>void;
     newProficeny: Feature<string, string>;
     setNewProficeny: SetStoreFunction<Feature<string, string>>;
 }
 
 const StartingProf:Component<props> = (props) => {
-  const allItems = useGetItems();
+  const allItems = useDnDItems();
   const [otherValue,setOtherValue] = createSignal<string>("")
+
+  const [activeTab, setActiveTab] = createSignal<number>(0);
 
   // functions
   const allWeapons = ():string[] => {
     const weapons:string[] = [];
-    const foundWeapons = allItems().filter(item=>item.equipmentCategory === ItemType[1]).map(x=>x.name);
+    const foundWeapons = allItems().filter(item=>item.type === ItemType.Weapon).map(x=>x.name);
 
     if (foundWeapons.length > 0) {
       foundWeapons.forEach(weapon=>weapons.push(weapon));
@@ -39,7 +42,7 @@ const StartingProf:Component<props> = (props) => {
 
   const allArmors = ():string[] => {
     const armors:string[] = []
-    const foundArmors = allItems().filter(item=>item.equipmentCategory === ItemType[2]).map(x=>x.name);
+    const foundArmors = allItems().filter(item=>item.type === ItemType.Armor).map(x=>x.name);
 
     if (foundArmors.length > 0) {
       foundArmors.forEach(armor=>armors.push(armor));
@@ -116,12 +119,12 @@ const StartingProf:Component<props> = (props) => {
   ])
 
   return (
-    <Modal title="Add A Profiencey" setClose={props.setClose} >
+    <Modal title="Add A Profiencey" show={props.show} >
       <div>
-        <Tabs 
-          transparent>
-          <Tab name="Armor">
-            <h2>General</h2>
+        <TabBar tabs={["Armor","Weapons","Tools","Skills"]} activeTab={activeTab()} onTabChange={(label,index)=>setActiveTab(index)} />
+
+        <Show when={activeTab() === 0}>
+          <h2>General</h2>
                     
             <Select
               transparent
@@ -131,7 +134,7 @@ const StartingProf:Component<props> = (props) => {
                 metadata: old.metadata,
                 name: old.name,
                 choices: old.choices,
-                value: e.currentTarget.value,
+                value: e,
               }))}
             >
               <For each={[
@@ -156,7 +159,7 @@ const StartingProf:Component<props> = (props) => {
                 metadata: old.metadata,
                 name: old.name,
                 choices: old.choices,
-                value: e.currentTarget.value,
+                value: e,
               }))}>
               <For each={allArmors()}>
                 { (armor) => <Option value={armor}>{armor}</Option> }
@@ -177,14 +180,15 @@ const StartingProf:Component<props> = (props) => {
                 // then add 
                 props.addProfiencey()
 
-                props.setClose(false)
+                props.show[1](false)
 
                 e.stopPropagation()
               }}>Add Proficencey</Button>
             </div>
-          </Tab>  
-          <Tab name="Weapons">
-            <h2>General</h2>
+        </Show>
+
+        <Show when={activeTab() === 1}>
+             <h2>General</h2>
 
             <Select
               transparent
@@ -194,7 +198,7 @@ const StartingProf:Component<props> = (props) => {
                 metadata: old.metadata,
                 name: old.name,
                 choices: old.choices,
-                value: e.currentTarget.value
+                value: e
               }))}
             >
               <For each={[
@@ -217,7 +221,7 @@ const StartingProf:Component<props> = (props) => {
                 metadata: old.metadata,
                 name: old.name,
                 choices: old.choices,
-                value: e.currentTarget.value
+                value: e
               }))}
             >
               <For each={allWeapons()}>
@@ -237,15 +241,16 @@ const StartingProf:Component<props> = (props) => {
 
                 props.addProfiencey()
 
-                props.setClose(false)
+                props.show[1](false)
 
                 e.stopPropagation()
               }}>Add Proficencey</Button>
             </div>
 
-          </Tab>
-          <Tab name="Tools">
-            
+        </Show>
+
+        <Show when={activeTab() === 2}>
+             
             <Select
               transparent
               value={props.newProficeny.value}
@@ -254,7 +259,7 @@ const StartingProf:Component<props> = (props) => {
                 metadata: old.metadata,
                 name: old.name,
                 choices: old.choices,
-                value: e.currentTarget.value
+                value: e
               }))}
             >
               <For each={allTools()}>
@@ -287,14 +292,14 @@ const StartingProf:Component<props> = (props) => {
 
                 props.addProfiencey()
 
-                props.setClose(false)
+                props.show[1](false)
 
                 e.stopPropagation()
               }}>Add Proficencey</Button>
             </div>
-          </Tab>
-          <Tab name="Skills">
-                    
+        </Show>
+
+        <Show when={activeTab() === 4}>
             <Select
               transparent
               value={props.newProficeny.value}
@@ -303,7 +308,7 @@ const StartingProf:Component<props> = (props) => {
                 metadata: old.metadata,
                 name: old.name,
                 choices: old.choices,
-                value: e.currentTarget.value
+                value: e
               }))}
             >
               <For each={allSkills()}>
@@ -336,14 +341,13 @@ const StartingProf:Component<props> = (props) => {
 
                 props.addProfiencey()
 
-                props.setClose(false)
+                props.show[1](false)
 
                 e.stopPropagation()
               }}>Add Proficencey</Button>
             </div>
-          </Tab>
-        </Tabs>
-                
+        </Show>
+
       </div>
     </Modal>
   )

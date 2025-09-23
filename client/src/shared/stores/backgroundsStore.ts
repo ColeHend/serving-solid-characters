@@ -1,6 +1,7 @@
 import { createStore } from "solid-js/store";
 import { createMemo, createRoot } from "solid-js";
 import type { Background } from "../../models/data/background";
+import { useDnDBackgrounds } from "../customHooks/dndInfo/info/all/backgrounds";
 
 interface BackgroundsState {
   entities: Record<string, Background>;
@@ -25,6 +26,8 @@ function createBackgroundsStore() {
     form: { abilityChoices: [] },
     blankDraft: undefined
   });
+  const DnDBackgrounds = useDnDBackgrounds();
+  
 
   async function load(version: '2014' | '2024' = '2024') {
     if (state.status === 'loading') return;
@@ -32,14 +35,17 @@ function createBackgroundsStore() {
     try {
       const res = await fetch(`/api/${version}/Backgrounds`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const list: Background[] = await res.json();
+      
+      
+      const list: Background[] = DnDBackgrounds();
       const entities: Record<string, Background> = {};
       const order: string[] = [];
       for (const b of list) {
         if (!b?.name || entities[b.name]) continue;
         entities[b.name] = b;
         order.push(b.name);
-      }
+      } 
+      
       setState({ entities, order, status: 'ready' });
     } catch (e: any) {
       setState({ status: 'error', error: e?.message || 'Load failed' });

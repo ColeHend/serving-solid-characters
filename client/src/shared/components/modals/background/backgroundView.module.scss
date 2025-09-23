@@ -5,9 +5,9 @@ $mobile: 768px;
     // margin-top: 1%;
     overflow-y: scroll;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: left;
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: left;
 
     h3 {
         font-family: 'Mr_Eaves_Small_Caps';
@@ -36,11 +36,6 @@ $mobile: 768px;
 }
 
 .skillProfsBar {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
     font-family: 'Bookinsanity';
     font-weight: 100;
     color: #000;
@@ -60,3 +55,16 @@ $mobile: 768px;
     text-wrap: wrap;
 }
 
+.flexBoxRow {
+    display: flex;
+    flex-direction: row;
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+    }
+}
+
+.flexBoxColumn {
+    display: flex;
+    flex-direction: column;
+}

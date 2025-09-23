@@ -1,3 +1,4 @@
+import { Character } from "../../../../../models/character.model";
 import { Class5E, Subclass, Race, Background, Item, MagicItem, Feat, Spell, WeaponMastery, Subrace } from "../../../../../models/data";
 import Dexie from "dexie";
 
@@ -12,8 +13,10 @@ export class LocalDB extends Dexie {
   feats!: Dexie.Table<Feat, 'name'>;
   spells!: Dexie.Table<Spell, 'name'>;
   weaponMasteries!: Dexie.Table<WeaponMastery, 'name'>;
+  characters!: Dexie.Table<Character, 'name'>;
   isReady: boolean = false;
   initPromise: Promise<void>;
+  
   constructor(name: string) {
       super(name);
       
@@ -25,36 +28,42 @@ export class LocalDB extends Dexie {
           spells: 'name',
           classes: 'name',
           races: 'name',
+          subraces: 'name',
           backgrounds: 'name',
           items: 'name',
           feats: 'name',
           magicItems: 'name',
           subclasses: 'name',
-          weaponMasteries: 'name'
+          weaponMasteries: 'name',
+          characters: 'name'
         });
         // v2 (previously introduced subclasses_v2) is deprecated. Keep a no-op version to avoid downgrade conflicts.
         this.version(2).stores({
           spells: 'name',
           classes: 'name',
           races: 'name',
+          subraces: 'name',
           backgrounds: 'name',
           items: 'name',
           feats: 'name',
           magicItems: 'name',
           subclasses: 'name',
-          weaponMasteries: 'name'
+          weaponMasteries: 'name',
+          characters: 'name'
         });
         // v3: migrate any data that might still live in deprecated subclasses_v2 back into subclasses then drop subclasses_v2.
         this.version(3).stores({
           spells: 'name',
           classes: 'name',
           races: 'name',
+          subraces: 'name',
           backgrounds: 'name',
           items: 'name',
           feats: 'name',
           magicItems: 'name',
           subclasses: 'name',
-          weaponMasteries: 'name'
+          weaponMasteries: 'name',
+          characters: 'name'
         }).upgrade(tx => {
           // If coming from v2 schema, subclasses_v2 will exist; attempt migration.
           let migrated = 0;

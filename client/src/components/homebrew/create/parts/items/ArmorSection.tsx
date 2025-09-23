@@ -1,20 +1,17 @@
 import { Component } from 'solid-js';
 import { FormField, Input, Select, Option } from 'coles-solid-library';
 import { itemsStore } from './itemsStore';
-import Section from './Section';
+import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; selectionVersion: number; }
 
 export const ArmorSection: Component<Props> = (p) => {
   const store = itemsStore;
   return (
-    <Section
-      id="armor"
-      title="Armor Data"
-      collapsed={p.collapsed}
-      onToggle={p.toggle}
-      accentData={{ 'data-kind-render':'armor', 'data-version': String(p.selectionVersion) }}
-      icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3l7-2 7 2v6a11 11 0 0 1-7 10A11 11 0 0 1 5 9V3z"/></svg>}
+    <FlatCard
+      icon='shield'
+      headerName='Armor Data'
+      startOpen={true}
     >
       <div style={{ display:'flex', gap:'0.75rem', 'flex-wrap':'wrap' }}>
         <FormField name="Armor Category"><Input transparent value={store.state.form!.armorCategory || ''} onInput={e=>store.updateField('armorCategory', e.currentTarget.value)} /></FormField>
@@ -34,7 +31,7 @@ export const ArmorSection: Component<Props> = (p) => {
           </Select>
         </FormField>
       </div>
-    </Section>
+    </FlatCard>
   );
 };
 

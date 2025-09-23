@@ -1,19 +1,17 @@
 import { Component } from 'solid-js';
 import { FormField, Input, Select, Option, TextArea } from 'coles-solid-library';
 import { itemsStore } from './itemsStore';
-import Section from './Section';
+import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; }
 
 export const IdentitySection: Component<Props> = (p) => {
   const store = itemsStore;
   return (
-    <Section
-      id="identity"
-      title="Identity"
-      collapsed={p.collapsed}
-      onToggle={p.toggle}
-      icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>}
+    <FlatCard
+      icon="identity_platform"
+      headerName='Identity'
+      startOpen={true}
     >
       <FormField name="Name">
         <Input transparent value={store.state.form!.name} onInput={e=>store.updateField('name', e.currentTarget.value)} />
@@ -38,7 +36,7 @@ export const IdentitySection: Component<Props> = (p) => {
         <FormField name="Unit"><Input transparent value={store.state.form!.cost.unit} onInput={e=>store.mutate(d=> d.cost.unit = e.currentTarget.value)} /></FormField>
         <FormField name="Weight"><Input type="number" transparent value={store.state.form!.weight || 0} onInput={e=>store.updateField('weight', parseInt(e.currentTarget.value||'0'))} /></FormField>
       </div>
-    </Section>
+    </FlatCard>
   );
 };
 

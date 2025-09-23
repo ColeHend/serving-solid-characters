@@ -1,0 +1,49 @@
+.learnSpellsTable {
+    height: 40vh;
+    overflow-y: scroll;
+    
+    table {
+        margin: 0 auto;
+        
+        tbody {
+            
+            tr {
+
+                // border: 2px solid;
+            }
+        }
+    }
+}
+
+.searchBar {
+    width: 30%;
+    margin: 0 auto;
+}
+
+.SpellsCard {
+
+    div { 
+
+        svg {
+            fill: var(--secondary-color) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color, blue), transparent);
+    }
+}
+
+.LearnBtn {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.spellChips {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+}

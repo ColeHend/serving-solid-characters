@@ -1,6 +1,7 @@
 import { Component, Show, For } from 'solid-js';
 import { FormField, Select, Option, Chip } from 'coles-solid-library';
 import styles from '../backgrounds.module.scss';
+import { FlatCard } from '../../../../../../shared/components/flatCard/flatCard';
 
 interface Feat { details: { name: string } }
 interface Props {
@@ -12,14 +13,12 @@ interface Props {
   onClear: () => void;
 }
 
-const FeatSection: Component<Props> = (p) => (
-  <div class={styles.flatSection} data-collapsed={p.collapsed} data-section="feat">
-    <div class={styles.sectionHeader}>
-      <h4>✨ Feat</h4>
-      <div class={styles.inlineMeta}>
-        <button class={styles.collapseBtn} onClick={() => p.toggle('feat')}>{p.collapsed ? 'Expand' : 'Collapse'}</button>
-      </div>
-    </div>
+const FeatSection: Component<Props> = (p) => {
+
+  return <FlatCard
+    icon='stars_2'
+    headerName='Feat'
+  >
     <div class={!p.collapsed ? '' : styles.collapsedContent}>
       <FormField name="Select Feat">
         <Select transparent value={p.value || ''} onChange={p.onChange}>
@@ -29,6 +28,6 @@ const FeatSection: Component<Props> = (p) => (
       </FormField>
       <Show when={p.value}><div class={styles.chipsRow}><Chip value={p.value!} remove={p.onClear} /></div></Show>
     </div>
-  </div>
-);
+  </FlatCard>
+};
 export default FeatSection;

@@ -1,0 +1,58 @@
+.flatCard {
+    // Stack content vertically
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+
+    // Bottom border between sections
+    border-bottom: 1px solid;
+
+    // Colored bar on the left
+    position: relative;
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(var(--primary-color, blue), transparent); // Or any color
+    }
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    div {
+        display: flex;
+        align-items: center;
+        gap: 5%;
+
+        svg {
+            fill: var(--primary-color) !important;
+        }
+    }
+
+    h4 {
+        margin: 0;
+        font-size: 1em;
+        font-weight: bold;
+       
+    }
+}
+
+.cardContent {
+    width: 100%;
+    padding-top: 2%
+}
+
+.iconTitle {
+    width: 30%;
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
+}

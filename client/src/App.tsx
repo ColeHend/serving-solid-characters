@@ -356,12 +356,6 @@ const App: Component = () => {
         <Container class={`${styles.body}`} theme='container'>
           <div class={`${styles.topRow}`}>
             <h1>Home</h1>
-            {/* <Button 
-              title='Import & Export' 
-              class={`${styles.fabBtn}`} 
-              onClick={() => setShowDataTransfer(!showDataTransfer())}>
-              +
-            </Button> */}
           </div>
 
           <div>
@@ -383,7 +377,7 @@ const App: Component = () => {
           <PdfFieldMapperModal debug forceDisableWorker pdfBytes={pdfBytes} show={[showPdfMapper, setShowPdfMapper]} character={Gandalf as any} />
           
           <div>
-
+        
             <div style={{
               display: 'flex',
               "flex-direction": 'row',
