@@ -50,7 +50,7 @@ class CharacterManager {
 
   public createCharacter(character: Character) {
     if (this._characters().some((c) => c.name === character.name)) return;
-    this.addCharacterToDB(Clone(character));
+    this.addCharacterToDB(Clone(character)).subscribe();
   }
 
   private addCharacterToDB(newCharacter: Character) {
@@ -90,7 +90,7 @@ class CharacterManager {
 
   public updateCharacter(character: Character) {
     if (!this.characters().some(c => c.name === character.name)) return;
-    this.updateCharInDB(character);
+    this.updateCharInDB(character).subscribe();
   }
 
   public updateCharSpell(characterName: string,newSpell: CharacterSpell) {
@@ -102,22 +102,8 @@ class CharacterManager {
 
       spells.push(newSpell);
 
-      this.updateCharacter({
-        name: character.name,
-        level: character.level,
-        levels: character.levels,
-        race: character.race,
-        className: character.className,
-        subclass: character.subclass,
-        background: character.background,
-        alignment: character.alignment,
-        proficiencies: character.proficiencies,
-        languages: character.languages,
-        health: character.health,
-        stats: character.stats,
-        items: character.items,
-        spells: spells
-      })
+      const updated = Object.assign(new Character(), character, { spells });
+      this.updateCharacter(updated)
       addSnackbar({
         message: `Added ${newSpell.name} to ${characterName}`,
         severity: "success"
@@ -194,22 +180,12 @@ class CharacterManager {
     const character = this.getCharacter(characterName);
 
     if (character) {
-      this.updateCharacter({
-        name: character.name,
-        level: character.level,
-        levels: character.levels,
-        race: character.race,
-        className: character.className,
-        subclass: character.subclass,
-        background: character.background,
-        alignment: character.alignment,
-        proficiencies: character.proficiencies,
-        languages: character.languages,
-        health: character.health,
-        stats: character.stats,
-        items: character.items,
-        spells: character.spells.filter(s => s.name !== spellName)
-      })
+      const updated = Object.assign(
+        new Character(),
+        character,
+        { spells: character.spells.filter(s => s.name !== spellName) }
+      );
+      this.updateCharacter(updated)
       addSnackbar({
         message: `deleted ${spellName} from ${characterName}`,
         severity: "success"
