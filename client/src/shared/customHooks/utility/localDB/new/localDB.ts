@@ -20,8 +20,6 @@ export class LocalDB extends Dexie {
   constructor(name: string) {
       super(name);
       
-      console.log(`Initializing LocalDB: ${name}`);
-      
       try {
         // v1 initial
         this.version(1).stores({
@@ -79,15 +77,12 @@ export class LocalDB extends Dexie {
             }
             return legacyNewTable.put(r).then(() => { migrated++; }).catch(()=>{});
           }))).then(() => {
-            // Best-effort delete v2 store (Dexie drops it automatically since not declared in v3 schema)
-            console.log(`Migrated ${migrated} subclasses from subclasses_v2 to subclasses`);
           });
         });
         
         // Initialize database with better error handling
         this.initPromise = this.open()
           .then(() => {
-            console.log(`LocalDB ${name} opened successfully`);
             this.isReady = true;
           })
           .catch(err => {
@@ -97,10 +92,8 @@ export class LocalDB extends Dexie {
             if (err.name === 'VersionError' || err.name === 'InvalidStateError') {
               console.warn(`Attempting to delete corrupted database: ${name}`);
               return Dexie.delete(name).then(() => {
-                console.log(`Deleted corrupted database ${name}, reopening...`);
                 return this.open();
               }).then(() => {
-                console.log(`LocalDB ${name} reopened successfully after deletion`);
                 this.isReady = true;
               });
             }

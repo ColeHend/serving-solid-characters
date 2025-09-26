@@ -24,8 +24,6 @@ const Provider: Component<ProviderProps<HookContext>> = (props: ProviderProps<Ho
 }
 
 const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
-  console.log("RootApp component initializing");
-  
   let [defaultUserSettings, setDefaultUserSettings] = createSignal<UserSettings>({
     theme: 'default',
     userId: 0,
@@ -37,7 +35,6 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   try {
     // Try to get user settings but fall back to defaults if it fails
     [defaultUserSettings, setDefaultUserSettings] = getUserSettings();
-    console.log("User settings loaded:", defaultUserSettings());
   } catch (error) {
     console.error("Failed to load user settings:", error);
     // Keep using the default theme
@@ -46,7 +43,6 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   const userStyle = createMemo(() => {
     try {
       const theme = defaultUserSettings().theme;
-      console.log("Applying theme:", theme);
       return useStyle(theme);
     } catch (error) {
       console.error("Failed to apply style:", error);
@@ -77,7 +73,6 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   createEffect(() => {
     try {
       const theme = defaultUserSettings().theme;
-      console.log("Adding theme:", theme);
       addTheme(theme);
     } catch (error) {
       console.error("Failed to add theme:", error);
@@ -87,9 +82,6 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   const mouseCapture = (e: MouseEvent) => setMouse({x: e.clientX, y: e.clientY});
 
   onMount(() => {
-    console.log("RootApp mounted");
-   
-    
     window.addEventListener('mousemove', mouseCapture)
   })
 
@@ -97,13 +89,10 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
     window.removeEventListener('mousemove', mouseCapture)
   })
   
-  console.log("Current theme:", defaultUserSettings().theme);
-  
   let isMobile;
   try {
     const services = useInjectServices();
     isMobile = services.isMobile;
-    console.log("Services injected successfully");
   } catch (error) {
     console.error("Failed to inject services:", error);
     // Fallback to our direct check
