@@ -10,3 +10,19 @@
 
     margin: 0 auto;
 }
+
+.nameColumn {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.levelColumn {
+    display: flex;
+    flex-direction: row;
+    font-size: 0.9rem;
+    >*:nth-child(n) {
+        margin-right: 0.5rem;
+    }
+}

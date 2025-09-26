@@ -62,7 +62,7 @@ export const SpellTable:Component<tableProps> = (props) => {
             class={styles.spellTable}>
             <Column name="name">
                 <Header><></></Header>
-                <Cell<Spell>>{(spell) => <span style={{display: "flex", "flex-direction": "column", "font-size": "0.9rem", "cursor": "pointer"}}>
+                <Cell<Spell>>{(spell) => <span class={`${styles.nameColumn}`}>
                     <h4>{spell.name}</h4>
                     <span>{spell.school}</span>
                     <span>{spell.duration}</span>
@@ -72,14 +72,14 @@ export const SpellTable:Component<tableProps> = (props) => {
             </Column>
             <Column name="level">
                 <Header><></></Header>
-                <Cell<Spell> onClick={(e)=>e.stopPropagation()}>{(spell) => <span style={{display: "flex", "flex-direction": "column", "font-size": "0.9rem"}}>
+                <Cell<Spell> onClick={(e)=>e.stopPropagation()}>{(spell) => <span class={`${styles.levelColumn}`}>
                     <span>{showLevel(spell.level)}</span>
                     
                     <Button transparent onClick={()=>{
                         const confirm = window.confirm("Are you sure?");
 
                         if (confirm) characterManager.deleteCharSpell(props.currentCharacter().name, spell.name);
-                    }}><Icon name="remove" /></Button>
+                    }}><Icon color="red" name="delete" /></Button>
                 </span>}</Cell>
             </Column>
 

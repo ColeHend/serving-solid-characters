@@ -22,10 +22,10 @@ const CharacterView: Component = () => {
   const allSpells = useDnDSpells();
   const allItems = useDnDItems();
   const getKnownSpells = (character: Character) => {
-    return allSpells().filter(spell => character.spells.some(s => s.name === spell.name));
+    return allSpells().filter(spell => character?.spells.some(s => s.name === spell.name));
   }
   const getCurrentItems = (items: string[]) => {
-    return allItems().filter(item => items.includes(item.name));
+    return allItems().filter(item => items?.includes(item.name));
   }
   const stylin = createMemo(() => useStyles(userSettings().theme));
 
@@ -33,8 +33,8 @@ const CharacterView: Component = () => {
   const [searchParam, setSearchParam] = useSearchParams();
    
   const [characters, setCharacters] = createSignal(characterManager.characters());
-  if (!searchParam.name) setSearchParam({ name: characters()[0].name });
-  const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ") || characters()[0].name).toLowerCase())[0];
+  if (!searchParam.name) setSearchParam({ name: (characters()?.[0]?.name ?? '') });
+  const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ") || (characters()?.[0].name ?? '')).toLowerCase())?.[0];
 
   const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
   const [activeMobileTab, setActiveMobileTab] = createSignal(0);
@@ -70,7 +70,7 @@ const CharacterView: Component = () => {
     { name: "Hellish Rebuke", desc: "Deal fire damage to a creature that damaged you." }
   ]);
   const [currentActionList, setCurrentActionList] = createSignal(actionList());
-  const [currentViewedItems, setCurrentViewedItems] = createSignal<string[]>(currentCharacter().items.inventory);
+  const [currentViewedItems, setCurrentViewedItems] = createSignal<string[]>(currentCharacter()?.items.inventory);
 
   const fullStats = useGetFullStats(currentCharacter);
 
@@ -113,7 +113,7 @@ const CharacterView: Component = () => {
   const ninthLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 9));
 
   effect(() => {
-    setSearchParam({ name: currentCharacter().name })
+    setSearchParam({ name: currentCharacter()?.name })
   })
   return (
     <Body class={`${stylin().accent} ${styles.mainBody}`}>
@@ -191,7 +191,7 @@ const CharacterView: Component = () => {
               <div class={`${styles.baseCharInfoBox}  ${styles.infoBoxRow}`}>
                 <div class={`${styles.hpMaxTemp}`}>
                   <div>
-                    <span>{currentCharacter().health?.current} / {currentCharacter().health?.max}</span>
+                    <span>{currentCharacter()?.health?.current} / {currentCharacter()?.health?.max}</span>
                     <hr />
                     <span>HP / MaxHP</span>
                   </div>
@@ -274,8 +274,8 @@ const CharacterView: Component = () => {
                   onTabChange={(label, index) => {
                     setActiveActionTab(index);
                   }}
-                  tabs={["Actions","Spells", "Items"]} />
-                <Show when={activeActionTab() === 0}>
+                  tabs={["Spells", "Items", "Actions"]} />
+                <Show when={activeActionTab() === 1}>
                   <div>
                     <div class={`${styles.actionButtonList}`}>
                       <Button onClick={()=>{setCurrentActionList(actionList())}}>Actions</Button>
@@ -290,7 +290,7 @@ const CharacterView: Component = () => {
                     }}</For>
                   </div>
                 </Show>
-                <Show when={activeActionTab() === 1}>
+                <Show when={activeActionTab() === 0}>
                   <div class={`${styles.spellTables}`}>
                     <Show when={cantrips().length >= 1}>
                       <SpellTable 
@@ -379,9 +379,9 @@ const CharacterView: Component = () => {
                 </Show>
                 <Show when={activeActionTab() === 2}>
                   <div class={`${styles.actionButtonList}`}>
-                    <Button onClick={()=>{setCurrentViewedItems(currentCharacter().items.inventory)}}>Inventory</Button>
-                    <Button onClick={()=>{setCurrentViewedItems(currentCharacter().items.equipped)}}>Equipped</Button>
-                    <Button onClick={()=>{setCurrentViewedItems(currentCharacter().items.attuned)}}>Attuned</Button>
+                    <Button onClick={()=>{setCurrentViewedItems(currentCharacter()?.items.inventory)}}>Inventory</Button>
+                    <Button onClick={()=>{setCurrentViewedItems(currentCharacter()?.items.equipped)}}>Equipped</Button>
+                    <Button onClick={()=>{setCurrentViewedItems(currentCharacter()?.items.attuned)}}>Attuned</Button>
                   </div>
                   <div class={`${styles.itemTable}`}>
                     <Table data={()=>getCurrentItems(currentViewedItems())} columns={["name","desc", "cost"]}>
@@ -407,7 +407,7 @@ const CharacterView: Component = () => {
           <Show when={showFeatures()}>
             <div class={`${stylin().box} ${styles.featuresBox}`}>
               <h2>Features</h2>
-              <For each={currentCharacter().levels.flatMap(x => x.features)}>
+              <For each={currentCharacter()?.levels.flatMap(x => x.features)}>
                 {(feature) => (
                   <div class={`${stylin().box} ${styles.featureItem}`}>
                     <h3>{feature.name}</h3>
