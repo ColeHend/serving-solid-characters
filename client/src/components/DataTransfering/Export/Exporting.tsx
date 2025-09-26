@@ -144,7 +144,7 @@ const Exporting:Component = () => {
   const AvalableChars = createMemo(()=>characterManager.characters().filter(char=>!isInExport("characters",char)));
 
   const [showConfirm,setShowConfirm] = createSignal<boolean>(false);
-
+  const arrowSize = {width:'32px',height:'32px'};
   return <div class={`${styles?.wrapper}`}>
         
     <div class={`${styles.leftList}`}>
@@ -159,7 +159,7 @@ const Exporting:Component = () => {
 
           {/*---------- ▼ spells ▼ ----------*/}
           <Show when={AvalableSpells().length > 0}>
-            <ExpansionPanel>
+            <ExpansionPanel arrowSize={arrowSize}>
 
               <div class={`${styles.optionHeader}`}>
                 <Checkbox 
@@ -198,7 +198,7 @@ const Exporting:Component = () => {
                     
           {/*---------- ▼ feats ▼ ----------*/}
           <Show when={AvalableFeats().length > 0}>
-            <ExpansionPanel>
+            <ExpansionPanel arrowSize={arrowSize}>
 
               <div class={`${styles.optionHeader}`}>
                 <Checkbox 
@@ -237,7 +237,7 @@ const Exporting:Component = () => {
 
           {/*---------- ▼ classes ▼ ----------*/}
           <Show when={AvalableClasses().length > 0}>
-            <ExpansionPanel>
+            <ExpansionPanel arrowSize={arrowSize}>
               <div class={`${styles.optionHeader}`}>
                 <Checkbox 
                   label="Classes"
@@ -273,7 +273,7 @@ const Exporting:Component = () => {
 
           {/*---------- ▼ backgrounds ▼ ----------*/}
           <Show when={AvalableBackground().length > 0}>
-            <ExpansionPanel>
+            <ExpansionPanel arrowSize={arrowSize}>
               <div class={`${styles.optionHeader}`}>
                 <Checkbox
                   label="Backgrounds"
@@ -310,7 +310,7 @@ const Exporting:Component = () => {
 
           {/*---------- ▼ items ▼ ----------*/}
           <Show when={AvalableItems().length > 0}>
-            <ExpansionPanel>
+            <ExpansionPanel arrowSize={arrowSize}>
               <div class={`${styles.optionHeader}`}>
                 <Checkbox
                   label="Items"
@@ -347,7 +347,7 @@ const Exporting:Component = () => {
 
           {/*---------- ▼ races ▼ ----------*/}
           <Show when={AvalableRaces().length > 0}>
-            <ExpansionPanel>
+            <ExpansionPanel arrowSize={arrowSize}>
               <div class={`${styles.optionHeader}`}>
                 <Checkbox 
                   label="Races"
@@ -383,7 +383,7 @@ const Exporting:Component = () => {
 
           {/*---------- ▼ characters ▼ ----------*/}
           <Show when={AvalableChars().length > 0}>
-            <ExpansionPanel>
+            <ExpansionPanel arrowSize={arrowSize}>
               <div class={`${styles.optionHeader}`}>
                 <Checkbox 
                   label="Characters"
