@@ -4,7 +4,7 @@ import { Spellcasting } from "./spellcasting";
 
 export interface Subclass {
   name: string;
-  parent_class: string;
+  parentClass: string;
   description: string;
   features: Record<number, FeatureDetail[]>;
   choices?: Choices;

@@ -216,8 +216,8 @@ public class Spellcasting
   /// <remarks>Present when <see cref="KnownType"/> is <see cref="SpellKnownType.Number"/>.</remarks>
   [JsonProperty("spells_known")] public Dictionary<int, int>? SpellsKnown { get; set; }
 
-  /// <remarks>Present when <see cref="KnownType"/> is <see cref="SpellKnownType.Calc"/>.</remarks>
-  public SpellCalc? SpellsKnownCalc { get; set; }
+  /// <remarks>Present when <see cref="KnownType"/> is <see cref="SpellCalc."/>.</remarks>
+  [JsonProperty("spells_known_calc")] public SpellCalc? SpellsKnownCalc { get; set; }
 
   public Dictionary<int, List<string>> LearnedSpells { get; set; } = new();
 }

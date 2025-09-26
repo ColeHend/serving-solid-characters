@@ -1044,7 +1044,7 @@
         }
       },
       "known_type": "calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat": "WIS",
         "level": "full",
         "roundUp": false
@@ -1438,7 +1438,7 @@
         }
       },
       "known_type": "calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat": "WIS",
         "level": "full",
         "roundUp": false
@@ -2317,7 +2317,7 @@
         }
       },
       "known_type": "calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat": "CHA",
         "level": "half",
         "roundUp": true
@@ -2635,7 +2635,7 @@
         }
       },
       "known_type": "calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat": "WIS",
         "level": "half",
         "roundUp": true
@@ -3955,7 +3955,7 @@
         }
       },
       "known_type": "calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat": "INT",
         "level": "full",
         "roundUp": false
