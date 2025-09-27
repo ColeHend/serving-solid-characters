@@ -1,4 +1,4 @@
-import { Component, For, createSignal, createMemo, Show, createEffect, onMount } from "solid-js";
+import { Component, For, createSignal, createMemo, Show, createEffect, onMount, Accessor } from "solid-js";
 import styles from './spells.module.scss';
 import { Input, Button, Select, Option, Chip, Body, TextArea, FormField, Checkbox } from "coles-solid-library";
 import { getAddNumberAccent, UniqueSet } from "../../../../../shared/";
@@ -103,6 +103,13 @@ const Spells: Component = () => {
   });
   createEffect(() => {
     setCurrentSpell({ 'higherLevel': spellHigherLevel() });
+  });
+  const isValid: Accessor<boolean> = createMemo(() => {
+    return currentSpell.name?.trim().length > 0 &&
+      currentSpell.range?.trim().length > 0 && 
+      currentSpell.castingTime?.trim().length > 0 &&
+      currentSpell.duration?.trim().length > 0 &&
+      currentSpell.description?.trim().length > 0;
   });
 
   return <Body>
@@ -305,10 +312,10 @@ const Spells: Component = () => {
         <span class={`${styles.break}`} />
         <p>
           <Show when={!doesExist()}>
-            <Button onClick={createSpell}>Create</Button>
+            <Button disabled={!isValid()} onClick={createSpell}>Create</Button>
           </Show>
           <Show when={doesExist()}>
-            <Button onClick={updateSpell}>Update</Button>
+            <Button disabled={!isValid()} onClick={updateSpell}>Update</Button>
           </Show>
         </p>
       </FlatCard>

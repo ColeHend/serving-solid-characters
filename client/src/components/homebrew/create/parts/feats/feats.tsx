@@ -104,7 +104,7 @@ const Feats: Component = () => {
       case PrerequisiteType.Subclass: {
         const sc = subclasses()[0];
         setKeyName("Subclass");
-        setKeyValue(sc ? `${sc.parent_class}:${sc.name}` : "");
+        setKeyValue(sc ? `${sc.parentClass}:${sc.name}` : "");
         break;
       }
       case PrerequisiteType.Feat: {
@@ -157,6 +157,10 @@ const Feats: Component = () => {
     homebrewManager.updateFeat(currentFeat() as any);
     clearFields();
   }
+
+  const isValid = createMemo(() => {
+    return featName()?.trim().length > 0;
+  })
   return (
     <>
       <Body>
@@ -296,7 +300,7 @@ const Feats: Component = () => {
                         onChange={(e) => setKeyValue(e)}
                       >
                         <For each={subclasses()}>{sc => (
-                          <Option value={`${sc.parent_class}:${sc.name}`}>{sc.parent_class} / {sc.name}</Option>
+                          <Option value={`${sc.parentClass}:${sc.name}`}>{sc.parentClass} / {sc.name}</Option>
                         )}</For>
                       </Select>
                     </div>
@@ -389,6 +393,7 @@ const Feats: Component = () => {
           <FlatCard icon="save" headerName="Saving" alwaysOpen>
             <Show when={!featExists()}>
               <Button
+                disabled={!isValid()}
                 class={`${styles.addButton}`}
                 onClick={addFeat}
               >
@@ -397,6 +402,7 @@ const Feats: Component = () => {
             </Show>
             <Show when={featExists()}>
               <Button
+                disabled={!isValid()}
                 class={`${styles.addButton}`}
                 onClick={updateFeat}
               >
