@@ -40,7 +40,7 @@ const ClassModal: Component<props> = (props) => {
   const features = createMemo(() => props.currentClass().features || []);
   const choices = createMemo(() => props.currentClass().choices || {});
   const currentSubclasses = createMemo<Subclass[]>(() => {
-    return allSubclasses().filter(s => s.parent_class === props.currentClass().name);
+    return allSubclasses().filter(s => s.parentClass === props.currentClass().name);
   });
 
   const armorChoiceKey = createMemo(()=>props.currentClass().startChoices?.armor ?? "");

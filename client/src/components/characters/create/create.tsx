@@ -64,7 +64,7 @@ const CharacterCreate: Component = () => {
   const [spellSearchRes,setSpellSearchRes] = createSignal<Spell[]>([]);
 
   const subclassNames = createMemo<string[]>(()=>{
-    const filteredSubclasses = subClasses().filter(sc => sc.parent_class === selectedClass());
+    const filteredSubclasses = subClasses().filter(sc => sc.parentClass === selectedClass());
 
 
     return filteredSubclasses.flatMap(sc => sc.name);

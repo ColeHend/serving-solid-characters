@@ -16,7 +16,6 @@ const defaultStyle: Style = {
 
 export function useStyle(styleType?: string): Style {
   // Adding console logging to help debug style issues
-  console.log("useStyle called with styleType:", styleType);
   
   try {
     // Apply background color based on theme
@@ -31,7 +30,6 @@ export function useStyle(styleType?: string): Style {
       document.body.classList.remove("light-theme");
     }
     
-    console.log("Theme styles applied successfully");
     return defaultStyle;
   } catch (error) {
     console.error("Error applying styles:", error);

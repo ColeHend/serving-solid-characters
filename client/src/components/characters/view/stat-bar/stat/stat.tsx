@@ -44,10 +44,10 @@ const StatBlock: Component<Props> = (props) => {
   };
   const calcSkillMod = (skill: CharacterSkillProficiency) => {
     let mod = getStatMod(props.stat);
-    if (skill.proficient) {
+    if (skill?.proficient) {
       mod += props.proficientMod;
     }
-    if (skill.expertise) {
+    if (skill?.expertise) {
       mod += props.proficientMod;
     }
     return mod;
@@ -70,9 +70,9 @@ const StatBlock: Component<Props> = (props) => {
             each={getSkills(props.name)}>
             {
               (skillName) => <li>
-                <span>{props.skills[`${skillName}`].proficient ? props.skills[`${skillName}`].expertise ? <u>✓✓ </u> : <u>✓_ </u> : <u>__</u>}</span>
+                <span>{props.skills?.[`${skillName}`].proficient ? props.skills?.[`${skillName}`].expertise ? <u>✓✓ </u> : <u>✓_ </u> : <u>__</u>}</span>
                 <label for={skillName}> {skillName} </label>
-                <span><u>_{calcSkillMod(props.skills[`${skillName}`])}_</u></span>
+                <span><u>_{calcSkillMod(props.skills?.[`${skillName}`])}_</u></span>
               </li>
             }
           </For>
