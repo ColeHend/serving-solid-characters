@@ -47,7 +47,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
                 {local.extraHeaderJsx}
                 <Show when={!isAlwaysOpen()}>
                     <Button borderTheme="none" onClick={()=>setShowCard(old=>!old)}>
-                        {!showCard() ? "Expand" : "Collapse"}
+                        {!showCard() ? <Icon name="add"/> : <Icon name="remove" />}
                     </Button>
                 </Show>
             </div>

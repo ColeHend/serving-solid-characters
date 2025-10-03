@@ -27,6 +27,8 @@ const masterSpells: Component = () => {
   // search param stuff
   const [searchParam, setSearchParam] = useSearchParams();
 
+  const [currentSpell, setCurrentSpell] = createSignal<Spell | undefined>(undefined);
+
   // Ensure we always have a valid name param once spells load (or version changes)
   createEffect(() => {
     const list = dndSrdSpells();
@@ -46,7 +48,7 @@ const masterSpells: Component = () => {
     return list.find(s => s.name.toLowerCase() === target) || list[0];
   });
 
-  const [currentSpell, setCurrentSpell] = createSignal<Spell | undefined>(undefined);
+ 
 
   // Keep currentSpell in sync with derived selectedSpell
   createEffect(() => {
@@ -194,7 +196,9 @@ const masterSpells: Component = () => {
 
           <Column name="menu">
             <Header><></></Header>
-            <Cell<Spell> onClick={(e)=>e.stopPropagation()}>{(spell) => <>
+            <Cell<Spell> onClick={(e)=>{
+              e.stopPropagation()
+            }}>{(spell) => <>
               <SpellMenu 
                 spell={spell}
                 lastChar={[lastChar, setLastChar]}/>
