@@ -1,13 +1,12 @@
 import { Cell, Column, Header, Modal, Row, Table } from "coles-solid-library";
 import { Accessor, Component, Setter } from "solid-js";
 import { Class5E } from "../../../../../models/data";
-import { charClasses } from "../classesSection";
 import styles from "./AddClass.module.scss";
 
 interface modalProps {
     show: [Accessor<boolean>,Setter<boolean>];
     allClasses: Accessor<Class5E[]>;
-    setCharClasses: Setter<charClasses[]>;
+    setCharClasses: Setter<string[]>;
 }
 
 export const AddClass: Component<modalProps> = (props) => {
@@ -35,9 +34,7 @@ export const AddClass: Component<modalProps> = (props) => {
                 </Column>
 
                 <Row onClick={(e,class5e: Class5E)=>{
-                    props.setCharClasses(old => [...old,{
-                        className: class5e.name
-                    }])
+                    props.setCharClasses(old => [...old,class5e.name])
                     setshow(false);
                 }}/>
             </Table>

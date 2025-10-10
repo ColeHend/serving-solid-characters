@@ -1,0 +1,23 @@
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: var(--secondary-color) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color, blue), transparent);
+    }
+}
+
+.traitList {
+    margin-top: 1%;
+}
+
+.raceSection {
+    max-height: 42vh;
+    overflow-y: scroll;
+}

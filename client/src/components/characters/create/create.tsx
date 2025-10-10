@@ -23,7 +23,7 @@ import {
   Option,
   ChipType
 } from "coles-solid-library";
-import { Character, CharacterForm } from "../../../models/character.model";
+import { Character, CharacterForm, CharacterLevel, CharacterRace } from "../../../models/character.model";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
 import { toCharacter5e } from "./characterMapper";
 import { SpellsSection } from "./spellsSection/spellsSection";
@@ -32,10 +32,14 @@ import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/s
 import { useSearchParams } from "@solidjs/router";
 import { characterManager, Clone } from "../../../shared";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
-import { Class5E } from "../../../models/data";
+import { Class5E, Race } from "../../../models/data";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { createStore } from "solid-js/store";
 import { ClassesSection } from "./classesSection/classesSection";
+import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races";
+import { RaceSection } from "./raceSection/raceSection";
+import { LanguageSection } from "./languageSection/languageSection";
+import { useDnDSubraces } from "../../../shared/customHooks/dndInfo/info/all/subraces";
 
 const CharacterCreate: Component = () => {
   const [userSettings,] = getUserSettings();
@@ -46,26 +50,26 @@ const CharacterCreate: Component = () => {
     "name": ["", [Validators.Required,Validators.minLength(3)]],
     "className": ["", [Validators.Required]],
     "subclass": ["", []],
-    "background": ["", []],
+    "background": ["", [Validators.Required]],
     "alignment": ["", []],
-    "languages": [[], []]
+    "languages": [[], [Validators.maxLength(2)]]
   });
 
   const classes = useDnDClasses();
   const subClasses = useDnDSubclasses();
   const backgrounds = useDnDBackgrounds();
   const spells = useDnDSpells();
+  const races = useDnDRaces();
+  const subraces = useDnDSubraces();
 
   const [knownSpells,setKnownSpells] = createSignal<string[]>([]);
   const [chips, setChips] = createSignal<ChipType[]>([]);
-  const [charClasses,setCharClasses] = createSignal<{
-    className: string;
-    subclass?: string;
-  }[]>([]);
+  const [charClasses,setCharClasses] = createSignal<string[]>([]);
   const [classLevels,setClassLevels] = createSignal<Record<string, number>>({});
+  const [charRace,setCharRace] = createSignal<string>("");
 
   const newCharStore = createStore<Character>({
-    name: `New character[${characterManager.characters().length + 1}]`,
+    name: "",
     level: 0,
     levels: [],
     spells: [],
@@ -126,7 +130,7 @@ const CharacterCreate: Component = () => {
   const selectedClasses = createMemo(()=>{
     const toReturn:Class5E[] = [];
 
-    charClasses().forEach((level => toReturn.push(getClass(level.className))))
+    charClasses().forEach((level => toReturn.push(getClass(level))))
 
     if (toReturn.length > 0) return toReturn;
 
@@ -143,22 +147,36 @@ const CharacterCreate: Component = () => {
     return allSpells.length > 0 ? true : false;
   })
   const isDisabled = createMemo<boolean>(()=>{
-    if (newCharStore[0].name !== "" && newCharStore[0].className !== "") {
+    const name = group.hasError("name");
+    const className = group.hasError("className");
+    const subclass = group.hasError("subclass");
+    const background = group.hasError("background");
+    const alignment = group.hasError("alignment");
+    const languages = group.hasError("languages");
+    
+    if (name || className || subclass || background || alignment || languages) {
       return true
+    } else {
+      return false;
     }
-
 
     return false;
   })
+  const selectedRace = createMemo<Race|null>(()=>{
+    return races().find(r => r.name === charRace()) ?? null;
+  })
 
   const resetForm = () => {
-    group.set("name", `New character[${characterManager.characters().length + 1}]`);
+    group.set("name", "");
     group.set("className", '');
     group.set("subclass", '');
     group.set("background", '');
     group.set("alignment", '');
     group.set("languages", []);
     setKnownSpells([]);
+    setCharRace("");
+    setClassLevels({});
+    setCharClasses([]);
     clearStore();
   }
   const handleSubmit = (data: CharacterForm) => {
@@ -170,10 +188,28 @@ const CharacterCreate: Component = () => {
     const fullData: CharacterForm = {
       ...data,
       name: characterName(),
-      className: selectedClass()
+      className: charClasses().join(",")
     }
 
-    const adapted = toCharacter5e(fullData,knownSpells())
+    const valid = group.validate();
+    
+
+    if (!valid) {
+      console.log("asdf");
+      
+      const Langerr = group.getErrors("languages")
+      addSnackbar({
+        message: `Could Not save: ${Langerr}`,
+        severity: "error"
+      })
+      console.error("error",Langerr);
+      
+      
+      
+      return;
+    }
+    
+    const adapted = toCharacter5e(fullData,knownSpells(),charClasses,[classLevels,setClassLevels],selectedRace as any)  
 
     const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
     
@@ -197,26 +233,7 @@ const CharacterCreate: Component = () => {
     });
     resetForm();
   }
-  const fillCharacterInfo = (search?:boolean) => {
-    const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
-    const searchName = search ? param : newCharStore[0].name;
-    const character = characterManager.getCharacter(searchName);
 
-    if (character) {
-      group.set("name",character.name);
-      group.set("className",character.className);
-      group.set("alignment",character.alignment);
-      group.set("subclass",character.subclass);
-      group.set("background",character.background);
-      group.set("languages",character.languages);
-      fillStore(character);
-      setKnownSpells(character.spells.flatMap(s => s.name));
-      knownSpells().forEach(spell => setChips(old=>[...old,{
-        key: "",
-        value: spell
-      }]))
-    }
-  }
   const handleDelete = () => {
     const confirm = window.confirm("Are you sure?");
 
@@ -224,16 +241,6 @@ const CharacterCreate: Component = () => {
       characterManager.deleteCharacter(characterName());
       resetForm();
     }
-  }
-  const fillStore = (char: Character) => {
-    newCharStore[1]("name", char.name);
-    newCharStore[1]("className", char.className);
-    newCharStore[1]("alignment", char.alignment);
-    newCharStore[1]("subclass", char.subclass);
-    newCharStore[1]("background", char.background);
-    newCharStore[1]("languages", char.languages);
-    newCharStore[1]("spells", char.spells);
-
   }
   const clearStore = () => {
     newCharStore[1]("name", `New character[${characterManager.characters().length + 1}]`);
@@ -257,8 +264,50 @@ const CharacterCreate: Component = () => {
     return classes().find(c => c.name === className) ?? {} as Class5E;
   }
 
+  function fillCharacterInfo(): void;
+  function fillCharacterInfo(search: boolean): void;
+  function fillCharacterInfo(search?:boolean): void {
+    const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
+    const searchName = search && search !== undefined ? param : newCharStore[0].name;
+    const character = characterManager.getCharacter(searchName);
+
+    if (character) {
+      group.set("name",character.name);
+      group.set("className",character.className.split(",")[0]);
+      group.set("alignment",character.alignment);
+      group.set("subclass",character.subclass);
+      group.set("background",character.background);
+      group.set("languages",character.languages.filter(l => l !== "Common"));
+      setCharClasses([]);
+      
+      newCharStore[1]("name", character.name);
+      // class levels
+      const classes = character.className.split(",");
+      
+      classes.forEach((class5e,i)=>{
+        const levels = character.levels.filter(l => l.class === class5e);
+        setCharClasses(old => [...old, class5e]);
+        setClassLevels(old => ({...old,[class5e]: levels.length}));
+      })
+      
+      newCharStore[1]("spells", character.spells);
+      newCharStore[1]("className", classes[0][0]);
+      newCharStore[1]("race",character.race);
+      newCharStore[1]("alignment", character.alignment);
+      newCharStore[1]("subclass", character.subclass);
+      newCharStore[1]("background", character.background);
+      newCharStore[1]("languages", character.languages.filter(l => l !== "Common"));
+
+      setCharRace(character.race.species);
+      setKnownSpells(character.spells.flatMap(s => s.name));
+      knownSpells().forEach(spell => setChips(old=>[...old,{
+        key: "",
+        value: spell
+      }]))
+    }
+  }
+
   onMount(()=>{
-    group.set("name", `New character[${characterManager.characters().length + 1}]`);
     if (searchParams.name) fillCharacterInfo(true);
   })
 
@@ -272,7 +321,7 @@ const CharacterCreate: Component = () => {
       <Form data={group} onSubmit={handleSubmit}>
         <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} extraHeaderJsx={
           <Show when={exist()}>
-              <Button onClick={()=>fillCharacterInfo()}>Fill Info</Button>
+              <Button onClick={fillCharacterInfo}>Fill Info</Button>
               <Button onClick={handleDelete}>Delete</Button>
           </Show>
         } alwaysOpen>
@@ -286,8 +335,8 @@ const CharacterCreate: Component = () => {
             <FormField name="Initial Class" formName="className">
               <Select value={newCharStore[0].className} onChange={(value)=>{
                 newCharStore[1]("className",value);
-                setCharClasses([{className: value, level: 0}]);
                 setClassLevels({});
+                setCharClasses([value]);
               }}>
                 <For each={classNames()}>
                   {(className) => <Option value={className}>{className}</Option>}
@@ -308,10 +357,10 @@ const CharacterCreate: Component = () => {
             "flex-direction": "row",
             "margin-top": "1%"
           }}>
-            <FormField name="subclass" formName="subclass">
-              <Select value={newCharStore[0].subclass} onChange={(subclass)=>newCharStore[1]("subclass",subclass)}>
-                <For each={subclassNames()}>
-                  {(subclass)=> <Option value={subclass}>{subclass}</Option>}
+            <FormField name="Species" formName="Species">
+              <Select value={charRace()} onChange={(race)=>setCharRace(race)}>
+                <For each={races()}>
+                  {(race)=><Option value={race.name}>{race.name}</Option>}
                 </For>
               </Select>
             </FormField>
@@ -336,6 +385,15 @@ const CharacterCreate: Component = () => {
           />
         </Show>
 
+        <Show when={charRace() !== "" && selectedRace()}>
+          <RaceSection
+            selectedRace={selectedRace as any}
+            subraces={subraces}
+          />
+        </Show>
+
+        <LanguageSection />
+
         <Show when={newCharStore[0].className !== "" && hasSpells()}>
           <SpellsSection 
             knSpells={[knownSpells,setKnownSpells]} 
@@ -343,9 +401,10 @@ const CharacterCreate: Component = () => {
             selectedSubclass={selectedSubclass}
           />
         </Show>
+       
 
         <FlatCard icon="save" headerName="Save" alwaysOpen> 
-          <Button type="submit" aria-label="submit btn" disabled={!isDisabled()}>
+          <Button type="submit" aria-label="submit btn" disabled={isDisabled()}>
             {exist() ? "update" : "create"}
           </Button>
         </FlatCard>

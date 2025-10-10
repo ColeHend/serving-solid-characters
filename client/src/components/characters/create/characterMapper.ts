@@ -1,11 +1,69 @@
-import { CharacterForm, Character, CharacterSpell } from "../../../models/character.model";
+import { Accessor, createMemo, Setter } from "solid-js";
+import { CharacterForm, Character, CharacterSpell, CharacterLevel, CharacterRace } from "../../../models/character.model";
+import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
+import { Class5E, Race } from "../../../models/data";
+import { charClasses } from "./classesSection/classesSection";
 
-export function toCharacter5e(form: CharacterForm,formSpells: string[]) {
+export function toCharacter5e(form: CharacterForm,formSpells: string[],charClasses: Accessor<string[]>, classLevel: [Accessor<Record<string, number>>,Setter<Record<string, number>>],currRace:Accessor<Race>) {
+    const [classLevels,setClassLevels] = classLevel;
+    const classes = useDnDClasses();
 
-    // create features map
+    const getCharacterLevel = (className: string): number => {
+  
+      return classLevels()[className] ?? 0;
+    }
+    const setCharacterLevel = (className: string, level: number): void => {
+        setClassLevels(old => ({...old,[className]: level}));
+    }
+    const getClass = (className: string): Class5E => {
+        return classes().find(c => c.name === className) ?? {} as Class5E;
+    }
+    const hitDieToNumber = (hitdie:string): number => {
+        switch (hitdie) {
+            case "d12":
+                return 12;
+            case "d10":
+                return 10;
+            case "d8":
+                return 8;
+            case "d6":
+                return 6;
 
+            default:
+                return 0;
+        }
+    }
 
-    // create spells map
+    // features map
+    const charLevels: CharacterLevel[] = [];
+    
+    const fulllevel = createMemo(()=>{
+        let toreturn = 0;
+        charClasses().forEach(value => toreturn += getCharacterLevel(value));
+
+        return toreturn
+    })
+
+    let level = 1;
+
+    charClasses().forEach((charClass)=>{
+        const class5e = getClass(charClass);
+        
+
+        for (let index = 1; index < fulllevel() && index < getCharacterLevel(charClass); index++) {
+        charLevels.push({
+            class: charClass,
+            subclass: "",
+            level: level,
+            hitDie: hitDieToNumber(class5e.hitDie),
+            features: [...class5e?.features?.[index] ?? []]
+        })
+        level += 1;
+        
+        }
+    })
+
+    // spells map
     const spells: CharacterSpell[] = [];
 
     if (formSpells.length > 0) {
@@ -16,183 +74,144 @@ export function toCharacter5e(form: CharacterForm,formSpells: string[]) {
     }
 
     // create race map
-
+    const race: CharacterRace = {
+        species: currRace().name,
+        subrace: "",
+        age: "",
+        size: currRace().size,
+        speed: `${currRace().speed}ft`,
+        features: currRace().traits.flatMap(t => t.details),
+    }
 
     // everthing else...
 
 
-    const payload = createExampleCharacter({
+    const payload = createCharacter({
         name: form.name.trim(),
         level: 0,
-        levels: [
-            {
-            class: "Wizard",
-            subclass: "Evocation",
-            level: 1,
-            hitDie: 6,
-            features: [
-                {
-                name: "Spellcasting",
-                description: "You can cast wizard spells using your spellbook.",
-                metadata: {
-                    category: "Class",
-                },
-                },
-            ],
-            },
-            {
-            class: "Wizard",
-            subclass: "Evocation",
-            level: 2,
-            hitDie: 6,
-            features: [
-                {
-                name: "Arcane Recovery",
-                description: "You can recover some spell slots during a short rest.",
-                metadata: {
-                    category: "Class",
-                },
-                },
-            ],
-            },
-        ],
+        levels: charLevels,
         spells: spells,
-        race: {
-            species: "elf",
-            subrace: "woodElf",
-            age: "200",
-            size: "Medium",
-            speed: "30ft",
-            features: [
-            {
-                name: "Darkvision",
-                description:
-                "You can see in dim light within 60 feet as if it were bright light.",
-                metadata: {},
-            },
-            ],
-        },
+        race: race,
         className: form.className.trim(),
         subclass: form.subclass.trim(),
         background: form.background.trim(),
         alignment: form.alignment,
         proficiencies: {
             skills: {
-            Acrobatics: {
-                stat: "dex",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            "Animal Handling": {
-                stat: "wis",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Arcana: {
-                stat: "int",
-                value: 10,
-                proficient: true,
-                expertise: true,
-            },
-            History: {
-                stat: "int",
-                value: 10,
-                proficient: true,
-                expertise: true,
-            },
-            Athletics: {
-                stat: "str",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Deception: {
-                stat: "cha",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Insight: {
-                stat: "wis",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Intimidation: {
-                stat: "cha",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Investigation: {
-                stat: "int",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Medicine: {
-                stat: "wis",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Nature: {
-                stat: "int",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Perception: {
-                stat: "wis",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Performance: {
-                stat: "cha",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Persuasion: {
-                stat: "cha",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Religion: {
-                stat: "int",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            "Sleight Of Hand": {
-                stat: "dex",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Stealth: {
-                stat: "dex",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
-            Survival: {
-                stat: "wis",
-                value: 0,
-                proficient: false,
-                expertise: false,
-            },
+                Acrobatics: {
+                    stat: "dex",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                "Animal Handling": {
+                    stat: "wis",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Arcana: {
+                    stat: "int",
+                    value: 10,
+                    proficient: true,
+                    expertise: true,
+                },
+                History: {
+                    stat: "int",
+                    value: 10,
+                    proficient: true,
+                    expertise: true,
+                },
+                Athletics: {
+                    stat: "str",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Deception: {
+                    stat: "cha",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Insight: {
+                    stat: "wis",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Intimidation: {
+                    stat: "cha",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Investigation: {
+                    stat: "int",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Medicine: {
+                    stat: "wis",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Nature: {
+                    stat: "int",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Perception: {
+                    stat: "wis",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Performance: {
+                    stat: "cha",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Persuasion: {
+                    stat: "cha",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Religion: {
+                    stat: "int",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                "Sleight Of Hand": {
+                    stat: "dex",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Stealth: {
+                    stat: "dex",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
+                Survival: {
+                    stat: "wis",
+                    value: 0,
+                    proficient: false,
+                    expertise: false,
+                },
             },
             other: {},
         },
         languages: [
-            "Common", 
-            "elvish", 
-            "draconic"
+            "Common",
+            ...form.languages
         ],
         health: {
             max: 1,
@@ -222,7 +241,7 @@ export function toCharacter5e(form: CharacterForm,formSpells: string[]) {
     return payload;
 }
 
-function createExampleCharacter(character: Character) {
+function createCharacter(character: Character) {
   const newCharacter = new Character();
 
   newCharacter.name = character.name;

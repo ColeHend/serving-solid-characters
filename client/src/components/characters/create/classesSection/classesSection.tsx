@@ -11,6 +11,7 @@ import SearchBar from "../../../../shared/components/SearchBar/SearchBar";
 import SpellModal from "../../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import getSpellAndCasterLevel from "../../../../shared/customHooks/utility/tools/getSpellAndCasterLevel";
+import { aL } from "vitest/dist/chunks/reporters.d.BFLkQcL6";
 
 export type charClasses = {
   className: string;
@@ -18,7 +19,7 @@ export type charClasses = {
 }
 
 interface sectionProps {
-  charClasses: [Accessor<charClasses[]>,Setter<charClasses[]>];
+  charClasses: [Accessor<string[]>,Setter<string[]>];
   classLevels: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
   getCharLevel: (className: string) => number;
   setCharLevel: (className: string, level: number) => void;
@@ -117,22 +118,8 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     // get current class level
     const level = createMemo<number>(()=>getCharacterLevel(className));
 
-    // use current level and caster type to get the slots
-    // const firstLSlots = createMemo(()=>getSpellSlots(level(), 1,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-    // const secondLSlots = createMemo(()=>getSpellSlots(level(),2,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-    // const thirdLSlots = createMemo(()=>getSpellSlots(level(), 3,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-    // const fourthLSlots = createMemo(()=>getSpellSlots(level(),4,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-    // const fithLSlots = createMemo(()=>getSpellSlots(level(),  5,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-    // const sixthLSlots = createMemo(()=>getSpellSlots(level(), 6,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-    // const seventhLSlots = createMemo(()=>getSpellSlots(level(),7,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-    // const eighthLSlots = createMemo(()=>getSpellSlots(level(), 8,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-    // const ninthLSlots = createMemo(()=>getSpellSlots(level(),  9,class5e().spellcasting?.metadata.casterType ?? CasterType.None));
-
     // check for highest slots
     const highestSlotLevel = createMemo<number>(()=>{
-
-      console.log("level", level());
-      
 
       return getSpellAndCasterLevel(class5e(),"spell",level() - 1)
     }) 
@@ -145,9 +132,6 @@ export const ClassesSection: Component<sectionProps> = (props) => {
 
       const allSpells = Clone([...classSpells,...subclassSpells]);
       
-      console.log("highest slot level: ", highestSlotLevel());
-      
-
       setLearnSpells(allSpells.filter(spell=> !!spell.level && +spell.level <= highestSlotLevel())); 
       
       return learnSpells().sort((a,b)=>+a.level - +b.level);
@@ -157,12 +141,24 @@ export const ClassesSection: Component<sectionProps> = (props) => {
 
     return activeTab()?.[name] ?? 0;
   }
-
   const setTab = (name:string, activeTab: number):void => {
     setActiveTab(old =>({...old,  
       [name]: activeTab
     }));
   }
+
+  const hasSpells = (className: string) => {
+    const classSpells = srdSpells().filter(s => s.classes.includes(className));
+    const subclassSpells = srdSpells().filter(s => s.subClasses.includes(currentSublcass()));
+
+    const allSpells = Clone([...classSpells,...subclassSpells]);
+    
+
+    if (allSpells.length > 0) return true;
+
+    return false;
+  }
+   
   
   return (
     <FlatCard
@@ -177,26 +173,24 @@ export const ClassesSection: Component<sectionProps> = (props) => {
       <div class={`${styles.classesSection}`}>
         <For each={charClasses()}>
           {(charLevel, i) => (
-            <FlatCard icon="sword_rose" headerName={`${charLevel.className}(${getCharacterLevel(charLevel.className) - 1 === -1 ? 0 : getCharacterLevel(charLevel.className) - 1})`} class={`${styles.cardAlt}`} extraHeaderJsx={
+            <FlatCard headerName={`${charLevel} (${getCharacterLevel(charLevel) - 1 === -1 ? 0 : getCharacterLevel(charLevel) - 1})`} class={`${styles.cardAlt}`} extraHeaderJsx={
                 <Show when={i() !== 0}>
                   <Button onClick={()=>{
                     const confirm = window.confirm("Are you sure?");
 
-                    if (confirm) setCharClasses(old => old.filter(old => old.className !== charLevel.className));
+                    if (confirm) setCharClasses(old => old.filter(old => old !== charLevel));
                   }}>Delete</Button>
                 </Show>
             }>
               <div class={`${styles.classHeader}`}>
-                <span>
-                  {charLevel.className}
-                  <Show when={charLevel.subclass}>({charLevel.subclass})</Show>
-                </span>
+                
 
                 <Select
-                  value={getCharacterLevel(charLevel.className)}
+                  value={getCharacterLevel(charLevel)}
                   onSelect={(value) =>
-                    setCharacterLevel(charLevel.className, value)
+                    setCharacterLevel(charLevel, value)
                   }
+                  class={`${styles.levelSelect}`}
                 >
                   <For each={levels()}>
                     {(level) => <Option value={level + 1}>{level}</Option>}
@@ -204,15 +198,17 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                 </Select>
               </div>
               <div class={`${styles.TabBar}`} style={{}}>
-                <Button onClick={()=>getTab(charLevel.className) === 0 ? setTab(charLevel.className,-1) :setTab(charLevel.className,0)} transparent>Features <Show when={getTab(charLevel.className) === 0} fallback={"↑"}>↓</Show></Button>
-                <Button onClick={()=>getTab(charLevel.className) === 1 ? setTab(charLevel.className,-1) :setTab(charLevel.className,1)} transparent>Spells <Show when={getTab(charLevel.className) === 1} fallback={"↑"}>↓</Show></Button>
+                <Button onClick={()=>getTab(charLevel) === 0 ? setTab(charLevel,-1) :setTab(charLevel,0)} transparent>Features <Show when={getTab(charLevel) === 0} fallback={"↑"}>↓</Show></Button>
+                <Show when={hasSpells(charLevel)}>
+                  <Button onClick={()=>getTab(charLevel) === 1 ? setTab(charLevel,-1) :setTab(charLevel,1)} transparent>Spells <Show when={getTab(charLevel) === 1} fallback={"↑"}>↓</Show></Button>
+                </Show>
               </div>
-              <Show when={getTab(charLevel.className) === 0}>
+              <Show when={getTab(charLevel) === 0}>
                 <div style={{ height: "40vh", "overflow-y": "scroll" }}>
-                  <For each={range(1, getCharacterLevel(charLevel.className))}>
+                  <For each={range(1, getCharacterLevel(charLevel))}>
                     {(level) => (
                       <div>
-                        <For each={getClass(charLevel.className).features?.[level]}>
+                        <For each={getClass(charLevel).features?.[level]}>
                           {(feature) => (
                             <FlatCard
                               headerName={`${feature.name}`}
@@ -230,9 +226,9 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                   </For>
                 </div>
               </Show>
-              <Show when={getTab(charLevel.className) === 1}>
+              <Show when={getTab(charLevel) === 1}>
                 <div class={`${styles.learnSpellsTable}`}>
-                  <Table data={filterdSpells(charLevel.className)} columns={["name","level","learnBtn"]}>
+                  <Table data={filterdSpells(charLevel)} columns={["name","level","learnBtn"]}>
                       <Column name="name">
                           <Header>
                               Name
@@ -309,7 +305,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
       <Show when={showAddClass()}>
         <AddClass 
           show={[showAddClass, setShowAddClass]}
-          allClasses={()=>classes().filter(class5e=>!charClasses().some(c => c.className.includes(class5e.name)))}
+          allClasses={()=>classes().filter(class5e=>!charClasses().some(c => c.includes(class5e.name)))}
           setCharClasses={setCharClasses}
         />
       </Show>
