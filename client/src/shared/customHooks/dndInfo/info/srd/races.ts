@@ -39,14 +39,10 @@ export function useGetSrdRaces(version: '2014' | '2024' | "both" | string) {
     srdDB2024$.pipe(
       take(1),
       concatMap((cached) => {
-        console.log("cashed data:", cached);
-        
         if (cached.length) return of(cached);
         return fetchRaces("2024");
       }),
       tap(list => {
-        console.log("cached data:", list);
-        
         if (list?.length) {
           SrdDB2024.races.bulkPut(list).catch(err => console.error('Error saving 2024 races:', err));
         }

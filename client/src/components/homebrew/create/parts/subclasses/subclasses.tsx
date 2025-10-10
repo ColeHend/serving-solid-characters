@@ -1,7 +1,7 @@
 import { Component, createMemo, createSignal, onMount, batch, Show, createEffect, For } from "solid-js";
 import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared";
 import { Subclass as OldSubclass } from "../../../../../models/old/class.model";
-import { useSearchParams } from "@solidjs/router";
+import { A, useSearchParams } from "@solidjs/router";
 // Removed old Feature generic import; now using new data FeatureDetail shape directly
 import { Body, FormGroup, Validators } from "coles-solid-library";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
@@ -25,7 +25,7 @@ export interface FeatureDetailLevel extends FeatureDetail {
 
 const Subclasses: Component = () => {
   // URL params
-  const [searchParam, setSearchParam] = useSearchParams();
+  const [searchParam, setSearchParam] = useSearchParams<{name: string, subclass: string}>();
 
   // Source data hooks
   const allClasses = useDnDClasses();
@@ -88,42 +88,7 @@ const Subclasses: Component = () => {
 
   // Derived: subclass levels for feature options
   const getSubclassLevels = createMemo(() => {
-    const className = subclassClass().toLowerCase();
-    const [ currentClass ] = allClasses().filter((c)=> c.name?.toLowerCase() === className?.toLowerCase());
-				
-        
-    switch (className) {
-    case 'cleric':
-      return ["1", "2", "6", "8", "17"];
-    case 'druid':
-    case 'wizard':
-      return ["2", "6", "10", "14"];
-    case 'barbarian':
-      return ["3", "6", "10", "14"];
-    case 'monk':
-      return ["3", "6", "11", "17"];
-    case 'bard':
-      return ["3", "6", "14"];
-    case 'sorcerer':
-    case 'warlock':
-      return ["1", "6", "14", "18"];
-    case 'fighter':
-      return ["3", "7", "10", "15", "18"];
-    case 'paladin':
-      return ["3", "7", "15", "20"];
-    case 'ranger':
-      return ["3", "7", "11", "15"];
-    case 'rogue':
-      return ["3", "9", "13", "17"];
-    case 'forgemaster':
-      return ["3", "7", "11", "15", "20"];
-    default:
-      return [];
-    }
-    // if (!!currentClass && !!currentClass.classMetadata?.subclassLevels?.length) {
-    //   return currentClass.classMetadata.subclassLevels.map(x=>`${x}`);
-    // } else {
-    // }
+    return Array.from({length:20}, (_,i)=>`${i+1}`);
   });
 
   // Derived spellcasting levels
@@ -196,7 +161,7 @@ const Subclasses: Component = () => {
   // Maintain a reactive local copy so UI updates when items are added/updated (test env lacks reactive manager)
   const [homebrewList, setHomebrewList] = createSignal<any[]>([...homebrewManager.subclasses()]);
   const refreshHomebrewList = () => setHomebrewList([...homebrewManager.subclasses()]);
-  const storageKeyFor = (s: any) => (s?.storage_key) ? s.storage_key : `${(s?.parent_class||'').toLowerCase()}__${(s?.name||'').toLowerCase()}`;
+  const storageKeyFor = (s: any) => (s?.storage_key) ? s.storage_key : `${(s?.parentClass||'').toLowerCase()}__${(s?.name||'').toLowerCase()}`;
   const existsInHomebrew = createMemo(()=> !!homebrewList().some(s => (s as any).storage_key === `${(SubclassFormGroup.get('parent_class')||'').toLowerCase()}__${(SubclassFormGroup.get('name')||'').toLowerCase()}`));
 
   // Track original snapshot for change detection when editing
@@ -254,7 +219,7 @@ const Subclasses: Component = () => {
     if (!found) return;
     setLoadingEdit(true);
     batch(()=> {
-      SubclassFormGroup.set('parent_class', found.parent_class as any);
+      SubclassFormGroup.set('parent_class', found.parentClass as any);
       SubclassFormGroup.set('name', found.name as any);
       SubclassFormGroup.set('description', (found.description||'') as any);
       // features record -> flat list
@@ -325,10 +290,10 @@ const Subclasses: Component = () => {
   onMount(() => {
     if (searchParam.name && searchParam.subclass) {
       // Try new-model stored subclass first
-      const stored = homebrewManager.subclasses().find(s => s.parent_class?.toLowerCase() === searchParam.name!.toLowerCase() && s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
+      const stored = homebrewManager.subclasses().find(s => s.parentClass?.toLowerCase() === searchParam.name!.toLowerCase() && s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
       if (stored) {
         batch(() => {
-          SubclassFormGroup.set('parent_class', stored.parent_class as any);
+          SubclassFormGroup.set('parent_class', stored.parentClass as any);
           SubclassFormGroup.set('name', stored.name as any);
           SubclassFormGroup.set('description', (stored.description || '') as any);
           // features record -> flat feature array not reconstructed (left minimal)
@@ -355,7 +320,7 @@ const Subclasses: Component = () => {
   // Helpers to mutate features
   const updateParamsIfReady = () => {
     if (SubclassFormGroup.get('parent_class') && SubclassFormGroup.get('name')) {
-      setSearchParam({ name: subclassClass(), subclass: subclassName() });
+      setSearchParam({ name: subclassClass(), subclass: subclassName() as string });
     }
   };
 
@@ -391,7 +356,7 @@ const Subclasses: Component = () => {
             style={{ padding: '0.45rem 0.65rem', 'background-color': 'var(--panel-bg,#1b1d22)', color: 'var(--text,#e6e6e6)', 'border-radius': '6px', border: '1px solid var(--border,#333)' }}
           >
             <option value="__new__">+ New Subclass</option>
-            <For each={homebrewList()}>{(s: any) => <option value={storageKeyFor(s)}>{s.parent_class} / {s.name}</option>}</For>
+            <For each={homebrewList()}>{(s: any) => <option value={storageKeyFor(s)}>{s.parentClass} / {s.name}</option>}</For>
           </select>
         </label>
         <Show when={activeKey() !== '__new__'}>
