@@ -33,7 +33,6 @@ const Characters: Component = () => {
           "background",
           "level",
           "class",
-          "subclass",
           "menu"
         ]}
         data={characters}>
@@ -65,7 +64,7 @@ const Characters: Component = () => {
             <Header>Level</Header>
             <Cell<Character>>
               {(character)=><span>
-                {character.level}
+                {character.levels.length}
               </span>}
             </Cell>
           </Column>
@@ -73,15 +72,9 @@ const Characters: Component = () => {
             <Header>Class</Header>
             <Cell<Character>>
               {(character)=><span>
-                {character.className}
-              </span>}
-            </Cell>
-          </Column>
-          <Column name="subclass">
-            <Header>Subclass</Header>
-            <Cell<Character>>
-              {(character)=><span>
-                {character.subclass}
+                <For each={character.className.split(",")}>
+                  { (className,i) => <div> {className}{i() !== character.className.split(",").length - 1 ? "," : ""} </div> }
+                </For>
               </span>}
             </Cell>
           </Column>

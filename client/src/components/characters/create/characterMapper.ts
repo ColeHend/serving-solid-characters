@@ -50,7 +50,7 @@ export function toCharacter5e(form: CharacterForm,formSpells: string[],charClass
         const class5e = getClass(charClass);
         
 
-        for (let index = 1; index < fulllevel() && index < getCharacterLevel(charClass); index++) {
+        for (let index = 1; index < fulllevel() - 1 && index < getCharacterLevel(charClass); index++) {
         charLevels.push({
             class: charClass,
             subclass: "",
