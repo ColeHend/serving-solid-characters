@@ -4,7 +4,10 @@ import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/clas
 import { Class5E, Race } from "../../../models/data";
 import { charClasses } from "./classesSection/classesSection";
 
-export function toCharacter5e(form: CharacterForm,formSpells: string[],charClasses: Accessor<string[]>, classLevel: [Accessor<Record<string, number>>,Setter<Record<string, number>>],currRace:Accessor<Race>) {
+export function toCharacter5e(form: CharacterForm,formSpells: string[],charClasses: Accessor<string[]>, classLevel: [Accessor<Record<string, number>>,Setter<Record<string, number>>],currRace:Accessor<Race>,currSubrace: Accessor<string>) {
+    
+    if (currSubrace() === "-"|| "") return new Character();
+
     const [classLevels,setClassLevels] = classLevel;
     const classes = useDnDClasses();
 
@@ -72,11 +75,11 @@ export function toCharacter5e(form: CharacterForm,formSpells: string[],charClass
             prepared: false
         }))
     }
-
+    
     // create race map
     const race: CharacterRace = {
         species: currRace().name,
-        subrace: "",
+        subrace: currSubrace(),
         age: "",
         size: currRace().size,
         speed: `${currRace().speed}ft`,
@@ -88,7 +91,7 @@ export function toCharacter5e(form: CharacterForm,formSpells: string[],charClass
 
     const payload = createCharacter({
         name: form.name.trim(),
-        level: 0,
+        level: charLevels.length,
         levels: charLevels,
         spells: spells,
         race: race,

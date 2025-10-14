@@ -18,6 +18,31 @@
 }
 
 .raceSection {
-    max-height: 42vh;
+    max-height: 55vh;
     overflow-y: scroll;
+}
+
+.pushDown {
+    margin-top: 1%;
+}
+
+.subraceInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.cardTrsiary {
+    $color: var(--primary-color-varient);
+
+    div { 
+
+        svg {
+            fill: $color !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient($color, transparent) !important;
+    }
 }

@@ -1,0 +1,42 @@
+.StatBox {
+    box-sizing: border-box;
+    width: 10%;
+    display: flex;
+    flex-direction: column;
+
+    div {
+        width: 100%;
+    }
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+        margin-bottom: 5%;
+    }
+}
+
+.statHeader {
+    width: 100%;
+    
+    
+    
+    h3 {
+        margin: 3%;
+        text-align: center;
+        font-size: 16px;
+    }
+}
+
+.statView {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 3%;
+    margin-left: 0;
+}
+
+
+.divider {
+    width: 100%;
+    border-bottom: 1px solid;
+    // border-bottom-width: ;
+}

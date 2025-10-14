@@ -30,7 +30,7 @@ export const LanguageSection:Component<sectionProps> = (props) => {
     return <FlatCard icon="chat" headerName="Languages">
         <div class={`${styles.languageSection}`}>
             <div>
-                You Know Common and two other languages.    
+                You know Common and two other languages.    
             </div>
             
             <div class={`${styles.langSelect}`}>

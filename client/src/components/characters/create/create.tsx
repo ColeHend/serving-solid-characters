@@ -40,6 +40,8 @@ import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races"
 import { RaceSection } from "./raceSection/raceSection";
 import { LanguageSection } from "./languageSection/languageSection";
 import { useDnDSubraces } from "../../../shared/customHooks/dndInfo/info/all/subraces";
+import { BackgroundSection } from "./backgroundSection/backgroundSection";
+import { Ass } from "./abilityScoreSection/abilityScoreSection";
 
 const CharacterCreate: Component = () => {
   const [userSettings,] = getUserSettings();
@@ -67,6 +69,10 @@ const CharacterCreate: Component = () => {
   const [charClasses,setCharClasses] = createSignal<string[]>([]);
   const [classLevels,setClassLevels] = createSignal<Record<string, number>>({});
   const [charRace,setCharRace] = createSignal<string>("");
+  const [charSubrace, setCharSubrace] = createSignal<string>("");
+  const [charStats, setCharStats] = createSignal<Record<string, number>>({});
+  const [statMods, setStatMods] = createSignal<Record<string, number>>({});
+
 
   const newCharStore = createStore<Character>({
     name: "",
@@ -106,6 +112,9 @@ const CharacterCreate: Component = () => {
     }
   })
   
+
+
+
   const characterName = createMemo(()=>newCharStore[0].name);
   const selectedClass = createMemo(()=>newCharStore[0].className);
   const selectedSubclass =createMemo(()=>newCharStore[0].subclass);
@@ -165,6 +174,12 @@ const CharacterCreate: Component = () => {
   const selectedRace = createMemo<Race|null>(()=>{
     return races().find(r => r.name === charRace()) ?? null;
   })
+  const selectedBackground = createMemo(()=>{
+    return backgrounds().find(b => b.name === newCharStore[0].background);
+  })
+
+
+
 
   const resetForm = () => {
     group.set("name", "");
@@ -209,7 +224,7 @@ const CharacterCreate: Component = () => {
       return;
     }
     
-    const adapted = toCharacter5e(fullData,knownSpells(),charClasses,[classLevels,setClassLevels],selectedRace as any)  
+    const adapted = toCharacter5e(fullData,knownSpells(),charClasses,[classLevels,setClassLevels],selectedRace as any,charSubrace)  
 
     const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
     
@@ -299,6 +314,7 @@ const CharacterCreate: Component = () => {
       newCharStore[1]("languages", character.languages.filter(l => l !== "Common"));
 
       setCharRace(character.race.species);
+      setCharSubrace(character.race.subrace ?? "");
       setKnownSpells(character.spells.flatMap(s => s.name));
       knownSpells().forEach(spell => setChips(old=>[...old,{
         key: "",
@@ -314,7 +330,6 @@ const CharacterCreate: Component = () => {
   createEffect(()=>{
     if(characterName() !== "") setSearchParams({ name: characterName()});
   })
-  
 
   return (
     <Body class={`${stylin().accent} ${styles.mainBody}`}>
@@ -358,7 +373,10 @@ const CharacterCreate: Component = () => {
             "margin-top": "1%"
           }}>
             <FormField name="Species" formName="Species">
-              <Select value={charRace()} onChange={(race)=>setCharRace(race)}>
+              <Select value={charRace()} onChange={(race)=>{
+                  setCharRace(race);
+                  setCharSubrace("");
+                }}>
                 <For each={races()}>
                   {(race)=><Option value={race.name}>{race.name}</Option>}
                 </For>
@@ -389,7 +407,14 @@ const CharacterCreate: Component = () => {
           <RaceSection
             selectedRace={selectedRace as any}
             subraces={subraces}
+            charSubrace={[charSubrace, setCharSubrace]}
           />
+        </Show>
+
+        <Show when={newCharStore[0].background !== ""}>
+            <BackgroundSection 
+              background={selectedBackground as any}
+            />
         </Show>
 
         <LanguageSection />
@@ -401,6 +426,11 @@ const CharacterCreate: Component = () => {
             selectedSubclass={selectedSubclass}
           />
         </Show>
+
+        <Ass 
+          stats={[charStats, setCharStats]}
+          modifers={[statMods, setStatMods]}
+        />
        
 
         <FlatCard icon="save" headerName="Save" alwaysOpen> 
