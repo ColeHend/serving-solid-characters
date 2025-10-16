@@ -24,11 +24,6 @@ export const RaceSection:Component<sectionProps> = (props) => {
     const currentSubrace = createMemo(()=>subraces().find(sr=> sr.name === charSubrace()));
     const subraceDescKeys = createMemo(()=>Object.keys(currentSubrace()?.descriptions ?? {}))
 
-    onMount(()=>{
-        console.log("subraces: ", subraces());
-        
-    })
-
     return <FlatCard headerName={`Species: ${[race().name]}`} icon="person">
         <div class={`${styles.raceSection}`}>
             <p>
@@ -87,7 +82,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
                         <div class={`${styles.pushDown}`}>
                             <FormField name="Lineage" formName="Lineage">
                                 <Select value={charSubrace()} onChange={(value)=>setCharSubrace(value)}>
-                                    <Option value={"-"}>---</Option>
+                                    <Option value={""}>---</Option>
                                     <For each={currentSubraces()}>
                                         {(subrace)=><Option value={subrace.name}>{subrace.name}</Option>}
                                     </For>

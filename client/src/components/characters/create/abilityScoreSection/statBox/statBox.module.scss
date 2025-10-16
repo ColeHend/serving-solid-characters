@@ -1,6 +1,6 @@
 .StatBox {
     box-sizing: border-box;
-    width: 10%;
+    width: 12%;
     display: flex;
     flex-direction: column;
 
@@ -16,13 +16,15 @@
 
 .statHeader {
     width: 100%;
-    
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     
     
     h3 {
         margin: 3%;
         text-align: center;
-        font-size: 16px;
+        font-size: 15px;
     }
 }
 
@@ -30,8 +32,14 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     margin: 3%;
     margin-left: 0;
+    
+
+    strong {
+        width: 100%;
+    }
 }
 
 
@@ -39,4 +47,14 @@
     width: 100%;
     border-bottom: 1px solid;
     // border-bottom-width: ;
+}
+
+.scoreInput {
+    width: 2vw;
+}
+
+.pbSelect {
+    // font-size: 12px;
+    display: flex;
+    flex-direction: row;
 }
