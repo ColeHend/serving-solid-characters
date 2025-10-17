@@ -42,6 +42,8 @@ import { LanguageSection } from "./languageSection/languageSection";
 import { useDnDSubraces } from "../../../shared/customHooks/dndInfo/info/all/subraces";
 import { BackgroundSection } from "./backgroundSection/backgroundSection";
 import { Ass } from "./abilityScoreSection/abilityScoreSection";
+import { HitPointSection } from "./hpSection/hpSection";
+import { ItemSection } from "./itemSection/itemSection";
 
 const CharacterCreate: Component = () => {
   const [userSettings,] = getUserSettings();
@@ -111,9 +113,6 @@ const CharacterCreate: Component = () => {
       attuned: []
     }
   })
-  
-
-
 
   const characterName = createMemo(()=>newCharStore[0].name);
   const selectedClass = createMemo(()=>newCharStore[0].className);
@@ -431,8 +430,11 @@ const CharacterCreate: Component = () => {
           stats={[charStats, setCharStats]}
           modifers={[statMods, setStatMods]}
         />
-       
 
+        <HitPointSection />
+
+        <ItemSection />
+       
         <FlatCard icon="save" headerName="Save" alwaysOpen> 
           <Button type="submit" aria-label="submit btn" disabled={isDisabled()}>
             {exist() ? "update" : "create"}

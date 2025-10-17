@@ -18,3 +18,26 @@
     border-right: 1px solid;
     border-left: 1px solid;
 }
+
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: var(--secondary-color) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color, blue), transparent);
+    }
+}
+
+.pushDown {
+    margin-top: 1%;
+}
+
+.modiferText {
+    word-wrap: wrap;
+}

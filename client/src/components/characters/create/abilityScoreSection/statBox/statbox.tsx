@@ -142,12 +142,12 @@ export const StatBox:Component<boxProps> = (props) => {
     return <Container {...other} theme="surface" class={`${styles.StatBox}`}>
         <div class={`${styles.statHeader}`}>
             <h3>{statName()} - {currentScore() + getModifer()}</h3>
-            <Show when={currentScore() !== 0}>
+            <Show when={currentScore() !== 0 && genMethod() !== "Extended Point Buy" && genMethod() !== "Point Buy"}>
                 <Button onClick={()=>{
                     props.setCurrStats(old => old.filter(stat => stat !== currentScore()))
                     setAbilityScore(getStatName(),0)
                 }}>
-                    <Icon name="delete" size={"medium"}/>
+                    <Icon name="delete" size={"medium"} color="red"/>
                 </Button>
             </Show>
         </div>
@@ -160,20 +160,19 @@ export const StatBox:Component<boxProps> = (props) => {
                 </Match>
                 <Match when={genMethod() === "Manual/Rolled"}>
                     <div class={`${styles.scoreInput}`}>
-                        <Input type="number" min={8} max={16} value={currentScore()} onInput={(e)=>setAbilityScore(getStatName(), +e.currentTarget.value)} transparent/>
+                        <Input type="number" min={1} max={20} value={currentScore()} onInput={(e)=>{
+                            if (+e.currentTarget.value <= 20) {
+                                setAbilityScore(getStatName(), +e.currentTarget.value)
+                            }
+                        }} transparent/>
                     </div>
                 </Match>
                 <Match when={genMethod() === "Point Buy" || genMethod() === "Extended Point Buy"}>
                     <div class={`${styles.pbSelect}`}>
                         <Select value={currentScore()} onSelect={(value)=>{
                             if (+value > currentScore()) {
-                                console.log("up", value,currentScore());
-                                
-
                                 addOne(value)
                             } else if (value < currentScore()) {
-                                console.log("down", value,currentScore());
-                                
                                 removeOne(value)
                             }
                         }}>

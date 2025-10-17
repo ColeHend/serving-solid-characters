@@ -1,6 +1,6 @@
-import { Accessor, Component, createMemo, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { FormField, Select, Option } from "coles-solid-library";
+import { FormField, Select, Option, Chipbar, ChipType, Checkbox } from "coles-solid-library";
 import styles from "./abilityScoreSection.module.scss";
 import { StatBox } from "./statBox/statbox";
 
@@ -20,6 +20,9 @@ export const Ass:Component<assProps> = (props) => {
     const [pbPoints,setPBPoints] = createSignal<number>(34);
     const [selectedStat, setSelectedStat] = createSignal<number>(0);
     const [selectedStats, setSelectedStats] = createSignal<number[]>([]);
+    const [modChips, setModChips] = createSignal<ChipType[]>([]);
+    const [modStat, setModStat] = createSignal<string>("");
+    const [isFocus, setIsFocus] = createSignal<boolean>(false);
 
     const GenMethods = createMemo<string[]>(()=>[
         "Standard Array",
@@ -114,6 +117,32 @@ export const Ass:Component<assProps> = (props) => {
         } 
     })
 
+    const displayStat = (stat: string) => {
+
+        switch (stat) {
+            case "str":
+                return "Stength";
+
+            case "dex":
+                return "Dexterity";
+
+            case "con": 
+                return "Constitution";
+
+            case "int":
+                return "Intelligence"
+            
+            case "wis":
+                return "Wisdom";
+
+            case "cha":
+                return "Charisma";
+            
+            default: 
+                return "";
+        }
+    }
+
 
     const stats = ["str","dex","con","int","wis","cha"];
     let runOnce = true;
@@ -122,6 +151,21 @@ export const Ass:Component<assProps> = (props) => {
             runOnce = false;
             stats.forEach((stat)=>setAbilityScore(stat,0))
             stats.forEach((stat)=>setStatMod(stat,0))
+        }
+    })
+
+    createEffect(()=>{
+        if (modChips().length === 0) {
+            setStatMods({
+                "str": 0,
+                "dex": 0,
+                "con": 0,
+                "int": 0,
+                "wis": 0,
+                "cha": 0,
+            })
+        } else {
+            modChips().forEach((chip)=>setStatMod(chip.key,+chip.value))
         }
     })
 
@@ -151,18 +195,86 @@ export const Ass:Component<assProps> = (props) => {
                                 });
                             }
                         }}>
-                        <Option value="">-</Option>
                         <For each={GenMethods()}>
                             {(method)=><Option value={method}>{method}</Option>}
                         </For>
                     </Select>
                 </FormField>
             </div>
-            
-            <div style={{'margin-top':"1%"}}>
+
+            <div class={`${styles.pushDown}`}>
+                <FlatCard headerName="Modifers" class={`${styles.cardAlt}`}>
+                    <div>
+                        <div class={`${styles.modiferText}`}>
+                            Your species or background may grant ability score increases. Choose one of the following ways to apply those bonuses:
+                        </div>
+
+                        <ul>
+                            <li>
+                                <strong>Spread:</strong> Increase up to three different ability scores by +1 each.
+                            </li>
+                            <li>
+                                <strong>Focus:</strong> Increase one ability score by +2 and a different ability score by +1.
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div style={{display: "flex", "flex-direction": "row", width: "20%",gap: "2%"}}>
+                        <Select
+                            value={modStat()}
+                            onChange={(value) => setModStat(value)}
+                            onSelect={(value) => {
+                                // prevent duplicates
+                                if (modChips().some(c => c.key === value)) return;
+
+                                const chips = modChips();
+                                const hasFocus = chips.some(c => c.value === "2");
+
+                                // If focus already chosen (there is a +2), second slot allowed only as +1
+                                if (hasFocus) {
+                                    if (chips.length >= 2) return;
+                                    setModChips(old => [...old, { key: value, value: "1" }]);
+                                    setModStat("");
+                                    return;
+                                }
+
+                                if (chips.length === 0) {
+                                    if (isFocus()) {
+                                        setModChips(old => [...old, { key: value, value: "2" }]);
+                                    } else {
+                                        setModChips(old => [...old, { key: value, value: "1" }]);
+                                    }
+                                    setModStat("");
+                                    return;
+                                }
+
+                                // Otherwise we're in Spread mode (existing chips are +1). Allow up to 3 distinct +1 chips.
+                                if (chips.length >= 3) return;
+                                setModChips(old => [...old, { key: value, value: "1" }]);
+                                setModStat("");
+                            }}
+                        >
+                            <Option value="">-</Option>
+                            <For each={stats.filter(stat => !modChips().some(chip => chip.key === stat))}>
+                                {stat => <Option value={stat}>{displayStat(stat)}</Option>}
+                            </For>
+                        </Select>
+
+                        <Checkbox disabled={modChips().length > 0} label={<>{isFocus()?"Focus":"Spread"}</>} checked={isFocus()} onChange={(value)=>setIsFocus(value)} />
+                    </div>
+                    <div>
+                        <Chipbar chips={modChips} setChips={setModChips} />
+                    </div>
+                </FlatCard>
+            </div>
+
+            <div class={`${styles.pushDown}`}>
                 <Switch>
                     <Match when={genMethod() === "Standard Array"}>
                         <div>
+                            Select a score from the array, then click the ability (stat box) you want to assign it to.
+                        </div>
+                        <div class={`${styles.pushDown}`}>
                             <strong>Standard Array: </strong>
                             <For each={standardSelection()}>
                                 {(stat,i)=> <>
@@ -176,6 +288,9 @@ export const Ass:Component<assProps> = (props) => {
                     </Match>
                     <Match when={genMethod() === "Custom Standard Array"}>
                         <div>
+                            Select a score from the array, then click the ability (stat box) you want to assign it to.
+                        </div>
+                        <div class={`${styles.pushDown}`}>
                             <strong>Custom Standard Array: </strong>
                             <For each={customSelection()}>
                                 {(stat, i)=><>

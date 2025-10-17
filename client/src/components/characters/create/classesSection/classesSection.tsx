@@ -92,11 +92,14 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     subClasses: []
   });
   
-
-  
     
-  const getCharacterLevel = props.getCharLevel;
-  const setCharacterLevel = props.setCharLevel;
+  const getCharacterLevel = (className: string): number => {
+    return classLevels()[className] ?? 0;
+  }
+  const setCharacterLevel = (className: string, level: number): void => {
+    setClassLevels(old => ({...old,[className]: level}));
+  }
+
   const currentSublcass = createMemo(()=>props.selectedSubclass());
 
 
@@ -159,11 +162,31 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     return false;
   }
    
+
+  const currentLevel = createMemo<number>(()=>{
+    let totalLevel = 0;
+
+    charClasses().forEach((class5e)=> {
+      let level = getCharacterLevel(class5e);
+
+      console.log("class level: ", level);
+      
+
+      if (Number.isNaN(level)) {
+        level = 0;
+      } 
+
+      totalLevel += level -1
+    })
+
+    return totalLevel;
+  })
+
   
   return (
     <FlatCard
       icon="shield"
-      headerName="Classes"
+      headerName={`Classes (${currentLevel()})`}
       extraHeaderJsx={
         <div>
           <Button onClick={()=>setShowAddClass(old=>!old)}>Add Class</Button>
