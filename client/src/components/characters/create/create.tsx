@@ -44,6 +44,10 @@ import { BackgroundSection } from "./backgroundSection/backgroundSection";
 import { Ass } from "./abilityScoreSection/abilityScoreSection";
 import { HitPointSection } from "./hpSection/hpSection";
 import { ItemSection } from "./itemSection/itemSection";
+import { getStatBonus } from "../../../shared/customHooks/utility/tools/characterTools";
+import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
+
+type GenMethod = "Standard Array"|"Custom Standard Array"|"Manual/Rolled"|"Point Buy"|"Extended Point Buy";
 
 const CharacterCreate: Component = () => {
   const [userSettings,] = getUserSettings();
@@ -59,22 +63,54 @@ const CharacterCreate: Component = () => {
     "languages": [[], [Validators.maxLength(2)]]
   });
 
+  // data hooks
   const classes = useDnDClasses();
   const subClasses = useDnDSubclasses();
   const backgrounds = useDnDBackgrounds();
   const spells = useDnDSpells();
   const races = useDnDRaces();
   const subraces = useDnDSubraces();
+  const items = useDnDItems();
 
+  // signals
   const [knownSpells,setKnownSpells] = createSignal<string[]>([]);
   const [chips, setChips] = createSignal<ChipType[]>([]);
   const [charClasses,setCharClasses] = createSignal<string[]>([]);
   const [classLevels,setClassLevels] = createSignal<Record<string, number>>({});
   const [charRace,setCharRace] = createSignal<string>("");
   const [charSubrace, setCharSubrace] = createSignal<string>("");
-  const [charStats, setCharStats] = createSignal<Record<string, number>>({});
-  const [statMods, setStatMods] = createSignal<Record<string, number>>({});
+  const [charStats, setCharStats] = createSignal<Record<string, number>>({
+    "str": 0,
+    "dex": 0,
+    "con": 0,
+    "int": 0,
+    "wis": 0,
+    "cha": 0,
+  });
+  const [statMods, setStatMods] = createSignal<Record<string, number>>({
+    "str": 0,
+    "dex": 0,
+    "con": 0,
+    "int": 0,
+    "wis": 0,
+    "cha": 0,
+  });
+  const [maxHP, setMaxHP] = createSignal<number>(0);
+  const [inventory,setInventory] = createSignal<string[]>([]);
+  const [equipped, setEquipped] = createSignal<string[]>([]);
+  const [attuned, setAttuned] = createSignal<string[]>([]);
 
+  // stats
+
+  const [genMethod, setGenMethod] = createSignal<GenMethod>("Standard Array");
+  const [pbPoints,setPBPoints] = createSignal<number>(34);
+  const [selectedStat, setSelectedStat] = createSignal<number>(0);
+  const [selectedStats, setSelectedStats] = createSignal<number[]>([]);
+  const [modChips, setModChips] = createSignal<ChipType[]>([]);
+  const [modStat, setModStat] = createSignal<string>("");
+  const [isFocus, setIsFocus] = createSignal<boolean>(false);
+
+  // store
 
   const newCharStore = createStore<Character>({
     name: "",
@@ -114,6 +150,7 @@ const CharacterCreate: Component = () => {
     }
   })
 
+  // memos
   const characterName = createMemo(()=>newCharStore[0].name);
   const selectedClass = createMemo(()=>newCharStore[0].className);
   const selectedSubclass =createMemo(()=>newCharStore[0].subclass);
@@ -178,7 +215,7 @@ const CharacterCreate: Component = () => {
   })
 
 
-
+  // functions
 
   const resetForm = () => {
     group.set("name", "");
@@ -222,7 +259,7 @@ const CharacterCreate: Component = () => {
       
       return;
     }
-    
+
     const adapted = toCharacter5e(fullData,knownSpells(),charClasses,[classLevels,setClassLevels],selectedRace as any,charSubrace)  
 
     const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
@@ -266,6 +303,7 @@ const CharacterCreate: Component = () => {
     newCharStore[1]("spells", []);
 
   }
+
   const getCharacterLevel = (className: string): number => {
   
       return classLevels()[className] ?? 0;
@@ -321,6 +359,14 @@ const CharacterCreate: Component = () => {
       }]))
     }
   }
+
+  const getConMod = () => {
+    const theStat = charStats()["con"];
+
+    return getStatBonus(theStat);
+  }
+
+  // effects on change
 
   onMount(()=>{
     if (searchParams.name) fillCharacterInfo(true);
@@ -395,8 +441,6 @@ const CharacterCreate: Component = () => {
           <ClassesSection 
             charClasses={[charClasses, setCharClasses]}
             classLevels={[classLevels, setClassLevels]}
-            getCharLevel={getCharacterLevel}
-            setCharLevel={setCharacterLevel}
             knSpells={[knownSpells, setKnownSpells]}
             selectedSubclass={selectedSubclass}
           />
@@ -416,7 +460,9 @@ const CharacterCreate: Component = () => {
             />
         </Show>
 
-        <LanguageSection />
+        <LanguageSection 
+          group={group}
+        />
 
         <Show when={newCharStore[0].className !== "" && hasSpells()}>
           <SpellsSection 
@@ -429,11 +475,32 @@ const CharacterCreate: Component = () => {
         <Ass 
           stats={[charStats, setCharStats]}
           modifers={[statMods, setStatMods]}
+          genMethod={[genMethod, setGenMethod]}
+          pbPoints={[pbPoints,setPBPoints]}
+          selectedStat={[selectedStat, setSelectedStat]}
+          selectedStats={[selectedStats, setSelectedStats]}
+          modChips={[modChips, setModChips]}
+          modStat={[modStat, setModStat]}
+          isFocus={[isFocus, setIsFocus]}
         />
 
-        <HitPointSection />
+        <Show when={selectedClass() !== "" && getConMod() !== 0}>
+          <HitPointSection 
+            currentClass={selectedClass}
+            maxHP={[maxHP, setMaxHP]}
+            classLevels={[classLevels,setClassLevels]}
+            classNames={charClasses}
+            stat={charStats}
+            mod={statMods}
+          />
+        </Show>
 
-        <ItemSection />
+        <ItemSection 
+          inventory={[inventory,setInventory]}
+          equipped={[equipped, setEquipped]}
+          attuned={[attuned, setAttuned]}
+          allItems={items}
+        />
        
         <FlatCard icon="save" headerName="Save" alwaysOpen> 
           <Button type="submit" aria-label="submit btn" disabled={isDisabled()}>

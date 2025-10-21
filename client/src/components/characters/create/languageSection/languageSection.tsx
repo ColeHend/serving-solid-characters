@@ -1,10 +1,11 @@
-import { FormField, Select, Option } from "coles-solid-library";
-import { Component, createMemo, For } from "solid-js";
+import { FormField, Select, Option, FormGroup } from "coles-solid-library";
+import { Component, createMemo, For, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import styles from "./languageSection.module.scss";
+import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
-
+    group: FormGroup<CharacterForm>
 }
 
 export const LanguageSection:Component<sectionProps> = (props) => {
@@ -27,7 +28,13 @@ export const LanguageSection:Component<sectionProps> = (props) => {
         "Deep Speech",
     ])
 
-    return <FlatCard icon="chat" headerName="Languages">
+    const getLanguages = ():string[] => {
+        return props.group.get("languages");
+    }
+
+    return <FlatCard icon="chat" headerName={<div>
+        Languages: Common<Show when={getLanguages().length > 0}>,</Show> {getLanguages().join(", ")}
+    </div>}>
         <div class={`${styles.languageSection}`}>
             <div>
                 You know Common and two other languages.    

@@ -1,12 +1,19 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { FormField, Select, Option, Chipbar, ChipType, Checkbox } from "coles-solid-library";
+import { FormField, Select, Option, Chipbar, ChipType, Checkbox, Chip } from "coles-solid-library";
 import styles from "./abilityScoreSection.module.scss";
 import { StatBox } from "./statBox/statbox";
 
 interface assProps {
     stats: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
     modifers: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
+    genMethod: [Accessor<GenMethod>, Setter<GenMethod>];
+    pbPoints: [Accessor<number>, Setter<number>];
+    selectedStat: [Accessor<number>, Setter<number>];
+    selectedStats: [Accessor<number[]>, Setter<number[]>];
+    modChips: [Accessor<ChipType[]>, Setter<ChipType[]>];
+    modStat: [Accessor<string>, Setter<string>];
+    isFocus: [Accessor<boolean>, Setter<boolean>];
 }
 
 type GenMethod = "Standard Array"|"Custom Standard Array"|"Manual/Rolled"|"Point Buy"|"Extended Point Buy";
@@ -16,13 +23,13 @@ export const Ass:Component<assProps> = (props) => {
     const [charStats, setCharStats] = props.stats;
     const [statMods, setStatMods] = props.modifers;
 
-    const [genMethod, setGenMethod] = createSignal<GenMethod>("Standard Array");
-    const [pbPoints,setPBPoints] = createSignal<number>(34);
-    const [selectedStat, setSelectedStat] = createSignal<number>(0);
-    const [selectedStats, setSelectedStats] = createSignal<number[]>([]);
-    const [modChips, setModChips] = createSignal<ChipType[]>([]);
-    const [modStat, setModStat] = createSignal<string>("");
-    const [isFocus, setIsFocus] = createSignal<boolean>(false);
+    const [genMethod, setGenMethod] = props.genMethod;
+    const [pbPoints,setPBPoints] = props.pbPoints;
+    const [selectedStat, setSelectedStat] = props.selectedStat;
+    const [selectedStats, setSelectedStats] = props.selectedStats;
+    const [modChips, setModChips] = props.modChips;
+    const [modStat, setModStat] = props.modStat;
+    const [isFocus, setIsFocus] = props.isFocus;
 
     const GenMethods = createMemo<string[]>(()=>[
         "Standard Array",
@@ -145,31 +152,20 @@ export const Ass:Component<assProps> = (props) => {
 
 
     const stats = ["str","dex","con","int","wis","cha"];
-    let runOnce = true;
-    onMount(()=>{
-        if (runOnce) {
-            runOnce = false;
-            stats.forEach((stat)=>setAbilityScore(stat,0))
-            stats.forEach((stat)=>setStatMod(stat,0))
-        }
-    })
 
     createEffect(()=>{
-        if (modChips().length === 0) {
-            setStatMods({
-                "str": 0,
-                "dex": 0,
-                "con": 0,
-                "int": 0,
-                "wis": 0,
-                "cha": 0,
-            })
-        } else {
-            modChips().forEach((chip)=>setStatMod(chip.key,+chip.value))
-        }
+        modChips().forEach((chip)=>setStatMod(chip.key,+chip.value))
     })
 
-    return <FlatCard icon="star" headerName="Abilities">
+    return <FlatCard icon="star" headerName={<div class={`${styles.headerTextWrapper}`}>
+        Stats: 
+        <span class={`${styles.headerText}`}>str <div>({strength() + strengthMod()})</div></span>
+        <span class={`${styles.headerText}`}>dex <div>({dexterity() + dexterityMod()})</div></span>
+        <span class={`${styles.headerText}`}>con <div>({constitution() + constitutionMod()})</div></span>
+        <span class={`${styles.headerText}`}>int <div>({intelligence() + intelligenceMod()})</div></span>
+        <span class={`${styles.headerText}`}>wis <div>({wisdom() + wisdomMod()})</div></span>
+        <span class={`${styles.headerText}`}>cha <div>({charisma() + charismaMod()})</div></span>
+    </div>}>
         <div>
             <div>
                 <FormField name="Generation Method" formName="Gen Method">
@@ -183,15 +179,6 @@ export const Ass:Component<assProps> = (props) => {
                                     "int": 8,
                                     "wis": 8,
                                     "cha": 8
-                                });
-                            } else {
-                                setCharStats({
-                                    "str": 0,
-                                    "dex": 0,
-                                    "con": 0,
-                                    "int": 0,
-                                    "wis": 0,
-                                    "cha": 0
                                 });
                             }
                         }}>
@@ -254,7 +241,6 @@ export const Ass:Component<assProps> = (props) => {
                                 setModStat("");
                             }}
                         >
-                            <Option value="">-</Option>
                             <For each={stats.filter(stat => !modChips().some(chip => chip.key === stat))}>
                                 {stat => <Option value={stat}>{displayStat(stat)}</Option>}
                             </For>
@@ -262,8 +248,13 @@ export const Ass:Component<assProps> = (props) => {
 
                         <Checkbox disabled={modChips().length > 0} label={<>{isFocus()?"Focus":"Spread"}</>} checked={isFocus()} onChange={(value)=>setIsFocus(value)} />
                     </div>
-                    <div>
-                        <Chipbar chips={modChips} setChips={setModChips} />
+                    <div class={`${styles.modChipBar}`}>
+                        <For each={modChips()}>
+                            {(chip)=><Chip key={chip.key} value={chip.value} remove={()=>{
+                                setModChips(old => old.filter(x => x.key !== chip.key))
+                                setStatMod(chip.key, 0);
+                            }} />}
+                        </For>
                     </div>
                 </FlatCard>
             </div>

@@ -21,8 +21,6 @@ export type charClasses = {
 interface sectionProps {
   charClasses: [Accessor<string[]>,Setter<string[]>];
   classLevels: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
-  getCharLevel: (className: string) => number;
-  setCharLevel: (className: string, level: number) => void;
   knSpells: [Accessor<string[]>,Setter<string[]>];
   selectedSubclass: Accessor<string>;
 }
@@ -182,11 +180,25 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     return totalLevel;
   })
 
+  const noNegitveValue = (value: number) => {
+    if (value === -1) return 0;
+
+    return value;
+  }
   
   return (
     <FlatCard
       icon="shield"
-      headerName={`Classes (${currentLevel()})`}
+      headerName={<div style={{width:"20vw", display:"flex",margin:"0",padding: "0","flex-direction": "row"}}>
+        <span>Class(es):</span>
+        ({currentLevel()})
+        <For each={charClasses()}>
+          {(class5e)=> <span >
+            {class5e} ({noNegitveValue(getCharacterLevel(class5e) - 1)})  
+          </span>}
+        </For>
+        
+      </div>}
       extraHeaderJsx={
         <div>
           <Button onClick={()=>setShowAddClass(old=>!old)}>Add Class</Button>

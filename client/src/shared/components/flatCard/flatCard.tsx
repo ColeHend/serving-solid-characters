@@ -4,7 +4,7 @@ import { Button, Container, Icon } from "coles-solid-library";
 
 interface FlatCardProps extends JSX.HTMLAttributes<HTMLDivElement> {
     icon?: string;
-    headerName: string;
+    headerName: JSX.Element;
     children?: JSX.Element;
     alwaysOpen?: boolean;
     startOpen?: boolean;
@@ -39,7 +39,9 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
                 <Show when={!isNoIcon()}>
                     <Icon name={local.icon ?? "disabled_by_default"} />
                 </Show>
-                <h4>{local.headerName}</h4>
+                <div>
+                    {local.headerName}
+                </div>
             </div>
             <div>
                 {local.extraHeaderJsx}
