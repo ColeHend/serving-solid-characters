@@ -37,7 +37,15 @@ export class Character {
   public items: CharacterGear = {
     inventory: [],
     equipped: [],
-    attuned: []
+    attuned: [],
+    currency: {
+      platinumPieces: 0,
+      goldPieces: 0,
+      electrumPieces: 0,
+      sliverPieces: 0,
+      copperPieces: 0
+    }
+
   }
 }
 export interface CharacterProficiency {
@@ -78,6 +86,15 @@ export interface CharacterGear {
 	inventory: string[];
 	equipped: string[];
 	attuned: string[];
+  currency: CharacterCurrency;
+}
+
+export interface CharacterCurrency {
+  platinumPieces: number;
+  goldPieces: number;
+  electrumPieces: number;
+  sliverPieces: number;
+  copperPieces: number;
 }
 
 export type CharacterForm = Omit<Character,"levels"|"spells"|"race"|"proficiencies"|"health"|"stats"|"items"|"level">

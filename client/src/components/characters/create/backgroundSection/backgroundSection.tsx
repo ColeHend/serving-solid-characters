@@ -14,15 +14,15 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
 
     const selBackground = createMemo(()=>props.background());
 
-    const langs = createMemo(()=>selBackground().languages?.options || []);
-    const features = createMemo(()=>selBackground().features || []);
-    const abilityOptions = createMemo(()=>selBackground().abilityOptions || []);
-    const suggestedFeat = createMemo(()=>selBackground().feat || "");
-    const itemOptionKeys = createMemo(()=>selBackground().startEquipment.flatMap(item => item.optionKeys || []));
-    const weaponsProfs = createMemo(()=>selBackground().proficiencies.weapons);
-    const armorProfs = createMemo(()=>selBackground().proficiencies.armor);
-    const toolsProfs = createMemo(()=>selBackground().proficiencies.tools);
-    const skillProfs = createMemo(()=>selBackground().proficiencies.skills);
+    const langs = createMemo(()=>selBackground()?.languages?.options || []);
+    const features = createMemo(()=>selBackground()?.features || []);
+    const abilityOptions = createMemo(()=>selBackground()?.abilityOptions || []);
+    const suggestedFeat = createMemo(()=>selBackground()?.feat || "");
+    const itemOptionKeys = createMemo(()=>selBackground()?.startEquipment.flatMap(item => item.optionKeys || []));
+    const weaponsProfs = createMemo(()=>selBackground()?.proficiencies.weapons);
+    const armorProfs = createMemo(()=>selBackground()?.proficiencies.armor);
+    const toolsProfs = createMemo(()=>selBackground()?.proficiencies.tools);
+    const skillProfs = createMemo(()=>selBackground()?.proficiencies.skills);
 
     const getFeature = (name: string) => {
         if (name.toLowerCase().includes("magic initiate")) {
@@ -32,7 +32,7 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
         return createMemo(()=>feats().find(f => f.details.name === name));
     }
 
-    return <FlatCard icon="home" headerName={`Background: ${selBackground().name}`}>
+    return <FlatCard icon="home" headerName={`Background: ${selBackground()?.name ?? ""}`}>
         <div>
             <div style={{"margin-bottom": "2%"}}>
                 <Markdown 

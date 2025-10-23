@@ -1,0 +1,27 @@
+.currenyBox {
+    display: flex;
+    // width: 20%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid;
+    padding: 0.5%;
+}
+
+.moneySection {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+}
+
+.moneyInput {
+    width: 60%;
+    padding: 0;
+    margin: 0;
+
+    div {
+        display: none;
+    }
+    
+}

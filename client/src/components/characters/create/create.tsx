@@ -99,6 +99,7 @@ const CharacterCreate: Component = () => {
   const [inventory,setInventory] = createSignal<string[]>([]);
   const [equipped, setEquipped] = createSignal<string[]>([]);
   const [attuned, setAttuned] = createSignal<string[]>([]);
+  const [currency, setCurrency] = createSignal<Record<string, number>>({});
 
   // stats
 
@@ -146,7 +147,14 @@ const CharacterCreate: Component = () => {
     items: {
       inventory: [],
       equipped: [],
-      attuned: []
+      attuned: [],
+      currency: {
+        platinumPieces: 0,
+        goldPieces: 0,
+        electrumPieces: 0,
+        sliverPieces: 0,
+        copperPieces: 0
+      }
     }
   })
 
@@ -494,13 +502,18 @@ const CharacterCreate: Component = () => {
             mod={statMods}
           />
         </Show>
-
-        <ItemSection 
-          inventory={[inventory,setInventory]}
-          equipped={[equipped, setEquipped]}
-          attuned={[attuned, setAttuned]}
-          allItems={items}
-        />
+        
+        <Show when={newCharStore[0].background !== "" && selectedClass() !== ""}>
+          <ItemSection 
+            inventory={[inventory,setInventory]}
+            equipped={[equipped, setEquipped]}
+            attuned={[attuned, setAttuned]}
+            currecy={[currency, setCurrency]}
+            allItems={items}
+            class5e={selectedClass}
+            background={selectedBackground as any}
+          />
+        </Show>
        
         <FlatCard icon="save" headerName="Save" alwaysOpen> 
           <Button type="submit" aria-label="submit btn" disabled={isDisabled()}>
