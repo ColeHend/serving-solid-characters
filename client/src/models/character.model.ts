@@ -97,4 +97,8 @@ export interface CharacterCurrency {
   copperPieces: number;
 }
 
-export type CharacterForm = Omit<Character,"levels"|"spells"|"race"|"proficiencies"|"health"|"stats"|"items"|"level">
+type halfCharacter = Omit<Character,"levels"|"race"|"spells"|"proficiencies"|"health"|"stats"|"items"|"level"> 
+
+export interface CharacterForm extends halfCharacter {
+  race: string
+}

@@ -69,7 +69,8 @@ const CharacterCreate: Component = () => {
     "subclass": ["", []],
     "background": ["", [Validators.Required]],
     "alignment": ["", []],
-    "languages": [[], [Validators.maxLength(2)]]
+    "languages": [[], [Validators.maxLength(2)]],
+    "race": ["",[]]
   });
 
   // data hooks
@@ -166,20 +167,14 @@ const CharacterCreate: Component = () => {
     }
   })
 
-  // -----name-----
+  // -----Form Data-----
 
-  const characterName = createMemo(()=>newCharStore[0].name);
-
-  const updateName = (name: string) => {
-    const oldName = characterName();
-
-    if (oldName === name) {
-      console.warn("The name didn't change!");
-      return;
-    }
-
-    newCharStore[1]("name",name);
-  }
+  const characterName = createMemo(()=>group.data.name);
+  const characterRace = createMemo(()=>group.data.race);
+  const selectedClass = createMemo(()=>group.data.className);
+  const selectedSubclass =createMemo(()=>group.data.subclass);
+  const charBackground = createMemo(()=>group.data.background);
+  const charAlignment = createMemo(()=>group.data.alignment);
 
   // -----levels-----
 
@@ -240,105 +235,6 @@ const CharacterCreate: Component = () => {
     }
 
     newCharStore[1]("spells",(old)=>[...old,newSpell])
-  }
-
-  // -----races-----
-  const characterRace = createMemo(()=>newCharStore[0].race);
-
-  const updateRace = (species: string, features: FeatureDetail[],subrace?:string,age?: string,size?: string, speed?: string) => {
-    const oldRace = characterRace();
-    const newRace:CharacterRace = {
-      species: species,
-      subrace: subrace ?? "",
-      age: age ?? "",
-      size: size ?? "",
-      speed: speed ?? "",
-      features: features,
-    };
-
-    const differenceCheck = ['species','subrace','age','size','speed','features'].some((key,i)=>{
-      const Key = key as keyof CharacterRace;
-      
-      if (oldRace[Key] === newRace[Key]) {
-        return true // the same
-      } else {
-        return false // not the same
-      }
-    })
-
-    if (!differenceCheck) { 
-      // if its new
-      newCharStore[1]("race",newRace);
-    } else {
-      // if nothing changed
-      console.warn("Race did't change!");
-      return;
-    }
-
-    
-  }
-
-  // -----className-----
-
-  const selectedClass = createMemo(()=>newCharStore[0].className);
-
-  const updateClassName = (class5e: string) => {
-    const oldName = selectedClass().split(",");
-
-    if (oldName.some(x => class5e === x)) {
-      console.warn("names already added!");
-      return;
-    }
-
-    const newName = `${class5e},${oldName.join(",")}` // <--- may or may not work 
-
-    newCharStore[1]("className",newName);
-  }
-
-  // -----subclass-----
-
-  const selectedSubclass =createMemo(()=>newCharStore[0].subclass);
-
-  const updateSubclass = (subclass: string) => {
-    const oldSubclassName = selectedSubclass();
-
-    if (oldSubclassName === subclass) {
-      console.warn("subclass didn't change!");
-      return;
-    }
-
-    newCharStore[1]("subclass",subclass);
-  }
-
-  // -----background-----
-  const charBackground = createMemo(()=>newCharStore[0].background);
-
-  const updateBackground = (background: string) => {
-    const oldBackground = charBackground();
-
-    if (oldBackground === background) {
-      console.warn("background didn't change!");
-      return;
-    }
-
-    newCharStore[1]("background",background);
-  }
-
-  // -----alignment-----
-  const charAlignment = createMemo(()=>newCharStore[0].alignment);
-
-  const updateAlignment = (alignment: string) => {
-    const oldAlignment = charAlignment();
-
-    console.log(oldAlignment);
-    
-
-    if (oldAlignment === alignment) {
-      console.warn("alignment didn't change!");
-      return;
-    }
-
-    newCharStore[1]("alignment",alignment);
   }
 
   // -----languages-----
@@ -685,7 +581,7 @@ const CharacterCreate: Component = () => {
             </FormField>
 
             <FormField name="Alignment" formName="alignment">
-              <Select value={charAlignment()} onChange={(value)=>updateAlignment(value)}>
+              <Select>
                 <For  each={alignments()}>
                   { (alignment) => <Option value={alignment}>{alignment}</Option> }
                 </For>
@@ -697,9 +593,8 @@ const CharacterCreate: Component = () => {
             "flex-direction": "row",
             "margin-top": "1%"
           }}>
-            <FormField name="Species" formName="Species">
-              <Select value={characterRace().species} onChange={(race)=>{
-                  updateRace(race,[],"");
+            <FormField name="Species" formName="race">
+              <Select onChange={()=>{
                   setCharSubrace("");
                 }}>
                 <For each={races()}>
@@ -708,7 +603,7 @@ const CharacterCreate: Component = () => {
               </Select>
             </FormField>
             <FormField name="background" formName="background">
-              <Select value={charBackground()} onChange={(value)=>updateBackground(value)}>
+              <Select>
                 <For each={backgroundNames()}>
                   {(background)=><Option value={background}>{background}</Option>}
                 </For>
