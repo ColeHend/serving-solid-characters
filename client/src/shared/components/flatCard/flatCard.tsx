@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, JSX, Show, splitProps } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, JSX, onCleanup, Show, splitProps } from "solid-js";
 import styles from "./flatCard.module.scss";
 import { Button, Container, Icon } from "coles-solid-library";
 
@@ -27,6 +27,75 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
     const isNoIcon = () => (local.icon === undefined);
     
     const [showCard,setShowCard] = createSignal<boolean>(isStartOpen());
+    const [contentRef, setContentRef] = createSignal<HTMLDialogElement |undefined>();
+
+    // helper to animate open/close using measured height
+    const openAnimated = async () => {
+        setShowCard(true);
+        const el = contentRef();
+        if (!el) return;
+        el.style.removeProperty("transition");
+        // from 0 to measured px
+        el.style.height = "0px";
+        // force reflow
+        void el.offsetHeight;
+        const target = el.scrollHeight + "px";
+        el.style.transition = "height 300ms ease, opacity 200ms ease";
+        el.style.height = target;
+        el.style.opacity = "1";
+        const onEnd = (e: TransitionEvent) => {
+            if (e.propertyName !== "height") return;
+            el.style.height = "auto";
+            el.removeEventListener("transitionend", onEnd);
+        };
+        el.addEventListener("transitionend", onEnd);
+    };
+
+    const closeAnimated = () => {
+        const el = contentRef();
+        
+        if (!el) {
+            setShowCard(false);
+            return;
+        }
+        
+        // from auto to fixed px, then to 0
+        const start = el.scrollHeight + "px";
+        el.style.height = start;
+        // force reflow
+        void el.offsetHeight;
+        el.style.transition = "height 300ms ease, opacity 200ms ease";
+        el.style.height = "0px";
+        el.style.opacity = "0";
+        const onEnd = (e: TransitionEvent) => {
+            if (e.propertyName !== "height") return;
+            el.removeEventListener("transitionend", onEnd);
+            // finally unmount
+            setShowCard(false);
+            // cleanup inline styles
+            el.style.removeProperty("height");
+            el.style.removeProperty("transition");
+            el.style.removeProperty("opacity");
+        };
+        el.addEventListener("transitionend", onEnd);
+    };
+
+    const toggle = () => {
+        if (isAlwaysOpen()) return;
+        if (!showCard()) {
+            openAnimated();
+        } else {
+            closeAnimated();
+        }
+    };
+
+    onCleanup(() => {
+        const el = contentRef();
+        if (el) {
+            el.removeEventListener("transitionend", () => {});
+        }
+    });
+
     createEffect(()=>{
         if (isAlwaysOpen()) {
             setShowCard(true);
@@ -46,14 +115,20 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
             <div>
                 {local.extraHeaderJsx}
                 <Show when={!isAlwaysOpen()}>
-                    <Button borderTheme="none" onClick={()=>setShowCard(old=>!old)}>
+                    <Button borderTheme="none" onClick={toggle}>
                         {!showCard() ? <Icon name="add"/> : <Icon name="remove" />}
                     </Button>
                 </Show>
             </div>
         </div>
         <Show when={showCard()}>
-            <div class={`${styles.cardContent}`}>{local.children}</div>
+            <div 
+                class={`${styles.cardContent}`} 
+                ref={setContentRef}
+                aria-hidden={!showCard()}
+            >
+                {local.children}
+            </div>
         </Show>
     </Container>
 }

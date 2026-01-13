@@ -4,7 +4,7 @@ import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/clas
 import { Class5E, Race } from "../../../models/data";
 import { charClasses } from "./classesSection/classesSection";
 
-export function toCharacter5e(form: CharacterForm,formSpells: string[],charClasses: Accessor<string[]>, classLevel: [Accessor<Record<string, number>>,Setter<Record<string, number>>],currRace:Accessor<Race>,currSubrace: Accessor<string>) {
+export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]>, classLevel: [Accessor<Record<string, number>>,Setter<Record<string, number>>],currRace:Accessor<Race>,currSubrace: Accessor<string>) {
     
     if (currSubrace() === "-"|| "") return new Character();
 
@@ -67,14 +67,14 @@ export function toCharacter5e(form: CharacterForm,formSpells: string[],charClass
     })
 
     // spells map
-    const spells: CharacterSpell[] = [];
+    // const spells: CharacterSpell[] = [];
 
-    if (formSpells.length > 0) {
-        formSpells.forEach(formSpell => spells.push({
-            name: formSpell.trim(),
-            prepared: false
-        }))
-    }
+    // if (formSpells.length > 0) {
+    //     formSpells.forEach(formSpell => spells.push({
+    //         name: formSpell.trim(),
+    //         prepared: false
+    //     }))
+    // }
     
     // create race map
     const race: CharacterRace = {
@@ -93,7 +93,7 @@ export function toCharacter5e(form: CharacterForm,formSpells: string[],charClass
         name: form.name.trim(),
         level: charLevels.length,
         levels: charLevels,
-        spells: spells,
+        spells: [],
         race: race,
         className: form.className.trim(),
         subclass: form.subclass.trim(),
@@ -236,6 +236,13 @@ export function toCharacter5e(form: CharacterForm,formSpells: string[],charClass
             "Component Pouch",
             "Explorer's Pack",
             ],
+            currency: {
+                platinumPieces: 0,
+                goldPieces: 0,
+                electrumPieces: 0,
+                sliverPieces: 0,
+                copperPieces: 0,
+            },
             equipped: ["Quarterstaff", "Spellbook"],
             attuned: ["Ring of Protection"],
         },

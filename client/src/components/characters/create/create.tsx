@@ -23,7 +23,7 @@ import {
   Option,
   ChipType
 } from "coles-solid-library";
-import { Character, CharacterForm, CharacterLevel, CharacterRace } from "../../../models/character.model";
+import { Character, CharacterForm, CharacterLevel, CharacterRace, CharacterSpell } from "../../../models/character.model";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
 import { toCharacter5e } from "./characterMapper";
 import { SpellsSection } from "./spellsSection/spellsSection";
@@ -32,7 +32,7 @@ import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/s
 import { useSearchParams } from "@solidjs/router";
 import { characterManager, Clone } from "../../../shared";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
-import { Class5E, Race } from "../../../models/data";
+import { Class5E, FeatureDetail, Race, Spell } from "../../../models/data";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { createStore } from "solid-js/store";
 import { ClassesSection } from "./classesSection/classesSection";
@@ -47,7 +47,16 @@ import { ItemSection } from "./itemSection/itemSection";
 import { getStatBonus } from "../../../shared/customHooks/utility/tools/characterTools";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 
-type GenMethod = "Standard Array"|"Custom Standard Array"|"Manual/Rolled"|"Point Buy"|"Extended Point Buy";
+export type GenMethod = "Standard Array"|"Custom Standard Array"|"Manual/Rolled"|"Point Buy"|"Extended Point Buy";
+
+export type charStats = {
+  str: number;
+  dex: number;
+  con: number;
+  int: number;
+  wis: number;
+  cha: number;
+}
 
 const CharacterCreate: Component = () => {
   const [userSettings,] = getUserSettings();
@@ -73,7 +82,6 @@ const CharacterCreate: Component = () => {
   const items = useDnDItems();
 
   // signals
-  const [knownSpells,setKnownSpells] = createSignal<string[]>([]);
   const [chips, setChips] = createSignal<ChipType[]>([]);
   const [charClasses,setCharClasses] = createSignal<string[]>([]);
   const [classLevels,setClassLevels] = createSignal<Record<string, number>>({});
@@ -158,16 +166,255 @@ const CharacterCreate: Component = () => {
     }
   })
 
-  // memos
-  const characterName = createMemo(()=>newCharStore[0].name);
-  const selectedClass = createMemo(()=>newCharStore[0].className);
-  const selectedSubclass =createMemo(()=>newCharStore[0].subclass);
-  const subclassNames = createMemo<string[]>(()=>{
-    const filteredSubclasses = subClasses().filter(sc => sc.parentClass === selectedClass());
+  // -----name-----
 
-    return filteredSubclasses.flatMap(sc => sc.name);
-  });
+  const characterName = createMemo(()=>newCharStore[0].name);
+
+  const updateName = (name: string) => {
+    const oldName = characterName();
+
+    if (oldName === name) {
+      console.warn("The name didn't change!");
+      return;
+    }
+
+    newCharStore[1]("name",name);
+  }
+
+  // -----levels-----
+
+  const updateLevels = () => {
+
+    // const charLevels: CharacterLevel[] = [];
+    
+    // const fulllevel = createMemo(()=>{
+    //     let toreturn = 0;
+    //     charClasses().forEach(value => toreturn += getCharacterLevel(value));
+
+    //     return toreturn
+    // })
+
+    // let level = 1;
+
+    // charClasses().forEach((charClass)=>{
+    //     const class5e = getClass(charClass);
+        
+
+    //     for (let index = 1; index < fulllevel() - 1 && index < getCharacterLevel(charClass); index++) {
+    //     charLevels.push({
+    //         class: charClass,
+    //         subclass: "",
+    //         level: level,
+    //         hitDie: hitDieToNumber(class5e.hitDie),
+    //         features: [...class5e?.features?.[index] ?? []]
+    //     })
+    //     level += 1;
+        
+    //     }
+    // })
+
+    // newCharStore[1]("levels",charLevels);
+    // newCharStore[1]("level" as any, charLevels.length);
+  
+
+    // change function to add one level propably rename it to add level then create another function to remove an level.
+    // inside class component change logic to add or remove class levels.
+    
+
+  }
+
+  // -----spells-----
+  const characterSpells = createMemo(()=>newCharStore[0].spells);
+
+  const updateSpells = (spell: Spell) => {
+    const newSpell: CharacterSpell = {
+      name: spell.name,
+      prepared: false,
+    }
+
+    const oldSpells = characterSpells();
+
+    if (oldSpells.includes(newSpell)) {
+      console.warn("Spell already added!");
+      return;
+    }
+
+    newCharStore[1]("spells",(old)=>[...old,newSpell])
+  }
+
+  // -----races-----
+  const characterRace = createMemo(()=>newCharStore[0].race);
+
+  const updateRace = (species: string, features: FeatureDetail[],subrace?:string,age?: string,size?: string, speed?: string) => {
+    const oldRace = characterRace();
+    const newRace:CharacterRace = {
+      species: species,
+      subrace: subrace ?? "",
+      age: age ?? "",
+      size: size ?? "",
+      speed: speed ?? "",
+      features: features,
+    };
+
+    const differenceCheck = ['species','subrace','age','size','speed','features'].some((key,i)=>{
+      const Key = key as keyof CharacterRace;
+      
+      if (oldRace[Key] === newRace[Key]) {
+        return true // the same
+      } else {
+        return false // not the same
+      }
+    })
+
+    if (!differenceCheck) { 
+      // if its new
+      newCharStore[1]("race",newRace);
+    } else {
+      // if nothing changed
+      console.warn("Race did't change!");
+      return;
+    }
+
+    
+  }
+
+  // -----className-----
+
+  const selectedClass = createMemo(()=>newCharStore[0].className);
+
+  const updateClassName = (class5e: string) => {
+    const oldName = selectedClass().split(",");
+
+    if (oldName.some(x => class5e === x)) {
+      console.warn("names already added!");
+      return;
+    }
+
+    const newName = `${class5e},${oldName.join(",")}` // <--- may or may not work 
+
+    newCharStore[1]("className",newName);
+  }
+
+  // -----subclass-----
+
+  const selectedSubclass =createMemo(()=>newCharStore[0].subclass);
+
+  const updateSubclass = (subclass: string) => {
+    const oldSubclassName = selectedSubclass();
+
+    if (oldSubclassName === subclass) {
+      console.warn("subclass didn't change!");
+      return;
+    }
+
+    newCharStore[1]("subclass",subclass);
+  }
+
+  // -----background-----
+  const charBackground = createMemo(()=>newCharStore[0].background);
+
+  const updateBackground = (background: string) => {
+    const oldBackground = charBackground();
+
+    if (oldBackground === background) {
+      console.warn("background didn't change!");
+      return;
+    }
+
+    newCharStore[1]("background",background);
+  }
+
+  // -----alignment-----
+  const charAlignment = createMemo(()=>newCharStore[0].alignment);
+
+  const updateAlignment = (alignment: string) => {
+    const oldAlignment = charAlignment();
+
+    console.log(oldAlignment);
+    
+
+    if (oldAlignment === alignment) {
+      console.warn("alignment didn't change!");
+      return;
+    }
+
+    newCharStore[1]("alignment",alignment);
+  }
+
+  // -----languages-----
+
+  const characterLanguages = createMemo(()=>newCharStore[0].languages);
+
+  const updateLanguages = (languages: string[]) => {
+    const oldLanguages = characterLanguages();
+
+    
+    if (languages.some(lang => oldLanguages.includes(lang))) {
+      console.warn("Languages didn't change!");
+      return;
+    }
+
+    newCharStore[1]("languages",(old)=>[...old,...languages]);
+  }
+
+  // -----Hitpoints-----
+  const charMaxHP = createMemo(()=>newCharStore[0].health.max);
+
+  const updateMaxHP = (hp: number,) => {
+    const oldMax = charMaxHP();
+
+    if (oldMax === hp) {
+      console.warn("HP didn't change!");
+      return;
+    }
+
+    newCharStore[1]("health",(old) => ({
+      max: hp,
+      current: old.current,
+      temp: old.temp
+    }))
+  };
+
+  // -----Stats------
+  const characterStats = createMemo(()=>newCharStore[0].stats);
+
+  const updateStats = (stats: charStats) => {
+    const oldStats = characterStats();
+
+    // update stats
+    ['str','dex','con','int','wis','cha'].forEach((stat)=>{
+      if (oldStats[stat as keyof charStats] !== stats[stat as keyof charStats]) {
+        newCharStore[1]("stats",(old)=>({
+        ...old,
+        [stat]: stats[stat as keyof charStats],
+      }))
+      }
+    })
+
+  };
+
+  // -----Gear-----
+  const characterInventory = createMemo(()=>newCharStore[0].items.inventory);
+  const characterEquipped = createMemo(()=>newCharStore[0].items.equipped);
+  const characterAttuned = createMemo(()=>newCharStore[0].items.attuned);
+  const characterCurrency = createMemo(()=>newCharStore[0].items.currency);
+
+  const updateInventory = (items: string[]) => {
+
+    newCharStore[1]("items", (old) => ({
+      inventory: items,
+      equipped: old.equipped,
+      attuned: old.attuned,
+      currency: old.currency
+    }))
+  }
+
+
+
+  // memos
+
   const classNames = createMemo<string[]>(()=>classes().flatMap(c => c.name));
+ 
   const alignments = createMemo<string[]>(()=>[
     "lawful good",
     "neutral good",
@@ -179,7 +426,9 @@ const CharacterCreate: Component = () => {
     "neutral evil",
     "chaotic evil",
   ])
+ 
   const backgroundNames = createMemo<string[]>(()=>backgrounds().flatMap(b => b.name));
+ 
   const selectedClasses = createMemo(()=>{
     const toReturn:Class5E[] = [];
 
@@ -189,7 +438,9 @@ const CharacterCreate: Component = () => {
 
     return [];
   })
+
   const exist = createMemo(()=>characterManager.characters().some(c => c.name.toLowerCase() === (characterName() || '').toLowerCase()))
+  
   const hasSpells = createMemo(()=>{
     const filterdSpells = spells().filter(s => selectedClasses().some(c => s.classes.includes(c.name)));
     const subclassSpells = spells().filter(s => s.subClasses.includes(selectedSubclass()));
@@ -199,6 +450,7 @@ const CharacterCreate: Component = () => {
 
     return allSpells.length > 0 ? true : false;
   })
+  
   const isDisabled = createMemo<boolean>(()=>{
     const name = group.hasError("name");
     const className = group.hasError("className");
@@ -215,9 +467,11 @@ const CharacterCreate: Component = () => {
 
     return false;
   })
+
   const selectedRace = createMemo<Race|null>(()=>{
     return races().find(r => r.name === charRace()) ?? null;
   })
+
   const selectedBackground = createMemo(()=>{
     return backgrounds().find(b => b.name === newCharStore[0].background);
   })
@@ -232,12 +486,12 @@ const CharacterCreate: Component = () => {
     group.set("background", '');
     group.set("alignment", '');
     group.set("languages", []);
-    setKnownSpells([]);
     setCharRace("");
     setClassLevels({});
     setCharClasses([]);
     clearStore();
   }
+
   const handleSubmit = (data: CharacterForm) => {
     addSnackbar({
       message: "Saving Character",
@@ -268,7 +522,7 @@ const CharacterCreate: Component = () => {
       return;
     }
 
-    const adapted = toCharacter5e(fullData,knownSpells(),charClasses,[classLevels,setClassLevels],selectedRace as any,charSubrace)  
+    const adapted = toCharacter5e(fullData,charClasses,[classLevels,setClassLevels],selectedRace as any,charSubrace)  
 
     const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
     
@@ -301,6 +555,7 @@ const CharacterCreate: Component = () => {
       resetForm();
     }
   }
+
   const clearStore = () => {
     newCharStore[1]("name", `New character[${characterManager.characters().length + 1}]`);
     newCharStore[1]("className", "");
@@ -316,8 +571,25 @@ const CharacterCreate: Component = () => {
   
       return classLevels()[className] ?? 0;
   }
+
   const setCharacterLevel = (className: string, level: number): void => {
       setClassLevels(old => ({...old,[className]: level}));
+  }
+
+  const hitDieToNumber = (hitdie:string): number => {
+        switch (hitdie) {
+            case "d12":
+                return 12;
+            case "d10":
+                return 10;
+            case "d8":
+                return 8;
+            case "d6":
+                return 6;
+
+            default:
+                return 0;
+        }
   }
 
   const getClass = (className: string): Class5E => {
@@ -360,10 +632,10 @@ const CharacterCreate: Component = () => {
 
       setCharRace(character.race.species);
       setCharSubrace(character.race.subrace ?? "");
-      setKnownSpells(character.spells.flatMap(s => s.name));
-      knownSpells().forEach(spell => setChips(old=>[...old,{
+      // setKnownSpells(character.spells.flatMap(s => s.name));
+      newCharStore[0].spells.forEach(spell => setChips(old=>[...old,{
         key: "",
-        value: spell
+        value: spell.name
       }]))
     }
   }
@@ -382,6 +654,9 @@ const CharacterCreate: Component = () => {
 
   createEffect(()=>{
     if(characterName() !== "") setSearchParams({ name: characterName()});
+
+    console.log(`${newCharStore[0].name}`,newCharStore[0]);
+    
   })
 
   return (
@@ -395,16 +670,13 @@ const CharacterCreate: Component = () => {
         } alwaysOpen>
           <div class={`${styles.SectionBody}`}>
             <FormField name="Name" formName="name">
-              <Input 
-              value={newCharStore[0].name} 
-              onInput={(e)=>newCharStore[1]("name",e.currentTarget.value)}/>
+              <Input />
             </FormField>
 
             <FormField name="Initial Class" formName="className">
-              <Select value={newCharStore[0].className} onChange={(value)=>{
-                newCharStore[1]("className",value);
+              <Select onChange={()=>{
                 setClassLevels({});
-                setCharClasses([value]);
+                setCharClasses([group.data.className]);
               }}>
                 <For each={classNames()}>
                   {(className) => <Option value={className}>{className}</Option>}
@@ -413,7 +685,7 @@ const CharacterCreate: Component = () => {
             </FormField>
 
             <FormField name="Alignment" formName="alignment">
-              <Select value={newCharStore[0].alignment} onChange={(value)=>newCharStore[1]("alignment",value)}>
+              <Select value={charAlignment()} onChange={(value)=>updateAlignment(value)}>
                 <For  each={alignments()}>
                   { (alignment) => <Option value={alignment}>{alignment}</Option> }
                 </For>
@@ -426,8 +698,8 @@ const CharacterCreate: Component = () => {
             "margin-top": "1%"
           }}>
             <FormField name="Species" formName="Species">
-              <Select value={charRace()} onChange={(race)=>{
-                  setCharRace(race);
+              <Select value={characterRace().species} onChange={(race)=>{
+                  updateRace(race,[],"");
                   setCharSubrace("");
                 }}>
                 <For each={races()}>
@@ -436,7 +708,7 @@ const CharacterCreate: Component = () => {
               </Select>
             </FormField>
             <FormField name="background" formName="background">
-              <Select value={newCharStore[0].background} onChange={(value)=>newCharStore[1]("background",value)}>
+              <Select value={charBackground()} onChange={(value)=>updateBackground(value)}>
                 <For each={backgroundNames()}>
                   {(background)=><Option value={background}>{background}</Option>}
                 </For>
@@ -445,11 +717,11 @@ const CharacterCreate: Component = () => {
           </div>
         </FlatCard>
         
-        <Show when={newCharStore[0].className !== ""}>
+        <Show when={selectedClass() !== ""}>
           <ClassesSection 
             charClasses={[charClasses, setCharClasses]}
             classLevels={[classLevels, setClassLevels]}
-            knSpells={[knownSpells, setKnownSpells]}
+            character={newCharStore}
             selectedSubclass={selectedSubclass}
           />
         </Show>
@@ -473,10 +745,8 @@ const CharacterCreate: Component = () => {
         />
 
         <Show when={newCharStore[0].className !== "" && hasSpells()}>
-          <SpellsSection 
-            knSpells={[knownSpells,setKnownSpells]} 
-            selectedClasses={selectedClasses} 
-            selectedSubclass={selectedSubclass}
+          <SpellsSection
+            character={newCharStore}
           />
         </Show>
 

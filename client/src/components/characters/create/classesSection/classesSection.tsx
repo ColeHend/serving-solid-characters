@@ -12,6 +12,8 @@ import SpellModal from "../../../../shared/components/modals/spellModal/spellMod
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import getSpellAndCasterLevel from "../../../../shared/customHooks/utility/tools/getSpellAndCasterLevel";
 import { aL } from "vitest/dist/chunks/reporters.d.BFLkQcL6";
+import { Character } from "../../../../models/character.model";
+import { SetStoreFunction } from "solid-js/store";
 
 export type charClasses = {
   className: string;
@@ -21,7 +23,7 @@ export type charClasses = {
 interface sectionProps {
   charClasses: [Accessor<string[]>,Setter<string[]>];
   classLevels: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
-  knSpells: [Accessor<string[]>,Setter<string[]>];
+  character: [get: Character, set: SetStoreFunction<Character>];
   selectedSubclass: Accessor<string>;
 }
 
@@ -29,9 +31,14 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const classes = useDnDClasses();
   const srdSpells = useDnDSpells();
 
-  const [knownSpells,setKnownSpells] = props.knSpells;
-  const [classLevels, setClassLevels] = props.classLevels;
-  const [charClasses, setCharClasses] = props.charClasses;
+  const [newCharacter, setNewCharacer] = props.character;
+
+  const character = createMemo(()=>newCharacter);
+
+  const charSpells = createMemo(()=>character().spells);
+
+  const [classLevels, setClassLevels] = props.classLevels; 
+  const [charClasses, setCharClasses] = props.charClasses; 
 
   const [showAddClass,setShowAddClass] = createSignal<boolean>(false);
   const [activeTab, setActiveTab] = createSignal<Record<string, number>>({});
@@ -109,7 +116,13 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   
 
   const isLearned = (spellName: string) => {
-    return knownSpells().includes(spellName);
+    // return charSpells().includes(spellName);
+
+    if (charSpells().some(x=>x.name.includes(spellName))) {
+      return true
+    } else {
+      return false
+    }
   }
 
   const filterdSpells = (className: string) => {
@@ -301,14 +314,16 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                           {(spell)=><span>
                               <Show when={!isLearned(spell.name)}>
                                   <Button class={`${styles.LearnBtn}`} onClick={()=>{
-                                      setKnownSpells(old=>[...old,spell.name])
+                                      setNewCharacer('spells',(old)=>{
+                                        return [...old, {name: spell.name, prepared: false}]
+                                      })
                                   }}>
                                       <Icon name="add"/> Learn
                                   </Button>
                               </Show>
                               <Show when={isLearned(spell.name)}>
                                   <Button class={`${styles.LearnBtn}`} onClick={()=>{
-                                      setKnownSpells(old=>old.filter(s=>s !== spell.name));
+                                      setNewCharacer('spells',(old)=>old.filter(s=>s.name !== spell.name));
                                   }}>
                                       <Icon name="remove" /> Delete
                                   </Button>
