@@ -31,6 +31,7 @@ builder.Services.AddTransient<IUserMapper, UserMapper>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ITokenRepository, TokenRepository>();
 builder.Services.AddTransient<ISrdInfoRepository, SrdInfoRepository>();
+builder.Services.AddTransient<HttpClient>();
 
 // ----- Add Database Stuff ----
 // Select which named connection string to use (default localDefault). Override in container with env var DB_CONNECTION_NAME=work
