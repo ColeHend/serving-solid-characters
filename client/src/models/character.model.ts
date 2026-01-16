@@ -97,8 +97,27 @@ export interface CharacterCurrency {
   copperPieces: number;
 }
 
-type halfCharacter = Omit<Character,"levels"|"race"|"spells"|"proficiencies"|"health"|"stats"|"items"|"level"> 
+type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"> 
 
 export interface CharacterForm extends halfCharacter {
-  race: string
+  race: string;
+  maxHP: number;
+  currentHP: number;
+  tempHP: number;
+  inventory: string[];
+  equipped: string[];
+  attuned: string[];
+  PP: number;
+  GP: number;
+  EP: number;
+  SP: number;
+  CP: number;
+  STR: number;
+  DEX: number;
+  CON: number;
+  INT: number;
+  WIS: number;
+  CHA: number;
+  spells: string[];
+  lineage: string
 }

@@ -4,15 +4,23 @@ import { Background } from "../../../../models/data";
 import { Markdown } from "../../../../shared";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import styles from "./backgroundSection.module.scss";
+import { FormGroup } from "coles-solid-library";
+import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
-    background: Accessor<Background>;
+    srdBackgrounds: Accessor<Background[]>;
+    formGroup: FormGroup<CharacterForm>;
 }
 
 export const BackgroundSection:Component<sectionProps> = (props) => {
     const feats = useDnDFeats();
+    const srdBackgrounds = createMemo(()=>props.srdBackgrounds());
 
-    const selBackground = createMemo(()=>props.background());
+    const form = createMemo(()=>props.formGroup);
+
+    const selBackgroundName = createMemo(()=>form().get().background);
+
+    const selBackground = createMemo(()=>srdBackgrounds().find((background, i)=>background.name === selBackgroundName()) ?? {} as Background);
 
     const langs = createMemo(()=>selBackground()?.languages?.options || []);
     const features = createMemo(()=>selBackground()?.features || []);

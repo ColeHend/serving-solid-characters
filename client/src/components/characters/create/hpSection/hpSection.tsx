@@ -1,16 +1,17 @@
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { FormField, Input } from "coles-solid-library";
+import { FormField, FormGroup, Input } from "coles-solid-library";
 import { getStatBonus } from "../../../../shared/customHooks/utility/tools/characterTools";
 import styles from "./hpSection.module.scss";
+import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
     currentClass: Accessor<string>;
-    maxHP: [Accessor<number>, Setter<number>];
     classLevels: [Accessor<Record<string, number>>,Setter<Record<string, number>>];
     classNames: Accessor<string[]>;
     stat: Accessor<Record<string, number>>;
     mod: Accessor<Record<string, number>>;
+    form: FormGroup<CharacterForm>;
 }
 
 export const HitPointSection:Component<sectionProps> = (props) => {
@@ -19,7 +20,7 @@ export const HitPointSection:Component<sectionProps> = (props) => {
     const stat = createMemo(()=>props.stat());
     const mod = createMemo(()=>props.mod());
 
-    const [maxHP, setMaxHP] = props.maxHP;
+    const maxHP = createMemo(()=>props.form.get().maxHP);
     const [classLevels,setClassLevels] = props.classLevels;
 
     const getHitDie = (name?: string) => {
@@ -66,7 +67,7 @@ export const HitPointSection:Component<sectionProps> = (props) => {
         return getStatBonus(theStat + theMod);
    }
 
-   const health = createMemo(()=>maxHP() + getConMod());
+   const health = createMemo(()=>Math.floor(+maxHP() + +getConMod()));
 
     return <FlatCard icon="health_and_safety" headerName={`Hit Points: ${health()}`}>
         <div>
@@ -96,9 +97,11 @@ export const HitPointSection:Component<sectionProps> = (props) => {
             </div>
         </div>
         <div class={`${styles.hpInput}`}>
-            <FormField name="health">
-                <Input type="number" min={1} value={maxHP()} onInput={(e)=>setMaxHP(+e.currentTarget.value)}/>
+            <FormField name="health" formName="maxHP">
+                <Input type="number" min={1} />
             </FormField>
         </div>
+
+        {props.form.get().maxHP}
     </FlatCard>
 } 

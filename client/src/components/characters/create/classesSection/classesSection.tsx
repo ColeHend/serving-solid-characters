@@ -1,4 +1,4 @@
-import { Button, ExpansionPanel, Select, Option, TabBar, Cell, Column, Header, Icon, Row, Table } from "coles-solid-library";
+import { Button, ExpansionPanel, Select, Option, TabBar, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField } from "coles-solid-library";
 import { range } from "rxjs";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
@@ -12,8 +12,7 @@ import SpellModal from "../../../../shared/components/modals/spellModal/spellMod
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import getSpellAndCasterLevel from "../../../../shared/customHooks/utility/tools/getSpellAndCasterLevel";
 import { aL } from "vitest/dist/chunks/reporters.d.BFLkQcL6";
-import { Character } from "../../../../models/character.model";
-import { SetStoreFunction } from "solid-js/store";
+import { Character, CharacterForm } from "../../../../models/character.model";
 
 export type charClasses = {
   className: string;
@@ -23,7 +22,8 @@ export type charClasses = {
 interface sectionProps {
   charClasses: [Accessor<string[]>,Setter<string[]>];
   classLevels: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
-  character: [get: Character, set: SetStoreFunction<Character>];
+  knownSpells: [Accessor<string[]>, Setter<string[]>];
+  formGroup: FormGroup<CharacterForm>;
   selectedSubclass: Accessor<string>;
 }
 
@@ -31,12 +31,13 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const classes = useDnDClasses();
   const srdSpells = useDnDSpells();
 
-  const [newCharacter, setNewCharacer] = props.character;
+  const group = createMemo(()=>props.formGroup); 
 
-  const character = createMemo(()=>newCharacter);
-
-  const charSpells = createMemo(()=>character().spells);
-
+  
+  const [knownSpells, setKnownSpells] = props.knownSpells;
+  
+  const charSpells = createMemo(()=>knownSpells());
+  
   const [classLevels, setClassLevels] = props.classLevels; 
   const [charClasses, setCharClasses] = props.charClasses; 
 
@@ -118,7 +119,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const isLearned = (spellName: string) => {
     // return charSpells().includes(spellName);
 
-    if (charSpells().some(x=>x.name.includes(spellName))) {
+    if (charSpells().some(x=>x.includes(spellName))) {
       return true
     } else {
       return false
@@ -190,6 +191,10 @@ export const ClassesSection: Component<sectionProps> = (props) => {
       totalLevel += level -1
     })
 
+    if (totalLevel === -1) {
+      return 0;
+    }
+
     return totalLevel;
   })
 
@@ -232,18 +237,17 @@ export const ClassesSection: Component<sectionProps> = (props) => {
             }>
               <div class={`${styles.classHeader}`}>
                 
-
-                <Select
-                  value={getCharacterLevel(charLevel)}
-                  onSelect={(value) =>
-                    setCharacterLevel(charLevel, value)
-                  }
-                  class={`${styles.levelSelect}`}
-                >
-                  <For each={levels()}>
-                    {(level) => <Option value={level + 1}>{level}</Option>}
-                  </For>
-                </Select>
+                  <Select
+                    value={getCharacterLevel(charLevel)}
+                    onSelect={(value) =>
+                      setCharacterLevel(charLevel, value)
+                    }
+                    class={`${styles.levelSelect}`}
+                  >
+                    <For each={levels()}>
+                      {(level) => <Option value={level + 1}>{level}</Option>}
+                    </For>
+                  </Select>
               </div>
               <div class={`${styles.TabBar}`} style={{}}>
                 <Button onClick={()=>getTab(charLevel) === 0 ? setTab(charLevel,-1) :setTab(charLevel,0)} transparent>Features <Show when={getTab(charLevel) === 0} fallback={"↑"}>↓</Show></Button>
@@ -314,16 +318,14 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                           {(spell)=><span>
                               <Show when={!isLearned(spell.name)}>
                                   <Button class={`${styles.LearnBtn}`} onClick={()=>{
-                                      setNewCharacer('spells',(old)=>{
-                                        return [...old, {name: spell.name, prepared: false}]
-                                      })
+                                      setKnownSpells(old=>[...old,spell.name])
                                   }}>
                                       <Icon name="add"/> Learn
                                   </Button>
                               </Show>
                               <Show when={isLearned(spell.name)}>
                                   <Button class={`${styles.LearnBtn}`} onClick={()=>{
-                                      setNewCharacer('spells',(old)=>old.filter(s=>s.name !== spell.name));
+                                    setKnownSpells(old=>old.filter(s=>s !== spell.name));
                                   }}>
                                       <Icon name="remove" /> Delete
                                   </Button>

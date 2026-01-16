@@ -10,7 +10,9 @@ interface sectionProps {
 
 export const LanguageSection:Component<sectionProps> = (props) => {
 
-    const lanugaes = createMemo<string[]>(()=>[
+    const form = createMemo(()=>props.group);
+
+    const languages = createMemo<string[]>(()=>[
         "Undercommon",
         "Abyssal",
         "Infernal",
@@ -28,8 +30,10 @@ export const LanguageSection:Component<sectionProps> = (props) => {
         "Deep Speech",
     ])
 
+    const hasError = createMemo(()=>form().hasError("languages"));
+
     const getLanguages = ():string[] => {
-        return props.group.get("languages");
+        return form().get().languages;
     }
 
     return <FlatCard icon="chat" headerName={<div>
@@ -43,13 +47,20 @@ export const LanguageSection:Component<sectionProps> = (props) => {
             <div class={`${styles.langSelect}`}>
                 <FormField name="Languages" formName="languages">
                     <Select multiple>
-                        <For each={lanugaes()}>
+                        <For each={languages()}>
                             {(lang)=><Option value={lang}>
                                 {lang}
                             </Option>}
                         </For>
                     </Select>
                 </FormField>
+            </div>
+
+            <div class={`${styles.errorMessage}`}>
+                <Show when={hasError()}>
+                    You can't select more than three languages! remember it's common plus two more.
+                    
+                </Show>
             </div>
         </div>
     </FlatCard>

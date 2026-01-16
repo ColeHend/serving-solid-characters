@@ -1,25 +1,24 @@
-import { Chip } from "coles-solid-library"
-import { Component, createMemo, createSignal, Show, For } from "solid-js"
+import { Chip, FormGroup } from "coles-solid-library"
+import { Component, createMemo, createSignal, Show, For, Accessor, Setter } from "solid-js"
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard"
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../../models/data"
-import { Character } from "../../../../models/character.model";
+import { Character, CharacterForm } from "../../../../models/character.model";
 import styles from "./spellsSection.module.scss";
 import SpellModal from "../../../../shared/components/modals/spellModal/spellModal.component";
 import { SetStoreFunction } from "solid-js/store";
 interface SectionProps {
-    character: [get: Character, set: SetStoreFunction<Character>];
+    spells: [Accessor<string[]>, Setter<string[]>];
 }
 
 export const SpellsSection:Component<SectionProps> = (props) => {
-    const [character,setCharacter] = props.character;
 
-    const Character = createMemo(()=>character);
+    const [knownSpells,setKnownSpells] = props.spells;
 
-    const characterSpells = createMemo(()=>Character().spells);
+    const characterSpells = createMemo(()=>knownSpells());
 
     const removeSpell = (spell: string) => {
-        setCharacter("spells", old => old.filter(old=>old.name !== spell));
+        setKnownSpells((old)=>old.filter(old=>old !== spell))
     }
 
     const srdSpells = useDnDSpells();
@@ -59,15 +58,15 @@ export const SpellsSection:Component<SectionProps> = (props) => {
     return <FlatCard icon="book_ribbon" headerName={`Spells (${characterSpells().length})`}>
         <div class={`${styles.spellChips}`}>
             <For each={characterSpells()}>
-                {(spell) => <Chip value={spell.name} onClick={(()=>{
-                    const Spell = getSpell(spell.name);
+                {(spell) => <Chip value={spell} onClick={(()=>{
+                    const Spell = getSpell(spell);
 
                     if (Spell) {
                         setSelectedSpell(Spell);
                         setShowSpellModal(old => !old);
                     }
                 })}
-                remove={()=>removeSpell(spell.name)}/>}
+                remove={()=>removeSpell(spell)}/>}
             </For>
         </div>
        

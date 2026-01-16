@@ -1,18 +1,19 @@
 import { Accessor, Component, createMemo, For, Setter, Show, Switch, Match, createSignal, createEffect } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { Background, ChoiceDetail, Class5E, Item, Race } from "../../../../models/data";
-import { Button, Checkbox, Chip, FormField, Input } from "coles-solid-library";
+import { Button, Checkbox, Chip, FormField, FormGroup, Input } from "coles-solid-library";
 import styles from "./itemSection.module.scss";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
+import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
     inventory: [Accessor<string[]>, Setter<string[]>];
     equipped: [Accessor<string[]>, Setter<string[]>];
     attuned: [Accessor<string[]>, Setter<string[]>];
-    currecy: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
     allItems: Accessor<Item[]>;
     class5e: Accessor<string>;
     background: Accessor<Background>;
+    form: FormGroup<CharacterForm>;
 }
 
 export const ItemSection:Component<sectionProps> = (props) => {
@@ -20,7 +21,6 @@ export const ItemSection:Component<sectionProps> = (props) => {
     const [inventory,setInventory] = props.inventory;
     const [equipped, setEquipped] = props.equipped;
     const [attuned, setAttuned] = props.attuned;
-    const [currency, setCurrency] = props.currecy;
     const [isItems, setIsItems] = createSignal<boolean>(true);
 
     const background = createMemo(()=>props.background());
@@ -31,7 +31,7 @@ export const ItemSection:Component<sectionProps> = (props) => {
 
 
     const classStartItems = createMemo(()=>class5e()?.choices?.[class5e()?.startChoices?.equipment ?? ""].options ?? []);
-    const backgroundStartItems = createMemo(()=>background().startEquipment)
+    const backgroundStartItems = createMemo(()=>background()?.startEquipment ?? [])
 
     const currencies = ["PP","GP","EP","SP","CP"];
 
@@ -74,14 +74,6 @@ export const ItemSection:Component<sectionProps> = (props) => {
             default:
                 return "#888888"; // fallback neutral color
         }
-    }
-
-    const getMoney = (type: string) => {
-        return currency()[type];
-    }
-
-    const setMoney = (type: string, value: number) => {
-        setCurrency(old => ({...old,[type]:value}));
     }
 
     createEffect(()=>{
@@ -130,7 +122,9 @@ export const ItemSection:Component<sectionProps> = (props) => {
             </For>
         </FlatCard>
         <FlatCard headerName={<strong>Add Item</strong>}>
-
+                <div>
+                    test: {props.form.get().PP};
+                </div>
         </FlatCard>
         <FlatCard headerName={<strong>Currency</strong>}>
             <div class={`${styles.moneySection}`}>
@@ -143,7 +137,7 @@ export const ItemSection:Component<sectionProps> = (props) => {
                             </span>
                             <span class={`${styles.moneyInput}`}>
                                 <FormField name={`${currency}`} formName={currency}>
-                                    <Input type="number" value={getMoney(currency)} onInput={(e)=>setMoney(currency,+e.currentTarget.value)} transparent/>
+                                    <Input type="number" transparent/>
                                 </FormField>
                             </span>
                         </div>

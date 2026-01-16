@@ -2,29 +2,36 @@ import { Accessor, Component, createMemo, For, onMount, Setter, Show } from "sol
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { AbilityScores, Race, Subrace } from "../../../../models/data";
 import styles from "./raceSection.module.scss";
-import { FormField, Select, Option, ExpansionPanel } from "coles-solid-library";
+import { FormField, Select, Option, ExpansionPanel, FormGroup } from "coles-solid-library";
 import { useDnDSubraces } from "../../../../shared/customHooks/dndInfo/info/all/subraces";
+import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
-    selectedRace: Accessor<Race>;
     subraces: Accessor<Subrace[]>;
-    charSubrace: [Accessor<string>,Setter<string>];
+    races: Accessor<Race[]>;
+    formGroup: FormGroup<CharacterForm>;
 }
 
 export const RaceSection:Component<sectionProps> = (props) => {
-    const [charSubrace, setCharSubrace] = props.charSubrace;
 
-    const race = createMemo(()=>props.selectedRace());
-    // const subraces = createMemo(()=>props.subraces());
-    const subraces = useDnDSubraces();
+    const form = createMemo(()=>props.formGroup);
+
+    const raceName = createMemo(()=>form().get().race);
+
+    const srdRaces = createMemo(()=>props.races());
+
+    const charRace = createMemo(()=>srdRaces().find((race,i)=>race.name === raceName()) ?? {} as Race);
+    const subraces = createMemo(()=>props.subraces());
     
-    const currentSubraces = createMemo<Subrace[]>(()=>subraces().filter(sr=>sr.parentRace === race().id));
-    const desc = createMemo(()=>race().descriptions ?? {});
+    const charSubrace = createMemo(()=>form().get().lineage);
+
+    const currentSubraces = createMemo<Subrace[]>(()=>subraces().filter(sr=>sr.parentRace === charRace()?.id));
+    const desc = createMemo(()=>charRace()?.descriptions ?? {});
     const descKeys = createMemo(()=>Object.keys(desc()));
     const currentSubrace = createMemo(()=>subraces().find(sr=> sr.name === charSubrace()));
     const subraceDescKeys = createMemo(()=>Object.keys(currentSubrace()?.descriptions ?? {}))
 
-    return <FlatCard headerName={`Species: ${[race().name]}`} icon="person">
+    return <FlatCard headerName={`Species: ${[charRace().name]}`} icon="person">
         <div class={`${styles.raceSection}`}>
             <p>
                 <For each={descKeys()}>
@@ -32,34 +39,33 @@ export const RaceSection:Component<sectionProps> = (props) => {
                 </For>
             </p>    
             
-            <Show when={race().abilityBonuses.length > 0}>
+            <Show when={charRace().abilityBonuses.length > 0}>
                 <div>
                     <strong>Ability Score(s): </strong>
-                    <For each={race().abilityBonuses}>
+                    <For each={charRace().abilityBonuses}>
                         {(score)=><span>
                             {AbilityScores[score.stat]}: {score.value}
                         </span>}
                     </For>
                 </div>
             </Show>
-
             <div>
                 <strong>Size: </strong>
-                {race().size}
+                {charRace().size}
             </div>
 
             <div>
                 <strong>Speed: </strong>
-                {race().speed}ft
+                {charRace().speed}ft
             </div>
 
             <div>
                 <strong>Traits: </strong>
-                {race().traits.flatMap(t => t.details.name).join(", ")}
+                {charRace().traits.flatMap(t => t.details.name).join(", ")}
             </div>
 
             <div class={`${styles.traitList}`}>  
-                <For each={race().traits}>
+                <For each={charRace().traits}>
                     {(trait)=><FlatCard headerName={`${trait.details.name}`} class={`${styles.cardAlt}`}>
                         <div>
                             <p>
@@ -80,12 +86,12 @@ export const RaceSection:Component<sectionProps> = (props) => {
                             </div>
                         </div>
                         <div class={`${styles.pushDown}`}>
-                            <FormField name="Lineage" formName="Lineage">
-                                <Select value={charSubrace()} onChange={(value)=>setCharSubrace(value)}>
+                            <FormField name="Lineage" formName="lineage">
+                                <Select>
                                     <Option value={""}>---</Option>
                                     <For each={currentSubraces()}>
                                         {(subrace)=><Option value={subrace.name}>{subrace.name}</Option>}
-                                    </For>
+                                                                                                                                                                                                                                                                                                                                                        </For>
                                 </Select>
                             </FormField>
                         </div>
