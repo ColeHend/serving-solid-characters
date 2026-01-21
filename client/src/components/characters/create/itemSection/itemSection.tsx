@@ -5,6 +5,7 @@ import { Button, Checkbox, Chip, FormField, FormGroup, Input } from "coles-solid
 import styles from "./itemSection.module.scss";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import { CharacterForm } from "../../../../models/character.model";
+import { AddItem } from "./addItem/AddItem";
 
 interface sectionProps {
     inventory: [Accessor<string[]>, Setter<string[]>];
@@ -14,6 +15,7 @@ interface sectionProps {
     class5e: Accessor<string>;
     background: Accessor<Background>;
     form: FormGroup<CharacterForm>;
+    exist: Accessor<boolean>;
 }
 
 export const ItemSection:Component<sectionProps> = (props) => {
@@ -22,16 +24,24 @@ export const ItemSection:Component<sectionProps> = (props) => {
     const [equipped, setEquipped] = props.equipped;
     const [attuned, setAttuned] = props.attuned;
     const [isItems, setIsItems] = createSignal<boolean>(true);
+    const [isBackgrndItems, setIsBackgrndItems] = createSignal<boolean>(true);
+    const [clsChoice, setClsChoice] = createSignal<string | null>(null);
+    const [backgrndChoice, setBackgrndChoice] = createSignal<string | null>(null);
+
+    const form = createMemo(()=>props.form);
 
     const background = createMemo(()=>props.background());
     const allItems = createMemo(()=>props.allItems());
     const class5eName = createMemo(()=>props.class5e());
+    const exist = createMemo(()=>props.exist());
+
+    const currentGold = createMemo(()=>form().get().GP);
 
     const class5e = createMemo(()=>classes().find(c => c.name === class5eName()));
 
-
     const classStartItems = createMemo(()=>class5e()?.choices?.[class5e()?.startChoices?.equipment ?? ""].options ?? []);
     const backgroundStartItems = createMemo(()=>background()?.startEquipment ?? [])
+
 
     const currencies = ["PP","GP","EP","SP","CP"];
 
@@ -76,55 +86,230 @@ export const ItemSection:Component<sectionProps> = (props) => {
         }
     }
 
-    createEffect(()=>{
-        console.log("x: ",backgroundStartItems() );
-        
-    })
+    /**
+     * Calculate the difference (delta) from the previous value
+     * @param e 
+     * @returns The difference (delta)
+     */
+    const calculateDelta = (e: InputEvent & {
+        currentTarget: HTMLInputElement;
+        target: HTMLInputElement
+    }) => {
+        const prevValue = +e.currentTarget.defaultValue || 0;
+        const currValue = +e.currentTarget.value || 0;
+        return currValue - prevValue;
+    }
+
+    /**
+     * Handles checkbox state changes for item selection, specifically parsing currency values from the choice string.
+     * If a currency value (PP, GP, EP, SP, CP) is found in the choice, it converts the amount to GP (gold pieces)
+     * using standard D&D currency conversion rates and updates the form's GP value accordingly, 
+     * as well as updating the inventory with the items from the choice string.
+     *
+     * @param checked - Indicates whether the checkbox is checked (true) or unchecked (false).
+     * @param choice - The string representing the selected item, which may contain a currency value.
+     */
+    const handleCheckbox = (checked: boolean, choice: string) => {
+        const target = choice;
+
+        const currencyRegex = /\d+\s*(PP|GP|EP|SP|CP)\b/i;
+
+        const match = target.match(currencyRegex);
+
+        if (match) {
+            const matchedText = match[0]; // e.g. "11 GP"
+            const amountMatch = matchedText.match(/\d+(?:\.\d+)?/);
+            const amount = amountMatch ? Number(amountMatch[0]) : 0;
+            const currencyCode = (match[1] || "").toUpperCase();
+
+            const itemsToAdd = target.split(",").filter(item => item.trim() !== matchedText.trim());
+
+            // Convert found currency to GP value and add to form GP
+            let addGp = 0;
+            switch (currencyCode) {
+                case "PP":
+                    addGp = amount * 10; // 1 PP = 10 GP
+                    break;
+                case "GP":
+                    addGp = amount;
+                    break;
+                case "EP":
+                    addGp = amount * 0.5; // 2 EP = 1 GP
+                    break;
+                case "SP":
+                    addGp = amount * 0.1; // 10 SP = 1 GP
+                    break;
+                case "CP":
+                    addGp = amount * 0.01; // 100 CP = 1 GP
+                    break;
+            }
+            
+            if (checked) {
+                const final = +currentGold() + addGp;
+                props.form.set("GP", final);
+                setInventory(old => [...old, ...itemsToAdd]);
+            } else {
+                const final = +currentGold() - addGp;
+                props.form.set("GP", final);
+                itemsToAdd.forEach((item)=> setInventory(old => old.filter(x => x !== item)));
+            }
+        }
+    }
+
+    const resetClassOptions = () => {
+        setClsChoice(null);
+        form().set("clsGold",0);
+        form().set("GP", 0);
+        setInventory([])
+    };
+
+    const resetBackgrndOptions = () => {
+        setBackgrndChoice(null);
+        form().set('backgrndGold', 0);
+        form().set("GP", 0);
+        setInventory([]);
+    }
 
     return <FlatCard icon="backpack" headerName="Equipment">
-        <FlatCard headerName={<strong>Starting Equipment</strong>}>
-            <div>
-                <Button onClick={()=>setIsItems(true)}>Items</Button>
-                <span> OR </span>
-                <Button onClick={()=>setIsItems(false)}>Gold</Button>
-            </div>
-            <Switch>
-                <Match when={!isItems()}>
-                    Gold
-                </Match>
-                <Match when={isItems}>
-                    <h3>{class5eName()} Starting Equipment</h3>
+        <Show when={!exist()}>
+            <FlatCard headerName={<strong>Starting Equipment</strong>}>
+                <div>
+                    please note that selecting ether button will reset the inventory and any option made. so please select <strong>items</strong> or <strong>gold</strong> before making any final dections
+                </div>
+
+                <h3>{class5eName()} Starting Equipment</h3>
+                
+
+                <div>
+                    <Button onClick={()=>{
+                        setIsItems(true)
+                        resetClassOptions();
+                    }}>Items</Button>
+                    <span> OR </span>
+                    <Button onClick={()=>{
+                        setIsItems(false)
+                        resetClassOptions();
+                    }}>Gold</Button>
+                </div>
                     
-                    <div>
-                        <For each={classStartItems()}>
-                            {(choice) => <li>
-                                <Checkbox label={<span>{choice}</span>} />
-                            </li>}
-                        </For>
-                    </div>
+                <Switch>
+                    <Match when={!isItems()}>
+                        <FormField name="Class Gold" formName="clsGold">
+                            <div class={`${styles.noInputBtns}`}>
+                                <Input
+                                    type="number"
+                                    step={1}                                
+                                    onInput={e => {
+                                        e.preventDefault();
 
-                    <h3>{background().name} Starting Equipment</h3>
+                                        const AddAmt = calculateDelta(e);
 
-                    <div>
-                        <For each={backgroundStartItems()}>
-                            {(choice)=><li>
-                                <Checkbox  label={<span>({choice.optionKeys}): {choice.items?.join(", ")}</span>}  />        
-                            </li>}
-                        </For>
-                    </div>
+                                        // setting defalut value to current value.
+                                        e.currentTarget.defaultValue = e.currentTarget.value;
 
-                </Match>
-            </Switch>
-        </FlatCard>
+                                        const final = +currentGold() + AddAmt;
+
+                                        props.form.set("GP",final);
+                                    }}
+                                />
+
+                            </div>
+                        </FormField>
+                    </Match>
+                    <Match when={isItems}>
+                    
+                        <div>
+                            <For each={classStartItems()}>
+                                {(choice, i) => <li>
+                                    <Checkbox onChange={(checked)=>{
+                                        handleCheckbox(checked, choice)
+                                        setClsChoice(checked ? choice : null);
+
+                                        if (!checked) {
+                                            setClsChoice(null);
+                                        }
+                                    }} 
+                                    label={<span>{choice}</span>} 
+                                    disabled={clsChoice() !== null  && clsChoice() !== choice} />
+                                </li>}
+                            </For>
+                        </div>
+                    
+                    </Match>
+                </Switch>
+
+                <h3>{background().name} Starting Equipment</h3>
+                
+                <div>
+                    <Button onClick={()=>{
+                        setIsBackgrndItems(true)
+                        resetBackgrndOptions()
+                    }}>Items</Button>
+                    <span> OR </span>
+                    <Button onClick={()=>{
+                        setIsBackgrndItems(false)
+                        resetBackgrndOptions()
+                    }}>Gold</Button>
+                </div>
+
+                <Switch>
+                    <Match when={!isBackgrndItems()}>
+                        <FormField name="Background Gold" formName="backgrndGold">
+                            <Input
+                                type="number"
+                                onInput={e => {
+                                    e.preventDefault();
+
+                                    const gold = +currentGold();
+                                    
+                                    // Calculate the difference (delta) from the previous value
+                                    const AddAmt = calculateDelta(e);
+
+                                    // setting defalut value to current value.
+                                    e.currentTarget.defaultValue = e.currentTarget.value;
+
+                                    const final = gold + AddAmt;
+
+                                    props.form.set("GP",final);
+                                }}
+                            />
+                        </FormField>
+                    </Match>
+                    <Match when={isBackgrndItems()}>
+                        <div>
+                            <For each={backgroundStartItems()}>
+                                {(choice)=><li>
+                                    <Checkbox onChange={(checked)=> {
+                                        const choiceString = choice.items?.join(",");
+
+                                        handleCheckbox(checked, choice.items?.join(",") || "");
+
+                                        if (choiceString) setBackgrndChoice(checked ? choiceString : null);
+
+
+                                        if (!checked) {
+                                            setBackgrndChoice(null);
+                                        }
+                                    }} 
+                                    label={<span>({choice.optionKeys}): {choice.items?.join(",")}</span>}
+                                    disabled={backgrndChoice() !== null && backgrndChoice() !== choice.items?.join(",")}  />        
+                                </li>}
+                            </For>
+                        </div>
+                    </Match>
+                </Switch>
+
+            </FlatCard>
+        </Show>
         <FlatCard headerName={<strong>Inventory ({inventory().length})</strong>}>
             <For each={inventory()}>
                 {(item)=><Chip value={item} />}
             </For>
         </FlatCard>
         <FlatCard headerName={<strong>Add Item</strong>}>
-                <div>
-                    test: {props.form.get().PP};
-                </div>
+            <AddItem allItems={allItems}>
+                test: {props.form.get().PP}
+            </AddItem>
         </FlatCard>
         <FlatCard headerName={<strong>Currency</strong>}>
             <div class={`${styles.moneySection}`}>

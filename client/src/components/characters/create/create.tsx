@@ -62,8 +62,10 @@ const CharacterCreate: Component = () => {
   const [searchParams,setSearchParams] = useSearchParams();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
+  const charactersAmnt = createMemo(()=>characterManager.characters().length);
+
   const group = new FormGroup<CharacterForm>({
-    "name": ["", [Validators.Required,Validators.minLength(3)]],
+    "name": [`New Character ${charactersAmnt() + 1}`, [Validators.Required,Validators.minLength(3)]],
     "className": ["", [Validators.Required]],
     "subclass": ["", []],
     "background": ["", [Validators.Required]],
@@ -88,7 +90,9 @@ const CharacterCreate: Component = () => {
     "INT": [0, []],
     "WIS": [0, []],
     "CHA": [0, []],
-    "lineage": ["", []]
+    "lineage": ["", []],
+    "clsGold": [0, []],
+    "backgrndGold": [0, []] 
   });
 
   // data hooks
@@ -218,13 +222,7 @@ const CharacterCreate: Component = () => {
   // functions
 
   const resetForm = () => {
-    group.set("name", "");
-    group.set("className", '');
-    group.set("subclass", '');
-    group.set("background", '');
-    group.set("alignment", '');
-    group.set("languages", []);
-    group.set("race", '');
+    group.reset();
     setClassLevels({});
     setCharClasses([]);
   }
@@ -293,36 +291,6 @@ const CharacterCreate: Component = () => {
     }
   }
 
-
-  const getCharacterLevel = (className: string): number => {
-  
-      return classLevels()[className] ?? 0;
-  }
-
-  const setCharacterLevel = (className: string, level: number): void => {
-      setClassLevels(old => ({...old,[className]: level}));
-  }
-
-  const hitDieToNumber = (hitdie:string): number => {
-        switch (hitdie) {
-            case "d12":
-                return 12;
-            case "d10":
-                return 10;
-            case "d8":
-                return 8;
-            case "d6":
-                return 6;
-
-            default:
-                return 0;
-        }
-  }
-
-  const getClass = (className: string): Class5E => {
-    return classes().find(c => c.name === className) ?? {} as Class5E;
-  }
-
   // function fillCharacterInfo(): void;
   // function fillCharacterInfo(search: boolean): void;
   // function fillCharacterInfo(search?:boolean): void {
@@ -367,6 +335,38 @@ const CharacterCreate: Component = () => {
   //     
   //   }
   // }
+
+
+
+  const getCharacterLevel = (className: string): number => {
+  
+      return classLevels()[className] ?? 0;
+  }
+
+  const setCharacterLevel = (className: string, level: number): void => {
+      setClassLevels(old => ({...old,[className]: level}));
+  }
+
+  const hitDieToNumber = (hitdie:string): number => {
+        switch (hitdie) {
+            case "d12":
+                return 12;
+            case "d10":
+                return 10;
+            case "d8":
+                return 8;
+            case "d6":
+                return 6;
+
+            default:
+                return 0;
+        }
+  }
+
+  const getClass = (className: string): Class5E => {
+    return classes().find(c => c.name === className) ?? {} as Class5E;
+  }
+
 
   const getConMod = () => {
     const theStat = charStats()["con"];
@@ -511,12 +511,13 @@ const CharacterCreate: Component = () => {
             class5e={selectedClass}
             background={selectedBackground as any}
             form={group}
+            exist={exist}
           />
         </Show>
        
         <FlatCard icon="save" headerName="Save" alwaysOpen> 
           <Button type="submit" aria-label="submit btn" disabled={isDisabled()}>
-            {exist() ? "update" : "create"}
+            {exist() ? "update" : "save"}
           </Button>
         </FlatCard>
       </Form>

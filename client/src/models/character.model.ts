@@ -119,5 +119,7 @@ export interface CharacterForm extends halfCharacter {
   WIS: number;
   CHA: number;
   spells: string[];
-  lineage: string
+  lineage: string;
+  clsGold: number;
+  backgrndGold: number;
 }
