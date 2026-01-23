@@ -92,7 +92,9 @@ const CharacterCreate: Component = () => {
     "CHA": [0, []],
     "lineage": ["", []],
     "clsGold": [0, []],
-    "backgrndGold": [0, []] 
+    "backgrndGold": [0, []],
+    "backgrndItemChoice": [null, []],
+    "classItemChoice": [null, []]
   });
 
   // data hooks
@@ -142,6 +144,10 @@ const CharacterCreate: Component = () => {
   // spells
 
   const [knownSpells,setKnownSpells] = createSignal<string[]>([]);
+
+  // items
+
+  const [startingItemOptions, setStartingItemOptions] = createSignal<Record<string, boolean>>({});
 
   // -----Form Data-----
 
@@ -228,6 +234,10 @@ const CharacterCreate: Component = () => {
   }
 
   const handleSubmit = (data: CharacterForm) => {
+    const is_Sure = window.confirm("Are you sure?");
+
+    if (!is_Sure) return;
+    
     addSnackbar({
       message: "Saving Character",
       severity: "info"

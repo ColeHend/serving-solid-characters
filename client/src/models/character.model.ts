@@ -122,4 +122,6 @@ export interface CharacterForm extends halfCharacter {
   lineage: string;
   clsGold: number;
   backgrndGold: number;
+  backgrndItemChoice: string|null;
+  classItemChoice: string|null;
 }

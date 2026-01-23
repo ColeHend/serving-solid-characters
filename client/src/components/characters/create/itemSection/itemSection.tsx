@@ -1,7 +1,7 @@
 import { Accessor, Component, createMemo, For, Setter, Show, Switch, Match, createSignal, createEffect } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { Background, ChoiceDetail, Class5E, Item, Race } from "../../../../models/data";
-import { Button, Checkbox, Chip, FormField, FormGroup, Input } from "coles-solid-library";
+import { Button, Checkbox, Chip, FormField, FormGroup, Input, RadioGroup } from "coles-solid-library";
 import styles from "./itemSection.module.scss";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import { CharacterForm } from "../../../../models/character.model";
@@ -25,10 +25,11 @@ export const ItemSection:Component<sectionProps> = (props) => {
     const [attuned, setAttuned] = props.attuned;
     const [isItems, setIsItems] = createSignal<boolean>(true);
     const [isBackgrndItems, setIsBackgrndItems] = createSignal<boolean>(true);
-    const [clsChoice, setClsChoice] = createSignal<string | null>(null);
-    const [backgrndChoice, setBackgrndChoice] = createSignal<string | null>(null);
-
+    
     const form = createMemo(()=>props.form);
+    
+    const clsChoice = createMemo<string | null>(()=>form().get().classItemChoice);
+    const backgrndChoice = createMemo<string | null>(()=>form().get().backgrndItemChoice);
 
     const background = createMemo(()=>props.background());
     const allItems = createMemo(()=>props.allItems());
@@ -42,6 +43,8 @@ export const ItemSection:Component<sectionProps> = (props) => {
     const classStartItems = createMemo(()=>class5e()?.choices?.[class5e()?.startChoices?.equipment ?? ""].options ?? []);
     const backgroundStartItems = createMemo(()=>background()?.startEquipment ?? [])
 
+    const goldFromClass = createMemo(()=>form().get().clsGold);
+    const goldFromBackgrnd = createMemo(()=>form().get().backgrndGold);
 
     const currencies = ["PP","GP","EP","SP","CP"];
 
@@ -84,6 +87,14 @@ export const ItemSection:Component<sectionProps> = (props) => {
             default:
                 return "#888888"; // fallback neutral color
         }
+    }
+
+    const setClsChoice = (value: string| null) => {
+        form().set("classItemChoice",value);
+    }
+
+    const setBackgrndChoice = (value: string| null) => {
+        form().set("backgrndItemChoice", value);
     }
 
     /**
@@ -184,12 +195,12 @@ export const ItemSection:Component<sectionProps> = (props) => {
                     <Button onClick={()=>{
                         setIsItems(true)
                         resetClassOptions();
-                    }}>Items</Button>
+                    }} disabled={clsChoice() !== null || goldFromClass() > 0}>Items</Button>
                     <span> OR </span>
                     <Button onClick={()=>{
                         setIsItems(false)
                         resetClassOptions();
-                    }}>Gold</Button>
+                    }} disabled={clsChoice() !== null || goldFromClass() > 0}>Gold</Button>
                 </div>
                     
                 <Switch>
@@ -224,11 +235,11 @@ export const ItemSection:Component<sectionProps> = (props) => {
                                     <Checkbox onChange={(checked)=>{
                                         handleCheckbox(checked, choice)
                                         setClsChoice(checked ? choice : null);
-
                                         if (!checked) {
                                             setClsChoice(null);
                                         }
                                     }} 
+                                    checked={clsChoice() !== null  && clsChoice() === choice}
                                     label={<span>{choice}</span>} 
                                     disabled={clsChoice() !== null  && clsChoice() !== choice} />
                                 </li>}
@@ -244,12 +255,12 @@ export const ItemSection:Component<sectionProps> = (props) => {
                     <Button onClick={()=>{
                         setIsBackgrndItems(true)
                         resetBackgrndOptions()
-                    }}>Items</Button>
+                    }} disabled={backgrndChoice() !== null || goldFromBackgrnd() > 0}>Items</Button>
                     <span> OR </span>
                     <Button onClick={()=>{
                         setIsBackgrndItems(false)
                         resetBackgrndOptions()
-                    }}>Gold</Button>
+                    }} disabled={backgrndChoice() !== null || goldFromBackgrnd() > 0}>Gold</Button>
                 </div>
 
                 <Switch>
@@ -284,13 +295,16 @@ export const ItemSection:Component<sectionProps> = (props) => {
 
                                         handleCheckbox(checked, choice.items?.join(",") || "");
 
-                                        if (choiceString) setBackgrndChoice(checked ? choiceString : null);
+                                        if (choiceString) {
+                                            setBackgrndChoice(checked ? choiceString : null);
+                                        }
 
 
                                         if (!checked) {
                                             setBackgrndChoice(null);
                                         }
                                     }} 
+                                    checked={backgrndChoice() !== null && backgrndChoice() === choice.items?.join(",")}
                                     label={<span>({choice.optionKeys}): {choice.items?.join(",")}</span>}
                                     disabled={backgrndChoice() !== null && backgrndChoice() !== choice.items?.join(",")}  />        
                                 </li>}
@@ -302,14 +316,17 @@ export const ItemSection:Component<sectionProps> = (props) => {
             </FlatCard>
         </Show>
         <FlatCard headerName={<strong>Inventory ({inventory().length})</strong>}>
-            <For each={inventory()}>
-                {(item)=><Chip value={item} />}
-            </For>
+            <div class={`${styles.inventoryBox}`}>
+                <For each={inventory()}>
+                    {(item)=><Chip value={item} />}
+                </For>
+            </div>
         </FlatCard>
         <FlatCard headerName={<strong>Add Item</strong>}>
-            <AddItem allItems={allItems}>
-                test: {props.form.get().PP}
-            </AddItem>
+            <AddItem 
+                allItems={allItems} 
+                inventory={[inventory, setInventory]}
+            />
         </FlatCard>
         <FlatCard headerName={<strong>Currency</strong>}>
             <div class={`${styles.moneySection}`}>

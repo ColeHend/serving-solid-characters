@@ -101,7 +101,8 @@ export const HitPointSection:Component<sectionProps> = (props) => {
                 <Input type="number" min={1} />
             </FormField>
         </div>
+        
 
-        {props.form.get().maxHP}
+       
     </FlatCard>
 } 
