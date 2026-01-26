@@ -124,4 +124,5 @@ export interface CharacterForm extends halfCharacter {
   backgrndGold: number;
   backgrndItemChoice: string|null;
   classItemChoice: string|null;
+  BackgrndFeat: string;
 }

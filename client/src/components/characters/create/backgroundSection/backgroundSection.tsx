@@ -1,10 +1,10 @@
-import { Accessor, Component, createMemo, For, Show } from "solid-js";
+import { Accessor, Component, createMemo, createSignal, For, onMount, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { Background } from "../../../../models/data";
+import { Background, FeatureDetail } from "../../../../models/data";
 import { Markdown } from "../../../../shared";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import styles from "./backgroundSection.module.scss";
-import { FormGroup } from "coles-solid-library";
+import { FormGroup, Select, Option, FormField } from "coles-solid-library";
 import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
@@ -31,6 +31,8 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
     const armorProfs = createMemo(()=>selBackground()?.proficiencies.armor);
     const toolsProfs = createMemo(()=>selBackground()?.proficiencies.tools);
     const skillProfs = createMemo(()=>selBackground()?.proficiencies.skills);
+
+    const chosenFeat = createMemo(()=>form().get().BackgrndFeat);
 
     const getFeature = (name: string) => {
         if (name.toLowerCase().includes("magic initiate")) {
@@ -106,10 +108,21 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
             <Show when={suggestedFeat() !== "" && suggestedFeat()}>
                 <div>
                     <h3>Suggested Feat: </h3>
-                    <FlatCard headerName={suggestedFeat()} class={`${styles.cardAlt}`}>
+                    
+                    <FormField name="Suggested Feat" formName="BackgrndFeat"> 
+                        <Select>
+                            <For each={feats().filter(x=> x.prerequisites.length === 0)}>
+                                {(feat)=><Option value={feat.details.name}>
+                                    {feat.details.name}    
+                                </Option>}
+                            </For>
+                        </Select>
+                    </FormField>
+
+                    <FlatCard headerName={chosenFeat()} class={`${styles.cardAlt}`}>
                         <div>
                             <Markdown
-                                text={getFeature(suggestedFeat())()?.details.description || ""}
+                                text={getFeature(chosenFeat())()?.details.description || ""}
                             />
                         </div>
                     </FlatCard>
@@ -119,6 +132,7 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
             <Show when={features().length > 0}>
                 <div>
                     <h3>Feature(s): </h3>
+
                     <For each={features()}>
                         {(feature)=><FlatCard headerName={`Feature: ${feature.name}`} class={`${styles.cardAlt}`}>
                             {feature.description}

@@ -1,7 +1,9 @@
-import { Accessor, Component, createMemo, createSignal, For, JSX, Setter } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, JSX, Setter } from "solid-js";
 import { Item, ItemType } from "../../../../../models/data";
-import { Button, Cell, Column, Header, Table } from "coles-solid-library";
+import { Button, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
+import { Paginator } from "../../../../../shared";
+import styles from "./AddItem.module.scss";
 
 interface props {
     allItems: Accessor<Item[]>;
@@ -10,6 +12,8 @@ interface props {
 
 export const AddItem: Component<props> = (props) => {
     const [searchedItems, setSearchedItems] = createSignal<Item[]>([]);
+    const [paginatedItems, setPaginatedItems] = createSignal<Item[]>([]);
+
 
     const srdItems = createMemo(()=>props.allItems());
 
@@ -20,17 +24,49 @@ export const AddItem: Component<props> = (props) => {
         return inventory().includes(value);
     }
 
-    return <div style={{height: "100%"}}>
+    const sortByType = (type: ItemType) => {
+        setSearchedItems(srdItems())
 
-        <div style={{width: "25%"}}>
+        switch (type) {
+            case 0: // Weapon
+                setSearchedItems(old => old.filter(x => x.type === 0));
+                break;
+
+            case 1: // Armor
+                setSearchedItems(old => old.filter(x => x.type === 1));
+                break;
+
+            case 2: // Tool
+                setSearchedItems(old => old.filter(x => x.type === 2));
+                break;
+
+            case 3: // All
+                setSearchedItems(old => old.filter(x => x.type === 3));
+                break;
+        }
+    }
+    return <div class={`${styles.addItemWrapper}`}>
+
+        <div class={`${styles.searchBar}`}>
             <SearchBar
                 dataSource={srdItems}
                 setResults={setSearchedItems}
+                tooltip="Type in a item name"
             />
         </div>
 
-       <div style={{height: "30vh","overflow-y":"scroll"}}>
-            <Table columns={["name", "cost", "type","options"]} data={searchedItems}>
+        <div>Sort By</div>
+        
+        <div class={`${styles.sortButtons}`}>
+            <Button onClick={()=>sortByType(3)}>All</Button>
+
+            <Button onClick={()=>sortByType(0)}>Weapons</Button>
+
+            <Button onClick={(()=>sortByType(1))}>Armors</Button>
+        </div>
+
+       <div class={`${styles.tableWrapper}`}>
+            <Table columns={["name", "cost", "type","options"]} data={paginatedItems}>
                 <Column name="name">
                     <Header>Name</Header>
                     <Cell<Item>>
@@ -71,7 +107,16 @@ export const AddItem: Component<props> = (props) => {
                         </div>}
                     </Cell>
                 </Column>
+
             </Table>
+       </div>
+
+       <div>
+        <Paginator
+            items={searchedItems}
+            setPaginatedItems={setPaginatedItems}
+            itemsPerPage={[6,10,15]}
+        />
        </div>
     </div>
 }

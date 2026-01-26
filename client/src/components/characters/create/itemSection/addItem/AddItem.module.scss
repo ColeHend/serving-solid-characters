@@ -1,0 +1,19 @@
+.addItemWrapper {
+    height: 100%;
+}
+
+.searchBar {
+    width: 25%;
+}
+
+.sortButtons {
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+}
+
+.tableWrapper {
+    height: 40vh;
+    overflow-y: scroll;
+    margin-top: 1%;
+}

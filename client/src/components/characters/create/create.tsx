@@ -94,7 +94,8 @@ const CharacterCreate: Component = () => {
     "clsGold": [0, []],
     "backgrndGold": [0, []],
     "backgrndItemChoice": [null, []],
-    "classItemChoice": [null, []]
+    "classItemChoice": [null, []],
+    "BackgrndFeat": ["", []]
   });
 
   // data hooks
@@ -445,7 +446,9 @@ const CharacterCreate: Component = () => {
               </Select>
             </FormField>
             <FormField name="background" formName="background">
-              <Select>
+              <Select onChange={()=>{
+                group.set("BackgrndFeat", selectedBackground()?.feat || "")
+              }}>
                 <For each={backgroundNames()}>
                   {(background)=><Option value={background}>{background}</Option>}
                 </For>

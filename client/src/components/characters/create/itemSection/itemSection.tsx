@@ -318,7 +318,7 @@ export const ItemSection:Component<sectionProps> = (props) => {
         <FlatCard headerName={<strong>Inventory ({inventory().length})</strong>}>
             <div class={`${styles.inventoryBox}`}>
                 <For each={inventory()}>
-                    {(item)=><Chip value={item} />}
+                    {(item)=><Chip value={item} remove={()=>setInventory(old => old.filter(x => x !== item))} />}
                 </For>
             </div>
         </FlatCard>

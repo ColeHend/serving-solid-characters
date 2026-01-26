@@ -97,8 +97,16 @@ export const HitPointSection:Component<sectionProps> = (props) => {
             </div>
         </div>
         <div class={`${styles.hpInput}`}>
-            <FormField name="health" formName="maxHP">
+            <FormField name="Max Hit Points" formName="maxHP">
                 <Input type="number" min={1} />
+            </FormField>
+            
+            <FormField name="Current Hit Points" formName="currentHP">
+                <Input type="number" min={0} />
+            </FormField>
+
+            <FormField name="Temp Hit Points" formName="tempHP">
+                <Input type="number" min={0} />
             </FormField>
         </div>
         

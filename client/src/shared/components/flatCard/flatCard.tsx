@@ -121,6 +121,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
                 </Show>
             </div>
         </div>
+        <div class={`${showCard() && !isAlwaysOpen() ? styles.titleBorder : ""}`}></div>
         <Show when={showCard()}>
             <div 
                 class={`${styles.cardContent}`} 
