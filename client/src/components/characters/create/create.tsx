@@ -100,7 +100,6 @@ const CharacterCreate: Component = () => {
 
   // data hooks
   const classes = useDnDClasses();
-  const subClasses = useDnDSubclasses();
   const backgrounds = useDnDBackgrounds();
   const spells = useDnDSpells();
   const races = useDnDRaces();
@@ -463,7 +462,6 @@ const CharacterCreate: Component = () => {
             classLevels={[classLevels, setClassLevels]}
             knownSpells={[knownSpells, setKnownSpells]}
             formGroup={group}
-            selectedSubclass={selectedSubclass}
           />
         </Show>
 

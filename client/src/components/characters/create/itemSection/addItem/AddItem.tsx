@@ -40,9 +40,12 @@ export const AddItem: Component<props> = (props) => {
                 setSearchedItems(old => old.filter(x => x.type === 2));
                 break;
 
-            case 3: // All
-                setSearchedItems(old => old.filter(x => x.type === 3));
+            case 3: // Item
+                setSearchedItems(old => old.filter(olditem => olditem.type === 3));
                 break;
+            
+            case 4: // Accessory
+                setSearchedItems(old => old.filter(olditem => olditem.type === 4));
         }
     }
     return <div class={`${styles.addItemWrapper}`}>
@@ -62,7 +65,9 @@ export const AddItem: Component<props> = (props) => {
 
             <Button onClick={()=>sortByType(0)}>Weapons</Button>
 
-            <Button onClick={(()=>sortByType(1))}>Armors</Button>
+            <Button onClick={()=>sortByType(1)}>Armors</Button>
+
+            <Button onClick={()=>sortByType(4)}>Accessory</Button>
         </div>
 
        <div class={`${styles.tableWrapper}`}>

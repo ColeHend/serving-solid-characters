@@ -1,4 +1,4 @@
-import { Button, ExpansionPanel, Select, Option, TabBar, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField } from "coles-solid-library";
+import { Button, ExpansionPanel, Select, Option, TabBar, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Input } from "coles-solid-library";
 import { range } from "rxjs";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
@@ -13,6 +13,7 @@ import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/sp
 import getSpellAndCasterLevel from "../../../../shared/customHooks/utility/tools/getSpellAndCasterLevel";
 import { aL } from "vitest/dist/chunks/reporters.d.BFLkQcL6";
 import { Character, CharacterForm } from "../../../../models/character.model";
+import { useDnDSubclasses } from "../../../../shared/customHooks/dndInfo/info/all/subclasses";
 
 export type charClasses = {
   className: string;
@@ -24,12 +25,12 @@ interface sectionProps {
   classLevels: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
   knownSpells: [Accessor<string[]>, Setter<string[]>];
   formGroup: FormGroup<CharacterForm>;
-  selectedSubclass: Accessor<string>;
 }
 
 export const ClassesSection: Component<sectionProps> = (props) => {
   const classes = useDnDClasses();
   const srdSpells = useDnDSpells();
+  const subclasses = useDnDSubclasses();
 
   const group = createMemo(()=>props.formGroup); 
 
@@ -105,9 +106,6 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const setCharacterLevel = (className: string, level: number): void => {
     setClassLevels(old => ({...old,[className]: level}));
   }
-
-  const currentSublcass = createMemo(()=>props.selectedSubclass());
-
 
   const getClass = (className: string): Class5E => {
       return classes().find(c => c.name === className) ?? {} as Class5E;
@@ -204,6 +202,16 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     return value;
   }
   
+  const getSubclasses = (className: string) => {
+    const currentClass = getClass(className);
+  
+    const toReturn = subclasses().filter(subclass=>subclass.parentClass === currentClass.name);
+
+    return toReturn
+  }
+
+  const currentSublcass = createMemo(()=>group().get().subclass);
+
   return (
     <FlatCard
       icon="shield"
@@ -236,7 +244,6 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                 </Show>
             }>
               <div class={`${styles.classHeader}`}>
-                
                   <Select
                     value={getCharacterLevel(charLevel)}
                     onSelect={(value) =>
@@ -270,6 +277,22 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                               {feature.description}
 
                               {feature.metadata?.category}
+
+                              <Show when={feature.name.includes("Subclass")}>
+                                <FormField name="subclass">
+                                  <Select
+                                    value={currentSublcass()}
+                                    onSelect={value => {
+                                      // Only update the subclass, not the whole form or class level
+                                      group().set("subclass",value);
+                                    }}
+                                  >
+                                    <For each={getSubclasses(charLevel)}>
+                                      {(subclass, i) => <Option value={subclass.name}>{subclass.name}</Option>}
+                                    </For>
+                                  </Select>
+                                </FormField>
+                              </Show>
                             </FlatCard>
                           )}
                         </For>
