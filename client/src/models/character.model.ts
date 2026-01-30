@@ -13,7 +13,7 @@ export class Character {
     features: []
   }
   public className: string = '';
-  public subclass: string = '';
+  public subclass: string[] = [];
   public background: string = '';
   public alignment: string = '';
   public proficiencies: CharacterProficiency = {

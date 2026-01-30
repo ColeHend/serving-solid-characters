@@ -32,7 +32,7 @@ import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/s
 import { useSearchParams } from "@solidjs/router";
 import { characterManager, Clone } from "../../../shared";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
-import { Class5E, Race, } from "../../../models/data";
+import { Class5E, Race } from "../../../models/data";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { ClassesSection } from "./classesSection/classesSection";
 import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races";
@@ -57,6 +57,11 @@ export type charStats = {
   cha: number;
 }
 
+export type formSubclass = {
+  subclass: string; 
+  class5e: string;
+}
+
 const CharacterCreate: Component = () => {
   const [userSettings,] = getUserSettings();
   const [searchParams,setSearchParams] = useSearchParams();
@@ -67,7 +72,7 @@ const CharacterCreate: Component = () => {
   const group = new FormGroup<CharacterForm>({
     "name": [`New Character ${charactersAmnt() + 1}`, [Validators.Required,Validators.minLength(3)]],
     "className": ["", [Validators.Required]],
-    "subclass": ["", []],
+    "subclass": [[], []],
     "background": ["", [Validators.Required]],
     "alignment": ["", []],
     "languages": [[], [Validators.maxLength(2)]],
@@ -95,7 +100,7 @@ const CharacterCreate: Component = () => {
     "backgrndGold": [0, []],
     "backgrndItemChoice": [null, []],
     "classItemChoice": [null, []],
-    "BackgrndFeat": ["", []]
+    "BackgrndFeat": ["", []],
   });
 
   // data hooks
@@ -109,6 +114,8 @@ const CharacterCreate: Component = () => {
   // Class Section
   const [charClasses,setCharClasses] = createSignal<string[]>([]);
   const [classLevels,setClassLevels] = createSignal<Record<string, number>>({});
+
+  const [currentSubclasses, setCurrentSubclasses] = createSignal<formSubclass[]>([]);
 
   // stats
   const [charStats, setCharStats] = createSignal<Record<string, number>>({
@@ -148,6 +155,8 @@ const CharacterCreate: Component = () => {
   // items
 
   const [startingItemOptions, setStartingItemOptions] = createSignal<Record<string, boolean>>({});
+
+
 
   // -----Form Data-----
 
@@ -191,7 +200,7 @@ const CharacterCreate: Component = () => {
   
   const hasSpells = createMemo(()=>{
     const filterdSpells = spells().filter(s => selectedClasses().some(c => s.classes.includes(c.name)));
-    const subclassSpells = spells().filter(s => s.subClasses.includes(selectedSubclass()));
+    const subclassSpells = spells().filter(s => s.subClasses.includes(selectedSubclass()[0]));
 
 
     const allSpells = Clone([...filterdSpells,...subclassSpells]);
@@ -234,7 +243,13 @@ const CharacterCreate: Component = () => {
   }
 
   const handleSubmit = (data: CharacterForm) => {
-    const is_Sure = window.confirm("Are you sure?");
+    const fullData: CharacterForm = {
+      ...data,
+      name: characterName(),
+      className: charClasses().join(",")
+    }
+
+    const is_Sure = window.confirm(`Are you Sure?                   Dev-test: ${fullData}`);
 
     if (!is_Sure) return;
     
@@ -243,11 +258,6 @@ const CharacterCreate: Component = () => {
       severity: "info"
     })
 
-    const fullData: CharacterForm = {
-      ...data,
-      name: characterName(),
-      className: charClasses().join(",")
-    }
 
     const valid = group.validate();
     
@@ -267,7 +277,7 @@ const CharacterCreate: Component = () => {
       return;
     }
 
-    const adapted = toCharacter5e(fullData,charClasses,[classLevels,setClassLevels],selectedRace as any,selectedSubclass)  
+    const adapted = toCharacter5e(fullData,charClasses,[classLevels,setClassLevels],selectedRace as any,)  
 
     const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
     
@@ -392,8 +402,6 @@ const CharacterCreate: Component = () => {
 
   createEffect(()=>{
     if(characterName() !== "") setSearchParams({ name: characterName()});
-
-    console.log(`${group.get().name}`,group.get().lineage);
     
   })
 
@@ -462,6 +470,7 @@ const CharacterCreate: Component = () => {
             classLevels={[classLevels, setClassLevels]}
             knownSpells={[knownSpells, setKnownSpells]}
             formGroup={group}
+            currSubclasses={[currentSubclasses, setCurrentSubclasses]}
           />
         </Show>
 
