@@ -64,7 +64,7 @@ export const HitPointSection:Component<sectionProps> = (props) => {
         const theStat = stat()["con"];
         const theMod = mod()["con"];
 
-        return getStatBonus(theStat + theMod);
+        return Math.floor(((theStat + theMod) - 10)/2);
    }
 
    const health = createMemo(()=>Math.floor(+maxHP() + +getConMod()));

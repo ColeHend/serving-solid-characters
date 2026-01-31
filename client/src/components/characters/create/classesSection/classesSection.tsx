@@ -45,35 +45,14 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const [activeTab, setActiveTab] = createSignal<Record<string, number>>({});
 
   const [learnSpells,setLearnSpells] = createSignal<Spell[]>([]);
-  const [currentSort, setCurrentSort] = createSignal<{
-      sortKey: string;
-      isAsc: boolean;
-  }>({ sortKey: "level", isAsc: true });
+  // const [currentSort, setCurrentSort] = createSignal<{
+  //     sortKey: string;
+  //     isAsc: boolean;
+  // }>({ sortKey: "level", isAsc: true });
   const [showSpellModal,setShowSpellModal] = createSignal<boolean>(false);
     
 
-  const levels = createMemo<number[]>(()=>[
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20
-  ])
+  const levels = createMemo<number[]>(()=>new Array(20).fill(0).map((x,i)=>i+1));
 
   const [selectedSpell,setSelectedSpell] = createSignal<Spell>({
     id: "",
@@ -100,7 +79,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   
     
   const getCharacterLevel = (className: string): number => {
-    return classLevels()[className] ?? 0;
+    return classLevels()[className] ?? 1;
   }
   const setCharacterLevel = (className: string, level: number): void => {
     setClassLevels(old => ({...old,[className]: level}));
@@ -116,11 +95,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const isLearned = (spellName: string) => {
     // return charSpells().includes(spellName);
 
-    if (charSpells().some(x=>x.includes(spellName))) {
-      return true
-    } else {
-      return false
-    }
+    return charSpells().some(x=>x.includes(spellName))
   }
 
   const filterdSpells = (className: string) => {
@@ -174,25 +149,23 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const currentLevel = createMemo<number>(()=>{
     let totalLevel = 0;
 
+
     charClasses().forEach((class5e)=> {
+      
       let level = getCharacterLevel(class5e);      
 
-      if (Number.isNaN(level)) {
+      if (Number.isNaN(level) || level < 0) {
         level = 0;
-      } 
+      }
 
-      totalLevel += level -1
+      totalLevel += level 
     })
-
-    if (totalLevel === -1) {
-      return 0;
-    }
 
     return totalLevel;
   })
 
   const noNegitveValue = (value: number) => {
-    if (value === -1) return 0;
+    if (Number.isNaN(value) || value < 0) return 0;
 
     return value;
   }
@@ -246,7 +219,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   }
 
   createEffect(()=>{
-    console.log("classes: ", classes());
+    console.log("classes: ", levels());
     
   })
 
@@ -261,7 +234,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
         ({currentLevel()})
         <For each={charClasses()}>
           {(class5e)=> <span >
-            {class5e} ({noNegitveValue(getCharacterLevel(class5e) - 1)})  
+            {class5e} ({noNegitveValue(getCharacterLevel(class5e))})  
           </span>}
         </For>
         
@@ -275,7 +248,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
       <div class={`${styles.classesSection}`}>
         <For each={charClasses()}>
           {(charLevel, i) => (
-            <FlatCard headerName={`${charLevel} (${getCharacterLevel(charLevel) - 1 === -1 ? 0 : getCharacterLevel(charLevel) - 1})`} class={`${styles.cardAlt}`} extraHeaderJsx={
+            <FlatCard headerName={`${charLevel} (${getCharacterLevel(charLevel) === -1 ? 1 : getCharacterLevel(charLevel)})`} class={`${styles.cardAlt}`} extraHeaderJsx={
                 <Show when={i() !== 0}>
                   <Button onClick={()=>{
                     const confirm = window.confirm("Are you sure?");
@@ -287,13 +260,14 @@ export const ClassesSection: Component<sectionProps> = (props) => {
               <div class={`${styles.classHeader}`}>
                   <Select
                     value={getCharacterLevel(charLevel)}
+                    defaultValue={1}
                     onSelect={(value) =>
                       setCharacterLevel(charLevel, value)
                     }
                     class={`${styles.levelSelect}`}
                   >
                     <For each={levels()}>
-                      {(level) => <Option value={level + 1}>{level}</Option>}
+                      {(level) => <Option value={level}>{level}</Option>}
                     </For>
                   </Select>
               </div>

@@ -58,8 +58,7 @@ export const LanguageSection:Component<sectionProps> = (props) => {
 
             <div class={`${styles.errorMessage}`}>
                 <Show when={hasError()}>
-                    You can't select more than three languages! remember it's common plus two more.
-                    
+                    You can't select more than two additional languages; you already know Common.
                 </Show>
             </div>
         </div>

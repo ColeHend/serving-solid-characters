@@ -391,7 +391,7 @@ const CharacterCreate: Component = () => {
   const getConMod = () => {
     const theStat = charStats()["con"];
 
-    return getStatBonus(theStat);
+    return Math.floor((theStat - 10)/2)
   }
 
   // effects on change
