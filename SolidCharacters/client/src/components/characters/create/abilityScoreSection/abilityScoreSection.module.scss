@@ -1,0 +1,74 @@
+.statsView {
+    margin-top: 1%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5%;
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        // flex-wrap: nowrap;
+        width: 100%;
+    }
+
+}
+
+.border {
+    border-right: 1px solid;
+    border-left: 1px solid;
+}
+
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: var(--secondary-color) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color, blue), transparent);
+    }
+}
+
+.pushDown {
+    margin-top: 1%;
+}
+
+.modiferText {
+    word-wrap: wrap;
+}
+
+.headerText {   
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+}
+
+.headerTextWrapper {
+    display: flex;
+    justify-content: center;
+    gap: 4%;
+    width: 100%; 
+    margin-left: 2%;
+
+    @media screen and (max-width: 768px) {
+        align-items: center;
+        flex-wrap: wrap;
+        // gap: 1%;
+        margin: 0;
+        width: 55vw;
+    }
+}
+
+.modChipBar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 1%;
+}

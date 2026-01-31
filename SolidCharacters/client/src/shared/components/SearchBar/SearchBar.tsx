@@ -42,6 +42,8 @@ const SearchBar = <T,>(props: Props<T>) => {
     }
   }, 0);
 
+  let searchTimeout:NodeJS.Timeout;
+
   createEffect(()=>{
     props.setResults(props.dataSource());
   })
@@ -51,9 +53,17 @@ const SearchBar = <T,>(props: Props<T>) => {
         transparent
         type="text"
         value={searchValue()}
-        onChange={(e) => setSearchValue(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && searchClick()}
-        onSubmit={()=>searchClick()}
+        onInput={(e) => {
+          setSearchValue(e.target.value)
+          
+          clearTimeout(searchTimeout)
+
+          searchTimeout = setTimeout(() => {
+            searchClick()
+          },500)
+        }}
+        // onKeyDown={(e) => e.key === "Enter" && searchClick()}
+        // onSubmit={()=>searchClick()}
         {...props}
         class={`${style.input} ${(props.class ?? "")}`}
       />

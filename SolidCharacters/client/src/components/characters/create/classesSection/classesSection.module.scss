@@ -1,0 +1,65 @@
+.classHeader {
+    margin-bottom: 1%;
+}
+
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: var(--secondary-color) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color, blue), transparent);
+    }
+}
+
+.classesSection {
+    max-height: 70vh;
+    overflow-y: scroll;
+}
+
+.TabBar {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 1%;
+
+    Button {
+        border-right: 2px solid;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: 0.5%;
+    }
+}
+
+.learnSpellsTable {
+    height: 40vh;
+    overflow-y: scroll;
+    
+    table {
+        margin: 0 auto;
+        
+        tbody {
+            
+            tr {
+
+                // border: 2px solid;
+            }
+        }
+    }
+}
+
+.searchBar {
+    width: 30%;
+    margin: 0 auto;
+}
+
+.LearnBtn {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}

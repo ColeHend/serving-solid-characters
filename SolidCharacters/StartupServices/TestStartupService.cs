@@ -6,7 +6,7 @@ namespace SolidCharacters.HostedServices
     {
         public void Run()
         {
-            Console.WriteLine("hello world\n");
+            Console.WriteLine("Hello this runs on startup!\n");
         }
     }
 }
