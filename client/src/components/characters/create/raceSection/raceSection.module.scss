@@ -1,0 +1,48 @@
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: var(--secondary-color) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color, blue), transparent);
+    }
+}
+
+.traitList {
+    margin-top: 1%;
+}
+
+.raceSection {
+    max-height: 55vh;
+    overflow-y: scroll;
+}
+
+.pushDown {
+    margin-top: 1%;
+}
+
+.subraceInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.cardTrsiary {
+    $color: var(--primary-color-varient);
+
+    div { 
+
+        svg {
+            fill: $color !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient($color, transparent) !important;
+    }
+}

@@ -25,11 +25,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    align-content: flex-start;
 
     div {
         display: flex;
         align-items: center;
-        gap: 5%;
+        gap: 1%;
 
         svg {
             fill: var(--primary-color) !important;
@@ -50,9 +51,17 @@
 }
 
 .iconTitle {
-    width: 30%;
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;
 
     @media screen and (max-width: 768px) {
         width: 100%;
     }
+}
+
+.titleBorder {
+    margin-top: 0.5rem;
+    border-bottom: 1px solid;
+    margin-left: 0;
 }

@@ -133,7 +133,7 @@ builder.WebHost.ConfigureKestrel((context, options) =>
     else
     {
         // Primary HTTPS listener for local development (shared mkcert cert)
-        var devCertPath = Path.Combine(Directory.GetCurrentDirectory(), "ssl", "dev-cert.pfx");
+        var devCertPath = Path.Combine(Directory.GetCurrentDirectory(), "dev-cert.pfx");
         if (File.Exists(devCertPath))
         {
             options.ListenAnyIP(5000, listenOptions =>

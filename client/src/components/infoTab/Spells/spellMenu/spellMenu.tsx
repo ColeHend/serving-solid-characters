@@ -9,8 +9,8 @@ import { AddSpell } from "../../../../shared/customHooks/utility/tools/addSpellT
 
 
 interface SpellMenuProps {
-    spell: Spell;
-    lastChar: [Accessor<string>, Setter<string>]
+  spell: Spell;
+  lastChar: [Accessor<string>, Setter<string>]
 }
 
 export const SpellMenu: Component<SpellMenuProps> = (props) => {

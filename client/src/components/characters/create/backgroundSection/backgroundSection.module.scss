@@ -1,6 +1,4 @@
-
-
-.SpellsCard {
+.cardAlt {
 
     div { 
 
@@ -13,11 +11,4 @@
 
         background: linear-gradient(var(--secondary-color, blue), transparent);
     }
-}
-
-.spellChips {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-
 }

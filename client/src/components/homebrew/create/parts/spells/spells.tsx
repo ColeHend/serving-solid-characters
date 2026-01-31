@@ -10,17 +10,7 @@ import { useSearchParams } from "@solidjs/router";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
-const Spells: Component = () => {
-  // const doesExist = ()=>{
-  //   return HomebrewManager.spells().findIndex((x) => x.name.toLowerCase() === currentSpell.name.toLowerCase()) > -1;
-  // }
-  const doesExist = createMemo(()=>HomebrewManager.spells().findIndex((x) => x.name.toLowerCase() === currentSpell.name.toLowerCase()) > -1)
-  const createSpell = () => {
-    HomebrewManager.addSpell(currentSpell);
-  }
-  const updateSpell = () => {
-    HomebrewManager.updateSpell(currentSpell);
-  }
+const Spells: Component = () => {  
   const [currentSpell, setCurrentSpell] = createStore<Spell>({
     id: "",
     name: "",
@@ -43,6 +33,13 @@ const Spells: Component = () => {
     subClasses: [],
     components:"", 
   });
+  const doesExist = createMemo(()=>HomebrewManager.spells().findIndex((x) => x.name.toLowerCase() === currentSpell.name.toLowerCase()) > -1)
+   const createSpell = () => {
+    HomebrewManager.addSpell(currentSpell);
+  }
+  const updateSpell = () => {
+    HomebrewManager.updateSpell(currentSpell);
+  }
   const spellLevels = Array.from({ length: 10 }, (_, i) => i);
   const allSpells = useDnDSpells();
   const allClasses = useDnDClasses();
@@ -56,7 +53,6 @@ const Spells: Component = () => {
   });
   const [spellDesc, setSpellDesc] = createSignal("");
   const [spellHigherLevel, setSpellHigherLevel] = createSignal("");
-
   const getSchools = () => {
     const schools = new UniqueSet<string>();
 		

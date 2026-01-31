@@ -17,7 +17,7 @@
 ---
 
 <p align="center"> Few lines describing your project.
-    <br> 
+Serving Solid Characters is a full‑stack PWA combining an ASP.NET API with a SolidJS/Vite frontend to serve versioned D&D SRD JSON (with optional SQL Server persistence). It’s optimized for offline‑first use, local HTTPS development, and easy extension to add or serve homebrew SRD entities.
 </p>
 
 ## 📝 Table of Contents
@@ -65,6 +65,37 @@ make sure you have a active sqlDB running. and the connection string is correct.
 ```
 "localDefault":"YourConnectionString"
 ```
+
+### Setting up dev enviroment
+
+1. 
+in base folder of the project run:
+
+```
+mkcert <spaced apart addresses>
+```
+
+it should create two files that look sorta like: 
+``` <example.com+5-key>.pem & <example.com+5>.pem ```
+
+2. 
+then run the falowing command and make sure to call the pfx file ```dev-cert```.
+
+```
+openssl pkcs12 -export -out dev-cert.pfx -inkey <example.com+5-key>.pem -in <example.com+5>.pem
+```
+
+if you didn't run the commands in the base folder of the project make sure to paste ```dev-cert.pfx``` in the base folder of the project.
+
+3. 
+take your two .pem files from before and create a folder named ```ssl``` in the ```/client```
+directory and paste them in your newly created folder. lastly rename your .pem files to look like:
+```
+dev-cert.pem
+dev-key.pem
+```
+
+
 
 ### Unified Local HTTPS (.NET API + Vite + PWA)
 

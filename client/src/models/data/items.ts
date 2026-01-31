@@ -35,6 +35,7 @@ export enum ItemType {
   Armor,
   Tool,
   Item,
+  Accessory
 }
 
 export interface ItemProperties {

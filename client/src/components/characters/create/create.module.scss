@@ -5,3 +5,33 @@
     border-radius: 15px;
     padding: 10px;
 }
+
+.classHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: var(--secondary-color) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color, blue), transparent);
+    }
+}
+
+.SectionBody {
+    display: flex;
+    flex-direction: row;
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+    }
+}

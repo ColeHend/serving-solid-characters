@@ -13,7 +13,7 @@ export class Character {
     features: []
   }
   public className: string = '';
-  public subclass: string = '';
+  public subclass: string[] = [];
   public background: string = '';
   public alignment: string = '';
   public proficiencies: CharacterProficiency = {
@@ -37,7 +37,15 @@ export class Character {
   public items: CharacterGear = {
     inventory: [],
     equipped: [],
-    attuned: []
+    attuned: [],
+    currency: {
+      platinumPieces: 0,
+      goldPieces: 0,
+      electrumPieces: 0,
+      sliverPieces: 0,
+      copperPieces: 0
+    }
+
   }
 }
 export interface CharacterProficiency {
@@ -78,6 +86,43 @@ export interface CharacterGear {
 	inventory: string[];
 	equipped: string[];
 	attuned: string[];
+  currency: CharacterCurrency;
 }
 
-export type CharacterForm = Omit<Character,"levels"|"spells"|"race"|"proficiencies"|"health"|"stats"|"items"|"level">
+export interface CharacterCurrency {
+  platinumPieces: number;
+  goldPieces: number;
+  electrumPieces: number;
+  sliverPieces: number;
+  copperPieces: number;
+}
+
+type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"> 
+
+export interface CharacterForm extends halfCharacter {
+  race: string;
+  maxHP: number;
+  currentHP: number;
+  tempHP: number;
+  inventory: string[];
+  equipped: string[];
+  attuned: string[];
+  PP: number;
+  GP: number;
+  EP: number;
+  SP: number;
+  CP: number;
+  STR: number;
+  DEX: number;
+  CON: number;
+  INT: number;
+  WIS: number;
+  CHA: number;
+  spells: string[];
+  lineage: string;
+  clsGold: number;
+  backgrndGold: number;
+  backgrndItemChoice: string|null;
+  classItemChoice: string|null;
+  BackgrndFeat: string;
+}
