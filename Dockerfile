@@ -6,12 +6,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy solution and project files first for restore caching
-COPY SolidCharacters.sln ./
+# Copy project files first for restore caching
 COPY SolidCharacters/SolidCharacters.csproj SolidCharacters/
 COPY SolidCharacters.Domain/SolidCharacters.Domain.csproj SolidCharacters.Domain/
 COPY SolidCharacters.Repository/SolidCharacters.Repository.csproj SolidCharacters.Repository/
-RUN dotnet restore "SolidCharacters.sln"
+RUN dotnet restore "SolidCharacters/SolidCharacters.csproj"
 
 # Copy the rest of the source
 COPY . .
@@ -47,6 +46,6 @@ EXPOSE 8080
 
 COPY --from=build /app/publish .
 COPY --from=build /src/SolidCharacters/client/dist ./client/dist
-COPY --from=build /src/data ./data
+COPY --from=build /src/SolidCharacters.Repository/data ./data
 
 ENTRYPOINT ["dotnet", "SolidCharacters.dll"]
