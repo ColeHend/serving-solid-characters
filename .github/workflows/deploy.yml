@@ -39,7 +39,7 @@ jobs:
 
       # Test .NET project
       - name: Test .NET project
-        run: dotnet test SolidCharacters.sln --no-build --verbosity normal
+        run: dotnet test SolidCharacters.sln --verbosity normal
 
       # Setup Node.js
       - name: Setup Node.js ${{ matrix.node-version }}
