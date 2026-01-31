@@ -2,10 +2,17 @@
 .vscode/
 bin/
 obj/
-appsettings.json
-wwwroot/
-client/dist
-client/dev-dist
+SolidCharacters.Domain/bin/
+SolidCharacters.Domain/obj/
+SolidCharacters.Repository/bin/
+SolidCharacters.Repository/obj/
+SolidCharacters/appsettings.json
+SolidCharacters/wwwroot/
+SolidCharacters/bin/
+SolidCharacters/obj/
+SolidCharacters/client/node_modules
+SolidCharacters/client/dist
+SolidCharacters/client/dev-dist
 node_modules
 # SSL dev certs
 ssl/

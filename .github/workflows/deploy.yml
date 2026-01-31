@@ -31,15 +31,15 @@ jobs:
 
       # Restore .NET dependencies
       - name: Restore .NET dependencies
-        run: dotnet restore
+        run: dotnet restore SolidCharacters.sln
 
       # Build .NET project
       - name: Build .NET project
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build SolidCharacters.sln --configuration Release --no-restore
 
       # Test .NET project
       - name: Test .NET project
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test SolidCharacters.sln --no-build --verbosity normal
 
       # Setup Node.js
       - name: Setup Node.js ${{ matrix.node-version }}
