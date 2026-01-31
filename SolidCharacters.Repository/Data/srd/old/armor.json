@@ -1,0 +1,262 @@
+[
+  {
+    "Id":0,
+    "ArmorCategory": "Light",
+    "StealthDisadvantage": true,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 11,
+      "DexBonus": true,
+      "MaxBonus": null
+    },
+    "Name": "Padded",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 5,
+      "Unit": "Gp"
+    },
+    "Weight": 8,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":1,
+    "ArmorCategory": "Light",
+    "StealthDisadvantage": false,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 11,
+      "DexBonus": true,
+      "MaxBonus": null
+    },
+    "Name": "Leather",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 10,
+      "Unit": "Gp"
+    },
+    "Weight": 10,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":2,
+    "ArmorCategory": "Light",
+    "StealthDisadvantage": false,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 12,
+      "DexBonus": true,
+      "MaxBonus": null
+    },
+    "Name": "Studded Leather",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 45,
+      "Unit": "Gp"
+    },
+    "Weight": 13,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":3,
+    "ArmorCategory": "Medium",
+    "StealthDisadvantage": false,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 12,
+      "DexBonus": true,
+      "MaxBonus": 2
+    },
+    "Name": "Hide",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 10,
+      "Unit": "Gp"
+    },
+    "Weight": 12,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":4,
+    "ArmorCategory": "Medium",
+    "StealthDisadvantage": false,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 13,
+      "DexBonus": true,
+      "MaxBonus": 2
+    },
+    "Name": "Chain Shirt",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 50,
+      "Unit": "Gp"
+    },
+    "Weight": 20,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":5,
+    "ArmorCategory": "Medium",
+    "StealthDisadvantage": true,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 14,
+      "DexBonus": true,
+      "MaxBonus": 2
+    },
+    "Name": "Scale Mail",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 50,
+      "Unit": "Gp"
+    },
+    "Weight": 45,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":6,
+    "ArmorCategory": "Medium",
+    "StealthDisadvantage": false,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 14,
+      "DexBonus": true,
+      "MaxBonus": 2
+    },
+    "Name": "Breastplate",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 400,
+      "Unit": "Gp"
+    },
+    "Weight": 20,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":7,
+    "ArmorCategory": "Medium",
+    "StealthDisadvantage": true,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 15,
+      "DexBonus": true,
+      "MaxBonus": 2
+    },
+    "Name": "Half Plate",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 750,
+      "Unit": "Gp"
+    },
+    "Weight": 40,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":8,
+    "ArmorCategory": "Heavy",
+    "StealthDisadvantage": true,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 14,
+      "DexBonus": false,
+      "MaxBonus": null
+    },
+    "Name": "Ring Mail",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 30,
+      "Unit": "Gp"
+    },
+    "Weight": 40,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":9,
+    "ArmorCategory": "Heavy",
+    "StealthDisadvantage": true,
+    "StrMin": 13,
+    "ArmorClass": {
+      "Base": 16,
+      "DexBonus": false,
+      "MaxBonus": null
+    },
+    "Name": "Chain Mail",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 75,
+      "Unit": "Gp"
+    },
+    "Weight": 55,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":10,
+    "ArmorCategory": "Heavy",
+    "StealthDisadvantage": true,
+    "StrMin": 15,
+    "ArmorClass": {
+      "Base": 17,
+      "DexBonus": false,
+      "MaxBonus": null
+    },
+    "Name": "Splint",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 200,
+      "Unit": "Gp"
+    },
+    "Weight": 60,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":11,
+    "ArmorCategory": "Heavy",
+    "StealthDisadvantage": true,
+    "StrMin": 15,
+    "ArmorClass": {
+      "Base": 18,
+      "DexBonus": false,
+      "MaxBonus": null
+    },
+    "Name": "Plate",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 1500,
+      "Unit": "Gp"
+    },
+    "Weight": 65,
+    "Tags": null,
+    "Desc": null
+  },
+  {
+    "Id":12,
+    "ArmorCategory": "Shield",
+    "StealthDisadvantage": false,
+    "StrMin": 0,
+    "ArmorClass": {
+      "Base": 2,
+      "DexBonus": false,
+      "MaxBonus": null
+    },
+    "Name": "Shield",
+    "EquipmentCategory": "Armor",
+    "Cost": {
+      "Quantity": 10,
+      "Unit": "Gp"
+    },
+    "Weight": 6,
+    "Tags": null,
+    "Desc": null
+  }
+]

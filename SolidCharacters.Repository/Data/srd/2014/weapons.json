@@ -1,0 +1,672 @@
+[
+  {
+    "id": 0,
+    "name": "Club",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "1 Sp",
+    "properties": {
+      "Damage": "1d4 Bludgeoning",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Light",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "name": "Dagger",
+    "desc": "",
+    "type": 0,
+    "weight": 1,
+    "cost": "2 Gp",
+    "properties": {
+      "Damage": "1d4 Piercing",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Finesse",
+        "Light",
+        "Thrown",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "name": "Greatclub",
+    "desc": "",
+    "type": 0,
+    "weight": 10,
+    "cost": "2 Sp",
+    "properties": {
+      "Damage": "1d8 Bludgeoning",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "name": "Handaxe",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "5 Gp",
+    "properties": {
+      "Damage": "1d6 Slashing",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Light",
+        "Thrown",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "name": "Javelin",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "5 Sp",
+    "properties": {
+      "Damage": "1d6 Piercing",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Thrown",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "name": "Light hammer",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "2 Gp",
+    "properties": {
+      "Damage": "1d4 Bludgeoning",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Light",
+        "Thrown",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "name": "Mace",
+    "desc": "",
+    "type": 0,
+    "weight": 4,
+    "cost": "5 Gp",
+    "properties": {
+      "Damage": "1d6 Bludgeoning",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "name": "Quarterstaff",
+    "desc": "",
+    "type": 0,
+    "weight": 4,
+    "cost": "2 Sp",
+    "properties": {
+      "Damage": "1d6 Bludgeoning",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Versatile",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "name": "Sickle",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "1 Gp",
+    "properties": {
+      "Damage": "1d4 Slashing",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Light",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "name": "Spear",
+    "desc": "",
+    "type": 0,
+    "weight": 3,
+    "cost": "1 Gp",
+    "properties": {
+      "Damage": "1d4 Piercing",
+      "Category": "Simple",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Thrown",
+        "Versatile",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "name": "Crossbow, light",
+    "desc": "",
+    "type": 0,
+    "weight": 5,
+    "cost": "25 Gp",
+    "properties": {
+      "Damage": "1d8 Piercing",
+      "Category": "Simple",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "80",
+      "RangeLong": "320",
+      "Properties": [
+        "Ammunition",
+        "Loading",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "name": "Dart",
+    "desc": "",
+    "type": 0,
+    "weight": 0,
+    "cost": "5 Cp",
+    "properties": {
+      "Damage": "1d4 Piercing",
+      "Category": "Simple",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "20",
+      "RangeLong": "60",
+      "Properties": [
+        "Finesse",
+        "Thrown"
+      ]
+    }
+  },
+  {
+    "id": 12,
+    "name": "Shortbow",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "25 Gp",
+    "properties": {
+      "Damage": "1d6 Piercing",
+      "Category": "Simple",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "80",
+      "RangeLong": "320",
+      "Properties": [
+        "Ammunition",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 13,
+    "name": "Sling",
+    "desc": "",
+    "type": 0,
+    "weight": 0,
+    "cost": "1 Sp",
+    "properties": {
+      "Damage": "1d4 Bludgeoning",
+      "Category": "Simple",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "30",
+      "RangeLong": "120",
+      "Properties": [
+        "Ammunition"
+      ]
+    }
+  },
+  {
+    "id": 14,
+    "name": "Battleaxe",
+    "desc": "",
+    "type": 0,
+    "weight": 4,
+    "cost": "10 Gp",
+    "properties": {
+      "Damage": "1d8 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Versatile"
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "name": "Flail",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "10 Gp",
+    "properties": {
+      "Damage": "1d8 Bludgeoning",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5"
+    }
+  },
+  {
+    "id": 16,
+    "name": "Glaive",
+    "desc": "",
+    "type": 0,
+    "weight": 6,
+    "cost": "20 Gp",
+    "properties": {
+      "Damage": "1d10 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Heavy",
+        "Reach",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 17,
+    "name": "Greataxe",
+    "desc": "",
+    "type": 0,
+    "weight": 7,
+    "cost": "30 Gp",
+    "properties": {
+      "Damage": "1d12 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Heavy",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 18,
+    "name": "Greatsword",
+    "desc": "",
+    "type": 0,
+    "weight": 6,
+    "cost": "50 Gp",
+    "properties": {
+      "Damage": "2d6 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Heavy",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "name": "Halberd",
+    "desc": "",
+    "type": 0,
+    "weight": 6,
+    "cost": "20 Gp",
+    "properties": {
+      "Damage": "1d10 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Heavy",
+        "Reach",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "name": "Lance",
+    "desc": "",
+    "type": 0,
+    "weight": 6,
+    "cost": "10 Gp",
+    "properties": {
+      "Damage": "1d12 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Reach",
+        "Special"
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "name": "Longsword",
+    "desc": "",
+    "type": 0,
+    "weight": 3,
+    "cost": "15 Gp",
+    "properties": {
+      "Damage": "1d8 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Versatile"
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "name": "Maul",
+    "desc": "",
+    "type": 0,
+    "weight": 10,
+    "cost": "10 Gp",
+    "properties": {
+      "Damage": "2d6 Bludgeoning",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Heavy",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "name": "Morningstar",
+    "desc": "",
+    "type": 0,
+    "weight": 4,
+    "cost": "15 Gp",
+    "properties": {
+      "Damage": "1d8 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5"
+    }
+  },
+  {
+    "id": 24,
+    "name": "Pike",
+    "desc": "",
+    "type": 0,
+    "weight": 18,
+    "cost": "5 Gp",
+    "properties": {
+      "Damage": "1d10 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Heavy",
+        "Reach",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "name": "Rapier",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "25 Gp",
+    "properties": {
+      "Damage": "1d8 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Finesse"
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "name": "Scimitar",
+    "desc": "",
+    "type": 0,
+    "weight": 3,
+    "cost": "25 Gp",
+    "properties": {
+      "Damage": "1d6 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Finesse",
+        "Light"
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "name": "Shortsword",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "10 Gp",
+    "properties": {
+      "Damage": "1d6 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Finesse",
+        "Light",
+        "Monk"
+      ]
+    }
+  },
+  {
+    "id": 28,
+    "name": "Trident",
+    "desc": "",
+    "type": 0,
+    "weight": 4,
+    "cost": "5 Gp",
+    "properties": {
+      "Damage": "1d6 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Thrown",
+        "Versatile"
+      ]
+    }
+  },
+  {
+    "id": 29,
+    "name": "War pick",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "5 Gp",
+    "properties": {
+      "Damage": "1d8 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5"
+    }
+  },
+  {
+    "id": 30,
+    "name": "Warhammer",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "15 Gp",
+    "properties": {
+      "Damage": "1d8 Bludgeoning",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Versatile"
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "name": "Whip",
+    "desc": "",
+    "type": 0,
+    "weight": 3,
+    "cost": "2 Gp",
+    "properties": {
+      "Damage": "1d4 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Melee",
+      "RangeNormal": "5",
+      "Properties": [
+        "Finesse",
+        "Reach"
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "name": "Blowgun",
+    "desc": "",
+    "type": 0,
+    "weight": 1,
+    "cost": "10 Gp",
+    "properties": {
+      "Damage": "1d1 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "25",
+      "RangeLong": "100",
+      "Properties": [
+        "Ammunition",
+        "Loading"
+      ]
+    }
+  },
+  {
+    "id": 33,
+    "name": "Crossbow, hand",
+    "desc": "",
+    "type": 0,
+    "weight": 3,
+    "cost": "75 Gp",
+    "properties": {
+      "Damage": "1d6 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "30",
+      "RangeLong": "120",
+      "Properties": [
+        "Ammunition",
+        "Light",
+        "Loading"
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "name": "Crossbow, heavy",
+    "desc": "",
+    "type": 0,
+    "weight": 18,
+    "cost": "50 Gp",
+    "properties": {
+      "Damage": "1d10 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "100",
+      "RangeLong": "400",
+      "Properties": [
+        "Ammunition",
+        "Light",
+        "Loading",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "name": "Longbow",
+    "desc": "",
+    "type": 0,
+    "weight": 2,
+    "cost": "50 Gp",
+    "properties": {
+      "Damage": "1d8 Piercing",
+      "Category": "Martial",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "150",
+      "RangeLong": "600",
+      "Properties": [
+        "Ammunition",
+        "Heavy",
+        "Two-Handed"
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "name": "Net",
+    "desc": "",
+    "type": 0,
+    "weight": 3,
+    "cost": "1 Gp",
+    "properties": {
+      "Damage": "1d0 Slashing",
+      "Category": "Martial",
+      "WeaponRange": "Ranged",
+      "RangeNormal": "5",
+      "RangeLong": "15",
+      "Properties": [
+        "Thrown",
+        "Special"
+      ]
+    }
+  }
+]

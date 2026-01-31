@@ -1,0 +1,169 @@
+[
+    {
+      "name": "Potion of Healing",
+      "category": "Potion (Consumable)",
+      "rarity": "Common",
+      "description": "A small vial filled with red liquid that glimmers when agitated. Drinking this potion restores a small amount of vitality.",
+      "properties": {
+        "Effect": "You regain 2d4 + 2 hit points when you drink this potion.",
+        "Use": "Action to drink (or administer to another)",
+        "Weight": "½ lb"
+      },
+      "cost": "50 gp (varies by market)"
+    },
+    {
+      "name": "Bag of Holding",
+      "category": "Wondrous Item",
+      "rarity": "Uncommon",
+      "description": "This appears as an ordinary cloth sack, but it is enchanted to hold far more than its outside dimensions suggest.",
+      "properties": {
+        "Capacity": "Inside is a pocket dimension holding up to 500 pounds (volume up to 64 cubic feet】. The bag always weighs 15 lb, regardless of contents.",
+        "Special": "Retrieving an item from the bag requires an Action. If the bag is overloaded or punctured, it ruptures and is destroyed, ejecting its contents. If turned inside out, contents spill out but bag is fine. Placing a Bag of Holding into an extra-dimensional space (like another bag of holding) opens a rift to the Astral Plane."
+      },
+      "cost": "500 gp (DMG value, variable)"
+    },
+    {
+      "name": "Boots of Elvenkind",
+      "category": "Wondrous Item",
+      "rarity": "Uncommon",
+      "description": "Soft leather boots that make no sound, often crafted in Elven style.",
+      "properties": {
+        "Attunement": "No",
+        "Effect": "While wearing these boots, your steps make no sound, regardless of the surfac】. You also have advantage on Dexterity (Stealth) checks that rely on moving silently."
+      },
+      "cost": "Varies (typically 500 gp or more)"
+    },
+    {
+      "name": "Cloak of Protection",
+      "category": "Wondrous Item",
+      "rarity": "Uncommon",
+      "description": "A magical cloak that fortifies the wearer’s defenses. Often a fine cloak embroidered with protective sigils.",
+      "properties": {
+        "Attunement": "Yes",
+        "Effect": "While wearing this cloak, you gain a +1 bonus to Armor Class **and** to all saving throw】."
+      },
+      "cost": "Varies (~750 gp)"
+    },
+    {
+      "name": "+1 Longsword",
+      "category": "Weapon (Martial Melee)",
+      "rarity": "Uncommon",
+      "description": "A finely crafted longsword engraved with runes. It is magically enhanced to strike true.",
+      "properties": {
+        "Attunement": "No",
+        "Effect": "You have a +1 bonus to attack rolls and damage rolls made with this magic sword. It counts as magical for overcoming resistance and immunity."
+      },
+      "cost": "Varies (~500 gp)",
+      "weight": "3 lb"
+    },
+    {
+      "name": "Wand of Fireballs",
+      "category": "Wand",
+      "rarity": "Rare",
+      "description": "A wooden wand carved with draconic flames. This wand allows the wielder to unleash explosive bursts of fire.",
+      "properties": {
+        "Attunement": "Yes (Spellcaster)",
+        "Charges": "7 (regains 1d6+1 charges daily at dawn)",
+        "Effect": "While attuned, you can expend 1 or more charges to cast the *Fireball* spell (Save DC 15) from the wand. For 1 charge, you cast a 3rd-level Fireball (8d6 fire damage). You may increase the spell level by spending an extra charge per spell level. If you expend the wand’s last charge, roll a d20; on a 1, the wand crumbles into ash."
+      },
+      "cost": "Varies (~5,000 gp)"
+    },
+    {
+      "name": "Ring of Invisibility",
+      "category": "Ring",
+      "rarity": "Legendary",
+      "description": "A plain gold ring that becomes invisible itself when worn. It grants the power of invisibility to its wearer.",
+      "properties": {
+        "Attunement": "Yes",
+        "Effect": "While wearing this ring, you can use an action to turn invisible. There is no time limit – you remain invisible until the ring is removed or until you attack or cast a spell. Activating or deactivating the invisibility requires an action. (No charges; works at will.)"
+      },
+      "cost": "Priceless (legendary item)",
+      "weight": "—"
+    },
+    {
+      "name": "Carpet of Flying",
+      "category": "Wondrous Item",
+      "rarity": "Very Rare",
+      "description": "A beautifully woven carpet that responds to its master’s commands and can carry passengers through the air.",
+      "properties": {
+        "Attunement": "No",
+        "Sizes": "Carpets come in various sizes: 3x5 ft (200 lb cap, speed 80 ft), 4x6 ft (400 lb, 60 ft), 5x7 ft (600 lb, 40 ft), 6x9 ft (800 lb, 30 ft】.",
+        "Effect": "You can use an action to speak the carpet’s command word and make it hover and fly. It moves according to your spoken directions, up to its listed Fly speed, and can carry up to its listed capacity (double capacity at half speed)."
+      },
+      "cost": "Varies (~25,000 gp for larger ones)",
+      "weight": "varies (light for its size)"
+    },
+    {
+      "name": "Cube of Force",
+      "category": "Wondrous Item",
+      "rarity": "Rare",
+      "description": "A small magical cube with engraved runes on each face. When activated, it creates invisible force barriers.",
+      "properties": {
+        "Attunement": "Yes",
+        "Charges": "10 (regains 1d6 charges at dawn】",
+        "Effect": "Each face of the cube corresponds to a different level of force field. As an action, you can press one face to expend 1 or more charges to cast a specific force effect (spells: Face 1 – *Mage Armor* (1 charge), Face 2 – *Shield* (1 charge), Face 3 – *Leomund’s Tiny Hut* (3 charges), Face 4 – *Private Sanctum* (4 charges), Face 5 – *Wall of Force* (5 charges), Face 6 – *Prismatic Wall* effect (all 6 faces together】). The chosen barrier surrounds you in a 15-foot cube. The effects can block certain types of physical or magical travel depending on which face is activated (e.g., one face might allow only breathable air through, another blocks living matter, etc.)."
+      },
+      "cost": "Approx. 8,000 gp",
+      "weight": "1 lb"
+    },
+    {
+      "name": "Staff of the Woodlands",
+      "category": "Staff",
+      "rarity": "Very Rare",
+      "description": "A wooden staff decorated with holly and other natural motifs. It is warm to the touch and thrums with druidic power.",
+      "properties": {
+        "Attunement": "Yes (Druid only)",
+        "Charges": "10 (regains 1d6+4 charges at dawn)",
+        "Effect": "The staff can be used as a magical Quarterstaff (+2 attack and damage). It allows the attuned druid to cast certain spells by expending charges: *Animal Friendship* (1 charge), *Speak with Animals* (1 charge), *Speak with Plants* (2 charges), *Wall of Thorns* (6 charges), and more. It also has the unique ability that if you plant it in fertile earth and expend 1 charge, it transforms into a healthy tree (60-foot tall, 5-foot diameter trunk) which lasts for up to 1 day or until dismisse】."
+      },
+      "cost": "— (highly valued among druids)",
+      "weight": "4 lb"
+    },
+    {
+      "name": "Vorpal Sword",
+      "category": "Weapon (Any Sword)",
+      "rarity": "Legendary",
+      "description": "A razor-sharp magical sword of legendary potency. Its edge is so keen it can slice through nearly anything.",
+      "properties": {
+        "Attunement": "Yes",
+        "Effect": "This is a +3 magical sword. In addition to the attack and damage bonus, when you attack a creature that has a head and roll a natural 20 on the attack (critical hit), you cut off the creature’s hea】. The creature dies if it cannot survive without its head. (Creatures immune to slashing damage, or with no head, are not slain by this effect.)"
+      },
+      "cost": "— (legendary artifact)",
+      "weight": "3 lb"
+    },
+    {
+      "name": "Bowl of Commanding Water Elementals",
+      "category": "Wondrous Item",
+      "rarity": "Rare",
+      "description": "A silver bowl etched with aquatic designs. When filled with water, it can summon an elemental from the Plane of Water.",
+      "properties": {
+        "Attunement": "Yes",
+        "Effect": "If the bowl is filled with water, you can use an action to speak a command word and summon a Water Elemental as if you had cast the *Conjure Elemental* spel】. The elemental obeys your commands and remains for up to 1 hour (or until it dies or you dismiss it). The bowl can’t be used this way again until the next dawn."
+      },
+      "weight": "3 lb"
+    },
+    {
+      "name": "Chime of Opening",
+      "category": "Wondrous Item",
+      "rarity": "Rare",
+      "description": "A hollow metal tube about a foot long. When struck, it produces a clear tone that can magically unlock doors and chests.",
+      "properties": {
+        "Attunement": "No",
+        "Charges": "10 uses",
+        "Effect": "As an action, you can strike the chime while pointing it at an object (door, lid, lock) that is closed or locked within 120 feet. The chime casts the *Knock* spell on that target, opening or unlocking it (if not barred by a more powerful magic】. Each use expends one 'charge.' After 10 uses, the chime cracks and becomes nonmagical."
+      },
+      "weight": "1 lb"
+    },
+    {
+      "name": "Circlet of Blasting",
+      "category": "Wondrous Item",
+      "rarity": "Uncommon",
+      "description": "A metal circlet adorned with a ruby. It allows the wearer to unleash a burst of fire energy.",
+      "properties": {
+        "Attunement": "No",
+        "Effect": "While wearing this circlet, you can use an action to cast *Scorching Ray* (spell attack +5】. This property can’t be used again until the next dawn. (Scorching Ray produces three rays of fire, each dealing 2d6 fire damage on a hit.)"
+      },
+      "weight": "—"
+    }
+  ]
+  
