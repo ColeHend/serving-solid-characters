@@ -716,7 +716,7 @@
     },
     "spellcasting": {
       "known_type": "calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat": "WIS",
         "level": "full"
       },
@@ -917,7 +917,7 @@
     },
     "spellcasting": {
       "known_type": "calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat": "WIS",
         "level": "full"
       },
@@ -1595,7 +1595,7 @@
     },
     "spellcasting": {
       "known_type": "calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat":"WIS",
         "level": "half",
         "roundUp": false
@@ -2830,7 +2830,7 @@
     },
     "spellcasting": {
       "known_type":"calc",
-      "spells_known": {
+      "spells_known_calc": {
         "stat": "INT",
         "level": "full"
       },

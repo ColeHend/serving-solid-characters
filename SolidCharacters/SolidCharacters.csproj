@@ -24,8 +24,11 @@
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-    <!-- Include data json files -->
-    <Content Update="..\data\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Link="data\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Copy JSON data files to output -->
+  <ItemGroup>
+    <None Include="..\SolidCharacters.Repository\data\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" LinkBase="data" />
   </ItemGroup>
 
   <ItemGroup>
