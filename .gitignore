@@ -17,3 +17,4 @@ node_modules
 # SSL dev certs
 ssl/
 *.pem
+dev-cert.pfx
