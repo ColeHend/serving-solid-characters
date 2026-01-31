@@ -44,4 +44,9 @@ namespace SolidCharacters.Domain.Core
         public List<ChoicesEntity<Feature<int, string>>> Choice5 { get; set; }
 
     }
+
+    public interface IRunOnStartup
+    {
+        void Run();
+    }
 }

@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.HttpOverrides; // forwarded headers
 using Microsoft.AspNetCore.ResponseCompression; // compression
 using System.IO.Compression; // compression levels
 using System.Net; // proxy IPs
+using SolidCharacters.Domain.Core;
+using SolidCharacters.HostedServices;
 
 var builder = WebApplication.CreateBuilder(args);
 var runningInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
@@ -32,6 +34,8 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ITokenRepository, TokenRepository>();
 builder.Services.AddTransient<ISrdInfoRepository, SrdInfoRepository>();
 builder.Services.AddTransient<HttpClient>();
+builder.Services.AddSingleton<IRunOnStartup, TestStartupService>();
+builder.Services.AddHostedService<StartupRunnerHostedService>();
 
 // ----- Add Database Stuff ----
 // Select which named connection string to use (default localDefault). Override in container with env var DB_CONNECTION_NAME=work

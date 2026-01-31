@@ -21,29 +21,56 @@ namespace SolidCharacters.Repository.Services
 
         public DbJsonService(Microsoft.Extensions.Logging.ILogger<DbJsonService>? logger = null)
         {
+            // Step 1: Resolve base path (separate from loading db.json)
+            path = ResolveDataRoot(logger);
+            logger?.LogInformation("DbJsonService initialized. BasePath={Base} DataExists={Exists}", path, Directory.Exists(Path.Combine(path, "data")));
+
+            // Step 2: Try to load db.json but don't change path or crash if missing
             try
             {
-                // Allow override via environment variable DB_JSON_ROOT
-                var baseAttempt = Environment.GetEnvironmentVariable("DB_JSON_ROOT")
-                                   ?? SafeBaseDirectory();
-                var candidate = baseAttempt;
-                // Walk up directory tree to find repo root with data/ folder
-                for (int i = 0; i < 6 && !Directory.Exists(Path.Combine(candidate, "data")); i++)
-                {
-                    var parent = Directory.GetParent(candidate)?.FullName;
-                    if (parent == null) break;
-                    candidate = parent;
-                }
-                path = candidate;
-                logger?.LogInformation("DbJsonService initialized. BasePath={Base} DataExists={Exists}", path, Directory.Exists(Path.Combine(path, "data")));
                 DatabaseCollection = GetDB();
             }
             catch (Exception ex)
             {
-                path = AppContext.BaseDirectory;
-                logger?.LogError(ex, "DbJsonService failed during initialization. Falling back to {Path}", path);
-                // Keep DatabaseCollection empty rather than throw to avoid crashing every request
+                logger?.LogWarning(ex, "DbJsonService: Failed to load db.json from {Path}. Using empty DatabaseCollection.", path);
+                DatabaseCollection = new DBCollection();
             }
+        }
+
+        /// <summary>
+        /// Resolves the base path containing the data/ folder.
+        /// Validates DB_JSON_ROOT if set; otherwise walks up from AppContext.BaseDirectory.
+        /// </summary>
+        private static string ResolveDataRoot(ILogger? logger)
+        {
+            // Check environment variable first, but only accept if it actually contains data/
+            var envRoot = Environment.GetEnvironmentVariable("DB_JSON_ROOT");
+            if (!string.IsNullOrWhiteSpace(envRoot))
+            {
+                if (Directory.Exists(Path.Combine(envRoot, "data")))
+                {
+                    return envRoot;
+                }
+                logger?.LogWarning("DB_JSON_ROOT={EnvRoot} does not contain a 'data' folder. Ignoring.", envRoot);
+            }
+
+            // Walk up from SafeBaseDirectory to find repo root with data/ folder
+            var baseAttempt = SafeBaseDirectory();
+            var candidate = baseAttempt;
+            for (int i = 0; i < 6; i++)
+            {
+                if (Directory.Exists(Path.Combine(candidate, "data")))
+                {
+                    return candidate;
+                }
+                var parent = Directory.GetParent(candidate)?.FullName;
+                if (parent == null) break;
+                candidate = parent;
+            }
+
+            // Fallback: return baseAttempt even if no data/ folder found (graceful degradation)
+            logger?.LogWarning("Could not locate 'data' folder within 6 parents of {BaseAttempt}. SRD JSON loading will fail.", baseAttempt);
+            return baseAttempt;
         }
         // ------- DatabaseCollection && DB JSON Interactions ---------
         /// <summary>
