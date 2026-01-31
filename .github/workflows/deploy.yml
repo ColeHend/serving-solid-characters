@@ -50,12 +50,12 @@ jobs:
 
       # Install NPM dependencies
       - name: Install NPM dependencies
-        working-directory: ./client
+        working-directory: ./SolidCharacters/client
         run: npm ci
 
       # Build SolidJS project
       - name: Build SolidJS project
-        working-directory: ./client
+        working-directory: ./SolidCharacters/client
         run: npm run build
       
       - name: Set up Docker Buildx
