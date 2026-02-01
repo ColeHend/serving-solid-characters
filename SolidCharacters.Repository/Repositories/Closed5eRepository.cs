@@ -44,11 +44,5 @@ public sealed class Closed5eRepository
             .ToList();
         return items;
     }
-    
-    // public async Task<List<Item>> GetOpen5eItems()
-    // {
-    //     var weapons = await _open5eRepository.GetV2WeaponsAsync();
-    //     var armor = await _open5eRepository.GetV2ArmorAsync();
-    //     return items;
-    // }
+
 }
