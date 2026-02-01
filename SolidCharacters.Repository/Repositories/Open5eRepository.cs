@@ -1,140 +1,120 @@
-using SolidCharacters.Domain.DTO.Updated;
-using SolidCharacters.Repository.Services;
-using Newtonsoft.Json;
-
 namespace SolidCharacters.Repository;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using SolidCharacters.Domain.Open5e;
 
-public class Open5eRepository
+public sealed class Open5eRepository
 {
     private readonly HttpClient _httpClient;
-    private readonly string _baseUrl = "https://api.open5e.com/";
+
+    // API root shows both v1 and v2 endpoints; keep base as api root. :contentReference[oaicite:1]{index=1}
+    private const string BaseUrl = "https://api.open5e.com/";
+
+    private static readonly JsonSerializerSettings JsonSettings = new()
+    {
+        ContractResolver = new DefaultContractResolver
+        {
+            NamingStrategy = new SnakeCaseNamingStrategy()
+        },
+        NullValueHandling = NullValueHandling.Ignore,
+        MissingMemberHandling = MissingMemberHandling.Ignore
+    };
+
     public Open5eRepository(HttpClient httpClient)
     {
         _httpClient = httpClient;
+        // Optional: If you set BaseAddress elsewhere, this won’t hurt.
+        _httpClient.BaseAddress ??= new Uri(BaseUrl);
     }
 
-    public async Task<List<Open5eSpell>> GetSpellsAsync()
-    {
-        var spells = new List<Open5eSpell>();
-        var nextUrl = $"{_baseUrl}spells/";
+    // -------------------------
+    // Public “get everything” methods (ALL endpoints in Api Root)
+    // -------------------------
 
-        while (nextUrl != null)
+    // v2
+    public Task<List<Open5eV2Spell>> GetV2SpellsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV2Spell>("v2/spells/", ct);
+
+    public Task<List<Open5eV2Document>> GetV2DocumentsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV2Document>("v2/documents/", ct);
+
+    public Task<List<Open5eV2Background>> GetV2BackgroundsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV2Background>("v2/backgrounds/", ct);
+
+    public Task<List<Open5eV2Feat>> GetV2FeatsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV2Feat>("v2/feats/", ct);
+
+    public Task<List<Open5eV2Condition>> GetV2ConditionsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV2Condition>("v2/conditions/", ct);
+
+    public Task<List<Open5eV2Weapon>> GetV2WeaponsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV2Weapon>("v2/weapons/", ct);
+
+    public Task<List<Open5eV2Armor>> GetV2ArmorAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV2Armor>("v2/armor/", ct);
+
+    // v1
+    public Task<List<Open5eV1SpellList>> GetV1SpellListsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV1SpellList>("v1/spelllist/", ct);
+
+    public Task<List<Open5eV1Monster>> GetV1MonstersAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV1Monster>("v1/monsters/", ct);
+
+    public Task<List<Open5eV1Plane>> GetV1PlanesAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV1Plane>("v1/planes/", ct);
+
+    public Task<List<Open5eV1Section>> GetV1SectionsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV1Section>("v1/sections/", ct);
+
+    public Task<List<Open5eV1Race>> GetV1RacesAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV1Race>("v1/races/", ct);
+
+    public Task<List<Open5eV1Class>> GetV1ClassesAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV1Class>("v1/classes/", ct);
+
+    public Task<List<Open5eV1MagicItem>> GetV1MagicItemsAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV1MagicItem>("v1/magicitems/", ct);
+
+    public Task<List<Open5eV1ManifestItem>> GetV1ManifestAsync(CancellationToken ct = default)
+        => GetAllPagesAsync<Open5eV1ManifestItem>("v1/manifest/", ct);
+
+    // -------------------------
+    // Core paginator
+    // -------------------------
+    private async Task<List<T>> GetAllPagesAsync<T>(string relativeOrAbsoluteUrl, CancellationToken ct)
+    {
+        var results = new List<T>();
+        string? nextUrl = MakeAbsolute(relativeOrAbsoluteUrl);
+
+        while (!string.IsNullOrWhiteSpace(nextUrl))
         {
-            var response = await _httpClient.GetAsync(nextUrl);
+            using var response = await _httpClient.GetAsync(nextUrl, ct).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
-            var spellResponse = JsonConvert.DeserializeObject<Open5eResponse<Open5eSpell>>(content);
+            var content = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+            var page = JsonConvert.DeserializeObject<Open5eListResponse<T>>(content, JsonSettings);
 
-            if (spellResponse != null)
-            {
-                spells.AddRange(spellResponse.Results);
-                nextUrl = spellResponse.Next;
-            }
-            else
-            {
-                nextUrl = null;
-            }
+            if (page?.Results != null)
+                results.AddRange(page.Results);
+
+            nextUrl = page?.Next;
         }
 
-        return spells;
+        return results;
     }
 
-    public async Task<List<Open5eClass>> GetClassesAsync()
+    private static string MakeAbsolute(string url)
     {
-        var classes = new List<Open5eClass>();
-        var nextUrl = $"{_baseUrl}classes/";
+        if (Uri.TryCreate(url, UriKind.Absolute, out _))
+            return url;
 
-        while (nextUrl != null)
-        {
-            var response = await _httpClient.GetAsync(nextUrl);
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            var classResponse = JsonConvert.DeserializeObject<Open5eResponse<Open5eClass>>(content);
-
-            if (classResponse != null)
-            {
-                classes.AddRange(classResponse.Results);
-                nextUrl = classResponse.Next;
-            }
-            else
-            {
-                nextUrl = null;
-            }
-        }
-
-        return classes;
+        // Accept "v1/..." "v2/..." or "/v1/..."
+        url = url.TrimStart('/');
+        return $"{BaseUrl}{url}";
     }
-
-}
-
-public class Open5eResponse<T>
-{
-    public int Count { get; set; }
-    public string Next { get; set; }
-    public string Previous { get; set; }
-    public List<T> Results { get; set; }
-}
-
-public class Open5eClass
-{
-    public string Slug { get; set; }
-    public string Name { get; set; }
-    public string desc { get; set; }
-    public string Hit_dice { get; set; }
-    public string Hp_at_1st_level { get; set; }
-    public string Hp_at_higher_levels { get; set; }
-    public string Prof_armor { get; set; }
-    public string Prof_weapons { get; set; }
-    public string Prof_tools { get; set; }
-    public string Prof_saving_throws { get; set; }
-    public string Prof_skills { get; set; }
-    public string Equipment { get; set; }
-    public string Table { get; set; }
-    public string Spellcasting_ability { get; set; }
-    public string Subtypes_name { get; set; }
-    public Open5eSubclass[] Archetypes { get; set; }
-}
-
-public class Open5eSubclass
-{
-    public string Slug { get; set; }
-    public string Name { get; set; }
-    public string Desc { get; set; }
-    public string Document__slug { get; set; }
-    public string Document__title { get; set; }
-    public string Document__license_url { get; set; }
-    public string Document__url { get; set; }
-}
-
-public class Open5eSpell
-{
-    public string Slug { get; set; }
-    public string Name { get; set; }
-    public string Desc { get; set; }
-    public string Higher_level { get; set; }
-    public int Page { get; set; }
-    public string Range { get; set; }
-    public int Target_range_sort { get; set; }  
-    public string Components { get; set; }
-    public string Material { get; set; }
-    public string Ritual { get; set; }
-    public bool Can_be_cast_as_ritual { get; set; }
-    public string Duration { get; set; }
-    public string Concentration { get; set; }
-    public bool Requires_concentration { get; set; }
-    public string Casting_time { get; set; }
-    public string Level { get; set; }  
-    public int Level_int { get; set; }
-    public int Spell_level { get; set; }
-    public string School { get; set; }
-    public string Dnd_class { get; set; }
-    public string[] Spell_lists { get; set; }
-    public string Archetype { get; set; }
-    public string Circles { get; set; }
-    public string Document__slug { get; set; }
-    public string Document__title { get; set; }
-    public string Document__license_url { get; set; }
-    public string Document__url { get; set; }
 }
