@@ -34,7 +34,10 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ITokenRepository, TokenRepository>();
 builder.Services.AddTransient<ISrdInfoRepository, SrdInfoRepository>();
 builder.Services.AddTransient<HttpClient>();
+builder.Services.AddTransient<Open5eRepository>();
+builder.Services.AddTransient<Closed5eRepository>();
 builder.Services.AddSingleton<IRunOnStartup, TypeGenStartupService>();
+builder.Services.AddScoped<IRunOnStartup, SpellSyncStartupService>();
 builder.Services.AddHostedService<StartupRunnerHostedService>();
 
 // ----- Add Database Stuff ----

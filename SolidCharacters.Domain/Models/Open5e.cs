@@ -240,7 +240,7 @@ public sealed class Open5eV2SpellCastingOption : Open5eExtensibleDto
     public int? TargetCount { get; set; }
 
     public string? Duration { get; set; }
-    public double? Range { get; set; }
+    public string? Range { get; set; }        // Can be numeric or text like "60 feet"
     public bool? Concentration { get; set; }
 
     public double? ShapeSize { get; set; }
@@ -284,7 +284,7 @@ public sealed class Open5eV2Spell : Open5eExtensibleDto
     public bool? Somatic { get; set; }
     public bool? Material { get; set; }
     public string? MaterialSpecified { get; set; }
-    public int? MaterialCost { get; set; }
+    public decimal? MaterialCost { get; set; }  // Can be decimal like "100.00"
     public bool? MaterialConsumed { get; set; }
 
     public int? TargetCount { get; set; }
