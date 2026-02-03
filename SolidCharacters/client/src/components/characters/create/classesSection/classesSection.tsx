@@ -1,4 +1,4 @@
-import { Button, ExpansionPanel, Select, Option, TabBar, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Input } from "coles-solid-library";
+import { Button, ExpansionPanel, Select, Option, TabBar, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Input, Chipbar, ChipType } from "coles-solid-library";
 import { range } from "rxjs";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
@@ -25,6 +25,8 @@ interface sectionProps {
   knownSpells: [Accessor<string[]>, Setter<string[]>];
   formGroup: FormGroup<CharacterForm>;
   currSubclasses: [Accessor<formSubclass[]>, Setter<formSubclass[]>];
+  charSkills: [Accessor<string[]>, Setter<string[]>];
+  chipJar: [Accessor<ChipType[]>, Setter<ChipType[]>];
 }
 
 export const ClassesSection: Component<sectionProps> = (props) => {
@@ -40,6 +42,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   
   const [classLevels, setClassLevels] = props.classLevels; 
   const [charClasses, setCharClasses] = props.charClasses; 
+  const [skillChipJar, setSkillChipJar] = props.chipJar;
 
   const [showAddClass,setShowAddClass] = createSignal<boolean>(false);
   const [activeTab, setActiveTab] = createSignal<Record<string, number>>({});
@@ -50,7 +53,10 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   //     isAsc: boolean;
   // }>({ sortKey: "level", isAsc: true });
   const [showSpellModal,setShowSpellModal] = createSignal<boolean>(false);
-    
+  const [charSubclasses, setCharSubclasses] = props.currSubclasses;
+  const [charSkills,setCharSkills] = props.charSkills;
+
+  const [skillChoice, setSkillChoice] = createSignal<string>("");
 
   const levels = createMemo<number[]>(()=>new Array(20).fill(0).map((x,i)=>i+1));
 
@@ -218,8 +224,16 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     return class5e.choices?.[class5e.startChoices?.skills ?? ''];
   }
 
+  const SkillAmount = (className: string) => {
+    const class5e = getClass(className);
+
+    const toReturn = class5e.choices?.[class5e.startChoices?.skills ?? ''].amount;
+
+    return toReturn ?? 0;
+  }
+
   createEffect(()=>{
-    console.log("classes: ", levels());
+    console.log("classes: ", classes());
     
   })
 
@@ -328,22 +342,36 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                 <h3>Skill Choices</h3>
                 Choose <span>{skillChoices(charLevel)?.amount}</span> skills from the list below.
                 
-                  {/* <Select
-                    value={Array.isArray(currentSkills()) ? currentSkills() : []}
-                    onSelect={(value) => {
-                      // Ensure value is always an array
-                      const selected = Array.isArray(value) ? value : [value];
+                <div style={{display:"flex", "justify-content":"center","align-items":"center"}}>
+                  <FormField name="Skill Choices" formName={`${charLevel}Skills`}>
+                    <Select
+                      value={skillChoice()}
+                      onChange={(value) => {
+                        const amount = SkillAmount(charLevel);
+                    
+                        if (skillChipJar().length < amount) {
+                          setSkillChoice(value)
+                        }
+                      }}
+                    >
+                      <For each={skillChoices(charLevel)?.options.filter(skill=> !skillChipJar().some(x=> x.value === skill)) ?? []}>
+                        {(skill) => <Option value={skill}>{skill}</Option>}
+                      </For>
+                    </Select>
+                  
+                  </FormField>
 
-                      
-                    }}
-                    multiple
-                  >
-                    <For each={skillChoices(charLevel)?.options}>
-                      {(skill) => <Option value={skill}>{skill}</Option>}
-                    </For>
-                  </Select> */}
-                {/* <FormField name="Skill Choices">
-                </FormField> */}
+                  <Button disabled={skillChipJar().length >= SkillAmount(charLevel)} onclick={()=>{
+                    const amount = SkillAmount(charLevel);
+                    
+                    if (skillChipJar().length < amount) {
+                      setSkillChipJar(old => [...old,{key:"",value:skillChoice(),}])
+                    }
+                  }}>Add Skill</Button>
+                </div>
+
+
+                <Chipbar chips={skillChipJar} setChips={setSkillChipJar} />
 
               </div>
 
@@ -370,12 +398,15 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                               {feature.metadata?.category}
 
                               <Show when={feature.name.includes(`Subclass`)}>
-                                <FormField name="subclass">
+                                <FormField name="subclass" formName={`${charLevel}`}>
                                   <Select
-                                    value={currentSubclass()[0]}
-                                    onSelect={value => {
-                                      // Only update the subclass, not the whole form or class level
-                                      group().set("subclass",[...group().get().subclass, value]);
+                                    value={charSubclasses().find(x => x.class5e === charLevel)?.subclass ?? ""}
+                                    onSelect={(value) => {
+                                      setCharSubclasses(old => {
+                                        // Remove any previous subclass for this class
+                                        const filtered = old.filter(x => x.class5e !== charLevel);
+                                        return [...filtered, { class5e: charLevel, subclass: value }];
+                                      });
                                     }}
                                   >
                                     <For each={getSubclasses(charLevel)}>

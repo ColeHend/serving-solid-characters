@@ -43,7 +43,6 @@ import { BackgroundSection } from "./backgroundSection/backgroundSection";
 import { Ass } from "./abilityScoreSection/abilityScoreSection";
 import { HitPointSection } from "./hpSection/hpSection";
 import { ItemSection } from "./itemSection/itemSection";
-import { getStatBonus } from "../../../shared/customHooks/utility/tools/characterTools";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 
 export type GenMethod = "Standard Array"|"Custom Standard Array"|"Manual/Rolled"|"Point Buy"|"Extended Point Buy";
@@ -114,8 +113,9 @@ const CharacterCreate: Component = () => {
   // Class Section
   const [charClasses,setCharClasses] = createSignal<string[]>([]);
   const [classLevels,setClassLevels] = createSignal<Record<string, number>>({});
-
+  const [charSkills,setCharSkills] = createSignal<string[]>([]);
   const [currentSubclasses, setCurrentSubclasses] = createSignal<formSubclass[]>([]);
+  const [skillChipJar, setSkillChipJar] = createSignal<ChipType[]>([]);
 
   // stats
   const [charStats, setCharStats] = createSignal<Record<string, number>>({
@@ -471,6 +471,8 @@ const CharacterCreate: Component = () => {
             knownSpells={[knownSpells, setKnownSpells]}
             formGroup={group}
             currSubclasses={[currentSubclasses, setCurrentSubclasses]}
+            charSkills={[charSkills,setCharSkills]}
+            chipJar={[skillChipJar, setSkillChipJar]}
           />
         </Show>
 
