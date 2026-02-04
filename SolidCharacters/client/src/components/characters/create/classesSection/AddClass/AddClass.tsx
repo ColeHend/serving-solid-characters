@@ -14,12 +14,21 @@ export const AddClass: Component<modalProps> = (props) => {
 
     return <Modal show={props.show} title="Add a class">
         <div class={`${styles.AddClassTable}`}>
-            <Table data={props.allClasses} columns={["name","hitdie"]}>
+            <Table data={props.allClasses} columns={["name","primaryAbility","hitdie"]}>
                 <Column name="name">
                     <Header>Name</Header>
                     <Cell<Class5E>>
                         {(class5e) => <span>
                             {class5e.name}
+                        </span>}
+                    </Cell>
+                </Column>
+                
+                <Column name="primaryAbility">
+                    <Header>Primary Stat</Header>
+                    <Cell<Class5E>>
+                        {(class5e)=><span>
+                            {class5e.primaryAbility}
                         </span>}
                     </Cell>
                 </Column>
