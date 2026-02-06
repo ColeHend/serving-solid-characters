@@ -106,7 +106,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const isLearned = (spellName: string) => {
     // return charSpells().includes(spellName);
 
-    return charSpells().some(x=>x.includes(spellName))
+    return charSpells().some(x=>x === spellName)
   }
 
   const filterdSpells = (className: string) => {
@@ -391,7 +391,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
               </div>
               <Show when={getTab(charLevel) === 0}>
                 <div style={{ height: "40vh", "overflow-y": "scroll" }}>
-                  <For each={range(1, getCharacterLevel(charLevel))}>
+                  <For each={range(1, getCharacterLevel(charLevel) + 1)}>
                     {(level) => (
                       <div>
                         <For each={getClass(charLevel).features?.[level]}>
@@ -515,7 +515,6 @@ export const ClassesSection: Component<sectionProps> = (props) => {
           setCharClasses={setCharClasses}
           stats={charStats}
           mods={statMods}
-
         />
       </Show>
     </FlatCard>
