@@ -28,6 +28,7 @@ interface sectionProps {
   charSkills: [Accessor<string[]>, Setter<string[]>];
   chipJar: [Accessor<ChipType[]>, Setter<ChipType[]>];
   stats: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
+  modifyers: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
 }
 
 export const ClassesSection: Component<sectionProps> = (props) => {
@@ -58,6 +59,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const [showSpellModal,setShowSpellModal] = createSignal<boolean>(false);
   const [charSubclasses, setCharSubclasses] = props.currSubclasses;
   const [charSkills,setCharSkills] = props.charSkills;
+  const [statMods, setStatMods] = props.modifyers;
 
   const [skillChoice, setSkillChoice] = createSignal<string>("");
 
@@ -512,6 +514,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
           charClasses={charClasses}
           setCharClasses={setCharClasses}
           stats={charStats}
+          mods={statMods}
 
         />
       </Show>

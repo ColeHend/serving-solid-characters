@@ -474,6 +474,7 @@ const CharacterCreate: Component = () => {
             charSkills={[charSkills,setCharSkills]}
             chipJar={[skillChipJar, setSkillChipJar]}
             stats={[charStats, setCharStats]}
+            modifyers={[statMods, setStatMods]}
           />
         </Show>
 

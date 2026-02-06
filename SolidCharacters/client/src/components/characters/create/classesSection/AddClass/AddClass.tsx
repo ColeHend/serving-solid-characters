@@ -11,6 +11,7 @@ interface modalProps {
     charClasses: Accessor<string[]>;
     setCharClasses: Setter<string[]>;
     stats: Accessor<Record<string, number>>;
+    mods: Accessor<Record<string, number>>;
 }
 
 export const AddClass: Component<modalProps> = (props) => {
@@ -18,12 +19,33 @@ export const AddClass: Component<modalProps> = (props) => {
 
     const isMobile = mobileCheck();
 
+    const [userSettings,] = getUserSettings();
+
+    const theme = userSettings().theme;
+
     const stats = createMemo(()=>props.stats());
+    const mods = createMemo(()=>props.mods());
 
     const charClasses = createMemo(()=>props.charClasses());
 
+    const isDarkTheme = createMemo(()=>{
+        if (theme === "dark") {
+            return true
+        } else if (theme === "light") {
+            return false;
+        }
+
+        return true;
+    })
+
+    // functions
+
     const getStat = (stat: string): number => {
-        return stats()[`${abbreviateStat(stat)}`] as number;
+        return stats()[`${abbreviateStat(stat.trim())}`] as number;
+    }
+
+    const getMod = (stat: string): number => {
+        return mods()[`${abbreviateStat(stat.trim())}`] as number;
     }
 
     const checkRequirments = (class5e: Class5E) => {
@@ -31,8 +53,11 @@ export const AddClass: Component<modalProps> = (props) => {
 
         return primaryStat.every((stat)=>{
             const charStat = getStat(stat);
+            const statMod = getMod(stat);
+
+            const fullStat = Math.floor(charStat + statMod);
             
-            if (charStat >= 13) {
+            if (fullStat >= 13) {
                 console.log("true");
                 
                 return true; // true, does meet the requirment.
@@ -108,17 +133,23 @@ export const AddClass: Component<modalProps> = (props) => {
                             <Show when={charClasses().length >= 1}>
                                 <For each={class5e.primaryAbility.split(",")}>
                                     {(stat) => {
-                                        const statVal = createMemo(() => getStat(stat));
-                                        console.log(`${stat}: `, statVal());
+                                        const trimmedStat = stat.trim();
+                                        const statVal = createMemo(() => getStat(trimmedStat));
+                                        const statMod = createMemo(() => getMod(trimmedStat));
+                                        const meetsRequirement = createMemo(() => (statVal() + statMod()) >= 13);
                                         
                                         return (
-                                            <span style={{ "border-bottom": statVal() >= 13 ? "1px solid green" : "1px solid red",display:"flex","justify-content":"center","align-items":"center"}}>
-                                                <span>
-                                                    {stat} of 13
-                                                </span>
-                                                <Show when={statVal() >= 13} fallback={<Icon name="close" size="small" color="red"/>}>
+                                            <span style={{ 
+                                                "border-bottom": meetsRequirement() ? "2px solid green" : "2px solid red",
+                                                display: "flex",
+                                                "justify-content": "center",
+                                                "align-items": "center",
+                                                padding: "4px 8px",
+                                                gap: "6px"
+                                            }}>
+                                                <span>{trimmedStat} of 13</span>
+                                                <Show when={meetsRequirement()} fallback={<Icon name="close" size="small" color="red"/>}>
                                                     <Icon name="check" size="small" color="green"/>
-                                                    
                                                 </Show>
                                             </span>
                                         );
@@ -139,7 +170,7 @@ export const AddClass: Component<modalProps> = (props) => {
                 </Column>
 
                 <Row rowNumber={1} onClick={(e,class5e: Class5E)=>handleClick(class5e)}/>
-                <Row rowNumber={2} />
+                <Row rowNumber={2} style={isDarkTheme() ? {"border-bottom": "1px solid rgba(255, 255, 255, 0.65)"} : {"border-bottom":"1px solid rgba(0,0,0,0.65)"}} />
             </Table>
         </div>
     </Modal>
