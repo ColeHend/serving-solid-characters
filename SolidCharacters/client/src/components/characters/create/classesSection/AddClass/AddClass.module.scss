@@ -4,5 +4,11 @@
     table {
         
         margin: 0 auto;
+
+        tr:nth-child(even) {
+            border-bottom: 1px solid;
+        }
     }
+
+    
 }

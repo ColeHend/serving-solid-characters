@@ -473,6 +473,7 @@ const CharacterCreate: Component = () => {
             currSubclasses={[currentSubclasses, setCurrentSubclasses]}
             charSkills={[charSkills,setCharSkills]}
             chipJar={[skillChipJar, setSkillChipJar]}
+            stats={[charStats, setCharStats]}
           />
         </Show>
 

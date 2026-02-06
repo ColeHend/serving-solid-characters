@@ -114,10 +114,15 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
             </div>
             <div>
                 {local.extraHeaderJsx}
+
                 <Show when={!isAlwaysOpen()}>
-                    <Button borderTheme="none" onClick={toggle}>
-                        {!showCard() ? <Icon name="add"/> : <Icon name="remove" />}
-                    </Button>
+                    <div tabIndex={0} onKeyDown={(e)=>{
+                        if (e.key === "Enter") toggle();
+                    }}>
+                        <Button onClick={toggle} >
+                            {!showCard() ? <Icon name="add"/> : <Icon name="remove" />}
+                        </Button>
+                    </div>
                 </Show>
             </div>
         </div>

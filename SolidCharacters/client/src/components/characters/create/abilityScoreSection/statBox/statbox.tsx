@@ -110,6 +110,8 @@ export const StatBox:Component<boxProps> = (props) => {
         setAbilityScore(getStatName(), targetStat)
     }
 
+    const StatBonus = createMemo(()=>Math.floor(((currentScore() + getModifer()) - 10)/2));
+
     createEffect(()=>{
         if (genMethod() === "Point Buy") {
             setPBStats([
@@ -187,6 +189,10 @@ export const StatBox:Component<boxProps> = (props) => {
         <div class={`${styles.statView}`}>
             <strong>Modifier </strong>
             <span>+{getModifer() === 0 ? "_" : getModifer()}</span>
+        </div>
+        <div class={`${styles.statView}`}>
+            <strong>Stat Bonus </strong>
+            <span><Show when={Math.sign(StatBonus()) === 1}>+</Show>{StatBonus()}</span>
         </div>
     </Container>
 }

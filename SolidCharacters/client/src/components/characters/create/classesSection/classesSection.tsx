@@ -27,6 +27,7 @@ interface sectionProps {
   currSubclasses: [Accessor<formSubclass[]>, Setter<formSubclass[]>];
   charSkills: [Accessor<string[]>, Setter<string[]>];
   chipJar: [Accessor<ChipType[]>, Setter<ChipType[]>];
+  stats: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
 }
 
 export const ClassesSection: Component<sectionProps> = (props) => {
@@ -37,6 +38,8 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const group = createMemo(()=>props.formGroup); 
 
   const [knownSpells, setKnownSpells] = props.knownSpells;
+
+  const [charStats, setCharStats] = props.stats;
   
   const charSpells = createMemo(()=>knownSpells());
   
@@ -232,13 +235,11 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     return toReturn ?? 0;
   }
 
-  createEffect(()=>{
-    console.log("classes: ", classes());
-    
-  })
+  const primaryAbility = (className: string) => {
+    const class5e = getClass(className);
 
-
-
+    return class5e.primaryAbility;
+  }
 
   return (
     <FlatCard
@@ -287,6 +288,11 @@ export const ClassesSection: Component<sectionProps> = (props) => {
               </div>
 
               <div>
+                <div>
+                  <strong>Primary <Show fallback={<>Ability:</>} when={primaryAbility(charLevel).split(",").length > 1}>Abilities:</Show>  </strong>
+                  {primaryAbility(charLevel)}
+                </div>
+
                 <div>
                   <strong>Saving Throws: </strong>
                   {savingThrows(charLevel).join(", ")}
@@ -503,7 +509,10 @@ export const ClassesSection: Component<sectionProps> = (props) => {
         <AddClass 
           show={[showAddClass, setShowAddClass]}
           allClasses={()=>classes().filter(class5e=>!charClasses().some(c => c.includes(class5e.name)))}
+          charClasses={charClasses}
           setCharClasses={setCharClasses}
+          stats={charStats}
+
         />
       </Show>
     </FlatCard>

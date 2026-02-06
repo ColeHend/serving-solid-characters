@@ -1,7 +1,6 @@
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { FormField, FormGroup, Input } from "coles-solid-library";
-import { getStatBonus } from "../../../../shared/customHooks/utility/tools/characterTools";
 import styles from "./hpSection.module.scss";
 import { CharacterForm } from "../../../../models/character.model";
 
