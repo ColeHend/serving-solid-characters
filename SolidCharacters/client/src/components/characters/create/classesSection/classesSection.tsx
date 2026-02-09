@@ -1,16 +1,15 @@
-import { Button, ExpansionPanel, Select, Option, TabBar, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Input, Chipbar, ChipType } from "coles-solid-library";
-import { range } from "rxjs";
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
+import { Button, Select, Option, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Chipbar, ChipType } from "coles-solid-library";
+import { Accessor, Component, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { CasterType, Class5E, Spell, Subclass } from "../../../../models/data";
+import { Class5E, Spell } from "../../../../models/data";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import styles from "./classesSection.module.scss";
 import { AddClass } from "./AddClass/AddClass";
-import { Clone, getSpellSlots, spellLevel } from "../../../../shared";
+import { Clone, spellLevel } from "../../../../shared";
 import SpellModal from "../../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import getSpellAndCasterLevel from "../../../../shared/customHooks/utility/tools/getSpellAndCasterLevel";
-import { Character, CharacterForm } from "../../../../models/character.model";
+import { CharacterForm } from "../../../../models/character.model";
 import { useDnDSubclasses } from "../../../../shared/customHooks/dndInfo/info/all/subclasses";
 import { formSubclass } from "../create";
 

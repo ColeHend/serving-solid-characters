@@ -4,7 +4,6 @@ import {
   createMemo, 
   createSignal, 
   For, 
-  onMount, 
   Show 
 } from "solid-js";
 import styles from "./create.module.scss";

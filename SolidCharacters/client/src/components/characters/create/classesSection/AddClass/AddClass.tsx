@@ -169,7 +169,7 @@ export const AddClass: Component<modalProps> = (props) => {
                     </Cell>
                 </Column>
 
-                <Row rowNumber={1} onClick={(e,class5e: Class5E)=>handleClick(class5e)}/>
+                <Row rowNumber={1} onClick={(e,class5e: Class5E)=>handleClick(class5e)} />
                 <Row rowNumber={2} style={isDarkTheme() ? {"border-bottom": "1px solid rgba(255, 255, 255, 0.65)"} : {"border-bottom":"1px solid rgba(0,0,0,0.65)"}} />
             </Table>
         </div>
