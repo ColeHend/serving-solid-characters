@@ -28,7 +28,7 @@ const SpellModal: Component<props> = (props) => {
 
         <h2>
           <span>
-            {spellLevel(props.spell().level)} {props.spell().school}
+            {spellLevel(+props.spell().level)} {props.spell().school}
           </span>
         </h2>
 

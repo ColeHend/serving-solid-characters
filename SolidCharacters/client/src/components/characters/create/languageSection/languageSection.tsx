@@ -38,7 +38,7 @@ export const LanguageSection:Component<sectionProps> = (props) => {
 
     return <FlatCard icon="chat" headerName={<div>
         Languages: Common<Show when={getLanguages().length > 0}>,</Show> {getLanguages().join(", ")}
-    </div>}>
+    </div>} transparent>
         <div class={`${styles.languageSection}`}>
             <div>
                 You know Common and two other languages.    

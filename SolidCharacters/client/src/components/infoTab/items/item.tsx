@@ -3,7 +3,9 @@ import {
   createEffect, 
   createMemo, 
   createSignal, 
-  lazy
+  lazy,
+  onCleanup,
+  onMount
 } from "solid-js";
 import { useSearchParams } from "@solidjs/router";
 import { Body, Carousel, CarouselElement } from "coles-solid-library";
@@ -12,6 +14,7 @@ import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items"
 import { ItemsView } from "./parts/items/itemsView";
 import { WeaponsView } from "./parts/weapon/weaponView";
 import { ArmorView } from "./parts/armor/armorView";
+import styles from "./item.module.scss";
 
 // const ItemsView = lazy(() => import("./parts/items/itemsView").then(mod => ({ default: mod.ItemsView })));
 // const WeaponsView = lazy(() => import("./parts/weapon/weaponView").then(mod => ({ default: mod.WeaponsView })));
@@ -82,7 +85,15 @@ const ItemsViewTab:Component = () => {
     setSearchParam({itemType: elementMemo()[itemIndex()].name})
   })
 
-  return <Body>
+  onMount(()=>{
+    document.body.classList.add('items-bg');
+  })
+
+  onCleanup(()=>{
+    document.body.classList.remove('items-bg');
+  })
+
+  return <Body class={`${styles.body}`}>
     <h1>Items</h1>
     
     <Carousel 

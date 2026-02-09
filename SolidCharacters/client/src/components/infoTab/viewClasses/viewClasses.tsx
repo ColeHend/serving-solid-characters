@@ -3,7 +3,9 @@ import {
   Show, 
   createSignal, 
   createMemo, 
-  createEffect 
+  createEffect, 
+  onMount,
+  onCleanup
 } from "solid-js";
 import styles from "./viewClasses.module.scss"
 import { useSearchParams } from "@solidjs/router";
@@ -74,13 +76,21 @@ const viewClasses: Component = () => {
     }
   })
 
+  onMount(()=>{
+    document.body.classList.add('classes-bg');
+  })
+
+  onCleanup(()=>{
+    document.body.classList.remove('classes-bg');
+  })
+
   createEffect(() => {
     const list = srdClasses();
     setTableData(list);    
   })
     
   return (
-    <Body class={`${stylin()?.primary}  ${styles.classesView}`}>
+    <Body class={`${stylin()?.primary}  ${styles.body}`}>
       <div class={`${styles.headerBar}`}>
         <h1>Classes</h1>
       </div>

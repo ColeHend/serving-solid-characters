@@ -12,6 +12,7 @@ export const ArmorSection: Component<Props> = (p) => {
       icon='shield'
       headerName='Armor Data'
       startOpen={true}
+      transparent
     >
       <div style={{ display:'flex', gap:'0.75rem', 'flex-wrap':'wrap' }}>
         <FormField name="Armor Category"><Input transparent value={store.state.form!.armorCategory || ''} onInput={e=>store.updateField('armorCategory', e.currentTarget.value)} /></FormField>

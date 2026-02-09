@@ -116,7 +116,7 @@ const CharacterView: Component = () => {
     setSearchParam({ name: currentCharacter()?.name })
   })
   return (
-    <Body class={`${stylin().accent} ${styles.mainBody}`}>
+    <Body class={`${stylin().accent} ${styles.body}`}>
       <h1>Characters View</h1>
       <div>
         <div class={`${styles.viewSheet}`}>

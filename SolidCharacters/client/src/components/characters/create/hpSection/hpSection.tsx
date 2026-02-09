@@ -1,7 +1,6 @@
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { FormField, FormGroup, Input } from "coles-solid-library";
-import { getStatBonus } from "../../../../shared/customHooks/utility/tools/characterTools";
 import styles from "./hpSection.module.scss";
 import { CharacterForm } from "../../../../models/character.model";
 
@@ -69,7 +68,7 @@ export const HitPointSection:Component<sectionProps> = (props) => {
 
    const health = createMemo(()=>Math.floor(+maxHP() + +getConMod()));
 
-    return <FlatCard icon="health_and_safety" headerName={`Hit Points: ${health()}`}>
+    return <FlatCard icon="health_and_safety" headerName={`Hit Points: ${health()}`} transparent>
         <div>
             <p>
             <strong>1st level:</strong> Your starting HP equals your class hit die ({getHitDie() ?? "_"}) plus your Constitution modifier.

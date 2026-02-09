@@ -1,4 +1,4 @@
-import { Component, For, Show, Switch, Match, createSignal, onMount } from 'solid-js';
+import { Component, For, Show, Switch, Match, createSignal, onMount, onCleanup } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Body, FormField, Select, Option } from 'coles-solid-library';
 import styles from './items.module.scss';
@@ -60,10 +60,16 @@ const Items: Component = () => {
     notify('Saved','success');
   }
 
-  // Built-in tags now encapsulated in TagsSection
+  onMount(()=>{
+    document.body.classList.add('items-bg');
+  })
+
+  onCleanup(()=>{
+    document.body.classList.remove('items-bg');
+  })
 
   return (
-    <Body>
+    <Body class={`${styles.body}`}>
       <h1>Items</h1>
       <div class={styles.newPanel || ''}>
         <FormField name="Select Item (SRD 2024/Homebrew)">

@@ -40,6 +40,7 @@ export const TagsSection: Component<Props> = (p) => {
     <FlatCard
      icon="deployed_code"
      headerName="Tags"
+     transparent
     >
       <div style={{ display: "flex", gap: "0.5rem", "flex-wrap": "wrap" }}>
         <For each={store.state.form!.tags}>
