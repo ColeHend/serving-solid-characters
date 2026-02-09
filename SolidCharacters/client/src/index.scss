@@ -21,7 +21,9 @@
 // [style*="display: none"], [style*="visibility: hidden"], [style*="opacity: 0"] {
 //   border: 3px solid red !important;
 // }
-
+:root {
+  --background-image: none;
+}
 //------------------------------------------------------------------
 // Styles
 body {
@@ -35,11 +37,23 @@ body {
   height: 100%;
   background-color: var(--background-color);
   color: var(--on-background-color);
+  background-image: var(--background-image);
 
   @media screen and (max-width: 768px) {
       overflow: hidden;
       position: relative;
   }
+}
+
+%backgroundSettings {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+
+body.home-bg {
+  --background-image: url('./assets/arcane_dictionary_wide.png');
+  @extend %backgroundSettings;
 }
 
 html {

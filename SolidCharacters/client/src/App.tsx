@@ -1,10 +1,18 @@
-import { type Component, createSignal, createEffect, ErrorBoundary } from 'solid-js';
+import { type Component, createSignal, createEffect, ErrorBoundary, onCleanup, onMount } from 'solid-js';
 import { getUserSettings, } from './shared';
 import { Button, Container } from 'coles-solid-library';
 import styles from './App.module.scss';
 
 const App: Component = () => {
   console.log("App component initializing");
+
+  onMount(() => {
+    document.body.classList.add('home-bg');
+  });
+
+  onCleanup(() => {
+    document.body.classList.remove('home-bg');
+  });
   
   // Initialize state with safe defaults
   const [userSettings, setUserSettings] = createSignal({ theme: 'dark' });
