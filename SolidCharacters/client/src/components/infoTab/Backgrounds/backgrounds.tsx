@@ -11,6 +11,8 @@ import { BackgroundMenu } from "./backgroundMenu/backgroundMenu";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
 
 const Viewbackgrounds: Component = () => {
+  // adding the image code gos here!
+
   const [currentBackground,setCurrentBackground] = createSignal<Background | undefined>(undefined); 
   const [showTheBackground,setShowTheBackground] = createSignal<boolean>(false);
   const [paginatedBackgrounds,setPaginatedBackgrounds] = createSignal<Background[]>([])
@@ -29,7 +31,7 @@ const Viewbackgrounds: Component = () => {
     const list = srdbackgrounds();
     if (list.length === 0) return;
     const param = searchParam.name;
-    const found = param && list.some(b => b.name.toLowerCase() === param.toLowerCase());
+    const found = param && list.some(b => b.name.toLowerCase() === (typeof param !== "string" ? param.join(" ") : param ).toLowerCase());
     if (!found) {
       setSearchParam({ name: list[0].name });
     }
@@ -38,7 +40,8 @@ const Viewbackgrounds: Component = () => {
   const selectedBackground = createMemo(() => {
     const list = srdbackgrounds();
     if (list.length === 0) return undefined;
-    const target = (searchParam.name || list[0].name).toLowerCase();
+    const searchString = (typeof searchParam.name !== "string" ? searchParam.name?.join(" ") : searchParam.name )
+    const target = (searchString || list[0].name).toLowerCase();
     return list.find(b => b.name.toLowerCase() === target) || list[0];
   })
 
@@ -64,7 +67,7 @@ const Viewbackgrounds: Component = () => {
 
 
 
-  return <Body>
+  return <Body class={`${styles.body}`}>
     <h1>Backgrounds</h1>
     <div class={`${styles.searchBar}`}>
       <SearchBar 

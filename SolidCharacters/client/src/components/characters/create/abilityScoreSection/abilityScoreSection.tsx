@@ -165,7 +165,7 @@ export const Ass:Component<assProps> = (props) => {
         <span class={`${styles.headerText}`}>int <div>({intelligence() + intelligenceMod()})</div></span>
         <span class={`${styles.headerText}`}>wis <div>({wisdom() + wisdomMod()})</div></span>
         <span class={`${styles.headerText}`}>cha <div>({charisma() + charismaMod()})</div></span>
-    </div>}>
+    </div>} transparent>
         <div>
             <div>
                 <FormField name="Generation Method" formName="Gen Method">
@@ -190,7 +190,7 @@ export const Ass:Component<assProps> = (props) => {
             </div>
 
             <div class={`${styles.pushDown}`}>
-                <FlatCard headerName="Modifers" class={`${styles.cardAlt}`}>
+                <FlatCard headerName="Modifers" class={`${styles.cardAlt}`} transparent>
                     <div>
                         <div class={`${styles.modiferText}`}>
                             Your species or background may grant ability score increases. Choose one of the following ways to apply those bonuses:

@@ -1,10 +1,15 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 $mobile: 768px;
-.classesView {
+
+.body {
     display: flex;
     flex-direction: column;
 
     justify-content: center;
     align-items: center;
+    background-color: vars.$color-surface;
+    background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 
 }
 

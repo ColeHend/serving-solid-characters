@@ -42,7 +42,7 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
         return createMemo(()=>feats().find(f => f.details.name === name));
     }
 
-    return <FlatCard icon="home" headerName={`Background: ${selBackground()?.name ?? ""}`}>
+    return <FlatCard icon="home" headerName={`Background: ${selBackground()?.name ?? ""}`} transparent>
         <div>
             <div style={{"margin-bottom": "2%"}}>
                 <Markdown 
@@ -119,7 +119,7 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
                         </Select>
                     </FormField>
 
-                    <FlatCard headerName={chosenFeat()} class={`${styles.cardAlt}`}>
+                    <FlatCard headerName={chosenFeat()} class={`${styles.cardAlt}`} transparent>
                         <div>
                             <Markdown
                                 text={getFeature(chosenFeat())()?.details.description || ""}
@@ -134,7 +134,7 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
                     <h3>Feature(s): </h3>
 
                     <For each={features()}>
-                        {(feature)=><FlatCard headerName={`Feature: ${feature.name}`} class={`${styles.cardAlt}`}>
+                        {(feature)=><FlatCard headerName={`Feature: ${feature.name}`} class={`${styles.cardAlt}`} transparent>
                             {feature.description}
                         </FlatCard>}
                     </For>

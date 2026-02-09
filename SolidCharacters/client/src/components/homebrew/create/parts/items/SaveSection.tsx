@@ -17,6 +17,7 @@ export const SaveSection: Component<Props> = (p) => {
       icon="save"
       headerName="Save"
       alwaysOpen
+      transparent
     >
       <div style={{ display: "flex", gap: "0.75rem", "align-items": "center" }}>
         <Button disabled={!store.canSave()} onClick={p.onSave}>

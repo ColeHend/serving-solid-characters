@@ -3,7 +3,9 @@ import {
   Show,
   createEffect,
   createMemo,
-  createSignal 
+  createSignal, 
+  onCleanup, 
+  onMount
 } from "solid-js";
 import { 
   Body,
@@ -72,7 +74,15 @@ const races: Component = () => {
     setTableData(list);
   })
 
-  return <Body>
+  onMount(()=>{
+    document.body.classList.add('race-bg');
+  })
+
+  onCleanup(()=>{
+    document.body.classList.remove('race-bg');
+  })
+
+  return <Body class={`${styles.body}`}>
     <h1>Races</h1>
 
     <div class={`${styles.searchBar}`}>

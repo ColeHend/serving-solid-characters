@@ -31,7 +31,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
     const currentSubrace = createMemo(()=>subraces().find(sr=> sr.name === charSubrace()));
     const subraceDescKeys = createMemo(()=>Object.keys(currentSubrace()?.descriptions ?? {}))
 
-    return <FlatCard headerName={`Species: ${[charRace().name]}`} icon="person">
+    return <FlatCard headerName={`Species: ${[charRace().name]}`} icon="person" transparent>
         <div class={`${styles.raceSection}`}>
             <p>
                 <For each={descKeys()}>
@@ -66,7 +66,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
 
             <div class={`${styles.traitList}`}>  
                 <For each={charRace().traits}>
-                    {(trait)=><FlatCard headerName={`${trait.details.name}`} class={`${styles.cardAlt}`}>
+                    {(trait)=><FlatCard headerName={`${trait.details.name}`} class={`${styles.cardAlt}`} transparent>
                         <div>
                             <p>
                                 {trait.details.description}
@@ -77,7 +77,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
                     </FlatCard>}
                 </For>
                 <Show when={currentSubraces().length >= 1}>
-                    <FlatCard headerName="Lineage" class={`${styles.cardAlt}`}>
+                    <FlatCard headerName="Lineage" class={`${styles.cardAlt}`} transparent>
                         <div>
                             The bloodlines of your chosen species branch into many distinct heritages. 
                             Each lineage carries its own legacy—some noble, some forgotten, some whispered of only in ancient tales. 
@@ -130,7 +130,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
                                     <div>
                                         <h3>Feature(s): </h3>
                                         <For each={currentSubrace()?.traits ?? []}>
-                                            {(trait)=><FlatCard headerName={`Feature: ${trait.details.name}`} class={`${styles.pushDown} ${styles.cardTrsiary}`}>
+                                            {(trait)=><FlatCard headerName={`Feature: ${trait.details.name}`} class={`${styles.pushDown} ${styles.cardTrsiary}`} transparent>
                                                 <div>
                                                     <div>
                                                         {trait.details.description}

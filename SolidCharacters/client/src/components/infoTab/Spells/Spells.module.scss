@@ -1,12 +1,15 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 $mobile: 768px;
-.SpellsBody{
+
+.body {
     display: block;
-    height: 49vh;
     width: 35%;
     
     margin: 0 auto;
-    overflow-y: scroll;
-    
+    background-color: vars.$color-surface;
+    background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+
     table {
         margin: 0 auto;
         
@@ -27,6 +30,12 @@ $mobile: 768px;
         width: 100%;
     }
 }
+
+.spellsBody {
+    overflow-y: scroll;
+    height: 49vh;
+}
+
 .paginator {
     display: block;
     width: min-content;

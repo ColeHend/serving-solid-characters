@@ -244,6 +244,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
           <Button onClick={()=>setShowAddClass(old=>!old)}>Add Class</Button>
         </div>
       }
+      transparent
     >
       <div class={`${styles.classesSection}`}>
         <For each={charClasses()}>
@@ -256,7 +257,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                     if (confirm) setCharClasses(old => old.filter(old => old !== charLevel));
                   }}>Delete</Button>
                 </Show>
-            }>
+            } transparent>
               <div class={`${styles.classHeader}`}>
                   <Select
                     value={getCharacterLevel(charLevel)}
@@ -364,6 +365,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                               headerName={`${feature.name}`}
                               icon="star"
                               class={`${styles.cardAlt}`}
+                              transparent
                             >
                               {feature.description}
 

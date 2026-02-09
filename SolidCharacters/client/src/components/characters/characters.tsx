@@ -23,7 +23,7 @@ const Characters: Component = () => {
     setCharacters(characterManager.characters());
   })
   return (
-    <Body class={`${stylin().accent} ${styles.mainBody}`}>
+    <Body class={`${stylin().accent} ${styles.body}`}>
       <h1 style={{margin: "0 auto", width: "min-content"}}>Characters</h1>
       <div class={`${styles.allCharsTables}`}>
         <Table 

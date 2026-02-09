@@ -6,6 +6,9 @@
   border-radius: $border-radius-md;
   padding: $spacing-1;
   justify-content: stretch;
+  background-color: $color-surface;
+  background-color: color-mix(in srgb, $color-surface 60%, transparent) !important;
+
   @media (max-width: 768px) {
     margin: $spacing-2;
     width: 95%;

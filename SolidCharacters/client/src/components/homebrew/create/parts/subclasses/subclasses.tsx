@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, onMount, batch, Show, createEffect, For } from "solid-js";
+import { Component, createMemo, createSignal, onMount, batch, Show, createEffect, For, onCleanup } from "solid-js";
 import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared";
 import { Subclass as OldSubclass } from "../../../../../models/old/class.model";
 import { A, useSearchParams } from "@solidjs/router";
@@ -15,6 +15,7 @@ import { SpellcastingSection } from './SpellcastingSection';
 import { FeatureDetail } from "../../../../../models/data";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
+import styles from './subclasses.module.scss';
 
 export interface FeatureDetailLevel extends FeatureDetail {
   info: {
@@ -344,8 +345,16 @@ const Subclasses: Component = () => {
   // Track user edits for dirty state via explicit listeners (avoid monkey-patching FormGroup)
   const markDirty = () => { if (!loadingEdit() && activeKey() !== '__new__') setUserDirty(true); };
 
+  onMount(() => {
+    document.body.classList.add('subclasses-bg');
+  })
+
+  onCleanup(() => {
+    document.body.classList.remove('subclasses-bg');
+  })
+
   return (
-    <Body>
+    <Body class={`${styles.body}`}>
       <h1>Subclass Homebrew</h1>
       <div style={{ 'margin-bottom': '1rem', display: 'flex', 'flex-direction': 'column', gap: '0.5rem', 'max-width': '620px' }}>
         <label style={{ display: 'flex', 'flex-direction': 'column', gap: '0.25rem' }}>
@@ -365,12 +374,12 @@ const Subclasses: Component = () => {
           </div>
         </Show>
       </div>
-      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true}>
+      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
         <ClassSelection form={SubclassFormGroup as any} allClassNames={allClassNames} getSubclassLevels={getSubclassLevels} setToAddFeatureLevel={setToAddFeatureLevel} updateParamsIfReady={updateParamsIfReady} />
         <CoreFields form={SubclassFormGroup as any} updateParamsIfReady={updateParamsIfReady} onNameInput={markDirty} onDescriptionInput={markDirty} />
       </FlatCard>
       <Show when={SubclassFormGroup.get('parent_class') && SubclassFormGroup.get('name')}>
-        <FlatCard icon="star" headerName="Features">
+        <FlatCard icon="star" headerName="Features" transparent>
           <FeaturesSection 
             form={SubclassFormGroup as any} 
             getSubclassLevels={getSubclassLevels} 
@@ -380,7 +389,7 @@ const Subclasses: Component = () => {
             setEditIndex={setEditIndex}
             getEditIndex={editIndex} />
         </FlatCard>
-        <FlatCard icon="equalizer" headerName="Spellcasting">
+        <FlatCard icon="equalizer" headerName="Spellcasting" transparent>
           <SpellcastingSection
             form={SubclassFormGroup as any}
             toAddKnownLevel={toAddKnownLevel}
@@ -407,7 +416,7 @@ const Subclasses: Component = () => {
             }}
           />
         </FlatCard>
-        <FlatCard icon="save" headerName="save" alwaysOpen>
+        <FlatCard icon="save" headerName="save" alwaysOpen transparent>
           <div style={{ display: 'flex', 'gap': '0.75rem', 'margin-top': '0.75rem', 'flex-wrap':'wrap' }}>
             <button
               disabled={!canAddSubclass() || (activeKey() !== '__new__' && !(isModifiedFlag() || userDirty()))}

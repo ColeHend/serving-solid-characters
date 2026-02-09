@@ -1,4 +1,4 @@
-import { Component, For, createSignal, createMemo, Show, createEffect, onMount, Accessor } from "solid-js";
+import { Component, For, createSignal, createMemo, Show, createEffect, onMount, Accessor, onCleanup } from "solid-js";
 import styles from './spells.module.scss';
 import { Input, Button, Select, Option, Chip, Body, TextArea, FormField, Checkbox } from "coles-solid-library";
 import { getAddNumberAccent, UniqueSet } from "../../../../../shared/";
@@ -93,6 +93,12 @@ const Spells: Component = () => {
 
   onMount(()=>{
     if (searchParam.name) fillSpellInfo(true);
+    
+    document.body.classList.add('spells-bg');
+  })
+
+  onCleanup(() => {
+    document.body.classList.remove('spells-bg');
   })
   createEffect(() => {
     setCurrentSpell({ 'description': spellDesc() });
@@ -108,10 +114,10 @@ const Spells: Component = () => {
       currentSpell.description?.trim().length > 0;
   });
 
-  return <Body>
+  return <Body class={`${styles.body}`}>
     <h1>Spells</h1>
     <div class={`${styles.wrapper}`}>
-      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true}>
+      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
         <p>
           <FormField class={`${styles.smallField}`} name="Spell Name">
             <Input transparent value={currentSpell['name']} onInput={(e) => setCurrentSpell({ name: e.currentTarget.value })} />
@@ -133,7 +139,7 @@ const Spells: Component = () => {
           </FormField>
         </p>
       </FlatCard>
-      <FlatCard icon="candle" headerName="Components">
+      <FlatCard icon="candle" headerName="Components" transparent>
         <span class={`${styles.break}`} />
         <p>
           <Checkbox label="has Verbal?"
@@ -185,7 +191,7 @@ const Spells: Component = () => {
           </p>
         </div>
       </FlatCard>
-      <FlatCard icon="deployed_code" headerName="properties">
+      <FlatCard icon="deployed_code" headerName="properties" transparent>
         <div class={`${styles.flexBoxRow}`}>
           <span class={`${styles.break}`} />
           <div class={`${styles.field}`}>
@@ -304,7 +310,7 @@ const Spells: Component = () => {
         </div>
         
       </FlatCard>
-      <FlatCard icon="save" headerName="Saving" alwaysOpen>
+      <FlatCard icon="save" headerName="Saving" alwaysOpen transparent>
         <span class={`${styles.break}`} />
         <p>
           <Show when={!doesExist()}>

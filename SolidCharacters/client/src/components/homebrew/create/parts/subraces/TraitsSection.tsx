@@ -18,7 +18,7 @@ export const TraitsSection: Component<Props> = (p) => {
     collapsed,
     toggle,
   } = p.api;
-  return <FlatCard icon="star" headerName="Traits">
+  return <FlatCard icon="star" headerName="Traits" transparent>
       <div class="inlineRow inlineDense" style={{ "margin-top": ".25rem" }}>
         <FormField name="Trait Name">
           <Input
