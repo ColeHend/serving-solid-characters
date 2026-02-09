@@ -3,18 +3,8 @@
 $mobile: 768px;
 
 .body {
-  width: 70%;
-  margin: 0 auto;
-  border-radius: 15px;
-  padding: 8px;
-  padding-top: 0px;
   background-color: vars.$color-surface;
   background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
-
-  @media screen and (max-width: $mobile){
-      width: 95%;
-      margin: 0 auto;
-    }
 }
 
 .backgroundsDiv {
