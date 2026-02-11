@@ -428,7 +428,7 @@ const CharacterCreate: Component = () => {
             </FormField>
 
             <FormField name="Initial Class" formName="className">
-              <Select class={`${styles.transparent}`} onChange={()=>{
+              <Select onChange={()=>{
                 setClassLevels({});
                 setCharClasses([group.get().className]);
               }}>
