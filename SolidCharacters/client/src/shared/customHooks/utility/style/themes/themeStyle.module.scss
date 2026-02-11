@@ -11,6 +11,45 @@
     padding: 0;
     overflow-x: hidden;
 }
+
+// background image is set on the body element, so we need to make sure the .body class doesn't override it
+
+:global(body.home-bg) .body {
+    background-color: transparent;
+}
+
+// :global(body.backgrounds-bg) .body {
+//     background-color: transparent;
+// }
+
+:global(body.feats-bg) .body {
+    background-color: transparent;
+}
+
+:global(body.spells-bg) .body {
+    background-color: transparent;
+}
+
+:global(body.classes-bg) .body {
+    background-color: transparent;
+}
+
+:global(body.subclasses-bg) .body {
+    background-color: transparent;
+}
+
+:global(body.items-bg) .body {
+    background-color: transparent;  
+}
+
+:global(body.race-bg) .body {
+    background-color: transparent;  
+}
+
+:global(body.character-create-bg) .body {
+    background-color: transparent;  
+}
+
 .primary {
     font-family: var(--font-family);
     font-size: var(--font-size-base);

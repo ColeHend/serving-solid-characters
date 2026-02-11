@@ -1,4 +1,4 @@
-import { Component, createSignal, createMemo, createEffect } from "solid-js";
+import { Component, createSignal, createMemo, createEffect, onMount, onCleanup } from "solid-js";
 import { useSearchParams } from "@solidjs/router";
 import { ArrayValidation, ValidatorResult } from "coles-solid-library/dist/components/Form/formHelp/models";
 import { addSnackbar, Button, Container, Form, FormGroup, Validators } from "coles-solid-library";
@@ -454,6 +454,14 @@ export const Classes: Component = () => {
     setDebugSnapshot({ primaryStat: prim, savingThrows: saves, armor, weapon, tool, itemStart });
   });
 
+  onMount(()=>{
+    document.body.classList.add('classes-bg');
+  })
+
+  onCleanup(()=>{
+    document.body.classList.remove('classes-bg');
+  })
+
   return (
     <Container
       theme="surface"
@@ -468,19 +476,19 @@ export const Classes: Component = () => {
     >
       <Form data={ClassFormGroup} onSubmit={onSubmit}>
         <div >
-          <FlatCard icon="identity_platform" headerName="Identity" startOpen={true}>
+          <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
             <div class={styles.body}>
               <Header resetNonce={resetNonce()} />
               <Stats />
             </div>
           </FlatCard>
-          <FlatCard icon="deployed_code" headerName="Proficiencies">
+          <FlatCard icon="deployed_code" headerName="Proficiencies" transparent>
             <Proficiencies setProfStore={setProfStore} formGroup={ClassFormGroup} />
           </FlatCard>
-          <FlatCard icon="home_repair_service" headerName="Starting Equipment">
+          <FlatCard icon="home_repair_service" headerName="Starting Equipment" transparent>
             <Items formGroup={ClassFormGroup} />
           </FlatCard>
-          <FlatCard icon="star" headerName="Features">
+          <FlatCard icon="star" headerName="Features" transparent>
             <FeatureTable tableData={classLevels} setTableData={setClassLevels} formGroup={ClassFormGroup} />
           </FlatCard>
         </div>
@@ -488,6 +496,7 @@ export const Classes: Component = () => {
           icon="save"
           headerName="Save"
           alwaysOpen
+          transparent
         >
           <Button type="submit" aria-label="Save Class">
             Submit

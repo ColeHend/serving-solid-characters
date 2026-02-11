@@ -53,7 +53,7 @@ export const FeaturesSection: Component<Props> = (p) => {
 
   return (
     <>
-      <FlatCard icon='star' headerName='Features'>
+      <FlatCard icon='star' headerName='Features' transparent>
         <div style={{ display:'flex', gap:'.5rem', 'align-items':'center' }}>
           <Button onClick={startAdd}>+ Feature</Button>
           <Show when={editIndex()>=0}><span style={{ 'font-size':'.7rem', opacity:0.65 }}>Editing: {featureName()}</span></Show>

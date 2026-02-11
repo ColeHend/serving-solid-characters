@@ -19,7 +19,7 @@ export const LanguageSection: Component<Props> = (p) => {
     toggle,
   } = p.api;
   return (
-    <FlatCard icon="chat" headerName="languages">
+    <FlatCard icon="chat" headerName="languages" transparent>
       <div class="inlineRow inlineDense" style={{ "margin-top": ".25rem" }}>
         <FormField name="Add Lang">
           <Input

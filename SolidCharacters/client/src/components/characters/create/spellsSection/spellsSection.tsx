@@ -55,7 +55,7 @@ export const SpellsSection:Component<SectionProps> = (props) => {
         return null;
     }
  
-    return <FlatCard icon="book_ribbon" headerName={`Spells (${characterSpells().length})`}>
+    return <FlatCard icon="book_ribbon" headerName={`Spells (${characterSpells().length})`} transparent>
         <div class={`${styles.spellChips}`}>
             <For each={characterSpells()}>
                 {(spell) => <Chip value={spell} onClick={(()=>{

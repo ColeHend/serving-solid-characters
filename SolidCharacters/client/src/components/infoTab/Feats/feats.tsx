@@ -4,6 +4,8 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  onCleanup,
+  onMount,
 } from "solid-js";
 import { 
   Body,
@@ -58,7 +60,7 @@ const featsList: Component = () => {
   createEffect(()=>{
     const list = allFeats();
     if (list.length === 0) return;
-    const param = searchParam.name;
+    const param = typeof searchParam.name !== "string" ? searchParam.name?.[0]: searchParam.name;
     const found = param && list.some(f => f.details?.name && f.details.name.toLowerCase() === param.toLowerCase());
     if (!found) {
       setSearchParam({ name: list[0].details?.name || ''});
@@ -68,8 +70,9 @@ const featsList: Component = () => {
   const selectedFeat = createMemo(() => {
   const list = allFeats();
     if (list.length === 0) return undefined;
-  const target = (searchParam.name || list[0].details?.name || '').toLowerCase();
-  return list.find(f => f.details?.name && f.details.name.toLowerCase() === target) || list[0];
+    const param = typeof searchParam.name !== "string" ? searchParam.name?.[0]: searchParam.name;
+    const target = (param || list[0].details?.name || '').toLowerCase();
+    return list.find(f => f.details?.name && f.details.name.toLowerCase() === target) || list[0];
   })
   
   
@@ -89,13 +92,21 @@ const featsList: Component = () => {
     }
   })
 
+  onMount(()=>{
+    document.body.classList.add('feats-bg');
+  })
+
+  onCleanup(()=>{
+    document.body.classList.remove('feats-bg');
+  })
+
   createEffect(()=>{
   const list = allFeats();
   setTableData(list.filter(f => f?.details?.name));
   })
 
   return (
-    <Body class={`${styles.featWrapper}`}>
+    <Body class={`${styles.body}`}>
       <h1>Feats</h1>
                 
       <div class={`${styles.searchDiv}`}>

@@ -1,4 +1,4 @@
-import { Component, For, Match, Switch, createSignal, createMemo, Show, onMount, createEffect } from "solid-js";
+import { Component, For, Match, Switch, createSignal, createMemo, Show, onMount, createEffect, onCleanup } from "solid-js";
 import styles from "./feats.module.scss";
 import { homebrewManager, } from "../../../../../shared/";
 import { Input, Select, Option, Chip, Body, Button, TextArea, FormField} from "coles-solid-library";
@@ -144,7 +144,11 @@ const Feats: Component = () => {
     } as Feat & { name: string; desc: string[] };
     return newFeat as Feat;
   });
-  onMount(() => { if (searchParams.name && typeof searchParams.name === "string") prefillFromQuery(searchParams.name); });
+  onMount(() => { 
+    if (searchParams.name && typeof searchParams.name === "string") prefillFromQuery(searchParams.name); 
+
+    document.body.classList.add('feats-bg');
+  });
   createEffect(() => { const qp = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" "); if (qp) prefillFromQuery(qp); });
   const featExists = createMemo(()=>{
     return HomebrewManager.feats().findIndex((x) => (x as any).details?.name === featName() || x.name === featName()) !== -1;
@@ -161,12 +165,16 @@ const Feats: Component = () => {
   const isValid = createMemo(() => {
     return featName()?.trim().length > 0;
   })
+
+  onCleanup(() => {
+    document.body.classList.remove('feats-bg');
+  })
+
   return (
-    <>
-      <Body>
+    <Body class={`${styles.body}`}>
         <h1>Feats</h1>
         <div class="featHomebrew">
-          <FlatCard icon="identity_platform" headerName="Identity" startOpen={true}>
+          <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
             <div class={`${styles.name}`}>
               <h2>Add Name</h2>
               <FormField name="Add Name">
@@ -211,7 +219,7 @@ const Feats: Component = () => {
               </Show>
             </div>
           </FlatCard>
-          <FlatCard icon="deployed_code" headerName="Prerequisites">
+          <FlatCard icon="deployed_code" headerName="Prerequisites" transparent>
             <div class={`${styles.preRequisites}`}>
               
               <h2>Add Pre-Requisites</h2>
@@ -376,7 +384,7 @@ const Feats: Component = () => {
               </div>
             </div>
           </FlatCard>
-          <FlatCard icon="equalizer" headerName="Description">
+          <FlatCard icon="equalizer" headerName="Description" transparent>
             <div class={`${styles.Description}`}>
               <h2>Description</h2>
               <FormField name="Description">
@@ -390,7 +398,7 @@ const Feats: Component = () => {
               </FormField>
             </div>
           </FlatCard>
-          <FlatCard icon="save" headerName="Saving" alwaysOpen>
+          <FlatCard icon="save" headerName="Saving" alwaysOpen transparent>
             <Show when={!featExists()}>
               <Button
                 disabled={!isValid()}
@@ -411,8 +419,7 @@ const Feats: Component = () => {
             </Show>
           </FlatCard>
         </div>
-      </Body>
-    </>
+    </Body>
   );
 };
 export default Feats;

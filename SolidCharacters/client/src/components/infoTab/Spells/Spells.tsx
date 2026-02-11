@@ -4,6 +4,8 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  onCleanup,
+  onMount,
   useContext,
 } from "solid-js";
 import styles from "./Spells.module.scss";
@@ -137,6 +139,14 @@ const masterSpells: Component = () => {
     }
   });
 
+  onMount(()=>{
+    document.body.classList.add('spells-bg');
+  })
+
+  onCleanup(()=>{
+    document.body.classList.remove('spells-bg');
+  })
+
   createEffect(() => {
     const allSpells = dndSrdSpells();
 
@@ -144,7 +154,7 @@ const masterSpells: Component = () => {
   });
 
   return (
-    <Body class={`${styles.spellsBody}`}>
+    <Body class={`${styles.body}`}>
       <h1>Spells</h1>
       {/* <SearchBar
         searchResults={searchResults}
@@ -158,7 +168,7 @@ const masterSpells: Component = () => {
           searchFunction={(spell,search)=>spell.name.toLowerCase() === search.toLowerCase()}
         />
       </div>
-      <div class={`${styles.SpellsBody}`}>
+      <div class={`${styles.spellsBody}`}>
         <Table 
           data={() => paginatedSpells()} 
           columns={["name","school","level","menu"]}> 

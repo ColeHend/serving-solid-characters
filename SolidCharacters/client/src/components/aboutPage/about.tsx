@@ -6,7 +6,7 @@ import Li_Icon from "../../assets/LI-In-Bug.png";
 
 export const aboutPage:Component = () => {
 
-  return <Body class={`${styles.aboutBody}`}>
+  return <Body class={`${styles.body}`}>
     <h1>About Us</h1>
     <h2>
       <a href="https://www.linkedin.com/in/coleahenderson/" target="_blank" class={`${styles.Icon}`}>

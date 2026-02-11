@@ -12,6 +12,7 @@ export const IdentitySection: Component<Props> = (p) => {
       icon="identity_platform"
       headerName='Identity'
       startOpen={true}
+      transparent
     >
       <FormField name="Name">
         <Input transparent value={store.state.form!.name} onInput={e=>store.updateField('name', e.currentTarget.value)} />

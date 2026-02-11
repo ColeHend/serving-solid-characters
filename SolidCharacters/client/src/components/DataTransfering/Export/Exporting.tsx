@@ -145,7 +145,7 @@ const Exporting:Component = () => {
 
   const [showConfirm,setShowConfirm] = createSignal<boolean>(false);
   const arrowSize = {width:'32px',height:'32px'};
-  return <div class={`${styles?.wrapper}`}>
+  return <div class={`${styles.body}`}>
         
     <div class={`${styles.leftList}`}>
       <h2>Avalable Options</h2>

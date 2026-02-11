@@ -21,7 +21,9 @@
 // [style*="display: none"], [style*="visibility: hidden"], [style*="opacity: 0"] {
 //   border: 3px solid red !important;
 // }
-
+:root {
+  --background-image: none;
+}
 //------------------------------------------------------------------
 // Styles
 body {
@@ -35,11 +37,65 @@ body {
   height: 100%;
   background-color: var(--background-color);
   color: var(--on-background-color);
+  background-image: var(--background-image);
 
   @media screen and (max-width: 768px) {
       overflow: hidden;
       position: relative;
   }
+}
+
+// ---background images--- \\
+
+%backgroundSettings {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+
+body.home-bg {
+  --background-image: url('./assets/arcane_dictionary_wide.png');
+  @extend %backgroundSettings;
+}
+
+// body.backrounds-bg {
+//   --background-image: url('./assets/arcane_dictionary_backgrounds.png');
+//   @extend %backgroundSettings;
+// }
+
+body.feats-bg {
+  --background-image: url('./assets/arcane_dictionary_feats.png');
+  @extend %backgroundSettings;
+}
+
+body.spells-bg {
+  --background-image: url('./assets/arcane_dictionary_spells.png');
+  @extend %backgroundSettings;
+}
+
+body.classes-bg {
+  --background-image: url('./assets/arcane_dictionary_classes.png');
+  @extend %backgroundSettings;
+}
+
+body.subclasses-bg {
+  --background-image: url('./assets/arcane_dictionary_subclasses.png');
+  @extend %backgroundSettings;
+}
+
+body.items-bg {
+  --background-image: url('./assets/arcane_dictionary_items.png');
+  @extend %backgroundSettings;
+}
+
+body.race-bg {
+  --background-image: url('./assets/arcane_dictionary_races.png');
+  @extend %backgroundSettings;
+}
+
+body.character-create-bg {
+  --background-image: url('./assets/arcane_dictionary_characters.png');
+  @extend %backgroundSettings;
 }
 
 html {

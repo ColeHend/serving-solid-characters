@@ -4,6 +4,8 @@ import {
   createMemo, 
   createSignal, 
   For, 
+  onCleanup, 
+  onMount, 
   Show 
 } from "solid-js";
 import styles from "./create.module.scss";
@@ -395,24 +397,31 @@ const CharacterCreate: Component = () => {
 
   // effects on change
 
-  // onMount(()=>{
-  //   if (searchParams.name) fillCharacterInfo(true);
-  // })
+  onMount(()=>{
+    // if (searchParams.name) fillCharacterInfo(true);
+
+    document.body.classList.add('character-create-bg');
+  })
+
+  onCleanup(()=>{
+    document.body.classList.remove('character-create-bg');
+  })
 
   createEffect(()=>{
     if(characterName() !== "") setSearchParams({ name: characterName()});
     
   })
 
+
   return (
-    <Body class={`${stylin().accent} ${styles.mainBody}`}>
+    <Body class={`${stylin().accent} ${styles.body}`}>
       <Form data={group} onSubmit={handleSubmit}>
         <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} extraHeaderJsx={
           <Show when={exist()}>
               <Button onClick={()=>{}}>Fill Info</Button>
               <Button onClick={handleDelete}>Delete</Button>
           </Show>
-        } alwaysOpen>
+        } alwaysOpen transparent>
           <div class={`${styles.SectionBody}`}>
             <FormField name="Name" formName="name">
               <Input />
@@ -538,7 +547,7 @@ const CharacterCreate: Component = () => {
           />
         </Show>
        
-        <FlatCard icon="save" headerName="Save" alwaysOpen> 
+        <FlatCard icon="save" headerName="Save" alwaysOpen transparent> 
           <Button type="submit" aria-label="submit btn" disabled={isDisabled()}>
             {exist() ? "update" : "save"}
           </Button>

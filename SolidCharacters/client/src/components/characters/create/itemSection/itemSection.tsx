@@ -181,9 +181,9 @@ export const ItemSection:Component<sectionProps> = (props) => {
         setInventory([]);
     }
 
-    return <FlatCard icon="backpack" headerName="Equipment">
+    return <FlatCard icon="backpack" headerName="Equipment" transparent>
         <Show when={!exist()}>
-            <FlatCard headerName={<strong>Starting Equipment</strong>}>
+            <FlatCard headerName={<strong>Starting Equipment</strong>} transparent>
                 <div>
                     please note that selecting ether button will reset the inventory and any option made. so please select <strong>items</strong> or <strong>gold</strong> before making any final dections
                 </div>
@@ -315,20 +315,20 @@ export const ItemSection:Component<sectionProps> = (props) => {
 
             </FlatCard>
         </Show>
-        <FlatCard headerName={<strong>Inventory ({inventory().length})</strong>}>
+        <FlatCard headerName={<strong>Inventory ({inventory().length})</strong>} transparent>
             <div class={`${styles.inventoryBox}`}>
                 <For each={inventory()}>
                     {(item)=><Chip value={item} remove={()=>setInventory(old => old.filter(x => x !== item))} />}
                 </For>
             </div>
         </FlatCard>
-        <FlatCard headerName={<strong>Add Item</strong>}>
+        <FlatCard headerName={<strong>Add Item</strong>} transparent>
             <AddItem 
                 allItems={allItems} 
                 inventory={[inventory, setInventory]}
             />
         </FlatCard>
-        <FlatCard headerName={<strong>Currency</strong>}>
+        <FlatCard headerName={<strong>Currency</strong>} transparent>
             <div class={`${styles.moneySection}`}>
                 <For each={currencies}>
                     {(currency, i)=><div>

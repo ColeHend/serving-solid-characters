@@ -24,7 +24,7 @@ export const IdentitySection: Component<Props> = (p) => {
     collapsed,
     toggle,
   } = p.api;
-  return <FlatCard icon="identity_platform" headerName="Idenity" startOpen={true}>
+  return <FlatCard icon="identity_platform" headerName="Idenity" startOpen={true} transparent>
       <div style={{
         display: "flex",
         "flex-direction": "row",

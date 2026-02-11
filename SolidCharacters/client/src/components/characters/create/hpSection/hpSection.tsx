@@ -68,7 +68,7 @@ export const HitPointSection:Component<sectionProps> = (props) => {
 
    const health = createMemo(()=>Math.floor(+maxHP() + +getConMod()));
 
-    return <FlatCard icon="health_and_safety" headerName={`Hit Points: ${health()}`}>
+    return <FlatCard icon="health_and_safety" headerName={`Hit Points: ${health()}`} transparent>
         <div>
             <p>
             <strong>1st level:</strong> Your starting HP equals your class hit die ({getHitDie() ?? "_"}) plus your Constitution modifier.
