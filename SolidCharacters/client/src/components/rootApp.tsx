@@ -10,6 +10,7 @@ import NavMenu from "./navMenu/navMenu";
 import { addTheme, Button, Container, SnackbarController } from "coles-solid-library";
 import { UserSettings } from "../models/userSettings";
 import { useDnDSpells } from "../shared/customHooks/dndInfo/info/all/spells";
+import styles from './rootApp.module.scss';
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
@@ -138,11 +139,11 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
             isMobile={isMobile()} 
             style={"margin-bottom: 15px;"} 
             list={[defaultShowList, setDefaultShowList]} />
-          <Container theme="subheader" style={{"margin-bottom": '8px',display:"flex",gap:"1%"}} >
+          <Container theme="subheader"   class={`${styles.subheader}`}>
             <span></span> {/* empty span to push buttons over */}
             <For each={quickLinks()}>
               {(quickLink,i)=><>
-                <Button style={{color: "white","border-right":"1px solid","padding-right":"8px","border-radius":"0"}} transparent onClick={()=>navigate(quickLink.link)}>
+                <Button transparent onClick={()=>navigate(quickLink.link)}>
                   {quickLink.name}
                   
                 </Button>

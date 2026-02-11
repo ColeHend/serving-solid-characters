@@ -40,7 +40,7 @@ const AbilitiesSection: Component<Props> = (p) => {
           </Button>
         </div>
       }
-    >
+    transparent>
       <div class={!p.collapsed ? styles.chipsRow : styles.collapsedContent}>
         <For each={p.abilityChoices}>{(a) => <Chip value={a} />}</For>
         <Show when={!p.abilityChoices.length}>

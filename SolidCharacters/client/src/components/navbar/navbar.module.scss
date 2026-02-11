@@ -14,11 +14,13 @@
     align-items: center;
     $mobile: 768px;
     color: $header-on-background-color !important;
-    
+    background-color: transparent;    
+
     :nth-child(1) {
         display: flex;
         flex-direction: row;
         width: 100vw;
+
         @media screen and (max-width: $mobile){
             width: 100%;
         }

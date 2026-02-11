@@ -51,7 +51,7 @@ const FeaturesSection: Component<Props> = (p) => {
     <FlatCard icon="star" headerName="Features" extraHeaderJsx={<div>
       <div><span>{p.features.length}</span> <span>total</span></div>
       <Button onClick={() => setShow(true)}>Edit</Button>
-    </div>}>
+    </div>} transparent>
       <div class={!p.collapsed ? styles.chipsRow : styles.collapsedContent}>
         <For each={p.features}>{(f) => <Chip value={f.name} />}</For>
         <Show when={!p.features.length}>

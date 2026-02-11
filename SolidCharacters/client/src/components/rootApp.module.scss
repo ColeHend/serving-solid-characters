@@ -1,0 +1,20 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
+.subheader {
+  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.37) !important;
+  margin-bottom: 8px;
+  display: flex !important; 
+  gap: 1%;
+
+    button {
+        color: white;
+        border-right: 1px solid transparent;
+        border-image: linear-gradient(
+        to bottom,
+        transparent,
+        vars.$color-primary
+        ) 1;
+        padding-right: 8px;
+        border-radius: 0;
+    }
+}

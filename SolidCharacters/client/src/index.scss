@@ -53,49 +53,26 @@ body {
   background-position: center top;
 }
 
-body.home-bg {
-  --background-image: url('./assets/arcane_dictionary_wide.png');
-  @extend %backgroundSettings;
-}
+// List of body classes with their respective background images
+$background-images: (
+  'home-bg': './assets/arcane_dictionary_wide.png',
+  'feats-bg': './assets/arcane_dictionary_feats.png',
+  'spells-bg': './assets/arcane_dictionary_spells.png',
+  'classes-bg': './assets/arcane_dictionary_classes.png',
+  'subclasses-bg': './assets/arcane_dictionary_subclasses.png',
+  'items-bg': './assets/arcane_dictionary_items.png',
+  'race-bg': './assets/arcane_dictionary_races.png',
+  'character-create-bg': './assets/arcane_dictionary_characters.png',
+  'character-view-bg': './assets/arcane_dictionary_CharacterView.png',
+  'backgrounds-bg': './assets/arcane_dictionary_backgronds.png',
+  'aboutUS-bg': './assets/arcane_dictionary_aaboutUS.png'
+);
 
-// body.backrounds-bg {
-//   --background-image: url('./assets/arcane_dictionary_backgrounds.png');
-//   @extend %backgroundSettings;
-// }
-
-body.feats-bg {
-  --background-image: url('./assets/arcane_dictionary_feats.png');
-  @extend %backgroundSettings;
-}
-
-body.spells-bg {
-  --background-image: url('./assets/arcane_dictionary_spells.png');
-  @extend %backgroundSettings;
-}
-
-body.classes-bg {
-  --background-image: url('./assets/arcane_dictionary_classes.png');
-  @extend %backgroundSettings;
-}
-
-body.subclasses-bg {
-  --background-image: url('./assets/arcane_dictionary_subclasses.png');
-  @extend %backgroundSettings;
-}
-
-body.items-bg {
-  --background-image: url('./assets/arcane_dictionary_items.png');
-  @extend %backgroundSettings;
-}
-
-body.race-bg {
-  --background-image: url('./assets/arcane_dictionary_races.png');
-  @extend %backgroundSettings;
-}
-
-body.character-create-bg {
-  --background-image: url('./assets/arcane_dictionary_characters.png');
-  @extend %backgroundSettings;
+@each $class, $image in $background-images {
+  body.#{$class} {
+    --background-image: url(#{$image});
+    @extend %backgroundSettings;
+  }
 }
 
 html {

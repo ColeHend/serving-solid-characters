@@ -428,7 +428,7 @@ const CharacterCreate: Component = () => {
             </FormField>
 
             <FormField name="Initial Class" formName="className">
-              <Select onChange={()=>{
+              <Select class={`${styles.transparent}`} onChange={()=>{
                 setClassLevels({});
                 setCharClasses([group.get().className]);
               }}>
@@ -461,9 +461,7 @@ const CharacterCreate: Component = () => {
               </Select>
             </FormField>
             <FormField name="background" formName="background">
-              <Select onChange={()=>{
-                group.set("BackgrndFeat", selectedBackground()?.feat || "")
-              }}>
+              <Select>
                 <For each={backgroundNames()}>
                   {(background)=><Option value={background}>{background}</Option>}
                 </For>

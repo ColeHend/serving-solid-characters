@@ -1,4 +1,4 @@
-import { Component, For, createSignal, createMemo, Show, createEffect } from "solid-js";
+import { Component, For, createSignal, createMemo, Show, createEffect, onMount, onCleanup } from "solid-js";
 import { Body, Input, Select, Option, Button, FormField } from "coles-solid-library";
 import styles from './backgrounds.module.scss';
 import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
@@ -162,13 +162,21 @@ const Backgrounds: Component = () => {
     }
   })
 
+  onMount(() => {
+    document.body.classList.add('backgrounds-bg');
+  })
+
+
+  onCleanup(() => {
+    document.body.classList.remove('backgrounds-bg');
+  })
+
   return (
-    <>
-      <Body>
+    <Body class={`${styles.body}`}>
         <h1>Backgrounds</h1>
         <div class={styles.newPanel}>
           <h2>SRD / Homebrew Background Editor</h2>
-          <FlatCard icon="identity_platform" headerName="Identity" alwaysOpen>
+          <FlatCard icon="identity_platform" headerName="Identity" alwaysOpen transparent>  
             <div class={styles.rowWrap}>
               <FormField name="Select Background (2024)">
                 <Select transparent value={bStore.state.selection.activeName || ''} onChange={(val) => { if (val === '__new__') bStore.selectNew(); else handleSelectBackground(val); }}>
@@ -276,7 +284,7 @@ const Backgrounds: Component = () => {
                 </div>
               </Show>
               {/* Persist */}
-              <FlatCard icon="save" headerName="Saving" alwaysOpen>
+              <FlatCard icon="save" headerName="Saving" alwaysOpen transparent>
                 <div class={styles.chipsRow}>
                   <Show when={!existsInHomebrew()} >
                    <Button disabled={!bStore.activeBackground() || !isValid()} onClick={() => saveNewFormat(false)}>Save As Homebrew</Button>
@@ -299,9 +307,7 @@ const Backgrounds: Component = () => {
             <div style={{ color: 'red' }}>Failed to load backgrounds: {bStore.state.error}</div>
           </Show>
         </div>
-        </Body> 
-      
-    </>
+    </Body> 
   );
 }
 export const SNACKBAR_TIMEOUT_MS = 3200; // exported for tests

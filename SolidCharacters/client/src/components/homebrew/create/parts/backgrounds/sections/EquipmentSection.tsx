@@ -89,7 +89,7 @@ const EquipmentSection: Component<Props> = (p) => {
           <Button onClick={() => setShow(true)}>Edit</Button>
         </div>
       }
-    >
+    transparent>
       <div
         
       >

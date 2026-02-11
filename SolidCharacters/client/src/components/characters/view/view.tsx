@@ -115,6 +115,15 @@ const CharacterView: Component = () => {
   effect(() => {
     setSearchParam({ name: currentCharacter()?.name })
   })
+
+  onMount(() => {
+    document.body.classList.add("character-view-bg");
+  })
+
+  onCleanup(() => {
+    document.body.classList.remove("character-view-bg");
+  })
+  
   return (
     <Body class={`${stylin().accent} ${styles.body}`}>
       <h1>Characters View</h1>

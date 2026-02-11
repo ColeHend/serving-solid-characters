@@ -42,6 +42,12 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
         return createMemo(()=>feats().find(f => f.details.name === name));
     }
 
+    onMount(()=>{
+        if (chosenFeat() === "") {
+            form().set("BackgrndFeat", selBackground()?.feat || "")
+        }
+    })
+
     return <FlatCard icon="home" headerName={`Background: ${selBackground()?.name ?? ""}`} transparent>
         <div>
             <div style={{"margin-bottom": "2%"}}>

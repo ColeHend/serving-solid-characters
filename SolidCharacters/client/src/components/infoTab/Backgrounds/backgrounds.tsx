@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, Show } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
 import styles from "./backgrounds.module.scss";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
@@ -11,8 +11,6 @@ import { BackgroundMenu } from "./backgroundMenu/backgroundMenu";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
 
 const Viewbackgrounds: Component = () => {
-  // adding the image code gos here!
-
   const [currentBackground,setCurrentBackground] = createSignal<Background | undefined>(undefined); 
   const [showTheBackground,setShowTheBackground] = createSignal<boolean>(false);
   const [paginatedBackgrounds,setPaginatedBackgrounds] = createSignal<Background[]>([])
@@ -65,7 +63,13 @@ const Viewbackgrounds: Component = () => {
     setTableData(list);
   })
 
+  onMount(() => {
+    document.body.classList.add("backgrounds-bg");
+  })
 
+  onCleanup(() => {
+    document.body.classList.remove("backgrounds-bg");
+  })
 
   return <Body class={`${styles.body}`}>
     <h1>Backgrounds</h1>
