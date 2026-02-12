@@ -193,6 +193,7 @@ export const ItemsView:Component<viewProps> = (props) => {
       <Paginator 
         items={searchResults}
         setPaginatedItems={setPaginatedItems}
+        transparent
       />
     </div>
 

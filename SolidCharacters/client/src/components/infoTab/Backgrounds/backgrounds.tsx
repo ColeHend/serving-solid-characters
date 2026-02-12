@@ -111,7 +111,7 @@ const Viewbackgrounds: Component = () => {
     </Show>
 
     <div class={`${styles.paginator}`}>
-      <Paginator items={displayResults} setPaginatedItems={setPaginatedBackgrounds}  />
+      <Paginator items={displayResults} setPaginatedItems={setPaginatedBackgrounds} transparent />
     </div>           
   </Body>
 };

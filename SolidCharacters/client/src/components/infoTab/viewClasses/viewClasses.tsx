@@ -127,7 +127,8 @@ const viewClasses: Component = () => {
       <div class={`${styles.paginator}`}>
         <Paginator 
           items={searchResults} 
-          setPaginatedItems={setPaginatedClasses}/>
+          setPaginatedItems={setPaginatedClasses}
+          transparent/>
       </div>
       
       <Show when={showClass()}>

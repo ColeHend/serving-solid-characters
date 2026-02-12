@@ -5,6 +5,8 @@
     flex-direction: row;
     background-color: white;
     border-radius: 30px;
+    padding: 1%;
+    
     input {
         margin: auto 0;
         font-size: large;
@@ -15,6 +17,8 @@
         border: none;
         background-color: inherit;
         color: black !important;
+        
+
         &:focus {
             outline: none;
         }
@@ -24,7 +28,7 @@
     
     
     button {
-        background-color: inherit !important;
+        background: transparent !important;
         border: none;
         margin: 0;
         padding: 0;

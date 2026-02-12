@@ -1,3 +1,5 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 .statsView {
     margin-top: 1%;
     display: flex;
@@ -71,4 +73,8 @@
     flex-direction: row;
     flex-wrap: wrap;
     margin-top: 1%;
+}
+
+.transparent {
+    background: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 }

@@ -118,7 +118,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     // check for highest slots
     const highestSlotLevel = createMemo<number>(()=>{
 
-      return getSpellAndCasterLevel(class5e(),"spell",level() - 1)
+      return getSpellAndCasterLevel(class5e(),"spell",level())
     }) 
 
     // - filter spells by class and subclass 

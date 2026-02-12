@@ -115,19 +115,18 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
                 <div>
                     <h3>Suggested Feat: </h3>
                     
-                        <Select value={form().get().BackgrndFeat} onChange={(feat)=>{
-                            props.formGroup.set("BackgrndFeat", feat)
-                            console.log("clicked");
-                            
-                        }}>
-                            <For each={feats().filter(x=> x.prerequisites.length === 0)}>
-                                {(feat)=><Option value={feat.details.name}>
-                                    {feat.details.name}    
-                                </Option>}
-                            </For>
-                        </Select>
-                    {/* <FormField name="Suggested Feat" formName="BackgrndFeat"> 
-                    </FormField> */}
+                    <Select value={form().get().BackgrndFeat} onChange={(feat)=>{
+                        props.formGroup.set("BackgrndFeat", feat)
+                        console.log("clicked");
+                        
+                    }} class={`${styles.transparent}`}>
+                        <For each={feats().filter(x=> x.prerequisites.length === 0)}>
+                            {(feat)=><Option value={feat.details.name}>
+                                {feat.details.name}    
+                            </Option>}
+                        </For>
+                    </Select>
+                    
 
                     <FlatCard headerName={chosenFeat()} class={`${styles.cardAlt}`} transparent>
                         <div>

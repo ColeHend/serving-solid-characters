@@ -3,6 +3,27 @@
 .body {
     background-color: vars.$color-surface;
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+
+    button {
+		background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+	}
+
+	fieldset {
+        background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+        
+        :nth-child(even) {
+            background-color: transparent !important;
+            
+            :nth-child(n) {
+                background-color: transparent !important;
+            }
+        }
+        
+        legend {
+            background-color: transparent !important;
+        }
+        
+    }
 }
 
 .name {
@@ -75,4 +96,12 @@
         width: max-content;
         margin: 5px;
     }
+}
+
+.tranparent {
+    background-color: transparent !important;
+}
+
+.colorTransparent {
+    background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 }

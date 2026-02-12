@@ -240,6 +240,7 @@ export const Ass:Component<assProps> = (props) => {
                                 setModChips(old => [...old, { key: value, value: "1" }]);
                                 setModStat("");
                             }}
+                            class={`${styles.transparent}`}
                         >
                             <For each={stats.filter(stat => !modChips().some(chip => chip.key === stat))}>
                                 {stat => <Option value={stat}>{displayStat(stat)}</Option>}

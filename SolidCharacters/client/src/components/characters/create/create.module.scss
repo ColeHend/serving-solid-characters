@@ -20,7 +20,6 @@
         
         :nth-child(even) {
             background-color: transparent !important;
-            background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
             
             :nth-child(n) {
                 background-color: transparent !important;

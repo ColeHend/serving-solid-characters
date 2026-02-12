@@ -21,6 +21,7 @@ export const ClassSelection = <T extends { parent_class: string }>(p: ClassSelec
         if (p.getSubclassLevels().length > 0) p.setToAddFeatureLevel(+p.getSubclassLevels()[0]);
         p.updateParamsIfReady();
       }}
+      class={`${Styles.transparent}`}
     >
       <For each={p.allClassNames()}>{c => <Option value={c}>{c}</Option>}</For>
     </Select>

@@ -168,7 +168,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           </div>
           <footer
             style={{
-              opacity: "25%",
+              opacity: "45%",
               width: "70%",
               "margin-top": "8px",
               bottom: 0,

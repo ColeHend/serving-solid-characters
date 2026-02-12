@@ -3,6 +3,31 @@
 .body {
     background-color: vars.$color-surface;
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+
+    button:not(.traitChipBtn) {
+        background-color: color-mix(
+            in srgb,
+            vars.$color-surface 60%,
+            transparent
+        ) !important;
+    }
+  
+    fieldset {
+        background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+        
+        :nth-child(even) {
+            background-color: transparent !important;
+            
+            :nth-child(n) {
+                background-color: transparent !important;
+            }
+        }
+        
+        legend {
+            background-color: transparent !important;
+        }
+        
+    }
 }
 
 
@@ -41,7 +66,7 @@
 :global(.chipsRowSingle) { display:flex; flex-wrap:nowrap; gap:.4rem; overflow-x:auto; scrollbar-width:thin; padding:.25rem .15rem .25rem 0; }
 :global(.chipsRowSingle)::-webkit-scrollbar { height:6px; }
 :global(.chipsRowSingle)::-webkit-scrollbar-track { background:transparent; }
-:global(.chipsRowSingle)::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
+:global(.chipsRowSingle)::-webkit-scrollbar-thumb { background: transparent; border-radius:3px; }
 
 /* Utility row actions still available globally */
 :global(.rowActions) { display:flex; gap:.5rem; align-items:center; }
@@ -62,5 +87,5 @@
 /* Highlight editing trait chip */
 :global([data-mock='Chip'][data-editing='true']) { outline:2px solid var(--clr-warning,#fa5); outline-offset:2px; border-radius:6px; box-shadow:0 0 0 2px color-mix(in srgb,var(--clr-warning,#fa5) 40%, transparent); }
 /* Clickable chip wrapper for trait editing */
-:global(.traitChipBtn) { background:none; border:0; padding:0; margin:0; cursor:pointer; display:inline-flex; }
+:global(.traitChipBtn) { background: transparent; border:0; padding:0; margin:0; cursor:pointer; display:inline-flex; }
 :global(.traitChipBtn[data-editing='true']) { outline:2px solid var(--clr-warning,#fa5); outline-offset:2px; }

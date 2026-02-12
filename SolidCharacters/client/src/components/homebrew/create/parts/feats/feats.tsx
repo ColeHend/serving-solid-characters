@@ -227,6 +227,7 @@ const Feats: Component = () => {
                 <Select
                   value={selectedType()}
                   onChange={(e) => setSelectedType(() => +e as PrerequisiteType)}
+                  class={`${styles.colorTransparent}`}
                   transparent
                 >
                   <Option value={PrerequisiteType.Stat}>Ability Score</Option>
@@ -242,7 +243,7 @@ const Feats: Component = () => {
                 <Switch>
                   <Match when={selectedType() === PrerequisiteType.Stat}>
                     <div>
-                      <Select transparent value={keyName()} onChange={(e) => setKeyName(e)}>
+                      <Select transparent value={keyName()} onChange={(e) => setKeyName(e)} class={`${styles.colorTransparent}`}>
                         <Option value={"STR"}>Strength</Option>
                         <Option value={"DEX"}>Dexterity</Option>
                         <Option value={"CON"}>Constitution</Option>
@@ -264,6 +265,7 @@ const Feats: Component = () => {
                     <div>
                       <Select transparent 
                         value={keyName()}
+                        class={`${styles.colorTransparent}`}
                         onChange={(e) => {
                           setKeyName("Class");
                           setKeyValue(e);
@@ -305,6 +307,7 @@ const Feats: Component = () => {
                       <Select
                         transparent
                         value={keyValue()}
+                        class={`${styles.colorTransparent}`}
                         onChange={(e) => setKeyValue(e)}
                       >
                         <For each={subclasses()}>{sc => (
@@ -319,6 +322,7 @@ const Feats: Component = () => {
                         transparent
                         value={keyValue()}
                         onChange={(e) => setKeyValue(e)}
+                        class={`${styles.colorTransparent}`}
                       >
                         <For each={feats()}>{f => {
                           const nm = (f as any).details?.name || (f as any).name;
@@ -333,6 +337,7 @@ const Feats: Component = () => {
                         transparent
                         value={keyValue()}
                         onChange={(e) => setKeyValue(e)}
+                        class={`${styles.colorTransparent}`}
                       >
                         <For each={races()}>{r => (
                           <Option value={(r as any).name}>{(r as any).name}</Option>
@@ -346,6 +351,7 @@ const Feats: Component = () => {
                         transparent
                         value={keyValue()}
                         onChange={(e) => setKeyValue(e)}
+                        class={`${styles.colorTransparent}`}
                       >
                         <For each={items()}>{it => (
                           <Option value={(it as any).name}>{(it as any).name}</Option>

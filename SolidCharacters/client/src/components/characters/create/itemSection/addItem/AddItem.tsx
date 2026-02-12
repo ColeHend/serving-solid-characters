@@ -120,7 +120,8 @@ export const AddItem: Component<props> = (props) => {
         <Paginator
             items={searchedItems}
             setPaginatedItems={setPaginatedItems}
-            itemsPerPage={[6,10,15]}
+            itemsPerPage={[6,10,15,25]}
+            transparent
         />
        </div>
     </div>

@@ -415,6 +415,7 @@ const CharacterCreate: Component = () => {
 
   return (
     <Body class={`${stylin().accent} ${styles.body}`}>
+      <h2>Character Creator</h2>
       <Form data={group} onSubmit={handleSubmit}>
         <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} extraHeaderJsx={
           <Show when={exist()}>
