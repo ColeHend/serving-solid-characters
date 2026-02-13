@@ -65,6 +65,7 @@ const NavMenu: Component<Props> = (props) => {
   const convertHombrewViewToCreate = (link: string) => {
     return link.replace('view', 'create').replace("?name=", "/");
   };
+  
   createEffect(() => {
     console.log('showSettings', showSettings());
   });

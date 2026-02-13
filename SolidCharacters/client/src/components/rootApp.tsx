@@ -11,6 +11,7 @@ import { addTheme, Button, Container, SnackbarController } from "coles-solid-lib
 import { UserSettings } from "../models/userSettings";
 import { useDnDSpells } from "../shared/customHooks/dndInfo/info/all/spells";
 import styles from './rootApp.module.scss';
+import { SideMenu } from "./sideMenu/SideMenu";
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
