@@ -22,6 +22,13 @@
 .classesSection {
     max-height: 70vh;
     overflow-y: scroll;
+
+    padding: 0;
+    margin: 0;
+
+    @media screen and (max-width: 768px) {
+        max-width: 100%;
+    }
 }
 
 .TabBar {

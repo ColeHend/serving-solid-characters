@@ -245,7 +245,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   return (
     <FlatCard
       icon="shield"
-      headerName={<div style={{width:"20vw", display:"flex",margin:"0",padding: "0","flex-direction": "row"}}>
+      headerName={<div style={{width:"10%", display:"flex",margin:"0",padding: "0","flex-direction": "row"}}>
         <span>Class(es):</span>
         ({currentLevel()})
         <For each={charClasses()}>
