@@ -35,6 +35,6 @@ export interface Proficiencies {
   skills: string[];
 }
 
-export interface subclassLevels {
+// export interface subclassLevels {
   
-}
+// }
