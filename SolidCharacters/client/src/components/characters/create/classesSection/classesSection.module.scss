@@ -1,5 +1,7 @@
 @use 'coles-solid-library/themes/variables' as vars;
 
+$mobile: 768px;
+
 .classHeader {
     margin-bottom: 1%;
 }
@@ -76,3 +78,18 @@
 .levelSelect {
     background: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 }
+
+.sectionHeader {
+    width: 10%;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex-direction: row;
+    gap: 6px !important;
+
+    @media screen and (max-width: $mobile) {
+        flex-wrap: wrap;
+    }
+}
+
+// width:"10%", display:"flex",margin:"0",padding: "0","flex-direction": "row",gap:"6px"

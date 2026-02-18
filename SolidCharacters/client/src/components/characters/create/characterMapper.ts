@@ -1,11 +1,23 @@
 import { Accessor, createMemo, Setter } from "solid-js";
 import { CharacterForm, Character, CharacterSpell, CharacterLevel, CharacterRace } from "../../../models/character.model";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
-import { Class5E, Race } from "../../../models/data";
+import { Class5E, FeatureDetail, Race } from "../../../models/data";
 import { charClasses } from "./classesSection/classesSection";
+import { Background } from "../../../models";
+import { group } from "console";
+import { useDnDFeats } from "../../../shared/customHooks/dndInfo/info/all/feats";
 
-export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]>, classLevel: [Accessor<Record<string, number>>,Setter<Record<string, number>>],currRace:Accessor<Race>) {
-    
+type stats = {
+    str: number;
+    dex: number;
+    con: number;
+    int: number;
+    wis: number;
+    cha: number;
+}
+
+export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]>, classLevel: [Accessor<Record<string, number>>,Setter<Record<string, number>>],currRace:Accessor<Race>,stats: stats,knownSpells: Accessor<string[]>,inventory: Accessor<string[]>, equipped: Accessor<string[]>, attuned: Accessor<string[]>) {
+    const feats = useDnDFeats();
 
     const [classLevels,setClassLevels] = classLevel;
     const classes = useDnDClasses();
@@ -14,12 +26,15 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
   
       return classLevels()[className] ?? 0;
     }
+
     const setCharacterLevel = (className: string, level: number): void => {
         setClassLevels(old => ({...old,[className]: level}));
     }
+
     const getClass = (className: string): Class5E => {
         return classes().find(c => c.name === className) ?? {} as Class5E;
     }
+
     const hitDieToNumber = (hitdie:string): number => {
         switch (hitdie) {
             case "d12":
@@ -35,6 +50,15 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
                 return 0;
         }
     }
+
+    const getFeature = (name: string) => {
+        if (name.toLowerCase().includes("magic initiate")) {
+            name = "Magic Initiate"
+        }
+
+        return feats().find(f => f.details.name === name);
+    }
+
 
     // features map
     const charLevels: CharacterLevel[] = [];
@@ -65,15 +89,7 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
         }
     })
 
-    // spells map
-    // const spells: CharacterSpell[] = [];
-
-    // if (formSpells.length > 0) {
-    //     formSpells.forEach(formSpell => spells.push({
-    //         name: formSpell.trim(),
-    //         prepared: false
-    //     }))
-    // }
+    charLevels[0].features.push()
     
     // create race map
     const race: CharacterRace = {
@@ -84,19 +100,34 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
         features: currRace().traits.flatMap(t => t.details),
     }
 
-    // everthing else...
+    // spell map
 
+    const spells:CharacterSpell[] = knownSpells().map((spell) => {
+        return {name: spell, prepared: false};
+    })
+
+    // features that arnt class features or race features, consistingo of primarly feats and other choseen feats and features.
+
+    const features:FeatureDetail[] = [];
+
+    features.push({
+        name: form.BackgrndFeat,
+        description: getFeature(form.BackgrndFeat)?.details.description ?? ""
+    })
+
+    
 
     const payload = createCharacter({
         name: form.name.trim(),
         level: charLevels.length,
         levels: charLevels,
-        spells: [],
+        spells: spells,
         race: race,
         className: form.className.trim(),
         subclass: form.subclass,
         background: form.background.trim(),
         alignment: form.alignment,
+        features: features,
         proficiencies: {
             skills: {
                 Acrobatics: {
@@ -215,34 +246,29 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
             ...form.languages
         ],
         health: {
-            max: 1,
-            current: 1,
-            temp: 10,
+            max: form.maxHP,
+            current: form.currentHP,
+            temp: form.tempHP,
         },
         stats: {
-            str: 8,
-            dex: 14,
-            con: 12,
-            int: 15,
-            wis: 13,
-            cha: 10,
+            str: stats.str,
+            dex: stats.dex,
+            con: stats.con,
+            int: stats.int,
+            wis: stats.wis,
+            cha: stats.cha,
         },
         items: {
-            inventory: [
-            "Spellbook",
-            "Quarterstaff",
-            "Component Pouch",
-            "Explorer's Pack",
-            ],
+            inventory: inventory(),
             currency: {
-                platinumPieces: 0,
-                goldPieces: 0,
-                electrumPieces: 0,
-                sliverPieces: 0,
-                copperPieces: 0,
+                platinumPieces: form.PP,
+                goldPieces: form.GP,
+                electrumPieces: form.EP,
+                sliverPieces: form.SP,
+                copperPieces: form.CP,
             },
-            equipped: ["Quarterstaff", "Spellbook"],
-            attuned: ["Ring of Protection"],
+            equipped: equipped(),
+            attuned: attuned(),
         },
     });
 

@@ -14,10 +14,11 @@ interface boxProps extends JSX.HTMLAttributes<HTMLDivElement> {
     setCharStat: Setter<Record<string, number>>;
     genMethod: Accessor<GenMethod>;
     totalPoints: [Accessor<number>, Setter<number>];
+    exist: Accessor<boolean>;
 }
 
 export const StatBox:Component<boxProps> = (props) => {
-    const [local, other] = splitProps(props,["modifier","score","statName","setCharStat","setCharStat","genMethod","totalPoints"])
+    const [local, other] = splitProps(props,["modifier","score","statName","setCharStat","setCharStat","genMethod","totalPoints","exist"])
 
     const [pbStats,setPBStats] = createSignal([
         8,
@@ -48,6 +49,7 @@ export const StatBox:Component<boxProps> = (props) => {
     const currentScore = createMemo(()=>local.score());
     const getModifer = createMemo(()=>local.modifier());
     const genMethod = createMemo(()=>local.genMethod());
+    const is_exist = createMemo(()=>local.exist());
     const [totalPoints, setTotalPoints] = local.totalPoints; 
     
     const filterdStatOptions = createMemo(()=>pbStats().filter(targetStat =>{
@@ -141,6 +143,10 @@ export const StatBox:Component<boxProps> = (props) => {
         }
     })
 
+    const getScoreBonus = (stat: number, mod: number ): number => {
+        return Math.floor(((stat + mod) - 10)/2);
+    }
+
     return <div {...other} class={`${styles.StatBox}`}>
         <div class={`${styles.statHeader}`}>
             <h3>{statName()} - {currentScore() + getModifer()}</h3>
@@ -186,9 +192,15 @@ export const StatBox:Component<boxProps> = (props) => {
                 </Match>
             </Switch>
         </div>
+        <Show when={!is_exist()}>
+            <div class={`${styles.statView}`}>
+                <strong>Modifier </strong>
+                <span>+{getModifer() === 0 ? "_" : getModifer()}</span>
+            </div>
+        </Show>
         <div class={`${styles.statView}`}>
-            <strong>Modifier </strong>
-            <span>+{getModifer() === 0 ? "_" : getModifer()}</span>
+            <strong>Bonus </strong>
+            <span><Show when={Math.sign(getScoreBonus(currentScore(), getModifer())) === 1}>+</Show>{getScoreBonus(currentScore(), getModifer())}</span>
         </div>
 
     </div>

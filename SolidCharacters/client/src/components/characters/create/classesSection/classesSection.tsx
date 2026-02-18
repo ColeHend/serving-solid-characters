@@ -28,6 +28,7 @@ interface sectionProps {
   chipJar: [Accessor<ChipType[]>, Setter<ChipType[]>];
   stats: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
   modifyers: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
+  exist: Accessor<boolean>;
 }
 
 export const ClassesSection: Component<sectionProps> = (props) => {
@@ -86,7 +87,12 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     classes: [],
     subClasses: []
   });
-  
+
+  const exist = createMemo(()=>props.exist());
+
+
+
+  // functions
     
   const getCharacterLevel = (className: string): number => {
     return classLevels()[className] ?? 1;
@@ -245,12 +251,23 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   return (
     <FlatCard
       icon="shield"
-      headerName={<div style={{width:"10%", display:"flex",margin:"0",padding: "0","flex-direction": "row"}}>
-        <span>Class(es):</span>
-        ({currentLevel()})
+      headerName={<div class={`${styles.sectionHeader}`}>
+        <div>
+          <span>Class(es):</span>
+          
+          <span>
+            ({currentLevel()})
+          </span>
+        </div>
+
         <For each={charClasses()}>
-          {(class5e)=> <span >
-            {class5e} ({noNegitveValue(getCharacterLevel(class5e))})  
+          {(class5e)=> <span>
+            <span>
+              {class5e}
+            </span>
+            <span>
+              ({noNegitveValue(getCharacterLevel(class5e))})  
+            </span>
           </span>}
         </For>
         
@@ -346,42 +363,44 @@ export const ClassesSection: Component<sectionProps> = (props) => {
 
               </div>
 
-              <div>
-                <h3>Skill Choices</h3>
-                Choose <span>{skillChoices(charLevel)?.amount}</span> skills from the list below.
-                
-                <div style={{display:"flex", "justify-content":"center","align-items":"center"}}>
-                  <FormField name="Skill Choices" formName={`${charLevel}Skills`}>
-                    <Select
-                      value={skillChoice()}
-                      onChange={(value) => {
-                        const amount = SkillAmount(charLevel);
-                    
-                        if (skillChipJar().length < amount) {
-                          setSkillChoice(value)
-                        }
-                      }}
-                    >
-                      <For each={skillChoices(charLevel)?.options.filter(skill=> !skillChipJar().some(x=> x.value === skill)) ?? []}>
-                        {(skill) => <Option value={skill}>{skill}</Option>}
-                      </For>
-                    </Select>
+              <Show when={!exist()}>
+                <div>
+                  <h3>Skill Choices</h3>
+                  Choose <span>{skillChoices(charLevel)?.amount}</span> skills from the list below.
                   
-                  </FormField>
-
-                  <Button disabled={skillChipJar().length >= SkillAmount(charLevel)} onclick={()=>{
-                    const amount = SkillAmount(charLevel);
+                  <div style={{display:"flex", "justify-content":"center","align-items":"center"}}>
+                    <FormField name="Skill Choices" formName={`${charLevel}Skills`}>
+                      <Select
+                        value={skillChoice()}
+                        onChange={(value) => {
+                          const amount = SkillAmount(charLevel);
+                      
+                          if (skillChipJar().length < amount) {
+                            setSkillChoice(value)
+                          }
+                        }}
+                      >
+                        <For each={skillChoices(charLevel)?.options.filter(skill=> !skillChipJar().some(x=> x.value === skill)) ?? []}>
+                          {(skill) => <Option value={skill}>{skill}</Option>}
+                        </For>
+                      </Select>
                     
-                    if (skillChipJar().length < amount) {
-                      setSkillChipJar(old => [...old,{key:"",value:skillChoice(),}])
-                    }
-                  }}>Add Skill</Button>
+                    </FormField>
+
+                    <Button disabled={skillChipJar().length >= SkillAmount(charLevel)} onclick={()=>{
+                      const amount = SkillAmount(charLevel);
+                      
+                      if (skillChipJar().length < amount) {
+                        setSkillChipJar(old => [...old,{key:"",value:skillChoice(),}])
+                      }
+                    }}>Add Skill</Button>
+                  </div>
+
+
+                  <Chipbar chips={skillChipJar} setChips={setSkillChipJar} />
+
                 </div>
-
-
-                <Chipbar chips={skillChipJar} setChips={setSkillChipJar} />
-
-              </div>
+              </Show>
 
               <div class={`${styles.TabBar}`} style={{}}>
                 <Button onClick={()=>getTab(charLevel) === 0 ? setTab(charLevel,-1) :setTab(charLevel,0)} transparent>Features <Show when={getTab(charLevel) === 0} fallback={"↑"}>↓</Show></Button>
@@ -418,6 +437,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                                       });
                                     }}
                                   >
+                                    <Option value="">-</Option>
                                     <For each={getSubclasses(charLevel)}>
                                       {(subclass, i) => <Option value={subclass.name}>{subclass.name}</Option>}
                                     </For>

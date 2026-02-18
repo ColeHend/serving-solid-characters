@@ -29,7 +29,6 @@ import { FlatCard } from "../../../shared/components/flatCard/flatCard";
 import { toCharacter5e } from "./characterMapper";
 import { SpellsSection } from "./spellsSection/spellsSection";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
-import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/subclasses";
 import { useSearchParams } from "@solidjs/router";
 import { characterManager, Clone } from "../../../shared";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
@@ -77,31 +76,21 @@ const CharacterCreate: Component = () => {
     "alignment": ["", []],
     "languages": [[], [Validators.maxLength(2)]],
     "race": ["",[]],
-    "spells": [[], []],
     "maxHP": [0, []],
     "currentHP": [0, []],
     "tempHP": [0, []],
-    "inventory": [[], []],
-    "equipped": [[], []],
-    "attuned": [[], []],
     "PP": [0, []],
     "GP": [0, []],
     "EP": [0, []],
     "SP": [0, []],
     "CP": [0, []],
-    "STR": [0, []],
-    "DEX": [0, []],
-    "CON": [0, []],
-    "INT": [0, []],
-    "WIS": [0, []],
-    "CHA": [0, []],
     "lineage": ["", []],
     "clsGold": [0, []],
     "backgrndGold": [0, []],
     "backgrndItemChoice": [null, []],
     "classItemChoice": [null, []],
     "BackgrndFeat": ["", []],
-  });
+  }); // most important character data
 
   // data hooks
   const classes = useDnDClasses();
@@ -112,8 +101,8 @@ const CharacterCreate: Component = () => {
   const items = useDnDItems();
 
   // Class Section
-  const [charClasses,setCharClasses] = createSignal<string[]>([]);
-  const [classLevels,setClassLevels] = createSignal<Record<string, number>>({});
+  const [charClasses,setCharClasses] = createSignal<string[]>([]); // when editing make sure to populate the character class names array.
+  const [classLevels,setClassLevels] = createSignal<Record<string, number>>({}); // most important character data
   const [charSkills,setCharSkills] = createSignal<string[]>([]);
   const [currentSubclasses, setCurrentSubclasses] = createSignal<formSubclass[]>([]);
   const [skillChipJar, setSkillChipJar] = createSignal<ChipType[]>([]);
@@ -126,7 +115,7 @@ const CharacterCreate: Component = () => {
     "int": 0,
     "wis": 0,
     "cha": 0,
-  });
+  }); // most important character data
   const [statMods, setStatMods] = createSignal<Record<string, number>>({
     "str": 0,
     "dex": 0,
@@ -134,7 +123,7 @@ const CharacterCreate: Component = () => {
     "int": 0,
     "wis": 0,
     "cha": 0,
-  });
+  }); // most important character data
 
   const [genMethod, setGenMethod] = createSignal<GenMethod>("Standard Array");
   const [pbPoints,setPBPoints] = createSignal<number>(34);
@@ -145,17 +134,13 @@ const CharacterCreate: Component = () => {
   const [isFocus, setIsFocus] = createSignal<boolean>(false);
 
   // inventory signals
-  const [inventory,setInventory] = createSignal<string[]>([]);
-  const [equipped, setEquipped] = createSignal<string[]>([]);
-  const [attuned, setAttuned] = createSignal<string[]>([]);
+  const [inventory,setInventory] = createSignal<string[]>([]); // most important character data
+  const [equipped, setEquipped] = createSignal<string[]>([]); // most important character data 
+  const [attuned, setAttuned] = createSignal<string[]>([]); // most important character data
 
   // spells
 
-  const [knownSpells,setKnownSpells] = createSignal<string[]>([]);
-
-  // items
-
-  const [startingItemOptions, setStartingItemOptions] = createSignal<Record<string, boolean>>({});
+  const [knownSpells,setKnownSpells] = createSignal<string[]>([]); // most important character data
 
 
 
@@ -222,8 +207,6 @@ const CharacterCreate: Component = () => {
     } else {
       return false;
     }
-
-    return false;
   })
 
   const selectedRace = createMemo<Race|null>(()=>{
@@ -250,7 +233,7 @@ const CharacterCreate: Component = () => {
       className: charClasses().join(",")
     }
 
-    const is_Sure = window.confirm(`Are you Sure?                   Dev-test: ${fullData}`);
+    const is_Sure = window.confirm(`Are you Sure?   Dev-test: ${JSON.stringify(fullData)}`);
 
     if (!is_Sure) return;
     
@@ -259,26 +242,32 @@ const CharacterCreate: Component = () => {
       severity: "info"
     })
 
-
     const valid = group.validate();
     
-
     if (!valid) {
-      console.log("asdf");
       
       const Langerr = group.getErrors("languages")
+
       addSnackbar({
         message: `Could Not save: ${Langerr}`,
         severity: "error"
       })
+
       console.error("error",Langerr);
-      
-      
       
       return;
     }
 
-    const adapted = toCharacter5e(fullData,charClasses,[classLevels,setClassLevels],selectedRace as any,)  
+    const stats = {
+      str: getAbilityScore("str") + getAbilityMod("str"),
+      dex: getAbilityScore("dex") + getAbilityMod("dex"),
+      con: getAbilityScore("con") + getAbilityMod("con"),
+      int: getAbilityScore("int") + getAbilityMod("int"),
+      wis: getAbilityScore("wis") + getAbilityMod("wis"),
+      cha: getAbilityScore("cha") + getAbilityMod("cha"),
+    }
+
+    const adapted = toCharacter5e(fullData ,charClasses ,[classLevels,setClassLevels] ,selectedRace as any ,stats,knownSpells, inventory ,equipped ,attuned)  
 
     const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
     
@@ -312,77 +301,97 @@ const CharacterCreate: Component = () => {
     }
   }
 
-  // function fillCharacterInfo(): void;
-  // function fillCharacterInfo(search: boolean): void;
-  // function fillCharacterInfo(search?:boolean): void {
-  //   if (!exist()) {
-  //     return;
-  //   }
+  function fillCharacterInfo(): void;
+  function fillCharacterInfo(search: boolean): void;
+  function fillCharacterInfo(search?:boolean): void {
+    if (!exist()) {
+      return;
+    }
     
-  //   const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
-  //   const searchName = search && search !== undefined ? param : newCharStore[0].name;
-  //   const character = characterManager.getCharacter(searchName);
+    const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
+    const searchName = search && search !== undefined ? param : group.get().name;
+    const character = characterManager.getCharacter(searchName);
         
-  //   if (character) {
-  //     group.set("name",character.name);
-  //     group.set("className",character.className.split(",")[0]);
-  //     group.set("alignment",character.alignment);
-  //     group.set("subclass",character.subclass);
-  //     group.set("background",character.background);
-  //     group.set("languages",character.languages.filter(l => l !== "Common"));
-  //     setCharClasses([]);
+    if (character) {
+      // identity
+
+      group.set("name",character.name);
+      group.set("className",character.className.split(",")[0]);
+      group.set("alignment",character.alignment);
+      group.set("race", character.race.species);
+      group.set("background",character.background);
+
+      // classes
       
-  //     newCharStore[1]("name", character.name);
-  //     // class levels
-  //     const classes = character.className.split(",");
+      setCharClasses([]);
       
-  //     classes.forEach((class5e,i)=>{
-  //       const levels = character.levels.filter(l => l.class === class5e);
-  //       setCharClasses(old => [...old, class5e]);
-  //       setClassLevels(old => ({...old,[class5e]: levels.length}));
-  //     })
+      group.set("subclass",character.subclass);
       
-  //     newCharStore[1]("spells", character.spells);
-  //     newCharStore[1]("className", classes[0][0]);
-  //     newCharStore[1]("race",character.race);
-  //     newCharStore[1]("alignment", character.alignment);
-  //     newCharStore[1]("subclass", character.subclass);
-  //     newCharStore[1]("background", character.background);
-  //     newCharStore[1]("languages", character.languages.filter(l => l !== "Common"));
+      // class levels
+      const classes = character.className.split(",");
+      
+      classes.forEach((class5e,i)=>{
+        const levels = character.levels.filter(l => l.class === class5e);
+        setCharClasses(old => [...old, class5e]);
+        setClassLevels(old => ({...old,[class5e]: levels.length}));
+      })
 
-  //     setCharRace(character.race.species);
-  //     setCharSubrace(character.race.subrace ?? "");
-  //     // setKnownSpells(character.spells.flatMap(s => s.name));
-  //     
-  //   }
-  // }
+      // races
 
+      group.set("lineage", character.race.subrace ?? '');
 
+      // languages
+      
+      group.set("languages",character.languages.filter(l => l !== "Common"));
 
-  const getCharacterLevel = (className: string): number => {
-  
-      return classLevels()[className] ?? 0;
+      // spells
+
+      setKnownSpells(character.spells.flatMap(s => s.name));
+
+      // ability scores
+
+      setCharStats({
+        "str": character.stats.str,
+        "dex": character.stats.dex,
+        "con": character.stats.con,
+        "int": character.stats.int,
+        "wis": character.stats.wis,
+        "cha": character.stats.cha,
+      })
+
+      // hit points
+
+      group.set("maxHP", character.health.max);
+      group.set("currentHP", character.health.current);
+      group.set("tempHP", character.health.temp);
+
+      // items
+
+      setInventory(character.items.inventory);
+
+      setAttuned(character.items.attuned);
+
+      setEquipped(character.items.equipped);
+
+      // currency
+     
+      group.set("PP", character.items.currency.platinumPieces);
+      group.set("GP", character.items.currency.goldPieces);
+      group.set("EP", character.items.currency.electrumPieces);
+      group.set("SP", character.items.currency.sliverPieces);
+      group.set("CP", character.items.currency.copperPieces);
+      
+    }
   }
 
-  const setCharacterLevel = (className: string, level: number): void => {
-      setClassLevels(old => ({...old,[className]: level}));
+  const getAbilityScore = (name: string) => {
+    return charStats()[name];
   }
 
-  const hitDieToNumber = (hitdie:string): number => {
-        switch (hitdie) {
-            case "d12":
-                return 12;
-            case "d10":
-                return 10;
-            case "d8":
-                return 8;
-            case "d6":
-                return 6;
-
-            default:
-                return 0;
-        }
+  const getAbilityMod = (name: string) => {
+    return statMods()[name];
   }
+
 
   const getClass = (className: string): Class5E => {
     return classes().find(c => c.name === className) ?? {} as Class5E;
@@ -398,7 +407,7 @@ const CharacterCreate: Component = () => {
   // effects on change
 
   onMount(()=>{
-    // if (searchParams.name) fillCharacterInfo(true);
+    if (searchParams.name && exist()) fillCharacterInfo(true);
 
     document.body.classList.add('character-create-bg');
   })
@@ -412,6 +421,11 @@ const CharacterCreate: Component = () => {
     
   })
 
+   createEffect(()=>{
+      if (exist()) {
+        setGenMethod("Manual/Rolled"); 
+      }
+    })
 
   return (
     <Body class={`${stylin().accent} ${styles.body}`}>
@@ -482,6 +496,7 @@ const CharacterCreate: Component = () => {
             chipJar={[skillChipJar, setSkillChipJar]}
             stats={[charStats, setCharStats]}
             modifyers={[statMods, setStatMods]}
+            exist={exist}
           />
         </Show>
 
@@ -497,6 +512,7 @@ const CharacterCreate: Component = () => {
             <BackgroundSection
               srdBackgrounds={backgrounds}
               formGroup={group}
+              exist={exist}
             />
         </Show>
 
@@ -520,6 +536,7 @@ const CharacterCreate: Component = () => {
           modChips={[modChips, setModChips]}
           modStat={[modStat, setModStat]}
           isFocus={[isFocus, setIsFocus]}
+          exist={exist}
         />
 
         <Show when={selectedClass() !== "" && getConMod() !== 0}>
