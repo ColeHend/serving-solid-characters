@@ -12,13 +12,23 @@ $padding: 7px;
     transform: translateX(0);
     width: 180px !important;
     padding: $padding;
+    background-color: color-mix(in srgb, vars.$color-surface 90%, transparent) !important;
+    z-index: 2;
 
     ul {
       list-style: none;
 
       padding: $padding;
       margin: $margin;
+    }
 
+    button {
+      background-color: color-mix(in srgb, vars.$color-surface 65%, transparent) !important;
+    
+    
+      svg {
+        fill: vars.$color-on-background !important;
+      }
     }
 
     &.openingLeft {
@@ -66,6 +76,17 @@ $padding: 7px;
 
   button svg {
     fill: vars.$color-on-background !important;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.headerItem {
+  
+  &:hover {
+    cursor: pointer;
   }
 }
 

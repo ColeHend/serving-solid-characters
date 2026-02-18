@@ -1,10 +1,10 @@
 import { Component, Accessor, Setter, createSignal, For, Switch, Match } from "solid-js";
-import { Clone } from "../../shared/customHooks/utility/tools/Tools";
-import { UserSettings } from "../../models/userSettings";
+import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
+import { UserSettings } from "../../../models/userSettings";
 import styles from "./settingsPopup.module.scss";
-import getUserSettings, { saveUserSettings } from "../../shared/customHooks/userSettings";
+import getUserSettings, { saveUserSettings } from "../../../shared/customHooks/userSettings";
 import { Select, Option, addSnackbar, Button, addTheme } from "coles-solid-library";
-import { homebrewManager } from "../../shared";
+import { homebrewManager } from "../../../shared";
 interface Props {
     defaultUserSettings: Accessor<UserSettings>,
     setDefaultUserSettings: Setter<UserSettings>,

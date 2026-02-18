@@ -3,10 +3,11 @@ import { UserSettings } from "../../models/userSettings";
 import { useNavigate } from "@solidjs/router";
 import { Portal } from "solid-js/web";
 import { ExtendedTab } from "../../models/extendedTab";
-import { Button, Container, ExpansionPanel, Icon } from "coles-solid-library";
+import { Button, Container, ExpansionPanel, Icon, Modal } from "coles-solid-library";
 import styles from "./SideMenu.module.scss";
 import useClickOutside from "solid-click-outside";
 import { FlatCard } from "../../shared/components/flatCard/flatCard";
+import SettingsPopup from "./settings/settingsPopup";
 
 
 
@@ -24,8 +25,6 @@ export const SideMenu:Component<MenuProps> = (props) => {
     const [shouldRender, setShouldRender] = createSignal(false);
 
     const [showSettings, setShowSettings] = createSignal(false);
-    // const [isTransitioning, setIsTransitioning] = createSignal(false);
-    const [transitiionTimer, setTransitiionTimer] = createSignal<number | undefined>(0);
 
     const navigate = useNavigate();
 
@@ -124,7 +123,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
         }
 
         useClickOutside(menuRef, () => {
-            if (showMenu()) setShowMenu(false);
+            if (showMenu() && showSettings() !== true) setShowMenu(false);
         });
     });
 
@@ -137,7 +136,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
     }
 
     const convertHombrewViewToCreate = (link: string) => {
-        return link.replace(`view?`, 'create').replace("?name=", "/");
+        return link.replace(`view`, 'create').replace("?name=", "/");
     };
   
 
@@ -148,10 +147,13 @@ export const SideMenu:Component<MenuProps> = (props) => {
         <Portal ref={menuRef()}>
             <Container theme="container" ref={ref => setMenuRef(ref)} class={`${styles.sideMenu} ${isOpening() ? setOpeningClass() : ""} ${isClosing() ? setClosingClass() : ""}`}>
                <ul>
-                    <li class={`${styles.headerItem}`} onClick={()=>navigate("/")}>
-                        <h3>Naviagtion</h3>
+                    <li class={`${styles.headerItem}`}>
+                        <h3 onClick={(e)=>{
+                            e.stopPropagation();
+                            navigate("/");
+                        }}>Naviagtion</h3>
 
-                        <Button>
+                        <Button onClick={()=>setShowSettings(old=>!old)}>
                             <Icon name="settings" size={'large'} />
                         </Button>
                     </li>
@@ -160,9 +162,9 @@ export const SideMenu:Component<MenuProps> = (props) => {
                         {(tab) => <>
                             <Show when={tab.Name !== "Homebrew"}>
                                 <li>
-                                    <FlatCard headerName={<span onClick={()=>navigate(tab.Link)}>{tab.Name}</span>}>
+                                    <FlatCard headerName={<span class={`${styles.headerItem}`} onClick={()=>navigate(tab.Link)}>{tab.Name}</span>} transparent>
                                         <For each={tab.children ?? []}>
-                                            {(child) => <li onClick={()=>{
+                                            {(child) => <li class={`${styles.menuItem}`} onClick={()=>{
                                                 navigate(child.Link);
                                                 setShowMenu(false);
                                             }}>
@@ -173,21 +175,25 @@ export const SideMenu:Component<MenuProps> = (props) => {
                                 </li>
                             </Show>
                             <Show when={tab.Name === "Homebrew"}>
-                                <FlatCard headerName={<span onClick={()=>navigate(tab.Link)}>{tab.Name}</span>}>
+                                <FlatCard headerName={<span class={`${styles.headerItem}`} onClick={()=>navigate(tab.Link)}>{tab.Name}</span>} transparent>
                                     <For each={tab.children ?? []}>
                                         {(child) => <li class={`${styles.menuItem}`} onClick={()=>{
                                             navigate(child.Link);
                                             setShowMenu(false);
                                         }}>
                                             <span>{child.Name}</span>
-                                            <Button transparent onClick={()=>{
+                                            <Button transparent onClick={(e)=>{
+                                                e.stopPropagation();
                                                 navigate(child.Link);
                                                 setShowMenu(false);
                                             }} >
                                                 <Icon name="visibility" size={'small'} />
                                             </Button>
-                                            <Button transparent onClick={()=>{
-                                                navigate(convertHombrewViewToCreate(child.Link));
+                                            <Button transparent onClick={(e)=>{
+                                                e.stopPropagation()
+                                                const x = convertHombrewViewToCreate(child.Link);
+
+                                                navigate(x.trim());
                                                 setShowMenu(false);
                                             }}>
                                                 <Icon name="edit" size={'small'} />
@@ -201,6 +207,11 @@ export const SideMenu:Component<MenuProps> = (props) => {
                 </ul>
             </Container>
         </Portal>
+        <Modal title="Settings" show={[showSettings, setShowSettings]}>
+            <SettingsPopup 
+                defaultUserSettings={userSettings} 
+                setDefaultUserSettings={setUserSettings} />
+        </Modal>
     </Show>
 }
 
