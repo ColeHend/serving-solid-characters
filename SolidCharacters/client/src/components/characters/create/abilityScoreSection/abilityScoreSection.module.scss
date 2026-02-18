@@ -1,3 +1,5 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 .statsView {
     margin-top: 1%;
     display: flex;
@@ -60,9 +62,13 @@
     @media screen and (max-width: 768px) {
         align-items: center;
         flex-wrap: wrap;
-        // gap: 1%;
+        gap: 10px !important;
         margin: 0;
         width: 55vw;
+
+        :nth-child(odd) {
+            padding: 0;
+        } 
     }
 }
 
@@ -71,4 +77,8 @@
     flex-direction: row;
     flex-wrap: wrap;
     margin-top: 1%;
+}
+
+.transparent {
+    background: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 }

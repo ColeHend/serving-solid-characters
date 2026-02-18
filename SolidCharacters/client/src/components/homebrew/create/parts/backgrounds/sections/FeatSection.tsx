@@ -18,7 +18,7 @@ const FeatSection: Component<Props> = (p) => {
   return <FlatCard
     icon='stars_2'
     headerName='Feat'
-  >
+  transparent>
     <div class={!p.collapsed ? '' : styles.collapsedContent}>
       <FormField name="Select Feat">
         <Select transparent value={p.value || ''} onChange={p.onChange}>

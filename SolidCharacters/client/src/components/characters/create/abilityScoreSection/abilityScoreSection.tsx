@@ -14,6 +14,7 @@ interface assProps {
     modChips: [Accessor<ChipType[]>, Setter<ChipType[]>];
     modStat: [Accessor<string>, Setter<string>];
     isFocus: [Accessor<boolean>, Setter<boolean>];
+    exist: Accessor<boolean>;
 }
 
 type GenMethod = "Standard Array"|"Custom Standard Array"|"Manual/Rolled"|"Point Buy"|"Extended Point Buy";
@@ -30,6 +31,8 @@ export const Ass:Component<assProps> = (props) => {
     const [modChips, setModChips] = props.modChips;
     const [modStat, setModStat] = props.modStat;
     const [isFocus, setIsFocus] = props.isFocus;
+
+    const is_exist = createMemo(() => props.exist());
 
     const GenMethods = createMemo<string[]>(()=>[
         "Standard Array",
@@ -157,107 +160,113 @@ export const Ass:Component<assProps> = (props) => {
         modChips().forEach((chip)=>setStatMod(chip.key,+chip.value))
     })
 
+   
+
     return <FlatCard icon="star" headerName={<div class={`${styles.headerTextWrapper}`}>
-        Stats: 
-        <span class={`${styles.headerText}`}>str <div>({strength() + strengthMod()})</div></span>
-        <span class={`${styles.headerText}`}>dex <div>({dexterity() + dexterityMod()})</div></span>
-        <span class={`${styles.headerText}`}>con <div>({constitution() + constitutionMod()})</div></span>
-        <span class={`${styles.headerText}`}>int <div>({intelligence() + intelligenceMod()})</div></span>
-        <span class={`${styles.headerText}`}>wis <div>({wisdom() + wisdomMod()})</div></span>
-        <span class={`${styles.headerText}`}>cha <div>({charisma() + charismaMod()})</div></span>
+        <span>Stats: </span>
+        <span class={`${styles.headerText}`}>str<div>({strength() + strengthMod()})</div></span>
+        <span class={`${styles.headerText}`}>dex<div>({dexterity() + dexterityMod()})</div></span>
+        <span class={`${styles.headerText}`}>con<div>({constitution() + constitutionMod()})</div></span>
+        <span class={`${styles.headerText}`}>int<div>({intelligence() + intelligenceMod()})</div></span>
+        <span class={`${styles.headerText}`}>wis<div>({wisdom() + wisdomMod()})</div></span>
+        <span class={`${styles.headerText}`}>cha<div>({charisma() + charismaMod()})</div></span>
     </div>} transparent>
         <div>
-            <div>
-                <FormField name="Generation Method" formName="Gen Method">
-                    <Select value={genMethod()} onChange={(value)=>{
-                            setGenMethod(value)
-                            if (genMethod() === "Point Buy" || genMethod() === "Extended Point Buy") {
-                                setCharStats({
-                                    "str": 8,
-                                    "dex": 8,
-                                    "con": 8,
-                                    "int": 8,
-                                    "wis": 8,
-                                    "cha": 8
-                                });
-                            }
-                        }}>
-                        <For each={GenMethods()}>
-                            {(method)=><Option value={method}>{method}</Option>}
-                        </For>
-                    </Select>
-                </FormField>
-            </div>
-
-            <div class={`${styles.pushDown}`}>
-                <FlatCard headerName="Modifers" class={`${styles.cardAlt}`} transparent>
-                    <div>
-                        <div class={`${styles.modiferText}`}>
-                            Your species or background may grant ability score increases. Choose one of the following ways to apply those bonuses:
-                        </div>
-
-                        <ul>
-                            <li>
-                                <strong>Spread:</strong> Increase up to three different ability scores by +1 each.
-                            </li>
-                            <li>
-                                <strong>Focus:</strong> Increase one ability score by +2 and a different ability score by +1.
-                            </li>
-                        </ul>
-
-                    </div>
-                    <div style={{display: "flex", "flex-direction": "row", width: "20%",gap: "2%"}}>
-                        <Select
-                            value={modStat()}
-                            onChange={(value) => setModStat(value)}
-                            onSelect={(value) => {
-                                // prevent duplicates
-                                if (modChips().some(c => c.key === value)) return;
-
-                                const chips = modChips();
-                                const hasFocus = chips.some(c => c.value === "2");
-
-                                // If focus already chosen (there is a +2), second slot allowed only as +1
-                                if (hasFocus) {
-                                    if (chips.length >= 2) return;
-                                    setModChips(old => [...old, { key: value, value: "1" }]);
-                                    setModStat("");
-                                    return;
+            <Show when={!is_exist()}>
+                <div>
+                    <FormField name="Generation Method" formName="Gen Method">
+                        <Select value={genMethod()} onChange={(value)=>{
+                                setGenMethod(value)
+                                if (genMethod() === "Point Buy" || genMethod() === "Extended Point Buy") {
+                                    setCharStats({
+                                        "str": 8,
+                                        "dex": 8,
+                                        "con": 8,
+                                        "int": 8,
+                                        "wis": 8,
+                                        "cha": 8
+                                    });
                                 }
-
-                                if (chips.length === 0) {
-                                    if (isFocus()) {
-                                        setModChips(old => [...old, { key: value, value: "2" }]);
-                                    } else {
-                                        setModChips(old => [...old, { key: value, value: "1" }]);
-                                    }
-                                    setModStat("");
-                                    return;
-                                }
-
-                                // Otherwise we're in Spread mode (existing chips are +1). Allow up to 3 distinct +1 chips.
-                                if (chips.length >= 3) return;
-                                setModChips(old => [...old, { key: value, value: "1" }]);
-                                setModStat("");
-                            }}
-                        >
-                            <For each={stats.filter(stat => !modChips().some(chip => chip.key === stat))}>
-                                {stat => <Option value={stat}>{displayStat(stat)}</Option>}
+                            }}>
+                            <For each={GenMethods()}>
+                                {(method)=><Option value={method}>{method}</Option>}
                             </For>
                         </Select>
+                    </FormField>
+                </div>
+                
+                <div class={`${styles.pushDown}`}>
+                    <FlatCard headerName="Modifers" class={`${styles.cardAlt}`} transparent>
+                        <div>
+                            <div class={`${styles.modiferText}`}>
+                                Your species or background may grant ability score increases. Choose one of the following ways to apply those bonuses:
+                            </div>
 
-                        <Checkbox disabled={modChips().length > 0} label={<>{isFocus()?"Focus":"Spread"}</>} checked={isFocus()} onChange={(value)=>setIsFocus(value)} />
-                    </div>
-                    <div class={`${styles.modChipBar}`}>
-                        <For each={modChips()}>
-                            {(chip)=><Chip key={chip.key} value={chip.value} remove={()=>{
-                                setModChips(old => old.filter(x => x.key !== chip.key))
-                                setStatMod(chip.key, 0);
-                            }} />}
-                        </For>
-                    </div>
-                </FlatCard>
-            </div>
+                            <ul>
+                                <li>
+                                    <strong>Spread:</strong> Increase up to three different ability scores by +1 each.
+                                </li>
+                                <li>
+                                    <strong>Focus:</strong> Increase one ability score by +2 and a different ability score by +1.
+                                </li>
+                            </ul>
+
+                        </div>
+                        <div style={{display: "flex", "flex-direction": "row", width: "20%",gap: "2%"}}>
+                            <Select
+                                value={modStat()}
+                                onChange={(value) => setModStat(value)}
+                                onSelect={(value) => {
+                                    // prevent duplicates
+                                    if (modChips().some(c => c.key === value)) return;
+
+                                    const chips = modChips();
+                                    const hasFocus = chips.some(c => c.value === "2");
+
+                                    // If focus already chosen (there is a +2), second slot allowed only as +1
+                                    if (hasFocus) {
+                                        if (chips.length >= 2) return;
+                                        setModChips(old => [...old, { key: value, value: "1" }]);
+                                        setModStat("");
+                                        return;
+                                    }
+
+                                    if (chips.length === 0) {
+                                        if (isFocus()) {
+                                            setModChips(old => [...old, { key: value, value: "2" }]);
+                                        } else {
+                                            setModChips(old => [...old, { key: value, value: "1" }]);
+                                        }
+                                        setModStat("");
+                                        return;
+                                    }
+
+                                    // Otherwise we're in Spread mode (existing chips are +1). Allow up to 3 distinct +1 chips.
+                                    if (chips.length >= 3) return;
+                                    setModChips(old => [...old, { key: value, value: "1" }]);
+                                    setModStat("");
+                                }}
+                                class={`${styles.transparent}`}
+                            >
+                                <For each={stats.filter(stat => !modChips().some(chip => chip.key === stat))}>
+                                    {stat => <Option value={stat}>{displayStat(stat)}</Option>}
+                                </For>
+                            </Select>
+
+                            <Checkbox disabled={modChips().length > 0} label={<>{isFocus()?"Focus":"Spread"}</>} checked={isFocus()} onChange={(value)=>setIsFocus(value)} />
+                        </div>
+                        <div class={`${styles.modChipBar}`}>
+                            <For each={modChips()}>
+                                {(chip)=><Chip key={chip.key} value={chip.value} remove={()=>{
+                                    setModChips(old => old.filter(x => x.key !== chip.key))
+                                    setStatMod(chip.key, 0);
+                                }} />}
+                            </For>
+                        </div>
+                    </FlatCard>
+                </div>
+            </Show>
+
 
             <div class={`${styles.pushDown}`}>
                 <Switch>
@@ -314,7 +323,8 @@ export const Ass:Component<assProps> = (props) => {
                 setCharStat={setCharStats}
                 genMethod={genMethod}
                 totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("str",strength())}/>
+                onClick={()=>handleClick("str",strength())}
+                exist={is_exist}/>
 
                 <StatBox 
                 statName="Dexterity"
@@ -324,7 +334,8 @@ export const Ass:Component<assProps> = (props) => {
                 setCharStat={setCharStats}
                 genMethod={genMethod}
                 totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("dex",dexterity())}/>
+                onClick={()=>handleClick("dex",dexterity())}
+                exist={is_exist}/>
 
                 <StatBox 
                 statName="Constitution"
@@ -334,7 +345,8 @@ export const Ass:Component<assProps> = (props) => {
                 setCharStat={setCharStats}
                 genMethod={genMethod}
                 totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("con",constitution())}/>
+                onClick={()=>handleClick("con",constitution())}
+                exist={is_exist}/>
 
                 <StatBox 
                 statName="Intelligence"
@@ -344,7 +356,8 @@ export const Ass:Component<assProps> = (props) => {
                 setCharStat={setCharStats}
                 genMethod={genMethod}
                 totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("int",intelligence())}/>
+                onClick={()=>handleClick("int",intelligence())}
+                exist={is_exist}/>
 
                 <StatBox 
                 statName="Wisdom"
@@ -354,7 +367,8 @@ export const Ass:Component<assProps> = (props) => {
                 setCharStat={setCharStats}
                 genMethod={genMethod}
                 totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("wis",wisdom())}/>
+                onClick={()=>handleClick("wis",wisdom())}
+                exist={is_exist}/>
 
                 <StatBox 
                 statName="Charisma"
@@ -364,7 +378,8 @@ export const Ass:Component<assProps> = (props) => {
                 setCharStat={setCharStats}
                 genMethod={genMethod}
                 totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("cha",charisma())}/>
+                onClick={()=>handleClick("cha",charisma())}
+                exist={is_exist}/>
 
             </div>
         </div>

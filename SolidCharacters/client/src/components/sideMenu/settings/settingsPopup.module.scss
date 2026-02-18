@@ -1,0 +1,41 @@
+.settingContainer {
+    display: flex;
+    flex-direction: row;
+    min-height: 87%;
+}
+
+.settingTabs {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid;
+    min-height: 100%;
+    ul {
+        list-style: none;
+        width: 100%;
+        padding: 0px;
+        li {
+            padding: 10px;
+            border-bottom: 1px solid;
+            border-radius: 10px;
+            &:hover {
+                cursor: pointer;
+                padding-bottom: 15px;
+                font-weight: bolder;
+            }
+        }
+    }
+}
+
+.settingBody {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    :nth-child(1) {
+        flex-grow: 1;
+    }
+}
+
+.active {
+    font-weight: bold;
+}

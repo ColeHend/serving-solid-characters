@@ -1,3 +1,5 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 .paginator {
     width: 100%;
     display: flex;
@@ -13,4 +15,8 @@
     display: flex;
     flex-direction: row;
     margin: auto 0;
+}
+
+.transparent {
+    background: color-mix(in srgb, vars.$color-surface 70%, transparent) !important;
 }

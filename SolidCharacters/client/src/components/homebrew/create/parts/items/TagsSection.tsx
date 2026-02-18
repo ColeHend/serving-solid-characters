@@ -2,6 +2,7 @@ import { Component, For } from "solid-js";
 import { Chip, Select, Option } from "coles-solid-library";
 import { itemsStore } from "./itemsStore";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
+import styles from "./items.module.scss";
 
 interface Props {
   collapsed?: boolean;
@@ -49,6 +50,7 @@ export const TagsSection: Component<Props> = (p) => {
         <Select
           transparent
           value=""
+          class={`${styles.transparent}`}
           onChange={(val) => {
             if (val) addTag(val);
           }}

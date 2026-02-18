@@ -1,3 +1,7 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
+$mobile: 768px;
+
 .classHeader {
     margin-bottom: 1%;
 }
@@ -20,6 +24,13 @@
 .classesSection {
     max-height: 70vh;
     overflow-y: scroll;
+
+    padding: 0;
+    margin: 0;
+
+    @media screen and (max-width: 768px) {
+        max-width: 100%;
+    }
 }
 
 .TabBar {
@@ -63,3 +74,22 @@
     flex-direction: row;
     justify-content: center;
 }
+
+.levelSelect {
+    background: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+}
+
+.sectionHeader {
+    width: 10%;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex-direction: row;
+    gap: 6px !important;
+
+    @media screen and (max-width: $mobile) {
+        flex-wrap: wrap;
+    }
+}
+
+// width:"10%", display:"flex",margin:"0",padding: "0","flex-direction": "row",gap:"6px"

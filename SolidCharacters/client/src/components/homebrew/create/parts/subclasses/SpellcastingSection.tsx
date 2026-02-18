@@ -58,21 +58,21 @@ export const SpellcastingSection = <T extends {
         <div class={styles.castingRowOne}>
           <span>
             <label for="casterType">Caster Type:</label>
-            <Select value={(p.form.get('casterType') as any)||''} onChange={v => p.form.set('casterType', v as any)}>
+            <Select value={(p.form.get('casterType') as any)||''} onChange={v => p.form.set('casterType', v as any)} class={`${styles.transparent}`}>
               <Option value="half">Half Caster</Option>
               <Option value="third">Third Caster</Option>
             </Select>
           </span>
           <span>
             <label for="castingStat">Casting Stat:</label>
-            <Select value={(p.form.get('castingModifier') as any)||''} onChange={v => p.form.set('castingModifier', v as any)}>
+            <Select value={(p.form.get('castingModifier') as any)||''} onChange={v => p.form.set('castingModifier', v as any)} class={`${styles.transparent}`}>
               <For each={["Intelligence", "Wisdom", "Charisma"]}>{stat => <Option value={stat}>{stat}</Option>}</For>
             </Select>
           </span>
         </div>
         <div>
           <label for="spellsKnown">Spells Known: </label>
-            <Select value={(p.form.get('spellsKnownCalc') as any)} onChange={e => p.form.set('spellsKnownCalc', (+e) as any)}>
+            <Select value={(p.form.get('spellsKnownCalc') as any)} onChange={e => p.form.set('spellsKnownCalc', (+e) as any)} class={`${styles.transparent}`}>
               <Option value={SpellsKnown.None.toString()}>None</Option>
               <Option value={SpellsKnown.Level.toString()}>Level</Option>
               <Option value={SpellsKnown.HalfLevel.toString()}>Half Level</Option>
@@ -125,7 +125,7 @@ export const SpellcastingSection = <T extends {
         </div>
         <div>
           <h3>Prepared / Known Spells</h3>
-          <Select value={(p.form.get('selectedSpellName') as any) || ''} onChange={v => p.form.set('selectedSpellName', v as any)}>
+          <Select value={(p.form.get('selectedSpellName') as any) || ''} onChange={v => p.form.set('selectedSpellName', v as any)} class={`${styles.transparent}`}>
             <For each={p.allSpells()}>{spell => <Option value={spell.name}>{spell.name}</Option>}</For>
           </Select>
           <Button onClick={addSpell}>Add Spell</Button>

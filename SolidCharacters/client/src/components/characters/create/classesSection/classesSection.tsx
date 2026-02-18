@@ -1,16 +1,15 @@
-import { Button, ExpansionPanel, Select, Option, TabBar, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Input } from "coles-solid-library";
-import { range } from "rxjs";
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
+import { Button, Select, Option, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Chipbar, ChipType } from "coles-solid-library";
+import { Accessor, Component, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { CasterType, Class5E, Spell, Subclass } from "../../../../models/data";
+import { Class5E, Spell } from "../../../../models/data";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import styles from "./classesSection.module.scss";
 import { AddClass } from "./AddClass/AddClass";
-import { Clone, getSpellSlots, spellLevel } from "../../../../shared";
+import { Clone, spellLevel } from "../../../../shared";
 import SpellModal from "../../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import getSpellAndCasterLevel from "../../../../shared/customHooks/utility/tools/getSpellAndCasterLevel";
-import { Character, CharacterForm } from "../../../../models/character.model";
+import { CharacterForm } from "../../../../models/character.model";
 import { useDnDSubclasses } from "../../../../shared/customHooks/dndInfo/info/all/subclasses";
 import { formSubclass } from "../create";
 
@@ -25,6 +24,11 @@ interface sectionProps {
   knownSpells: [Accessor<string[]>, Setter<string[]>];
   formGroup: FormGroup<CharacterForm>;
   currSubclasses: [Accessor<formSubclass[]>, Setter<formSubclass[]>];
+  charSkills: [Accessor<string[]>, Setter<string[]>];
+  chipJar: [Accessor<ChipType[]>, Setter<ChipType[]>];
+  stats: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
+  modifyers: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
+  exist: Accessor<boolean>;
 }
 
 export const ClassesSection: Component<sectionProps> = (props) => {
@@ -35,11 +39,14 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const group = createMemo(()=>props.formGroup); 
 
   const [knownSpells, setKnownSpells] = props.knownSpells;
+
+  const [charStats, setCharStats] = props.stats;
   
   const charSpells = createMemo(()=>knownSpells());
   
   const [classLevels, setClassLevels] = props.classLevels; 
   const [charClasses, setCharClasses] = props.charClasses; 
+  const [skillChipJar, setSkillChipJar] = props.chipJar;
 
   const [showAddClass,setShowAddClass] = createSignal<boolean>(false);
   const [activeTab, setActiveTab] = createSignal<Record<string, number>>({});
@@ -50,7 +57,11 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   //     isAsc: boolean;
   // }>({ sortKey: "level", isAsc: true });
   const [showSpellModal,setShowSpellModal] = createSignal<boolean>(false);
-    
+  const [charSubclasses, setCharSubclasses] = props.currSubclasses;
+  const [charSkills,setCharSkills] = props.charSkills;
+  const [statMods, setStatMods] = props.modifyers;
+
+  const [skillChoice, setSkillChoice] = createSignal<string>("");
 
   const levels = createMemo<number[]>(()=>new Array(20).fill(0).map((x,i)=>i+1));
 
@@ -76,7 +87,12 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     classes: [],
     subClasses: []
   });
-  
+
+  const exist = createMemo(()=>props.exist());
+
+
+
+  // functions
     
   const getCharacterLevel = (className: string): number => {
     return classLevels()[className] ?? 1;
@@ -95,7 +111,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const isLearned = (spellName: string) => {
     // return charSpells().includes(spellName);
 
-    return charSpells().some(x=>x.includes(spellName))
+    return charSpells().some(x=>x === spellName)
   }
 
   const filterdSpells = (className: string) => {
@@ -108,7 +124,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     // check for highest slots
     const highestSlotLevel = createMemo<number>(()=>{
 
-      return getSpellAndCasterLevel(class5e(),"spell",level() - 1)
+      return getSpellAndCasterLevel(class5e(),"spell",level())
     }) 
 
     // - filter spells by class and subclass 
@@ -218,23 +234,40 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     return class5e.choices?.[class5e.startChoices?.skills ?? ''];
   }
 
-  createEffect(()=>{
-    console.log("classes: ", levels());
-    
-  })
+  const SkillAmount = (className: string) => {
+    const class5e = getClass(className);
 
+    const toReturn = class5e.choices?.[class5e.startChoices?.skills ?? ''].amount;
 
+    return toReturn ?? 0;
+  }
 
+  const primaryAbility = (className: string) => {
+    const class5e = getClass(className);
+
+    return class5e.primaryAbility;
+  }
 
   return (
     <FlatCard
       icon="shield"
-      headerName={<div style={{width:"20vw", display:"flex",margin:"0",padding: "0","flex-direction": "row"}}>
-        <span>Class(es):</span>
-        ({currentLevel()})
+      headerName={<div class={`${styles.sectionHeader}`}>
+        <div>
+          <span>Class(es):</span>
+          
+          <span>
+            ({currentLevel()})
+          </span>
+        </div>
+
         <For each={charClasses()}>
-          {(class5e)=> <span >
-            {class5e} ({noNegitveValue(getCharacterLevel(class5e))})  
+          {(class5e)=> <span>
+            <span>
+              {class5e}
+            </span>
+            <span>
+              ({noNegitveValue(getCharacterLevel(class5e))})  
+            </span>
           </span>}
         </For>
         
@@ -274,6 +307,11 @@ export const ClassesSection: Component<sectionProps> = (props) => {
               </div>
 
               <div>
+                <div>
+                  <strong>Primary <Show fallback={<>Ability:</>} when={primaryAbility(charLevel).split(",").length > 1}>Abilities:</Show>  </strong>
+                  {primaryAbility(charLevel)}
+                </div>
+
                 <div>
                   <strong>Saving Throws: </strong>
                   {savingThrows(charLevel).join(", ")}
@@ -325,28 +363,44 @@ export const ClassesSection: Component<sectionProps> = (props) => {
 
               </div>
 
-              <div>
-                <h3>Skill Choices</h3>
-                Choose <span>{skillChoices(charLevel)?.amount}</span> skills from the list below.
-                
-                  {/* <Select
-                    value={Array.isArray(currentSkills()) ? currentSkills() : []}
-                    onSelect={(value) => {
-                      // Ensure value is always an array
-                      const selected = Array.isArray(value) ? value : [value];
-
+              <Show when={!exist()}>
+                <div>
+                  <h3>Skill Choices</h3>
+                  Choose <span>{skillChoices(charLevel)?.amount}</span> skills from the list below.
+                  
+                  <div style={{display:"flex", "justify-content":"center","align-items":"center"}}>
+                    <FormField name="Skill Choices" formName={`${charLevel}Skills`}>
+                      <Select
+                        value={skillChoice()}
+                        onChange={(value) => {
+                          const amount = SkillAmount(charLevel);
                       
-                    }}
-                    multiple
-                  >
-                    <For each={skillChoices(charLevel)?.options}>
-                      {(skill) => <Option value={skill}>{skill}</Option>}
-                    </For>
-                  </Select> */}
-                {/* <FormField name="Skill Choices">
-                </FormField> */}
+                          if (skillChipJar().length < amount) {
+                            setSkillChoice(value)
+                          }
+                        }}
+                      >
+                        <For each={skillChoices(charLevel)?.options.filter(skill=> !skillChipJar().some(x=> x.value === skill)) ?? []}>
+                          {(skill) => <Option value={skill}>{skill}</Option>}
+                        </For>
+                      </Select>
+                    
+                    </FormField>
 
-              </div>
+                    <Button disabled={skillChipJar().length >= SkillAmount(charLevel)} onclick={()=>{
+                      const amount = SkillAmount(charLevel);
+                      
+                      if (skillChipJar().length < amount) {
+                        setSkillChipJar(old => [...old,{key:"",value:skillChoice(),}])
+                      }
+                    }}>Add Skill</Button>
+                  </div>
+
+
+                  <Chipbar chips={skillChipJar} setChips={setSkillChipJar} />
+
+                </div>
+              </Show>
 
               <div class={`${styles.TabBar}`} style={{}}>
                 <Button onClick={()=>getTab(charLevel) === 0 ? setTab(charLevel,-1) :setTab(charLevel,0)} transparent>Features <Show when={getTab(charLevel) === 0} fallback={"↑"}>↓</Show></Button>
@@ -356,7 +410,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
               </div>
               <Show when={getTab(charLevel) === 0}>
                 <div style={{ height: "40vh", "overflow-y": "scroll" }}>
-                  <For each={range(1, getCharacterLevel(charLevel))}>
+                  <For each={range(1, getCharacterLevel(charLevel) + 1)}>
                     {(level) => (
                       <div>
                         <For each={getClass(charLevel).features?.[level]}>
@@ -372,14 +426,18 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                               {feature.metadata?.category}
 
                               <Show when={feature.name.includes(`Subclass`)}>
-                                <FormField name="subclass">
+                                <FormField name="subclass" formName={`${charLevel}`}>
                                   <Select
-                                    value={currentSubclass()[0]}
-                                    onSelect={value => {
-                                      // Only update the subclass, not the whole form or class level
-                                      group().set("subclass",[...group().get().subclass, value]);
+                                    value={charSubclasses().find(x => x.class5e === charLevel)?.subclass ?? ""}
+                                    onSelect={(value) => {
+                                      setCharSubclasses(old => {
+                                        // Remove any previous subclass for this class
+                                        const filtered = old.filter(x => x.class5e !== charLevel);
+                                        return [...filtered, { class5e: charLevel, subclass: value }];
+                                      });
                                     }}
                                   >
+                                    <Option value="">-</Option>
                                     <For each={getSubclasses(charLevel)}>
                                       {(subclass, i) => <Option value={subclass.name}>{subclass.name}</Option>}
                                     </For>
@@ -474,7 +532,10 @@ export const ClassesSection: Component<sectionProps> = (props) => {
         <AddClass 
           show={[showAddClass, setShowAddClass]}
           allClasses={()=>classes().filter(class5e=>!charClasses().some(c => c.includes(class5e.name)))}
+          charClasses={charClasses}
           setCharClasses={setCharClasses}
+          stats={charStats}
+          mods={statMods}
         />
       </Show>
     </FlatCard>

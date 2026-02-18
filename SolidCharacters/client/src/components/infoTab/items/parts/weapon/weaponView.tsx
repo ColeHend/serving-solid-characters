@@ -140,7 +140,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
     // const properties = createMemo<ItemProperties>(()=>currentItem()?.properties ?? {});
 
     return <Body class={`${styles.itemsBody}`}>
-        <div>
+        <div class={`${styles.searchBar}`}>
             <SearchBar 
                 dataSource={tabledata}
                 setResults={setSearchResults}
@@ -216,6 +216,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
             <Paginator 
                 items={searchResult$}
                 setPaginatedItems={setPaginatedItems}
+                transparent
             />
         </div>
         

@@ -11,10 +11,11 @@ type Props<T> = {
     setPaginatedItems: Setter<T>;
     itemsPerPage?: number[];
 		classes?: string;
+    transparent?: boolean;
 };
 
 const Paginator = <T,>(props: Props<T[]>) => {
-  const sharedHooks = useContext(SharedHookContext);
+  const is_trannsparent = createMemo(() => "transparent" in props && props.transparent !== false);
 
   const [userSettings, setUserSettings] = getUserSettings();
   const [currentPage, setCurrentPage] = createSignal(1);
@@ -53,9 +54,9 @@ const Paginator = <T,>(props: Props<T[]>) => {
     
   return (
     <div class={`${stylin()?.tertiary} ${style.paginator} `}>
-      <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)}>←←</Button>
-      <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)}>←</Button>
-      <Select value={itemsPerPage()} onChange={(e)=>setItemsPerPage(e)}>
+      <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)} class={is_trannsparent() ? style.transparent : ""}>←←</Button>
+      <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)} class={is_trannsparent() ? style.transparent : ""}>←</Button>
+      <Select value={itemsPerPage()} onChange={(e)=>setItemsPerPage(e)} class={is_trannsparent() ? style.transparent : ""}>
         <For each={ItemsPerPageArr}>
           {(item) => 
             <Option value={item}>
@@ -67,8 +68,8 @@ const Paginator = <T,>(props: Props<T[]>) => {
       <div class={style.pageView}>
         <div>{currentPage()}</div> / <div>{lastpage()}</div>
       </div>
-      <Button disabled={currentPage() === lastpage()} onClick={()=>setCurrentPage(currentPage() + 1)}>→</Button>
-      <Button disabled={currentPage() === lastpage()} onClick={()=>setCurrentPage(lastpage())}>→→</Button>
+      <Button disabled={currentPage() === lastpage()} onClick={()=>setCurrentPage(currentPage() + 1)} class={is_trannsparent() ? style.transparent : ""}>→</Button>
+      <Button disabled={currentPage() === lastpage()} onClick={()=>setCurrentPage(lastpage())} class={is_trannsparent() ? style.transparent : ""}>→→</Button>
             
     </div>
   );

@@ -4,6 +4,27 @@
     background-color: vars.$color-surface;
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 
+    button {
+        background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+    }
+  
+    fieldset {
+        background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+        
+        :nth-child(even) {
+            background-color: transparent !important;
+            
+            :nth-child(n) {
+                background-color: transparent !important;
+            }
+        }
+        
+        legend {
+            background-color: transparent !important;
+        }
+        
+    }
+
     @media screen and (max-width: 768px){
         width: 100%;
         
@@ -46,4 +67,51 @@
     margin-top: 10px;
     th, td { border: 1px solid var(--border-color, #444); padding: 2px 4px; font-size: 0.75rem; text-align: center; }
     thead { background: rgba(255,255,255,0.08); }
+}
+
+.transparent {
+  background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+}
+
+.subclassSelector {
+    padding: 0.45rem 0.65rem; 
+    // background-color: var(--panel-bg,#1b1d22); 
+    background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+    color: var(--text,#e6e6e6); 
+    border-radius: 6px; 
+    border: 1px solid var(--border,#333);
+    cursor: pointer;
+    
+    option {
+        &:focus {
+            background-color: vars.$color-surface !important;
+        }
+    }
+
+    // &:focus {
+    //     background-color: vars.$color-surface !important;
+    // }
+}
+
+.subclassSelectorWrapper {
+    margin-bottom: 1rem; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.5rem; 
+    max-width: 620px; 
+}
+
+.selectorLabel {
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.25rem;
+}
+
+.fontWeight600 {
+    font-weight: 600;
+}
+
+.editingStatus {
+    font-size: 0.75rem; 
+    color: var(--text-subtle,#999);
 }

@@ -16,6 +16,7 @@ export class Character {
   public subclass: string[] = [];
   public background: string = '';
   public alignment: string = '';
+  public features: FeatureDetail[] = [];
   public proficiencies: CharacterProficiency = {
     skills: {},
     other: {}
@@ -97,28 +98,18 @@ export interface CharacterCurrency {
   copperPieces: number;
 }
 
-type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"> 
+type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"> 
 
 export interface CharacterForm extends halfCharacter {
   race: string;
   maxHP: number;
   currentHP: number;
   tempHP: number;
-  inventory: string[];
-  equipped: string[];
-  attuned: string[];
   PP: number;
   GP: number;
   EP: number;
   SP: number;
   CP: number;
-  STR: number;
-  DEX: number;
-  CON: number;
-  INT: number;
-  WIS: number;
-  CHA: number;
-  spells: string[];
   lineage: string;
   clsGold: number;
   backgrndGold: number;

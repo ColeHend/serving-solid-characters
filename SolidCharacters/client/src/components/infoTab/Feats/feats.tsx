@@ -148,7 +148,7 @@ const featsList: Component = () => {
       </Show>
                
       <div class={`${styles.paginator}`}>
-        <Paginator items={displayResults} setPaginatedItems={setPaginatedFeats} />
+        <Paginator items={displayResults} setPaginatedItems={setPaginatedFeats} transparent/>
       </div>
     </Body>
   );

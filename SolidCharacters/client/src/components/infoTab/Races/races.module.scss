@@ -5,12 +5,21 @@ $mobile: 768px;
 .body {
     background-color: vars.$color-surface;
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+
+    button {
+        background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+    }
 }
 
 .searchBar {
     width: 35%; 
-    height: 5vh;
+    height: 3vh;
     margin: 0 auto;
+    margin-bottom: 1vh;
+
+    button {
+        background: transparent !important;
+    }
 
     @media screen and (max-width:$mobile) {
         width: 100%;
