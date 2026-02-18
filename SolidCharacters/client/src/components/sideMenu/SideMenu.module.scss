@@ -1,29 +1,72 @@
+@use 'coles-solid-library/themes/variables.scss' as vars;
+
 $border-radius: 10px;
-
-
+$margin: 2px;
+$padding: 7px;
 
 .sideMenu {
     display: flex;
     flex-direction: column;
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
+    transform: translateX(0);
+    width: 180px !important;
+    padding: $padding;
+
+    ul {
+      list-style: none;
+
+      padding: $padding;
+      margin: $margin;
+
+    }
 
     &.openingLeft {
-        animation: SlideIn 0.3s forwards;
+        animation: slideInFromLeft 0.3s forwards;
     }
 
     &.closingLeft {
-        animation: SlideOut 0.3s forwards;
+        animation: slideOutToLeft 0.3s forwards;
     }
 
     &.openingRight {
-        animation: SlideInRight 0.3s ease-out forwards;
+        animation: slideInFromRight 0.3s forwards;
     }
 
     &.closingRight {
-        animation: SlideOutRight 0.3s ease-out forwards;
+        animation: slideOutToRight 0.3s forwards;
     }
 
+}
+
+.headerItem {
+  display: flex;
+  flex-direction: row;
+  
+  justify-content: center;
+  align-items: center;
+  
+  gap: 8%;
+}
+
+.menuItem {
+  display: flex;
+  flex-direction: row;
+  
+  :first-child {
+    flex-grow: 1;
+  }
+  :nth-child(2) :nth-child(3) {
+    margin: 0 4px;
+  }
+
+  h3 {
+    display: inline;
+  }
+
+  button svg {
+    fill: vars.$color-on-background !important;
+  }
 }
 
 @keyframes slideInFromLeft {

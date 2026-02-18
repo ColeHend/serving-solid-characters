@@ -1,11 +1,14 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, onCleanup, onMount, Setter, Show } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, onMount, Setter, Show, untrack } from "solid-js";
 import { UserSettings } from "../../models/userSettings";
-import { Style } from "../../shared/customHooks/utility/style/styleHook";
 import { useNavigate } from "@solidjs/router";
 import { Portal } from "solid-js/web";
 import { ExtendedTab } from "../../models/extendedTab";
-import { Container } from "coles-solid-library";
+import { Button, Container, ExpansionPanel, Icon } from "coles-solid-library";
 import styles from "./SideMenu.module.scss";
+import useClickOutside from "solid-click-outside";
+import { FlatCard } from "../../shared/components/flatCard/flatCard";
+
+
 
 interface MenuProps {
     defaultShowList: [Accessor<boolean>, Setter<boolean>],
@@ -21,8 +24,8 @@ export const SideMenu:Component<MenuProps> = (props) => {
     const [shouldRender, setShouldRender] = createSignal(false);
 
     const [showSettings, setShowSettings] = createSignal(false);
-    const [isTransitioning, setIsTransitioning] = createSignal(false);
-    let transitiionTimer: number | undefined;
+    // const [isTransitioning, setIsTransitioning] = createSignal(false);
+    const [transitiionTimer, setTransitiionTimer] = createSignal<number | undefined>(0);
 
     const navigate = useNavigate();
 
@@ -46,12 +49,11 @@ export const SideMenu:Component<MenuProps> = (props) => {
 
             if (props.location === "left") {
                 menu.style.top = `${anchorRect.bottom}px`;
-                menu.style.left = `${anchorRect.left}px`;
+                menu.style.left = `${document.body.getBoundingClientRect().left}px`;
 
-                menu.classList.add()
             } else if (props.location === "right") {
-                menu.style.top = `0`;
-                menu.style.left = `${anchorRect.right - menuRect.width}px`;
+                menu.style.top = `${anchorRect.bottom}px`;
+                menu.style.right = `${document.body.getBoundingClientRect().left}px`;
             }
 
         }
@@ -120,19 +122,11 @@ export const SideMenu:Component<MenuProps> = (props) => {
                 setIsClosing(false);
             },300)
         }
+
+        useClickOutside(menuRef, () => {
+            if (showMenu()) setShowMenu(false);
+        });
     });
-
-    createEffect(() => updatePosition());
-
-    onMount(() => {
-        document.body.addEventListener('click', (e) => updatePosition());
-        window.addEventListener('resize', (e) => updatePosition());
-    })
-
-    onCleanup(() => {
-        document.body.removeEventListener('click', (e) => updatePosition());
-        window.removeEventListener('resize', (e) => updatePosition());
-    })
 
     const setOpeningClass = ():string => {
         return props.location === "right" ? styles.openingRight : styles.openingLeft;
@@ -142,10 +136,69 @@ export const SideMenu:Component<MenuProps> = (props) => {
         return props.location === "right" ? styles.closingRight : styles.closingLeft;
     }
 
+    const convertHombrewViewToCreate = (link: string) => {
+        return link.replace(`view?`, 'create').replace("?name=", "/");
+    };
+  
+
+    createEffect(() => updatePosition());
+
+
     return <Show when={shouldRender()}>
         <Portal ref={menuRef()}>
             <Container theme="container" ref={ref => setMenuRef(ref)} class={`${styles.sideMenu} ${isOpening() ? setOpeningClass() : ""} ${isClosing() ? setClosingClass() : ""}`}>
-                asgasdf
+               <ul>
+                    <li class={`${styles.headerItem}`} onClick={()=>navigate("/")}>
+                        <h3>Naviagtion</h3>
+
+                        <Button>
+                            <Icon name="settings" size={'large'} />
+                        </Button>
+                    </li>
+
+                    <For each={MenuItems()}>
+                        {(tab) => <>
+                            <Show when={tab.Name !== "Homebrew"}>
+                                <li>
+                                    <FlatCard headerName={<span onClick={()=>navigate(tab.Link)}>{tab.Name}</span>}>
+                                        <For each={tab.children ?? []}>
+                                            {(child) => <li onClick={()=>{
+                                                navigate(child.Link);
+                                                setShowMenu(false);
+                                            }}>
+                                                {child.Name}
+                                            </li>}
+                                        </For>  
+                                    </FlatCard>
+                                </li>
+                            </Show>
+                            <Show when={tab.Name === "Homebrew"}>
+                                <FlatCard headerName={<span onClick={()=>navigate(tab.Link)}>{tab.Name}</span>}>
+                                    <For each={tab.children ?? []}>
+                                        {(child) => <li class={`${styles.menuItem}`} onClick={()=>{
+                                            navigate(child.Link);
+                                            setShowMenu(false);
+                                        }}>
+                                            <span>{child.Name}</span>
+                                            <Button transparent onClick={()=>{
+                                                navigate(child.Link);
+                                                setShowMenu(false);
+                                            }} >
+                                                <Icon name="visibility" size={'small'} />
+                                            </Button>
+                                            <Button transparent onClick={()=>{
+                                                navigate(convertHombrewViewToCreate(child.Link));
+                                                setShowMenu(false);
+                                            }}>
+                                                <Icon name="edit" size={'small'} />
+                                            </Button>
+                                        </li>}
+                                    </For>  
+                                </FlatCard>
+                            </Show>
+                        </>}
+                    </For>
+                </ul>
             </Container>
         </Portal>
     </Show>

@@ -180,7 +180,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
             <Button onClick={()=>navigate("/about")}>About</Button>
           </footer>
         </div>
-        <NavMenu
+        {/* <NavMenu
           anchorElement={menuAnchor} 
           userStyle={userStyle} 
           defaultShowList={defaultShowList} 
@@ -188,7 +188,14 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           defaultIsMobile={defaultIsMobile} 
           setDefaultIsMobile={setDefaultIsMobile} 
           defaultUserSettings={defaultUserSettings as any} 
-          setDefaultUserSettings={setDefaultUserSettings as any} />
+          setDefaultUserSettings={setDefaultUserSettings as any} /> */}
+        <SideMenu 
+          location="right"
+          anchorElement={menuAnchor}
+          defaultIsMobile={[defaultIsMobile, setDefaultIsMobile]}
+          defaultShowList={[defaultShowList, setDefaultShowList]}
+          defaultUserSettings={[defaultUserSettings, setDefaultUserSettings]}
+        />
         <SnackbarController />
       </Provider>      
     </ErrorBoundary>
