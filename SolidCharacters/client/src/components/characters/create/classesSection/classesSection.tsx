@@ -36,7 +36,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const srdSpells = useDnDSpells();
   const subclasses = useDnDSubclasses();
 
-  const group = createMemo(()=>props.formGroup); 
+  const group = props.formGroup; 
 
   const [knownSpells, setKnownSpells] = props.knownSpells;
 
@@ -193,7 +193,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
 
   }
 
-  const currentSubclass = createMemo(()=>group().get().subclass);
+  const currentSubclass = createMemo(()=>props.formGroup.get().subclass);
 
 
   // Class Info Getter Funcitions
@@ -249,295 +249,297 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   }
 
   return (
-    <FlatCard
-      icon="shield"
-      headerName={<div class={`${styles.sectionHeader}`}>
-        <div>
-          <span>Class(es):</span>
+    <Show when={props.formGroup.get().className !== ""}>
+      <FlatCard
+        icon="shield"
+        headerName={<div class={`${styles.sectionHeader}`}>
+          <div>
+            <span>Class(es):</span>
+            
+            <span>
+              ({currentLevel()})
+            </span>
+          </div>
+
+          <For each={charClasses()}>
+            {(class5e)=> <span>
+              <span>
+                {class5e}
+              </span>
+              <span>
+                ({noNegitveValue(getCharacterLevel(class5e))})  
+              </span>
+            </span>}
+          </For>
           
-          <span>
-            ({currentLevel()})
-          </span>
-        </div>
+        </div>}
+        extraHeaderJsx={
+          <div>
+            <Button onClick={()=>setShowAddClass(old=>!old)}>Add Class</Button>
+          </div>
+        }
+        transparent
+        hidden={props.formGroup.get().className !== ""}
+      >
+        <div class={`${styles.classesSection}`}>
+          <For each={charClasses()}>
+            {(charLevel, i) => (
+              <FlatCard headerName={`${charLevel} (${getCharacterLevel(charLevel) === -1 ? 1 : getCharacterLevel(charLevel)})`} class={`${styles.cardAlt}`} extraHeaderJsx={
+                  <Show when={i() !== 0}>
+                    <Button onClick={()=>{
+                      const confirm = window.confirm("Are you sure?");
 
-        <For each={charClasses()}>
-          {(class5e)=> <span>
-            <span>
-              {class5e}
-            </span>
-            <span>
-              ({noNegitveValue(getCharacterLevel(class5e))})  
-            </span>
-          </span>}
-        </For>
-        
-      </div>}
-      extraHeaderJsx={
-        <div>
-          <Button onClick={()=>setShowAddClass(old=>!old)}>Add Class</Button>
-        </div>
-      }
-      transparent
-    >
-      <div class={`${styles.classesSection}`}>
-        <For each={charClasses()}>
-          {(charLevel, i) => (
-            <FlatCard headerName={`${charLevel} (${getCharacterLevel(charLevel) === -1 ? 1 : getCharacterLevel(charLevel)})`} class={`${styles.cardAlt}`} extraHeaderJsx={
-                <Show when={i() !== 0}>
-                  <Button onClick={()=>{
-                    const confirm = window.confirm("Are you sure?");
-
-                    if (confirm) setCharClasses(old => old.filter(old => old !== charLevel));
-                  }}>Delete</Button>
-                </Show>
-            } transparent>
-              <div class={`${styles.classHeader}`}>
-                  <Select
-                    value={getCharacterLevel(charLevel)}
-                    defaultValue={1}
-                    onSelect={(value) =>
-                      setCharacterLevel(charLevel, value)
-                    }
-                    class={`${styles.levelSelect}`}
-                  >
-                    <For each={levels()}>
-                      {(level) => <Option value={level}>{level}</Option>}
-                    </For>
-                  </Select>
-              </div>
-
-              <div>
-                <div>
-                  <strong>Primary <Show fallback={<>Ability:</>} when={primaryAbility(charLevel).split(",").length > 1}>Abilities:</Show>  </strong>
-                  {primaryAbility(charLevel)}
-                </div>
-
-                <div>
-                  <strong>Saving Throws: </strong>
-                  {savingThrows(charLevel).join(", ")}
-                </div>
-
-                <h3>Proficiencies</h3>
-                    
-                <Show when={weaponProfs(charLevel).length > 0} fallback={
-                  <div>
-                      <strong>Weapons: </strong>
-                      None
-                  </div>
-                }>
-                  <div>
-                      <strong>Weapons: </strong>
-                      {weaponProfs(charLevel).join(", ")}
-                  </div>
-                </Show>
-
-                <Show when={armorProfs(charLevel).length > 0} fallback={<div>
-                  <strong>Armor: </strong>
-                  None
-                </div>}>
-                  <div>
-                    <strong>Armor: </strong>
-                    {armorProfs(charLevel).join(", ")}
-                  </div>
-                </Show>
-
-                <Show when={toolsProfs(charLevel).length > 0} fallback={<div>
-                  <strong>Tools: </strong>
-                  None
-                </div>}>
-                  <div>
-                    <strong>Tools: </strong>
-                    {toolsProfs(charLevel).join(", ")}
-                  </div>
-                </Show>
-
-                <Show when={skillProfs(charLevel).length > 0} fallback={<div>
-                  <strong>Skills: </strong>
-                  None
-                </div>}>
-                  <div>
-                    <strong>Skills: </strong>
-                    {skillProfs(charLevel).join(", ")}
-                  </div>
-                </Show>
-
-              </div>
-
-              <Show when={!exist()}>
-                <div>
-                  <h3>Skill Choices</h3>
-                  Choose <span>{skillChoices(charLevel)?.amount}</span> skills from the list below.
-                  
-                  <div style={{display:"flex", "justify-content":"center","align-items":"center"}}>
-                    <FormField name="Skill Choices" formName={`${charLevel}Skills`}>
-                      <Select
-                        value={skillChoice()}
-                        onChange={(value) => {
-                          const amount = SkillAmount(charLevel);
-                      
-                          if (skillChipJar().length < amount) {
-                            setSkillChoice(value)
-                          }
-                        }}
-                      >
-                        <For each={skillChoices(charLevel)?.options.filter(skill=> !skillChipJar().some(x=> x.value === skill)) ?? []}>
-                          {(skill) => <Option value={skill}>{skill}</Option>}
-                        </For>
-                      </Select>
-                    
-                    </FormField>
-
-                    <Button disabled={skillChipJar().length >= SkillAmount(charLevel)} onclick={()=>{
-                      const amount = SkillAmount(charLevel);
-                      
-                      if (skillChipJar().length < amount) {
-                        setSkillChipJar(old => [...old,{key:"",value:skillChoice(),}])
+                      if (confirm) setCharClasses(old => old.filter(old => old !== charLevel));
+                    }}>Delete</Button>
+                  </Show>
+              } transparent>
+                <div class={`${styles.classHeader}`}>
+                    <Select
+                      value={getCharacterLevel(charLevel)}
+                      onSelect={(value) =>
+                        setCharacterLevel(charLevel, value)
                       }
-                    }}>Add Skill</Button>
+                      class={`${styles.levelSelect}`}
+                    >
+                      <For each={levels()}>
+                        {(level) => <Option value={level}>{level}</Option>}
+                      </For>
+                    </Select>
+                </div>
+
+                <div>
+                  <div>
+                    <strong>Primary <Show fallback={<>Ability:</>} when={primaryAbility(charLevel).split(",").length > 1}>Abilities:</Show>  </strong>
+                    {primaryAbility(charLevel)}
                   </div>
 
+                  <div>
+                    <strong>Saving Throws: </strong>
+                    {savingThrows(charLevel).join(", ")}
+                  </div>
 
-                  <Chipbar chips={skillChipJar} setChips={setSkillChipJar} />
-
-                </div>
-              </Show>
-
-              <div class={`${styles.TabBar}`} style={{}}>
-                <Button onClick={()=>getTab(charLevel) === 0 ? setTab(charLevel,-1) :setTab(charLevel,0)} transparent>Features <Show when={getTab(charLevel) === 0} fallback={"↑"}>↓</Show></Button>
-                <Show when={hasSpells(charLevel)}>
-                  <Button onClick={()=>getTab(charLevel) === 1 ? setTab(charLevel,-1) :setTab(charLevel,1)} transparent>Spells <Show when={getTab(charLevel) === 1} fallback={"↑"}>↓</Show></Button>
-                </Show>
-              </div>
-              <Show when={getTab(charLevel) === 0}>
-                <div style={{ height: "40vh", "overflow-y": "scroll" }}>
-                  <For each={range(1, getCharacterLevel(charLevel) + 1)}>
-                    {(level) => (
-                      <div>
-                        <For each={getClass(charLevel).features?.[level]}>
-                          {(feature) => (
-                            <FlatCard
-                              headerName={`${feature.name}`}
-                              icon="star"
-                              class={`${styles.cardAlt}`}
-                              transparent
-                            >
-                              {feature.description}
-
-                              {feature.metadata?.category}
-
-                              <Show when={feature.name.includes(`Subclass`)}>
-                                <FormField name="subclass" formName={`${charLevel}`}>
-                                  <Select
-                                    value={charSubclasses().find(x => x.class5e === charLevel)?.subclass ?? ""}
-                                    onSelect={(value) => {
-                                      setCharSubclasses(old => {
-                                        // Remove any previous subclass for this class
-                                        const filtered = old.filter(x => x.class5e !== charLevel);
-                                        return [...filtered, { class5e: charLevel, subclass: value }];
-                                      });
-                                    }}
-                                  >
-                                    <Option value="">-</Option>
-                                    <For each={getSubclasses(charLevel)}>
-                                      {(subclass, i) => <Option value={subclass.name}>{subclass.name}</Option>}
-                                    </For>
-                                  </Select>
-                                </FormField>
-                              </Show>
-                            </FlatCard>
-                          )}
-                        </For>
-                      </div>
-                    )}
-                  </For>
-                </div>
-              </Show>
-              <Show when={getTab(charLevel) === 1}>
-                <div class={`${styles.learnSpellsTable}`}>
-                  <Table data={filterdSpells(charLevel)} columns={["name","level","learnBtn"]}>
-                      <Column name="name">
-                          <Header>
-                              Name
-                          </Header>
-                          <Cell<Spell>>
-                              {(spell)=><span>
-                                  <div>{spell.name}</div>
-                                  <div>
-                                      <Show when={spell.is_concentration}>
-                                          <span>concentration</span>
-                                      </Show>
-                                      <Show when={spell.is_ritual}>
-                                          <span>ritual</span>
-                                      </Show>
-                                  </div>
-
-                              </span>}
-                          </Cell>
-                      </Column>
-
-                      <Column name="level">
-                          <Header>
-                          Level
-                          </Header>
-                          <Cell<Spell>>
-                              {(spell)=><span>
-                                  <span>{spellLevel(+spell.level)}</span>
-                              </span>}
-                          </Cell>
-                      </Column>
-
-                      <Column name="learnBtn">
-                        <Header><></></Header>
-                        <Cell<Spell> onClick={(e)=>e.stopPropagation()}>
-                          {(spell)=><span>
-                              <Show when={!isLearned(spell.name)}>
-                                  <Button class={`${styles.LearnBtn}`} onClick={()=>{
-                                      setKnownSpells(old=>[...old,spell.name])
-                                  }}>
-                                      <Icon name="add"/> Learn
-                                  </Button>
-                              </Show>
-                              <Show when={isLearned(spell.name)}>
-                                  <Button class={`${styles.LearnBtn}`} onClick={()=>{
-                                    setKnownSpells(old=>old.filter(s=>s !== spell.name));
-                                  }}>
-                                      <Icon name="remove" /> Delete
-                                  </Button>
-                              </Show>
-                          </span>}
-                        </Cell>
-                      </Column>
+                  <h3>Proficiencies</h3>
                       
-                      <Row onClick={(e,spell)=>{
-                          setSelectedSpell(spell);
-                          setShowSpellModal(old => !old);
-                      }} />
-                  </Table>
+                  <Show when={weaponProfs(charLevel).length > 0} fallback={
+                    <div>
+                        <strong>Weapons: </strong>
+                        None
+                    </div>
+                  }>
+                    <div>
+                        <strong>Weapons: </strong>
+                        {weaponProfs(charLevel).join(", ")}
+                    </div>
+                  </Show>
+
+                  <Show when={armorProfs(charLevel).length > 0} fallback={<div>
+                    <strong>Armor: </strong>
+                    None
+                  </div>}>
+                    <div>
+                      <strong>Armor: </strong>
+                      {armorProfs(charLevel).join(", ")}
+                    </div>
+                  </Show>
+
+                  <Show when={toolsProfs(charLevel).length > 0} fallback={<div>
+                    <strong>Tools: </strong>
+                    None
+                  </div>}>
+                    <div>
+                      <strong>Tools: </strong>
+                      {toolsProfs(charLevel).join(", ")}
+                    </div>
+                  </Show>
+
+                  <Show when={skillProfs(charLevel).length > 0} fallback={<div>
+                    <strong>Skills: </strong>
+                    None
+                  </div>}>
+                    <div>
+                      <strong>Skills: </strong>
+                      {skillProfs(charLevel).join(", ")}
+                    </div>
+                  </Show>
+
                 </div>
-              </Show>
+
+                <Show when={!exist()}>
+                  <div>
+                    <h3>Skill Choices</h3>
+                    Choose <span>{skillChoices(charLevel)?.amount}</span> skills from the list below.
+                    
+                    <div style={{display:"flex", "justify-content":"center","align-items":"center"}}>
+                      <FormField name="Skill Choices" formName={`${charLevel}Skills`}>
+                        <Select
+                          value={skillChoice()}
+                          onChange={(value) => {
+                            const amount = SkillAmount(charLevel);
+                        
+                            if (skillChipJar().length < amount) {
+                              setSkillChoice(value)
+                            }
+                          }}
+                        >
+                          <For each={skillChoices(charLevel)?.options.filter(skill=> !skillChipJar().some(x=> x.value === skill)) ?? []}>
+                            {(skill) => <Option value={skill}>{skill}</Option>}
+                          </For>
+                        </Select>
+                      
+                      </FormField>
+
+                      <Button disabled={skillChipJar().length >= SkillAmount(charLevel)} onclick={()=>{
+                        const amount = SkillAmount(charLevel);
+                        
+                        if (skillChipJar().length < amount) {
+                          setSkillChipJar(old => [...old,{key:"",value:skillChoice(),}])
+                        }
+                      }}>Add Skill</Button>
+                    </div>
 
 
-              <Show when={showSpellModal()}>
-                <SpellModal 
-                  spell={selectedSpell}
-                  backgroundClick={[showSpellModal,setShowSpellModal]}
-                />
-              </Show>
-            </FlatCard>
-          )}
-        </For>
-      </div>
+                    <Chipbar chips={skillChipJar} setChips={setSkillChipJar} />
 
-      <Show when={showAddClass()}>
-        <AddClass 
-          show={[showAddClass, setShowAddClass]}
-          allClasses={()=>classes().filter(class5e=>!charClasses().some(c => c.includes(class5e.name)))}
-          charClasses={charClasses}
-          setCharClasses={setCharClasses}
-          stats={charStats}
-          mods={statMods}
-        />
-      </Show>
-    </FlatCard>
+                  </div>
+                </Show>
+
+                <div class={`${styles.TabBar}`} style={{}}>
+                  <Button onClick={()=>getTab(charLevel) === 0 ? setTab(charLevel,-1) :setTab(charLevel,0)} transparent>Features <Show when={getTab(charLevel) === 0} fallback={"↑"}>↓</Show></Button>
+                  <Show when={hasSpells(charLevel)}>
+                    <Button onClick={()=>getTab(charLevel) === 1 ? setTab(charLevel,-1) :setTab(charLevel,1)} transparent>Spells <Show when={getTab(charLevel) === 1} fallback={"↑"}>↓</Show></Button>
+                  </Show>
+                </div>
+                <Show when={getTab(charLevel) === 0}>
+                  <div style={{ height: "40vh", "overflow-y": "scroll" }}>
+                    <For each={range(1, getCharacterLevel(charLevel) + 1)}>
+                      {(level) => (
+                        <div>
+                          <For each={getClass(charLevel).features?.[level]}>
+                            {(feature) => (
+                              <FlatCard
+                                headerName={`${feature.name}`}
+                                icon="star"
+                                class={`${styles.cardAlt}`}
+                                transparent
+                              >
+                                {feature.description}
+
+                                {feature.metadata?.category}
+
+                                <Show when={feature.name.includes(`Subclass`)}>
+                                  <FormField name="subclass" formName={`${charLevel}`}>
+                                    <Select
+                                      value={charSubclasses().find(x => x.class5e === charLevel)?.subclass ?? ""}
+                                      onSelect={(value) => {
+                                        setCharSubclasses(old => {
+                                          // Remove any previous subclass for this class
+                                          const filtered = old.filter(x => x.class5e !== charLevel);
+                                          return [...filtered, { class5e: charLevel, subclass: value }];
+                                        });
+                                      }}
+                                    >
+                                      <Option value="">-</Option>
+                                      <For each={getSubclasses(charLevel)}>
+                                        {(subclass, i) => <Option value={subclass.name}>{subclass.name}</Option>}
+                                      </For>
+                                    </Select>
+                                  </FormField>
+                                </Show>
+                              </FlatCard>
+                            )}
+                          </For>
+                        </div>
+                      )}
+                    </For>
+                  </div>
+                </Show>
+                <Show when={getTab(charLevel) === 1}>
+                  <div class={`${styles.learnSpellsTable}`}>
+                    <Table data={filterdSpells(charLevel)} columns={["name","level","learnBtn"]}>
+                        <Column name="name">
+                            <Header>
+                                Name
+                            </Header>
+                            <Cell<Spell>>
+                                {(spell)=><span>
+                                    <div>{spell.name}</div>
+                                    <div>
+                                        <Show when={spell.is_concentration}>
+                                            <span>concentration</span>
+                                        </Show>
+                                        <Show when={spell.is_ritual}>
+                                            <span>ritual</span>
+                                        </Show>
+                                    </div>
+
+                                </span>}
+                            </Cell>
+                        </Column>
+
+                        <Column name="level">
+                            <Header>
+                            Level
+                            </Header>
+                            <Cell<Spell>>
+                                {(spell)=><span>
+                                    <span>{spellLevel(+spell.level)}</span>
+                                </span>}
+                            </Cell>
+                        </Column>
+
+                        <Column name="learnBtn">
+                          <Header><></></Header>
+                          <Cell<Spell> onClick={(e)=>e.stopPropagation()}>
+                            {(spell)=><span>
+                                <Show when={!isLearned(spell.name)}>
+                                    <Button class={`${styles.LearnBtn}`} onClick={()=>{
+                                        setKnownSpells(old=>[...old,spell.name])
+                                    }}>
+                                        <Icon name="add"/> Learn
+                                    </Button>
+                                </Show>
+                                <Show when={isLearned(spell.name)}>
+                                    <Button class={`${styles.LearnBtn}`} onClick={()=>{
+                                      setKnownSpells(old=>old.filter(s=>s !== spell.name));
+                                    }}>
+                                        <Icon name="remove" /> Delete
+                                    </Button>
+                                </Show>
+                            </span>}
+                          </Cell>
+                        </Column>
+                        
+                        <Row onClick={(e,spell)=>{
+                            setSelectedSpell(spell);
+                            setShowSpellModal(old => !old);
+                        }} />
+                    </Table>
+                  </div>
+                </Show>
+
+
+                <Show when={showSpellModal()}>
+                  <SpellModal 
+                    spell={selectedSpell}
+                    backgroundClick={[showSpellModal,setShowSpellModal]}
+                  />
+                </Show>
+              </FlatCard>
+            )}
+          </For>
+        </div>
+
+        <Show when={showAddClass()}>
+          <AddClass 
+            show={[showAddClass, setShowAddClass]}
+            allClasses={()=>classes().filter(class5e=>!charClasses().some(c => c.includes(class5e.name)))}
+            charClasses={charClasses}
+            setCharClasses={setCharClasses}
+            stats={charStats}
+            mods={statMods}
+          />
+        </Show>
+      </FlatCard>
+    </Show> 
   );
 };

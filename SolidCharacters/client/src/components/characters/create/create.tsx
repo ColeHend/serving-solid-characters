@@ -92,6 +92,9 @@ const CharacterCreate: Component = () => {
     "BackgrndFeat": ["", []],
   }); // most important character data
 
+  console.log("ran!");
+  
+
   // data hooks
   const classes = useDnDClasses();
   const backgrounds = useDnDBackgrounds();
@@ -485,20 +488,20 @@ const CharacterCreate: Component = () => {
           </div>
         </FlatCard>
         
-        <Show when={selectedClass() !== ""}>
-          <ClassesSection 
-            charClasses={[charClasses, setCharClasses]}
-            classLevels={[classLevels, setClassLevels]}
-            knownSpells={[knownSpells, setKnownSpells]}
-            formGroup={group}
-            currSubclasses={[currentSubclasses, setCurrentSubclasses]}
-            charSkills={[charSkills,setCharSkills]}
-            chipJar={[skillChipJar, setSkillChipJar]}
-            stats={[charStats, setCharStats]}
-            modifyers={[statMods, setStatMods]}
-            exist={exist}
-          />
-        </Show>
+        <ClassesSection 
+          charClasses={[charClasses, setCharClasses]}
+          classLevels={[classLevels, setClassLevels]}
+          knownSpells={[knownSpells, setKnownSpells]}
+          formGroup={group}
+          currSubclasses={[currentSubclasses, setCurrentSubclasses]}
+          charSkills={[charSkills,setCharSkills]}
+          chipJar={[skillChipJar, setSkillChipJar]}
+          stats={[charStats, setCharStats]}
+          modifyers={[statMods, setStatMods]}
+          exist={exist}
+        />
+        {/* <Show when={selectedClass() !== ""}>
+        </Show> */}
 
         <Show when={characterRace() !== ""}>
           <RaceSection
