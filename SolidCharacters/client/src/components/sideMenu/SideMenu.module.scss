@@ -1,0 +1,128 @@
+@use 'coles-solid-library/themes/variables.scss' as vars;
+
+$border-radius: 10px;
+$margin: 2px;
+$padding: 7px;
+
+.sideMenu {
+    display: flex;
+    flex-direction: column;
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+    transform: translateX(0);
+    width: 180px !important;
+    padding: $padding;
+    background-color: color-mix(in srgb, vars.$color-surface 90%, transparent) !important;
+    z-index: 2;
+
+    ul {
+      list-style: none;
+
+      padding: $padding;
+      margin: $margin;
+    }
+
+    button {
+      background-color: color-mix(in srgb, vars.$color-surface 65%, transparent) !important;
+    
+    
+      svg {
+        fill: vars.$color-on-background !important;
+      }
+    }
+
+    &.openingLeft {
+        animation: slideInFromLeft 0.3s forwards;
+    }
+
+    &.closingLeft {
+        animation: slideOutToLeft 0.3s forwards;
+    }
+
+    &.openingRight {
+        animation: slideInFromRight 0.3s forwards;
+    }
+
+    &.closingRight {
+        animation: slideOutToRight 0.3s forwards;
+    }
+
+}
+
+.headerItem {
+  display: flex;
+  flex-direction: row;
+  
+  justify-content: center;
+  align-items: center;
+  
+  gap: 8%;
+}
+
+.menuItem {
+  display: flex;
+  flex-direction: row;
+  
+  :first-child {
+    flex-grow: 1;
+  }
+  :nth-child(2) :nth-child(3) {
+    margin: 0 4px;
+  }
+
+  h3 {
+    display: inline;
+  }
+
+  button svg {
+    fill: vars.$color-on-background !important;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.headerItem {
+  
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}

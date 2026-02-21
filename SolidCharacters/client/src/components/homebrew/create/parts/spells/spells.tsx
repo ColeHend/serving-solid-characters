@@ -169,7 +169,7 @@ const Spells: Component = () => {
           <span class={`${styles.break}`} />
           <p class={`${styles.field}`}>
             <label>Level </label>
-            <Select class={`${styles.border}`} value={currentSpell["level"]} onChange={(e) => setCurrentSpell({ level: e })} transparent>
+            <Select class={`${styles.border} ${styles.transparent}`} value={currentSpell["level"]} onChange={(e) => setCurrentSpell({ level: e })} transparent>
               <For each={spellLevels}>{(slotLevel) =>
                 <Option value={slotLevel.toString(10)} >
                   {getAddNumberAccent(slotLevel)}
@@ -179,7 +179,7 @@ const Spells: Component = () => {
           </p>
           <p class={`${styles.field}`}>
             <label>School </label>
-            <Select class={`${styles.border}`}
+            <Select class={`${styles.border} ${styles.transparent}`}
               value={currentSpell["school"]}
               onChange={(e) => setCurrentSpell({ "school": e})} transparent>
               <For each={getSchools()}>{(school) =>
@@ -196,7 +196,7 @@ const Spells: Component = () => {
           <span class={`${styles.break}`} />
           <div class={`${styles.field}`}>
             <h4>Classes?</h4>
-            <Select class={`${styles.border}`} value={tempValue["currentClass"]} onChange={(e)=>setTempValue({"currentClass": e})} transparent>
+            <Select class={`${styles.border} ${styles.transparent}`} value={tempValue["currentClass"]} onChange={(e)=>setTempValue({"currentClass": e})} transparent>
               <For each={ClassNames()}>{(className) =>
                 <Option value={className} >
                   {className}
@@ -226,7 +226,7 @@ const Spells: Component = () => {
             </span>
             <Show when={!showCustoms["castingTime"]}>
               <label>Casting Time</label>
-              <Select class={`${styles.border}`}
+              <Select class={`${styles.border} ${styles.transparent}`}
                 value={currentSpell["castingTime"]}
                 onChange={(e) => setCurrentSpell({ "castingTime": e})} transparent>
                 <For each={getCastingTimes()}>{(castingTime) =>
@@ -253,7 +253,7 @@ const Spells: Component = () => {
             </span>
             <Show when={!showCustoms["range"]}>
               <label>Range</label>
-              <Select class={`${styles.border}`} transparent
+              <Select class={`${styles.border} ${styles.transparent}`} transparent
                 value={currentSpell['range']}
                 onChange={(e) => setCurrentSpell({ 'range': e})}>
                 <For each={getRanges()}>{(range) =>
@@ -285,7 +285,7 @@ const Spells: Component = () => {
             <span class={`${styles.duration}`}>
               <Show when={!showCustoms["duration"]}>
                 <label>Duration</label>
-                <Select class={`${styles.border}`} transparent 
+                <Select class={`${styles.border} ${styles.transparent}`} transparent 
                   value={currentSpell["duration"]} 
                   onChange={(e)=>{
                     setCurrentSpell({ duration: e})

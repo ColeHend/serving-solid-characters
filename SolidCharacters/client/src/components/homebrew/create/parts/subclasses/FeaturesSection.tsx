@@ -1,6 +1,7 @@
 import { createSignal, createEffect, For, Show } from "solid-js";
 import { Select, Option, Button, FormGroup, Modal, Input, TextArea, Chip } from "coles-solid-library";
 import { FeatureDetail } from "../../../../../models/data";
+import styles from "./subclasses.module.scss";
 
 // Added optional id to allow stable identity (reference equality was breaking indexOf logic)
 export interface FeatureDetailLevel extends FeatureDetail { info: { level: number }; id?: string }
@@ -54,7 +55,7 @@ export const FeaturesSection = <T extends { parent_class: string; features: Feat
   return (
   <div>
     <h2>Level up features</h2>
-    <Select value={p.toAddFeatureLevel()} transparent onChange={e => p.setToAddFeatureLevel(e)}>
+    <Select value={p.toAddFeatureLevel()} transparent onChange={e => p.setToAddFeatureLevel(e)} class={`${styles.transparent}`}>
       <For each={p.getSubclassLevels()}>{level => <Option value={level}>{level}</Option>}</For>
     </Select>
     <Show when={p.toAddFeatureLevel() > 0}>

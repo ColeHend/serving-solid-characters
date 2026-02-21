@@ -11,3 +11,18 @@
     overflow-y: scroll;
     
 }
+
+.searchBar {
+    width: 35%; 
+    height: 3vh;
+    margin: 0 auto;
+    margin-bottom: 1vh;
+
+    :nth-child(2) {
+        background: transparent !important;
+    }
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
+}

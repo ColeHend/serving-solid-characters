@@ -19,6 +19,7 @@ export const WeaponSection: Component<Props> = (p) => {
      icon='swords'
      headerName='Weapon Data'
      startOpen={true}
+     transparent
     >
       <div style={{ display:'flex', gap:'0.75rem', 'flex-wrap':'wrap' }}>
         <FormField name="Weapon Category"><Input transparent value={store.state.form!.weaponCategory || ''} onInput={e=>store.updateField('weaponCategory', e.currentTarget.value)} /></FormField>

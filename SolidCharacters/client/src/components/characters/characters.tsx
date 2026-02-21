@@ -1,4 +1,4 @@
-import { Component, For, createMemo, createSignal, onMount } from "solid-js";
+import { Component, For, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import styles from "./characters.module.scss";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
@@ -6,6 +6,7 @@ import { Body, Button, Cell, Column, Header, Icon, Menu, MenuItem, Row, Table } 
 import { Character } from "../../models/character.model";
 import { characterManager } from "../../shared";
 import { useNavigate } from "@solidjs/router";
+import { CharacterMenu } from "./characterMenu/characterMenu";
 
 
 const Characters: Component = () => {
@@ -21,10 +22,16 @@ const Characters: Component = () => {
 
   onMount(()=>{
     setCharacters(characterManager.characters());
+
+    document.body.classList.add("character-view-bg");
+  })
+
+  onCleanup(() => {
+    document.body.classList.remove("character-view-bg");
   })
   return (
     <Body class={`${stylin().accent} ${styles.body}`}>
-      <h1 style={{margin: "0 auto", width: "min-content"}}>Characters</h1>
+      <h1 class={`${styles.header}`}>Characters</h1>
       <div class={`${styles.allCharsTables}`}>
         <Table 
         columns={[
@@ -81,16 +88,7 @@ const Characters: Component = () => {
           <Column name="menu">
             <Header><></></Header>
             <Cell<Character> onClick={(e)=>e.stopPropagation()}>
-              {(character)=><span>
-                <Button ref={setAnchorEle} onClick={()=>setShowMenu((old)=>!old)}>
-                  <Icon name="more_vert"/>
-                </Button>
-                <Menu  anchorElement={anchorEle} show={[showMenu,setShowMenu]} position="left" >
-                  <MenuItem onClick={() => navigate(`/characters/create?name=${character.name}`)}>
-                    Edit
-                  </MenuItem>
-                </Menu>
-              </span>}
+              {(character)=><CharacterMenu character={character} />}
             </Cell>
           </Column>
           

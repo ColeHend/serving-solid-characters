@@ -1,9 +1,14 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 .body {
     width: 80%;
     height: 80%;
     margin: 20px auto;
     border-radius: 15px;
     padding: 10px;
+
+    background-color: vars.$color-surface;
+    background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 }
 
 .menuButton {
@@ -28,4 +33,9 @@
             }
         }
     }
+}
+
+.header {
+    margin: 0 auto; 
+    width: min-content;
 }

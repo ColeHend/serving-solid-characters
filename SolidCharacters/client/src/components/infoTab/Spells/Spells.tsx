@@ -233,6 +233,7 @@ const masterSpells: Component = () => {
         <Paginator
           items={paginateItems}
           setPaginatedItems={setPaginatedSpells}
+          transparent
         ></Paginator>
       </div>
     </Body>

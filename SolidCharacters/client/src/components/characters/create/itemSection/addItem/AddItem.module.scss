@@ -4,6 +4,10 @@
 
 .searchBar {
     width: 25%;
+
+    button {
+        background: transparent !important;
+    }
 }
 
 .sortButtons {
@@ -13,7 +17,35 @@
 }
 
 .tableWrapper {
-    height: 40vh;
-    overflow-y: scroll;
-    margin-top: 1%;
+    table {
+    display: flex;
+    flex-direction: column;
+    width: 35%;
+  }
+
+  thead,
+  tbody {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    tr {
+        display: flex;
+        width: 100%;
+    }
+  }
+
+  th,
+  td {
+    flex: 1;
+    padding: 0.5rem;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  tbody {
+    height: 49vh;
+    overflow-y: auto;
+    gap: 0.5rem;
+  }
 }

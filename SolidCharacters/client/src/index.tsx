@@ -35,7 +35,7 @@ const root = document.getElementById("root");
 if (!root) {
   console.error("ROOT ELEMENT NOT FOUND! Application cannot mount!");
   document.body.innerHTML = `
-    <div style="color: red; background: white; padding: 20px; font-family: sans-serif;">
+    <div style="color: red; background: transparent; padding: 20px; font-family: sans-serif;">
       <h1>Critical Error</h1>
       <p>The application could not find the root element to mount on.</p>
     </div>
@@ -46,7 +46,7 @@ if (!root) {
 
 if (root) {
   root.innerHTML = `
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; background: transparent;">
       <h2>Loading application...</h2>
       <p>Please wait while the app initializes</p>
     </div>
@@ -56,7 +56,7 @@ if (root) {
     root.innerHTML = '';
     render(() => (
       <ErrorBoundary fallback={(err) => (
-        <div style="padding: 20px; color: red; background: white;">
+        <div style="padding: 20px; color: red; background: transparent;">
           <h2>Something went wrong rendering the application</h2>
           <pre>{err.toString()}</pre>
           <button onClick={() => window.location.reload()}>Reload Application</button>

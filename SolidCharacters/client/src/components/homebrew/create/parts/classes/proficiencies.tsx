@@ -82,7 +82,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 setSelectedArmor([]);
                 props.setProfStore((prev) => ({ ...prev, armor: [...prev.armor || [], ...selectedArmor()] }));
               }}><Icon name="add" /></Button>
-              <Select multiple value={selectedArmor()} onChange={setSelectedArmor}>
+              <Select multiple value={selectedArmor()} onChange={setSelectedArmor} class={`${styles.transparent}`}>
                 <Option value="Light">Light</Option>
                 <Option value="Medium">Medium</Option>
                 <Option value="Heavy">Heavy</Option>
@@ -107,7 +107,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 setSelectedWeapons([]);
                 props.setProfStore((prev) => ({ ...prev, weapons: [...prev.weapons || [], ...selectedWeapons()] }));
               }}><Icon name="add" /></Button>
-              <Select multiple value={selectedWeapons()} onChange={setSelectedWeapons}>
+              <Select multiple value={selectedWeapons()} onChange={setSelectedWeapons} class={`${styles.transparent}`}>
                 <Option value="Simple">Simple</Option>
                 <Option value="Martial">Martial</Option>
                 <For each={allWeapons()}>
@@ -130,7 +130,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 setSelectedItems([]);
                 props.setProfStore((prev) => ({ ...prev, tools: [...prev.tools || [], ...selectedItems()] }));
               }}><Icon name="add" /></Button>
-              <Select multiple value={selectedItems()} onChange={setSelectedItems}>
+              <Select multiple value={selectedItems()} onChange={setSelectedItems} class={`${styles.transparent}`}>
                 <For each={allItems().filter(item => item.type === ItemType.Tool)}>
                   {(item) => <Option value={item.name}>{item.name}</Option>}
                 </For>
