@@ -9,4 +9,5 @@ export type MadCommands = AddRemove<'Spells'> |
 export interface MadFeature {
     command: MadCommands;
     value: Record<string, string>;
+    numberOfUses?: number;
 }

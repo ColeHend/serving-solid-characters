@@ -1,4 +1,5 @@
 import { Stats } from "../shared";
+import { MadFeature } from "../shared/customHooks/mads/madModels";
 import { FeatureDetail } from "./data";
 
 export class Character {
@@ -17,7 +18,7 @@ export class Character {
   public subclass: string[] = [];
   public background: string = '';
   public alignment: string = '';
-  public features: FeatureDetail[] = [];
+  public features: MadFeature[] = [];
   public proficiencies: CharacterProficiency = {
     skills: {},
     other: {}
