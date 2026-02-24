@@ -18,7 +18,7 @@ export class Character {
   public subclass: string[] = [];
   public background: string = '';
   public alignment: string = '';
-  public features: MadFeature[] = [];
+  public features: FeatureDetail[] = [];
   public proficiencies: CharacterProficiency = {
     skills: {},
     other: {}

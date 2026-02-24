@@ -104,6 +104,7 @@ class CharacterManager {
 
       this.updateCharacter({
         name: character.name,
+        ArmorClass: character.ArmorClass,
         level: character.level,
         levels: character.levels,
         race: character.race,
@@ -116,7 +117,8 @@ class CharacterManager {
         health: character.health,
         stats: character.stats,
         items: character.items,
-        spells: spells
+        spells: spells,
+        features: character.features
       })
       addSnackbar({
         message: `Added ${newSpell.name} to ${characterName}`,
@@ -196,6 +198,8 @@ class CharacterManager {
     if (character) {
       this.updateCharacter({
         name: character.name,
+        ArmorClass: character.ArmorClass,
+        features: character.features,
         level: character.level,
         levels: character.levels,
         race: character.race,

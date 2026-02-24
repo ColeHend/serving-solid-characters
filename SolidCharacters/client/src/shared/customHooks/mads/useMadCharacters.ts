@@ -1,4 +1,9 @@
 import { Character } from "../../../models/character.model";
+import characterManager from "../dndInfo/useCharacters";
+import {addACFeature, removeACFeature} from "./commands/useACFeature";
+import { AddCurrencyFeature, RemoveCurrencyFeature } from "./commands/useCurrencyFeature";
+import { AddItemFeature, RemoveItemFeature } from "./commands/useItemFeature";
+import { AddSpellFeature, RemoveSpellFeature } from "./commands/useSpellFeature";
 import { MadFeature } from "./madModels";
 
 // this hook should return a character with its MAD attributes applied, so that the character sheet can be rendered with the MAD features included. It should also be memoized to prevent unnecessary recalculations when the character or MAD features haven't changed.
@@ -13,7 +18,7 @@ export function useMadCharacters(character: Character, madFeatures: MadFeature[]
  * @param feature The MadFeature containing the command and value that specifies how to modify the character.
  * @returns The updated character after applying the MadFeature.
  */
-function addMadFeature(character: Character, feature: MadFeature): Character {
+export function addMadFeature(character: Character, feature: MadFeature): Character {
     switch (feature.command) {
         case 'AddSpells':
             character = AddSpellFeature(character, feature);
@@ -33,64 +38,93 @@ function addMadFeature(character: Character, feature: MadFeature): Character {
         case 'RemoveCurrency':
             character = RemoveCurrencyFeature(character, feature);
             break;
+        case "AddArmorClass":
+            character = addACFeature(character, feature);
+            break;
+        case "RemoveArmorClass":
+            character = removeACFeature(character, feature); 
+            break;
+        case "AddExpertise":
+            break;
+        case "RemoveExpertise":
+            break;
+        case "AddFeats":
+            break;
+        case "RemoveFeats":
+            break;
+        case "AddLanguages":
+            break;
+        case "RemoveLanguages":
+            break;
+        case "AddResistances":
+            break;
+        case "RemoveResistances":
+            break;
+        case "AddVulnerabilities":
+            break;
+        case "RemoveVulnerabilities":
+            break;
+        case "AddImmunities":
+            break;
+        case "RemoveImmunities":
+            break;
+        case "AddSavingThrows":
+            break;
+        case "RemoveSavingThrows":
+            break;
+        case "AddStats":
+            break; // might not be needed due to ui allowing direct stat changes, but could be used for temp stat boosts or something similar
+        case "RemoveStats":
+            break; // ----- 
+        case "AddEldrichInvocations":
+            break;
+        case "RemoveEldrichInvocations":
+            break;
+        case "AddFeatures":
+            break;
+        case "RemoveFeatures":             
+            break;
+        case "AddProficiencies":
+            break;
+        case "RemoveProficiencies":
+            break;
         default:
             break;
     }
     return character;
 }
 
-const AddSpellFeature = (character: Character, feature: MadFeature): Character => {
-    const spellName = feature.value?.['name'] ?? '';
-    if (spellName) {
-        character.spells = [...character.spells, {
-            name: spellName,
-            prepared: false,
-        }];
+/**
+ *  Custom hook that applies a spell feature to a character based on the provided character name and spell ID. 
+ *  The function retrieves the relevant MadFeature for the specified character and spell, 
+ *  then updates the character's spells accordingly by either adding or removing the spell feature.
+ * 
+ * @param characterName 
+ * @param spellID 
+ */
+export function useSpellFeature(characterName: string, spellID: string): Character | undefined {
+    let character = characterManager.getCharacter(characterName);
+
+    if (!character) {
+        console.error(`Character with the name ${characterName} couldn't be found!`);
+        return;
     }
+
+    // search for applicable mad features for the character and spell
+
+    character.features.forEach(feature => {
+        let mads = feature?.metadata?.mads;
+        
+        if (mads && mads.command === "AddSpells" && mads.value['id'] === spellID) {
+            character = AddSpellFeature(character as any, mads);
+        } else if (mads && mads.command === "RemoveSpells" && mads.value['id'] === spellID) {
+            character = RemoveSpellFeature(character as any, mads);
+        }
+
+    });
+
     return character;
 }
 
-const RemoveSpellFeature = (character: Character, feature: MadFeature): Character => {
-    const spellName = feature.value?.['name'] ?? '';
-    if (spellName) character.spells = character.spells.filter(s => s.name !== spellName);
-    return character;
-}
 
-const AddItemFeature = (character: Character, feature: MadFeature): Character => {
-    const itemName = feature.value?.['name'] ?? '';
-    if (itemName) character.items.inventory.push(itemName);
-    return character;
-};
 
-const RemoveItemFeature = (character: Character, feature: MadFeature): Character => {
-    const itemName = feature.value?.['name'] ?? '';
-    if (itemName) character.items.inventory = character.items.inventory.filter(i => i !== itemName);
-    return character;
-}
-
-const AddCurrencyFeature = (character: Character, feature: MadFeature): Character => {
-    const currencyType = feature.value?.['type'] ?? '';
-    const amount = parseInt(feature.value?.['amount'] ?? '0', 10);
-    character.items.currency.copperPieces = character.items.currency.copperPieces || 0;
-    character.items.currency.sliverPieces = character.items.currency.sliverPieces || 0;
-    character.items.currency.electrumPieces = character.items.currency.electrumPieces || 0;
-    character.items.currency.goldPieces = character.items.currency.goldPieces || 0;
-    character.items.currency.platinumPieces = character.items.currency.platinumPieces || 0;
-    if (Object.keys(character.items.currency).includes(currencyType) && amount) {
-        character.items.currency[currencyType as keyof Character['items']['currency']] += amount;
-    }
-    return character;
-};
-const RemoveCurrencyFeature = (character: Character, feature: MadFeature): Character => {
-    const currencyType = feature.value?.['type'] ?? '';
-    const amount = parseInt(feature.value?.['amount'] ?? '0', 10);
-    character.items.currency.copperPieces = character.items.currency.copperPieces || 0;
-    character.items.currency.sliverPieces = character.items.currency.sliverPieces || 0;
-    character.items.currency.electrumPieces = character.items.currency.electrumPieces || 0;
-    character.items.currency.goldPieces = character.items.currency.goldPieces || 0;
-    character.items.currency.platinumPieces = character.items.currency.platinumPieces || 0;
-    if (Object.keys(character.items.currency).includes(currencyType) && amount) {
-        character.items.currency[currencyType as keyof Character['items']['currency']] -= amount;
-    }
-    return character;
-}
