@@ -1,4 +1,3 @@
-import { A } from "@vite-pwa/assets-generator/shared/assets-generator.DnoqiTld";
 
 type AddRemove<T extends string> = `Add${T}` | `Remove${T}`;
 
