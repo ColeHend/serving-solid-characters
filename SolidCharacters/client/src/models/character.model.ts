@@ -14,6 +14,7 @@ export class Character {
     features: []
   }
   public ArmorClass: number = 0;
+  public Speed: number = 0;
   public className: string = '';
   public subclass: string[] = [];
   public background: string = '';

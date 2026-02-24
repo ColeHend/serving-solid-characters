@@ -2,8 +2,14 @@ import { Character } from "../../../models/character.model";
 import characterManager from "../dndInfo/useCharacters";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
 import { AddCurrencyFeature, RemoveCurrencyFeature } from "./commands/useCurrencyFeature";
+import { addExpertiseFeature, removeExpertiseFeature } from "./commands/useExpertiseFeature";
+import { AddFeature ,RemoveFeature } from "./commands/useFeatures";
 import { AddItemFeature, RemoveItemFeature } from "./commands/useItemFeature";
+import { addLanguageFeature, removeLanguageFeature } from "./commands/useLanguagesFeature";
+import { addProficienciesFeature, RemoveProficienciesFeature } from "./commands/useProficienciesFeature";
+import { addSpeedFeature, removeSpeedFeature } from "./commands/useSpeedFeature";
 import { AddSpellFeature, RemoveSpellFeature } from "./commands/useSpellFeature";
+import { addStatFeature, removeStatFeature } from "./commands/useStatFeature";
 import { MadFeature } from "./madModels";
 
 // this hook should return a character with its MAD attributes applied, so that the character sheet can be rendered with the MAD features included. It should also be memoized to prevent unnecessary recalculations when the character or MAD features haven't changed.
@@ -44,17 +50,33 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
         case "RemoveArmorClass":
             character = removeACFeature(character, feature); 
             break;
+        case "AddProficiencies":
+            character = addProficienciesFeature(character, feature);
+            break;
+        case "RemoveProficiencies":
+            character = RemoveProficienciesFeature(character, feature);
+            break;
         case "AddExpertise":
+            character = addExpertiseFeature(character, feature);
             break;
         case "RemoveExpertise":
+            character = removeExpertiseFeature(character, feature);
             break;
-        case "AddFeats":
+        // case "AddFeats":
+        //     break;
+        // case "RemoveFeats":
+        //     break;
+        case "AddFeatures":
+            character = AddFeature(character, feature);
             break;
-        case "RemoveFeats":
+        case "RemoveFeatures":             
+            character = RemoveFeature(character, feature);
             break;
         case "AddLanguages":
+            character = addLanguageFeature(character, feature);
             break;
         case "RemoveLanguages":
+            character = removeLanguageFeature(character, feature);
             break;
         case "AddResistances":
             break;
@@ -73,20 +95,16 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
         case "RemoveSavingThrows":
             break;
         case "AddStats":
-            break; // might not be needed due to ui allowing direct stat changes, but could be used for temp stat boosts or something similar
+            character = addStatFeature(character, feature);
+            break; 
         case "RemoveStats":
+            character = removeStatFeature(character, feature);
             break; // ----- 
-        case "AddEldrichInvocations":
+        case "Addspeed":
+            character = addSpeedFeature(character, feature);
             break;
-        case "RemoveEldrichInvocations":
-            break;
-        case "AddFeatures":
-            break;
-        case "RemoveFeatures":             
-            break;
-        case "AddProficiencies":
-            break;
-        case "RemoveProficiencies":
+        case "Removespeed":
+            character = removeSpeedFeature(character, feature);
             break;
         default:
             break;
