@@ -474,6 +474,7 @@ export const Classes: Component = () => {
       data-tool-profs={debugSnapshot().tool}
       data-item-start={debugSnapshot().itemStart}
     >
+      <h2>Class Creator</h2>
       <Form data={ClassFormGroup} onSubmit={onSubmit}>
         <div >
           <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>

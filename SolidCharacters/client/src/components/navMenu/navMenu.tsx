@@ -65,6 +65,7 @@ const NavMenu: Component<Props> = (props) => {
   const convertHombrewViewToCreate = (link: string) => {
     return link.replace('view', 'create').replace("?name=", "/");
   };
+  
   createEffect(() => {
     console.log('showSettings', showSettings());
   });
@@ -72,7 +73,7 @@ const NavMenu: Component<Props> = (props) => {
   return (
     <>
       <Menu 
-        position="right"
+        position="left"
         style={{width: '180px'}}
         show={[props.defaultShowList, props.setDefaultShowList]} 
         anchorElement={props.anchorElement} 

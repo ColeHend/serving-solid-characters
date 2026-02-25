@@ -7,6 +7,7 @@ namespace SolidCharacters.Domain.DTO.Updated
 /// <summary>Represents a discrete feat a character can gain.</summary>
 public class Feat
 {
+  [JsonProperty("id")] public string Id { get; set; } = null!;
   public FeatureDetail Details { get; set; } = null!;
   public List<Prerequisite> Prerequisites { get; set; } = new();
 }
@@ -59,7 +60,7 @@ public class StartingEquipment
 
 public class MagicItem
 {
-  public int Id { get; set; }
+  [JsonProperty("id")] public string Id { get; set; } = null!;
   public string Name { get; set; } = null!;
   public string Desc { get; set; } = null!;
   public string Rarity { get; set; } = null!;
@@ -78,7 +79,7 @@ public class MagicItemProperties
 
 public class Item
 {
-  public int Id { get; set; }
+  [JsonProperty("id")] public string Id { get; set; } = null!;
   public string Name { get; set; } = null!;
   public string Desc { get; set; } = null!;
   public ItemType Type { get; set; }
@@ -94,7 +95,7 @@ public class Item
 
 public class WeaponMastery
 {
-  public int Id { get; set; }
+  [JsonProperty("id")] public string Id { get; set; } = null!;
   public string Name { get; set; } = null!;
   public string Damage { get; set; } = null!;
   public List<string> Properties { get; set; } = new();
@@ -103,6 +104,7 @@ public class WeaponMastery
 
 public class Spell
 {
+  [JsonProperty("id")] public string Id { get; set; } = null!;
   // Keep C# names for internal code, but expose snake_case / expected client names via attributes
   [JsonProperty("name")] public string Name { get; set; } = null!;
   [JsonProperty("description")] public string Description { get; set; } = null!; // front-end expects 'description'
@@ -128,6 +130,7 @@ public class Spell
 
 public class Background
 {
+  [JsonProperty("id")] public string Id { get; set; } = null!;
   public string Name { get; set; } = null!;
   public string Desc { get; set; } = null!;
   public Proficiencies Proficiencies { get; set; } = new();
@@ -160,6 +163,7 @@ public class Subrace : Race
 
 public class Subclass
 {
+  [JsonProperty("id")] public string Id { get; set; } = null!;
   [JsonProperty("name")] public string Name { get; set; } = null!;
 
   [JsonProperty("parent_class")] public string ParentClass { get; set; } = null!;
@@ -173,7 +177,7 @@ public class Subclass
 
 public class Class5E
 {
-  [JsonProperty("id")] public int Id { get; set; }
+  [JsonProperty("id")] public string Id { get; set; } = null!;
   [JsonProperty("name")] public string Name { get; set; } = null!;
   [JsonProperty("hit_die")] public string HitDie { get; set; } = null!;
   [JsonProperty("primary_ability")] public string PrimaryAbility { get; set; } = null!;

@@ -23,7 +23,7 @@ const LanguagesSection: Component<Props> = (p) => {
           <Button onClick={p.onEdit}>Edit</Button>
         </div>
       }
-    >
+    transparent>
       <div class={!p.collapsed ? styles.chipsRow : styles.collapsedContent}>
         <For each={p.options}>{(l) => <Chip value={l} />}</For>
         <Show when={!p.options.length}>

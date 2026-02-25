@@ -14,40 +14,27 @@
 
 // background image is set on the body element, so we need to make sure the .body class doesn't override it
 
-:global(body.home-bg) .body {
-    background-color: transparent;
-}
+// List of body classes to target
+$body-classes: (
+  'home-bg',
+  'backgrounds-bg',
+  'feats-bg',
+  'spells-bg',
+  'classes-bg',
+  'subclasses-bg',
+  'items-bg',
+  'race-bg',
+  'character-create-bg',
+  'character-view-bg',
+  'aboutUS-bg'
+);
 
-// :global(body.backgrounds-bg) .body {
-//     background-color: transparent;
-// }
-
-:global(body.feats-bg) .body {
-    background-color: transparent;
-}
-
-:global(body.spells-bg) .body {
-    background-color: transparent;
-}
-
-:global(body.classes-bg) .body {
-    background-color: transparent;
-}
-
-:global(body.subclasses-bg) .body {
-    background-color: transparent;
-}
-
-:global(body.items-bg) .body {
-    background-color: transparent;  
-}
-
-:global(body.race-bg) .body {
-    background-color: transparent;  
-}
-
-:global(body.character-create-bg) .body {
-    background-color: transparent;  
+@each $class in $body-classes {
+  :global(body.#{$class}) {
+    .body {
+      background-color: transparent;
+    }
+  }
 }
 
 .primary {

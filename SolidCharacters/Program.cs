@@ -38,6 +38,7 @@ builder.Services.AddTransient<Open5eRepository>();
 builder.Services.AddTransient<Closed5eRepository>();
 builder.Services.AddSingleton<IRunOnStartup, TypeGenStartupService>();
 builder.Services.AddScoped<IRunOnStartup, SpellSyncStartupService>();
+builder.Services.AddScoped<IRunOnStartup, SrdIdNormalizationStartupService>();
 builder.Services.AddHostedService<StartupRunnerHostedService>();
 
 // ----- Add Database Stuff ----
@@ -250,27 +251,20 @@ app.UseAuthorization();
 // 7. Map API controllers (protected by your policies as needed)
 app.MapControllers();
 
-// 8. SPA fallback / proxy
-// Two dev modes:
-//   a) USE_VITE_PROXY=true -> proxy to running Vite dev server (:3000)
-//   b) (default)           -> serve pre-built static assets from client/dist on :5000
+
 if (app.Environment.IsDevelopment())
 {
-    var useViteProxy = Environment.GetEnvironmentVariable("USE_VITE_PROXY") == "true";
-    if (useViteProxy)
-    {
-        Console.WriteLine("[spa] Using Vite dev server proxy (https://localhost:3000)");
-        app.UseSpa(spa =>
+    Console.WriteLine("[spa] Using Vite dev server proxy (https://localhost:3000)");
+    app.UseWhen(
+        ctx => !ctx.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase),
+        spaApp =>
         {
-            spa.Options.SourcePath = "client";
-            spa.UseProxyToSpaDevelopmentServer("https://localhost:3000");
+            spaApp.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "client";
+                spa.UseProxyToSpaDevelopmentServer("https://localhost:3000");
+            });
         });
-    }
-    else
-    {
-        Console.WriteLine("[spa] Serving built static assets from client/dist (set USE_VITE_PROXY=true to enable live dev proxy)");
-        app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
-    }
 }
 else
 {

@@ -3,7 +3,7 @@ import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDic
 import { Subclass as OldSubclass } from "../../../../../models/old/class.model";
 import { A, useSearchParams } from "@solidjs/router";
 // Removed old Feature generic import; now using new data FeatureDetail shape directly
-import { Body, FormGroup, Validators } from "coles-solid-library";
+import { Body, FormGroup, Validators, Select } from "coles-solid-library";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../../../models";
 import { buildDataSpellcasting, parseDataSpellcasting } from './subclassAdapter';
@@ -356,20 +356,20 @@ const Subclasses: Component = () => {
   return (
     <Body class={`${styles.body}`}>
       <h1>Subclass Homebrew</h1>
-      <div style={{ 'margin-bottom': '1rem', display: 'flex', 'flex-direction': 'column', gap: '0.5rem', 'max-width': '620px' }}>
-        <label style={{ display: 'flex', 'flex-direction': 'column', gap: '0.25rem' }}>
-          <span style={{ 'font-weight': 600 }}>Select Existing or Create New</span>
-          <select
+      <div class={`${styles.subclassSelectorWrapper}`}>
+        <label class={`${styles.selectorLabel}`}>
+          <span class={`${styles.fontWeight600}`}>Select Existing or Create New</span>
+          <Select
             value={activeKey()}
-            onChange={e => setActiveKey(e.currentTarget.value)}
-            style={{ padding: '0.45rem 0.65rem', 'background-color': 'var(--panel-bg,#1b1d22)', color: 'var(--text,#e6e6e6)', 'border-radius': '6px', border: '1px solid var(--border,#333)' }}
+            onChange={(e) => setActiveKey(e)}
+            class={`${styles.subclassSelector}`}
           >
             <option value="__new__">+ New Subclass</option>
             <For each={homebrewList()}>{(s: any) => <option value={storageKeyFor(s)}>{s.parentClass} / {s.name}</option>}</For>
-          </select>
+          </Select>
         </label>
         <Show when={activeKey() !== '__new__'}>
-          <div style={{ 'font-size': '0.75rem', color: 'var(--text-subtle,#999)' }}>
+          <div class={`${styles.editingStatus}`}>
             Editing existing subclass. {(isModifiedFlag() || userDirty()) ? 'Unsaved changes' : 'No changes yet.'}
           </div>
         </Show>

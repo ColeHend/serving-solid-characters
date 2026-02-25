@@ -1,5 +1,11 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 .lineUp {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.transparent {
+  background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 }

@@ -16,6 +16,7 @@ const ProficienciesSection: Component<Props> = (p) => {
   return <FlatCard
     icon='shield'
     headerName='Proficiencies'
+    transparent
   >
     <div class={!p.collapsed ? styles.accentChipGroup : styles.collapsedContent}>
       <div class={styles.chipsRow}><strong>Armor:</strong><For each={p.profs.armor}>{a => <Chip value={a} />}</For><Show when={!p.profs.armor.length}><Chip value="None" /></Show></div>

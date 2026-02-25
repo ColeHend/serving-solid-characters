@@ -41,9 +41,7 @@ const TraitsSection: Component = () => {
       </div>
       <div class="chipsRowSingle" style={{ 'margin-top': '.35rem' }} aria-label="Traits">
         <Show when={traits().length} fallback={<Chip value="None" />}> <For each={traits()}>{t => (
-          <button type="button" class="traitChipBtn" data-editing={editing()===t.name} onClick={() => beginEdit(t.name)}>
-            <Chip value={t.name} remove={() => isNew() && remove(t.name)} />
-          </button>
+          <Chip data-editing={editing()===t.name} onClick={() => beginEdit(t.name)} value={t.name} remove={() => isNew() && remove(t.name)} />
         )}</For></Show>
       </div>
     </div>

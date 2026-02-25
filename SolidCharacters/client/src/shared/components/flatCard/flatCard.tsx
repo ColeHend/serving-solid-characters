@@ -5,7 +5,7 @@ import { Button, Container, Icon } from "coles-solid-library";
 interface FlatCardProps extends JSX.HTMLAttributes<HTMLDivElement> {
     icon?: string;
     headerName: JSX.Element;
-    children?: JSX.Element;
+    children: JSX.Element;
     alwaysOpen?: boolean;
     startOpen?: boolean;
     extraHeaderJsx?: JSX.Element;
@@ -83,7 +83,8 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
         el.addEventListener("transitionend", onEnd);
     };
 
-    const toggle = () => {
+    const toggle = (e:Event) => {
+        e.stopImmediatePropagation();
         if (isAlwaysOpen()) return;
         if (!showCard()) {
             openAnimated();
@@ -117,10 +118,15 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
             </div>
             <div>
                 {local.extraHeaderJsx}
+
                 <Show when={!isAlwaysOpen()}>
-                    <Button borderTheme="none" onClick={toggle}>
-                        {!showCard() ? <Icon name="add"/> : <Icon name="remove" />}
-                    </Button>
+                    <div tabIndex={0} onKeyDown={(e)=>{
+                        if (e.key === "Enter") toggle(e);
+                    }}>
+                        <Button onClick={toggle} >
+                            {!showCard() ? <Icon name="add"/> : <Icon name="remove" />}
+                        </Button>
+                    </div>
                 </Show>
             </div>
         </div>

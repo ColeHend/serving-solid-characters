@@ -10,6 +10,7 @@ import { CharacterForm } from "../../../../models/character.model";
 interface sectionProps {
     srdBackgrounds: Accessor<Background[]>;
     formGroup: FormGroup<CharacterForm>;
+    exist: Accessor<boolean>;
 }
 
 export const BackgroundSection:Component<sectionProps> = (props) => {
@@ -32,6 +33,8 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
     const toolsProfs = createMemo(()=>selBackground()?.proficiencies.tools);
     const skillProfs = createMemo(()=>selBackground()?.proficiencies.skills);
 
+    const is_exist = createMemo(() => props.exist());
+
     const chosenFeat = createMemo(()=>form().get().BackgrndFeat);
 
     const getFeature = (name: string) => {
@@ -41,6 +44,12 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
 
         return createMemo(()=>feats().find(f => f.details.name === name));
     }
+
+    onMount(()=>{
+        if (chosenFeat() === "") {
+            form().set("BackgrndFeat", selBackground()?.feat || "")
+        }
+    })
 
     return <FlatCard icon="home" headerName={`Background: ${selBackground()?.name ?? ""}`} transparent>
         <div>
@@ -109,15 +118,20 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
                 <div>
                     <h3>Suggested Feat: </h3>
                     
-                    <FormField name="Suggested Feat" formName="BackgrndFeat"> 
-                        <Select>
+                    <Show when={!is_exist()}>
+                        <Select value={form().get().BackgrndFeat} onChange={(feat)=>{
+                            props.formGroup.set("BackgrndFeat", feat)
+                            console.log("clicked");
+                            
+                        }} class={`${styles.transparent}`}>
                             <For each={feats().filter(x=> x.prerequisites.length === 0)}>
                                 {(feat)=><Option value={feat.details.name}>
                                     {feat.details.name}    
                                 </Option>}
                             </For>
                         </Select>
-                    </FormField>
+                    </Show>
+                    
 
                     <FlatCard headerName={chosenFeat()} class={`${styles.cardAlt}`} transparent>
                         <div>

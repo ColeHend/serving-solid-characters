@@ -126,7 +126,7 @@ const races: Component = () => {
     </Show>
 
     <div class={`${styles.paginator}`}>
-      <Paginator items={displayResults} setPaginatedItems={setPaginatedRaces} />
+      <Paginator items={displayResults} setPaginatedItems={setPaginatedRaces} transparent />
     </div>
 
   </Body>

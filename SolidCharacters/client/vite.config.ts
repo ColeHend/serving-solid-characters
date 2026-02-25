@@ -33,10 +33,14 @@ function devHttps() {
 }
 
 // Resolve backend URL (default to https://localhost:5000 when cert present, else http)
+function hasBackendHttpsCert() {
+  const backendPfxPath = path.resolve(__dirname, '../../ssl/dev-cert.pfx');
+  return fs.existsSync(backendPfxPath);
+}
+
 function resolveBackendTarget() {
   if (process.env.BACKEND_URL) return process.env.BACKEND_URL;
-  const httpsCert = devHttps();
-  return httpsCert ? 'https://localhost:5000' : 'http://localhost:5000';
+  return hasBackendHttpsCert() ? 'https://localhost:5000' : 'http://localhost:5000';
 }
 export default defineConfig({
   define: {

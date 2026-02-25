@@ -1,6 +1,15 @@
+@use 'coles-solid-library/themes/variables' as *;
+
+// $color1: rgpa($color-on-surface, 0.65);
+
 .AddClassTable {
-    
     table {
         margin: 0 auto;
+
     }
+
+    // tr:nth-child(even) {
+    //     border-bottom: 1px solid $color1;
+    // }
+    
 }

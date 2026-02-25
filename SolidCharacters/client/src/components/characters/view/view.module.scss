@@ -1,3 +1,5 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 $mobile: 768px;
 .tabBar {
     margin-bottom: 1rem;
@@ -7,6 +9,12 @@ $mobile: 768px;
     margin: 20px auto;
     border-radius: 15px;
     padding: 10px;
+    background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
+
+    // button {
+    //     background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
+    // }
+
     @media screen and (max-width: $mobile) {
         width: 90%;
         margin-top: 5px;
@@ -31,6 +39,7 @@ $mobile: 768px;
 
 .featuresBox {
     flex-basis: 90%;
+    background-color: transparent;
 }
 
 .baseCharInfoBox {
@@ -39,6 +48,9 @@ $mobile: 768px;
     height: min-content;
     width: 25%;
     padding: 10px;
+    background-color: transparent;
+
+
     @media screen and (max-width: $mobile) {
         width: 95%;
         padding: 0px;
