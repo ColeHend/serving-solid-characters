@@ -189,8 +189,7 @@ public static class Open5eExtenstions
             return result;
         }
 
-        // Compute a stable integer ID from the slug.
-        result.Id = class5E.Slug != null ? class5E.Slug.GetHashCode() : 0;
+        result.Id = !string.IsNullOrWhiteSpace(class5E.Slug) ? class5E.Slug : Guid.NewGuid().ToString();
         result.Name = class5E.Name ?? string.Empty;
         result.HitDie = class5E.HitDice ?? string.Empty;
         result.PrimaryAbility = class5E.SpellcastingAbility ?? string.Empty;
@@ -392,7 +391,7 @@ public static class Open5eExtenstions
             return result;
         }
 
-        result.Id = magicItem.Slug != null ? magicItem.Slug.GetHashCode() : 0;
+        result.Id = !string.IsNullOrWhiteSpace(magicItem.Slug) ? magicItem.Slug : Guid.NewGuid().ToString();
         result.Name = magicItem.Name ?? string.Empty;
         result.Desc = magicItem.Desc ?? string.Empty;
         result.Rarity = magicItem.Rarity ?? string.Empty;
