@@ -4,7 +4,7 @@ import { MadFeature } from "../madModels";
 const AddFeature = (character: Character, feature: MadFeature) => {
     const newFeatureName = feature.value?.['feature']?.trim() ?? "";
     const newFeatureDescription = feature.value?.['description']?.trim() ?? "";
-
+    
     if (!newFeatureName) {
         console.error("No feature name provided for AddFeature command");
         return character;
@@ -36,4 +36,32 @@ const RemoveFeature = (character: Character, feature: MadFeature) => {
     return character;   
 }
 
+function useFeatures (character: Character) {
+    
+    if (!character) {
+        console.error("No character provided to useFeatures");
+        return;
+    }
+
+    character.features.forEach(feature => {
+        if (feature.metadata?.mads) {
+            const madFeature = feature.metadata.mads;
+            
+            switch (madFeature.command) {
+                case 'AddFeatures':
+                    AddFeature(character, madFeature);
+                    break;
+                case 'RemoveFeatures':
+                    RemoveFeature(character, madFeature);
+                    break;
+                default:
+                    break;
+            }
+        }
+    });
+
+    return character;
+}
+
+export default useFeatures;
 export { AddFeature, RemoveFeature };

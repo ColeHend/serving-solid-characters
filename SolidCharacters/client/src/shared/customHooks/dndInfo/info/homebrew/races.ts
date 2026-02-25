@@ -1,4 +1,4 @@
-import { Race } from "../../../../../models/data";
+import { Race } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import HombrewDB from "../../../utility/localDB/new/homebrewDB";

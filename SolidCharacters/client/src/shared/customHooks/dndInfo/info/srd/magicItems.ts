@@ -1,4 +1,4 @@
-import { MagicItem } from "../../../../../models/data";
+import { MagicItem } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import SrdDB from "../../../utility/localDB/new/srdDB";

@@ -24,6 +24,10 @@ export class Character {
     skills: {},
     other: {}
   };
+  public savingThrows: CharacterSavingThrow[] = [];
+  public resistances: DamageAffinity[] = [];
+  public vulnerabilities: DamageAffinity[] = [];
+  public immunities: DamageAffinity[] = [];
   public languages: string[] = [];
   public health: CharacterHealth = {
     max: 0,
@@ -100,6 +104,18 @@ export interface CharacterCurrency {
   sliverPieces: number;
   copperPieces: number;
 }
+
+export interface DamageAffinity {
+  type: string;
+  value: boolean;
+}
+
+export interface CharacterSavingThrow {
+  stat: keyof Stats;
+  proficient: boolean;
+}
+
+// -- Character Form Models --
 
 type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"> 
 

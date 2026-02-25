@@ -1,7 +1,7 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
 
-export const AddCurrencyFeature = (character: Character, feature: MadFeature): Character => {
+const AddCurrencyFeature = (character: Character, feature: MadFeature): Character => {
     const currencyType = feature.value?.['type'] ?? '';
     const amount = parseInt(feature.value?.['amount'] ?? '0', 10);
     character.items.currency.copperPieces = character.items.currency.copperPieces || 0;
@@ -15,7 +15,7 @@ export const AddCurrencyFeature = (character: Character, feature: MadFeature): C
     return character;
 };
 
-export const RemoveCurrencyFeature = (character: Character, feature: MadFeature): Character => {
+const RemoveCurrencyFeature = (character: Character, feature: MadFeature): Character => {
     const currencyType = feature.value?.['type'] ?? '';
     const amount = parseInt(feature.value?.['amount'] ?? '0', 10);
     character.items.currency.copperPieces = character.items.currency.copperPieces || 0;
@@ -28,3 +28,26 @@ export const RemoveCurrencyFeature = (character: Character, feature: MadFeature)
     }
     return character;
 }
+
+function useCurrencyFeature (character: Character) {
+    if (!character) {
+        console.error("No Character Found!");
+        return;
+    }
+
+    character.features.forEach(feature => {
+        let mads = feature.metadata?.mads;
+
+        if (mads && mads.command === 'AddCurrency') {
+            character = AddCurrencyFeature(character, mads);
+        } else if (mads && mads.command === 'RemoveCurrency') {
+            character = RemoveCurrencyFeature(character, mads);
+        }
+
+    });
+
+    return character;
+}
+
+export default useCurrencyFeature;
+export { AddCurrencyFeature, RemoveCurrencyFeature };

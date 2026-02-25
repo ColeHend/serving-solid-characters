@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "5d851af7-029a-470d-b0f7-c166b1ecc7d5",
     "name": "Potion of Healing",
     "desc": "A small vial filled with red liquid that glimmers when agitated. Drinking this potion restores a small amount of vitality.",
     "rarity": "Common",
@@ -13,7 +13,7 @@
     }
   },
   {
-    "id": 2,
+    "id": "2c3c8a8c-abfc-4757-836a-ab8787f4233f",
     "name": "Bag of Holding",
     "desc": "This appears as an ordinary cloth sack, but it is enchanted to hold far more than its outside dimensions suggest.",
     "rarity": "Uncommon",
@@ -26,7 +26,7 @@
     }
   },
   {
-    "id": 3,
+    "id": "769bf54c-df4a-4eb3-b35e-740b99f85c23",
     "name": "Boots of Elvenkind",
     "desc": "Soft leather boots that make no sound, often crafted in Elven style.",
     "rarity": "Uncommon",
@@ -39,7 +39,7 @@
     }
   },
   {
-    "id": 4,
+    "id": "ee4d29fa-1ad8-4aad-80fb-17b4c5d33b29",
     "name": "Cloak of Protection",
     "desc": "A magical cloak that fortifies the wearer’s defenses. Often a fine cloak embroidered with protective sigils.",
     "rarity": "Uncommon",
@@ -52,7 +52,7 @@
     }
   },
   {
-    "id": 5,
+    "id": "72b6beb8-9f79-49d8-8dfb-78e73d0e427c",
     "name": "+1 Longsword",
     "desc": "A finely crafted longsword engraved with runes. It is magically enhanced to strike true.",
     "rarity": "Uncommon",
@@ -65,7 +65,7 @@
     }
   },
   {
-    "id": 6,
+    "id": "8bcccbac-1fa4-4090-9d30-d0500cf93f0d",
     "name": "Wand of Fireballs",
     "desc": "A wooden wand carved with draconic flames. This wand allows the wielder to unleash explosive bursts of fire.",
     "rarity": "Rare",
@@ -79,7 +79,7 @@
     }
   },
   {
-    "id": 7,
+    "id": "6877e838-5615-43ff-9f74-3dece88b1b43",
     "name": "Ring of Invisibility",
     "desc": "A plain gold ring that becomes invisible itself when worn. It grants the power of invisibility to its wearer.",
     "rarity": "Legendary",
@@ -92,7 +92,7 @@
     }
   },
   {
-    "id": 8,
+    "id": "ca5ae3ee-3db2-4842-841d-f941f7f0b180",
     "name": "Carpet of Flying",
     "desc": "A beautifully woven carpet that responds to its master’s commands and can carry passengers through the air.",
     "rarity": "Very Rare",
@@ -106,7 +106,7 @@
     }
   },
   {
-    "id": 9,
+    "id": "ddd2665b-70c5-491c-b6bb-d5e9ca8636f5",
     "name": "Cube of Force",
     "desc": "A small magical cube with engraved runes on each face. When activated, it creates invisible force barriers.",
     "rarity": "Rare",
@@ -120,7 +120,7 @@
     }
   },
   {
-    "id": 10,
+    "id": "0f04a8af-ab8b-41a1-8b1a-f88667b75291",
     "name": "Staff of the Woodlands",
     "desc": "A wooden staff decorated with holly and other natural motifs. It is warm to the touch and thrums with druidic power.",
     "rarity": "Very Rare",
@@ -134,7 +134,7 @@
     }
   },
   {
-    "id": 11,
+    "id": "1795755c-07b9-4b2a-bb7a-25a43cb7962a",
     "name": "Vorpal Sword",
     "desc": "A razor-sharp magical sword of legendary potency. Its edge is so keen it can slice through nearly anything.",
     "rarity": "Legendary",
@@ -147,7 +147,7 @@
     }
   },
   {
-    "id": 12,
+    "id": "2f822687-2f5a-441f-a488-5d7f30dbec3c",
     "name": "Bowl of Commanding Water Elementals",
     "desc": "A silver bowl etched with aquatic designs. When filled with water, it can summon an elemental from the Plane of Water.",
     "rarity": "Rare",
@@ -160,7 +160,7 @@
     }
   },
   {
-    "id": 13,
+    "id": "fd874fae-b16f-44eb-a7ed-8ad1fd0f32ff",
     "name": "Chime of Opening",
     "desc": "A hollow metal tube about a foot long. When struck, it produces a clear tone that can magically unlock doors and chests.",
     "rarity": "Rare",
@@ -174,7 +174,7 @@
     }
   },
   {
-    "id": 14,
+    "id": "e7570aa7-d014-44e3-b39a-3ebffe408896",
     "name": "Circlet of Blasting",
     "desc": "A metal circlet adorned with a ruby. It allows the wearer to unleash a burst of fire energy.",
     "rarity": "Uncommon",

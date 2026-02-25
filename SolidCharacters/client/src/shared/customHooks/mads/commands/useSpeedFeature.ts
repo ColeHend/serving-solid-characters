@@ -17,4 +17,31 @@ const removeSpeedFeature = (character: Character, feature: MadFeature): Characte
     return character;
 }
 
+function useSpeedFeature (character: Character) {
+    
+    if (!character) {
+        console.error("No character was found!");
+        return;
+    }
+
+    character.features.forEach(feature => {
+        const MadFeature = feature.metadata?.mads;
+
+        if (MadFeature) {
+            switch (MadFeature.command) {
+                case "AddSpeed":
+                    character = addSpeedFeature(character, MadFeature);
+                    break;
+
+                case "RemoveSpeed":
+                    character = removeSpeedFeature(character, MadFeature);
+                    break;
+            }
+        }
+    })
+
+    return character;
+}
+
+export default useSpeedFeature;
 export {addSpeedFeature, removeSpeedFeature};

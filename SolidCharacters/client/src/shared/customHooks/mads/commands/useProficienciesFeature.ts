@@ -1,4 +1,3 @@
-import { C } from "@vite-pwa/assets-generator/shared/assets-generator.DnoqiTld";
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
 
@@ -56,4 +55,27 @@ const RemoveProficienciesFeature = (character: Character, feature: MadFeature) =
     return character;
 }
 
+function useProficienciesFeature (character: Character) {
+
+    if (!character) {
+        console.error("No character provided to useProficienciesFeature");
+        return;
+    }
+
+    character.features.forEach(feature => {
+        let mads = feature.metadata?.mads;
+        
+        if (mads) {
+            if (mads.command === 'AddProficiencies') {
+                character = addProficienciesFeature(character, mads);
+            } else if (mads.command === 'RemoveProficiencies') {
+                character = RemoveProficienciesFeature(character, mads);
+            }
+        }   
+    });
+
+    return character;
+};
+
+export default useProficienciesFeature;
 export { addProficienciesFeature, RemoveProficienciesFeature };

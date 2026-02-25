@@ -22,4 +22,27 @@ const removeLanguageFeature = (character: Character, feature: MadFeature): Chara
 
 }
 
+function useLanguageFeature (character: Character) {
+    
+    if (!character) {
+        console.error("No character provided to useLanguageFeature");
+        return;
+    }
+
+    character.features.forEach(feature => {
+        let mads = feature.metadata?.mads;
+
+        if (mads) {
+            if (mads.command === 'AddLanguages') {
+                character = addLanguageFeature(character, mads);
+            } else if (mads.command === 'RemoveLanguages') {
+                character = removeLanguageFeature(character, mads);
+            }
+        }
+    });
+
+    return character;
+};
+
+export default useLanguageFeature;
 export { addLanguageFeature, removeLanguageFeature };

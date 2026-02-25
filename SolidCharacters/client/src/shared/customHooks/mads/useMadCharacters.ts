@@ -1,15 +1,20 @@
 import { Character } from "../../../models/character.model";
-import characterManager from "../dndInfo/useCharacters";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
+import { addAllProficiencyFeature ,removeAllProficiencyFeature } from "./commands/useAllProficiencyFeature";
 import { AddCurrencyFeature, RemoveCurrencyFeature } from "./commands/useCurrencyFeature";
 import { addExpertiseFeature, removeExpertiseFeature } from "./commands/useExpertiseFeature";
+import { AddFeat, RemoveFeat } from "./commands/useFeat";
 import { AddFeature ,RemoveFeature } from "./commands/useFeatures";
+import { addImmunities, removeImmunities } from "./commands/useImmunitiesFeature";
 import { AddItemFeature, RemoveItemFeature } from "./commands/useItemFeature";
 import { addLanguageFeature, removeLanguageFeature } from "./commands/useLanguagesFeature";
 import { addProficienciesFeature, RemoveProficienciesFeature } from "./commands/useProficienciesFeature";
+import { addResistanceFeature, removeResistanceFeature } from "./commands/useResistanceFeature";
+import { addSavingThrowFeature, removeSavingThrowFeature } from "./commands/useSavingThrowFeature";
 import { addSpeedFeature, removeSpeedFeature } from "./commands/useSpeedFeature";
 import { AddSpellFeature, RemoveSpellFeature } from "./commands/useSpellFeature";
 import { addStatFeature, removeStatFeature } from "./commands/useStatFeature";
+import { addVulnerabilityFeature, removeVulnerabilityFeature } from "./commands/useVulnerabilitiesFeature";
 import { MadFeature } from "./madModels";
 
 // this hook should return a character with its MAD attributes applied, so that the character sheet can be rendered with the MAD features included. It should also be memoized to prevent unnecessary recalculations when the character or MAD features haven't changed.
@@ -17,10 +22,9 @@ export function useMadCharacters(character: Character, madFeatures: MadFeature[]
    return madFeatures.reduce((updatedCharacter, feature) => addMadFeature(updatedCharacter, feature), character);
 }
 
-/** * Applies a MadFeature to a character, modifying the character's attributes based on the command and value specified in the feature.
- * @param character The character to which to apply the MadFeatu);
-            break;
-        case 'RemoveCurrency':re.
+/**
+ * Applies a MadFeature to a character, modifying the character's attributes based on the command and value specified in the feature.
+ * @param character The character to which to apply the MadFeature.
  * @param feature The MadFeature containing the command and value that specifies how to modify the character.
  * @returns The updated character after applying the MadFeature.
  */
@@ -62,10 +66,6 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
         case "RemoveExpertise":
             character = removeExpertiseFeature(character, feature);
             break;
-        // case "AddFeats":
-        //     break;
-        // case "RemoveFeats":
-        //     break;
         case "AddFeatures":
             character = AddFeature(character, feature);
             break;
@@ -79,20 +79,28 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
             character = removeLanguageFeature(character, feature);
             break;
         case "AddResistances":
+            character = addResistanceFeature(character, feature);
             break;
         case "RemoveResistances":
+            character = removeResistanceFeature(character, feature);
             break;
         case "AddVulnerabilities":
+            character = addVulnerabilityFeature(character, feature);
             break;
         case "RemoveVulnerabilities":
+            character = removeVulnerabilityFeature(character, feature);
             break;
         case "AddImmunities":
+            character = addImmunities(character, feature);
             break;
         case "RemoveImmunities":
+            character = removeImmunities(character, feature);
             break;
         case "AddSavingThrows":
+            character = addSavingThrowFeature(character, feature);
             break;
         case "RemoveSavingThrows":
+            character = removeSavingThrowFeature(character, feature);
             break;
         case "AddStats":
             character = addStatFeature(character, feature);
@@ -100,47 +108,27 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
         case "RemoveStats":
             character = removeStatFeature(character, feature);
             break; // ----- 
-        case "Addspeed":
+        case "AddSpeed":
             character = addSpeedFeature(character, feature);
             break;
-        case "Removespeed":
+        case "RemoveSpeed":
             character = removeSpeedFeature(character, feature);
+            break;
+        case "AddAllProficiencies":
+            character = addAllProficiencyFeature(character, feature);
+            break;
+        case "RemoveAllProficiencies":
+            character = removeAllProficiencyFeature(character, feature);
+            break;
+        case "AddFeats":
+            character = AddFeat(character, feature);
+            break;
+        case "RemoveFeats":
+            character = RemoveFeat(character, feature);
             break;
         default:
             break;
     }
-    return character;
-}
-
-/**
- *  Custom hook that applies a spell feature to a character based on the provided character name and spell ID. 
- *  The function retrieves the relevant MadFeature for the specified character and spell, 
- *  then updates the character's spells accordingly by either adding or removing the spell feature.
- * 
- * @param characterName 
- * @param spellID 
- */
-export function useSpellFeature(characterName: string, spellID: string): Character | undefined {
-    let character = characterManager.getCharacter(characterName);
-
-    if (!character) {
-        console.error(`Character with the name ${characterName} couldn't be found!`);
-        return;
-    }
-
-    // search for applicable mad features for the character and spell
-
-    character.features.forEach(feature => {
-        let mads = feature?.metadata?.mads;
-        
-        if (mads && mads.command === "AddSpells" && mads.value['id'] === spellID) {
-            character = AddSpellFeature(character as any, mads);
-        } else if (mads && mads.command === "RemoveSpells" && mads.value['id'] === spellID) {
-            character = RemoveSpellFeature(character as any, mads);
-        }
-
-    });
-
     return character;
 }
 

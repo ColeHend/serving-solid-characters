@@ -1,7 +1,7 @@
 // New implementation using 5E data model types while keeping legacy-compatible accessors.
 import { Observable, take, tap, of, concatMap, catchError, finalize, endWith } from "rxjs";
 import { Accessor, Setter, createSignal } from "solid-js";
-import { Class5E, Item, Feat, Spell, Background, Race, Subclass } from "../../models/data";
+import { Class5E, Item, Feat, Spell, Background, Race, Subclass } from "../../models/generated";
 import HombrewDB from "./utility/localDB/new/homebrewDB";
 import httpClient$ from "./utility/tools/httpClientObs";
 import { Clone } from "./utility/tools/Tools";
@@ -57,8 +57,8 @@ class HomebrewManager {
       try {
         const rows = await HombrewDB.subclasses.toArray().catch(()=>[]);
         rows.forEach(r => {
-          if (!r.storage_key && r.parent_class && r.name) {
-            (r as any).storage_key = `${r.parent_class.toLowerCase()}__${r.name.toLowerCase()}`;
+          if (!r.storage_key && r.parentClass && r.name) {
+            (r as any).storage_key = `${r.parentClass.toLowerCase()}__${r.name.toLowerCase()}`;
           }
         });
         return rows as Subclass[];
@@ -260,7 +260,7 @@ class HomebrewManager {
 
   // Subclasses (standalone persistence; projection into classes left to consumer if needed)
   public addSubclass = (subclass: Subclass): Promise<void> | null => {
-    const storage_key = `${subclass.parent_class.toLowerCase()}__${subclass.name.toLowerCase()}`;
+    const storage_key = `${subclass.parentClass.toLowerCase()}__${subclass.name.toLowerCase()}`;
     (subclass as any).storage_key = storage_key;
     if (this._subclasses().some(s => (s as any).storage_key === storage_key)) return null;
     return new Promise(res => this.addSubclassToDB(Clone(subclass)).subscribe({ complete: () => res(), error: () => res() }));
@@ -286,12 +286,12 @@ class HomebrewManager {
       );
   }
   public updateSubclass = (subclass: Subclass): Promise<void> | void => {
-  const storage_key = `${subclass.parent_class.toLowerCase()}__${subclass.name.toLowerCase()}`;
+  const storage_key = `${subclass.parentClass.toLowerCase()}__${subclass.name.toLowerCase()}`;
   if (!this._subclasses().some(s => (s as any).storage_key === storage_key)) return; 
     return new Promise(res => this.updateSubclassInDB(Clone(subclass)).subscribe({ complete: () => res(), error: () => res() }));
   }
   private updateSubclassInDB = (subclass: Subclass) => { 
-    const storage_key = `${subclass.parent_class.toLowerCase()}__${subclass.name.toLowerCase()}`;
+    const storage_key = `${subclass.parentClass.toLowerCase()}__${subclass.name.toLowerCase()}`;
     (subclass as any).storage_key = storage_key;
   let error = false; return httpClient$.toObservable(HombrewDB.subclasses.put(subclass as any)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating subclass", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setSubclasses(list => list.map(s => ((s as any).storage_key === storage_key) ? subclass : s)); addSnackbar({ message: "Subclass updated", severity: "success" }); } })) }
   public removeSubclass = (parentClass: string, name: string): Promise<void> | void => {

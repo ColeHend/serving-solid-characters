@@ -12,6 +12,12 @@ const addExpertiseFeature = (character: Character, feature: MadFeature) => {
     skillNames.forEach(skillName => {
         if (skillName) {
             const old = character.proficiencies.skills[`${skillName}`];
+            const isProficient = old?.proficient ?? false;
+
+            if (!isProficient) {
+                console.warn(`Cannot add expertise to ${skillName} because character is not proficient in it.`);
+                return;
+            }
 
             character.proficiencies.skills[`${skillName}`] = {
                 stat: old.stat,
@@ -36,7 +42,7 @@ const removeExpertiseFeature = (character: Character, feature: MadFeature) => {
     skillNames.forEach(skillName => {
         if (skillName) {
             const old = character.proficiencies.skills[`${skillName}`];
-
+            
             character.proficiencies.skills[`${skillName}`] = {
                 stat: old.stat,
                 value: old.value,
@@ -49,4 +55,24 @@ const removeExpertiseFeature = (character: Character, feature: MadFeature) => {
     return character;
 }
 
+function useExpertiseFeature (character: Character) {
+    if (!character) {
+        console.error("No Character Found!");
+        return;
+    }
+
+    character.features.forEach(feature => {
+        let mads = feature.metadata?.mads;
+
+        if (mads && mads.command === 'AddExpertise') {
+            character = addExpertiseFeature(character, mads);
+        } else if (mads && mads.command === 'RemoveExpertise') {
+            character = removeExpertiseFeature(character, mads);
+        }
+    });
+
+    return character;
+}
+
+export default useExpertiseFeature;
 export { addExpertiseFeature, removeExpertiseFeature };

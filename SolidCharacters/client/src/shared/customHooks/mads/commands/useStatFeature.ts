@@ -50,4 +50,29 @@ const removeStatFeature = (character: Character, feature: MadFeature) => {
     }
 }
 
+function useStatFeature(character: Character) {
+
+    if (!character) {
+        console.error("No character was found");
+        return;
+    }
+
+    character.features.forEach(feature => {
+        const MadFeature = feature.metadata?.mads;
+
+        switch (MadFeature?.command) {
+            case "AddStats":
+                character = addStatFeature(character, MadFeature);
+                break;
+
+            case "RemoveStats":
+                character = removeStatFeature(character, MadFeature);
+                break;
+        }
+    })
+
+    return character;
+} 
+
+export default useStatFeature;
 export { addStatFeature, removeStatFeature };

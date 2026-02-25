@@ -28,7 +28,8 @@
           "description": "Starting at 14th level, when you take damage from a creature that is within 5 feet of you, you can use your reaction to make a melee weapon Attack against that creature."
         }
       ]
-    }
+    },
+    "id": "73085528-a348-439a-b1d5-cc9991adf805"
   },
   {
     "name": "Lore",
@@ -81,7 +82,8 @@
           "Any Spell"
         ]
       }
-    }
+    },
+    "id": "6af678ca-23b1-4ef9-b417-5d9db31890a2"
   },
   {
     "name": "Land",
@@ -125,7 +127,8 @@
           "Druid Cantrip"
         ]
       }
-    }
+    },
+    "id": "69d0a13f-06db-459e-a53b-14219d3e435d"
   },
   {
     "name": "Life",
@@ -166,7 +169,8 @@
           "description": "Starting at 17th level, when you would normally roll one or more dice to restore hit points with a spell, you instead use the highest number possible for each die. For example, instead of restoring 2d6 hit points to a creature, you restore 12."
         }
       ]
-    }
+    },
+    "id": "882c9f29-d9e7-46a7-945f-40102557fc28"
   },
   {
     "name": "Champion",
@@ -203,7 +207,8 @@
           "description": "At 18th level, you attain the pinnacle of resilience in battle. At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don't gain this benefit if you have 0 hit points."
         }
       ]
-    }
+    },
+    "id": "94610ffa-ee9e-48c4-aefc-030a2d3f28e5"
   },
   {
     "name": "Open Hand",
@@ -234,7 +239,8 @@
           "description": "At 17th level, you gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an unarmed strike, you can spend 3 ki points to start these imperceptible vibrations, which last for a number of days equal to your monk level. The vibrations are harmless unless you use your action to end them. To do so, you and the target must be on the same plane of existence. When you use this action, the creature must make a Constitution saving throw. If it fails, it is reduced to 0 hit points. If it succeeds, it takes 10d10 necrotic damage.\n\nYou can have only one creature under the effect of this feature at a time. You can choose to end the vibrations harmlessly without using an action."
         }
       ]
-    }
+    },
+    "id": "62272522-35fa-4643-bd20-946d6f38da47"
   },
   {
     "name": "Devotion",
@@ -269,7 +275,8 @@
           "description": "At 20th level, as an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30-foot radius, and dim light shines 30 feet beyond that.\n\nWhenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.\n\nIn addition, for the duration, you have advantage on saving throws against spells cast by fiends or undead."
         }
       ]
-    }
+    },
+    "id": "28e62c98-99fd-40c7-b1c8-566afade2811"
   },
   {
     "name": "Hunter",
@@ -337,7 +344,8 @@
           "Uncanny Dodge"
         ]
       }
-    }
+    },
+    "id": "c4fdab6f-cc07-43f9-8c9c-a58bcfaafd9f"
   },
   {
     "name": "Thief",
@@ -372,7 +380,8 @@
           "description": "When you reach 17th level, you have become adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal initiative and your second turn at your initiative minus 10. You can't use this feature when you are surprised."
         }
       ]
-    }
+    },
+    "id": "fc6009af-4a44-403b-9c40-5364dbf09be0"
   },
   {
     "name": "Draconic",
@@ -425,7 +434,8 @@
           "White"
         ]
       }
-    }
+    },
+    "id": "67faff29-ba21-49a9-8122-ec032068268f"
   },
   {
     "name": "Fiend",
@@ -456,7 +466,8 @@
           "description": "Starting at 14th level, when you hit a creature with an attack, you can use this feature to instantly transport the target through the lower planes. The creature disappears and hurtles through a nightmare landscape.\n At the end of your next turn, the target returns to the space it previously occupied, or the nearest unoccupied space. If the target is not a fiend, it takes 10d10 psychic damage as it reels from its horrific experience. \nOnce you use this feature, you can't use it again until you finish a long rest."
         }
       ]
-    }
+    },
+    "id": "0372bee7-37a9-44aa-af7b-8eb298ea680c"
   },
   {
     "name": "Evocation",
@@ -491,6 +502,7 @@
           "description": "Starting at 14th level, you can increase the power of your simpler spells. When you cast a wizard spell of 1st through 5th level that deals damage, you can deal maximum damage with that spell.\n The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a long rest, you take 2d12 necrotic damage for each level of the spell, immediately after you cast it. Each time you use this feature again before finishing a long rest, the necrotic damage per spell level increases by 1d12. This damage ignores resistance and immunity."
         }
       ]
-    }
+    },
+    "id": "4e57865f-4ea4-420c-9b49-9e53c77e8c08"
   }
 ]

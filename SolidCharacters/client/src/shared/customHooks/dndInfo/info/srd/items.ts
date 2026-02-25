@@ -1,4 +1,4 @@
-import { Item } from "../../../../../models/data";
+import { Item } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import SrdDB from "../../../utility/localDB/new/srdDB";

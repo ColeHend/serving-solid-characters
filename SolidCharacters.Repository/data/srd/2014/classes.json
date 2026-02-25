@@ -1,6 +1,6 @@
 [
   {
-    "id": -1,
+    "id": "481ed09a-b505-4bbb-86cb-98482151691d",
     "name": "Barbarian",
     "hit_die": "12",
     "primary_ability": "STR",
@@ -10,15 +10,28 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_main_weapon", "start_side_weapon"]
+        "optionKeys": [
+          "start_main_weapon",
+          "start_side_weapon"
+        ]
       },
       {
-        "Items": ["Explorer's Pack", "4 Javelin"]
+        "Items": [
+          "Explorer's Pack",
+          "4 Javelin"
+        ]
       }
     ],
     "proficiencies": {
-      "armor": ["Light Armor", "Medium Armor", "Shields"],
-      "weapons": ["Simple", "Martial"],
+      "armor": [
+        "Light Armor",
+        "Medium Armor",
+        "Shields"
+      ],
+      "weapons": [
+        "Simple",
+        "Martial"
+      ],
       "tools": [],
       "skills": []
     },
@@ -27,7 +40,6 @@
         {
           "name": "Rage",
           "description": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action. While raging, you gain the following benefits if you aren't wearing heavy armor:\n - You have advantage on Strength checks and Strength saving throws.\n - When you make a melee weapon Attack using Strength, you gain a +2 bonus to the damage roll. This bonus increases as you level.\n - You have Resistance to bludgeoning, piercing, and slashing damage.\n If you are able to cast Spells, you can't cast them or concentrate on them while raging.\n Your rage lasts for 1 minute. It ends early if you are knocked Unconscious or if Your Turn ends and you haven't attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on Your Turn as a Bonus Action.\n Once you have raged the maximum number of times for your barbarian level, you must finish a Long Rest before you can rage again. You may rage 2 times at 1st level, 3 at 3rd, 4 at 6th, 5 at 12th, and 6 at 17th."
-          
         },
         {
           "name": "Unarmored Defense",
@@ -42,14 +54,12 @@
         {
           "name": "Danger Sense",
           "description": "At 2nd level, you gain an uncanny sense of when things nearby aren't as they should be, giving you an edge when you dodge away from danger. You have advantage on Dexterity saving throws against effects that you can see, such as traps and spells. To gain this benefit, you can't be blinded, deafened, or incapacitated."
-          
         }
       ],
       "3": [
         {
           "name": "Primal Path",
           "description": "At 3rd level, you choose a path that shapes the nature of your rage. Choose the Path of the Berserker or the Path of the Totem Warrior, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th, 10th, and 14th levels."
-          
         }
       ],
       "4": [
@@ -62,7 +72,6 @@
         {
           "name": "Extra Attack",
           "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
-          
         },
         {
           "name": "Fast Movement",
@@ -73,84 +82,72 @@
         {
           "name": "Feral Instinct",
           "description": "By 7th level, your instincts are so honed that you have advantage on initiative rolls.\n Additionally, if you are surprised at the beginning of combat and aren't incapacitated, you can act normally on your first turn, but only if you enter your rage before doing anything else on that turn."
-          
         }
       ],
       "8": [
         {
           "name": "Ability Score Improvement",
           "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
-          
         }
       ],
       "9": [
         {
           "name": "Brutal Critical (1 die)",
           "description": "Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack. This increases to two additional dice at 13th level and three additional dice at 17th level."
-          
         }
       ],
       "11": [
         {
           "name": "Relentless Rage",
           "description": "Starting at 11th level, your rage can keep you fighting despite grievous wounds. If you drop to 0 hit points while you're raging and don't die outright, you can make a DC 10 Constitution saving throw. If you succeed, you drop to 1 hit point instead.\n Each time you use this feature after the first, the DC increases by 5. When you finish a short or long rest, the DC resets to 10."
-          
         }
       ],
       "12": [
         {
           "name": "Ability Score Improvement",
           "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
-          
         }
       ],
       "13": [
         {
           "name": "Brutal Critical (2 dice)",
           "description": "Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack. This increases to two additional dice at 13th level and three additional dice at 17th level."
-          
         }
       ],
       "15": [
         {
           "name": "Persistent Rage",
           "description": "Beginning at 15th level, your rage is so fierce that it ends early only if you fall unconscious or if you choose to end it."
-          
         }
       ],
       "16": [
         {
           "name": "Ability Score Improvement",
           "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
-          
         }
       ],
       "17": [
         {
           "name": "Brutal Critical (3 dice)",
           "description": "Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack. This increases to two additional dice at 13th level and three additional dice at 17th level."
-          
         }
       ],
       "18": [
         {
           "name": "Indomitable Might",
           "description": "Beginning at 18th level, if your total for a Strength check is less than your Strength score, you can use that score in place of the total."
-          
         }
       ],
       "19": [
         {
           "name": "Ability Score Improvement",
           "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
-          
         }
       ],
       "20": [
         {
           "name": "Primal Champion",
           "description": "At 20th level, you embody the power of the wilds. Your Strength and Constitution scores increase by 4. Your maximum for those scores is now 24."
-          
         }
       ]
     },
@@ -207,7 +204,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "2e018eb1-fc86-4319-9fd2-7716eeec10e8",
     "name": "Bard",
     "hit_die": "8",
     "primary_ability": "CHA",
@@ -217,10 +214,17 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_weapon", "start_pack", "start_instrument"]
+        "optionKeys": [
+          "start_weapon",
+          "start_pack",
+          "start_instrument"
+        ]
       },
       {
-        "Items": ["Leather Armor", "Dagger"]
+        "Items": [
+          "Leather Armor",
+          "Dagger"
+        ]
       }
     ],
     "spellcasting": {
@@ -314,8 +318,16 @@
       }
     },
     "proficiencies": {
-      "armor": ["Light Armor"],
-      "weapons": ["Simple", "Hand Crossbows", "Longswords", "Rapiers", "Shortswords"],
+      "armor": [
+        "Light Armor"
+      ],
+      "weapons": [
+        "Simple",
+        "Hand Crossbows",
+        "Longswords",
+        "Rapiers",
+        "Shortswords"
+      ],
       "tools": [],
       "skills": []
     },
@@ -324,7 +336,6 @@
         {
           "name": "Spellcasting: Bard",
           "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations."
-          
         },
         {
           "name": "Bardic Inspiration (d6)",
@@ -354,7 +365,7 @@
       "4": [
         {
           "name": "Ability Score Improvement",
-          "description":  "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
         }
       ],
       "5": [
@@ -383,7 +394,6 @@
         {
           "name": "Song of Rest (d8)",
           "description": "Beginning at 2nd level, you can use soothing music or oration to help revitalize your wounded allies during a short rest. If you or any friendly creatures who can hear your performance regain hit points at the end of the short rest by spending one or more Hit Dice, each of those creatures regains an extra 1d6 hit points. \n The extra hit points increase when you reach certain levels in this class: to 1d8 at 9th level, to 1d10 at 13th level, and to 1d12 at 17th level."
-          
         }
       ],
       "10": [
@@ -433,7 +443,7 @@
       "17": [
         {
           "name": "Song of Rest (d12)",
-          "description": "Beginning at 2nd level, you can use soothing music or oration to help revitalize your wounded allies during a short rest. If you or any friendly creatures who can hear your performance regain hit points at the end of the short rest by spending one or more Hit Dice, each of those creatures regains an extra 1d6 hit points. \n The extra hit points increase when you reach certain levels in this class: to 1d8 at 9th level, to 1d10 at 13th level, and to 1d12 at 17th level."   
+          "description": "Beginning at 2nd level, you can use soothing music or oration to help revitalize your wounded allies during a short rest. If you or any friendly creatures who can hear your performance regain hit points at the end of the short rest by spending one or more Hit Dice, each of those creatures regains an extra 1d6 hit points. \n The extra hit points increase when you reach certain levels in this class: to 1d8 at 9th level, to 1d10 at 13th level, and to 1d12 at 17th level."
         }
       ],
       "18": [
@@ -521,7 +531,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "66209f87-c6e1-4348-9cd7-a82be312368c",
     "name": "Cleric",
     "hit_die": "8",
     "primary_ability": "WIS",
@@ -531,15 +541,29 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_weapon", "start_range_weapon", "start_armor", "start_pack"]
+        "optionKeys": [
+          "start_weapon",
+          "start_range_weapon",
+          "start_armor",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["Holy symbol", "Shield"]
+        "Items": [
+          "Holy symbol",
+          "Shield"
+        ]
       }
     ],
     "proficiencies": {
-      "armor": ["Light Armor", "Medium Armor", "Shields"],
-      "weapons": ["Simple"],
+      "armor": [
+        "Light Armor",
+        "Medium Armor",
+        "Shields"
+      ],
+      "weapons": [
+        "Simple"
+      ],
       "tools": [],
       "skills": []
     },
@@ -621,7 +645,7 @@
       "10": [
         {
           "name": "Divine Intervention",
-          "description":  "Beginning at 10th level, you can call on your deity to intervene on your behalf when your need is great. \n Imploring your deity's aid requires you to use your action. Describe the assistance you seek, and roll percentile dice. If you roll a number equal to or lower than your cleric level, your deity intervenes. The GM chooses the nature of the intervention; the effect of any cleric spell or cleric domain spell would be appropriate. \n If your deity intervenes, you can't use this feature again for 7 days. Otherwise, you can use it again after you finish a long rest. \n At 20th level, your call for intervention succeeds automatically, no roll required." 
+          "description": "Beginning at 10th level, you can call on your deity to intervene on your behalf when your need is great. \n Imploring your deity's aid requires you to use your action. Describe the assistance you seek, and roll percentile dice. If you roll a number equal to or lower than your cleric level, your deity intervenes. The GM chooses the nature of the intervention; the effect of any cleric spell or cleric domain spell would be appropriate. \n If your deity intervenes, you can't use this feature again for 7 days. Otherwise, you can use it again after you finish a long rest. \n At 20th level, your call for intervention succeeds automatically, no roll required."
         }
       ],
       "11": [
@@ -788,7 +812,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "790ab343-5817-4e8a-a5d8-fcfbb06438ce",
     "name": "Druid",
     "hit_die": "8",
     "primary_ability": "WIS",
@@ -798,16 +822,38 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_shield_weapon", "start_weapon"]
+        "optionKeys": [
+          "start_shield_weapon",
+          "start_weapon"
+        ]
       },
       {
-        "Items": ["Leather Armor","Explorer's Pack", "Druidic Focus"]
+        "Items": [
+          "Leather Armor",
+          "Explorer's Pack",
+          "Druidic Focus"
+        ]
       }
     ],
     "proficiencies": {
-      "armor": ["Light Armor", "Medium Armor", "Shields"],
-      "weapons": ["Simple", "Clubs", "Darts", "Javelins", "Maces", "Quarterstaffs", "Sickles", "Spears"],
-      "tools": ["Herbalism Kit"],
+      "armor": [
+        "Light Armor",
+        "Medium Armor",
+        "Shields"
+      ],
+      "weapons": [
+        "Simple",
+        "Clubs",
+        "Darts",
+        "Javelins",
+        "Maces",
+        "Quarterstaffs",
+        "Sickles",
+        "Spears"
+      ],
+      "tools": [
+        "Herbalism Kit"
+      ],
       "skills": []
     },
     "features": {
@@ -989,7 +1035,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "e773ac06-b31c-4beb-91e7-97209f552952",
     "name": "Fighter",
     "hit_die": "10",
     "primary_ability": "DEX",
@@ -999,15 +1045,30 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_armor", "start_weapon", "start_range_weapon", "start_shield_weapon", "start_pack"]
+        "optionKeys": [
+          "start_armor",
+          "start_weapon",
+          "start_range_weapon",
+          "start_shield_weapon",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["Chain Mail", "Explorer's Pack"]
+        "Items": [
+          "Chain Mail",
+          "Explorer's Pack"
+        ]
       }
     ],
     "proficiencies": {
-      "armor": ["All Armor", "Shields"],
-      "weapons": ["Simple", "Martial"],
+      "armor": [
+        "All Armor",
+        "Shields"
+      ],
+      "weapons": [
+        "Simple",
+        "Martial"
+      ],
       "tools": [],
       "skills": []
     },
@@ -1162,7 +1223,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "d128340f-85c3-43e2-b799-406b5bf6f165",
     "name": "Monk",
     "hit_die": "8",
     "primary_ability": "DEX",
@@ -1172,14 +1233,22 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_weapon", "start_pack"]
+        "optionKeys": [
+          "start_weapon",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["10 dart"]
+        "Items": [
+          "10 dart"
+        ]
       }
     ],
     "proficiencies": {
-      "weapons": ["Simple", "Shortsword"],
+      "weapons": [
+        "Simple",
+        "Shortsword"
+      ],
       "armor": [],
       "tools": [],
       "skills": []
@@ -1427,7 +1496,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "51c6913d-90bd-4ed9-bcf7-75332f9b329f",
     "name": "Paladin",
     "hit_die": "10",
     "primary_ability": "STR",
@@ -1437,15 +1506,29 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_armor", "start_weapon", "start_range_weapon", "start_pack"]
+        "optionKeys": [
+          "start_armor",
+          "start_weapon",
+          "start_range_weapon",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["Chain Mail", "Holy symbol"]
+        "Items": [
+          "Chain Mail",
+          "Holy symbol"
+        ]
       }
     ],
     "proficiencies": {
-      "armor": ["All Armor", "Shields"],
-      "weapons": ["Simple", "Martial"],
+      "armor": [
+        "All Armor",
+        "Shields"
+      ],
+      "weapons": [
+        "Simple",
+        "Martial"
+      ],
       "tools": [],
       "skills": []
     },
@@ -1596,7 +1679,7 @@
     "spellcasting": {
       "known_type": "calc",
       "spells_known_calc": {
-        "stat":"WIS",
+        "stat": "WIS",
         "level": "half",
         "roundUp": false
       },
@@ -1706,7 +1789,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "4c8c39a0-6bf7-46e4-b082-f8899a7cca4c",
     "name": "Ranger",
     "hit_die": "10",
     "primary_ability": "DEX",
@@ -1716,15 +1799,29 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_armor", "start_weapon", "start_pack"]
+        "optionKeys": [
+          "start_armor",
+          "start_weapon",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["Long Bow", "quiver of 20 arrows"]
+        "Items": [
+          "Long Bow",
+          "quiver of 20 arrows"
+        ]
       }
     ],
     "proficiencies": {
-      "armor": ["Light Armor", "Medium Armor", "Shields"],
-      "weapons": ["Simple", "Martial"],
+      "armor": [
+        "Light Armor",
+        "Medium Armor",
+        "Shields"
+      ],
+      "weapons": [
+        "Simple",
+        "Martial"
+      ],
       "tools": [],
       "skills": []
     },
@@ -2010,7 +2107,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "2017cf77-17c7-489f-a36f-5c6abab15614",
     "name": "Rogue",
     "hit_die": "8",
     "primary_ability": "DEX",
@@ -2020,16 +2117,34 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_melee_weapon", "start_weapon", "start_pack"]
+        "optionKeys": [
+          "start_melee_weapon",
+          "start_weapon",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["Leather Armor", "2 Daggers", "Thieves' Tools"]
+        "Items": [
+          "Leather Armor",
+          "2 Daggers",
+          "Thieves' Tools"
+        ]
       }
     ],
     "proficiencies": {
-      "armor": ["Light Armor"],
-      "weapons": ["Simple", "Hand Crossbows", "Longswords", "Rapiers", "Shortswords"],
-      "tools": ["Thieves' Tools"],
+      "armor": [
+        "Light Armor"
+      ],
+      "weapons": [
+        "Simple",
+        "Hand Crossbows",
+        "Longswords",
+        "Rapiers",
+        "Shortswords"
+      ],
+      "tools": [
+        "Thieves' Tools"
+      ],
       "skills": []
     },
     "features": {
@@ -2210,7 +2325,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "95cafb97-77ad-4632-87f6-0d496c624469",
     "name": "Sorcerer",
     "hit_die": "6",
     "primary_ability": "CHA",
@@ -2220,15 +2335,27 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_weapon", "start_focus", "start_pack"]
+        "optionKeys": [
+          "start_weapon",
+          "start_focus",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["2 Dagger"]
+        "Items": [
+          "2 Dagger"
+        ]
       }
     ],
     "proficiencies": {
       "armor": [],
-      "weapons": ["Daggers", "Darts", "Quarterstaffs", "Light Crossbows", "Slings"],
+      "weapons": [
+        "Daggers",
+        "Darts",
+        "Quarterstaffs",
+        "Light Crossbows",
+        "Slings"
+      ],
       "tools": [],
       "skills": []
     },
@@ -2461,7 +2588,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "ba516ec1-b640-478f-a89e-00dc05e610ca",
     "name": "Warlock",
     "hit_die": "8",
     "primary_ability": "CHA",
@@ -2471,15 +2598,27 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_weapon", "start_focus", "start_pack"]
+        "optionKeys": [
+          "start_weapon",
+          "start_focus",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["Leather Armor", "Simple Weapon", "2 Daggers"]
+        "Items": [
+          "Leather Armor",
+          "Simple Weapon",
+          "2 Daggers"
+        ]
       }
     ],
     "proficiencies": {
-      "armor": ["Light Armor"],
-      "weapons": ["Simple"],
+      "armor": [
+        "Light Armor"
+      ],
+      "weapons": [
+        "Simple"
+      ],
       "tools": [],
       "skills": []
     },
@@ -2638,7 +2777,7 @@
           },
           "3": {
             "cantrips_known": 2,
-            "spell_slots_level_2": 2 
+            "spell_slots_level_2": 2
           },
           "4": {
             "cantrips_known": 2,
@@ -2713,7 +2852,7 @@
     }
   },
   {
-    "id": -1,
+    "id": "b605b882-9fad-4066-aea0-45ebeac5ee65",
     "name": "Wizard",
     "hit_die": "6",
     "primary_ability": "INT",
@@ -2723,15 +2862,27 @@
     ],
     "starting_equipment": [
       {
-        "optionKeys": ["start_weapon", "start_focus", "start_pack"]
+        "optionKeys": [
+          "start_weapon",
+          "start_focus",
+          "start_pack"
+        ]
       },
       {
-        "Items": ["Spellbook"]
+        "Items": [
+          "Spellbook"
+        ]
       }
     ],
     "proficiencies": {
       "armor": [],
-      "weapons": ["Daggers", "Darts", "Quarterstaffs", "Light Crossbows", "Slings"],
+      "weapons": [
+        "Daggers",
+        "Darts",
+        "Quarterstaffs",
+        "Light Crossbows",
+        "Slings"
+      ],
       "tools": [],
       "skills": []
     },
@@ -2829,7 +2980,7 @@
       }
     },
     "spellcasting": {
-      "known_type":"calc",
+      "known_type": "calc",
       "spells_known_calc": {
         "stat": "INT",
         "level": "full"

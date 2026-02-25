@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "id": "f58190ff-2410-4982-9a81-5a8fe2613455",
     "name": "Hill Dwarf",
     "parentRace": "1",
     "size": "Medium",
@@ -29,7 +29,7 @@
     }
   },
   {
-    "id": "2",
+    "id": "f0066dd5-405a-4200-83c5-de318c0ce540",
     "name": "High Elf",
     "parentRace": "2",
     "size": "Medium",
@@ -73,7 +73,7 @@
     }
   },
   {
-    "id": "3",
+    "id": "894705bb-587e-40cb-85ea-0cc01f8faaf4",
     "name": "Lightfoot Halfling",
     "parentRace": "3",
     "size": "Medium",
@@ -102,7 +102,7 @@
     }
   },
   {
-    "id": "4",
+    "id": "be15b450-a00b-4daa-ba63-460f23952e43",
     "name": "Rock Gnome",
     "parentRace": "6",
     "size": "Medium",

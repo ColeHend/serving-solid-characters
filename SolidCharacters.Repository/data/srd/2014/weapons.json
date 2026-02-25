@@ -1,6 +1,6 @@
 [
   {
-    "id": 0,
+    "id": "6e34c452-e759-4020-a6bd-c9fee0c72f22",
     "name": "Club",
     "desc": "",
     "type": 0,
@@ -18,7 +18,7 @@
     }
   },
   {
-    "id": 1,
+    "id": "e454326b-c0fc-4343-a282-e3d992c63ed3",
     "name": "Dagger",
     "desc": "",
     "type": 0,
@@ -38,7 +38,7 @@
     }
   },
   {
-    "id": 2,
+    "id": "b4233f8c-1b47-4458-8b3e-af4877167892",
     "name": "Greatclub",
     "desc": "",
     "type": 0,
@@ -55,7 +55,7 @@
     }
   },
   {
-    "id": 3,
+    "id": "5b18bf8a-7c68-4680-ba63-397db5dc4399",
     "name": "Handaxe",
     "desc": "",
     "type": 0,
@@ -74,7 +74,7 @@
     }
   },
   {
-    "id": 4,
+    "id": "7a4340aa-521a-4696-b1c3-13a261cd17b6",
     "name": "Javelin",
     "desc": "",
     "type": 0,
@@ -92,7 +92,7 @@
     }
   },
   {
-    "id": 5,
+    "id": "0cd45ddb-00bb-40e0-8b33-be5f29064e5a",
     "name": "Light hammer",
     "desc": "",
     "type": 0,
@@ -111,7 +111,7 @@
     }
   },
   {
-    "id": 6,
+    "id": "d59d2bfe-e9d5-429f-a3f2-af063d9b745b",
     "name": "Mace",
     "desc": "",
     "type": 0,
@@ -128,7 +128,7 @@
     }
   },
   {
-    "id": 7,
+    "id": "39462751-fa9c-4565-92b1-1c889fdc46df",
     "name": "Quarterstaff",
     "desc": "",
     "type": 0,
@@ -146,7 +146,7 @@
     }
   },
   {
-    "id": 8,
+    "id": "ed74bff9-f1a3-494c-be0c-a092477ead6c",
     "name": "Sickle",
     "desc": "",
     "type": 0,
@@ -164,7 +164,7 @@
     }
   },
   {
-    "id": 9,
+    "id": "63556f88-653b-4851-93d1-9ce914a14b3f",
     "name": "Spear",
     "desc": "",
     "type": 0,
@@ -183,7 +183,7 @@
     }
   },
   {
-    "id": 10,
+    "id": "d6f3e5d0-e2bb-43b2-af1f-8e56d61f67f6",
     "name": "Crossbow, light",
     "desc": "",
     "type": 0,
@@ -203,7 +203,7 @@
     }
   },
   {
-    "id": 11,
+    "id": "e83f71b0-b8a0-40cc-bc2e-e56c2ebf266f",
     "name": "Dart",
     "desc": "",
     "type": 0,
@@ -222,7 +222,7 @@
     }
   },
   {
-    "id": 12,
+    "id": "0e5c5f53-47cd-499d-84a2-819042b4a69c",
     "name": "Shortbow",
     "desc": "",
     "type": 0,
@@ -241,7 +241,7 @@
     }
   },
   {
-    "id": 13,
+    "id": "58d71894-60c1-4976-8db2-c4855135bc0b",
     "name": "Sling",
     "desc": "",
     "type": 0,
@@ -259,7 +259,7 @@
     }
   },
   {
-    "id": 14,
+    "id": "d147dfa7-3b63-415b-a104-b038243a25d4",
     "name": "Battleaxe",
     "desc": "",
     "type": 0,
@@ -276,7 +276,7 @@
     }
   },
   {
-    "id": 15,
+    "id": "8cfd658a-7d02-4247-b09d-642eb161f586",
     "name": "Flail",
     "desc": "",
     "type": 0,
@@ -290,7 +290,7 @@
     }
   },
   {
-    "id": 16,
+    "id": "cbf44903-bdc9-4266-ba85-d845b8a33d99",
     "name": "Glaive",
     "desc": "",
     "type": 0,
@@ -309,7 +309,7 @@
     }
   },
   {
-    "id": 17,
+    "id": "09ca512e-0eef-4e7e-9a60-f9952a22e84d",
     "name": "Greataxe",
     "desc": "",
     "type": 0,
@@ -327,7 +327,7 @@
     }
   },
   {
-    "id": 18,
+    "id": "08ef35d1-d1b0-4cb6-8fc8-df71cf7015a7",
     "name": "Greatsword",
     "desc": "",
     "type": 0,
@@ -345,7 +345,7 @@
     }
   },
   {
-    "id": 19,
+    "id": "bf4a2593-13ad-4ba6-840e-cb894f7c0555",
     "name": "Halberd",
     "desc": "",
     "type": 0,
@@ -364,7 +364,7 @@
     }
   },
   {
-    "id": 20,
+    "id": "f3949dea-fe61-48a2-8c22-6a41a28c8ee3",
     "name": "Lance",
     "desc": "",
     "type": 0,
@@ -382,7 +382,7 @@
     }
   },
   {
-    "id": 21,
+    "id": "9c597fbf-3303-4f83-94f3-3a82bedb711a",
     "name": "Longsword",
     "desc": "",
     "type": 0,
@@ -399,7 +399,7 @@
     }
   },
   {
-    "id": 22,
+    "id": "e145f9ca-7cd1-4dcb-bc2f-5eeb88cec690",
     "name": "Maul",
     "desc": "",
     "type": 0,
@@ -417,7 +417,7 @@
     }
   },
   {
-    "id": 23,
+    "id": "4796a308-eebb-43d6-ae0b-27c75f665548",
     "name": "Morningstar",
     "desc": "",
     "type": 0,
@@ -431,7 +431,7 @@
     }
   },
   {
-    "id": 24,
+    "id": "c201696c-5902-4fd4-bcb8-a78da837fd47",
     "name": "Pike",
     "desc": "",
     "type": 0,
@@ -450,7 +450,7 @@
     }
   },
   {
-    "id": 25,
+    "id": "78f19581-96f3-4db4-a2f6-4b8778163c0b",
     "name": "Rapier",
     "desc": "",
     "type": 0,
@@ -467,7 +467,7 @@
     }
   },
   {
-    "id": 26,
+    "id": "a033958e-5ee0-4d26-a99e-42621a72592c",
     "name": "Scimitar",
     "desc": "",
     "type": 0,
@@ -485,7 +485,7 @@
     }
   },
   {
-    "id": 27,
+    "id": "37038cd0-7481-4448-80a2-668dc5e82755",
     "name": "Shortsword",
     "desc": "",
     "type": 0,
@@ -504,7 +504,7 @@
     }
   },
   {
-    "id": 28,
+    "id": "a0eacc1a-b2d9-4a0b-b99c-f50ab4c3d355",
     "name": "Trident",
     "desc": "",
     "type": 0,
@@ -522,7 +522,7 @@
     }
   },
   {
-    "id": 29,
+    "id": "1000c844-9f44-4c8b-b4c7-f76186e9a5a4",
     "name": "War pick",
     "desc": "",
     "type": 0,
@@ -536,7 +536,7 @@
     }
   },
   {
-    "id": 30,
+    "id": "4134a4d5-8f51-4fc0-becb-9df71f4dae27",
     "name": "Warhammer",
     "desc": "",
     "type": 0,
@@ -553,7 +553,7 @@
     }
   },
   {
-    "id": 31,
+    "id": "c300b506-9b17-4ede-a8bf-737f2f67850b",
     "name": "Whip",
     "desc": "",
     "type": 0,
@@ -571,7 +571,7 @@
     }
   },
   {
-    "id": 32,
+    "id": "f4a98f24-0045-4da4-b56f-18f5ffe00e35",
     "name": "Blowgun",
     "desc": "",
     "type": 0,
@@ -590,7 +590,7 @@
     }
   },
   {
-    "id": 33,
+    "id": "a6f6e386-27df-4694-91fb-615eaf89bddb",
     "name": "Crossbow, hand",
     "desc": "",
     "type": 0,
@@ -610,7 +610,7 @@
     }
   },
   {
-    "id": 34,
+    "id": "ac9249f9-a978-4151-ac28-03ce19877305",
     "name": "Crossbow, heavy",
     "desc": "",
     "type": 0,
@@ -631,7 +631,7 @@
     }
   },
   {
-    "id": 35,
+    "id": "e405ca1f-25ae-4d27-83bd-38c7b67402ff",
     "name": "Longbow",
     "desc": "",
     "type": 0,
@@ -651,7 +651,7 @@
     }
   },
   {
-    "id": 36,
+    "id": "ac2380d5-c24d-4eb3-a285-bd0ef29c1d8f",
     "name": "Net",
     "desc": "",
     "type": 0,

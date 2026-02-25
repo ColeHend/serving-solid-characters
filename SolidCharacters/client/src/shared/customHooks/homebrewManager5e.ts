@@ -1,5 +1,5 @@
 import { Accessor, Setter, createSignal } from "solid-js";
-import { Class5E } from "../../models/data/classes";
+import { Class5E } from "../../models/generated";
 import HombrewDB from "./utility/localDB/new/homebrewDB";
 import httpClient$ from "./utility/tools/httpClientObs";
 import { catchError, finalize, of, take, tap } from "rxjs";

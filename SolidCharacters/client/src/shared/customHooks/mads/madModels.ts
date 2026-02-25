@@ -1,4 +1,3 @@
-
 type AddRemove<T extends string> = `Add${T}` | `Remove${T}`;
 
 export type MadCommands = AddRemove<'Spells'> | 
@@ -8,22 +7,21 @@ export type MadCommands = AddRemove<'Spells'> |
     AddRemove<'Currency'> | 
     AddRemove<'ArmorClass'> | 
     AddRemove<'Expertise'> | 
-    // AddRemove<'Feats'> | 
+    AddRemove<'Feats'> | 
     AddRemove<'Languages'> | 
     AddRemove<'Resistances'> | 
     AddRemove<'Vulnerabilities'> | 
     AddRemove<'Immunities'> | 
     AddRemove<'SavingThrows'> | 
     AddRemove<'Stats'> | 
-    AddRemove<'speed'>;
-    // AddRemove<'EldrichInvocations'>;
+    AddRemove<'Speed'> |
+    AddRemove<'AllProficiencies'>;
 
 export interface MadFeature {
     command: MadCommands;
     value: Record<string, string>;
     type: MadType;
 }
-
 
 export enum MadType {
     // changes on the character sheet

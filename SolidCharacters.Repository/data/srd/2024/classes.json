@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "12af8c33-73fe-461b-a813-bc5fb3402132",
     "name": "Barbarian",
     "hit_die": "d12",
     "primary_ability": "Strength",
@@ -274,7 +274,7 @@
     }
   },
   {
-    "id": 2,
+    "id": "da5435a0-7c94-4c2f-b34a-214805c22396",
     "name": "Bard",
     "hit_die": "d8",
     "primary_ability": "Charisma",
@@ -695,7 +695,7 @@
     }
   },
   {
-    "id": 3,
+    "id": "31e2452c-ccfb-4cf5-9d3d-96b8c0776c0e",
     "name": "Cleric",
     "hit_die": "d8",
     "primary_ability": "Wisdom",
@@ -1077,7 +1077,7 @@
     }
   },
   {
-    "id": 4,
+    "id": "3a5594a6-4a72-4e9f-9c63-8749021d050a",
     "name": "Druid",
     "hit_die": "d8",
     "primary_ability": "Wisdom",
@@ -1471,7 +1471,7 @@
     }
   },
   {
-    "id": 5,
+    "id": "b5c7ef14-adc6-4dfb-89c9-1745d2580d58",
     "name": "Fighter",
     "hit_die": "d10",
     "primary_ability": "Strength, Dexterity",
@@ -1741,7 +1741,7 @@
     }
   },
   {
-    "id": 6,
+    "id": "b8485e64-cedd-406b-aa35-5d04ea17502d",
     "name": "Monk",
     "hit_die": "d8",
     "primary_ability": "Dexterity, Wisdom",
@@ -1948,7 +1948,7 @@
       }
     },
     "classSpecific": {
-      "martial_arts":{
+      "martial_arts": {
         "1": "1d6",
         "2": "1d6",
         "3": "1d6",
@@ -2016,7 +2016,7 @@
     }
   },
   {
-    "id": 7,
+    "id": "67910be0-51cd-4765-90f8-8f3341349113",
     "name": "Paladin",
     "hit_die": "d10",
     "primary_ability": "Strength, Charisma",
@@ -2325,7 +2325,7 @@
       "learned_spells": {}
     },
     "classSpecific": {
-      "channel_divinity":{
+      "channel_divinity": {
         "1": "-",
         "2": "-",
         "3": "2",
@@ -2350,7 +2350,7 @@
     }
   },
   {
-    "id": 8,
+    "id": "83e69412-d466-4821-a6b5-5de9ab19cb23",
     "name": "Ranger",
     "hit_die": "d10",
     "primary_ability": "Dexterity, Wisdom",
@@ -2668,7 +2668,7 @@
     }
   },
   {
-    "id": 9,
+    "id": "614f376d-abc0-4acd-8db4-318f95c4a74c",
     "name": "Rogue",
     "hit_die": "d8",
     "primary_ability": "Dexterity",
@@ -2864,7 +2864,7 @@
         "amount": 1
       }
     },
-    "classSpecific":{
+    "classSpecific": {
       "sneak_attack": {
         "1": "1d6",
         "2": "1d6",
@@ -2890,7 +2890,7 @@
     }
   },
   {
-    "id": 10,
+    "id": "94fba721-0644-4673-9f9e-15f1a39f130f",
     "name": "Sorcerer",
     "hit_die": "d6",
     "primary_ability": "Charisma",
@@ -3285,7 +3285,7 @@
     }
   },
   {
-    "id": 11,
+    "id": "2e7eae19-9f4a-4472-b5eb-3230c3a9f084",
     "name": "Warlock",
     "hit_die": "d8",
     "primary_ability": "Charisma",
@@ -3605,7 +3605,7 @@
     }
   },
   {
-    "id": 12,
+    "id": "4633a78f-d775-4694-b20f-2d2e13d2e226",
     "name": "Wizard",
     "hit_die": "d6",
     "primary_ability": "Intelligence",
