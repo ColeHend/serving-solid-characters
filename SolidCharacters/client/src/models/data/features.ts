@@ -1,3 +1,4 @@
+import { MadFeature } from "../../shared/customHooks/mads/madModels";
 import { Prerequisite, PrerequisiteType } from "./core";
 
 export interface Feat {
@@ -16,6 +17,7 @@ export interface FeatureDetail {
   recharge?: string;
   spells?: string[];
   category?: string;
+  mads?: MadFeature;
  }
 
  

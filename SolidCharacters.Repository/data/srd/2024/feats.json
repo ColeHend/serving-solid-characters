@@ -7,7 +7,8 @@
         "category": "Origin Feat"
       }
     },
-    "prerequisites": []
+    "prerequisites": [],
+    "id": "a91d1498-8170-4843-b833-2b75a1b8ccf7"
   },
   {
     "details": {
@@ -17,7 +18,8 @@
         "category": "Origin Feat"
       }
     },
-    "prerequisites": []
+    "prerequisites": [],
+    "id": "86f24b1d-af3c-48e8-a02f-bf088d83c67f"
   },
   {
     "details": {
@@ -27,7 +29,8 @@
         "category": "Origin Feat"
       }
     },
-    "prerequisites": []
+    "prerequisites": [],
+    "id": "c90997d3-468c-4253-aa12-12ba35d5efb8"
   },
   {
     "details": {
@@ -37,7 +40,8 @@
         "category": "Origin Feat"
       }
     },
-    "prerequisites": []
+    "prerequisites": [],
+    "id": "5fcc2e61-e9a8-4097-aac1-efc02b8a1051"
   },
   {
     "details": {
@@ -52,7 +56,8 @@
         "type": 1,
         "value": "4"
       }
-    ]
+    ],
+    "id": "530fc83b-75ba-4c4e-9860-f43f6e589b28"
   },
   {
     "details": {
@@ -71,7 +76,8 @@
         "type": 7,
         "value": "DEX:13"
       }
-    ]
+    ],
+    "id": "7bd5ef9d-18d4-425d-8ed4-664d05b6128e"
   },
   {
     "details": {
@@ -86,7 +92,8 @@
         "type": 1,
         "value": "4"
       }
-    ]
+    ],
+    "id": "f6955481-1409-4aaa-b348-682e1d4119eb"
   },
   {
     "details": {
@@ -101,7 +108,8 @@
         "type": 1,
         "value": "4"
       }
-    ]
+    ],
+    "id": "797c0b79-1d4c-49ee-9dbf-7efd52c82d34"
   },
   {
     "details": {
@@ -116,7 +124,8 @@
         "type": 1,
         "value": "4"
       }
-    ]
+    ],
+    "id": "5d0059f2-2255-463d-87e7-8bf631869d6c"
   },
   {
     "details": {
@@ -131,7 +140,8 @@
         "type": 0,
         "value": "Fighting Style feature"
       }
-    ]
+    ],
+    "id": "14a44b0d-0a9c-4316-8e1c-db46003179cf"
   },
   {
     "details": {
@@ -146,7 +156,8 @@
         "type": 0,
         "value": "Fighting Style feature"
       }
-    ]
+    ],
+    "id": "d282513c-d2ea-4e40-a8ae-b580f821ad14"
   },
   {
     "details": {
@@ -161,7 +172,8 @@
         "type": 0,
         "value": "Fighting Style feature"
       }
-    ]
+    ],
+    "id": "c23078e7-0d00-41bc-aea1-edba7bc76602"
   },
   {
     "details": {
@@ -176,7 +188,8 @@
         "type": 0,
         "value": "Fighting Style feature"
       }
-    ]
+    ],
+    "id": "d870455b-835e-490a-88f2-f377064dc66a"
   },
   {
     "details": {
@@ -191,7 +204,8 @@
         "type": 1,
         "value": "19"
       }
-    ]
+    ],
+    "id": "cf04ee02-6913-4ccb-a4cf-f160bf8e81e5"
   },
   {
     "details": {
@@ -210,7 +224,8 @@
         "type": 0,
         "value": "Spellcasting feature"
       }
-    ]
+    ],
+    "id": "89b69d9b-9bc4-45cb-9af9-f6209bbd1d05"
   },
   {
     "details": {
@@ -225,7 +240,8 @@
         "type": 1,
         "value": "19"
       }
-    ]
+    ],
+    "id": "6db560f7-e2e5-4bbc-85fd-d0b6ccafd1a2"
   },
   {
     "details": {
@@ -240,7 +256,8 @@
         "type": 1,
         "value": "19"
       }
-    ]
+    ],
+    "id": "cc01400d-55e1-4f00-96a8-990f91599d0e"
   },
   {
     "details": {
@@ -255,7 +272,8 @@
         "type": 1,
         "value": "19"
       }
-    ]
+    ],
+    "id": "85910dd5-44ac-4eed-9fa5-7ecf8505816a"
   },
   {
     "details": {
@@ -270,7 +288,8 @@
         "type": 1,
         "value": "19"
       }
-    ]
+    ],
+    "id": "ae1b4f15-faa1-4ed2-8fe1-9f3f5f78f520"
   },
   {
     "details": {
@@ -285,6 +304,7 @@
         "type": 1,
         "value": "19"
       }
-    ]
+    ],
+    "id": "f0f18ad7-9d09-477a-9b77-b6853c8a2d65"
   }
 ]

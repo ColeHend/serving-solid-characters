@@ -1,4 +1,4 @@
-import { WeaponMastery } from "../../../../../models/data";
+import { WeaponMastery } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import SrdDB from "../../../utility/localDB/new/srdDB"; // assuming masteries live only in 2024 DB; keep single DB

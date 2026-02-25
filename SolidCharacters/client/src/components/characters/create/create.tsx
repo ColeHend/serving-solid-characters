@@ -90,6 +90,7 @@ const CharacterCreate: Component = () => {
     "backgrndItemChoice": [null, []],
     "classItemChoice": [null, []],
     "BackgrndFeat": ["", []],
+    "ArmorClass": [0, []],  
   }); // most important character data
 
   // data hooks

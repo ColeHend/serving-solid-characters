@@ -1,4 +1,4 @@
-import { Subrace } from "../../../../../models/data";
+import { Subrace } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import HombrewDB from "../../../utility/localDB/new/homebrewDB";

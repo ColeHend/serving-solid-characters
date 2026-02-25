@@ -1,4 +1,4 @@
-import { Subclass } from "../../../../../models/data";
+import { Subclass } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import SrdDB from "../../../utility/localDB/new/srdDB";

@@ -1,5 +1,5 @@
 import { Character } from "../../../../../models/character.model";
-import { Class5E, Subclass, Race, Background, Item, MagicItem, Feat, Spell, WeaponMastery, Subrace } from "../../../../../models/data";
+import { Class5E, Subclass, Race, Background, Item, MagicItem, Feat, Spell, WeaponMastery, Subrace } from "../../../../../models/generated";
 import Dexie from "dexie";
 
 export class LocalDB extends Dexie {

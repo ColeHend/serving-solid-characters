@@ -1,4 +1,5 @@
 import { Stats } from "../shared";
+import { MadFeature } from "../shared/customHooks/mads/madModels";
 import { FeatureDetail } from "./data";
 
 export class Character {
@@ -12,6 +13,8 @@ export class Character {
     species: "",
     features: []
   }
+  public ArmorClass: number = 0;
+  public Speed: number = 0;
   public className: string = '';
   public subclass: string[] = [];
   public background: string = '';
@@ -21,6 +24,10 @@ export class Character {
     skills: {},
     other: {}
   };
+  public savingThrows: CharacterSavingThrow[] = [];
+  public resistances: DamageAffinity[] = [];
+  public vulnerabilities: DamageAffinity[] = [];
+  public immunities: DamageAffinity[] = [];
   public languages: string[] = [];
   public health: CharacterHealth = {
     max: 0,
@@ -97,6 +104,18 @@ export interface CharacterCurrency {
   sliverPieces: number;
   copperPieces: number;
 }
+
+export interface DamageAffinity {
+  type: string;
+  value: boolean;
+}
+
+export interface CharacterSavingThrow {
+  stat: keyof Stats;
+  proficient: boolean;
+}
+
+// -- Character Form Models --
 
 type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"> 
 
