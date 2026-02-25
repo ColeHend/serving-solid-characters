@@ -38,6 +38,7 @@ builder.Services.AddTransient<Open5eRepository>();
 builder.Services.AddTransient<Closed5eRepository>();
 builder.Services.AddSingleton<IRunOnStartup, TypeGenStartupService>();
 builder.Services.AddScoped<IRunOnStartup, SpellSyncStartupService>();
+builder.Services.AddScoped<IRunOnStartup, SrdIdNormalizationStartupService>();
 builder.Services.AddHostedService<StartupRunnerHostedService>();
 
 // ----- Add Database Stuff ----
@@ -254,11 +255,16 @@ app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     Console.WriteLine("[spa] Using Vite dev server proxy (https://localhost:3000)");
-    app.UseSpa(spa =>
-    {
-        spa.Options.SourcePath = "client";
-        spa.UseProxyToSpaDevelopmentServer("https://localhost:3000");
-    });
+    app.UseWhen(
+        ctx => !ctx.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase),
+        spaApp =>
+        {
+            spaApp.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "client";
+                spa.UseProxyToSpaDevelopmentServer("https://localhost:3000");
+            });
+        });
 }
 else
 {
