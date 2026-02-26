@@ -1,6 +1,6 @@
 import { Accessor, Component, createMemo, createSignal, For, Setter, Show, useContext } from "solid-js";
 // import { Race } from "../../../../models";
-import { AbilityScores, PrerequisiteType, Race } from "../../../../models/data";
+import { AbilityScores, PrerequisiteType, Race } from "../../../../models/generated";
 import styles from "./raceView.module.scss";
 import { SharedHookContext } from "../../../../components/rootApp";
 import { Modal, TabBar, TextArea } from "coles-solid-library";

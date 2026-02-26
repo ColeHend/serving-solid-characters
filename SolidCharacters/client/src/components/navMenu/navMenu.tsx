@@ -7,6 +7,12 @@ import SettingsPopup from "./settingsPopup";
 import styles from "./navMenu.module.scss";
 import { Button, Menu, MenuItem, Modal, MenuDropdown, Icon } from "coles-solid-library";
 
+/* 
+
+THIS IS DEPRECATED NOW. MUST DELETE!!!
+
+*/
+
 interface Props {
     userStyle: Accessor<Style>,
     defaultShowList: Accessor<boolean>,

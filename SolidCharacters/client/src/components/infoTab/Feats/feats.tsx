@@ -18,7 +18,7 @@ import { homebrewManager, Paginator } from "../../../shared";
 import { useSearchParams } from "@solidjs/router";
 import { FeatMenu } from "./featMenu/featMenu";
 import { useDnDFeats } from "../../../shared/customHooks/dndInfo/info/all/feats";
-import { Feat } from "../../../models/data";
+import { Feat } from "../../../models/generated";
 import FeatView from "../../../shared/components/modals/featModal/featView";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import styles from "./feats.module.scss";

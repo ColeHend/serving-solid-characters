@@ -1,6 +1,7 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, Show } from "solid-js";
 import style from "./amorView.module.scss";
-import { Item, ItemType } from "../../../../../models/data";
+import { Item, ItemType } from "../../../../../models/generated";
+import { srdItem, ItemProperties } from "../../../../../models/data/generated";
 import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import { useSearchParams } from "@solidjs/router";
 import { costToCopper } from "../../item";
@@ -10,7 +11,7 @@ import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/Ite
 import { ItemsMenu } from "../itemsMenu/itemsMenu";
 
 interface viewProps {
-    items: Accessor<Item[]>;
+    items: Accessor<srdItem[]>;
 }
 
 export const ArmorView:Component<viewProps> = (props) => {
@@ -155,7 +156,7 @@ export const ArmorView:Component<viewProps> = (props) => {
                         <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                     </Show>
                     </Header>
-                    <Cell<Item>>
+                    <Cell<srdItem>>
                     {(item)=><span>
                         {item.properties?.AC}
                     </span>}
@@ -169,7 +170,7 @@ export const ArmorView:Component<viewProps> = (props) => {
                         <span>{ currentSort().isAsc ? " ▲" : " ▼"}</span>
                     </Show>
                     </Header>
-                    <Cell<Item>>
+                    <Cell<srdItem>>
                     {(item)=><span>
                         {(item.cost)}
                     </span>}
@@ -178,7 +179,7 @@ export const ArmorView:Component<viewProps> = (props) => {
 
                 <Column name="menu">
                   <Header><></></Header>
-                  <Cell<Item> onClick={(e)=>e.stopPropagation()}>
+                  <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
                     {(item)=><ItemsMenu item={item} />}
                   </Cell>
                 </Column>

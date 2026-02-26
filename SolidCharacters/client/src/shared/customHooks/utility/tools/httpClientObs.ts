@@ -1,4 +1,3 @@
-import { o } from '@vite-pwa/assets-generator/shared/assets-generator.5e51fd40';
 import { Observable } from 'rxjs';
 import { Accessor, createSignal } from 'solid-js';
 

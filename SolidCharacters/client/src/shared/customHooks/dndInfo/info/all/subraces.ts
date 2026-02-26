@@ -1,6 +1,6 @@
 import { useGetSrdSubraces } from "../srd/subraces";
 import { useGetHombrewSubraces } from "../homebrew/subraces";
-import { Subrace } from "../../../../../models/data";
+import { Subrace } from "../../../../../models/generated";
 import { Accessor, createMemo } from "solid-js";
 import { getUserSettings } from "../../../userSettings";
 

@@ -1,7 +1,7 @@
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { Component, createSignal } from "solid-js";
-import { Background } from "../../../../models/data";
+import { Background } from "../../../../models/generated";
 import { homebrewManager } from "../../../../shared";
 
 interface menuProps {

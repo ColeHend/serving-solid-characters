@@ -8,7 +8,7 @@ import {
   Show,
 } from "solid-js";
 import FeatureTable from "./featureTable/featureTable";
-import { Class5E, Subclass } from "../../../../models/data";
+import { Class5E, Subclass } from "../../../../models/generated";
 import getUserSettings from "../../../customHooks/userSettings";
 import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";

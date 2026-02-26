@@ -24,8 +24,8 @@ export interface MadFeature {
 }
 
 export enum MadType {
-    // changes on the character sheet
+    /** changes on the character sheet */ 
     Character = "character",
-    // more detailed information about the feat/feature like numberOFUses, recharge info, etc
+    /** more detailed information about the feat/feature like numberOFUses, recharge info, etc */ 
     Info = "info"
 }

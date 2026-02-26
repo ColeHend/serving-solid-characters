@@ -1,8 +1,9 @@
-import { CasterType, FeatureDetail, Spellcasting, StartingEquipment, Subclass, Class5E, Proficiencies } from "../../../models/data";
+import { CasterType, FeatureDetail, Spellcasting, StartingEquipment, Subclass, Class5E, Proficiencies, SpellKnownType } from "../../../models/generated";
 import { of, forkJoin, Observable } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
 import HttpClient$ from "../utility/tools/httpClientObs";
+import { createNewId } from "../utility/tools/idGen";
 /* ------------------------------------------------------------------
    Helper types for the remote API
 ------------------------------------------------------------------ */
@@ -81,15 +82,16 @@ function fetchClassDetail$(classIndex: string): Observable<Class5E> {
         // Combine ────────────────────────
         return forkJoin({ spellcasting$, startingEq$, profDetails$, features$, subclasses$ }).pipe(
           map(({ spellcasting$, startingEq$, profDetails$, features$, subclasses$ }) => ({
-            id: -1,                                 // API lacks a numeric id
+            id: createNewId(), // do i need to create a new id here?
             name: cls.name,
-            hit_die: String(cls.hit_die),
-            primary_ability: '',                    // not in API
-            saving_throws: cls.saving_throws.map((st) => st.name),
-            starting_equipment: startingEq$ as StartingEquipment[],
+            hitDie: String(cls.hit_die),
+            primaryAbility: '',                    // not in API
+            savingThrows: cls.saving_throws.map((st) => st.name),
+            startingEquipment: startingEq$ as StartingEquipment[],
             proficiencies: mapProficienciesArray(profDetails$),
             spellcasting: spellcasting$ ? mapSpellcasting(spellcasting$) : undefined,
             features: features$,
+            startChoices: {},
             choices: {},                            // could be enriched further
             // subclasses added for caller convenience
             // (not in original interface but harmless)
@@ -126,9 +128,9 @@ function mapSpellcasting(api: any): Spellcasting {
       slots: {},                    // D&D 5e API doesn’t expose slot tables per class
       casterType: CasterType.Full,  // crude default
     },
-    known_type: 'number',
-    spells_known: {},
-    learned_spells: {},
+    knownType: SpellKnownType.Number,
+    spellsKnown: {},
+    learnedSpells: {},
   };
 }
 
@@ -185,8 +187,9 @@ function fetchSubclassesForClass$(refs: APIReference[]): Observable<Subclass[]> 
             : of({ subDetail, features: {} }),
         ),
         map(({ subDetail, features }) => ({
+          id: createNewId(), // do i need to create a new id here?
           name: subDetail.name,
-          parent_class: subDetail.class?.name || '',
+          parentClass: subDetail.class?.name || '',
           description: (subDetail.desc as string[])?.join('\n') || '',
           features,
         })),

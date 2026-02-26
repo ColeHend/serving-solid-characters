@@ -1,5 +1,3 @@
-import { Style } from '@react-pdf/types'
-
 export interface TextSpots {
     [key: string]: {
         x: string,
@@ -7,6 +5,6 @@ export interface TextSpots {
         page: number,
         width: string
         text: string,
-        style?: Style
+        style?: any
     }
 }

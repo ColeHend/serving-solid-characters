@@ -5,9 +5,7 @@ import {Button,Input,ExpansionPanel,Modal, Checkbox} from "coles-solid-library";
 import { Trade } from "../../../models/trade.model";
 import { createStore } from "solid-js/store";
 import { downloadObjectAsJson } from "../../../shared/customHooks/utility/tools/downloadObjectAsJson";
-import { Spell } from "../../../models";
-import { Background, Class5E, Feat, Item, Race } from "../../../models/data";
-import { Character } from "../../../models/character.model";
+import { Background, Class5E, Feat, Item, Race } from "../../../models/generated";
 
 const Exporting:Component = () => {
 

@@ -9,12 +9,13 @@ import {
 } from "solid-js";
 import { useSearchParams } from "@solidjs/router";
 import { Body, Carousel, CarouselElement } from "coles-solid-library";
-import { Item, ItemType } from "../../../models/data";
+import { Item, ItemType } from "../../../models/generated";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { ItemsView } from "./parts/items/itemsView";
 import { WeaponsView } from "./parts/weapon/weaponView";
 import { ArmorView } from "./parts/armor/armorView";
 import styles from "./item.module.scss";
+import { srdItem } from "../../../models/data/generated";
 
 // const ItemsView = lazy(() => import("./parts/items/itemsView").then(mod => ({ default: mod.ItemsView })));
 // const WeaponsView = lazy(() => import("./parts/weapon/weaponView").then(mod => ({ default: mod.WeaponsView })));
@@ -49,11 +50,11 @@ const ItemsViewTab:Component = () => {
   const [searchParam,setSearchParam] = useSearchParams();
   
   // items sorted by equipment Category
-  const srdItems = createMemo<Item[]>(() => SrdItems().filter(item => item.type === ItemType.Item));
-  const srdArmors = createMemo<Item[]>(() => SrdItems().filter(item => item.type === ItemType.Armor));
-  const srdWeapons = createMemo<Item[]>(() => SrdItems().filter(item => item.type === ItemType.Weapon));
-  const srdTools = createMemo<Item[]>(() => SrdItems().filter(item => item.type === ItemType.Tool));
-  const srdEquipment = createMemo<Item[]>(() => [...srdItems(),...srdTools()]);
+  const srdItems = createMemo<srdItem[]>(() => SrdItems().filter(item => item.type === ItemType.Item));
+  const srdArmors = createMemo<srdItem[]>(() => SrdItems().filter(item => item.type === ItemType.Armor));
+  const srdWeapons = createMemo<srdItem[]>(() => SrdItems().filter(item => item.type === ItemType.Weapon));
+  const srdTools = createMemo<srdItem[]>(() => SrdItems().filter(item => item.type === ItemType.Tool));
+  const srdEquipment = createMemo<srdItem[]>(() => [...srdItems(),...srdTools()]);
 
   const elementMemo = createMemo<CarouselElement[]>(()=>([
     {name: "Equipment", element: <ItemsView items={srdEquipment} /> },

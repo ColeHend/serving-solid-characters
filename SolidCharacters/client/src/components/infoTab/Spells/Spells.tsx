@@ -18,7 +18,7 @@ import { characterManager, Clone, homebrewManager } from "../../../shared";
 import { Body, Table, Chip, Icon, Column, Cell, Header,Menu, Row } from "coles-solid-library";
 import { SpellMenu } from "./spellMenu/spellMenu";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
-import { Spell } from "../../../models";
+import { Spell } from "../../../models/generated";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 
 

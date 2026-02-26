@@ -8,7 +8,8 @@ import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option, Input, FormField, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, ExpansionPanel, Icon } from "coles-solid-library";
 import { Character, CharacterGear, CharacterSpell } from "../../../models/character.model";
-import { Item, Spell } from "../../../models";
+import { Item, Spell } from "../../../models/generated";
+import { srdItem } from "../../../models/data/generated";
 // import { useGetItems } from "../../../shared";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
@@ -396,15 +397,15 @@ const CharacterView: Component = () => {
                     <Table data={()=>getCurrentItems(currentViewedItems())} columns={["name","desc", "cost"]}>
                       <Column name="name">
                         <Header>Item</Header>
-                        <Cell<Item>>{(item) => item.name}</Cell>
+                        <Cell<srdItem>>{(item) => item.name}</Cell>
                       </Column>
                       <Column name="desc">
                         <Header>Tags</Header>
-                        <Cell<Item>>{(item) => item.tags?.join(', ') || "-"}</Cell>
+                        <Cell<srdItem>>{(item) => item.properties?.[0]}</Cell>
                       </Column>
                       <Column name="cost">
                         <Header>Cost</Header>
-                        <Cell<Item>>{(item) => item.cost ? `${item.cost.quantity} ${item.cost.unit}` : "-"}</Cell>
+                        <Cell<srdItem>>{(item) => item.cost}</Cell>
                       </Column>
                     </Table>  
                   </div>

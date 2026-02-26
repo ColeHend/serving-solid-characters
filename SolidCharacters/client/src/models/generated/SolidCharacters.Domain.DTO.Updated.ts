@@ -99,7 +99,8 @@ export enum ItemType {
   Weapon = 0,
   Armor = 1,
   Tool = 2,
-  Item = 3
+  Item = 3,
+  // Accessory = 4,
 }
 
 export interface MagicItem {
@@ -239,12 +240,6 @@ export interface Subclass {
   features: Record<number, FeatureDetail[]>;
   choices?: Choices;
   spellcasting?: Spellcasting;
-
-  /**
-   * Internal persistence key combining parent class + name (lowercased) to guarantee uniqueness.
-   * Added in DB schema v2. Not part of exported payloads.
-   */
-  storage_key?: string;
 }
 
 export interface Subrace extends Race {

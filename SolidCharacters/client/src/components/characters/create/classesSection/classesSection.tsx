@@ -1,7 +1,7 @@
 import { Button, Select, Option, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Chipbar, ChipType } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { Class5E, Spell } from "../../../../models/data";
+import { Class5E, Spell } from "../../../../models/generated";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import styles from "./classesSection.module.scss";
 import { AddClass } from "./AddClass/AddClass";
@@ -70,10 +70,10 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     name: "",
     description: "",
     duration: "",
-    is_concentration: false,
+    concentration: false,
     level: "0",
     range: "",
-    is_ritual: false,
+    ritual: false,
     school: "",
     castingTime: "",
     damageType: "",
@@ -82,7 +82,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
     isMaterial: false,
     isSomatic: false,
     isVerbal: false,
-    materials_Needed: "",
+    materialsNeeded: "",
     higherLevel: "",
     classes: [],
     subClasses: []
@@ -463,10 +463,10 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                               {(spell)=><span>
                                   <div>{spell.name}</div>
                                   <div>
-                                      <Show when={spell.is_concentration}>
+                                      <Show when={spell.concentration}>
                                           <span>concentration</span>
                                       </Show>
-                                      <Show when={spell.is_ritual}>
+                                      <Show when={spell.ritual}>
                                           <span>ritual</span>
                                       </Show>
                                   </div>

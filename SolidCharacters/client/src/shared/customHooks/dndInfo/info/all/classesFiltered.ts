@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js";
 import { useDnDClasses } from "./classes";
 import { getUserSettings } from "../../../userSettings";
-import type { Class5E } from "../../../../../models/data";
+import type { Class5E } from "../../../../../models/generated";
 
 type Year = '2014' | '2024';
 interface ClassWithEdition extends Class5E { edition: Year }

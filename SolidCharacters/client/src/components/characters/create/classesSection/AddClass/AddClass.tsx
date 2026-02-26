@@ -1,6 +1,6 @@
 import { Cell, Column, FormGroup, Header, Icon, Modal, Row, Table } from "coles-solid-library";
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
-import { Class5E } from "../../../../../models/data";
+import { Class5E } from "../../../../../models/generated";
 import styles from "./AddClass.module.scss";
 import { CharacterForm } from "../../../../../models/character.model";
 import { getUserSettings, mobileCheck } from "../../../../../shared";

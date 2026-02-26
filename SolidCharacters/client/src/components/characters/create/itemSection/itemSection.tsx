@@ -1,6 +1,6 @@
 import { Accessor, Component, createMemo, For, Setter, Show, Switch, Match, createSignal, createEffect } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { Background, ChoiceDetail, Class5E, Item, Race } from "../../../../models/data";
+import { Background, ChoiceDetail, Class5E, Item, Race } from "../../../../models/generated";
 import { Button, Checkbox, Chip, FormField, FormGroup, Input, RadioGroup } from "coles-solid-library";
 import styles from "./itemSection.module.scss";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";

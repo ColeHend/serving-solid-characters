@@ -1,6 +1,6 @@
 import { Accessor, Component, createMemo, createSignal, For, onMount, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { Background, FeatureDetail } from "../../../../models/data";
+import { Background, FeatureDetail } from "../../../../models/generated";
 import { Markdown } from "../../../../shared";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import styles from "./backgroundSection.module.scss";

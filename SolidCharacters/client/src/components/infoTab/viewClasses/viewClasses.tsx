@@ -22,7 +22,7 @@ import {
   Table 
 } from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
-import { Class5E, Subclass } from "../../../models/data";
+import { Class5E, Subclass } from "../../../models/generated";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
 import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/subclasses";
 
