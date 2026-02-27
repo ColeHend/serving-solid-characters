@@ -40,7 +40,9 @@ export interface ChoiceDetail {
 }
 
 export interface Choices extends Record<string, ChoiceDetail> {
+  [key: string]: ChoiceDetail;
 }
+
 
 export interface Class5E {
   id: string;
@@ -99,8 +101,7 @@ export enum ItemType {
   Weapon = 0,
   Armor = 1,
   Tool = 2,
-  Item = 3,
-  // Accessory = 4,
+  Item = 3
 }
 
 export interface MagicItem {
