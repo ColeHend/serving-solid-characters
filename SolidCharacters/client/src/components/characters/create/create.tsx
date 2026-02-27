@@ -91,7 +91,7 @@ const CharacterCreate: Component = () => {
     "classItemChoice": [null, []],
     "BackgrndFeat": ["", []],
     "ArmorClass": [0, []], 
-    "Speed": [0, []]
+    "Speed": [0, []] 
   }); // most important character data
 
   // data hooks

@@ -67,7 +67,8 @@ export const SideMenu:Component<MenuProps> = (props) => {
           isOpen: false,
           children: [
             { Name: "View", Link: "/characters/view", isOpen: false },
-            { Name: "Create", Link: "/characters/create", isOpen: false }
+            { Name: "Create", Link: "/characters/create", isOpen: false },
+            // { Name: "PDF Create", Link: "/characters/pdfCreate", isOpen: false}
           ]
         }, 
         {

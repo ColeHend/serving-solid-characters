@@ -1,13 +1,13 @@
 /* @refresh reload */
-import { effect, render } from "solid-js/web";
+import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
-import { lazy, Show, ErrorBoundary } from "solid-js";
+import { Show, ErrorBoundary } from "solid-js";
 import "./index.scss";
 import App from "./App";
 import 'solid-devtools';
-const Characters = lazy(() => import("./components/characters/characters"));
-const CharacterCreate = lazy(() => import("./components/characters/create/create"));
-const CharacterView = lazy(() => import("./components/characters/view/view"));
+// const Characters = lazy(() => import("./components/characters/characters"));
+// const CharacterCreate = lazy(() => import("./components/characters/create/create"));
+// const CharacterView = lazy(() => import("./components/characters/view/view"));
 import ReloadPrompt from "./ReloadPrompt";
 import { registerServiceWorker, needRefresh, offlineReady, swVersion, swBuildTime, applyUpdateAndReload } from './pwa/register';
 import Homebrew from "./components/homebrew/homebrew";
@@ -28,6 +28,10 @@ import RootApp from "./components/rootApp";
 import ItemsViewTab from "./components/infoTab/items/item";
 import Subraces from "./components/homebrew/create/parts/subraces/subraces";
 import { aboutPage } from "./components/aboutPage/about";
+import Characters from "./components/characters/characters";
+import CharacterCreate from "./components/characters/create/create";
+import CharacterView from "./components/characters/view/view";
+import { CreateCharacterPDF } from "./components/characters/characterCreatePDF/characterCreatePDF";
 
 console.log("Application initializing...");
 
@@ -79,6 +83,7 @@ if (root) {
             <Route path="/" component={Characters} />
             <Route path="/view" component={CharacterView} />
             <Route path="/create" component={CharacterCreate} />
+            {/* <Route path="/pdfCreate" component={CreateCharacterPDF} /> */}
           </Route>
           <Route path="/info" >
             <Route path="/races" component={races} />
