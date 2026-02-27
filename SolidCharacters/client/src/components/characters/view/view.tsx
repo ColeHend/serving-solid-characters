@@ -6,9 +6,9 @@ import { effect } from "solid-js/web";
 import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-import { Body, Select, Option, Input, FormField, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, ExpansionPanel, Icon } from "coles-solid-library";
-import { Character, CharacterGear, CharacterSpell } from "../../../models/character.model";
-import { Item, Spell } from "../../../models/generated";
+import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, ExpansionPanel } from "coles-solid-library";
+import { Character } from "../../../models/character.model";
+import { Spell } from "../../../models/generated";
 import { srdItem } from "../../../models/data/generated";
 // import { useGetItems } from "../../../shared";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
@@ -18,8 +18,7 @@ import { characterManager, Clone } from "../../../shared";
 import { SpellTable } from "./SpellTable/SpellTable";
 
 const CharacterView: Component = () => {
-  // eslint-disable-next-line
-  const [userSettings, setUserSettings] = getUserSettings();
+  const [userSettings] = getUserSettings();
   const allSpells = useDnDSpells();
   const allItems = useDnDItems();
   const getKnownSpells = (character: Character) => {
@@ -47,7 +46,7 @@ const CharacterView: Component = () => {
     setShowSpellModal(true);
   }
 
-  const [actionList, setActionList] = createSignal<{name:string, desc:string;}[]>([
+  const [actionList] = createSignal<{name:string, desc:string;}[]>([
     { name: "Attack", desc: "Make a melee or ranged attack." },
     { name: "Magic", desc: "Cast a spell." },
     { name: "Dash", desc: "Double your movement speed for the turn." },
@@ -59,12 +58,12 @@ const CharacterView: Component = () => {
     { name: "Search", desc: "Look for hidden objects or creatures." },
     { name: "Use an Object", desc: "Interact with an object." }
   ]);
-  const [bonusActionList, setBonusActionList] = createSignal<{name:string, desc:string;}[]>([
+  const [bonusActionList] = createSignal<{name:string, desc:string;}[]>([
     { name: "Second Wind", desc: "Regain hit points." },
     { name: "Rage", desc: "Enter a state of heightened combat prowess." },
     { name: "Healing Word", desc: "Heal an ally with a quick spell." }
   ]);
-  const [reactionList, setReactionList] = createSignal<{name:string, desc:string;}[]>([
+  const [reactionList] = createSignal<{name:string, desc:string;}[]>([
     { name: "Opportunity Attack", desc: "Make a melee attack against a creature that leaves your reach." },
     { name: "Shield", desc: "Cast the Shield spell in response to an attack." },
     { name: "Counterspell", desc: "Attempt to interrupt a spell being cast." },
@@ -87,7 +86,7 @@ const CharacterView: Component = () => {
   });
 
   type ActionRow = { name: string; range: string; damage: string };
-  const [actionTableData, setActionTableData] = createSignal<ActionRow[]>([
+  const [actionTableData] = createSignal<ActionRow[]>([
     { name: "Longsword", range: "Melee", damage: "1d8 slashing" },
     { name: "Shortbow", range: "Range 80/320", damage: "1d6 piercing" }
   ]);

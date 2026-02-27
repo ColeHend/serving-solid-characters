@@ -36,11 +36,11 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const srdSpells = useDnDSpells();
   const subclasses = useDnDSubclasses();
 
-  const group = props.formGroup; 
+  // const group = props.formGroup; 
 
   const [knownSpells, setKnownSpells] = props.knownSpells;
 
-  const [charStats, setCharStats] = props.stats;
+  const [charStats] = props.stats;
   
   const charSpells = createMemo(()=>knownSpells());
   
@@ -58,8 +58,8 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   // }>({ sortKey: "level", isAsc: true });
   const [showSpellModal,setShowSpellModal] = createSignal<boolean>(false);
   const [charSubclasses, setCharSubclasses] = props.currSubclasses;
-  const [charSkills,setCharSkills] = props.charSkills;
-  const [statMods, setStatMods] = props.modifyers;
+  // const [charSkills,setCharSkills] = props.charSkills;
+  const [statMods] = props.modifyers;
 
   const [skillChoice, setSkillChoice] = createSignal<string>("");
 

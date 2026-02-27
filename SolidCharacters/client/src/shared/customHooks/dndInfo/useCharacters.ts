@@ -198,32 +198,16 @@ class CharacterManager {
   }
 
   public deleteCharSpell(characterName: string,spellName: string) {
-    const character = this.getCharacter(characterName);
+    
+    // eslint-disable-next-line prefer-const
+    let character = this.getCharacter(characterName);
 
+    
     if (character) {
-      this.updateCharacter({
-        name: character.name,
-        ArmorClass: character.ArmorClass,
-        Speed: character.Speed,
-        features: character.features,
-        level: character.level,
-        levels: character.levels,
-        race: character.race,
-        className: character.className,
-        subclass: character.subclass,
-        background: character.background,
-        alignment: character.alignment,
-        proficiencies: character.proficiencies,
-        savingThrows: character.savingThrows,
-        resistances: character.resistances,
-        vulnerabilities: character.vulnerabilities,
-        immunities: character.immunities,
-        languages: character.languages,
-        health: character.health,
-        stats: character.stats,
-        items: character.items,
-        spells: character.spells.filter(s => s.name !== spellName)
-      })
+      character.spells = character.spells.filter(s => s.name !== spellName);
+      
+      this.updateCharacter(character);
+
       addSnackbar({
         message: `deleted ${spellName} from ${characterName}`,
         severity: "success"

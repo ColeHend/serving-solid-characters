@@ -2,11 +2,10 @@ import { RouteSectionProps, useNavigate } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
 import { getUserSettings, useInjectServices } from "../shared";
-import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For, Show } from "solid-js";
+import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
-import NavMenu from "./navMenu/navMenu";
 import { addTheme, Button, Container, SnackbarController } from "coles-solid-library";
 import { UserSettings } from "../models/userSettings";
 import { useDnDSpells } from "../shared/customHooks/dndInfo/info/all/spells";
@@ -143,7 +142,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           <Container theme="subheader"   class={`${styles.subheader}`}>
             <span></span> {/* empty span to push buttons over */}
             <For each={quickLinks()}>
-              {(quickLink,i)=><>
+              {(quickLink)=><>
                 <Button transparent onClick={()=>navigate(quickLink.link)}>
                   {quickLink.name}
                   
