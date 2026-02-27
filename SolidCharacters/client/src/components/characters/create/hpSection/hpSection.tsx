@@ -22,6 +22,8 @@ export const HitPointSection:Component<sectionProps> = (props) => {
     const maxHP = createMemo(()=>props.form.get().maxHP);
     const [classLevels,setClassLevels] = props.classLevels;
 
+
+
     const getHitDie = (name?: string) => {
         const searchTarget = name !== undefined ? name : currentClass();
 
@@ -97,7 +99,11 @@ export const HitPointSection:Component<sectionProps> = (props) => {
         </div>
         <div class={`${styles.hpInput}`}>
             <FormField name="Max Hit Points" formName="maxHP">
-                <Input type="number" min={1} />
+                <Input onInput={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation()
+                    props.form.set("maxHP", +e.currentTarget.value)
+                }} type="number" min={1} />
             </FormField>
             
             <FormField name="Current Hit Points" formName="currentHP">

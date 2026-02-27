@@ -153,8 +153,8 @@ const CharacterCreate: Component = () => {
   const selectedClass = createMemo(()=>group.get().className);
   const selectedSubclass =createMemo(()=>group.get().subclass);
   const charBackground = createMemo(()=>group.get().background);
-  const charAlignment = createMemo(()=>group.get().alignment);
-  const maxHP = createMemo(()=>group.get().maxHP);
+  // const charAlignment = createMemo(()=>group.get().alignment);
+  // const maxHP = createMemo(()=>group.get().maxHP);
 
   // memos
 
@@ -268,7 +268,8 @@ const CharacterCreate: Component = () => {
       wis: getAbilityScore("wis") + getAbilityMod("wis"),
       cha: getAbilityScore("cha") + getAbilityMod("cha"),
     }
-
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const adapted = toCharacter5e(fullData ,charClasses ,[classLevels,setClassLevels] ,selectedRace as any ,stats,knownSpells, inventory ,equipped ,attuned)  
 
     const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
@@ -332,7 +333,7 @@ const CharacterCreate: Component = () => {
       // class levels
       const classes = character.className.split(",");
       
-      classes.forEach((class5e,i)=>{
+      classes.forEach((class5e)=>{
         const levels = character.levels.filter(l => l.class === class5e);
         setCharClasses(old => [...old, class5e]);
         setClassLevels(old => ({...old,[class5e]: levels.length}));
@@ -559,6 +560,7 @@ const CharacterCreate: Component = () => {
             attuned={[attuned, setAttuned]}
             allItems={items}
             class5e={selectedClass}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             background={selectedBackground as any}
             form={group}
             exist={exist}

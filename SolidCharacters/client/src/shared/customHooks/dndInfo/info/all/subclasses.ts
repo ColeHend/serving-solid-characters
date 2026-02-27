@@ -8,7 +8,7 @@ type settings = {
   overrideVersion: string;
 }
 
-export function useDnDSubclasses(settings: settings): Accessor<Subclass[]> {
+export function useDnDSubclasses(settings?: settings): Accessor<Subclass[]> {
   const [userSettings] = getUserSettings();
   const homebrew = useGetHombrewSubclasses();
   

@@ -1,4 +1,4 @@
-import { Body, Container, Icon } from "coles-solid-library";
+import { Body } from "coles-solid-library";
 import { Component, onCleanup, onMount } from "solid-js";
 import styles from "./about.module.scss";
 

@@ -2,7 +2,7 @@ import { Component, For, createMemo, createSignal, onCleanup, onMount } from "so
 import styles from "./characters.module.scss";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
-import { Body, Button, Cell, Column, Header, Icon, Menu, MenuItem, Row, Table } from "coles-solid-library";
+import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import { Character } from "../../models/character.model";
 import { characterManager } from "../../shared";
 import { useNavigate } from "@solidjs/router";
@@ -10,15 +10,14 @@ import { CharacterMenu } from "./characterMenu/characterMenu";
 
 
 const Characters: Component = () => {
-  // eslint-disable-next-line
-  const [userSettings, setUserSettings] = getUserSettings();
+  const [userSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
 
   const navigate = useNavigate();
    
   const [characters, setCharacters] = createSignal(characterManager.characters());
-  const [showMenu,setShowMenu] = createSignal<boolean>(false);
-  const [anchorEle,setAnchorEle] = createSignal<HTMLElement | undefined>();
+  // const [showMenu,setShowMenu] = createSignal<boolean>(false);
+  // const [anchorEle,setAnchorEle] = createSignal<HTMLElement | undefined>();
 
   onMount(()=>{
     setCharacters(characterManager.characters());

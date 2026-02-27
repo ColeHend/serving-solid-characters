@@ -2,9 +2,6 @@ import { Accessor, createMemo, Setter } from "solid-js";
 import { CharacterForm, Character, CharacterSpell, CharacterLevel, CharacterRace } from "../../../models/character.model";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
 import { Class5E, FeatureDetail, Race } from "../../../models/generated";
-import { charClasses } from "./classesSection/classesSection";
-import { Background } from "../../../models";
-import { group } from "console";
 import { useDnDFeats } from "../../../shared/customHooks/dndInfo/info/all/feats";
 
 type stats = {
@@ -19,7 +16,7 @@ type stats = {
 export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]>, classLevel: [Accessor<Record<string, number>>,Setter<Record<string, number>>],currRace:Accessor<Race>,stats: stats,knownSpells: Accessor<string[]>,inventory: Accessor<string[]>, equipped: Accessor<string[]>, attuned: Accessor<string[]>) {
     const feats = useDnDFeats();
 
-    const [classLevels,setClassLevels] = classLevel;
+    const [classLevels] = classLevel;
     const classes = useDnDClasses();
 
     const getCharacterLevel = (className: string): number => {
@@ -27,9 +24,9 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
       return classLevels()[className] ?? 0;
     }
 
-    const setCharacterLevel = (className: string, level: number): void => {
-        setClassLevels(old => ({...old,[className]: level}));
-    }
+    // const setCharacterLevel = (className: string, level: number): void => {
+    //     setClassLevels(old => ({...old,[className]: level}));
+    // }
 
     const getClass = (className: string): Class5E => {
         return classes().find(c => c.name === className) ?? {} as Class5E;

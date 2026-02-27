@@ -36,11 +36,11 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   const srdSpells = useDnDSpells();
   const subclasses = useDnDSubclasses();
 
-  const group = createMemo(()=>props.formGroup); 
+  // const group = props.formGroup; 
 
   const [knownSpells, setKnownSpells] = props.knownSpells;
 
-  const [charStats, setCharStats] = props.stats;
+  const [charStats] = props.stats;
   
   const charSpells = createMemo(()=>knownSpells());
   
@@ -58,8 +58,8 @@ export const ClassesSection: Component<sectionProps> = (props) => {
   // }>({ sortKey: "level", isAsc: true });
   const [showSpellModal,setShowSpellModal] = createSignal<boolean>(false);
   const [charSubclasses, setCharSubclasses] = props.currSubclasses;
-  const [charSkills,setCharSkills] = props.charSkills;
-  const [statMods, setStatMods] = props.modifyers;
+  // const [charSkills,setCharSkills] = props.charSkills;
+  const [statMods] = props.modifyers;
 
   const [skillChoice, setSkillChoice] = createSignal<string>("");
 
@@ -193,7 +193,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
 
   }
 
-  const currentSubclass = createMemo(()=>group().get().subclass);
+  const currentSubclass = createMemo(()=>props.formGroup.get().subclass);
 
 
   // Class Info Getter Funcitions
@@ -292,76 +292,72 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                 </Show>
             } transparent>
               <div class={`${styles.classHeader}`}>
-                  <Select
-                    value={getCharacterLevel(charLevel)}
-                    defaultValue={1}
-                    onSelect={(value) =>
-                      setCharacterLevel(charLevel, value)
-                    }
-                    class={`${styles.levelSelect}`}
-                  >
-                    <For each={levels()}>
-                      {(level) => <Option value={level}>{level}</Option>}
-                    </For>
-                  </Select>
+                <Select
+                  value={getCharacterLevel(charLevel)}
+                  onSelect={(value) =>
+                    setCharacterLevel(charLevel, value)
+                  }
+                  class={`${styles.levelSelect}`}
+                >
+                  <For each={levels()}>
+                    {(level) => <Option value={level}>{level}</Option>}
+                  </For>
+                </Select>
               </div>
 
               <div>
-                <div>
-                  <strong>Primary <Show fallback={<>Ability:</>} when={primaryAbility(charLevel).split(",").length > 1}>Abilities:</Show>  </strong>
-                  {primaryAbility(charLevel)}
-                </div>
-
-                <div>
-                  <strong>Saving Throws: </strong>
-                  {savingThrows(charLevel).join(", ")}
-                </div>
-
-                <h3>Proficiencies</h3>
-                    
-                <Show when={weaponProfs(charLevel).length > 0} fallback={
-                  <div>
-                      <strong>Weapons: </strong>
-                      None
-                  </div>
-                }>
-                  <div>
-                      <strong>Weapons: </strong>
-                      {weaponProfs(charLevel).join(", ")}
-                  </div>
-                </Show>
-
-                <Show when={armorProfs(charLevel).length > 0} fallback={<div>
-                  <strong>Armor: </strong>
-                  None
-                </div>}>
-                  <div>
-                    <strong>Armor: </strong>
-                    {armorProfs(charLevel).join(", ")}
-                  </div>
-                </Show>
-
-                <Show when={toolsProfs(charLevel).length > 0} fallback={<div>
-                  <strong>Tools: </strong>
-                  None
-                </div>}>
-                  <div>
-                    <strong>Tools: </strong>
-                    {toolsProfs(charLevel).join(", ")}
-                  </div>
-                </Show>
-
-                <Show when={skillProfs(charLevel).length > 0} fallback={<div>
-                  <strong>Skills: </strong>
-                  None
-                </div>}>
-                  <div>
-                    <strong>Skills: </strong>
-                    {skillProfs(charLevel).join(", ")}
-                  </div>
-                </Show>
-
+                <strong>Primary <Show fallback={<>Ability:</>} when={primaryAbility(charLevel).split(",").length > 1}>Abilities:</Show>  </strong>
+                {primaryAbility(charLevel)}
               </div>
+
+              <div>
+                <strong>Saving Throws: </strong>
+                {savingThrows(charLevel).join(", ")}
+              </div>
+
+              <h3>Proficiencies</h3>
+                  
+              <Show when={weaponProfs(charLevel).length > 0} fallback={
+                <div>
+                  <strong>Weapons: </strong>
+                  None
+                </div>
+              }>
+                <div>
+                  <strong>Weapons: </strong>
+                  {weaponProfs(charLevel).join(", ")}
+                </div>
+              </Show>
+
+              <Show when={armorProfs(charLevel).length > 0} fallback={<div>
+                <strong>Armor: </strong>
+                None
+              </div>}>
+                <div>
+                  <strong>Armor: </strong>
+                  {armorProfs(charLevel).join(", ")}
+                </div>
+              </Show>
+
+              <Show when={toolsProfs(charLevel).length > 0} fallback={<div>
+                <strong>Tools: </strong>
+                None
+              </div>}>
+                <div>
+                  <strong>Tools: </strong>
+                  {toolsProfs(charLevel).join(", ")}
+                </div>
+              </Show>
+
+              <Show when={skillProfs(charLevel).length > 0} fallback={<div>
+                <strong>Skills: </strong>
+                None
+              </div>}>
+                <div>
+                  <strong>Skills: </strong>
+                  {skillProfs(charLevel).join(", ")}
+                </div>
+              </Show>
 
               <Show when={!exist()}>
                 <div>
@@ -396,7 +392,6 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                     }}>Add Skill</Button>
                   </div>
 
-
                   <Chipbar chips={skillChipJar} setChips={setSkillChipJar} />
 
                 </div>
@@ -423,8 +418,6 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                             >
                               {feature.description}
 
-                              {feature.metadata?.category}
-
                               <Show when={feature.name.includes(`Subclass`)}>
                                 <FormField name="subclass" formName={`${charLevel}`}>
                                   <Select
@@ -439,7 +432,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                                   >
                                     <Option value="">-</Option>
                                     <For each={getSubclasses(charLevel)}>
-                                      {(subclass, i) => <Option value={subclass.name}>{subclass.name}</Option>}
+                                      {(subclass) => <Option value={subclass.name}>{subclass.name}</Option>}
                                     </For>
                                   </Select>
                                 </FormField>
@@ -455,67 +448,63 @@ export const ClassesSection: Component<sectionProps> = (props) => {
               <Show when={getTab(charLevel) === 1}>
                 <div class={`${styles.learnSpellsTable}`}>
                   <Table data={filterdSpells(charLevel)} columns={["name","level","learnBtn"]}>
-                      <Column name="name">
-                          <Header>
-                              Name
-                          </Header>
-                          <Cell<Spell>>
-                              {(spell)=><span>
-                                  <div>{spell.name}</div>
-                                  <div>
-                                      <Show when={spell.concentration}>
-                                          <span>concentration</span>
-                                      </Show>
-                                      <Show when={spell.ritual}>
-                                          <span>ritual</span>
-                                      </Show>
-                                  </div>
+                    <Column name="name">
+                      <Header>
+                        Name
+                      </Header>
+                      <Cell<Spell>>
+                        {(spell)=><span>
+                          <div>{spell.name}</div>
+                          <div>
+                            <Show when={spell.concentration}>
+                              <span>concentration</span>
+                            </Show>
+                            <Show when={spell.ritual}>
+                              <span>ritual</span>
+                            </Show>
+                          </div>
+                        </span>}
+                      </Cell>
+                    </Column>
 
-                              </span>}
-                          </Cell>
-                      </Column>
+                    <Column name="level">
+                      <Header>
+                        Level
+                      </Header>
+                      <Cell<Spell>>
+                        {(spell)=><span>{spellLevel(+spell.level)}</span>}
+                      </Cell>
+                    </Column>
 
-                      <Column name="level">
-                          <Header>
-                          Level
-                          </Header>
-                          <Cell<Spell>>
-                              {(spell)=><span>
-                                  <span>{spellLevel(+spell.level)}</span>
-                              </span>}
-                          </Cell>
-                      </Column>
-
-                      <Column name="learnBtn">
-                        <Header><></></Header>
-                        <Cell<Spell> onClick={(e)=>e.stopPropagation()}>
-                          {(spell)=><span>
-                              <Show when={!isLearned(spell.name)}>
-                                  <Button class={`${styles.LearnBtn}`} onClick={()=>{
-                                      setKnownSpells(old=>[...old,spell.name])
-                                  }}>
-                                      <Icon name="add"/> Learn
-                                  </Button>
-                              </Show>
-                              <Show when={isLearned(spell.name)}>
-                                  <Button class={`${styles.LearnBtn}`} onClick={()=>{
-                                    setKnownSpells(old=>old.filter(s=>s !== spell.name));
-                                  }}>
-                                      <Icon name="remove" /> Delete
-                                  </Button>
-                              </Show>
-                          </span>}
-                        </Cell>
-                      </Column>
-                      
-                      <Row onClick={(e,spell)=>{
-                          setSelectedSpell(spell);
-                          setShowSpellModal(old => !old);
-                      }} />
+                    <Column name="learnBtn">
+                      <Header><></></Header>
+                      <Cell<Spell> onClick={(e)=>e.stopPropagation()}>
+                        {(spell)=><span>
+                          <Show when={!isLearned(spell.name)}>
+                            <Button class={`${styles.LearnBtn}`} onClick={()=>{
+                              setKnownSpells(old=>[...old,spell.name])
+                            }}>
+                              <Icon name="add"/> Learn
+                            </Button>
+                          </Show>
+                          <Show when={isLearned(spell.name)}>
+                            <Button class={`${styles.LearnBtn}`} onClick={()=>{
+                              setKnownSpells(old=>old.filter(s=>s !== spell.name));
+                            }}>
+                              <Icon name="remove" /> Delete
+                            </Button>
+                          </Show>
+                        </span>}
+                      </Cell>
+                    </Column>
+                    
+                    <Row onClick={(e,spell)=>{
+                      setSelectedSpell(spell);
+                      setShowSpellModal(old => !old);
+                    }} />
                   </Table>
                 </div>
               </Show>
-
 
               <Show when={showSpellModal()}>
                 <SpellModal 
