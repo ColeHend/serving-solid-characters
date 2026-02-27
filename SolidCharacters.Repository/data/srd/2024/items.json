@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "3ad8e069-a01f-4cb9-aa1a-55d6b171472b",
     "name": "Longsword",
     "desc": "A versatile, one-handed sword with a long blade, favored by knights and soldiers.",
     "type": 0,
@@ -8,12 +8,12 @@
     "cost": "15 gp",
     "properties": {
       "Damage": "1d8 slashing (Versatile 1d10)",
-  "Properties": "Versatile",
+      "Properties": "Versatile",
       "Mastery": "Sap (on hit, impose disadvantage on target’s next attack roll】"
     }
   },
   {
-    "id": 2,
+    "id": "7be135a4-b340-427b-8845-1568ba2d006f",
     "name": "Shortbow",
     "desc": "A smaller bow made of wood, easy to handle from horseback or in tight quarters.",
     "type": 0,
@@ -21,12 +21,12 @@
     "cost": "25 gp",
     "properties": {
       "Damage": "1d6 piercing",
-  "Properties": "Two-Handed, Ammunition (range 80/320)",
+      "Properties": "Two-Handed, Ammunition (range 80/320)",
       "Mastery": "Vex (on hit, gain advantage on next attack vs same target】"
     }
   },
   {
-    "id": 3,
+    "id": "792ece9d-c7f8-4285-bf03-709de2ade347",
     "name": "Leather Armor",
     "desc": "A jacket and leggings of toughened leather. Offers basic protection without hindering movement.",
     "type": 1,
@@ -39,7 +39,7 @@
     }
   },
   {
-    "id": 4,
+    "id": "55605f16-652d-4a97-a1be-0ffab11da9b4",
     "name": "Chain Mail",
     "desc": "Interlocking metal rings worn over padding. Protects well but is noisy and heavy.",
     "type": 1,
@@ -52,7 +52,7 @@
     }
   },
   {
-    "id": 5,
+    "id": "8337909e-bb7d-44ae-b18e-767c339290fb",
     "name": "Shield",
     "desc": "Wooden or metal handheld shield. Increases defense when wielded.",
     "type": 1,
@@ -65,7 +65,7 @@
     }
   },
   {
-    "id": 6,
+    "id": "6bcb4844-5249-4ca1-b674-9281e94395a9",
     "name": "Explorer’s Pack",
     "desc": "A backpack containing essential gear for exploration: a bedroll, mess kit, tinderbox, torches, rations, and waterskin, plus 50 feet of hempen rope strapped to the side.",
     "type": 3,
@@ -76,7 +76,7 @@
     }
   },
   {
-    "id": 7,
+    "id": "29a96fa3-2919-4e97-a1a1-95319c231729",
     "name": "Backpack",
     "desc": "A sturdy leather backpack with straps. It can hold up to 1 cubic foot/30 pounds of gear inside.",
     "type": 3,
@@ -87,7 +87,7 @@
     }
   },
   {
-    "id": 8,
+    "id": "8051bb96-64b0-4da6-bd03-690b7354715c",
     "name": "50 ft. Hempen Rope",
     "desc": "A 50-foot length of hempen rope. Useful for climbing, tying, or securing items.",
     "type": 3,
@@ -98,7 +98,7 @@
     }
   },
   {
-    "id": 9,
+    "id": "1d8baf2f-12b6-48b8-8b0a-d68e0139bd98",
     "name": "Torch",
     "desc": "A wooden torch wrapped in oil-soaked cloth. When lit, it burns for 1 hour, providing bright light in a 20-foot radius (and dim light 20 feet further).",
     "type": 3,
@@ -110,7 +110,7 @@
     }
   },
   {
-    "id": 10,
+    "id": "4574d77f-ee6d-41b7-b2ab-9fbfc58d8789",
     "name": "Rations (1 day)",
     "desc": "Dried foods suitable for travel: jerky, dried fruit, hardtack. One day's worth of sustenance for one person.",
     "type": 3,
@@ -121,7 +121,7 @@
     }
   },
   {
-    "id": 11,
+    "id": "5085ca08-ea52-4442-b096-aab099ad024c",
     "name": "Crowbar",
     "desc": "A metal bar with a curved, forked end. Grants leverage for prying objects open or breaking through barriers.",
     "type": 2,
@@ -132,7 +132,7 @@
     }
   },
   {
-    "id": 12,
+    "id": "fc806a87-2a44-4622-bf31-b8c7a2222bdf",
     "name": "Lantern, Hooded",
     "desc": "A hooded lantern that burns oil to produce light. You can lower the hood to dim the light.",
     "type": 3,
@@ -144,7 +144,7 @@
     }
   },
   {
-    "id": 13,
+    "id": "de3b1b82-1a77-42fb-90b6-a1a192cd83f1",
     "name": "Waterskin",
     "desc": "A sturdy leather pouch for carrying water (or other liquids). Can hold up to 4 pints of liquid.",
     "type": 3,

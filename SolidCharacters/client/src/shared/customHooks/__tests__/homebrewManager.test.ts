@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import homebrewManager from '../homebrewManager';
-import { Class5E, Item, Feat, Spell, Background, Race } from '../../../models/data';
-import { ItemType } from '../../../models/data/items';
+import { Class5E, Item, Feat, Spell, Background, Race, ClassStartChoices } from '../../../models/generated';
+import { ItemType } from '../../../models/generated';
+import { createNewId } from '../utility/tools/idGen';
 
 // Mock snackbar to avoid DOM side-effects
 vi.mock('../../components/Snackbar/snackbar', () => ({
@@ -18,27 +19,28 @@ describe('homebrewManager (5E internal types)', () => {
 
   function sampleClass(name = 'TestClass'): Class5E {
     return {
-      id: 0,
+      id: createNewId(),
       name,
-      hit_die: 'd8',
-      primary_ability: 'STR',
-      saving_throws: ['STR','CON'],
-      starting_equipment: [],
+      hitDie: 'd8',
+      primaryAbility: 'STR',
+      savingThrows: ['STR','CON'],
+      startingEquipment: [],
+      startChoices: {} as ClassStartChoices,
       proficiencies: { armor: [], weapons: [], tools: [], skills: [] },
     };
   }
 
-  function sampleItem(id = 1, name = 'Sword'): Item {
+  function sampleItem(id = createNewId(), name = 'Sword'): Item {
     return { id, name, desc: 'Sharp blade', type: ItemType.Weapon, weight: 3, cost: '10 gp', properties: {} };
   }
   function sampleFeat(name = 'Alert'): Feat {
     return { name, details: { name, description: 'Always ready' }, prerequisites: [] } as any;
   }
   function sampleSpell(name = 'Zap'): Spell {
-    return { id: name, name, description: 'Zaps a foe', duration: 'Instant', is_concentration: false, level: 1, range: '60 ft', is_ritual: false, school: 'Evocation', castingTime: '1 action', damageType: 'Lightning', page: 'HB p.1', components: 'V,S', isMaterial: false, isSomatic: true, isVerbal: true, higherLevel: '', classes: [], subClasses: [] };
+    return { id: name, name, description: 'Zaps a foe', duration: 'Instant', concentration: false, level: "1", range: '60 ft', ritual: false, school: 'Evocation', castingTime: '1 action', damageType: 'Lightning', page: 'HB p.1', components: 'V,S', isMaterial: false, isSomatic: true, isVerbal: true, higherLevel: '', classes: [], subClasses: [] };
   }
-  function sampleBackground(name = 'Sailor'): Background {
-    return { name, desc: 'Sea life', proficiencies: { armor: [], weapons: [], tools: [], skills: [] }, startEquipment: [], features: [] };
+  function sampleBackground(id = createNewId(),name = 'Sailor'): Background {
+    return {id, name, desc: 'Sea life', proficiencies: { armor: [], weapons: [], tools: [], skills: [] }, startEquipment: [], features: [] };
   }
   function sampleRace(id = 'elf-id', name = 'Elf'): Race {
     return { id, name, size: 'Medium', speed: 30, languages: [], abilityBonuses: [], traits: [], abilityBonusChoice: undefined, languageChoice: undefined, traitChoice: undefined } as Race;
@@ -58,7 +60,7 @@ describe('homebrewManager (5E internal types)', () => {
 
   it('updates an existing class', async () => {
     await homebrewManager.addClass(sampleClass());
-    await homebrewManager.updateClass({ ...sampleClass(), primary_ability: 'INT' });
+    await homebrewManager.updateClass({ ...sampleClass(), primaryAbility: 'INT' });
     const updated = homebrewManager.classes().find(c => c.name === 'TestClass');
     expect(updated?.primary_ability).toBe('INT');
   });

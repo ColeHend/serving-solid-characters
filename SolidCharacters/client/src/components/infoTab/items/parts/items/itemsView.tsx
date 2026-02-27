@@ -1,6 +1,7 @@
 import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
-import { Item, ItemType } from "../../../../../models/data";
+import { Item, ItemType } from "../../../../../models/generated";
+import { srdItem } from "../../../../../models/data/generated";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { Clone, Paginator } from "../../../../../shared";
 import { useSearchParams } from "@solidjs/router";
@@ -10,16 +11,16 @@ import { costToCopper } from "../../item";
 import { ItemsMenu } from "../itemsMenu/itemsMenu";
 
 interface viewProps {
-  items: Accessor<Item[]>;
+  items: Accessor<srdItem[]>;
 }
 
 export const ItemsView:Component<viewProps> = (props) => {
   const [searchParam, setSearchParam] = useSearchParams();
 
-  const [tableData,setTableData] = createSignal<Item[]>([]);
-  const [searchResult,setSearchResult] = createSignal<Item[]>([]);
-  const [paginatedItems,setPaginatedItems] = createSignal<Item[]>([]);
-  const [currentItem, setCurrentItem] = createSignal<Item | undefined>(undefined);
+  const [tableData,setTableData] = createSignal<srdItem[]>([]);
+  const [searchResult,setSearchResult] = createSignal<srdItem[]>([]);
+  const [paginatedItems,setPaginatedItems] = createSignal<srdItem[]>([]);
+  const [currentItem, setCurrentItem] = createSignal<srdItem | undefined>(undefined);
   const [showItem,setShowItem] = createSignal<boolean>(false);
   const [currentSort,setCurrentSort] = createSignal<{
     sortKey: string;
@@ -75,7 +76,7 @@ export const ItemsView:Component<viewProps> = (props) => {
 
   
 
-  const dataSort = (sortBy: keyof Item) => {
+  const dataSort = (sortBy: keyof srdItem) => {
     setCurrentSort(old => {
       if (old.sortKey === sortBy) {
         return Clone({ sortKey: sortBy as string, isAsc: !old.isAsc });
@@ -140,7 +141,7 @@ export const ItemsView:Component<viewProps> = (props) => {
               <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
             </Show>
           </Header>
-          <Cell<Item>>
+          <Cell<srdItem>>
             {(item)=> <span>
               {item.name}
             </span>}
@@ -154,7 +155,7 @@ export const ItemsView:Component<viewProps> = (props) => {
               <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
             </Show>
           </Header>
-          <Cell<Item>>
+          <Cell<srdItem>>
             {(item)=><span>
               {ItemType[item.type]}
             </span>}
@@ -168,7 +169,7 @@ export const ItemsView:Component<viewProps> = (props) => {
               <span>{ currentSort().isAsc ? " ▲" : " ▼"}</span>
             </Show>
           </Header>
-          <Cell<Item>>
+          <Cell<srdItem>>
             {(item)=><span>
               {(item.cost)}
             </span>}
@@ -177,7 +178,7 @@ export const ItemsView:Component<viewProps> = (props) => {
 
         <Column name="menu">
           <Header><></></Header>
-          <Cell<Item> onClick={(e)=>e.stopPropagation()}>
+          <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
             {(item)=><ItemsMenu item={item} />}
           </Cell>
         </Column>

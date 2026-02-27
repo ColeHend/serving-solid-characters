@@ -2,7 +2,7 @@ import { Chip, FormGroup } from "coles-solid-library"
 import { Component, createMemo, createSignal, Show, For, Accessor, Setter } from "solid-js"
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard"
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
-import { Spell } from "../../../../models/data"
+import { Spell } from "../../../../models/generated"
 import { Character, CharacterForm } from "../../../../models/character.model";
 import styles from "./spellsSection.module.scss";
 import SpellModal from "../../../../shared/components/modals/spellModal/spellModal.component";
@@ -29,10 +29,10 @@ export const SpellsSection:Component<SectionProps> = (props) => {
         name: "",
         description: "",
         duration: "",
-        is_concentration: false,
+        concentration: false,
         level: "0",
         range: "",
-        is_ritual: false,
+        ritual: false,
         school: "",
         castingTime: "",
         damageType: "",
@@ -41,7 +41,7 @@ export const SpellsSection:Component<SectionProps> = (props) => {
         isMaterial: false,
         isSomatic: false,
         isVerbal: false,
-        materials_Needed: "",
+        materialsNeeded: "",
         higherLevel: "",
         classes: [],
         subClasses: []

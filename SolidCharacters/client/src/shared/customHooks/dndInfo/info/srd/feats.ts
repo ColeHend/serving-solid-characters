@@ -3,7 +3,7 @@ import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
 import { concatMap, of, take, tap } from "rxjs";
 import { createMemo, createSignal } from "solid-js";
-import { Feat } from "../../../../../models/data";
+import { Feat } from "../../../../../models/generated";
 
 const [feats2014, setFeats2014] = createSignal<Feat[]>([]);
 const [feats2024, setFeats2024] = createSignal<Feat[]>([]);

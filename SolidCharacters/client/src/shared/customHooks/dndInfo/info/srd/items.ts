@@ -1,12 +1,13 @@
-import { Item } from "../../../../../models/data";
+import { Item } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import { createMemo, createSignal } from "solid-js";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
+import { srdItem } from "../../../../../models/data/generated";
 
-const [items2014, setItems2014] = createSignal<Item[]>([]);
-const [items2024, setItems2024] = createSignal<Item[]>([]);
+const [items2014, setItems2014] = createSignal<srdItem[]>([]);
+const [items2024, setItems2024] = createSignal<srdItem[]>([]);
 let loading2014 = false;
 let loading2024 = false;
 
@@ -54,7 +55,7 @@ export function useGetSrdItems(version: '2014' | '2024' | "both" | string) {
     });
   }
 
-  return createMemo<Item[]>(() => {
+  return createMemo<srdItem[]>(() => {
     if (version === "2014") return items2014();
     if (version === "2024") return items2024();
     if (version === "both") return [...items2014(),...items2024()]
@@ -63,5 +64,5 @@ export function useGetSrdItems(version: '2014' | '2024' | "both" | string) {
 }
 
 function fetchItems(version: '2014' | '2024') {
-  return HttpClient$.get<Item[]>(`/api/${version}/Items`).pipe(take(1));
+  return HttpClient$.get<srdItem[]>(`/api/${version}/Items`).pipe(take(1));
 }

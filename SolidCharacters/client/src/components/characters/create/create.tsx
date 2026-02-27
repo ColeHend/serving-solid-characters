@@ -32,7 +32,7 @@ import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/clas
 import { useSearchParams } from "@solidjs/router";
 import { characterManager, Clone } from "../../../shared";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
-import { Class5E, Race } from "../../../models/data";
+import { Class5E, Race } from "../../../models/generated";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { ClassesSection } from "./classesSection/classesSection";
 import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races";
@@ -90,10 +90,9 @@ const CharacterCreate: Component = () => {
     "backgrndItemChoice": [null, []],
     "classItemChoice": [null, []],
     "BackgrndFeat": ["", []],
+    "ArmorClass": [0, []], 
+    "Speed": [0, []]
   }); // most important character data
-
-  console.log("ran!");
-  
 
   // data hooks
   const classes = useDnDClasses();
@@ -488,20 +487,20 @@ const CharacterCreate: Component = () => {
           </div>
         </FlatCard>
         
-        <ClassesSection 
-          charClasses={[charClasses, setCharClasses]}
-          classLevels={[classLevels, setClassLevels]}
-          knownSpells={[knownSpells, setKnownSpells]}
-          formGroup={group}
-          currSubclasses={[currentSubclasses, setCurrentSubclasses]}
-          charSkills={[charSkills,setCharSkills]}
-          chipJar={[skillChipJar, setSkillChipJar]}
-          stats={[charStats, setCharStats]}
-          modifyers={[statMods, setStatMods]}
-          exist={exist}
-        />
-        {/* <Show when={selectedClass() !== ""}>
-        </Show> */}
+        <Show when={selectedClass() !== ""}>
+          <ClassesSection 
+            charClasses={[charClasses, setCharClasses]}
+            classLevels={[classLevels, setClassLevels]}
+            knownSpells={[knownSpells, setKnownSpells]}
+            formGroup={group}
+            currSubclasses={[currentSubclasses, setCurrentSubclasses]}
+            charSkills={[charSkills,setCharSkills]}
+            chipJar={[skillChipJar, setSkillChipJar]}
+            stats={[charStats, setCharStats]}
+            modifyers={[statMods, setStatMods]}
+            exist={exist}
+          />
+        </Show>
 
         <Show when={characterRace() !== ""}>
           <RaceSection

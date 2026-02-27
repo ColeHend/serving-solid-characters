@@ -1,12 +1,12 @@
 import { Component, createSignal } from "solid-js";
-import { Item } from "../../../../../models/data";
+import { srdItem } from "../../../../../models/data/generated";
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { homebrewManager } from "../../../../../shared";
 
 
 interface menuProps {
-    item: Item;
+    item: srdItem;
 }
 
 export const ItemsMenu:Component<menuProps> = (props) => {
@@ -17,7 +17,7 @@ export const ItemsMenu:Component<menuProps> = (props) => {
     const navigate = useNavigate();
 
     const checkForHomebrew = (item: string) => {
-        homebrewManager.items().forEach((customItem:Item) => {
+        homebrewManager.items().forEach((customItem:srdItem) => {
             if (customItem.name.toLowerCase() === item.toLowerCase()) return true;
         })
 

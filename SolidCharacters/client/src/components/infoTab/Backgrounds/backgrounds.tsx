@@ -3,7 +3,7 @@ import styles from "./backgrounds.module.scss";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
 // import { Background } from "../../../models/data";
-import { Background } from "../../../models/data";
+import { Background } from "../../../models/generated";
 import { Paginator } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
 import { Body, Table, Cell, Column, Header } from "coles-solid-library";

@@ -1,6 +1,6 @@
 import { useGetSrdMasteries } from "../srd/masteries";
 import { useGetHombrewWeaponMastery } from "../homebrew/masteries";
-import { WeaponMastery } from "../../../../../models/data";
+import { WeaponMastery } from "../../../../../models/generated";
 import { Accessor, createMemo } from "solid-js";
 import { getUserSettings } from "../../../userSettings";
 

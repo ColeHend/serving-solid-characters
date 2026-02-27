@@ -16,7 +16,7 @@ import {
 } from "coles-solid-library";
 import { useSearchParams } from "@solidjs/router";
 import { Paginator } from "../../../shared";
-import { Race } from "../../../models/data";
+import { Race } from "../../../models/generated";
 import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races";
 import { RaceMenu } from "./raceMenu/raceMenu";
 import RaceView from "../../../shared/components/modals/raceView/raceView";

@@ -3,7 +3,7 @@ import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { Component, createSignal } from "solid-js";
 import { homebrewManager } from "../../../../shared";
 // import { DnDClass } from "../../../../models";
-import { Class5E } from "../../../../models/data";
+import { Class5E } from "../../../../models/generated";
 
 interface menuProps {
     dndClass: Class5E;

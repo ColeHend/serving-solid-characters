@@ -1,6 +1,6 @@
 import { useGetSrdMagicItems } from "../srd/magicItems";
 import { useGetHombrewMagicItems } from "../homebrew/magicItem";
-import { MagicItem } from "../../../../../models/data";
+import { MagicItem } from "../../../../../models/generated";
 import { Accessor, createMemo } from "solid-js";
 import { getUserSettings } from "../../../userSettings";
 

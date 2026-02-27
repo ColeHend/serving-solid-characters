@@ -1,219 +1,353 @@
 [
-    {
-      "name": "Club",
-      "damage": "1d4 bludgeoning",
-      "properties": ["Light"],
-      "mastery": "Slow - If you hit a creature with this weapon, you can reduce its speed by 10 feet until the start of your next turn. (Multiple hits don’t stack additional slowdown beyond 10 feet.)"
-    },
-    {
-      "name": "Dagger",
-      "damage": "1d4 piercing",
-      "properties": ["Finesse", "Light", "Thrown (20/60)"],
-      "mastery": "Nick - When engaging in two-weapon fighting, you can make the off-hand extra attack as part of the Attack action instead of as a Bonus Action. (You still only get one extra attack per turn.) This makes dual-wielding more fluid."
-    },
-    {
-      "name": "Greatclub",
-      "damage": "1d8 bludgeoning",
-      "properties": ["Two-Handed"],
-      "mastery": "Push - If you hit a creature with this weapon, you can push the creature up to 10 feet straight away from you, provided it is Large or smaller."
-    },
-    {
-      "name": "Handaxe",
-      "damage": "1d6 slashing",
-      "properties": ["Light", "Thrown (20/60)"],
-      "mastery": "Vex - If you hit a creature with this weapon, you have advantage on your next attack roll against that creature before the end of your next turn. (This encourages focusing on one target by exploiting a weak spot.)"
-    },
-    {
-      "name": "Javelin",
-      "damage": "1d6 piercing",
-      "properties": ["Thrown (30/120)"],
-      "mastery": "Slow - On a hit, you can reduce the target’s speed by 10 feet until the start of your next turn (as with the Slow property."
-    },
-    {
-      "name": "Light Hammer",
-      "damage": "1d4 bludgeoning",
-      "properties": ["Light", "Thrown (20/60)"],
-      "mastery": "Nick - When dual-wielding Light hammers, you can make the off-hand attack as part of the Attack action instead of using your Bonus Action (similar to Dagger’s mastery."
-    },
-    {
-      "name": "Mace",
-      "damage": "1d6 bludgeoning",
-      "properties": [],
-      "mastery": "Sap - If you hit a creature with this weapon, that creature has disadvantage on its next attack roll before the start of your next turn. (A concussive blow makes it less effective at striking back.)"
-    },
-    {
-      "name": "Sickle",
-      "damage": "1d4 slashing",
-      "properties": ["Light"],
-      "mastery": "Nick - (See Dagger.) The sickle’s mastery allows the off-hand extra attack to be made as part of the Attack action once per turn."
-    },
-    {
-      "name": "Spear",
-      "damage": "1d6 piercing (1d8 versatile)",
-      "properties": ["Thrown (20/60)", "Versatile"],
-      "mastery": "Sap - On a hit, the target has disadvantage on its next attack roll until your next turn (the spear’s jab rattles the foe)."
-    },
-    {
-      "name": "Light Crossbow",
-      "damage": "1d8 piercing",
-      "properties": ["Ammunition (80/320)", "Loading", "Two-Handed"],
-      "mastery": "Slow - If you hit, you reduce the target’s speed by 10 feet until the start of your next ture. (A well-placed bolt hinders movement.)"
-    },
-    {
-      "name": "Shortbow",
-      "damage": "1d6 piercing",
-      "properties": ["Ammunition (80/320)", "Two-Handed"],
-      "mastery": "Vex - Hitting a creature grants you advantage on your next attack roll against that same creature before end of your next turn."
-    },
-    {
-      "name": "Sling",
-      "damage": "1d4 bludgeoning",
-      "properties": ["Ammunition (30/120)"],
-      "mastery": "Slow - A struck target’s speed is lowered by 10 feet until the start of your next turn (the sling stone momentarily disorients the target."
-    },
-    {
-      "name": "Battleaxe",
-      "damage": "1d8 slashing (1d10 versatile)",
-      "properties": ["Versatile"],
-      "mastery": "Topple - If you hit a creature with this weapon, you can force it to make a Constitution saving throw (DC = 8 + your attack mod + Prof). On a failure, it falls prone. (The battleaxe can knock foes off their feet.)"
-    },
-    {
-      "name": "Flail",
-      "damage": "1d8 bludgeoning",
-      "properties": [],
-      "mastery": "Sap - A hit from a flail imposes disadvantage on the target’s next attack roll before the start of your next turn. (The chain of the flail throws off the enemy’s balance.)"
-    },
-    {
-      "name": "Glaive",
-      "damage": "1d10 slashing",
-      "properties": ["Heavy", "Reach", "Two-Handed"],
-      "mastery": "Graze - When you miss a creature with this weapon, you still deal damage equal to your ability modifier used for the attack (the target takes a grazing wound). This property only applies if the attack miss was within normal reach/range."
-    },
-    {
-      "name": "Greataxe",
-      "damage": "1d12 slashing",
-      "properties": ["Heavy", "Two-Handed"],
-      "mastery": "Cleave - If you hit a creature with a melee attack using this weapon, you can immediately make another attack with the greataxe against a different creature within 5 feet of the original target and within your react. This extra attack can only be made once per turn and does not add your ability mod to damage."
-    },
-    {
-      "name": "Greatsword",
-      "damage": "2d6 slashing",
-      "properties": ["Heavy", "Two-Handed"],
-      "mastery": "Graze - If you miss with a greatsword attack, you still deal damage to the target equal to your Strength modifier (minimum 0). Your wide swing clips the foe even on a miss."
-    },
-    {
-      "name": "Halberd",
-      "damage": "1d10 slashing",
-      "properties": ["Heavy", "Reach", "Two-Handed"],
-      "mastery": "Cleave - On a hit, you can make an additional melee attack with the halberd against a second creature within 5 feet of the first target (and within your reach). This secondary attack, once per turn, deals normal weapon damage but without adding your ability modifier."
-    },
-    {
-      "name": "Lance",
-      "damage": "1d12 piercing",
-      "properties": ["Reach", "Special"],
-      "mastery": "Topple - A lance strike can unhorse foes. On hit, you can force a CON save (DC = 8 + attack mod + Prof) or knock the target prone. (Lances are unwieldy to use on foot; special: disadvantage to attack targets within 5 feet.)"
-    },
-    {
-      "name": "Longsword",
-      "damage": "1d8 slashing (1d10 versatile)",
-      "properties": ["Versatile"],
-      "mastery": "Sap - A precise slash causes the target to falter. A creature hit by a longsword has disadvantage on its next attack roll before your next turn."
-    },
-    {
-      "name": "Maul",
-      "damage": "2d6 bludgeoning",
-      "properties": ["Heavy", "Two-Handed"],
-      "mastery": "Topple - The crushing force of a maul can knock foes down. On a hit, you may force a CON save (DC 8 + mod + Prof) or the target falls prone."
-    },
-    {
-      "name": "Morningstar",
-      "damage": "1d8 piercing",
-      "properties": [],
-      "mastery": "Sap - The spiked head of the morningstar disrupts enemies. On a hit, target has disadvantage on its next attack roll until the start of your next turn."
-    },
-    {
-      "name": "Pike",
-      "damage": "1d10 piercing",
-      "properties": ["Heavy", "Reach", "Two-Handed"],
-      "mastery": "Push - A pike thrust can drive enemies back. On hit, you can push a Large or smaller creature up to 10 feet away from you."
-    },
-    {
-      "name": "Rapier",
-      "damage": "1d8 piercing",
-      "properties": ["Finesse"],
-      "mastery": "Vex - A rapier’s precise strike marks a foe. When you hit, you have advantage on your next attack against that creature before end of your next turn."
-    },
-    {
-      "name": "Scimitar",
-      "damage": "1d6 slashing",
-      "properties": ["Finesse", "Light"],
-      "mastery": "Nick - Nimble scimitar fighting lets you make your off-hand attack as part of the Attack action (once per turn) instead of using a Bonus Action, when fighting with two light weapon."
-    },
-    {
-      "name": "Shortsword",
-      "damage": "1d6 piercing",
-      "properties": ["Finesse", "Light"],
-      "mastery": "Vex - Striking with a shortsword grants you advantage on your next attack against the same target before your next turn."
-    },
-    {
-      "name": "Trident",
-      "damage": "1d6 piercing (1d8 versatile)",
-      "properties": ["Thrown (20/60)", "Versatile"],
-      "mastery": "Topple - A solid hit can knock the wind out of foes. On a hit, you may force a CON save (DC based on attack) or knock the target prone (as with other Topple weapons."
-    },
-    {
-      "name": "War Pick",
-      "damage": "1d8 piercing",
-      "properties": [],
-      "mastery": "Sap - The war pick’s puncturing strike imposes disadvantage on the target’s next attack roll until the start of your next turn (like other Sap weapons."
-    },
-    {
-      "name": "Warhammer",
-      "damage": "1d8 bludgeoning (1d10 versatile)",
-      "properties": ["Versatile"],
-      "mastery": "Push - A powerful blow can shove a foe back. On hit, you can push a Large or smaller creature up to 10 feet away."
-    },
-    {
-      "name": "Whip",
-      "damage": "1d4 slashing",
-      "properties": ["Finesse", "Reach"],
-      "mastery": "Slow - The lash of a whip entangles briefly. A creature hit by a whip has its speed reduced by 10 feet until the start of your next turn."
-    },
-    {
-      "name": "Blowgun",
-      "damage": "1 piercing",
-      "properties": ["Ammunition (25/100)", "Loading"],
-      "mastery": "Vex - A hit from a blowgun dart marks a target. You have advantage on your next attack roll against that creature before end of your next turn (assuming the creature is affected by the hit, often used with poison."
-    },
-    {
-      "name": "Crossbow, Hand",
-      "damage": "1d6 piercing",
-      "properties": ["Ammunition (30/120)", "Light", "Loading"],
-      "mastery": "Vex - A well-placed hand crossbow bolt grants you advantage on your next attack against that target before end of next turn."
-    },
-    {
-      "name": "Crossbow, Heavy",
-      "damage": "1d10 piercing",
-      "properties": ["Ammunition (100/400)", "Heavy", "Loading", "Two-Handed"],
-      "mastery": "Push - The impact of a heavy bolt can knock foes back 10 feet on a hit (Large or smaller creatures)."
-    },
-    {
-      "name": "Longbow",
-      "damage": "1d8 piercing",
-      "properties": ["Ammunition (150/600)", "Heavy", "Two-Handed"],
-      "mastery": "Slow - A struck target’s movement is hindered, reducing its speed by 10 feet until the start of your next turn."
-    },
-    {
-      "name": "Musket",
-      "damage": "1d12 piercing",
-      "properties": ["Ammunition (120/360)", "Heavy", "Loading", "Two-Handed"],
-      "mastery": "Slow - The concussive shot from a musket slows the target by 10 feet until the start of your next turn."
-    },
-    {
-      "name": "Pistol",
-      "damage": "1d10 piercing",
-      "properties": ["Ammunition (30/90)", "Light", "Loading"],
-      "mastery": "Vex - A bullet from a pistol marks the target, granting advantage on your next attack roll against that creature before end of your next turn."
-    }
-  ]
-  
+  {
+    "name": "Club",
+    "damage": "1d4 bludgeoning",
+    "properties": [
+      "Light"
+    ],
+    "mastery": "Slow - If you hit a creature with this weapon, you can reduce its speed by 10 feet until the start of your next turn. (Multiple hits don’t stack additional slowdown beyond 10 feet.)",
+    "id": "2db22e7d-6e78-4048-9fcc-34f6348ae55f"
+  },
+  {
+    "name": "Dagger",
+    "damage": "1d4 piercing",
+    "properties": [
+      "Finesse",
+      "Light",
+      "Thrown (20/60)"
+    ],
+    "mastery": "Nick - When engaging in two-weapon fighting, you can make the off-hand extra attack as part of the Attack action instead of as a Bonus Action. (You still only get one extra attack per turn.) This makes dual-wielding more fluid.",
+    "id": "abac2a28-ea95-436d-a8d9-851861e816ca"
+  },
+  {
+    "name": "Greatclub",
+    "damage": "1d8 bludgeoning",
+    "properties": [
+      "Two-Handed"
+    ],
+    "mastery": "Push - If you hit a creature with this weapon, you can push the creature up to 10 feet straight away from you, provided it is Large or smaller.",
+    "id": "62552201-2736-4614-b861-fb2978085b74"
+  },
+  {
+    "name": "Handaxe",
+    "damage": "1d6 slashing",
+    "properties": [
+      "Light",
+      "Thrown (20/60)"
+    ],
+    "mastery": "Vex - If you hit a creature with this weapon, you have advantage on your next attack roll against that creature before the end of your next turn. (This encourages focusing on one target by exploiting a weak spot.)",
+    "id": "05712319-9ee4-471d-989d-36da527994ac"
+  },
+  {
+    "name": "Javelin",
+    "damage": "1d6 piercing",
+    "properties": [
+      "Thrown (30/120)"
+    ],
+    "mastery": "Slow - On a hit, you can reduce the target’s speed by 10 feet until the start of your next turn (as with the Slow property.",
+    "id": "66159a0d-91ed-4ac4-a2c2-eea7d2e72b65"
+  },
+  {
+    "name": "Light Hammer",
+    "damage": "1d4 bludgeoning",
+    "properties": [
+      "Light",
+      "Thrown (20/60)"
+    ],
+    "mastery": "Nick - When dual-wielding Light hammers, you can make the off-hand attack as part of the Attack action instead of using your Bonus Action (similar to Dagger’s mastery.",
+    "id": "8f338645-edb1-4a13-a2ac-a3aaf798cc47"
+  },
+  {
+    "name": "Mace",
+    "damage": "1d6 bludgeoning",
+    "properties": [],
+    "mastery": "Sap - If you hit a creature with this weapon, that creature has disadvantage on its next attack roll before the start of your next turn. (A concussive blow makes it less effective at striking back.)",
+    "id": "155bf4c1-6307-4b3b-9b34-020f94cce349"
+  },
+  {
+    "name": "Sickle",
+    "damage": "1d4 slashing",
+    "properties": [
+      "Light"
+    ],
+    "mastery": "Nick - (See Dagger.) The sickle’s mastery allows the off-hand extra attack to be made as part of the Attack action once per turn.",
+    "id": "5bcc8846-769f-4f26-a0c9-9afab767ef31"
+  },
+  {
+    "name": "Spear",
+    "damage": "1d6 piercing (1d8 versatile)",
+    "properties": [
+      "Thrown (20/60)",
+      "Versatile"
+    ],
+    "mastery": "Sap - On a hit, the target has disadvantage on its next attack roll until your next turn (the spear’s jab rattles the foe).",
+    "id": "1993eb26-78d7-473e-84c8-d8285f6084f4"
+  },
+  {
+    "name": "Light Crossbow",
+    "damage": "1d8 piercing",
+    "properties": [
+      "Ammunition (80/320)",
+      "Loading",
+      "Two-Handed"
+    ],
+    "mastery": "Slow - If you hit, you reduce the target’s speed by 10 feet until the start of your next ture. (A well-placed bolt hinders movement.)",
+    "id": "7ed9b289-38e7-4544-b48d-a342b9ec4ba0"
+  },
+  {
+    "name": "Shortbow",
+    "damage": "1d6 piercing",
+    "properties": [
+      "Ammunition (80/320)",
+      "Two-Handed"
+    ],
+    "mastery": "Vex - Hitting a creature grants you advantage on your next attack roll against that same creature before end of your next turn.",
+    "id": "25e8f81f-767a-4979-a1b7-9e8c548fed2c"
+  },
+  {
+    "name": "Sling",
+    "damage": "1d4 bludgeoning",
+    "properties": [
+      "Ammunition (30/120)"
+    ],
+    "mastery": "Slow - A struck target’s speed is lowered by 10 feet until the start of your next turn (the sling stone momentarily disorients the target.",
+    "id": "7a83fe94-372f-4d0b-a2f3-de4b2692ac83"
+  },
+  {
+    "name": "Battleaxe",
+    "damage": "1d8 slashing (1d10 versatile)",
+    "properties": [
+      "Versatile"
+    ],
+    "mastery": "Topple - If you hit a creature with this weapon, you can force it to make a Constitution saving throw (DC = 8 + your attack mod + Prof). On a failure, it falls prone. (The battleaxe can knock foes off their feet.)",
+    "id": "0399b457-aa08-49ce-a584-ad4036d916ff"
+  },
+  {
+    "name": "Flail",
+    "damage": "1d8 bludgeoning",
+    "properties": [],
+    "mastery": "Sap - A hit from a flail imposes disadvantage on the target’s next attack roll before the start of your next turn. (The chain of the flail throws off the enemy’s balance.)",
+    "id": "1d2c28fc-cdf5-40cc-9db6-2257c1b48be1"
+  },
+  {
+    "name": "Glaive",
+    "damage": "1d10 slashing",
+    "properties": [
+      "Heavy",
+      "Reach",
+      "Two-Handed"
+    ],
+    "mastery": "Graze - When you miss a creature with this weapon, you still deal damage equal to your ability modifier used for the attack (the target takes a grazing wound). This property only applies if the attack miss was within normal reach/range.",
+    "id": "a6b6af52-c099-422a-bb4f-ed05dcbf6c3f"
+  },
+  {
+    "name": "Greataxe",
+    "damage": "1d12 slashing",
+    "properties": [
+      "Heavy",
+      "Two-Handed"
+    ],
+    "mastery": "Cleave - If you hit a creature with a melee attack using this weapon, you can immediately make another attack with the greataxe against a different creature within 5 feet of the original target and within your react. This extra attack can only be made once per turn and does not add your ability mod to damage.",
+    "id": "918523ac-56fa-4ec6-bce6-f481f1c86d9d"
+  },
+  {
+    "name": "Greatsword",
+    "damage": "2d6 slashing",
+    "properties": [
+      "Heavy",
+      "Two-Handed"
+    ],
+    "mastery": "Graze - If you miss with a greatsword attack, you still deal damage to the target equal to your Strength modifier (minimum 0). Your wide swing clips the foe even on a miss.",
+    "id": "3c292aff-7ada-433d-9216-46b77d8af36d"
+  },
+  {
+    "name": "Halberd",
+    "damage": "1d10 slashing",
+    "properties": [
+      "Heavy",
+      "Reach",
+      "Two-Handed"
+    ],
+    "mastery": "Cleave - On a hit, you can make an additional melee attack with the halberd against a second creature within 5 feet of the first target (and within your reach). This secondary attack, once per turn, deals normal weapon damage but without adding your ability modifier.",
+    "id": "53912b6b-41d4-4a39-a697-1093f3a472e7"
+  },
+  {
+    "name": "Lance",
+    "damage": "1d12 piercing",
+    "properties": [
+      "Reach",
+      "Special"
+    ],
+    "mastery": "Topple - A lance strike can unhorse foes. On hit, you can force a CON save (DC = 8 + attack mod + Prof) or knock the target prone. (Lances are unwieldy to use on foot; special: disadvantage to attack targets within 5 feet.)",
+    "id": "debaf5c1-73c6-45b7-b6e8-20dae6836f5a"
+  },
+  {
+    "name": "Longsword",
+    "damage": "1d8 slashing (1d10 versatile)",
+    "properties": [
+      "Versatile"
+    ],
+    "mastery": "Sap - A precise slash causes the target to falter. A creature hit by a longsword has disadvantage on its next attack roll before your next turn.",
+    "id": "97e86aea-af67-4e60-9f44-51f48b578d88"
+  },
+  {
+    "name": "Maul",
+    "damage": "2d6 bludgeoning",
+    "properties": [
+      "Heavy",
+      "Two-Handed"
+    ],
+    "mastery": "Topple - The crushing force of a maul can knock foes down. On a hit, you may force a CON save (DC 8 + mod + Prof) or the target falls prone.",
+    "id": "579ec173-7af4-4570-b45e-c9fcf0f69e04"
+  },
+  {
+    "name": "Morningstar",
+    "damage": "1d8 piercing",
+    "properties": [],
+    "mastery": "Sap - The spiked head of the morningstar disrupts enemies. On a hit, target has disadvantage on its next attack roll until the start of your next turn.",
+    "id": "547ccf68-b272-419e-9b2a-ae626b98e362"
+  },
+  {
+    "name": "Pike",
+    "damage": "1d10 piercing",
+    "properties": [
+      "Heavy",
+      "Reach",
+      "Two-Handed"
+    ],
+    "mastery": "Push - A pike thrust can drive enemies back. On hit, you can push a Large or smaller creature up to 10 feet away from you.",
+    "id": "7b099ebc-179c-45c2-a71a-e27d020b879f"
+  },
+  {
+    "name": "Rapier",
+    "damage": "1d8 piercing",
+    "properties": [
+      "Finesse"
+    ],
+    "mastery": "Vex - A rapier’s precise strike marks a foe. When you hit, you have advantage on your next attack against that creature before end of your next turn.",
+    "id": "6c0b661d-f233-4ff9-9c0e-665970356846"
+  },
+  {
+    "name": "Scimitar",
+    "damage": "1d6 slashing",
+    "properties": [
+      "Finesse",
+      "Light"
+    ],
+    "mastery": "Nick - Nimble scimitar fighting lets you make your off-hand attack as part of the Attack action (once per turn) instead of using a Bonus Action, when fighting with two light weapon.",
+    "id": "a6305587-a693-4c78-9768-f44896eef073"
+  },
+  {
+    "name": "Shortsword",
+    "damage": "1d6 piercing",
+    "properties": [
+      "Finesse",
+      "Light"
+    ],
+    "mastery": "Vex - Striking with a shortsword grants you advantage on your next attack against the same target before your next turn.",
+    "id": "676f79fe-44fc-40a2-9c7e-fd79a75d66a6"
+  },
+  {
+    "name": "Trident",
+    "damage": "1d6 piercing (1d8 versatile)",
+    "properties": [
+      "Thrown (20/60)",
+      "Versatile"
+    ],
+    "mastery": "Topple - A solid hit can knock the wind out of foes. On a hit, you may force a CON save (DC based on attack) or knock the target prone (as with other Topple weapons.",
+    "id": "a8722295-7592-45dd-8add-5d04ab1d474d"
+  },
+  {
+    "name": "War Pick",
+    "damage": "1d8 piercing",
+    "properties": [],
+    "mastery": "Sap - The war pick’s puncturing strike imposes disadvantage on the target’s next attack roll until the start of your next turn (like other Sap weapons.",
+    "id": "959fd0f8-8ea5-4506-bd4e-a7e8bf01ea09"
+  },
+  {
+    "name": "Warhammer",
+    "damage": "1d8 bludgeoning (1d10 versatile)",
+    "properties": [
+      "Versatile"
+    ],
+    "mastery": "Push - A powerful blow can shove a foe back. On hit, you can push a Large or smaller creature up to 10 feet away.",
+    "id": "b03e370e-c956-4534-aa85-e7da036f7cd9"
+  },
+  {
+    "name": "Whip",
+    "damage": "1d4 slashing",
+    "properties": [
+      "Finesse",
+      "Reach"
+    ],
+    "mastery": "Slow - The lash of a whip entangles briefly. A creature hit by a whip has its speed reduced by 10 feet until the start of your next turn.",
+    "id": "d17db453-e5d3-4a98-a449-4d86374a7d29"
+  },
+  {
+    "name": "Blowgun",
+    "damage": "1 piercing",
+    "properties": [
+      "Ammunition (25/100)",
+      "Loading"
+    ],
+    "mastery": "Vex - A hit from a blowgun dart marks a target. You have advantage on your next attack roll against that creature before end of your next turn (assuming the creature is affected by the hit, often used with poison.",
+    "id": "7c3c034a-fc53-431f-917e-1c4adfe9b8a7"
+  },
+  {
+    "name": "Crossbow, Hand",
+    "damage": "1d6 piercing",
+    "properties": [
+      "Ammunition (30/120)",
+      "Light",
+      "Loading"
+    ],
+    "mastery": "Vex - A well-placed hand crossbow bolt grants you advantage on your next attack against that target before end of next turn.",
+    "id": "acc4555a-213e-4782-94b9-63d518ef5d9a"
+  },
+  {
+    "name": "Crossbow, Heavy",
+    "damage": "1d10 piercing",
+    "properties": [
+      "Ammunition (100/400)",
+      "Heavy",
+      "Loading",
+      "Two-Handed"
+    ],
+    "mastery": "Push - The impact of a heavy bolt can knock foes back 10 feet on a hit (Large or smaller creatures).",
+    "id": "81f5d77e-8631-485b-9970-bea87a018e62"
+  },
+  {
+    "name": "Longbow",
+    "damage": "1d8 piercing",
+    "properties": [
+      "Ammunition (150/600)",
+      "Heavy",
+      "Two-Handed"
+    ],
+    "mastery": "Slow - A struck target’s movement is hindered, reducing its speed by 10 feet until the start of your next turn.",
+    "id": "9dad2d78-d9a1-4793-805c-4d0f8fee5380"
+  },
+  {
+    "name": "Musket",
+    "damage": "1d12 piercing",
+    "properties": [
+      "Ammunition (120/360)",
+      "Heavy",
+      "Loading",
+      "Two-Handed"
+    ],
+    "mastery": "Slow - The concussive shot from a musket slows the target by 10 feet until the start of your next turn.",
+    "id": "5bf6f2c0-1bea-43c7-a7c2-b94d8a8092e8"
+  },
+  {
+    "name": "Pistol",
+    "damage": "1d10 piercing",
+    "properties": [
+      "Ammunition (30/90)",
+      "Light",
+      "Loading"
+    ],
+    "mastery": "Vex - A bullet from a pistol marks the target, granting advantage on your next attack roll against that creature before end of your next turn.",
+    "id": "3b66fd34-fe51-43dd-9883-21965a23341a"
+  }
+]

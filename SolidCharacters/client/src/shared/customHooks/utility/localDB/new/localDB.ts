@@ -1,14 +1,15 @@
 import { Character } from "../../../../../models/character.model";
-import { Class5E, Subclass, Race, Background, Item, MagicItem, Feat, Spell, WeaponMastery, Subrace } from "../../../../../models/data";
+import { Class5E, Subclass, Race, Background, Item, MagicItem, Feat, Spell, WeaponMastery, Subrace } from "../../../../../models/generated";
+import { srdItem,srdSubclass } from "../../../../../models/data/generated";
 import Dexie from "dexie";
 
 export class LocalDB extends Dexie {
   classes!: Dexie.Table<Class5E, 'name'>;
-  subclasses!: Dexie.Table<Subclass, 'name'>; // unified store (v1 primary key 'name')
+  subclasses!: Dexie.Table<srdSubclass, 'name'>; // unified store (v1 primary key 'name')
   races!: Dexie.Table<Race, 'name'>;
   subraces!: Dexie.Table<Subrace, 'name'>;
   backgrounds!: Dexie.Table<Background, 'name'>;
-  items!: Dexie.Table<Item, 'name'>;
+  items!: Dexie.Table<srdItem, 'name'>;
   magicItems!: Dexie.Table<MagicItem, 'name'>;
   feats!: Dexie.Table<Feat, 'name'>;
   spells!: Dexie.Table<Spell, 'name'>;

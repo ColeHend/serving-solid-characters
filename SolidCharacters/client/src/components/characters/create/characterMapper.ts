@@ -1,7 +1,7 @@
 import { Accessor, createMemo, Setter } from "solid-js";
 import { CharacterForm, Character, CharacterSpell, CharacterLevel, CharacterRace } from "../../../models/character.model";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
-import { Class5E, FeatureDetail, Race } from "../../../models/data";
+import { Class5E, FeatureDetail, Race } from "../../../models/generated";
 import { charClasses } from "./classesSection/classesSection";
 import { Background } from "../../../models";
 import { group } from "console";
@@ -128,6 +128,12 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
         background: form.background.trim(),
         alignment: form.alignment,
         features: features,
+        vulnerabilities: [],
+        savingThrows: [],
+        resistances: [],
+        immunities: [],
+        ArmorClass: 0,
+        Speed: 0,
         proficiencies: {
             skills: {
                 Acrobatics: {

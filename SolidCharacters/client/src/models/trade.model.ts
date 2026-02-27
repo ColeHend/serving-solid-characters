@@ -1,10 +1,5 @@
-import { Background } from "./data";
 import { Character } from "./character.model";
-import { Spell } from "./data";
-import { Feat } from "./data";
-import { Class5E } from "./data";
-import { Item } from "./data";
-import { Race } from "./data";
+import { Background, Spell, Feat, Class5E, Item, Race } from "./generated";
 
 
 export interface Trade {

@@ -1,4 +1,4 @@
-import { CasterType, Class5E } from "../../../../models/data";
+import { CasterType, Class5E } from "../../../../models/generated";
 
 // function getSpellAndCasterLevel(class5e: Class5E, stat: 'caster' | never,level: number): number
 function getSpellAndCasterLevel(class5e: Class5E, stat: 'spell' | 'caster',level: number, rounddown?: Boolean): number {

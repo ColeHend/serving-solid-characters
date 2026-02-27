@@ -8,7 +8,7 @@ import { Stats } from "./useCharacters";
 import { Character } from "../../../models/character.model";
 import { useDnDSpells } from "./info/all/spells";
 import { useDnDRaces } from "./info/all/races";
-import { AbilityScores } from "../../../models/data";
+import { AbilityScores } from "../../../models/generated";
 
 const useExportFullStats = (currentCharacter: Accessor<Character>) => {
   

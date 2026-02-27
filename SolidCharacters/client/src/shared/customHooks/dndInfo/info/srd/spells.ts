@@ -1,4 +1,4 @@
-import { Spell } from "../../../../../models/data";
+import { Spell } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { combineLatest, concatMap, of, take, tap } from "rxjs";
 import SrdDB from "../../../utility/localDB/new/srdDB";

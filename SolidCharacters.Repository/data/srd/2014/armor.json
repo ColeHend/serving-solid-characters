@@ -1,6 +1,6 @@
 [
   {
-    "id": 0,
+    "id": "4b2299ba-17c9-407d-8333-bf33139ab98e",
     "name": "Padded",
     "desc": "",
     "type": 1,
@@ -14,7 +14,7 @@
     }
   },
   {
-    "id": 1,
+    "id": "3e311f20-6a4b-496a-a3cc-25d7007e04e1",
     "name": "Leather",
     "desc": "",
     "type": 1,
@@ -28,7 +28,7 @@
     }
   },
   {
-    "id": 2,
+    "id": "4e93dfa9-b472-41bd-a03a-2d68bb4d242a",
     "name": "Studded Leather",
     "desc": "",
     "type": 1,
@@ -42,7 +42,7 @@
     }
   },
   {
-    "id": 3,
+    "id": "a28d6770-114c-4bf8-b438-bb377c381e13",
     "name": "Hide",
     "desc": "",
     "type": 1,
@@ -56,7 +56,7 @@
     }
   },
   {
-    "id": 4,
+    "id": "dab4e5d1-f066-4b4a-a6fd-53d6310c51c6",
     "name": "Chain Shirt",
     "desc": "",
     "type": 1,
@@ -70,7 +70,7 @@
     }
   },
   {
-    "id": 5,
+    "id": "2662ca29-0866-45a6-824e-4d249ccc3e1a",
     "name": "Scale Mail",
     "desc": "",
     "type": 1,
@@ -84,7 +84,7 @@
     }
   },
   {
-    "id": 6,
+    "id": "f7e439f8-44ea-4c00-812c-67f5b95ac64c",
     "name": "Breastplate",
     "desc": "",
     "type": 1,
@@ -98,7 +98,7 @@
     }
   },
   {
-    "id": 7,
+    "id": "ead4b4c6-888e-4a07-a034-065c1ef8024b",
     "name": "Half Plate",
     "desc": "",
     "type": 1,
@@ -112,7 +112,7 @@
     }
   },
   {
-    "id": 8,
+    "id": "2e78b891-2714-4a88-9696-79bebee99298",
     "name": "Ring Mail",
     "desc": "",
     "type": 1,
@@ -126,7 +126,7 @@
     }
   },
   {
-    "id": 9,
+    "id": "3ac0a624-aa8b-4dde-b866-eb0cd9bc0973",
     "name": "Chain Mail",
     "desc": "",
     "type": 1,
@@ -140,7 +140,7 @@
     }
   },
   {
-    "id": 10,
+    "id": "9da0c5f4-9ada-42cd-9150-0b8f46d45a4a",
     "name": "Splint",
     "desc": "",
     "type": 1,
@@ -154,7 +154,7 @@
     }
   },
   {
-    "id": 11,
+    "id": "ab79ef22-b8e3-44cc-8da5-362579b9e885",
     "name": "Plate",
     "desc": "",
     "type": 1,
@@ -168,7 +168,7 @@
     }
   },
   {
-    "id": 12,
+    "id": "7e873dbb-cd8b-4517-ba1f-745f82a38b8c",
     "name": "Shield",
     "desc": "",
     "type": 1,

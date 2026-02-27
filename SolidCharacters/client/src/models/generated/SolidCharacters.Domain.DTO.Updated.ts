@@ -15,6 +15,7 @@ export enum AbilityScores {
 }
 
 export interface Background {
+  id: string;
   name: string;
   desc: string;
   proficiencies: Proficiencies;
@@ -39,10 +40,12 @@ export interface ChoiceDetail {
 }
 
 export interface Choices extends Record<string, ChoiceDetail> {
+  [key: string]: ChoiceDetail;
 }
 
+
 export interface Class5E {
-  id: number;
+  id: string;
   name: string;
   hitDie: string;
   primaryAbility: string;
@@ -65,6 +68,7 @@ export interface ClassStartChoices {
 }
 
 export interface Feat {
+  id: string;
   details: FeatureDetail;
   prerequisites: Prerequisite[];
 }
@@ -84,7 +88,7 @@ export interface FeatureMetadata {
 }
 
 export interface Item {
-  id: number;
+  id: string;
   name: string;
   desc: string;
   type: ItemType;
@@ -101,7 +105,7 @@ export enum ItemType {
 }
 
 export interface MagicItem {
-  id: number;
+  id: string;
   name: string;
   desc: string;
   rarity: string;
@@ -155,6 +159,7 @@ export interface Race {
 }
 
 export interface Spell {
+  id: string;
   name: string;
   description: string;
   duration: string;
@@ -229,6 +234,7 @@ export interface StatBonus {
 }
 
 export interface Subclass {
+  id: string;
   name: string;
   parentClass: string;
   description: string;
@@ -258,7 +264,7 @@ export interface TraitChoice {
 }
 
 export interface WeaponMastery {
-  id: number;
+  id: string;
   name: string;
   damage: string;
   properties: string[];

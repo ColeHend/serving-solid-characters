@@ -1,5 +1,5 @@
 import { addSnackbar } from "coles-solid-library";
-import { Spell } from "../../../../models";
+import { Spell } from "../../../../models/generated";
 import { CharacterSpell } from "../../../../models/character.model";
 import characterManager from "../../dndInfo/useCharacters";
 
@@ -35,6 +35,13 @@ export const AddSpell = (spell: Spell, charName: string) => {
       race: character.race,
       className: character.className,
       subclass: character.subclass,
+      vulnerabilities: character.vulnerabilities,
+      savingThrows: character.savingThrows,
+      resistances: character.resistances,
+      immunities: character.immunities,
+      features: character.features,
+      ArmorClass: character.ArmorClass,
+      Speed: character.Speed,      
       background: character.background,
       alignment: character.alignment,
       proficiencies: character.proficiencies,

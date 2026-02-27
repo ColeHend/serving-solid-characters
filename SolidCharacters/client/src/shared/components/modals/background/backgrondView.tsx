@@ -1,6 +1,6 @@
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 // import { Background } from "../../../../models";
-import { Background } from "../../../../models/data";
+import { Background } from "../../../../models/generated";
 import { Modal } from "coles-solid-library";
 import styles from "./backgroundView.module.scss"
 import Markdown from "../../MarkDown/MarkDown";

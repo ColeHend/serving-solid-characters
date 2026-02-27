@@ -1,5 +1,5 @@
-import { Spell } from "../../../../models";
-import { FeatureTypes } from "../../../../models/old/core.model";
+import { Spell } from "../../../../models/generated";
+import { FeatureTypes } from "../../../../models/data";
 
 /**
  * Retrieves the feature type, falling back to a default if the provided type is nullish.
@@ -417,8 +417,8 @@ export const spellComponents = (spell:Spell) => {
   if(spell.isVerbal) components.push("V");
   if(spell.isSomatic) components.push("S");
   if(spell.isMaterial) components.push("M");
-  if (spell.materials_Needed) {
-    return [...components, spell.materials_Needed ?? null].join(', ')
+  if (spell.materialsNeeded) {
+    return [...components, spell.materialsNeeded ?? null].join(', ')
   }
   return components.join(', ')
 }

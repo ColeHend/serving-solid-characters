@@ -1,6 +1,6 @@
 import { Accessor, Component, createMemo, For, onMount, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { AbilityScores, Race, Subrace } from "../../../../models/data";
+import { AbilityScores, Race, Subrace } from "../../../../models/generated";
 import styles from "./raceSection.module.scss";
 import { FormField, Select, Option, ExpansionPanel, FormGroup } from "coles-solid-library";
 import { useDnDSubraces } from "../../../../shared/customHooks/dndInfo/info/all/subraces";

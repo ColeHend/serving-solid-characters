@@ -12,7 +12,7 @@ import {
     Row, 
     Table
 } from "coles-solid-library"
-import { Spell } from "../../../../models/data";
+import { Spell } from "../../../../models/generated";
 import { characterManager } from "../../../../shared";
 import { Character } from "../../../../models/character.model";
 import styles from "./addSpellPopup.module.scss";

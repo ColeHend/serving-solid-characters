@@ -28,7 +28,8 @@
           "description": "As a Bonus Action, you can attempt to frighten someone with your menacing presence. Choose one creature within 30 feet that can see or hear you. It must make a Wisdom saving throw (DC 8 + Str mod + Prof) or be Frightened of you for 1 minute. The target can repeat the save at end of each of its turns, ending the effect on a success. Once you successfully use this feature on a creature, you can’t use it again until you finish a Long Rest (or expend a Rage use to do it again)."
         }
       ]
-    }
+    },
+    "id": "aa4107af-26f3-4fd8-9a91-a2cbe896cfae"
   },
   {
     "name": "College of Lore",
@@ -57,7 +58,8 @@
           "description": "When you make an ability check and fail, you can expend one use of Bardic Inspiration, roll a Bardic Inspiration die, and add it to your check, possibly turning failure into success. If it still fails, the Bardic Inspiration is not expended."
         }
       ]
-    }
+    },
+    "id": "8e9b151a-b847-47cd-a7e2-27729c0596b2"
   },
   {
     "name": "Life Domain",
@@ -96,7 +98,8 @@
           "description": "When you roll dice to determine the hit points a spell restores, treat any 1s on those dice as the highest possible number (maximized healing)."
         }
       ]
-    }
+    },
+    "id": "fb3b0004-f7db-45a3-ab82-702081864aa5"
   },
   {
     "name": "Circle of the Land",
@@ -131,7 +134,8 @@
           "description": "As a Magic action, you can expend a use of Wild Shape to create a 15-foot cube of spectral vegetation at a point within 120 feet. It lasts 1 minute. You and allies in the area have half-cover and also gain your Nature’s Ward resistance while in the area. As a Bonus Action, you can move this cube up to 60 feet. (This essentially summons protective nature spirits.)"
         }
       ]
-    }
+    },
+    "id": "8c8faaa8-43a2-4620-9186-cc7bc7150fd9"
   },
   {
     "name": "Champion",
@@ -172,7 +176,8 @@
           "description": "At the start of each of your turns, if you have no more than half your hit points left, you regain 5 + Constitution modifier hit points. You don’t gain this benefit if you have 0 hit points."
         }
       ]
-    }
+    },
+    "id": "127653d6-d1fb-4377-ae85-c65aad1cdb2e"
   },
   {
     "name": "Way of the Open Hand (Warrior of the Open Hand)",
@@ -203,7 +208,8 @@
           "description": "When you hit a creature with an unarmed strike, you can spend 4 Focus Points to start imperceptible vibrations in its body. At any time within the next number of days equal to your Monk level, you can use an Action to end the vibrations, forcing the creature to make a CON save. On a failed save, it is reduced to 0 HP. On a success, it takes 10d10 necrotic damage. You can have only one creature under this effect at a time."
         }
       ]
-    }
+    },
+    "id": "17347b9b-7dc7-447b-8f43-1b7a3bac68c8"
   },
   {
     "name": "Oath of Devotion",
@@ -244,7 +250,8 @@
           "description": "If you drop to 0 HP and don’t die outright, you can choose to drop to 1 HP instead. You can use this once per Long Rest (similar to Relentless Endurance)."
         }
       ]
-    }
+    },
+    "id": "9c7ac12d-d60b-430f-b963-1944c89e47ca"
   },
   {
     "name": "Hunter",
@@ -279,7 +286,8 @@
           "description": "When you fail a saving throw or take damage, you can use your Reaction to halve the damage against you and potentially reflect some effect. (In 2014: Evasion-like effect or Stand Against Tide; in 2024 likely Resist damage by Reaction)."
         }
       ]
-    }
+    },
+    "id": "469f040a-7612-49c5-b280-0f12ad8ce0ed"
   },
   {
     "name": "Thief",
@@ -314,7 +322,8 @@
           "description": "You are extraordinarily quick. You can take two turns during the first round of any combat: one at your normal initiative, and an additional turn at initiative count minus 10."
         }
       ]
-    }
+    },
+    "id": "03a23802-3b05-4dcd-9312-2e49678e415a"
   },
   {
     "name": "Draconic Sorcery (Draconic Bloodline)",
@@ -345,7 +354,8 @@
           "description": "You can cast the Summon Draconic Spirit spell without material components. You can also cast it once without a spell slot, regaining this ability after a Long Rest. Additionally, when you cast it, you can choose to have it not require concentration, but if you do, its duration is reduced to 1 minute."
         }
       ]
-    }
+    },
+    "id": "0667b276-b164-430e-8e7d-a669e9e37433"
   },
   {
     "name": "Fiend Patron",
@@ -386,7 +396,8 @@
           "description": "Once per turn when you hit a creature, you can force it to make a Charisma save against your spell-save DC. On a failure, it vanishes into the Lower Planes, taking 8d10 psychic damage (unless it’s a fiend) and is incapacitated until the end of your next turn, then returns to its former space (or the nearest empty one). You regain this ability after a long rest, or sooner by expending a Pact Magic slot."
         }
       ]
-    }
+    },
+    "id": "0b4cee6e-60e4-4f53-8ee6-da45e10d500c"
   },
   {
     "name": "Evoker",
@@ -415,12 +426,13 @@
           "description": "Whenever you cast a Wizard spell from the Evocation school, you can add your Intelligence modifier to one damage roll of that spell."
         }
       ],
-      "14":[
+      "14": [
         {
           "name": "Overchannel",
           "description": "You can increase the power of your spells. When you cast a Wizard spell with a spell slot of levels 1–5 that deals damage, you can deal maximum damage with that spell on the turn you cast it. The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a Long Rest, you take 2d12 Necrotic damage for each level of the spell slot immediately after you cast it. This damage ignores Resistance and Immunity. Each time you use this feature again before finishing a Long Rest, the Necrotic damage per spell level increases by 1d12."
         }
       ]
-    }
+    },
+    "id": "b8360259-b706-424d-95a1-14a713cf1431"
   }
 ]

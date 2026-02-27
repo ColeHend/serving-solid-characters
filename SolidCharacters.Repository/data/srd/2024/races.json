@@ -1,6 +1,6 @@
 [
   {
-    "id": "dragonborn",
+    "id": "2b42f684-ce54-4413-85b6-8262a7463e55",
     "name": "Dragonborn",
     "size": "Medium",
     "speed": 30,
@@ -87,7 +87,7 @@
     }
   },
   {
-    "id": "dwarf",
+    "id": "47bbfb0d-7bcf-4c53-838b-2bdb593b8ca6",
     "name": "Dwarf",
     "size": "Medium",
     "speed": 30,
@@ -165,7 +165,7 @@
     }
   },
   {
-    "id": "elf",
+    "id": "07c0f5a8-439c-4412-b54d-d85a280e65a4",
     "name": "Elf",
     "size": "Medium",
     "speed": 30,
@@ -263,7 +263,7 @@
     }
   },
   {
-    "id": "gnome",
+    "id": "b4a04425-302b-4ce9-acd2-4f3fb286eb4a",
     "name": "Gnome",
     "size": "Small",
     "speed": 30,
@@ -342,7 +342,7 @@
     }
   },
   {
-    "id": "goliath",
+    "id": "b498011d-b53b-42b5-a83f-dc49df19b9e8",
     "name": "Goliath",
     "size": "Medium",
     "speed": 35,
@@ -418,7 +418,7 @@
     }
   },
   {
-    "id": "halfling",
+    "id": "7e6335b1-e62a-4bfa-b5ca-2da3fcf4e67c",
     "name": "Halfling",
     "size": "Small",
     "speed": 30,
@@ -492,7 +492,7 @@
     }
   },
   {
-    "id": "human",
+    "id": "1bf63816-e9c4-49b1-9d61-8ece12dabaf0",
     "name": "Human",
     "size": "Small",
     "speed": 30,
@@ -564,7 +564,7 @@
     }
   },
   {
-    "id": "orc",
+    "id": "bdb7692f-ad71-4c1d-8cf6-a506eac47b6b",
     "name": "Orc",
     "size": "Medium",
     "speed": 30,
@@ -635,7 +635,7 @@
     }
   },
   {
-    "id": "tiefling",
+    "id": "1a7d899b-f6a7-4b65-b639-b236f6cca7ad",
     "name": "Tiefling",
     "size": "Small",
     "speed": 30,
