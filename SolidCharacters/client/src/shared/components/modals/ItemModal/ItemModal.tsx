@@ -1,17 +1,18 @@
 import { Modal } from "coles-solid-library";
 import { Component,Accessor, Setter, createMemo, For, Show } from "solid-js";
-import { Item, ItemProperties } from "../../../../models/data";
+import { srdItem } from "../../../../models/data/generated";
+import { ItemProperties } from "../../../../models/data";
 import styles from "./itemsModal.module.scss";
 
 
 interface modalProps {
-    item: Accessor<Item>;
+    item: Accessor<srdItem>;
     show: [Accessor<boolean>, Setter<boolean>];
 }
 
 export const ItemPopup:Component<modalProps> = (props) => {
     const currentItem = props.item();
-    const propertieKeys = createMemo<Array<keyof ItemProperties>>(()=> {
+    const propertieKeys = createMemo(()=> {
         return Object.keys(props.item().properties);
     })
     

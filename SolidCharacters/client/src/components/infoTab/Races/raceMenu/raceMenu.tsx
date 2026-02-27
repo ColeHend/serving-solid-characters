@@ -1,6 +1,6 @@
 import { Component, createSignal } from "solid-js";
 // import { Race } from "../../../../models";
-import { Race } from "../../../../models/data";
+import { Race } from "../../../../models/generated";
 import { homebrewManager } from "../../../../shared";
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";

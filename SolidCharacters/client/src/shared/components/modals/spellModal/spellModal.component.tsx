@@ -1,5 +1,5 @@
 import { Accessor, Component, createMemo, createSignal, Setter, Show, splitProps, useContext } from "solid-js";
-import { Spell } from "../../../../models";
+import { Spell } from "../../../../models/generated";
 import getUserSettings from "../../../customHooks/userSettings";
 import { SharedHookContext } from "../../../../components/rootApp";
 import { useUserStyles } from "../../../customHooks/utility/style/styleHook";

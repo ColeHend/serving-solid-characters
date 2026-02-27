@@ -40,7 +40,9 @@ export interface ChoiceDetail {
 }
 
 export interface Choices extends Record<string, ChoiceDetail> {
+  [key: string]: ChoiceDetail;
 }
+
 
 export interface Class5E {
   id: string;
@@ -239,12 +241,6 @@ export interface Subclass {
   features: Record<number, FeatureDetail[]>;
   choices?: Choices;
   spellcasting?: Spellcasting;
-
-  /**
-   * Internal persistence key combining parent class + name (lowercased) to guarantee uniqueness.
-   * Added in DB schema v2. Not part of exported payloads.
-   */
-  storage_key?: string;
 }
 
 export interface Subrace extends Race {

@@ -1,7 +1,7 @@
 import { Accessor, createEffect } from "solid-js";
 import { useDnDClasses } from "./shared/customHooks/dndInfo/info/all/classes";
 import { useDnDSubclasses } from "./shared/customHooks/dndInfo/info/all/subclasses";
-import { Class5E, Subclass } from "./models/data";
+import { Class5E, Subclass } from "./models/generated";
 
 export function useTest(): [Accessor<Class5E[]>, Accessor<Subclass[]>] {
   const classes = useDnDClasses({ overrideVersion: "2024" });

@@ -1,7 +1,7 @@
 import { Observable, take, tap, of, concatMap, OperatorFunction, catchError, finalize, endWith, retry } from "rxjs";
 import { Accessor, Setter, createSignal } from "solid-js";
 import { Clone } from "./utility/tools/Tools";
-import { Background, DnDClass, Feat, Item, Race, Spell } from "../../models";
+import { Background, Class5E, Feat, Item, Race, Spell } from "../../models/generated";
 import homebrewManager from "./homebrewManager";
 import {addSnackbar} from "coles-solid-library";
 
@@ -44,9 +44,9 @@ class HomebrewSearch {
   }
 
 
-  public dndClasses():DnDClass {
+  public dndClasses():Class5E {
 
-    return {} as DnDClass
+    return {} as Class5E
   }
 
 

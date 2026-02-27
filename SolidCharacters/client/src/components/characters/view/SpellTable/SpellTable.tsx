@@ -1,5 +1,5 @@
 import { Accessor, Component, createMemo, Setter } from "solid-js";
-import { Spell } from "../../../../models/data";
+import { Spell } from "../../../../models/generated";
 import { Table, Column, Header, Cell, Row, Button, Icon, Checkbox, addSnackbar } from "coles-solid-library";
 import { Character, CharacterSpell } from "../../../../models/character.model";
 import styles from "./SpellTable.module.scss";
@@ -67,7 +67,7 @@ export const SpellTable:Component<tableProps> = (props) => {
                     <span>{spell.school}</span>
                     <span>{spell.duration}</span>
                     <span>{spell.castingTime}</span>
-                    <span>{spell.is_ritual && <em> (Ritual)</em>}</span>    
+                    <span>{spell.ritual && <em> (Ritual)</em>}</span>    
                 </span>}</Cell>
             </Column>
             <Column name="level">

@@ -1,5 +1,5 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, JSX, Setter } from "solid-js";
-import { Item, ItemType } from "../../../../../models/data";
+import { Item, ItemType } from "../../../../../models/generated";
 import { Button, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { Paginator } from "../../../../../shared";
@@ -44,8 +44,8 @@ export const AddItem: Component<props> = (props) => {
                 setSearchedItems(old => old.filter(olditem => olditem.type === 3));
                 break;
             
-            case 4: // Accessory
-                setSearchedItems(old => old.filter(olditem => olditem.type === 4));
+            // case 4: // Accessory
+            //     setSearchedItems(old => old.filter(olditem => olditem.type === 4));
         }
     }
     return <div class={`${styles.addItemWrapper}`}>
@@ -67,7 +67,7 @@ export const AddItem: Component<props> = (props) => {
 
             <Button onClick={()=>sortByType(1)}>Armors</Button>
 
-            <Button onClick={()=>sortByType(4)}>Accessory</Button>
+            {/* <Button onClick={()=>sortByType(4)}>Accessory</Button> */}
         </div>
 
        <div class={`${styles.tableWrapper}`}>

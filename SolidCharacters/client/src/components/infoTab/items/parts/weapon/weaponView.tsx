@@ -17,7 +17,8 @@ import {
 import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
 import { Clone, Paginator } from "../../../../../shared";
 import { useSearchParams } from "@solidjs/router";
-import { Item, ItemProperties } from "../../../../../models/data";
+import { Item } from "../../../../../models/generated";
+import { srdItem, ItemProperties } from "../../../../../models/data/generated";
 import { costToCopper } from "../../item";
 import styles from "./weaponsView.module.scss";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
@@ -89,7 +90,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
 
 
 
-    const dataSort = (sortBy: keyof Item) => {
+    const dataSort = (sortBy: keyof srdItem) => {
         setCurrentSort(old => {
           if (old.sortKey === sortBy) {
             return Clone({ sortKey: sortBy as string, isAsc: !old.isAsc });
@@ -158,7 +159,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
                             <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                         </Show>
                     </Header>
-                    <Cell<Item>>
+                    <Cell<srdItem>>
                         {(item)=><span>
                             {item.name}
                         </span>}
@@ -174,7 +175,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
                             <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                         </Show>
                     </Header>
-                    <Cell<Item>>
+                    <Cell<srdItem>>
                         {(item)=><span>
                             {item.properties?.Damage ?? "" }
                         </span>}
@@ -191,7 +192,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
                             <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                         </Show>
                     </Header>
-                    <Cell<Item>>
+                    <Cell<srdItem>>
                         {(item)=><span>
                             {item.cost}
                         </span>}
@@ -200,7 +201,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
 
                 <Column name="menu">
                     <Header><></></Header>
-                    <Cell<Item> onClick={(e)=>e.stopPropagation()}>
+                    <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
                     {(item)=><ItemsMenu item={item} />}
                     </Cell>
                 </Column>

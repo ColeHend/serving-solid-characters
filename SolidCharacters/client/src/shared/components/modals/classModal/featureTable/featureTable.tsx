@@ -1,5 +1,5 @@
 import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
-import { CasterType, Class5E, Spellslots } from "../../../../../models/data";
+import { CasterType, Class5E, Spellslots } from "../../../../../models/generated";
 import {
   formatKeysForDisplay,
 } from "../../../../customHooks/utility/tools/stringsHelper";

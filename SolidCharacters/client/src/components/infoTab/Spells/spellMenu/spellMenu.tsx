@@ -1,7 +1,7 @@
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { Accessor, Component, createSignal, Setter, Show } from "solid-js";
 import { homebrewManager } from "../../../../shared";
-import { Spell } from "../../../../models";
+import { Spell } from "../../../../models/generated";
 import { useNavigate } from "@solidjs/router";
 import styles from "./spellMenu.module.scss";
 import { AddSpellPopup } from "../addSpellPopup/addSpellPopup";

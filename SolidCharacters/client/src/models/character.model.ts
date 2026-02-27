@@ -117,7 +117,7 @@ export interface CharacterSavingThrow {
 
 // -- Character Form Models --
 
-type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"> 
+type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"> 
 
 export interface CharacterForm extends halfCharacter {
   race: string;

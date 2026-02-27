@@ -3,8 +3,9 @@ import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import HombrewDB from "../../../utility/localDB/new/homebrewDB";
 import { createSignal } from "solid-js";
+import { srdItem } from "../../../../../models/data/generated";
 
-const [items, setItems] = createSignal<Item[]>([]);
+const [items, setItems] = createSignal<srdItem[]>([]);
 
 export function useGetHombrewItems() {
   const LocalItems = HttpClient$.toObservable(HombrewDB.items.toArray());

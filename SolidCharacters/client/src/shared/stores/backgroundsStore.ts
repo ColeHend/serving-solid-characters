@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
 import { createMemo, createRoot } from "solid-js";
-import type { Background } from "../../models/data/background";
+import type { Background } from "../../models/generated";
 import { useDnDBackgrounds } from "../customHooks/dndInfo/info/all/backgrounds";
 
 interface BackgroundsState {
@@ -63,6 +63,7 @@ function createBackgroundsStore() {
 
   function selectNew() {
     const draft: Background = {
+      id: '',
       name: '',
       desc: '',
       proficiencies: { armor: [], weapons: [], tools: [], skills: [] },

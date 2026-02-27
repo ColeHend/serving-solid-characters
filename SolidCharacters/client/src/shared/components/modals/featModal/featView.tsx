@@ -1,5 +1,5 @@
 import { Accessor, Component, createMemo, For, Match, Setter, Show, Switch } from "solid-js";
-import { Feat, PrerequisiteType } from "../../../../models/data";
+import { Feat, PrerequisiteType } from "../../../../models/generated";
 import style from "./featView.module.scss";
 import { Modal } from "coles-solid-library";
 import Markdown from "../../MarkDown/MarkDown";

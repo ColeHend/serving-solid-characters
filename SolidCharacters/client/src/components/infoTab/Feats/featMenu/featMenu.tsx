@@ -3,7 +3,7 @@ import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { Component, createSignal } from "solid-js";
 import styles from "./featMenu.module.scss";
 // import { Feat } from "../../../../models";
-import { Feat } from "../../../../models/data";
+import { Feat } from "../../../../models/generated";
 import { homebrewManager } from "../../../../shared";
 
 interface menuProps {
