@@ -38,6 +38,7 @@ export interface MadFeature {
     value: Record<string, string>;
     type: MadType;
     prerequisites?: Madprerequisite[];
+    group: number;
 }
 
 export enum MadType {
@@ -68,7 +69,7 @@ export interface Madprerequisite {
      * the group number for "or" prerequisites, prerequisites with the same group number are "or" prerequisites, prerequisites with group 0 are "and" prerequisites;
      * 
      *  @example 
-     * "for example, if the prerequisites are "Strength Score >= 15 or Dexterity Score >= 15", the group number for both prerequisites would be 1, if the prerequisites are "Strength Score >= 15 and Dexterity Score >= 15", the group number for both prerequisites would be 0."
+     * 
      */
     group: number;
 }
