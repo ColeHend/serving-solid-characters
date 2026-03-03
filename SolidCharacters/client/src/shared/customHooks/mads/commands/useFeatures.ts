@@ -1,12 +1,14 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { MadFeature as MadFeat } from "../../../../models/generated";
+import { DebugConsole } from "../../DebugConsole";
 
 const AddFeature = (character: Character, feature: MadFeature) => {
     const newFeatureName = feature.value?.['feature']?.trim() ?? "";
     const newFeatureDescription = feature.value?.['description']?.trim() ?? "";
     
     if (!newFeatureName) {
-        console.error("No feature name provided for AddFeature command");
+        DebugConsole.error("No feature name provided for AddFeature command");
         return character;
     }
 
@@ -15,7 +17,7 @@ const AddFeature = (character: Character, feature: MadFeature) => {
             name: newFeatureName,
             description: newFeatureDescription,
             metadata: {
-                mads: feature,
+                mads: feature as MadFeat,
             }
         });
     }
@@ -27,7 +29,7 @@ const RemoveFeature = (character: Character, feature: MadFeature) => {
     const featureNameToRemove = feature.value?.['feature']?.trim() ?? "";
 
     if (!featureNameToRemove) {
-        console.error("No feature name provided for RemoveFeature command");
+        DebugConsole.error("No feature name provided for RemoveFeature command");
         return character;
     }
 
@@ -39,13 +41,13 @@ const RemoveFeature = (character: Character, feature: MadFeature) => {
 function useFeatures (character: Character) {
     
     if (!character) {
-        console.error("No character provided to useFeatures");
+        DebugConsole.error("No character provided to useFeatures");
         return;
     }
 
     character.features.forEach(feature => {
         if (feature.metadata?.mads) {
-            const madFeature = feature.metadata.mads;
+            const madFeature = feature.metadata.mads as MadFeature;
             
             switch (madFeature.command) {
                 case 'AddFeatures':

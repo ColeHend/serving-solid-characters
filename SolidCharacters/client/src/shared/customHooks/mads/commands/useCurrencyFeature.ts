@@ -1,5 +1,6 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 const AddCurrencyFeature = (character: Character, feature: MadFeature): Character => {
     const currencyType = feature.value?.['type'] ?? '';
@@ -31,12 +32,12 @@ const RemoveCurrencyFeature = (character: Character, feature: MadFeature): Chara
 
 function useCurrencyFeature (character: Character) {
     if (!character) {
-        console.error("No Character Found!");
+        DebugConsole.error("No Character Found!");
         return;
     }
 
     character.features.forEach(feature => {
-        let mads = feature.metadata?.mads;
+        const mads = feature.metadata?.mads as MadFeature;
 
         if (mads && mads.command === 'AddCurrency') {
             character = AddCurrencyFeature(character, mads);

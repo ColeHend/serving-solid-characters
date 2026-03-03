@@ -1,5 +1,6 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 /**
  * requires an amount value in the feature.value object, which determines how the character's proficiencies will be increased by the proficiency level 
@@ -14,7 +15,7 @@ const addAllProficiencyFeature = (character: Character, feature: MadFeature) => 
     const AmntToDevide = +feature.value?.['amount'];
 
     if (isNaN(AmntToDevide) || AmntToDevide <= 0) {
-        console.error("Invalid amount provided for AddProficiencies command");
+        DebugConsole.error("Invalid amount provided for AddProficiencies command");
         return character;
     }
 
@@ -35,7 +36,7 @@ const removeAllProficiencyFeature = (character: Character, feature: MadFeature) 
     const AmntToDevide = +feature.value?.['amount'];
     
     if (isNaN(AmntToDevide) || AmntToDevide <= 0) {
-        console.error("Invalid amount provided for RemoveProficiencies command");
+        DebugConsole.error("Invalid amount provided for RemoveProficiencies command");
         return character;
     }
 
@@ -62,16 +63,17 @@ function getProficiencyBonus(level: number): number {
 function useAllProficiencyFeature (character: Character ): Character | undefined {
     
     if (!character) {
-        console.error(`Character couldn't be found!`);
+        DebugConsole.error(`Character couldn't be found!`);
         return;
     }
     
     character.features.forEach(feature => {
-        let mads = feature?.metadata?.mads;
+        const mads = feature?.metadata?.mads as MadFeature;
+
         if (mads && mads.command === "AddAllProficiencies") {
-            character = addAllProficiencyFeature(character as any, mads);
+            character = addAllProficiencyFeature(character, mads);
         } else if (mads && mads.command === "RemoveAllProficiencies") {
-            character = removeAllProficiencyFeature(character as any, mads);
+            character = removeAllProficiencyFeature(character, mads);
         }
     });
     

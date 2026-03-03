@@ -1,5 +1,6 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 const addSpeedFeature = (character: Character, feature: MadFeature): Character => {
     const speedIncrease = feature.value?.['speed'];
@@ -20,12 +21,12 @@ const removeSpeedFeature = (character: Character, feature: MadFeature): Characte
 function useSpeedFeature (character: Character) {
     
     if (!character) {
-        console.error("No character was found!");
+        DebugConsole.error("No character was found!");
         return;
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads;
+        const MadFeature = feature.metadata?.mads as MadFeature;
 
         if (MadFeature) {
             switch (MadFeature.command) {

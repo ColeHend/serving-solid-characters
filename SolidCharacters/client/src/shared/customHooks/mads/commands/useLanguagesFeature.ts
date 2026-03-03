@@ -1,5 +1,6 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 const addLanguageFeature = (character: Character, feature: MadFeature): Character => {
     const language = feature.value?.['name'] ?? '';
@@ -25,12 +26,12 @@ const removeLanguageFeature = (character: Character, feature: MadFeature): Chara
 function useLanguageFeature (character: Character) {
     
     if (!character) {
-        console.error("No character provided to useLanguageFeature");
+        DebugConsole.error("No character provided to useLanguageFeature");
         return;
     }
 
     character.features.forEach(feature => {
-        let mads = feature.metadata?.mads;
+        const mads = feature.metadata?.mads as MadFeature;
 
         if (mads) {
             if (mads.command === 'AddLanguages') {

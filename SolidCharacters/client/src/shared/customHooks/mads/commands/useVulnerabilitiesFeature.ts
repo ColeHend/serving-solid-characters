@@ -1,11 +1,12 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 const addVulnerabilityFeature = (character: Character, feature: MadFeature) => {
     const type = feature.value?.["vulnerability"];
 
     if (!type) {
-        console.error("No vulnerability type provided for AddVulnerability command");
+        DebugConsole.error("No vulnerability type provided for AddVulnerability command");
         return character;
     }
 
@@ -20,7 +21,7 @@ const removeVulnerabilityFeature = (character: Character, feature: MadFeature) =
     const type = feature.value?.["vulnerability"];
 
     if (!type) {
-        console.error("No vulnerability type provided for RemoveVulnerability command");
+        DebugConsole.error("No vulnerability type provided for RemoveVulnerability command");
         return character;
     }
 
@@ -32,12 +33,12 @@ const removeVulnerabilityFeature = (character: Character, feature: MadFeature) =
 function useVulnerabilitiesFeature(character: Character) {
 
     if (!character) {
-        console.error("No character was found!");
+        DebugConsole.error("No character was found!");
         return;
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads;
+        const MadFeature = feature.metadata?.mads as MadFeature;
 
         if (MadFeature) {
             switch (MadFeature.command) {

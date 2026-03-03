@@ -69,7 +69,7 @@ export default [
       "no-with": "error",
       "require-yield": "error",
       "use-isnan": "error",
-      "valid-typeof": "error"
+      "valid-typeof": "error",
     }
   },
   ...tseslint.configs.recommended,
@@ -78,6 +78,7 @@ export default [
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-unused-expressions": "warn",
+      "@typescript-eslint/no-empty-object-type": "warn"
     }
   }
 ];
