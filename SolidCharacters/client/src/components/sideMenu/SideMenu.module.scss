@@ -13,7 +13,7 @@ $padding: 7px;
     width: 180px !important;
     padding: $padding;
     background-color: color-mix(in srgb, vars.$color-surface 90%, transparent) !important;
-    z-index: 2;
+    z-index: 1;
 
     ul {
       list-style: none;

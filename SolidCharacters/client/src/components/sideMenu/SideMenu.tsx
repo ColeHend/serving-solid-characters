@@ -1,9 +1,9 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, onMount, Setter, Show, untrack } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { UserSettings } from "../../models/userSettings";
 import { useNavigate } from "@solidjs/router";
 import { Portal } from "solid-js/web";
 import { ExtendedTab } from "../../models/extendedTab";
-import { Button, Container, ExpansionPanel, Icon, Modal } from "coles-solid-library";
+import { Button, Container, Icon, Modal } from "coles-solid-library";
 import styles from "./SideMenu.module.scss";
 import useClickOutside from "solid-click-outside";
 import { FlatCard } from "../../shared/components/flatCard/flatCard";
@@ -19,6 +19,8 @@ interface MenuProps {
     location?: "left" | "right";
 }
 
+// const highestZIndex:number = 1;
+
 export const SideMenu:Component<MenuProps> = (props) => {
     const [isClosing, setIsClosing] = createSignal(false);
     const [isOpening, setIsOpening] = createSignal(false);
@@ -29,12 +31,19 @@ export const SideMenu:Component<MenuProps> = (props) => {
     const navigate = useNavigate();
 
     const [showMenu, setShowMenu] = props.defaultShowList;
-    const [isMobile, setIsMobile] = props.defaultIsMobile;
+    // const [isMobile, setIsMobile] = props.defaultIsMobile;
     const [userSettings, setUserSettings] = props.defaultUserSettings;
 
     const [menuRef, setMenuRef] = createSignal<HTMLDivElement | undefined>();
     
     const anchorEl = createMemo(() => props.anchorElement());
+
+    const isTopmost = () => {
+        const menu = menuRef();
+        if (!menu) return false;
+        
+        return menu === document.activeElement || menu.contains(document.activeElement);
+    };
 
     const updatePosition = () => {
         const anchor = anchorEl();
@@ -42,7 +51,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
 
         if (anchor && menu) {
             const anchorRect = anchor.getBoundingClientRect();
-            const menuRect = menu.getBoundingClientRect();
+            // const menuRect = menu.getBoundingClientRect();
             
             menu.style.position = 'absolute';
 
@@ -124,7 +133,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
         }
 
         useClickOutside(menuRef, () => {
-            if (showMenu() && showSettings() !== true) setShowMenu(false);
+            if (isTopmost()) setShowMenu(false);
         });
     });
 
@@ -205,7 +214,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
                             </Show>
                         </>}
                     </For>
-                </ul>
+               </ul>
             </Container>
         </Portal>
         <Modal title="Settings" show={[showSettings, setShowSettings]}>
