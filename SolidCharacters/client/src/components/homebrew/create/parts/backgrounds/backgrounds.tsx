@@ -3,8 +3,8 @@ import { Body, Input, Select, Option, Button, FormField } from "coles-solid-libr
 import styles from './backgrounds.module.scss';
 import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { createStore } from "solid-js/store";
-import { Background } from "../../../../../models/data";
-import type { FeatureDetail } from "../../../../../models/data/features";
+import { Background, FeatureDetail } from "../../../../../models/generated";
+// import type { FeatureDetail } from "../../../../../models/data/features";
 import { useDnDBackgrounds } from "../../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/feats";
 import { backgroundsStore } from "../../../../../shared/stores/backgroundsStore";

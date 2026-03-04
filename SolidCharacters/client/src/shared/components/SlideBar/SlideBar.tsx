@@ -1,27 +1,30 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, Setter, Show } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, JSX, Setter, Show, splitProps } from "solid-js";
 import { Portal } from "solid-js/web";
 import { Container } from "coles-solid-library";
 import styles from "./SideMenu.module.scss";
 import useClickOutside from "solid-click-outside";
 
-interface MenuProps {
+interface MenuProps extends JSX.HTMLAttributes<HTMLDivElement> {
     show: [Accessor<boolean>, Setter<boolean>],
     anchorElement: Accessor<HTMLElement | undefined>;
     location?: "left" | "right";
+    children: JSX.Element;
 }
 
 const highestZIndex:number = 0;
 
 export const SideMenu:Component<MenuProps> = (props) => {
+    const [local, other] = splitProps(props, ["anchorElement","children","location","show"]);
+
     const [isClosing, setIsClosing] = createSignal(false);
     const [isOpening, setIsOpening] = createSignal(false);
     const [shouldRender, setShouldRender] = createSignal(false);
 
-    const [showMenu, setShowMenu] = props.show;
+    const [showMenu, setShowMenu] = local.show;
 
     const [menuRef, setMenuRef] = createSignal<HTMLDivElement | undefined>();
     
-    const anchorEl = createMemo(() => props.anchorElement());
+    const anchorEl = createMemo(() => local.anchorElement());
 
     const isTopmost = () => {
         const menu = menuRef();
@@ -40,11 +43,11 @@ export const SideMenu:Component<MenuProps> = (props) => {
             
             menu.style.position = 'absolute';
 
-            if (props.location === "left") {
+            if (local.location === "left") {
                 menu.style.top = `${anchorRect.bottom}px`;
                 menu.style.left = `${document.body.getBoundingClientRect().left}px`;
 
-            } else if (props.location === "right") {
+            } else if (local.location === "right") {
                 menu.style.top = `${anchorRect.bottom}px`;
                 menu.style.right = `${document.body.getBoundingClientRect().left}px`;
             }
@@ -53,7 +56,6 @@ export const SideMenu:Component<MenuProps> = (props) => {
 
 
     };
-
 
     createEffect(()=>{
         if (showMenu()) {
@@ -78,17 +80,17 @@ export const SideMenu:Component<MenuProps> = (props) => {
 
         useClickOutside(menuRef, () => {
             if (showMenu() !== true) {
-                if (isTopmost()) setShowMenu(false);
+                if (isTopmost()) setShowMenu(false); // this doesn't work properly. this can only setShowMenu to false when its the topmost element being displayed.
             };
         });
     });
 
     const setOpeningClass = ():string => {
-        return props.location === "right" ? styles.openingRight : styles.openingLeft;
+        return local.location === "right" ? styles.openingRight : styles.openingLeft;
     }
 
     const setClosingClass = ():string => {
-        return props.location === "right" ? styles.closingRight : styles.closingLeft;
+        return local.location === "right" ? styles.closingRight : styles.closingLeft;
     }
 
     createEffect(() => updatePosition());
@@ -96,8 +98,8 @@ export const SideMenu:Component<MenuProps> = (props) => {
 
     return <Show when={shouldRender()}>
         <Portal ref={menuRef()}>
-            <Container theme="container" ref={ref => setMenuRef(ref)} class={`${styles.sideMenu} ${isOpening() ? setOpeningClass() : ""} ${isClosing() ? setClosingClass() : ""}`}>
-              asd
+            <Container theme="container" {...other} ref={ref => setMenuRef(ref)} class={`${styles.sideMenu} ${isOpening() ? setOpeningClass() : ""} ${isClosing() ? setClosingClass() : ""}`}>
+              {local.children}
             </Container>
         </Portal>
     </Show>

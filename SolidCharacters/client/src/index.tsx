@@ -70,6 +70,7 @@ if (root) {
           needRefresh={needRefresh()}
           offlineReady={offlineReady()}
           updateServiceWorker={applyUpdateAndReload}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           version={swVersion() || (import.meta as any).env?.VITE_APP_VERSION}
         />
         <Show when={swVersion()}>

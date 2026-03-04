@@ -1,7 +1,7 @@
 import { Component, For, Show, createSignal } from "solid-js";
 import { Button, Chip, Modal, Input, FormField } from "coles-solid-library";
 import styles from "../backgrounds.module.scss";
-import { FeatureDetail } from "../../../../../../models/data/features";
+import { FeatureDetail } from "../../../../../../models/generated";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 
 interface Props {
