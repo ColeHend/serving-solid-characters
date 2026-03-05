@@ -11,11 +11,9 @@ import 'solid-devtools';
 import ReloadPrompt from "./ReloadPrompt";
 import { registerServiceWorker, needRefresh, offlineReady, swVersion, swBuildTime, applyUpdateAndReload } from './pwa/register';
 import Homebrew from "./components/homebrew/homebrew";
-import View from "./components/homebrew/view/view";
 import { Classes } from "./components/homebrew/create/parts/classes/classes";
 import Items from "./components/homebrew/create/parts/items/items";
 import Feats from "./components/homebrew/create/parts/feats/feats";
-import Backgrounds from "./components/homebrew/create/parts/backgrounds/backgrounds";
 import Spells from "./components/homebrew/create/parts/spells/spells";
 import Races from "./components/homebrew/create/parts/races/races";
 import masterSpells from "./components/infoTab/Spells/Spells";
@@ -32,6 +30,7 @@ import Characters from "./components/characters/characters";
 import CharacterCreate from "./components/characters/create/create";
 import CharacterView from "./components/characters/view/view";
 import { CreateCharacterPDF } from "./components/characters/characterCreatePDF/characterCreatePDF";
+import { HomebrewBackgrounds } from "./components/homebrew/Parts/background/Background";
 
 console.log("Application initializing...");
 
@@ -97,18 +96,17 @@ if (root) {
           </Route>
           <Route path="/homebrew">
             <Route path="/" component={Homebrew} />
-            <Route path="/view" component={View} />
             <Route path="/create" >
               <Route path="/classes" component={Classes} />
-              <Route path={"/subclasses"} component={Subclasses} />
+              <Route path="/subclasses" component={Subclasses} />
               <Route path="/items" component={Items} />
               <Route path="/feats" component={Feats} />
-              <Route path="/backgrounds" component={Backgrounds} />
+              <Route path="/backgrounds" component={HomebrewBackgrounds} />
               <Route path="/spells" component={Spells} />
               <Route path="/races" component={Races} />
               <Route path="/subraces" component={Subraces} />
             </Route>
-            <Route path="/*any" component={View} />
+            <Route path="/*any" component={Homebrew} />
           </Route>
           <Route path="/about" component={aboutPage}></Route>
         </Router>

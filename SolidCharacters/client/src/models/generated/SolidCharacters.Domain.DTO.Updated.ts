@@ -39,6 +39,7 @@ export interface ChoiceDetail {
   amount: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Choices extends Record<string, ChoiceDetail> {
 }
 
