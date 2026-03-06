@@ -32,3 +32,20 @@
     padding: 6px;
     align-items: center;
 }
+
+.LangSelectBox {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    margin-bottom: 2px;
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+    }
+}
+
+.equipmentSelectBox {
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+}

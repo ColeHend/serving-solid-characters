@@ -27,6 +27,8 @@ export const OriginFeat:Component<SectionProps> = (props) => {
 
         <Show when={featID() !== ""}>
             <Chip value={`${props.getSelectedFeat(featID())?.details.name}`} />
+            
+            {props.getSelectedFeat(featID())?.details.description}
         </Show>
     </FlatCard>
 }

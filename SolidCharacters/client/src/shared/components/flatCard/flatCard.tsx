@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, JSX, onCleanup, Show, splitProps } from "solid-js";
+import { Component, createEffect, createSignal, JSX, onCleanup, Show, splitProps } from "solid-js";
 import styles from "./flatCard.module.scss";
 import { Button, Container, Icon } from "coles-solid-library";
 

@@ -13,6 +13,7 @@ import { Proficiencies } from "./Sectons/Proficiencies/Proficiencies";
 import { Languages } from "./Sectons/Languages/Languages";
 import { OptionalFeatures } from "./Sectons/Features/Features";
 import { Saving } from "./Sectons/Saving/Saving";
+import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
 
 export const HomebrewBackgrounds: Component = () => {
 
@@ -53,9 +54,30 @@ export const HomebrewBackgrounds: Component = () => {
         "Charisma"
     ]
 
+    const AllLanguages = [
+        "Common",
+        "Undercommon",
+        "Abyssal",
+        "Infernal",
+        "Celestial",
+        "Primordial",
+        "Draconic",
+        "Dwarvish",
+        "Elvish",
+        "Giant",
+        "Gnomish",
+        "Goblin",
+        "Halfling",
+        "Orc",
+        "Sylvan",
+        "Deep Speech",
+    ]
+
     const srdFeats = useDnDFeats();
 
-    const originFeats = createMemo(() => srdFeats().filter(x => x.prerequisites.length === 0))
+    const originFeats = createMemo(() => srdFeats().filter(x => x.prerequisites.length === 0));
+
+    const srdItems = useDnDItems();
 
     // functions
 
@@ -98,11 +120,20 @@ export const HomebrewBackgrounds: Component = () => {
         <Form data={formGroup} onSubmit={handleSubmit}>  
             <Identity formGroup={formGroup} />
 
-            <AbilityScore abilityScores={abilityScores} formGroup={formGroup} />
+            <AbilityScore 
+                abilityScores={abilityScores} 
+                formGroup={formGroup} 
+                allStats={abillityOptions}/>
 
-            <Equipment startItemKeys={startItemKeys} startingEquipment={startingEquipment} />
+            <Equipment 
+                startItemKeys={startItemKeys} 
+                startingEquipment={[startingEquipment, setStartingEquipment]} 
+                allItems={srdItems}/>
 
-            <OriginFeat featID={featID} getSelectedFeat={getSelectedFeat} originFeats={originFeats} />
+            <OriginFeat 
+                featID={featID} 
+                getSelectedFeat={getSelectedFeat} 
+                originFeats={originFeats} />
 
             <Proficiencies 
                 weaponProfs={weaponProfs} 
@@ -110,7 +141,10 @@ export const HomebrewBackgrounds: Component = () => {
                 skillProfs={skillProfs} 
                 toolProfs={toolProfs} />
 
-            <Languages />
+            <Languages 
+                languages={[languages, setLanguages]}
+                form={formGroup}
+                allLangs={AllLanguages}/>
 
             <OptionalFeatures />
 
