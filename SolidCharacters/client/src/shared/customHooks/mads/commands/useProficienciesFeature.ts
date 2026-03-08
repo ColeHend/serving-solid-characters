@@ -1,11 +1,12 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 const addProficienciesFeature = (character: Character, feature: MadFeature) => {
     const newProficiencies = feature.value['proficiencies']?.split(',').map(p => p.trim()) || [];
 
     if (newProficiencies.length === 0) {
-        console.error("No proficiencies provided for AddProficiencies command");
+        DebugConsole.error("No proficiencies provided for AddProficiencies command");
         
         return character;
     }
@@ -32,7 +33,7 @@ const RemoveProficienciesFeature = (character: Character, feature: MadFeature) =
     const newProficiencies = feature.value['proficiencies']?.split(',').map(p => p.trim()) || [];
 
     if (newProficiencies.length === 0) {
-        console.error("No proficiencies provided for RemoveProficiencies command");
+        DebugConsole.error("No proficiencies provided for RemoveProficiencies command");
         
         return character;
     }
@@ -58,12 +59,12 @@ const RemoveProficienciesFeature = (character: Character, feature: MadFeature) =
 function useProficienciesFeature (character: Character) {
 
     if (!character) {
-        console.error("No character provided to useProficienciesFeature");
+        DebugConsole.error("No character provided to useProficienciesFeature");
         return;
     }
 
     character.features.forEach(feature => {
-        let mads = feature.metadata?.mads;
+        const mads = feature.metadata?.mads as MadFeature;
         
         if (mads) {
             if (mads.command === 'AddProficiencies') {

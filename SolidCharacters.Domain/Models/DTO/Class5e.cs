@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using SolidCharacters.Domain.JsonModels;
 namespace SolidCharacters.Domain.DTO.Updated
 {
 
@@ -27,6 +29,30 @@ public class FeatureMetadata
   [JsonProperty("recharge")] public string? Recharge { get; set; }
   [JsonProperty("spells")] public List<string>? Spells { get; set; }
   [JsonProperty("category")] public string? Category { get; set; }
+  [JsonProperty("mads")] public MadFeature? Mads {get; set;}
+}
+
+public enum MadType
+{
+    Character = 0, // changes on the character sheet
+    Info = 1 // more detailed information about the feat/feature like numberOFUses, recharge info, etc
+}
+
+public class MadFeature
+{
+  public required string Command {get; set;}
+  public required Dictionary<string, string> Value {get; set;}
+  public required MadType Type {get; set;} 
+  public required MadPrerequisite[] Prerequisites {get; set;}
+  public int Group {get; set;}
+}
+
+public class MadPrerequisite
+{
+  public string? Value {get; set;}
+  public string? Operation {get; set;}
+  public string? KeyValue {get; set;}
+  public int Group {get; set;}
 }
 
 public class Prerequisite
@@ -36,7 +62,10 @@ public class Prerequisite
 }
 
 
-public class Choices : Dictionary<string, ChoiceDetail> { }
+public class Choices : Dictionary<string, ChoiceDetail>
+{
+    
+}
 
 public class ChoiceDetail
 {

@@ -1,5 +1,6 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 // add spell feature
 
@@ -10,7 +11,7 @@ import { MadFeature } from "../madModels";
  * @returns {Character} The updated character with the new spell feature added.
  */
 const AddSpellFeature = (character: Character, feature: MadFeature): Character => {
-    const spellName = feature.value?.['name'] ?? '';
+    const spellName = feature.value?.['ID'] ?? '';
     if (spellName) {
         character.spells = [...character.spells, {
             name: spellName,
@@ -29,7 +30,7 @@ const AddSpellFeature = (character: Character, feature: MadFeature): Character =
  * @returns {Character} The updated character with the specified spell feature removed.
  */
 const RemoveSpellFeature = (character: Character, feature: MadFeature): Character => {
-    const spellName = feature.value?.['name'] ?? '';
+    const spellName = feature.value?.['ID'] ?? '';
     if (spellName) character.spells = character.spells.filter(s => s.name !== spellName);
     return character;
 }
@@ -45,19 +46,19 @@ const RemoveSpellFeature = (character: Character, feature: MadFeature): Characte
 function useSpellFeature(character: Character, spellID: string): Character | undefined {
 
     if (!character) {
-        console.error(`Character couldn't be found!`);
+        DebugConsole.error(`Character couldn't be found!`);
         return;
     }
 
     // search for applicable mad features for the character and spell
 
     character.features.forEach(feature => {
-        let mads = feature?.metadata?.mads;
+        const mads = feature?.metadata?.mads as MadFeature;
         
-        if (mads && mads.command === "AddSpells" && mads.value['id'] === spellID) {
-            character = AddSpellFeature(character as any, mads);
-        } else if (mads && mads.command === "RemoveSpells" && mads.value['id'] === spellID) {
-            character = RemoveSpellFeature(character as any, mads);
+        if (mads && mads.command === "AddSpells" && mads.value['ID'] === spellID) {
+            character = AddSpellFeature(character, mads);
+        } else if (mads && mads.command === "RemoveSpells" && mads.value['ID'] === spellID) {
+            character = RemoveSpellFeature(character, mads);
         }
 
     });

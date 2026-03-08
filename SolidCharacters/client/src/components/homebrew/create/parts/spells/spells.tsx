@@ -4,22 +4,23 @@ import { Input, Button, Select, Option, Chip, Body, TextArea, FormField, Checkbo
 import { getAddNumberAccent, UniqueSet } from "../../../../../shared/";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { createStore } from "solid-js/store";
-import { Spell } from "../../../../../models";
+import { Spell } from "../../../../../models/generated";
 import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
 const Spells: Component = () => {  
+  
   const [currentSpell, setCurrentSpell] = createStore<Spell>({
     id: "",
     name: "",
     description: "",
     duration: "",
-    is_concentration: false,
+    concentration: false,
     level: "0",
     range: "",
-    is_ritual: false,
+    ritual: false,
     school: "",
     castingTime: "",
     damageType: "",
@@ -27,24 +28,28 @@ const Spells: Component = () => {
     isMaterial: false,
     isSomatic: false,
     isVerbal: false,
-    materials_Needed: "",
+    materialsNeeded: "",
     higherLevel: "",
     classes: [],
     subClasses: [],
     components:"", 
   });
+  
   const doesExist = createMemo(()=>HomebrewManager.spells().findIndex((x) => x.name.toLowerCase() === currentSpell.name.toLowerCase()) > -1)
    const createSpell = () => {
     HomebrewManager.addSpell(currentSpell);
   }
+  
   const updateSpell = () => {
     HomebrewManager.updateSpell(currentSpell);
   }
+  
   const spellLevels = Array.from({ length: 10 }, (_, i) => i);
   const allSpells = useDnDSpells();
   const allClasses = useDnDClasses();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [searchParam, setSearchParam] = useSearchParams();
+  
+  const [searchParam] = useSearchParams();
+  
   const ClassNames = createMemo(()=> allClasses().map((x) => x.name));
   const [tempValue, setTempValue] = createStore<{[key:string]:string}>({});
   const [showCustoms, setShowCustoms] = createStore<{ [key: string]: boolean }>({
@@ -53,27 +58,32 @@ const Spells: Component = () => {
   });
   const [spellDesc, setSpellDesc] = createSignal("");
   const [spellHigherLevel, setSpellHigherLevel] = createSignal("");
+  
   const getSchools = () => {
     const schools = new UniqueSet<string>();
 		
     allSpells().forEach(spell => schools.add(spell.school));
     return schools.value.sort()
   };
+  
   const getCastingTimes = () => {
     const castingTimes = new UniqueSet<string>();
     allSpells().forEach(spell => castingTimes.add(spell.castingTime));
     return castingTimes.value.sort()
   };
+  
   const getRanges = () => {
     const ranges = new UniqueSet<string>();
     allSpells().forEach(spell => ranges.add(spell.range));
     return ranges.value.sort()
   }
+  
   const getDurations = () => {
     const durations = new UniqueSet<string>(); 
     allSpells().forEach(spell => durations.add(spell.duration));
     return durations.value.sort()
   }
+  
   const fillSpellInfo = (search?: boolean)=> {
     const searchName = search ? searchParam.name : currentSpell.name;
     const spell = HomebrewManager.spells().find((x)=>x.name === searchName);
@@ -82,12 +92,12 @@ const Spells: Component = () => {
     if(srdSpell) {
       setCurrentSpell(srdSpell);
       setSpellDesc(srdSpell.description);
-      setSpellHigherLevel(srdSpell.higherLevel);
+      setSpellHigherLevel(srdSpell.higherLevel ?? "");
     }
     if (spell) {
       setCurrentSpell(spell);
       setSpellDesc(spell.description);
-      setSpellHigherLevel(spell.higherLevel);
+      setSpellHigherLevel(spell.higherLevel ?? "");
     };
   };
 
@@ -106,6 +116,7 @@ const Spells: Component = () => {
   createEffect(() => {
     setCurrentSpell({ 'higherLevel': spellHigherLevel() });
   });
+
   const isValid: Accessor<boolean> = createMemo(() => {
     return currentSpell.name?.trim().length > 0 &&
       currentSpell.range?.trim().length > 0 && 
@@ -152,16 +163,16 @@ const Spells: Component = () => {
             checked={currentSpell['isMaterial']}
             onChange={(e) => setCurrentSpell({ isMaterial: e })} />
           <Checkbox label="is Ritual?"
-            checked={currentSpell['is_ritual']}
-            onChange={(e) => setCurrentSpell({ is_ritual: e })} />
+            checked={currentSpell['ritual']}
+            onChange={(e) => setCurrentSpell({ ritual: e })} />
         </p>
         <span class={`${styles.break}`} />
         <Show when={currentSpell['isMaterial']}>
           <div>
             <FormField name="Material Components">
               <Input transparent
-                value={currentSpell['materials_Needed']}
-                onChange={(e) => setCurrentSpell({ materials_Needed: e.currentTarget.value })} />
+                value={currentSpell['materialsNeeded']}
+                onChange={(e) => setCurrentSpell({ materialsNeeded: e.currentTarget.value })} />
             </FormField>
           </div>
         </Show>
@@ -219,9 +230,13 @@ const Spells: Component = () => {
           <span class={`${styles.break}`} />
           <p class={`${styles.field}`}>
             <span>
-              <label >Custom</label>
+              {/* <label >Custom</label>
               <Input type="checkbox" tooltip="Custom Input?"
                 onClick={(e) => setShowCustoms({ "castingTime": e.currentTarget.checked })}
+                checked={showCustoms["castingTime"]} /> */}
+
+              <Checkbox label="Custom"
+                onChange={(e) => setShowCustoms({ "castingTime": e })}
                 checked={showCustoms["castingTime"]} />
             </span>
             <Show when={!showCustoms["castingTime"]}>
@@ -246,9 +261,13 @@ const Spells: Component = () => {
           </p>
           <p class={`${styles.field}`}>
             <span>
-              <label>Custom</label>
-              <Input type="checkbox" tooltip="Custom Input?"
+              {/* <label>Custom</label> */}
+              {/* <Input type="checkbox" tooltip="Custom Input?"
                 onClick={(e) => setShowCustoms({ "range": e.currentTarget.checked })}
+                checked={showCustoms["range"]} /> */}
+              
+              <Checkbox label="Custom" ariaLabel="Custom Input?"
+                onChange={(e) => setShowCustoms({ "range": e })}
                 checked={showCustoms["range"]} />
             </span>
             <Show when={!showCustoms["range"]}>
@@ -279,8 +298,8 @@ const Spells: Component = () => {
                 onChange={(e) => setShowCustoms({ "duration": e })}
                 checked={showCustoms["duration"]} />
               <Checkbox label="is Concentration?"
-                checked={currentSpell['is_concentration']}
-                onChange={(e) => setCurrentSpell({ is_concentration: e })} />
+                checked={currentSpell['concentration']}
+                onChange={(e) => setCurrentSpell({ concentration: e })} />
             </span>
             <span class={`${styles.duration}`}>
               <Show when={!showCustoms["duration"]}>
@@ -290,7 +309,7 @@ const Spells: Component = () => {
                   onChange={(e)=>{
                     setCurrentSpell({ duration: e})
                   }}>
-                  <For each={getDurations().filter((val) => currentSpell["is_concentration"] ? val.toLowerCase().includes("concentration") : !val.toLowerCase().includes("concentration"))}>{(duration) =>
+                  <For each={getDurations().filter((val) => currentSpell["concentration"] ? val.toLowerCase().includes("concentration") : !val.toLowerCase().includes("concentration"))}>{(duration) =>
                     <Option value={duration} >
                       {duration}
                     </Option>

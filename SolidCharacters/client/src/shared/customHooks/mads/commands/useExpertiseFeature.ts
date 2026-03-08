@@ -1,11 +1,12 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 const addExpertiseFeature = (character: Character, feature: MadFeature) => {
     const skillNames = feature.value?.["proficiencies"].split(",").map(p => p.trim()) ?? [];
 
     if (skillNames.length === 0) {
-        console.error("No proficiencies provided for AddExpertise command");
+        DebugConsole.error("No proficiencies provided for AddExpertise command");
         return character;
     }
 
@@ -15,7 +16,7 @@ const addExpertiseFeature = (character: Character, feature: MadFeature) => {
             const isProficient = old?.proficient ?? false;
 
             if (!isProficient) {
-                console.warn(`Cannot add expertise to ${skillName} because character is not proficient in it.`);
+                DebugConsole.warn(`Cannot add expertise to ${skillName} because character is not proficient in it.`);
                 return;
             }
 
@@ -35,7 +36,7 @@ const removeExpertiseFeature = (character: Character, feature: MadFeature) => {
     const skillNames = feature.value?.["proficiencies"].split(",").map(p => p.trim()) ?? [];
 
     if (skillNames.length === 0) {
-        console.error("No proficiencies provided for RemoveExpertise command");
+        DebugConsole.error("No proficiencies provided for RemoveExpertise command");
         return character;
     }
 
@@ -57,12 +58,12 @@ const removeExpertiseFeature = (character: Character, feature: MadFeature) => {
 
 function useExpertiseFeature (character: Character) {
     if (!character) {
-        console.error("No Character Found!");
+        DebugConsole.error("No Character Found!");
         return;
     }
 
     character.features.forEach(feature => {
-        let mads = feature.metadata?.mads;
+        const mads = feature.metadata?.mads as MadFeature;
 
         if (mads && mads.command === 'AddExpertise') {
             character = addExpertiseFeature(character, mads);

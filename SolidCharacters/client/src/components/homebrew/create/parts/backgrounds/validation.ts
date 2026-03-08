@@ -1,4 +1,4 @@
-import type { FeatureDetail } from "../../../../../models/data/features";
+import type { FeatureDetail } from "../../../../../models/generated";
 
 export interface EquipmentGroup { optionKeys?: string[]; items?: string[] }
 

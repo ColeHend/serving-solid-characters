@@ -40,9 +40,7 @@ export interface ChoiceDetail {
 }
 
 export interface Choices extends Record<string, ChoiceDetail> {
-  [key: string]: ChoiceDetail;
 }
-
 
 export interface Class5E {
   id: string;
@@ -85,6 +83,7 @@ export interface FeatureMetadata {
   recharge?: string;
   spells?: string[];
   category?: string;
+  mads?: MadFeature;
 }
 
 export interface Item {
@@ -102,6 +101,26 @@ export enum ItemType {
   Armor = 1,
   Tool = 2,
   Item = 3
+}
+
+export interface MadFeature {
+  command: string;
+  value: Record<string, string>;
+  type: MadType;
+  prerequisites: MadPrerequisite[];
+  group: number;
+}
+
+export interface MadPrerequisite {
+  value?: string;
+  operation?: string;
+  keyValue?: string;
+  group: number;
+}
+
+export enum MadType {
+  Character = 0,
+  Info = 1
 }
 
 export interface MagicItem {

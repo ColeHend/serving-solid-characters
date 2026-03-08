@@ -2,6 +2,7 @@ import { Character } from "../../../../models/character.model";
 import { FeatureDetail } from "../../../../models/generated";
 import { useDnDFeats } from "../../dndInfo/info/all/feats";
 import { MadFeature } from "../madModels";
+import { DebugConsole } from "../../DebugConsole";
 
 const srdFeats = useDnDFeats();
 
@@ -9,7 +10,7 @@ const AddFeat = (character: Character, feature: MadFeature) => {
     const featID = feature.value?.["featID"].trim() ?? "";
 
     if (featID === "") {
-        console.error("No feat ID was provoided!");
+        DebugConsole.error("No feat ID was provoided!");
         return character;
     }
 
@@ -34,7 +35,7 @@ const RemoveFeat = (character: Character, feature: MadFeature) => {
     const featID = feature.value?.["featID"].trim() ?? "";
 
     if (featID === "") {
-        console.error("No feat ID was provoided!");
+        DebugConsole.error("No feat ID was provoided!");
         return character;
     }
 
@@ -50,12 +51,12 @@ const RemoveFeat = (character: Character, feature: MadFeature) => {
 function useFeat (character:Character) {
 
     if (!character) {
-        console.error("No character was found!");
+        DebugConsole.error("No character was found!");
         return;
     }
 
     character.features.forEach(feature => {
-        const madFeature = feature.metadata?.mads;
+        const madFeature = feature.metadata?.mads as MadFeature;
 
         if (madFeature) {
             switch (madFeature.command) {

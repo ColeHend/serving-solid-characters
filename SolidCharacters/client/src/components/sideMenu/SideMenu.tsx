@@ -1,9 +1,9 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, onMount, Setter, Show, untrack } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { UserSettings } from "../../models/userSettings";
 import { useNavigate } from "@solidjs/router";
 import { Portal } from "solid-js/web";
 import { ExtendedTab } from "../../models/extendedTab";
-import { Button, Container, ExpansionPanel, Icon, Modal } from "coles-solid-library";
+import { Button, Container, Icon, Modal } from "coles-solid-library";
 import styles from "./SideMenu.module.scss";
 import useClickOutside from "solid-click-outside";
 import { FlatCard } from "../../shared/components/flatCard/flatCard";
@@ -29,7 +29,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
     const navigate = useNavigate();
 
     const [showMenu, setShowMenu] = props.defaultShowList;
-    const [isMobile, setIsMobile] = props.defaultIsMobile;
+    // const [isMobile, setIsMobile] = props.defaultIsMobile;
     const [userSettings, setUserSettings] = props.defaultUserSettings;
 
     const [menuRef, setMenuRef] = createSignal<HTMLDivElement | undefined>();
@@ -42,7 +42,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
 
         if (anchor && menu) {
             const anchorRect = anchor.getBoundingClientRect();
-            const menuRect = menu.getBoundingClientRect();
+            // const menuRect = menu.getBoundingClientRect();
             
             menu.style.position = 'absolute';
 
@@ -89,14 +89,14 @@ export const SideMenu:Component<MenuProps> = (props) => {
           Link: "/homebrew",
           isOpen: false,
           children: [
-            { Name: "Classes", Link: "/homebrew/view?name=classes", isOpen: false },
-            { Name: "Subclasses", Link: "/homebrew/view?name=subclasses", isOpen: false },
-            { Name: "Backgrounds", Link: "/homebrew/view?name=backgrounds", isOpen: false },
-            { Name: "Races", Link: "/homebrew/view?name=races", isOpen: false },
-            { Name: "Subraces", Link: "/homebrew/view?name=subraces",isOpen: false},
-            { Name: "Spells", Link: "/homebrew/view?name=spells", isOpen: false },
-            { Name: "Feats", Link: "/homebrew/view?name=feats", isOpen: false },
-            { Name: "Items", Link: "/homebrew/view?name=items", isOpen: false }
+            { Name: "Classes", Link: "/homebrew/create/classes", isOpen: false },
+            { Name: "Subclasses", Link: "/homebrew/create/subclasses", isOpen: false },
+            { Name: "Backgrounds", Link: "/homebrew/create/backgrounds", isOpen: false },
+            { Name: "Races", Link: "/homebrew/create/races", isOpen: false },
+            { Name: "Subraces", Link: "/homebrew/create/subraces",isOpen: false},
+            { Name: "Spells", Link: "/homebrew/create/spells", isOpen: false },
+            { Name: "Feats", Link: "/homebrew/create/feats", isOpen: false },
+            { Name: "Items", Link: "/homebrew/create/items", isOpen: false }
           ]
         }
       ].sort((a, b) => a.Name > b.Name ? 1 : -1));
@@ -124,7 +124,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
         }
 
         useClickOutside(menuRef, () => {
-            if (showMenu() && showSettings() !== true) setShowMenu(false);
+            if (showSettings() !== true) setShowMenu(false);
         });
     });
 
@@ -136,9 +136,9 @@ export const SideMenu:Component<MenuProps> = (props) => {
         return props.location === "right" ? styles.closingRight : styles.closingLeft;
     }
 
-    const convertHombrewViewToCreate = (link: string) => {
-        return link.replace(`view`, 'create').replace("?name=", "/");
-    };
+    // const convertHombrewViewToCreate = (link: string) => {
+    //     return link.replace(`view`, 'create').replace("?name=", "/");
+    // };
   
 
     createEffect(() => updatePosition());
@@ -161,19 +161,20 @@ export const SideMenu:Component<MenuProps> = (props) => {
 
                     <For each={MenuItems()}>
                         {(tab) => <>
-                            <Show when={tab.Name !== "Homebrew"}>
-                                <li>
-                                    <FlatCard headerName={<span class={`${styles.headerItem}`} onClick={()=>navigate(tab.Link)}>{tab.Name}</span>} transparent>
-                                        <For each={tab.children ?? []}>
-                                            {(child) => <li class={`${styles.menuItem}`} onClick={()=>{
-                                                navigate(child.Link);
-                                                setShowMenu(false);
-                                            }}>
-                                                {child.Name}
-                                            </li>}
-                                        </For>  
-                                    </FlatCard>
-                                </li>
+                            <li>
+                                <FlatCard headerName={<span class={`${styles.headerItem}`} onClick={()=>navigate(tab.Link)}>{tab.Name}</span>} transparent>
+                                    <For each={tab.children ?? []}>
+                                        {(child) => <li class={`${styles.menuItem}`} onClick={()=>{
+                                            navigate(child.Link);
+                                            setShowMenu(false);
+                                        }}>
+                                            {child.Name}
+                                        </li>}
+                                    </For>  
+                                </FlatCard>
+                            </li>
+                            {/* <Show when={tab.Name !== "Homebrew"}>
+                                
                             </Show>
                             <Show when={tab.Name === "Homebrew"}>
                                 <FlatCard headerName={<span class={`${styles.headerItem}`} onClick={()=>navigate(tab.Link)}>{tab.Name}</span>} transparent>
@@ -185,16 +186,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
                                             <span>{child.Name}</span>
                                             <Button transparent onClick={(e)=>{
                                                 e.stopPropagation();
-                                                navigate(child.Link);
-                                                setShowMenu(false);
-                                            }} >
-                                                <Icon name="visibility" size={'small'} />
-                                            </Button>
-                                            <Button transparent onClick={(e)=>{
-                                                e.stopPropagation()
-                                                const x = convertHombrewViewToCreate(child.Link);
-
-                                                navigate(x.trim());
+                                                navigate(child.Link.trim());
                                                 setShowMenu(false);
                                             }}>
                                                 <Icon name="edit" size={'small'} />
@@ -202,10 +194,10 @@ export const SideMenu:Component<MenuProps> = (props) => {
                                         </li>}
                                     </For>  
                                 </FlatCard>
-                            </Show>
+                            </Show> */}
                         </>}
                     </For>
-                </ul>
+               </ul>
             </Container>
         </Portal>
         <Modal title="Settings" show={[showSettings, setShowSettings]}>
