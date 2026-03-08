@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
 import { createMemo, createRoot } from "solid-js";
-import type { Race } from "../../../../../models/data/races";
+import type { Race } from "../../../../../models/generated";
 import { homebrewManager } from "../../../../../shared";
 
 export interface RaceDraft {
@@ -199,7 +199,7 @@ function createRacesStore() {
           try {
             (homebrewManager as any)._setRaces((list: any[]) => list.map(r => r.name === updated.name ? updated : r));
           } catch { /* ignore if private shape changes */ }
-          homebrewManager.updateRace(updated as any);
+          homebrewManager.updateRace(updated);
           // Update local entities (overwriting SRD view with homebrew variant)
           const alreadyInOrder = state.order.includes(updated.name);
           setState({ blankDraft: undefined, selection: { activeName: updated.name }, entities: { ...state.entities, [updated.name]: updated }, order: alreadyInOrder ? state.order : [...state.order, updated.name] });
@@ -215,7 +215,7 @@ function createRacesStore() {
     if (homebrewManager.races().some(r => (r as any).name === entity.name)) return true;
     // Direct clone of SRD as-is
     const cloned: Race = { ...entity, id: crypto.randomUUID() };
-    homebrewManager.addRace(cloned as any);
+    homebrewManager.addRace(cloned);
     return true;
   }
 
@@ -295,17 +295,17 @@ function createRacesStore() {
       languageChoice: d.languages.amount ? { amount: d.languages.amount, options: d.languages.options } : undefined,
       abilityBonuses: d.abilityBonuses.map(a => ({ stat: Number(a.name) as any, value: a.value })),
       abilityBonusChoice: undefined,
-      traits: d.traits.map(t => ({ details: { name: t.name, description: t.value.join('\n') }, prerequisites: [] })),
+      traits: d.traits.map(t => ({ id: crypto.randomUUID(), details: { name: t.name, description: t.value.join('\n') }, prerequisites: [] })),
       traitChoice: undefined,
-  descriptions: { age: d.text.age, alignment: d.text.alignment, size: d.text.sizeDesc, language: d.languages.desc, abilities: d.text.abilitiesDesc }
-    } as Race;
+      descriptions: { age: d.text.age, alignment: d.text.alignment, size: d.text.sizeDesc, language: d.languages.desc, abilities: d.text.abilitiesDesc }
+    };
   }
 
   function saveNew(): boolean {
     if (state.selection.activeName !== '__new__' || !state.blankDraft) return false;
     if (!state.blankDraft.name.trim()) return false;
   const race = draftToRace(state.blankDraft);
-  homebrewManager.addRace(race as any);
+  homebrewManager.addRace(race);
   // after save, exit new mode and select; if race already existed in SRD list, don't duplicate order entry
   const alreadyInOrder = state.order.includes(race.name);
   setState({ blankDraft: undefined, selection: { activeName: race.name }, entities: { ...state.entities, [race.name]: race }, order: alreadyInOrder ? state.order : [...state.order, race.name] });
@@ -317,7 +317,7 @@ function createRacesStore() {
     if (!original) return false;
     // For now only speed/size changes in existing (others would require diff UI) -> reconstruct from draft mapping
     // Not implementing partial edit yet.
-  homebrewManager.updateRace(original as any);
+  homebrewManager.updateRace(original);
     return true;
   }
 
@@ -365,7 +365,7 @@ function createRacesStore() {
 
   // Merge existing homebrew races (reactive to changes)
   createMemo(() => {
-    const hb = homebrewManager.races() as unknown as Race[] | undefined;
+    const hb = homebrewManager.races() as Race[] | undefined;
     if (!hb || !Array.isArray(hb)) return hb;
     if (hb.length === 0) return hb;
     const newEntities: Record<string, Race> = {};
