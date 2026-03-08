@@ -48,7 +48,6 @@ export enum MadType {
     Info = 1 
 }
 
-
 export interface Madprerequisite {
     /**
      * The key on the character to check the prerequisite against. For example, if the prerequisite is "Strength Score >= 15", the value would be "Strength Score".
