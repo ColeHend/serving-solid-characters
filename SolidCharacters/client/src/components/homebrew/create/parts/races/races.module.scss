@@ -1,42 +1,49 @@
 @use 'coles-solid-library/themes/variables' as vars;
 
-.body {
+.container {
+    display: flex;
+    flex-direction: column;
+    border-radius: vars.$border-radius-md;
+    padding: vars.$spacing-1;
+    justify-content: stretch;
     background-color: vars.$color-surface;
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 
     button:not(.traitChipBtn) {
-        background-color: color-mix(
-            in srgb,
-            vars.$color-surface 60%,
-            transparent
-        ) !important;
+        background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
     }
-  
+
     fieldset {
         background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
-        
+
         :nth-child(even) {
             background-color: transparent !important;
-            
+
             :nth-child(n) {
                 background-color: transparent !important;
             }
         }
-        
+
         legend {
             background-color: transparent !important;
         }
-        
+    }
+
+    @media (max-width: 768px) {
+        margin: vars.$spacing-2;
+        width: 95%;
+        font-size: 0.7em;
+    }
+    @media (min-width: 769px) {
+        margin: vars.$spacing-3;
+        width: 95%;
     }
 }
 
-
-/* Races editor styling aligned with backgrounds component */
-
 .sectionList { display: flex; flex-direction: column; gap: 1.1rem; width: 100%; }
 
-.validationBox { background:rgba(255,0,0,0.07); border:1px solid rgba(255,0,0,0.25); padding:.4rem .6rem; border-radius:6px; font-size:.7rem; display:flex; flex-direction:column; gap:.25rem; }
-.validationItem { color: var(--clr-error,#f66); }
+.statusMessage { font-size: .85rem; opacity: .7; }
+.errorMessage { color: var(--clr-error, #f66); font-size: .85rem; }
 
 .inlineMeta { font-size:.7rem; opacity:.65; display:flex; gap:.6rem; }
 
