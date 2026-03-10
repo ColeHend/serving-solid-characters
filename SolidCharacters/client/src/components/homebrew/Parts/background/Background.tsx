@@ -1,5 +1,5 @@
 import { Body, Form, FormGroup, Validators } from "coles-solid-library";
-import { Component, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { BackgroundForm } from "../../../../models/data/formModels";
 import styles from "./Background.module.scss";
 import { Background, Feat, FeatureDetail, homebrewManager } from "../../../../shared";
@@ -15,6 +15,8 @@ import { OptionalFeatures } from "./Sectons/Features/Features";
 import { Saving } from "./Sectons/Saving/Saving";
 import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
 import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/all/backgrounds";
+import { useSearchParams } from "@solidjs/router";
+import { create } from "domain";
 
 export const HomebrewBackgrounds: Component = () => {
 
@@ -42,6 +44,10 @@ export const HomebrewBackgrounds: Component = () => {
     const [languages, setLanguages] = createSignal<string[]>([]);
 
     const [features, setFeatures] = createSignal<FeatureDetail[]>([]);
+
+    const [searchParam, setSearchParam] = useSearchParams();
+
+    const selectedName = createMemo(()=>formGroup.get().name);
 
     // data 
     const homebrew = homebrewManager;
@@ -119,7 +125,12 @@ export const HomebrewBackgrounds: Component = () => {
     }
 
     const fillForm = (search?:boolean) => {
-        const name = search ? " " : formGroup.get().name;
+        
+        const paramName = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(",");
+
+        const formName = selectedName();
+
+        const name = search ? paramName ?? "" : formName;
 
         if (name === "") return;
 
@@ -151,6 +162,10 @@ export const HomebrewBackgrounds: Component = () => {
         setToolProfs(background.proficiencies.tools);
         // features
         setFeatures(background.features ?? []);
+
+        // non background stuff
+
+        setSearchParam({name: background.name});
     }
 
     const cloneSRDBackground = () => {
@@ -161,11 +176,20 @@ export const HomebrewBackgrounds: Component = () => {
 
     onMount(() => {
         document.body.classList.add('backgrounds-bg');
-    })
 
+        const formName = selectedName();
+    
+        if (!searchParam.name && formName !== "") setSearchParam({name: formName});
+    })
 
     onCleanup(() => {
         document.body.classList.remove('backgrounds-bg');
+    })
+
+    createEffect(()=>{
+        const formName = selectedName();
+
+        setSearchParam({name: formName});
     })
     
     return <Body class={`${styles.body}`}>
