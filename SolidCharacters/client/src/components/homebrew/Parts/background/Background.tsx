@@ -2,7 +2,7 @@ import { Body, Form, FormGroup, Validators } from "coles-solid-library";
 import { Component, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { BackgroundForm } from "../../../../models/data/formModels";
 import styles from "./Background.module.scss";
-import { Feat, FeatureDetail } from "../../../../shared";
+import { Background, Feat, FeatureDetail, homebrewManager } from "../../../../shared";
 import { Identity } from "./Sectons/Identity/Identity";
 import { AbilityScore } from "./Sectons/AbilityScore/AbilityScore";
 import { Equipment } from "./Sectons/Equipment/Equipment";
@@ -14,13 +14,13 @@ import { Languages } from "./Sectons/Languages/Languages";
 import { OptionalFeatures } from "./Sectons/Features/Features";
 import { Saving } from "./Sectons/Saving/Saving";
 import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
+import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 
 export const HomebrewBackgrounds: Component = () => {
 
     const formGroup = new FormGroup<BackgroundForm>({
         "id": [0, [Validators.Required]],
         "name": ["", [Validators.Required]],
-        "newName": ["", []],
         "desc": ["", []],
         "feat": ["", []],
         "abilityOptions": [[], [Validators.maxLength(3)]],
@@ -44,6 +44,7 @@ export const HomebrewBackgrounds: Component = () => {
     const [features, setFeatures] = createSignal<FeatureDetail[]>([]);
 
     // data 
+    const homebrew = homebrewManager;
 
     const abillityOptions = [
         "Strength",
@@ -79,6 +80,12 @@ export const HomebrewBackgrounds: Component = () => {
 
     const srdItems = useDnDItems();
 
+    const homebrewBackgrounds = createMemo<Background[]>(() => homebrew.backgrounds());
+
+    const srdBackgrounds = useDnDBackgrounds();
+
+
+
     // functions
 
 
@@ -103,6 +110,53 @@ export const HomebrewBackgrounds: Component = () => {
         return toReturn;
     }
 
+    const is_Exist = (id: string) => {
+        return srdBackgrounds().some(x => x.id === id);
+    }
+
+    const is_Homebrew = (id: string) => {
+        return homebrewBackgrounds().some(x => x.id === id);
+    }
+
+    const fillForm = (search?:boolean) => {
+        const name = search ? " " : formGroup.get().name;
+
+        if (name === "") return;
+
+        const background = srdBackgrounds().find(background => background.name.toLowerCase().trim() === name.toLowerCase().trim());
+
+        if (!background) {
+            return;
+        }
+
+        formGroup.set("id", background.id);
+        formGroup.set("name", background.name);
+        formGroup.set("desc", background.desc);
+        formGroup.set("abilityOptions", background.abilityOptions);
+        // languages
+        formGroup.set("langChoiceAmount", background.languages?.amount ?? 1);
+        setLanguages(background.languages?.options ?? []);
+        // items
+        background.startEquipment.forEach(choice => {
+            const key = choice.optionKeys?.join(',') ?? "";
+            const value = choice.items?.join(",") ?? "";
+            setStartingEquipment(old => ({...old,[key]: value}))
+        })
+        // feat
+        formGroup.set("feat", background.feat);
+        // proficiencies
+        setArmorProfs(background.proficiencies.armor);
+        setWeaponProfs(background.proficiencies.weapons);
+        setSkillProfs(background.proficiencies.skills);
+        setToolProfs(background.proficiencies.tools);
+        // features
+        setFeatures(background.features ?? []);
+    }
+
+    const cloneSRDBackground = () => {
+        
+    }
+
     // effects 
 
     onMount(() => {
@@ -118,7 +172,13 @@ export const HomebrewBackgrounds: Component = () => {
         <h2>Backgrounds</h2>
 
         <Form data={formGroup} onSubmit={handleSubmit}>  
-            <Identity formGroup={formGroup} />
+            <Identity 
+                formGroup={formGroup} 
+                existingBackgrounds={homebrewBackgrounds}
+                srdBackgrounds={srdBackgrounds}
+                clone={(e)=>{}}
+                fill={(e)=>{}}
+                delete={(e)=>{}}/>
 
             <AbilityScore 
                 abilityScores={abilityScores} 

@@ -11,7 +11,6 @@ import { Background } from "../generated";
 type HalfBackground = Omit<Background,"proficiencies"|"startEquipment"|"languages"|"features">
 
 export interface BackgroundForm extends HalfBackground {
-    newName: string,
     langChoiceAmount: number
 }
 

@@ -49,3 +49,18 @@
     flex-direction: row;
     gap: 3px;
 }
+
+.NameBox {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    margin-bottom: 15px;
+    padding: 0;
+}
+
+.descBox {
+    :nth-child(1) {
+        margin: 0 !important; 
+        padding: 0 !important;
+    }
+}
