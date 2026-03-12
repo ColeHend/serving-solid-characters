@@ -1,5 +1,5 @@
-import { Chip, FormField, Input, Select, Option, Button } from "coles-solid-library";
-import { Accessor, Component, createMemo, createSignal, For, Setter, Show } from "solid-js";
+import { Chip, Button } from "coles-solid-library";
+import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 import { srdItem } from "../../../../../../models/data/generated";
 import styles from "../../Background.module.scss";

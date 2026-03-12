@@ -16,7 +16,6 @@ import { Saving } from "./Sectons/Saving/Saving";
 import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
 import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useSearchParams } from "@solidjs/router";
-import { create } from "domain";
 import { EquipmentPopup } from "./Sectons/EquipmentPopup/EquipmentPopup";
 
 export const HomebrewBackgrounds: Component = () => {
@@ -209,9 +208,9 @@ export const HomebrewBackgrounds: Component = () => {
                 formGroup={formGroup} 
                 existingBackgrounds={homebrewBackgrounds}
                 srdBackgrounds={srdBackgrounds}
-                clone={(e)=>cloneBackground()}
-                fill={(e)=>getBackground()}
-                delete={(e)=>{}}/>
+                clone={()=>cloneBackground()}
+                fill={()=>getBackground()}
+                delete={()=>{}}/>
 
             <AbilityScore 
                 abilityScores={abilityScores} 
