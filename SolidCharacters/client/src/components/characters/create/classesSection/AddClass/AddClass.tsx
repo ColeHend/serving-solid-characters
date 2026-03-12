@@ -128,7 +128,7 @@ export const AddClass: Component<modalProps> = (props) => {
                         </span>}
                     </Cell>
                     <Cell<Class5E> rowNumber={2}>
-                    {(class5e)=> <div style={{display:"flex",gap:"2px","justify-content":"flex-start"}}>
+                    {(class5e)=> <div class={`${styles.secondRow}`} >
 
                             <Show when={charClasses().length >= 1}>
                                 <For each={class5e.primaryAbility.split(",")}>
@@ -139,13 +139,8 @@ export const AddClass: Component<modalProps> = (props) => {
                                         const meetsRequirement = createMemo(() => (statVal() + statMod()) >= 13);
                                         
                                         return (
-                                            <span style={{ 
+                                            <span class={`${styles.requirementItem}`} style={{ 
                                                 "border-bottom": meetsRequirement() ? "2px solid green" : "2px solid red",
-                                                display: "flex",
-                                                "justify-content": "center",
-                                                "align-items": "center",
-                                                padding: "4px 8px",
-                                                gap: "6px"
                                             }}>
                                                 <span>{trimmedStat} of 13</span>
                                                 <Show when={meetsRequirement()} fallback={<Icon name="close" size="small" color="red"/>}>

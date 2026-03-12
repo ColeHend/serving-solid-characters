@@ -1,4 +1,4 @@
-import { FormField, Select, Option, FormGroup } from "coles-solid-library";
+import { FormField, Select, Option, FormGroup, Chip } from "coles-solid-library";
 import { Component, createMemo, For, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import styles from "./languageSection.module.scss";
@@ -10,7 +10,7 @@ interface sectionProps {
 
 export const LanguageSection:Component<sectionProps> = (props) => {
 
-    const form = createMemo(()=>props.group);
+    const form = props.group;
 
     const languages = createMemo<string[]>(()=>[
         "Undercommon",
@@ -30,10 +30,10 @@ export const LanguageSection:Component<sectionProps> = (props) => {
         "Deep Speech",
     ])
 
-    const hasError = createMemo(()=>form().hasError("languages"));
+    const hasError = createMemo(()=>form.hasError("languages"));
 
     const getLanguages = ():string[] => {
-        return form().get().languages;
+        return form.get().languages;
     }
 
     return <FlatCard icon="chat" headerName={<div>
@@ -46,7 +46,7 @@ export const LanguageSection:Component<sectionProps> = (props) => {
             
             <div class={`${styles.langSelect}`}>
                 <FormField name="Languages" formName="languages">
-                    <Select multiple>
+                    <Select disabled={getLanguages().length === 2} multiple>
                         <For each={languages()}>
                             {(lang)=><Option value={lang}>
                                 {lang}
@@ -56,11 +56,19 @@ export const LanguageSection:Component<sectionProps> = (props) => {
                 </FormField>
             </div>
 
-            <div class={`${styles.errorMessage}`}>
-                <Show when={hasError()}>
+            <Show when={hasError()}>
+                <div class={`${styles.errorMessage}`}>
                     You can't select more than two additional languages; you already know Common.
-                </Show>
+                </div>
+            </Show>
+
+            <div>
+                <For each={getLanguages()}>
+                    {lang => <Chip value={lang} remove={() => form.set("languages", getLanguages().filter(old => old !== lang))} />}
+                </For>
             </div>
+
+            
         </div>
     </FlatCard>
 }

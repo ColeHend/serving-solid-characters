@@ -21,6 +21,10 @@ $mobile: 768px;
     margin: 0 auto;
   }
   fill: var(--on-background-color);
+
+  @media screen and (max-width: $mobile) {
+    width: 100%;
+  }
 }
 
 .searchBar {

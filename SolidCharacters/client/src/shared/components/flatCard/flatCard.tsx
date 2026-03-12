@@ -123,7 +123,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
                     <div tabIndex={0} onKeyDown={(e)=>{
                         if (e.key === "Enter") toggle(e);
                     }}>
-                        <Button onClick={toggle} >
+                        <Button onClick={toggle} class={`${isTransparent() ? styles.transparentBtn : ''}`}>
                             {!showCard() ? <Icon name="add"/> : <Icon name="remove" />}
                         </Button>
                     </div>

@@ -2,7 +2,7 @@ import { Body, Form, FormGroup, Validators } from "coles-solid-library";
 import { Component, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { BackgroundForm } from "../../../../models/data/formModels";
 import styles from "./Background.module.scss";
-import { Background, Feat, FeatureDetail, homebrewManager } from "../../../../shared";
+import { Background, Clone, Feat, FeatureDetail, homebrewManager } from "../../../../shared";
 import { Identity } from "./Sectons/Identity/Identity";
 import { AbilityScore } from "./Sectons/AbilityScore/AbilityScore";
 import { Equipment } from "./Sectons/Equipment/Equipment";
@@ -17,6 +17,7 @@ import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/ite
 import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useSearchParams } from "@solidjs/router";
 import { create } from "domain";
+import { EquipmentPopup } from "./Sectons/EquipmentPopup/EquipmentPopup";
 
 export const HomebrewBackgrounds: Component = () => {
 
@@ -26,7 +27,8 @@ export const HomebrewBackgrounds: Component = () => {
         "desc": ["", []],
         "feat": ["", []],
         "abilityOptions": [[], [Validators.maxLength(3)]],
-        "langChoiceAmount": [0, []]
+        "langChoiceAmount": [0, []],
+        "optionKey": ["", []]
     }) 
 
     const [armorProfs, setArmorProfs] = createSignal<string[]>([]);
@@ -48,6 +50,8 @@ export const HomebrewBackgrounds: Component = () => {
     const [searchParam, setSearchParam] = useSearchParams();
 
     const selectedName = createMemo(()=>formGroup.get().name);
+
+    const [showItemsPopup, setShowItemsPopup] = createSignal(false);
 
     // data 
     const homebrew = homebrewManager;
@@ -90,7 +94,7 @@ export const HomebrewBackgrounds: Component = () => {
 
     const srdBackgrounds = useDnDBackgrounds();
 
-
+    const is_exist = createMemo(() => srdBackgrounds().some(b => b.name === selectedName())); 
 
     // functions
 
@@ -116,16 +120,7 @@ export const HomebrewBackgrounds: Component = () => {
         return toReturn;
     }
 
-    const is_Exist = (id: string) => {
-        return srdBackgrounds().some(x => x.id === id);
-    }
-
-    const is_Homebrew = (id: string) => {
-        return homebrewBackgrounds().some(x => x.id === id);
-    }
-
-    const fillForm = (search?:boolean) => {
-        
+    const getBackground = (search?: boolean) => {
         const paramName = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(",");
 
         const formName = selectedName();
@@ -140,6 +135,10 @@ export const HomebrewBackgrounds: Component = () => {
             return;
         }
 
+        fillForm(background);
+    }
+
+    const fillForm = (background: Background) => {
         formGroup.set("id", background.id);
         formGroup.set("name", background.name);
         formGroup.set("desc", background.desc);
@@ -168,8 +167,18 @@ export const HomebrewBackgrounds: Component = () => {
         setSearchParam({name: background.name});
     }
 
-    const cloneSRDBackground = () => {
-        
+    const cloneBackground = () => {
+        const formName = selectedName();
+
+        if (formName === "") return;
+
+        const background = srdBackgrounds().find(background => background.name.toLowerCase().trim() === formName.toLowerCase().trim());
+
+        if (!background) {
+            return;
+        }
+
+        fillForm(Clone(background));
     }
 
     // effects 
@@ -200,8 +209,8 @@ export const HomebrewBackgrounds: Component = () => {
                 formGroup={formGroup} 
                 existingBackgrounds={homebrewBackgrounds}
                 srdBackgrounds={srdBackgrounds}
-                clone={(e)=>{}}
-                fill={(e)=>{}}
+                clone={(e)=>cloneBackground()}
+                fill={(e)=>getBackground()}
                 delete={(e)=>{}}/>
 
             <AbilityScore 
@@ -212,7 +221,8 @@ export const HomebrewBackgrounds: Component = () => {
             <Equipment 
                 startItemKeys={startItemKeys} 
                 startingEquipment={[startingEquipment, setStartingEquipment]} 
-                allItems={srdItems}/>
+                allItems={srdItems}
+                setShowItems={setShowItemsPopup}/>
 
             <OriginFeat 
                 featID={featID} 
@@ -232,7 +242,15 @@ export const HomebrewBackgrounds: Component = () => {
 
             <OptionalFeatures />
 
-            <Saving />
+            <Saving 
+                is_exist={is_exist} />
         </Form>
+
+        <EquipmentPopup 
+            show={[showItemsPopup, setShowItemsPopup]}
+            startItemKeys={startItemKeys}
+            startingEquipment={[startingEquipment, setStartingEquipment]}
+            allItems={srdItems} 
+            formGroup={formGroup}/>
     </Body>
 }

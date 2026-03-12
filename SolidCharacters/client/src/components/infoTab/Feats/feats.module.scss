@@ -1,6 +1,6 @@
 @use 'coles-solid-library/themes/variables' as vars;
 
-$mobial-size:768px;
+$mobile-size:768px;
 
 .body {
   background-color: vars.$color-surface;
@@ -34,7 +34,7 @@ $mobial-size:768px;
         background: transparent !important;
     }
     
-    @media screen and (max-width:$mobial-size) {
+    @media screen and (max-width:$mobile-size) {
         width: 100%;
         margin: 0;
     }
@@ -65,7 +65,13 @@ $mobial-size:768px;
         }
     }
 
-
+    @media screen and (max-width: $mobile-size) {
+        width: 100% !important;
+        
+        table {
+            width: 100% !important;
+        }
+    }
 }
 
 .paginator {
@@ -76,7 +82,7 @@ $mobial-size:768px;
         color: white;
     }
 
-    @media screen and (max-width: $mobial-size) {
+    @media screen and (max-width: $mobile-size) {
         width: 100%;
         margin: 0;
     }

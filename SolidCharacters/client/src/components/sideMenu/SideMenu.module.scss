@@ -62,7 +62,8 @@ $padding: 7px;
 .menuItem {
   display: flex;
   flex-direction: row;
-  
+  padding: 2px;
+
   :first-child {
     flex-grow: 1;
   }
