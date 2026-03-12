@@ -25,9 +25,7 @@ export const Equipment: Component<SectionProps> = (props) => {
         transparent>
             <Show when={startItemKeys().length > 0} fallback={<Chip value="None" />}>
                 <For each={startItemKeys()}>
-                    {(key) => <>
-                        {key}: {startingEquipment()[key]}
-                    </>}
+                    {(key) => <Chip key={key} value={startingEquipment()[key]} />}
                 </For>
             </Show>
     </FlatCard>

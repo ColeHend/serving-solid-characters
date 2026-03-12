@@ -1,5 +1,5 @@
-import { Column, FormField, Header, Input, Modal, Table, Cell, Chip, FormGroup, Button } from "coles-solid-library";
-import { Accessor, Component, createMemo, createSignal, Setter } from "solid-js";
+import { Column, FormField, Header, Input, Modal, Table, Cell, Chip, FormGroup, Button, addSnackbar } from "coles-solid-library";
+import { Accessor, Component, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { srdItem } from "../../../../../../models/data/generated";
 import { ItemType, Paginator } from "../../../../../../shared";
 import { BackgroundForm } from "../../../../../../models/data/formModels";
@@ -12,9 +12,18 @@ interface PopupProps {
     formGroup: FormGroup<BackgroundForm>;
 }
 
+type event = MouseEvent & {
+    currentTarget: HTMLButtonElement;
+    target: Element;
+}
+
 export const EquipmentPopup: Component<PopupProps> = (props) => {
     const [show, setShow] = props.show;
     const allItems = createMemo(() => props.allItems());
+
+    const [startingEquipment, setStartingEquipment] = props.startingEquipment;
+
+    const startItemKeys = createMemo(() => props.startItemKeys());
 
     const group = props.formGroup;
 
@@ -38,6 +47,28 @@ export const EquipmentPopup: Component<PopupProps> = (props) => {
 
     const added = (item: string) => {
         return newItems().some(i => i === item);
+    }
+
+    const handleSubmit = (e:event) => {
+        if (startItemKeys().some(k => k === group.get().optionKey)) {
+            addSnackbar({
+                severity: "error",
+                message: "That key already exists!"
+            })
+            return;
+        }
+
+        setStartingEquipment(old=>({...old,[group.get().optionKey]: newItems().join(",")}))
+        group.set("optionKey", "");
+        setNewItems([]);
+    }
+
+    const remove = (key: string) => {
+        setStartingEquipment(old => {
+            const updated = {...old};
+            delete updated[key];
+            return updated;
+        })
     }
 
     return <Modal show={[show, setShow]} title="Add A Choice!">
@@ -89,9 +120,25 @@ export const EquipmentPopup: Component<PopupProps> = (props) => {
             </div>
            
            <div>
-                <Chip key={group.get().optionKey} value={newItems().join(",")}  />
+                <Chip key={group.get().optionKey} value={newItems().join(",")}  /> <span>:</span>
 
+                <Show when={startItemKeys().length > 0}>
+                    <For each={startItemKeys()}>
+                        {key => <Chip key={key} value={startingEquipment()[key]} onClick={()=>{
+                            const confirm = window.confirm("Are you sure you want to load this item group?");
+
+                            if (!confirm) return;
+                            
+                            group.set("optionKey", key);
+                            setNewItems(startingEquipment()[key].split(","))
+                            remove(key);
+                        }} remove={()=>remove(key)} />}
+                    </For>
+                </Show>
            </div>
+
+            <Button onClick={handleSubmit}>Add</Button>
+
 
         </div>
     </Modal>
