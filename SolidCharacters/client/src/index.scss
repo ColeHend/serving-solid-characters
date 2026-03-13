@@ -26,6 +26,7 @@
   --menu-pos: absolute;
   --menu-top: 0;
   --menu-left: 0;
+  
 }
 //------------------------------------------------------------------
 // Styles
@@ -41,6 +42,8 @@ body {
   background-color: var(--background-color);
   color: var(--on-background-color);
   background-image: var(--background-image);
+  z-index: 0;
+  
 
   @media screen and (max-width: 768px) {
       overflow: hidden;
@@ -54,6 +57,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center top;
+  z-index: 0;
 }
 
 // List of body classes with their respective background images

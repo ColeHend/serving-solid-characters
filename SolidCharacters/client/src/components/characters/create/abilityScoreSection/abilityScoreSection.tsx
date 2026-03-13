@@ -153,14 +153,21 @@ export const Ass:Component<assProps> = (props) => {
         }
     }
 
+    const isDisabled = () => {
+        const chips = modChips();
+        const hasFocus = chips.some(c => c.value === "2");
+        
+        if (chips.length === 2 && hasFocus) return chips.length >= 2;
+
+        if (chips.length === 3) return chips.length >= 3;
+        
+    }
 
     const stats = ["str","dex","con","int","wis","cha"];
 
     createEffect(()=>{
         modChips().forEach((chip)=>setStatMod(chip.key,+chip.value))
     })
-
-   
 
     return <FlatCard icon="star" headerName={<div class={`${styles.headerTextWrapper}`}>
         <span>Stats: </span>
@@ -212,7 +219,7 @@ export const Ass:Component<assProps> = (props) => {
                             </ul>
 
                         </div>
-                        <div style={{display: "flex", "flex-direction": "row", width: "20%",gap: "2%"}}>
+                        <div class={`${styles.selectBox}`}>
                             <Select
                                 value={modStat()}
                                 onChange={(value) => setModStat(value)}
@@ -247,6 +254,7 @@ export const Ass:Component<assProps> = (props) => {
                                     setModStat("");
                                 }}
                                 class={`${styles.transparent}`}
+                                disabled={isDisabled() ? isDisabled() : false}
                             >
                                 <For each={stats.filter(stat => !modChips().some(chip => chip.key === stat))}>
                                     {stat => <Option value={stat}>{displayStat(stat)}</Option>}

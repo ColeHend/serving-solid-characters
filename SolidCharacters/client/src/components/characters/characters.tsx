@@ -1,4 +1,4 @@
-import { Component, For, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { Component, For, createMemo, createSignal, onCleanup, onMount, useContext } from "solid-js";
 import styles from "./characters.module.scss";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
@@ -7,11 +7,15 @@ import { Character } from "../../models/character.model";
 import { characterManager } from "../../shared";
 import { useNavigate } from "@solidjs/router";
 import { CharacterMenu } from "./characterMenu/characterMenu";
+import { SharedHookContext } from "../rootApp";
 
 
 const Characters: Component = () => {
   const [userSettings] = getUserSettings();
   const stylin = createMemo(()=>useStyles(userSettings().theme));
+  const context = useContext(SharedHookContext);
+
+  const isMobile = createMemo(() => context.isMobile());
 
   const navigate = useNavigate();
    
@@ -33,12 +37,18 @@ const Characters: Component = () => {
       <h1 class={`${styles.header}`}>Characters</h1>
       <div class={`${styles.allCharsTables}`}>
         <Table 
-        columns={[
+        columns={!isMobile() ? [
           "name",
           "race",
           "background",
           "level",
           "class",
+          "menu"
+        ] : [
+          "name",
+          "race",
+          "class",
+          "level",
           "menu"
         ]}
         data={characters}>

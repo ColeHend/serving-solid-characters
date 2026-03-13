@@ -181,6 +181,10 @@ export const ItemSection:Component<sectionProps> = (props) => {
         setInventory([]);
     }
 
+    const handleRemoveItem = (item: string) => {
+        setInventory(old => old.filter(x => x !== item));
+    }
+
     return <FlatCard icon="backpack" headerName="Equipment" transparent>
         <Show when={!exist()}>
             <FlatCard headerName={<strong>Starting Equipment</strong>} transparent>
@@ -316,11 +320,13 @@ export const ItemSection:Component<sectionProps> = (props) => {
             </FlatCard>
         </Show>
         <FlatCard headerName={<strong>Inventory ({inventory().length})</strong>} transparent>
-            <div class={`${styles.inventoryBox}`}>
-                <For each={inventory()}>
-                    {(item)=><Chip value={item} remove={()=>setInventory(old => old.filter(x => x !== item))} />}
-                </For>
-            </div>
+            <Show when={inventory().length > 0} fallback={<Chip value="None" />}>
+                <div class={`${styles.inventoryBox}`}>
+                    <For each={inventory()}>
+                        {(item)=><Chip value={item} remove={()=>handleRemoveItem(item)} />}
+                    </For>
+                </div>
+            </Show>
         </FlatCard>
         <FlatCard headerName={<strong>Add Item</strong>} transparent>
             <AddItem 
@@ -333,8 +339,8 @@ export const ItemSection:Component<sectionProps> = (props) => {
                 <For each={currencies}>
                     {(currency, i)=><div>
                         <div class={`${styles.currenyBox}`}>
-                            <span style={{display:"flex","flex-direction":"row", gap:"1%", height: "50%","margin-top":"3%"}}>
-                                <div style={{"background-color":`${getBarColor(currency)}`,width:"0.5vw"}} />
+                            <span class={`${styles.currencyHeader}`}>
+                                <div class={`${styles.currencyBar}`} style={{"background-color":`${getBarColor(currency)}`}} />
                                 <strong>{getMoneyName(currency)}</strong>
                             </span>
                             <span class={`${styles.moneyInput}`}>

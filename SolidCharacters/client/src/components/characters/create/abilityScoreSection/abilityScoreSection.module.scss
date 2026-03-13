@@ -60,14 +60,17 @@
     margin-left: 2%;
 
     @media screen and (max-width: 768px) {
-        align-items: center;
+        align-items: flex-start;
+        justify-content: flex-start;
         flex-wrap: wrap;
-        gap: 10px !important;
+        gap: 10% !important;
         margin: 0;
         width: 55vw;
+        margin-left: 5%;
 
-        :nth-child(odd) {
+        :nth-child(n) {
             padding: 0;
+            margin: 0;
         } 
     }
 }
@@ -82,3 +85,16 @@
 .transparent {
     background: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
 }
+
+.selectBox {
+    display: flex;
+    flex-direction: row;
+    width: 20%;
+    gap: 2%;
+
+    @media screen and (max-width: 768px) {
+        width: 100%
+    }
+}
+
+// display: "flex", "flex-direction": "row", width: "20%",gap: "2%"

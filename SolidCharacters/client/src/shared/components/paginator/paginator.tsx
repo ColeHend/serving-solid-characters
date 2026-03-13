@@ -1,8 +1,8 @@
-import { Accessor, Component, For, createSignal, createMemo, Setter, useContext, createEffect } from "solid-js";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Accessor, For, createSignal, createMemo, Setter, createEffect } from "solid-js";
 // Removed outdated Spell import (no direct usage)
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import style from "./paginator.module.scss";
-import { SharedHookContext } from "../../../components/rootApp";
 import { getUserSettings } from "../..";
 import { Button, Select, Option } from "coles-solid-library";
 
@@ -17,7 +17,7 @@ type Props<T> = {
 const Paginator = <T,>(props: Props<T[]>) => {
   const is_trannsparent = createMemo(() => "transparent" in props && props.transparent !== false);
 
-  const [userSettings, setUserSettings] = getUserSettings();
+  const [userSettings] = getUserSettings();
   const [currentPage, setCurrentPage] = createSignal(1);
   const [itemsPerPage, setItemsPerPage] = createSignal(props.itemsPerPage?.[0] ?? 10);
 

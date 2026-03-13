@@ -11,10 +11,7 @@ $mobile: 768px;
     padding: 10px;
     background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
 
-    // button {
-    //     background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
-    // }
-
+    
     @media screen and (max-width: $mobile) {
         width: 90%;
         margin-top: 5px;
@@ -40,6 +37,10 @@ $mobile: 768px;
 .featuresBox {
     flex-basis: 90%;
     background-color: transparent;
+    
+    :nth-child(n) {
+        background-color: transparent;
+    }
 }
 
 .baseCharInfoBox {
@@ -153,6 +154,7 @@ $mobile: 768px;
 //Item Table
 .itemTable {
     width: 100%;
+    
     table {
         width: 100%;
         margin: 0 auto;
@@ -162,6 +164,7 @@ $mobile: 768px;
 .actionsBox {
     text-align: center;
     width: 100%;
+
     table {
         // border: 1px solid;
         // border-radius: 10px;
@@ -182,6 +185,7 @@ $mobile: 768px;
 }
 .actionList {
     margin-bottom: 1rem;
+    background: transparent !important;
 }
 .actionButtonList {
     display: flex;
@@ -189,6 +193,11 @@ $mobile: 768px;
     justify-content: center;
     gap: 10px;
     margin-bottom: 1rem;
+
+    button {
+        background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
+    }
+
 }
 
 .levelBox {

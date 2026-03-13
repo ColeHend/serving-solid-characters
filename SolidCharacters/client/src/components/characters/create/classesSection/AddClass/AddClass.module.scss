@@ -8,8 +8,36 @@
 
     }
 
+    @media screen and (max-width: 768px) {
+        
+        table {
+            width: 90% !important;
+
+        }
+    }
+
     // tr:nth-child(even) {
     //     border-bottom: 1px solid $color1;
     // }
     
+}
+
+.secondRow {
+    display: flex;
+    gap: 2px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.requirementItem {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ padding: 4px 8px;
+ gap: 6px;
+
+ @media screen {
+    gap: 4px;
+    font-size: 0.8em;
+ }
 }

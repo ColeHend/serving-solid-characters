@@ -7,9 +7,17 @@
 
 .langSelect {
     width: 20vw;
+
+    @media screen and (max-width: 768px) {
+        width: 100%;        
+    }
 }
 
 .errorMessage {
-    color: red;
+    border: 1px solid red;
+    background-color: color-mix(in srgb, rgba(151, 4, 4, 0.719) 60%, transparent) !important;
+    color: white;
+    padding: 5px;
+    border-radius: 12px;
     font-size: 0.9em;
 }
