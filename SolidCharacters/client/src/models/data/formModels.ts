@@ -13,6 +13,11 @@ type HalfBackground = Omit<Background,"proficiencies"|"startEquipment"|"language
 export interface BackgroundForm extends HalfBackground {
     langChoiceAmount: number;
     optionKey: string;
+    PP: number;
+    GP: number;
+    EP: number;
+    SP: number;
+    CP: number;
 }
 
 // Race

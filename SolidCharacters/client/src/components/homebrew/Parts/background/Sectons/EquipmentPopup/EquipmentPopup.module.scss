@@ -1,22 +1,23 @@
-.currenyBox {
+.moneySection {
     display: flex;
-    width: min-content;
+    width: 50%;
+    flex-direction: column;
+    gap: 1%;
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
+}
+
+.moneyBox {
+    display: flex;
+    // width: 20%;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid;
     padding: 0.5%;
-}
-
-.moneySection {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    gap: 1%;
-
-    @media screen and (max-width: 768px) {
-        flex-direction: column;
-    }
+    margin-top: 1%;
 }
 
 .moneyInput {
@@ -42,25 +43,9 @@
         width: 80%;
         
     }
-    
 }
 
-.inventoryBox {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 1%;
-}
-
-.currencyBar {
-    width: 0.5vw;
-
-    @media screen and (max-width: 768px){
-        width: 1vw;
-    }
-}
-
-.currencyHeader {
+.moneyHeader {
     display: flex;
     flex-direction: row;
     gap: 1%;
@@ -68,4 +53,20 @@
     margin-top: 3%;
 }
 
-// display:"flex","flex-direction":"row", gap:"1%", height: "50%","margin-top":"3%"
+.moneyBar {
+    width: 0.5vw;
+
+    @media screen and (max-width: 768px){
+        width: 1vw;
+    }
+}
+
+.sectionWrapper {
+    display: flex;
+    flex-direction: row;
+    
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        margin-bottom: 15%;
+    }
+}

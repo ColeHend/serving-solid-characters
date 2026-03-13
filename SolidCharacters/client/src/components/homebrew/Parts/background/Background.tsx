@@ -27,7 +27,12 @@ export const HomebrewBackgrounds: Component = () => {
         "feat": ["", []],
         "abilityOptions": [[], [Validators.maxLength(3)]],
         "langChoiceAmount": [0, []],
-        "optionKey": ["", []]
+        "optionKey": ["", []],
+        "PP": [0, []],
+        "GP": [0, []],
+        "EP": [0, []],
+        "SP": [0, []],
+        "CP": [0, []],
     }) 
 
     const [armorProfs, setArmorProfs] = createSignal<string[]>([]);

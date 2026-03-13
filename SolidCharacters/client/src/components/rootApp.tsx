@@ -153,7 +153,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
                 </>}
             </For>
           </Container>
-          <div class="body">
+          <div class={`body ${styles.rootBody}`}>
             <ErrorBoundary fallback={(err) => {
               console.error("Error in route content:", err);
               return (
