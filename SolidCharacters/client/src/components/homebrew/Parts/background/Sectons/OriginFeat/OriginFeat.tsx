@@ -15,7 +15,11 @@ export const OriginFeat:Component<SectionProps> = (props) => {
     const featID = createMemo(() => props.featID());
     const originFeats = createMemo(() => props.originFeats());
 
-    return <FlatCard headerName="Origin Feat" icon='stars_2' transparent>
+    return <FlatCard headerName={<div>
+        <span>
+            Origin Feat<Show when={featID() !== ""}>: {props.getSelectedFeat(featID())?.details.name}</Show>
+        </span>
+    </div>} icon='stars_2' transparent>
         <FormField name="Select Feat" formName="feat">
             <Select>
                 <For each={originFeats()}>

@@ -18,7 +18,7 @@ export const Equipment: Component<SectionProps> = (props) => {
 
     return <FlatCard 
         headerName={<div class={`${styles}`}>
-        <span>Equipment</span>
+        <span>Equipment Groups ({startItemKeys().length})</span>
         </div>} 
         extraHeaderJsx={<Button onClick={()=>props.setShowItems(old => !old)}>Edit</Button>} 
         icon="home_repair_service" 

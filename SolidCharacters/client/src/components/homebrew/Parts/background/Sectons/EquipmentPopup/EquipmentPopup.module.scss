@@ -70,3 +70,86 @@
         margin-bottom: 15%;
     }
 }
+
+.wrapper {
+    margin: 0;
+    padding: 0;
+    width: 98%;
+}
+
+.chipBar {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.itemTableSection {
+    margin-right: 5%;
+    margin-left: 2%;
+
+    @media screen and (max-width: 768px) {
+        margin: 0;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+$height: 29.5vh;
+
+.itemTable {
+    // height: 25vh !important;
+
+    table {
+        height: $height !important;
+        display: flex;
+        flex-direction: column;
+    }
+
+    thead,
+    tbody {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        tr {
+        display: flex;
+        width: 100%;
+        }
+    }
+
+    th,
+    td {
+        flex: 1;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    tbody {
+        height: $height !important;
+        overflow-y: auto !important;
+    }
+
+    @media screen and (max-width: 768px) {
+        table {
+        width: 100%;
+        }
+
+        font-size: .8em;
+    }
+}
+
+.separator {
+    display: block;
+    width: min-content;
+    text-align: right;
+}
+
+.OptionKeyInput {
+    @media screen and (min-width: 768px) {
+        margin-left: 2%;
+        width: 80% !important;
+    }
+}

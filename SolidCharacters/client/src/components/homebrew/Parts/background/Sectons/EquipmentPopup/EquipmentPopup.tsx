@@ -13,11 +13,6 @@ interface PopupProps {
     formGroup: FormGroup<BackgroundForm>;
 }
 
-type event = MouseEvent & {
-    currentTarget: HTMLButtonElement;
-    target: Element;
-}
-
 export const EquipmentPopup: Component<PopupProps> = (props) => {
     const [show, setShow] = props.show;
     const allItems = createMemo(() => props.allItems());
@@ -50,7 +45,7 @@ export const EquipmentPopup: Component<PopupProps> = (props) => {
         return newItems().some(i => i === item);
     }
 
-    const handleSubmit = (e:event) => {
+    const handleSubmit = () => {
         if (startItemKeys().some(k => k === group.get().optionKey)) {
             addSnackbar({
                 severity: "error",
@@ -62,6 +57,11 @@ export const EquipmentPopup: Component<PopupProps> = (props) => {
         setStartingEquipment(old=>({...old,[group.get().optionKey]: newItems().join(",")}))
         group.set("optionKey", "");
         setNewItems([]);
+        group.set("PP", 0);
+        group.set("GP", 0);
+        group.set("EP", 0);
+        group.set("SP", 0);
+        group.set("CP", 0);
     }
 
     const remove = (key: string) => {
@@ -138,18 +138,29 @@ export const EquipmentPopup: Component<PopupProps> = (props) => {
         }
     }
 
+    const handleChange = (moneyType: string) => {
+        const value = getCurrentMoney(moneyType) ?? 0;
+        const addCurrency = `${value}${moneyType.toLowerCase()}`;
+        if (value <= 0) {
+            setNewItems(old => old.filter(item => !item.endsWith(moneyType.toLowerCase())));
+        } else {
+            setNewItems(old => old.filter(item => !item.endsWith(moneyType.toLowerCase())));
+            setNewItems(old => [...old,addCurrency])
+        }
+    }
+
     return <Modal show={[show, setShow]} title="Add A Choice!">
-        <div>
-            <FormField name="Opiton key" formName="optionKey">
-                <Input value={group.get().optionKey} onInput={(e)=>group.set("optionKey",e.currentTarget.value)}/>
+        <div class={`${styles.wrapper}`}>
+            <FormField name="Opiton key" formName="optionKey" class={`${styles.OptionKeyInput}`}>
+                <Input min={0} value={group.get().optionKey} onInput={(e)=>group.set("optionKey",e.currentTarget.value)}/>
             </FormField>
 
             <div class={`${styles.sectionWrapper}`}>
-                <div>
+                <div class={`${styles.itemTableSection}`}>
                     <div>
 
                     </div>
-                    <div>
+                    <div class={`${styles.itemTable}`}>
                         <Table data={pagiantedItems} columns={['name','type','action']}>
                             <Column name="name">
                                 <Header>
@@ -188,29 +199,23 @@ export const EquipmentPopup: Component<PopupProps> = (props) => {
                 </div>
                 <div class={`${styles.moneySection}`}>
                     <For each={currencies}>
-                        {moneyType => <>
-                            <div class={`${styles.moneyBox}`}>
-                                <span class={`${styles.moneyHeader}`}>
-                                    <div class={`${styles.moneyBar}`} style={{"background-color":`${getBarColor(moneyType)}`}} />
-                                    <strong>{getMoneyName(moneyType)}</strong>
-                                </span>
-                                <span class={`${styles.moneyInput}`}>
-                                    <FormField name={getMoneyName(moneyType) ?? ""} formName={`${moneyType}`}>
-                                        <Input value={getCurrentMoney(moneyType) ?? 0} onInput={(e)=>group.set(`${moneyType as keyof BackgroundForm}`, e.currentTarget.value)} />
-                                    </FormField>
-                                </span>
-                            </div>
-                            <Button onClick={()=>{
-                                setNewItems(old => [...old,`${getCurrentMoney(moneyType) ?? 0}${moneyType.toLowerCase()}`])
-                                group.set(`${moneyType as keyof BackgroundForm}`, 0);
-                            }}>add</Button>
-                        </>}
+                        {moneyType => <div class={`${styles.moneyBox}`}>
+                            <span class={`${styles.moneyHeader}`}>
+                                <div class={`${styles.moneyBar}`} style={{"background-color":`${getBarColor(moneyType)}`}} />
+                                <strong>{getMoneyName(moneyType)}</strong>
+                            </span>
+                            <span class={`${styles.moneyInput}`}>
+                                <FormField name={getMoneyName(moneyType) ?? ""} formName={`${moneyType}`}>
+                                    <Input onChange={()=>handleChange(moneyType)} type="number" value={getCurrentMoney(moneyType) ?? 0} onInput={(e)=>group.set(`${moneyType as keyof BackgroundForm}`, e.currentTarget.value)} />
+                                </FormField>
+                            </span>
+                        </div>}
                     </For>
                 </div>
             </div>    
            
-           <div>
-                <Chip key={group.get().optionKey} value={newItems().join(",")}  /> <span>:</span>
+           <div class={`${styles.chipBar}`}>
+                <Chip key={group.get().optionKey} value={newItems().join(",")}  /> <span class={`${styles.separator}`}>:</span>
 
                 <Show when={startItemKeys().length > 0}>
                     <For each={startItemKeys()}>
@@ -220,7 +225,32 @@ export const EquipmentPopup: Component<PopupProps> = (props) => {
                             if (!confirm) return;
                             
                             group.set("optionKey", key);
-                            setNewItems(startingEquipment()[key].split(","))
+                            
+                            const items = startingEquipment()[key].split(","); 
+
+                            setNewItems(items)
+                            
+                            items.forEach(item => {
+                                const num = item.match(/\d+/)?.[0] ?? 1;
+                                
+                                if (item.endsWith("pp")) {
+                                    group.set("PP", +num);
+
+                                } else if (item.endsWith('gp')) {
+                                    group.set("GP", +num);
+
+                                } else if (item.endsWith('ep')) {
+                                    group.set("EP", +num);
+
+                                } else if (item.endsWith('sp')) {
+                                    group.set("SP", +num);
+
+                                } else if (item.endsWith('cp')) {
+                                    group.set("CP", +num);
+
+                                }
+                            })
+
                             remove(key);
                         }} remove={()=>remove(key)} />}
                     </For>

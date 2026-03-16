@@ -36,7 +36,11 @@ export const Languages: Component<SectionProps> = (props) => {
         if (langSelect() === "Other/Text") setCustomLang("");
     }
 
-    return <FlatCard headerName="Languages" icon="chat" transparent>
+    return <FlatCard headerName={<div>
+        <span>
+            Languages<Show when={languages().length > 0}>: {languages().join(", ")}</Show>
+        </span>
+    </div>} icon="chat" transparent>
         <div class={`${styles.LangSelectBox}`}>
             <FormField name="Select Language" form="langSelect">
                 <Select value={langSelect()} onChange={(e) => setLangSelect(e)}>
