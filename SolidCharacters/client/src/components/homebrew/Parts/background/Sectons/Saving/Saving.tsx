@@ -1,11 +1,6 @@
 import { Button } from "coles-solid-library";
-import { Accessor, Component, createMemo, Show } from "solid-js";
+import { Accessor, Component, createMemo } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
-
-type event = MouseEvent & {
-    currentTarget: HTMLButtonElement;
-    target: Element;
-}
 
 interface SectonProps {
     is_exist: Accessor<boolean>;

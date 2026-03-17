@@ -29,7 +29,7 @@ public class FeatureMetadata
   [JsonProperty("recharge")] public string? Recharge { get; set; }
   [JsonProperty("spells")] public List<string>? Spells { get; set; }
   [JsonProperty("category")] public string? Category { get; set; }
-  [JsonProperty("mads")] public MadFeature? Mads {get; set;}
+  [JsonProperty("mads")] public List<MadFeature>? Mads {get; set;}
 }
 
 public enum MadType

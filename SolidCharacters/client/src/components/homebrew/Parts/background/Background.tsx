@@ -17,6 +17,7 @@ import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/ite
 import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useSearchParams } from "@solidjs/router";
 import { EquipmentPopup } from "./Sectons/EquipmentPopup/EquipmentPopup";
+import { ProficienciesPopup } from "./Sectons/proficienciesPopup/proficienciesPopup";
 
 export const HomebrewBackgrounds: Component = () => {
 
@@ -56,6 +57,10 @@ export const HomebrewBackgrounds: Component = () => {
     const selectedName = createMemo(()=>formGroup.get().name);
 
     const [showItemsPopup, setShowItemsPopup] = createSignal(false);
+
+    const [showProfsPopup, setShowProfsPopup] = createSignal(false);
+
+    const [showFeaturePopup, setShowFeaturePopup] = createSignal(false);
 
     // data 
     const homebrew = homebrewManager;
@@ -101,9 +106,6 @@ export const HomebrewBackgrounds: Component = () => {
     const is_exist = createMemo(() => srdBackgrounds().some(b => b.name === selectedName())); 
 
     // functions
-
-
-
     const handleSubmit = (data: BackgroundForm) => {
 
     }
@@ -215,39 +217,50 @@ export const HomebrewBackgrounds: Component = () => {
                 srdBackgrounds={srdBackgrounds}
                 clone={()=>cloneBackground()}
                 fill={()=>getBackground()}
-                delete={()=>{}}/>
+                delete={()=>{}} 
+            />
 
             <AbilityScore 
                 abilityScores={abilityScores} 
                 formGroup={formGroup} 
-                allStats={abillityOptions}/>
+                allStats={abillityOptions} 
+            />
 
             <Equipment 
                 startItemKeys={startItemKeys} 
                 startingEquipment={[startingEquipment, setStartingEquipment]} 
                 allItems={srdItems}
-                setShowItems={setShowItemsPopup}/>
+                setShowItems={setShowItemsPopup} 
+            />
 
             <OriginFeat 
                 featID={featID} 
                 getSelectedFeat={getSelectedFeat} 
-                originFeats={originFeats} />
+                originFeats={originFeats} 
+            />
 
             <Proficiencies 
                 weaponProfs={weaponProfs} 
                 armorProfs={armorProfs} 
                 skillProfs={skillProfs} 
-                toolProfs={toolProfs} />
+                toolProfs={toolProfs} 
+                setShowPopup={setShowProfsPopup} 
+            />
 
             <Languages 
                 languages={[languages, setLanguages]}
                 form={formGroup}
-                allLangs={AllLanguages}/>
+                allLangs={AllLanguages} 
+            />
 
-            <OptionalFeatures />
+            <OptionalFeatures 
+                features={[features, setFeatures]}
+                showPopup={setShowFeaturePopup}
+            />
 
             <Saving 
-                is_exist={is_exist} />
+                is_exist={is_exist} 
+            />
         </Form>
 
         <EquipmentPopup 
@@ -255,6 +268,15 @@ export const HomebrewBackgrounds: Component = () => {
             startItemKeys={startItemKeys}
             startingEquipment={[startingEquipment, setStartingEquipment]}
             allItems={srdItems} 
-            formGroup={formGroup}/>
+            formGroup={formGroup} 
+        />
+
+        <ProficienciesPopup 
+            show={[showProfsPopup, setShowProfsPopup]}
+            setWeapons={[weaponProfs, setWeaponProfs]}
+            setArmor={[armorProfs, setArmorProfs]}
+            setSkills={[skillProfs, setSkillProfs]}
+            setTools={[toolProfs, setToolProfs]}
+        />
     </Body>
 }
