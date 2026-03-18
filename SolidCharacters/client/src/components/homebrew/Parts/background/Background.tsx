@@ -18,6 +18,7 @@ import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/a
 import { useSearchParams } from "@solidjs/router";
 import { EquipmentPopup } from "./Sectons/EquipmentPopup/EquipmentPopup";
 import { ProficienciesPopup } from "./Sectons/proficienciesPopup/proficienciesPopup";
+import { FeaturesPopup } from "../featuresPopup/featuresPopup";
 
 export const HomebrewBackgrounds: Component = () => {
 
@@ -277,6 +278,11 @@ export const HomebrewBackgrounds: Component = () => {
             setArmor={[armorProfs, setArmorProfs]}
             setSkills={[skillProfs, setSkillProfs]}
             setTools={[toolProfs, setToolProfs]}
+        />
+
+        <FeaturesPopup 
+            Show={[showFeaturePopup, setShowFeaturePopup]}
+            features={[features, setFeatures]}
         />
     </Body>
 }
