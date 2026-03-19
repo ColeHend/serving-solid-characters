@@ -1,3 +1,5 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
 .flatCard {
     // Stack content vertically
     display: flex;
@@ -68,4 +70,8 @@
 
 .transparent {
     background-color: transparent !important;
+}
+
+.transparentBtn {
+    background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
 }

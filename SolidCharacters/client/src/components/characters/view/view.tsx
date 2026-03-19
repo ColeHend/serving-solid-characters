@@ -16,6 +16,7 @@ import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spell
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { characterManager, Clone } from "../../../shared";
 import { SpellTable } from "./SpellTable/SpellTable";
+import { FlatCard } from "../../../shared/components/flatCard/flatCard";
 
 const CharacterView: Component = () => {
   const [userSettings] = getUserSettings();
@@ -292,10 +293,9 @@ const CharacterView: Component = () => {
                       <Button onClick={()=>{setCurrentActionList(reactionList())}}>Reactions</Button>
                     </div>
                     <For each={currentActionList()}>{(actionItem)=>{
-                      return (<ExpansionPanel arrowSize={{width: '32px', height: '32px'}} class={`${styles.actionList}`}>
-                        <span>{actionItem.name}</span>
+                      return (<FlatCard headerName={<span>{actionItem.name}</span>}  class={`${styles.actionList}`} transparent>
                         <div class={`${styles.actionList}`}>{actionItem.desc}</div>
-                      </ExpansionPanel>)
+                      </FlatCard>)
                     }}</For>
                   </div>
                 </Show>

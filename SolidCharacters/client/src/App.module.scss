@@ -23,6 +23,7 @@
   background-color: vars.$color-surface;
   background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
   z-index: 0;
+  margin-top: 8px;
 
   @media screen and (max-width: 768px){
       width: 95%;

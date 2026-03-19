@@ -8,6 +8,10 @@
     button {
         background: transparent !important;
     }
+
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
 }
 
 .sortButtons {
@@ -47,5 +51,11 @@
     height: 49vh;
     overflow-y: auto;
     gap: 0.5rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    table {
+      width: 100%;
+    }
   }
 }

@@ -83,7 +83,7 @@ export interface FeatureMetadata {
   recharge?: string;
   spells?: string[];
   category?: string;
-  mads?: MadFeature;
+  mads?: MadFeature[];
 }
 
 export interface Item {

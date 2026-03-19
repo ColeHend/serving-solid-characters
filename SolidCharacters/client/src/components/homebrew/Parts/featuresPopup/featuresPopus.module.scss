@@ -1,0 +1,78 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    height: 100%;
+    overflow-y: hidden;
+    margin-bottom: 0px !important;
+}
+
+.sideBar {
+    flex: 1;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid vars.$color-primary;
+    background-color: vars.$color-background;
+}
+
+.featureBody {
+    flex: 2;
+    width: 75%;
+    padding: 12px;
+}
+
+.selectBox {
+  
+}
+
+.newFeatureBox {
+    border-bottom: 1px solid vars.$color-primary;
+    display: flex;
+    flex-direction: row;
+    width: 85%;
+    justify-content: center;
+    padding: 12px;
+
+    button {
+        width: 85%;
+    }
+    
+}
+
+.featureHeader {
+    text-align: left;
+    border-bottom: 1px solid vars.$color-primary;
+    margin-bottom: 3%;
+
+    :nth-child(2) {
+        margin: 10px;
+    }
+}
+
+.divider {
+    border-right: 1px solid;
+    margin: 12px;    
+}
+
+.actionBtns {
+    // margin-top: 55%;
+    // flex: 3;
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    display: flex;
+    gap: 3%;
+
+    button {
+        border-radius: 6px !important;
+    }
+}
+
+.scrollBox {
+    overflow-y: scroll;
+    height: 70%;
+}

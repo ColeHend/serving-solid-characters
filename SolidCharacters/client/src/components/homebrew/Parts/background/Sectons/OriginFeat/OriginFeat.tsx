@@ -2,6 +2,7 @@ import { FormField, Select, Chip, Option } from "coles-solid-library";
 import { Accessor, Component, createMemo, For, Show } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 import { Feat } from "../../../../../../models/generated";
+import { Markdown } from "../../../../../../shared";
 
 interface SectionProps {
     featID: Accessor<string>;
@@ -14,7 +15,11 @@ export const OriginFeat:Component<SectionProps> = (props) => {
     const featID = createMemo(() => props.featID());
     const originFeats = createMemo(() => props.originFeats());
 
-    return <FlatCard headerName="Origin Feat" icon='stars_2' transparent>
+    return <FlatCard headerName={<div>
+        <span>
+            Origin Feat<Show when={featID() !== ""}>: {props.getSelectedFeat(featID())?.details.name}</Show>
+        </span>
+    </div>} icon='stars_2' transparent>
         <FormField name="Select Feat" formName="feat">
             <Select>
                 <For each={originFeats()}>
@@ -28,7 +33,7 @@ export const OriginFeat:Component<SectionProps> = (props) => {
         <Show when={featID() !== ""}>
             <Chip value={`${props.getSelectedFeat(featID())?.details.name}`} />
             
-            {props.getSelectedFeat(featID())?.details.description}
+            <Markdown text={props.getSelectedFeat(featID())?.details.description ?? ''} />  
         </Show>
     </FlatCard>
 }

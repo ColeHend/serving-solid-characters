@@ -1,0 +1,155 @@
+.moneySection {
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    gap: 1%;
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
+}
+
+.moneyBox {
+    display: flex;
+    // width: 20%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid;
+    padding: 0.5%;
+    margin-top: 1%;
+}
+
+.moneyInput {
+    width: 60%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-2);
+
+
+    div {
+        display: none;
+    }
+
+    :nth-child(n) {
+        max-width: 180px;
+        flex: 1 1 200px;
+        box-sizing: border-box;    
+    }
+
+    @media screen and (max-width: 768px) {
+        width: 80%;
+        
+    }
+}
+
+.moneyHeader {
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+    height: 50%;
+    margin-top: 3%;
+}
+
+.moneyBar {
+    width: 0.5vw;
+
+    @media screen and (max-width: 768px){
+        width: 1vw;
+    }
+}
+
+.sectionWrapper {
+    display: flex;
+    flex-direction: row;
+    
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        margin-bottom: 15%;
+    }
+}
+
+.wrapper {
+    margin: 0;
+    padding: 0;
+    width: 98%;
+}
+
+.chipBar {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.itemTableSection {
+    margin-right: 5%;
+    margin-left: 2%;
+
+    @media screen and (max-width: 768px) {
+        margin: 0;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+$height: 29.5vh;
+
+.itemTable {
+    // height: 25vh !important;
+
+    table {
+        height: $height !important;
+        display: flex;
+        flex-direction: column;
+    }
+
+    thead,
+    tbody {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        tr {
+        display: flex;
+        width: 100%;
+        }
+    }
+
+    th,
+    td {
+        flex: 1;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    tbody {
+        height: $height !important;
+        overflow-y: auto !important;
+    }
+
+    @media screen and (max-width: 768px) {
+        table {
+        width: 100%;
+        }
+
+        font-size: .8em;
+    }
+}
+
+.separator {
+    display: block;
+    width: min-content;
+    text-align: right;
+}
+
+.OptionKeyInput {
+    @media screen and (min-width: 768px) {
+        margin-left: 2%;
+        width: 80% !important;
+    }
+}
