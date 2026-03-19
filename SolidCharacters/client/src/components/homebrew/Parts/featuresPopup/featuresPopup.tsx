@@ -1,4 +1,4 @@
-import { Button, FormField, Icon, Input, Modal, Container } from "coles-solid-library";
+import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter } from "solid-js";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
@@ -14,10 +14,16 @@ interface popupProps {
 }
 
 export const FeaturesPopup: Component<popupProps> = (props) => {
+    
     const [show, setShow] = props.Show;
     const [features, setFeatures] = props.features;
+    const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
 
-    const is_edit = createMemo(()=>!isNullish(features()));
+    const is_edit = createMemo(()=>features().length > 0);
+
+    const currentFeatures = new FormArray<FeatureDetail>([[], []]);
+
+    
 
     const [featureName, setFeatureName] = createSignal("");
     const [featureDesc, setFeatureDesc] = createSignal("");
@@ -47,9 +53,20 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         setCharChanges([]); 
     }
 
+    createEffect(()=>{ 
+        if (popupRef()) {
+            const parentEL = popupRef()!.parentElement;
 
-    return <Modal show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>
-        <div class={`${styles.wrapper}`}>
+            if (parentEL) {
+                const parent = parentEL.parentElement;
+
+                if (parent) parent.style.setProperty("padding-bottom","0","important")
+            }
+        }
+    })
+
+    return <Modal ref={popupRef} show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>
+        <div class={`${styles.wrapper}`} ref={(e)=>setPopupRef(e)}>
             <div class={`${styles.sideBar}`}> 
                 <div class={`${styles.newFeatureBox}`}>
                     <Button>New Feature +</Button>
@@ -82,31 +99,37 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         </span>
                     </div>
                 </div>
-                <FlatCard headerName="Identity" icon="identity_platform">
-                    <FormField name="Feature Name" formName="featureName">
-                        <Input 
-                            value={featureName()} 
-                            onInput={(e)=>setFeatureName(e.currentTarget.value)} 
-                            placeholder="Feature Name..."
-                        />
-                    </FormField>
+                <div class={`${styles.scrollBox}`}>
+                    <FlatCard headerName="Identity" icon="identity_platform">
+                        <FormField name="Feature Name" formName="featureName">
+                            <Input 
+                                value={featureName()} 
+                                onInput={(e)=>setFeatureName(e.currentTarget.value)} 
+                                placeholder="Feature Name..."
+                            />
+                        </FormField>
 
-                    <FormField name="Feature Desc" formName="featureDesc">
-                        <TextArea
-                            text={featureDesc}
-                            setText={setFeatureDesc}
-                            placeholder="What does the feature do..."
-                        />
-                    </FormField>
-                </FlatCard>
+                        <FormField name="Feature Desc" formName="featureDesc">
+                            <TextArea
+                                text={featureDesc}
+                                setText={setFeatureDesc}
+                                placeholder="What does the feature do..."
+                            />
+                        </FormField>
+                    </FlatCard>
 
-                <FlatCard headerName="Character Changes" icon="key">
-                    Placeholder Text
-                </FlatCard>
+                    <FlatCard headerName="Character Changes" icon="key">
+                        Placeholder Text
+                    </FlatCard>
+                </div>
 
-                <div>
+                <div class={`${styles.actionBtns}`}>
+                    <Button>
+                        Duplicate
+                    </Button>
+
                     <Button onClick={() => setShow(false)}>
-                        Cancel
+                        Delete
                     </Button>
                     
                     <Button onClick={save}>

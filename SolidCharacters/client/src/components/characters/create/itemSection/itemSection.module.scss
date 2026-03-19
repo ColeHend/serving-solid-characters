@@ -1,11 +1,15 @@
 .currenyBox {
     display: flex;
-    width: min-content;
+    
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid;
     padding: 0.5%;
+
+    @media screen and (max-width: 768px) {
+        width: min-content;        
+    }
 }
 
 .moneySection {

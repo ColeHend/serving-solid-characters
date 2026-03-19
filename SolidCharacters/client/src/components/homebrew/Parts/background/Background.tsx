@@ -1,8 +1,8 @@
-import { Body, Form, FormGroup, Validators } from "coles-solid-library";
+import { addSnackbar, Body, Form, FormGroup, Validators } from "coles-solid-library";
 import { Component, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { BackgroundForm } from "../../../../models/data/formModels";
 import styles from "./Background.module.scss";
-import { Background, Clone, Feat, FeatureDetail, homebrewManager } from "../../../../shared";
+import { Background, ChoiceDetail, Clone, Feat, FeatureDetail, homebrewManager, Proficiencies as ProficienciesModel, StartingEquipment } from "../../../../shared";
 import { Identity } from "./Sectons/Identity/Identity";
 import { AbilityScore } from "./Sectons/AbilityScore/AbilityScore";
 import { Equipment } from "./Sectons/Equipment/Equipment";
@@ -19,6 +19,7 @@ import { useSearchParams } from "@solidjs/router";
 import { EquipmentPopup } from "./Sectons/EquipmentPopup/EquipmentPopup";
 import { ProficienciesPopup } from "./Sectons/proficienciesPopup/proficienciesPopup";
 import { FeaturesPopup } from "../featuresPopup/featuresPopup";
+import { createNewId } from "../../../../shared/customHooks/utility/tools/idGen";
 
 export const HomebrewBackgrounds: Component = () => {
 
@@ -37,22 +38,29 @@ export const HomebrewBackgrounds: Component = () => {
         "CP": [0, []],
     }) 
 
+    // proficiencies
     const [armorProfs, setArmorProfs] = createSignal<string[]>([]);
     const [weaponProfs, setWeaponProfs] = createSignal<string[]>([]);
     const [toolProfs, setToolProfs] = createSignal<string[]>([]);
     const [skillProfs, setSkillProfs] = createSignal<string[]>([]);
 
+    // fetching form data
     const abilityScores = createMemo(() => formGroup.get().abilityOptions ?? []);
     const featID = createMemo(() => formGroup.get().feat ?? "");
 
+    // starting items
     const [startingEquipment, setStartingEquipment] = createSignal<Record<string, string>>({});
 
     const startItemKeys = createMemo(() => Object.keys(startingEquipment()));
 
+    // languages
     const [languages, setLanguages] = createSignal<string[]>([]);
 
+    // features
     const [features, setFeatures] = createSignal<FeatureDetail[]>([]);
 
+
+    // state
     const [searchParam, setSearchParam] = useSearchParams();
 
     const selectedName = createMemo(()=>formGroup.get().name);
@@ -104,11 +112,95 @@ export const HomebrewBackgrounds: Component = () => {
 
     const srdBackgrounds = useDnDBackgrounds();
 
-    const is_exist = createMemo(() => srdBackgrounds().some(b => b.name === selectedName())); 
+    const is_exist = createMemo(() => srdBackgrounds().some(b => b.id === formGroup.get().id)); 
 
     // functions
     const handleSubmit = (data: BackgroundForm) => {
+        const formData: BackgroundForm = {
+            ...data,
+        };
 
+        const newLangugaes: ChoiceDetail = {
+            options: languages(),
+            amount: formData.langChoiceAmount
+        } 
+
+        const newFeatures = features();
+
+        const newProficiencies: ProficienciesModel = {
+            weapons: weaponProfs(),
+            armor: armorProfs(),
+            skills: skillProfs(),
+            tools: toolProfs(),
+        }
+
+        const itemKeys = startItemKeys();
+
+        const newStartingEquipment = itemKeys.flatMap(key => {
+            const items = startingEquipment()[key];
+            const newStartingEquipment: StartingEquipment = {
+                optionKeys: [key],
+                items: items.split(','),
+            }
+
+
+            return newStartingEquipment;
+        })
+                
+        let id: string = ""
+
+        const exist = is_exist();
+
+        if (exist) {
+            id = formData.id;
+        } else {
+            id = createNewId();
+        }
+
+        const background: Background = {
+            id: id,
+            name: formData.name,
+            desc: formData.desc,
+            proficiencies: newProficiencies,
+            startEquipment: newStartingEquipment,
+            abilityOptions: formData.abilityOptions,
+            feat: formData.feat,
+            languages: newLangugaes,
+            features: newFeatures
+        }
+
+        const valid = formGroup.validate();
+
+        if (!valid) {
+            const errs: string[] = [
+                ...formGroup.getErrors("name"),
+                ...formGroup.getErrors("id"),
+                ...formGroup.getErrors("abilityOptions")
+            ]
+
+            errs.forEach(err => addSnackbar({
+                severity: "error",
+                message: err
+            }))
+
+            return;
+        }
+
+        if (exist) {
+            addSnackbar({
+                severity: "success",
+                message: `Updateing background: ${formData.name}!`
+            })
+            homebrewManager.updateBackground(background);
+            clearForm();
+        } else {
+            addSnackbar({
+                severity: "success",
+                message: `Adding new background: ${formData.name}`
+            })
+            homebrewManager.addBackground(background);
+            clearForm();
+        }
     }
 
     const getSelectedFeat = (id: string): Feat | null => {
@@ -188,6 +280,10 @@ export const HomebrewBackgrounds: Component = () => {
         fillForm(Clone(background));
     }
 
+    const clearForm = () => {
+
+    }
+
     // effects 
 
     onMount(() => {
@@ -196,6 +292,8 @@ export const HomebrewBackgrounds: Component = () => {
         const formName = selectedName();
     
         if (!searchParam.name && formName !== "") setSearchParam({name: formName});
+    
+        if (searchParam.name) getBackground(true);
     })
 
     onCleanup(() => {
@@ -261,6 +359,7 @@ export const HomebrewBackgrounds: Component = () => {
 
             <Saving 
                 is_exist={is_exist} 
+                onSubmit={() => handleSubmit(formGroup.get())}
             />
         </Form>
 

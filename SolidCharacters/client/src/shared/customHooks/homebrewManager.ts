@@ -236,13 +236,13 @@ class HomebrewManager {
       finalize(() => { if (!failed) { this._setBackgrounds(o => [...o, bg]); addSnackbar({ message: "Background added", severity: "success" }); } })
     );
   };
-  public updateBackground = (bg: Background): Promise<void> | void => { if (!this._backgrounds().some(b => b.name === bg.name)) return; return new Promise(res => this.updateBackgroundsInDB(Clone(bg)).subscribe({ complete: () => res(), error: () => res() })); }
+  public updateBackground = (bg: Background): Promise<void> | void => { if (!this._backgrounds().some(b => b.id === bg.id)) return; return new Promise(res => this.updateBackgroundsInDB(Clone(bg)).subscribe({ complete: () => res(), error: () => res() })); }
   private updateBackgroundsInDB = (bg: Background) => {
     let failed = false;
     return httpClient$.toObservable(HombrewDB.backgrounds.put(bg)).pipe(
       take(1),
       catchError(err => { console.error(err); failed = true; addSnackbar({ message: "Error updating backgrounds", severity: "error" }); return of(null); }),
-      finalize(() => { if (!failed) { this._setBackgrounds(list => list.map(b => b.name === bg.name ? bg : b)); addSnackbar({ message: "Background updated", severity: "success" }); } })
+      finalize(() => { if (!failed) { this._setBackgrounds(list => list.map(b => b.id === bg.id ? bg : b)); addSnackbar({ message: "Background updated", severity: "success" }); } })
     );
   };
   public removeBackground = (name: string): Promise<void> | void => { if (!this._backgrounds().some(b => b.name === name)) return; const updated = this._backgrounds().filter(b => b.name !== name); return new Promise(res => { httpClient$.toObservable(HombrewDB.backgrounds.clear()).pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.backgrounds.bulkAdd(updated)))).subscribe({ error: err => { console.error(err); addSnackbar({ message: "Error removing background", severity: "error" }); res(); }, complete: () => { this._setBackgrounds(updated); addSnackbar({ message: "Background removed", severity: "success" }); res(); } }); }); }
