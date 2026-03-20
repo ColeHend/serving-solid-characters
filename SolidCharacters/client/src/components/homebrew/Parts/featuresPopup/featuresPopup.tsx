@@ -1,4 +1,4 @@
-import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup } from "coles-solid-library";
+import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup, Form } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter } from "solid-js";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
@@ -23,11 +23,24 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const currentFeatures = new FormArray<FeatureDetail>([[], []]);
 
-    
+    const theFeatures = createMemo(() => currentFeatures.get());
+
+    const  [currentIndex, setCurrentIndex] = createSignal(0);
 
     const [featureName, setFeatureName] = createSignal("");
     const [featureDesc, setFeatureDesc] = createSignal("");
-    const [charChanges, setCharChanges] = createSignal<MadFeature[]>();
+    const [charChanges, setCharChanges] = createSignal<MadFeature[]>([]);
+
+    const currentFeature = createMemo(()=>{
+        const features = theFeatures();
+        const selectedIndex = currentIndex();
+        
+        const toReturn = features.find((value, i) => i === selectedIndex);
+
+        if (!toReturn) return null;
+
+        return toReturn;
+    })
 
     const save = () => {
         const newMetadata: FeatureMetadata = {
@@ -53,6 +66,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         setCharChanges([]); 
     }
 
+    const setInputs = (name: string, desc: string) => {
+        clearInputs();
+        setFeatureName(name);
+        setFeatureDesc(desc);
+    }
+
     createEffect(()=>{ 
         if (popupRef()) {
             const parentEL = popupRef()!.parentElement;
@@ -63,18 +82,25 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                 if (parent) parent.style.setProperty("padding-bottom","0","important")
             }
         }
+        const current = currentFeature();
+
+        if (current) {
+            setInputs(current.name, current.description);
+        }
     })
+
 
     return <Modal ref={popupRef} show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>
         <div class={`${styles.wrapper}`} ref={(e)=>setPopupRef(e)}>
             <div class={`${styles.sideBar}`}> 
                 <div class={`${styles.newFeatureBox}`}>
-                    <Button>New Feature +</Button>
+                    <Button onClick={()=>{
+                    }}>New Feature +</Button>
                 </div>
 
                 <div>
-                    <For each={features()}>
-                        {feature => <div class={`${styles.selectBox}`}>
+                    <For each={theFeatures()}>
+                        {(feature, i) => <div class={`${styles.selectBox}`} onClick={() => setCurrentIndex(i())}>
                             <Icon name="hexagon" size={"small"}/> 
 
                             <span>
@@ -133,7 +159,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                     </Button>
                     
                     <Button onClick={save}>
-                        {is_edit() ? "Update" : "Create"}
+                        {is_edit() ? "Update" : "Save"}
                     </Button>
                 </div>
             </div>
