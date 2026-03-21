@@ -19,44 +19,50 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const [features, setFeatures] = props.features;
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
 
+    const [currentIndex, setCurrentIndex] = createSignal(0);
+
     const is_edit = createMemo(()=>features().length > 0);
 
-    const currentFeatures = new FormArray<FeatureDetail>([[], []]);
-
-    
-
-    const [featureName, setFeatureName] = createSignal("");
-    const [featureDesc, setFeatureDesc] = createSignal("");
-    const [charChanges, setCharChanges] = createSignal<MadFeature[]>();
-
-    const save = () => {
-        const newMetadata: FeatureMetadata = {
-            uses: 0,
-            recharge: "",
-            spells: [],
-            category: "",
-            mads: charChanges() as GeneratedModel[],
+    const currentFeatures = new FormArray<FeatureDetail>([]);
+    const getFeatureValue =  <T extends keyof FeatureDetail,>(index: number, field: T): FeatureDetail[T]|undefined => {
+        const feature = currentFeatures.getGroup(index);
+        if (feature) {
+            return feature.get(field);
         }
+        return undefined;
+    };
+    const setFeatureValue = <T extends keyof FeatureDetail,>(index: number, field: T, value: FeatureDetail[T]) => {
+        const feature = currentFeatures.getGroup(index);
+        if (feature) {
+            feature.set(field, value);
+        }
+    };
+    const currentFeatureLength = createMemo(()=>currentFeatures.get().length);
+    const addNewFeature = ()=>{
+        const newFeature =  new FormGroup<FeatureDetail>({
+            name: [`New Feature ${currentFeatureLength() + 1}`, []],
+            description: ['', []],
+        })
 
-        const newFeature:FeatureDetail = {
-            name: featureName(),
-            description: featureDesc(),
-            metadata: newMetadata,
-        };
-
-        setFeatures(old => [...old, newFeature]);
+        currentFeatures.add(newFeature);
+        setCurrentIndex(currentFeatureLength());
     }
 
+    const featureName = createMemo(() => getFeatureValue(currentIndex(), "name") ?? "");
+    const featureDesc = createMemo(() => {
+        const desc = getFeatureValue(currentIndex(), "description");
+        return isNullish(desc) ? "" : desc as string;
+    })
+    const [charChanges, setCharChanges] = createSignal<MadFeature[]>();
+
     const clearInputs = () => {
-        setFeatureName("");
-        setFeatureDesc("");
         setCharChanges([]); 
+        currentFeatures.reset();
     }
 
     createEffect(()=>{ 
         if (popupRef()) {
             const parentEL = popupRef()!.parentElement;
-
             if (parentEL) {
                 const parent = parentEL.parentElement;
 
@@ -69,12 +75,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         <div class={`${styles.wrapper}`} ref={(e)=>setPopupRef(e)}>
             <div class={`${styles.sideBar}`}> 
                 <div class={`${styles.newFeatureBox}`}>
-                    <Button>New Feature +</Button>
+                    <Button onClick={addNewFeature}>New Feature +</Button>
                 </div>
 
                 <div>
-                    <For each={features()}>
-                        {feature => <div class={`${styles.selectBox}`}>
+                    <For each={currentFeatures.get()}>
+                        {(feature, i) => <div class={`${styles.selectBox}`} onClick={(e) => setCurrentIndex(i())}>
                             <Icon name="hexagon" size={"small"}/> 
 
                             <span>
@@ -103,8 +109,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                     <FlatCard headerName="Identity" icon="identity_platform">
                         <FormField name="Feature Name" formName="featureName">
                             <Input 
-                                value={featureName()} 
-                                onInput={(e)=>setFeatureName(e.currentTarget.value)} 
+                                value={getFeatureValue(currentIndex(), "name") ?? ""} 
+                                onInput={(e)=>setFeatureValue(currentIndex(), "name", e.currentTarget.value)} 
                                 placeholder="Feature Name..."
                             />
                         </FormField>
@@ -112,7 +118,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         <FormField name="Feature Desc" formName="featureDesc">
                             <TextArea
                                 text={featureDesc}
-                                setText={setFeatureDesc}
+                                setText={(e)=>setFeatureValue(currentIndex(), "description", e as string)}
                                 placeholder="What does the feature do..."
                             />
                         </FormField>
@@ -132,7 +138,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         Delete
                     </Button>
                     
-                    <Button onClick={save}>
+                    <Button onClick={() => {}}>
                         {is_edit() ? "Update" : "Create"}
                     </Button>
                 </div>
