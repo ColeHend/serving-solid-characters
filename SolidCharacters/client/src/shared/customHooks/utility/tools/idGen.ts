@@ -1,3 +1,8 @@
 export function createNewId(): string {
-    return crypto.randomUUID();
+    const uniqueId = crypto.randomUUID();
+    if (uniqueId) {
+        return uniqueId;
+    }
+    // Fallback to a simple random string if crypto.randomUUID is not supported
+    return `${Date.now()}-${Math.random().toString(36)}`;
 }
