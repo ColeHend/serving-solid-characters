@@ -55,10 +55,17 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         const desc = getFeatureValue(currentIndex(), "description");
         return isNullish(desc) ? "" : desc as string;
     })
-    const [charChanges, setCharChanges] = createSignal<MadFeature[]>();
+    const featureMetadata = createMemo(() => {
+        return getFeatureValue(currentIndex(), "metadata") ?? {};
+    })
+
+
+
+    const [command, setCommand] = createSignal("")
+
+    // const [charChanges, setCharChanges] = createSignal<MadFeature[]>();
 
     const clearInputs = () => {
-        setCharChanges([]); 
         currentFeatures.reset();
     }
 
@@ -146,7 +153,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                     </Button>
                     
                     <Button onClick={() => {}}>
-                        {is_edit() ? "Update" : "Create"}
+                        {is_edit() ? "Update" : "Save"}
                     </Button>
                 </div>
             </div>
