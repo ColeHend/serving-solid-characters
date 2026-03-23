@@ -309,7 +309,13 @@ export const HomebrewBackgrounds: Component = () => {
     return <Body class={`${styles.body}`}>
         <h2>Backgrounds</h2>
 
-        <Form data={formGroup} onSubmit={handleSubmit}>  
+        <Form data={formGroup} onSubmit={(data)=> {
+            if (Array.isArray(data)) {
+                data.forEach((item) => handleSubmit(item));
+            } else {
+                handleSubmit(data);
+            }
+        }}>  
             <Identity 
                 formGroup={formGroup} 
                 existingBackgrounds={homebrewBackgrounds}

@@ -1,9 +1,8 @@
-import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter } from "solid-js";
+import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup, TextArea, Validators } from "coles-solid-library";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, Setter } from "solid-js";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { TextArea } from "coles-solid-library"
 import { isNullish } from "../../../../shared";
 import { MadFeature as GeneratedModel } from "../../../../models/generated";
 import styles from "./featuresPopus.module.scss";
@@ -23,7 +22,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const is_edit = createMemo(()=>features().length > 0);
 
-    const currentFeatures = new FormArray<FeatureDetail>([]);
+    const currentFeatures = new FormArray<FeatureDetail>([], [Validators.minLength(0)]);
+    
     const getFeatureValue =  <T extends keyof FeatureDetail,>(index: number, field: T): FeatureDetail[T]|undefined => {
         const feature = currentFeatures.getGroup(index);
         if (feature) {
@@ -43,9 +43,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             name: [`New Feature ${currentFeatureLength() + 1}`, []],
             description: ['', []],
         })
+        
 
         currentFeatures.add(newFeature);
-        setCurrentIndex(currentFeatureLength());
+        const length = currentFeatureLength() -1;
+        setCurrentIndex(length);
     }
 
     const featureName = createMemo(() => getFeatureValue(currentIndex(), "name") ?? "");
@@ -69,7 +71,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                 if (parent) parent.style.setProperty("padding-bottom","0","important")
             }
         }
+
+        if (!show()) {
+            console.log("ran");
+        }
     })
+
 
     return <Modal ref={popupRef} show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>
         <div class={`${styles.wrapper}`} ref={(e)=>setPopupRef(e)}>
@@ -80,8 +87,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
                 <div>
                     <For each={currentFeatures.get()}>
-                        {(feature, i) => <div class={`${styles.selectBox}`} onClick={(e) => setCurrentIndex(i())}>
-                            <Icon name="hexagon" size={"small"}/> 
+                        {(feature, i) => <div class={`${styles.selectBox}`} onClick={() => setCurrentIndex(i())}>
+                            <Icon name="star_rate" size={"small"}/> 
 
                             <span>
                                 {feature.name}
