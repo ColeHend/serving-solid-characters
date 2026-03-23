@@ -93,17 +93,17 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         }
     })
 
+    const newFeature: FeatureDetail = {
+        name: `New Feature (${theFeatures().length + 1})`,
+        description: "",
+        metadata: {}
+    }
 
     return <Modal ref={popupRef} show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>
         <div class={`${styles.wrapper}`} ref={(e)=>setPopupRef(e)}>
             <div class={`${styles.sideBar}`}> 
                 <div class={`${styles.newFeatureBox}`}>
                     <Button onClick={()=>{
-                        const newFeature: FeatureDetail = {
-                            name: `New Feature (${theFeatures().length + 1})`,
-                            description: "",
-                            metadata: {}
-                        }
                         const allFeatures = theFeatures();
 
                         allFeatures.push(newFeature);
