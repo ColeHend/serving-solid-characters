@@ -128,7 +128,191 @@ class HttpClientObs {
         .catch((err) => observer.error(err));
     });
   }
-}
 
+  public streamText(url: string, options: Omit<RequestInit, 'method'>): Observable<StreamResponse<string>> {
+    return new Observable<StreamResponse<string>>((observer) => {
+      streamText(url, {
+        onChunk: (chunk) => observer.next({ value: chunk }),
+        onError: (err) => observer.error(err),
+        onDone: () => observer.complete(),
+        onProgress: (progress) => observer.next({ value: '', metadata: {
+          percentComplete: progress.percent ?? undefined,
+          totalBytes: progress.totalBytes ?? undefined,
+          receivedBytes: progress.receivedBytes,
+        } }),
+        ...options,
+      })
+    });
+  }
+
+  public fetchJsonWithProgress<T>(url: string, options: Omit<RequestInit, 'method'>): Observable<StreamResponse<T>> {
+    return new Observable<StreamResponse<T>>((observer) => {
+      fetchJsonWithProgress<T>(url, {
+        onProgress: (progress) => observer.next({ value: null as any, metadata: {
+          percentComplete: progress.percent ?? undefined,
+          totalBytes: progress.totalBytes ?? undefined,
+          receivedBytes: progress.receivedBytes,
+        } }),
+        onError: (err) => observer.error(err),
+        ...options,
+      })
+        .then((data) => {
+          observer.next({ value: data });
+          observer.complete();
+        })
+        .catch((err) => observer.error(err));
+    });
+  }
+}
+interface StreamResponse<T> {
+  value: T;
+  metadata?: {
+    percentComplete?: number;
+    totalBytes?: number;
+    receivedBytes?: number;
+  }
+}
 // export a single shared instance
 export default new HttpClientObs();
+
+export type FetchJsonProgress = {
+  receivedBytes: number;
+  totalBytes: number | null;
+  percent: number | null;
+};
+
+type FetchJsonOptions = RequestInit & {
+  onProgress?: (progress: FetchJsonProgress) => void;
+  onError?: (error: unknown) => void;
+};
+
+async function fetchJsonWithProgress<T>(
+  input: RequestInfo | URL,
+  options: FetchJsonOptions = {}
+): Promise<T> {
+  const { onProgress, onError, ...requestInit } = options;
+
+  try {
+    const response = await fetch(input, requestInit);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    }
+
+    if (!response.body) {
+      throw new Error("Response body is empty.");
+    }
+
+    const totalBytesHeader = response.headers.get("Content-Length");
+    const totalBytes = totalBytesHeader ? Number(totalBytesHeader) : null;
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    let receivedBytes = 0;
+    let text = "";
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (!value) continue;
+
+        receivedBytes += value.byteLength;
+        text += decoder.decode(value, { stream: true });
+
+        onProgress?.({
+          receivedBytes,
+          totalBytes,
+          percent:
+            totalBytes && totalBytes > 0
+              ? Math.min(100, (receivedBytes / totalBytes) * 100)
+              : null,
+        });
+      }
+
+      text += decoder.decode();
+
+      return JSON.parse(text) as T;
+    } finally {
+      reader.releaseLock();
+    }
+  } catch (error) {
+    onError?.(error);
+    throw error;
+  }
+}
+
+export type StreamProgress = {
+  receivedBytes: number;
+  totalBytes: number | null;
+  percent: number | null;
+};
+
+type StreamTextOptions = RequestInit & {
+  onChunk: (chunk: string) => void;
+  onProgress?: (progress: StreamProgress) => void;
+  onDone?: () => void;
+  onError?: (error: unknown) => void;
+};
+
+async function streamText(
+  input: RequestInfo | URL,
+  options: StreamTextOptions
+): Promise<void> {
+  const { onChunk, onProgress, onDone, onError, ...requestInit } = options;
+
+  try {
+    const response = await fetch(input, requestInit);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    }
+
+    if (!response.body) {
+      throw new Error("Response body is empty or streaming is unsupported.");
+    }
+
+    const totalBytesHeader = response.headers.get("Content-Length");
+    const totalBytes = totalBytesHeader ? Number(totalBytesHeader) : null;
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    let receivedBytes = 0;
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (!value) continue;
+
+        receivedBytes += value.byteLength;
+
+        const chunk = decoder.decode(value, { stream: true });
+        if (chunk) onChunk(chunk);
+
+        onProgress?.({
+          receivedBytes,
+          totalBytes,
+          percent:
+            totalBytes && totalBytes > 0
+              ? Math.min(100, (receivedBytes / totalBytes) * 100)
+              : null,
+        });
+      }
+
+      const tail = decoder.decode();
+      if (tail) {
+        onChunk(tail);
+      }
+
+      onDone?.();
+    } finally {
+      reader.releaseLock();
+    }
+  } catch (error) {
+    onError?.(error);
+    throw error;
+  }
+}
