@@ -1,73 +1,74 @@
 import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup, TextArea, Validators } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, Setter } from "solid-js";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
-import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
+import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { isNullish } from "../../../../shared";
 import { MadFeature as GeneratedModel } from "../../../../models/generated";
 import styles from "./featuresPopus.module.scss";
+import { MadForm } from "../../../../models/data/formModels";
 
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
-    features: [Accessor<FeatureDetail[]>, Setter<FeatureDetail[]>];
+    feature: [Accessor<FeatureDetail|undefined>, Setter<FeatureDetail|undefined>];
 }
 
 export const FeaturesPopup: Component<popupProps> = (props) => {
     
     const [show, setShow] = props.Show;
-    const [features, setFeatures] = props.features;
+    const [feature, setFeature] = props.feature;
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
 
     const [currentIndex, setCurrentIndex] = createSignal(0);
 
-    const is_edit = createMemo(()=>features().length > 0);
+    const is_edit = createMemo(()=>feature() !== undefined);
 
-    const currentFeatures = new FormArray<FeatureDetail>([], [Validators.minLength(0)]);
-    
-    const getFeatureValue =  <T extends keyof FeatureDetail,>(index: number, field: T): FeatureDetail[T]|undefined => {
-        const feature = currentFeatures.getGroup(index);
-        if (feature) {
-            return feature.get(field);
-        }
+    const currentFeatures = new FormArray<FeatureDetail>([], []);
+    const currentFeatureMetadata = new FormArray<MadForm>([]);
+
+    const getMetadataValue = <T extends keyof MadForm,>(index: number, field: T): MadForm[T]|undefined => {
+        const metadata = currentFeatureMetadata.getGroup(index);
+        if (metadata) return metadata.get(field);
         return undefined;
     };
-    const setFeatureValue = <T extends keyof FeatureDetail,>(index: number, field: T, value: FeatureDetail[T]) => {
-        const feature = currentFeatures.getGroup(index);
-        if (feature) {
-            feature.set(field, value);
-        }
-    };
-    const currentFeatureLength = createMemo(()=>currentFeatures.get().length);
-    const addNewFeature = ()=>{
-        const newFeature =  new FormGroup<FeatureDetail>({
-            name: [`New Feature ${currentFeatureLength() + 1}`, []],
-            description: ['', []],
+    const setMetadataValue = <T extends keyof MadForm,>(index:number, field: T, value: MadForm[T]) => {
+        const metadata = currentFeatureMetadata.getGroup(index);
+        if (metadata) metadata.set(field, value);
+    }
+
+    const currentMadsLength = createMemo(()=>currentFeatureMetadata.get().length);
+    
+    const addNewMetadata = () => {
+        const newMetadata = new FormGroup<MadForm>({
+            name: [`change ${currentMadsLength() + 1}`, []],
+            command: ['', []],
+            value: [{}, []],
+            type: ['', []],
+            prerequisites: [[], []],
+            group: [0, []]
         })
-        
 
-        currentFeatures.add(newFeature);
-        const length = currentFeatureLength() -1;
-        setCurrentIndex(length);
+        currentFeatureMetadata.add(newMetadata);
     }
 
-    const featureName = createMemo(() => getFeatureValue(currentIndex(), "name") ?? "");
-    const featureDesc = createMemo(() => {
-        const desc = getFeatureValue(currentIndex(), "description");
-        return isNullish(desc) ? "" : desc as string;
-    })
-    const featureMetadata = createMemo(() => {
-        return getFeatureValue(currentIndex(), "metadata") ?? {};
-    })
+    // const featureName = createMemo(() => getFeatureValue(currentIndex(), "name") ?? "");
+    // const featureDesc = createMemo(() => {
+    //     const desc = getFeatureValue(currentIndex(), "description");
+    //     return isNullish(desc) ? "" : desc as string;
+    // })
+    // const featureMetadata = createMemo(() => {
+    //     return getFeatureValue(currentIndex(), "metadata") ?? {};
+    // })
 
+    const clearInputs = (index: number) => {
+        const feature = currentFeatures.getGroup(index);
 
-
-    const [command, setCommand] = createSignal("")
-
-    // const [charChanges, setCharChanges] = createSignal<MadFeature[]>();
-
-    const clearInputs = () => {
-        currentFeatures.reset();
+        if (feature) {
+            // feature.reset();
+            currentFeatureMetadata.reset();
+        }
     }
+
 
     createEffect(()=>{ 
         if (popupRef()) {
@@ -84,30 +85,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         }
     })
 
-
     return <Modal ref={popupRef} show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>
         <div class={`${styles.wrapper}`} ref={(e)=>setPopupRef(e)}>
-            <div class={`${styles.sideBar}`}> 
-                <div class={`${styles.newFeatureBox}`}>
-                    <Button onClick={addNewFeature}>New Feature +</Button>
-                </div>
-
-                <div>
-                    <For each={currentFeatures.get()}>
-                        {(feature, i) => <div class={`${styles.selectBox}`} onClick={() => setCurrentIndex(i())}>
-                            <Icon name="star_rate" size={"small"}/> 
-
-                            <span>
-                                {feature.name}
-                            </span>
-                        </div>}
-                    </For>
-                </div>
-            </div>
             <div class={`${styles.featureBody}`}>
                 <div class={`${styles.featureHeader}`}>
                     <div>
-                        <h3>Feature: {featureName()}</h3>
+                        {/* <h3>Feature: {featureName()}</h3> */}
                     </div>
                     <div>
                         <span>
@@ -120,7 +103,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                     </div>
                 </div>
                 <div class={`${styles.scrollBox}`}>
-                    <FlatCard headerName="Identity" icon="identity_platform">
+                    {/* <FlatCard headerName="Identity" icon="identity_platform">
                         <FormField name="Feature Name" formName="featureName">
                             <Input 
                                 value={getFeatureValue(currentIndex(), "name") ?? ""} 
@@ -136,10 +119,24 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                 placeholder="What does the feature do..."
                             />
                         </FormField>
-                    </FlatCard>
+                    </FlatCard>  */}
 
                     <FlatCard headerName="Character Changes" icon="key">
-                        Placeholder Text
+                        <div>
+                            <div>
+                                <Button onClick={addNewMetadata}>
+                                    Add Change
+                                </Button>
+                            </div>
+
+                            <div>
+                                <For each={currentFeatureMetadata.get()}>
+                                    {metadata => <FlatCard headerName={`${metadata.name}`}>
+                                        x
+                                    </FlatCard>}
+                                </For>
+                            </div>
+                        </div>
                     </FlatCard>
                 </div>
 

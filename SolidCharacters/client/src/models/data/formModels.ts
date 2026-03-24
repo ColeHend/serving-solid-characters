@@ -1,5 +1,6 @@
 // Class
 
+import { MadFeature } from "../../shared/customHooks/mads/madModels";
 import { Background } from "../generated";
 
 
@@ -33,3 +34,10 @@ export interface BackgroundForm extends HalfBackground {
 
 
 // Items
+
+
+// features
+
+export interface MadForm extends MadFeature {
+    name: string;
+}

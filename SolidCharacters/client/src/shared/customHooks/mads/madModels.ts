@@ -67,7 +67,7 @@ export interface Madprerequisite {
     /**
      * the group number for "or" prerequisites, prerequisites with the same group number are "or" prerequisites, prerequisites with group 0 are "and" prerequisites;
      * 
-     *  @example 
+     *
      * 
      */
     group: number;
