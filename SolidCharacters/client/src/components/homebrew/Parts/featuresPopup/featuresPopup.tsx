@@ -23,18 +23,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const is_edit = createMemo(()=>feature() !== undefined);
 
-    const currentFeatures = new FormArray<FeatureDetail>([], []);
     const currentFeatureMetadata = new FormArray<MadForm>([]);
-
-    const getMetadataValue = <T extends keyof MadForm,>(index: number, field: T): MadForm[T]|undefined => {
-        const metadata = currentFeatureMetadata.getGroup(index);
-        if (metadata) return metadata.get(field);
-        return undefined;
-    };
-    const setMetadataValue = <T extends keyof MadForm,>(index:number, field: T, value: MadForm[T]) => {
-        const metadata = currentFeatureMetadata.getGroup(index);
-        if (metadata) metadata.set(field, value);
-    }
 
     const currentMadsLength = createMemo(()=>currentFeatureMetadata.get().length);
     
@@ -59,15 +48,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     // const featureMetadata = createMemo(() => {
     //     return getFeatureValue(currentIndex(), "metadata") ?? {};
     // })
-
-    const clearInputs = (index: number) => {
-        const feature = currentFeatures.getGroup(index);
-
-        if (feature) {
-            // feature.reset();
-            currentFeatureMetadata.reset();
-        }
-    }
 
 
     createEffect(()=>{ 
