@@ -1,5 +1,5 @@
-import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup, TextArea, Validators } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, Setter } from "solid-js";
+import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup, TextArea, Validators, Form } from "coles-solid-library";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, onMount, Setter } from "solid-js";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
@@ -7,26 +7,32 @@ import { isNullish } from "../../../../shared";
 import { MadFeature as GeneratedModel } from "../../../../models/generated";
 import styles from "./featuresPopus.module.scss";
 import { MadForm } from "../../../../models/data/formModels";
-
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
     feature: [Accessor<FeatureDetail|undefined>, Setter<FeatureDetail|undefined>];
+    onClose?: (data: FeatureDetail) => void;
 }
 
 export const FeaturesPopup: Component<popupProps> = (props) => {
     
+
     const [show, setShow] = props.Show;
     const [feature, setFeature] = props.feature;
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
 
-    const [currentIndex, setCurrentIndex] = createSignal(0);
-
     const is_edit = createMemo(()=>feature() !== undefined);
 
     const currentFeatureMetadata = new FormArray<MadForm>([]);
+    const currentFeature = new FormGroup<FeatureDetail>({
+        "name": ["", []],
+        "description": ["", []],
+    });
 
     const currentMadsLength = createMemo(()=>currentFeatureMetadata.get().length);
     
+    const featureName = createMemo(() => currentFeature.get("name"));
+    const featureDesc = createMemo(() => currentFeature.get("description"));
+
     const addNewMetadata = () => {
         const newMetadata = new FormGroup<MadForm>({
             name: [`change ${currentMadsLength() + 1}`, []],
@@ -40,15 +46,51 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         currentFeatureMetadata.add(newMetadata);
     }
 
-    // const featureName = createMemo(() => getFeatureValue(currentIndex(), "name") ?? "");
-    // const featureDesc = createMemo(() => {
-    //     const desc = getFeatureValue(currentIndex(), "description");
-    //     return isNullish(desc) ? "" : desc as string;
-    // })
-    // const featureMetadata = createMemo(() => {
-    //     return getFeatureValue(currentIndex(), "metadata") ?? {};
-    // })
+    const save = () => {
+        const name = featureName();
+        const desc = featureDesc();
+        const madsData:MadFeature[] = currentFeatureMetadata.get();
 
+        const newFeature: FeatureDetail = {
+            name: name,
+            description: desc,
+            metadata: {
+                uses: 0,
+                recharge: "",
+                spells: [],
+                category: "",
+                mads: madsData as GeneratedModel[],
+            }
+        }
+
+        setFeature(structuredClone(newFeature));
+        clearInputs();
+        setShow(false);
+        if (props.onClose) {
+            props.onClose(newFeature);
+        }
+    }
+
+    const clearInputs = () => {
+        currentFeature.reset();
+        currentFeatureMetadata.reset();
+    }
+
+    const getEmptyFeature = (): FeatureDetail => {
+        return {
+            name: "",
+            description: "",
+            metadata: {
+                uses: 0,
+                recharge: "",
+                spells: [],
+                category: "",
+                mads: [],
+            }
+        }
+    }
+
+    // let runOnce = true;
 
     createEffect(()=>{ 
         if (popupRef()) {
@@ -59,18 +101,47 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                 if (parent) parent.style.setProperty("padding-bottom","0","important")
             }
         }
-
-        if (!show()) {
-            console.log("ran");
-        }
     })
+
+    createEffect((prevOpen) => {
+        const oldValue = show();
+
+        if (oldValue !== show() || (oldValue && !prevOpen)) {
+            if (props.feature) {
+                const newfeat = structuredClone(feature());
+                currentFeature.set("name", newfeat?.name || "");
+                currentFeature.set("description", newfeat?.description || "");
+
+                if (newfeat?.metadata?.mads) {
+                    newfeat.metadata.mads.forEach(mad => {
+                        const newMetadata = new FormGroup<MadForm>({
+                            name: [`${currentMadsLength() + 1}`, []],
+                            command: [mad.command, []],
+                            value: [mad.value, []],
+                            type: [mad.type, []],
+                            prerequisites: [mad.prerequisites || [], []],
+                            group: [mad.group || 0, []]
+                        })
+
+                        currentFeatureMetadata.add(newMetadata);
+                    });
+                }
+
+            } else {
+                setFeature(getEmptyFeature());
+                clearInputs();
+            }
+        }        
+        
+        return show();
+    }, false);
 
     return <Modal ref={popupRef} show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>
         <div class={`${styles.wrapper}`} ref={(e)=>setPopupRef(e)}>
             <div class={`${styles.featureBody}`}>
                 <div class={`${styles.featureHeader}`}>
                     <div>
-                        {/* <h3>Feature: {featureName()}</h3> */}
+                        <h3>Feature: {featureName()}</h3>
                     </div>
                     <div>
                         <span>
@@ -83,23 +154,22 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                     </div>
                 </div>
                 <div class={`${styles.scrollBox}`}>
-                    {/* <FlatCard headerName="Identity" icon="identity_platform">
-                        <FormField name="Feature Name" formName="featureName">
-                            <Input 
-                                value={getFeatureValue(currentIndex(), "name") ?? ""} 
-                                onInput={(e)=>setFeatureValue(currentIndex(), "name", e.currentTarget.value)} 
-                                placeholder="Feature Name..."
-                            />
-                        </FormField>
 
-                        <FormField name="Feature Desc" formName="featureDesc">
-                            <TextArea
-                                text={featureDesc}
-                                setText={(e)=>setFeatureValue(currentIndex(), "description", e as string)}
-                                placeholder="What does the feature do..."
-                            />
-                        </FormField>
-                    </FlatCard>  */}
+                    <Form data={currentFeature} onSubmit={()=>{}}>
+                        <FlatCard headerName="Identity" icon="identity_platform">
+                            <FormField name="Feature Name" formName="name">
+                                <Input
+                                    placeholder="Feature Name..."
+                                />
+                            </FormField>
+
+                            <FormField name="Feature Desc" formName="description">
+                                <TextArea
+                                    placeholder="What does the feature do..."
+                                />
+                            </FormField>
+                        </FlatCard> 
+                    </Form>
 
                     <FlatCard headerName="Character Changes" icon="key">
                         <div>
@@ -121,15 +191,15 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                 </div>
 
                 <div class={`${styles.actionBtns}`}>
-                    <Button>
+                    {/* <Button>
                         Duplicate
-                    </Button>
+                    </Button> */}
 
-                    <Button onClick={() => setShow(false)}>
-                        Delete
+                    <Button onClick={() => { clearInputs(); setShow(false); }}>
+                        Cancel
                     </Button>
                     
-                    <Button onClick={() => {}}>
+                    <Button onClick={save}>
                         {is_edit() ? "Update" : "Save"}
                     </Button>
                 </div>

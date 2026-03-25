@@ -59,10 +59,7 @@ export const HomebrewBackgrounds: Component = () => {
     // features
     const [features, setFeatures] = createSignal<FeatureDetail[]>([]);
 
-    const [currentFeature,setCurrentFeature] = createSignal<FeatureDetail>({
-        name: "",
-        description: "",
-    });
+    const [currentFeature,setCurrentFeature] = createSignal<FeatureDetail|undefined>(undefined);
 
     // state
     const [searchParam, setSearchParam] = useSearchParams();
@@ -365,6 +362,7 @@ export const HomebrewBackgrounds: Component = () => {
             <OptionalFeatures 
                 features={[features, setFeatures]}
                 showPopup={setShowFeaturePopup}
+                currentFeature={[currentFeature, setCurrentFeature]}
             />
 
             <Saving 
@@ -391,7 +389,19 @@ export const HomebrewBackgrounds: Component = () => {
 
         <FeaturesPopup 
             Show={[showFeaturePopup, setShowFeaturePopup]}
-            feature={[currentFeature, setCurrentFeature] as any}
+            feature={[currentFeature, setCurrentFeature]}
+            onClose={(data) => {
+                const currentFeatures = features();
+                const featureIndex = currentFeatures.findIndex(f => f.name === data.name);
+
+                if (featureIndex !== -1) {
+                    currentFeatures[featureIndex] = data;
+                    setFeatures([...currentFeatures]);
+                } else {
+                    setFeatures([...currentFeatures, data]);
+                }
+                setCurrentFeature(undefined);
+            }}
         />
     </Body>
 }
