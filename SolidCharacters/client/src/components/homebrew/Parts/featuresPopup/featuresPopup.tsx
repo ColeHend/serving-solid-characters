@@ -1,16 +1,17 @@
-import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup, TextArea, Validators, Form } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, onMount, Setter } from "solid-js";
+import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea, Form } from "coles-solid-library";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, Setter } from "solid-js";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
-import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
+import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { isNullish } from "../../../../shared";
 import { MadFeature as GeneratedModel } from "../../../../models/generated";
 import styles from "./featuresPopus.module.scss";
 import { MadForm } from "../../../../models/data/formModels";
+import { DebugConsole } from "../../../../shared/customHooks/DebugConsole";
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
-    feature: [Accessor<FeatureDetail|undefined>, Setter<FeatureDetail|undefined>];
+    feature: [Accessor<FeatureDetail>, Setter<FeatureDetail>];
     onClose?: (data: FeatureDetail) => void;
+    isEdit: Accessor<boolean>;
 }
 
 export const FeaturesPopup: Component<popupProps> = (props) => {
@@ -20,7 +21,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const [feature, setFeature] = props.feature;
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
 
-    const is_edit = createMemo(()=>feature() !== undefined);
+    const is_edit = createMemo(()=>props.isEdit());
 
     const currentFeatureMetadata = new FormArray<MadForm>([]);
     const currentFeature = new FormGroup<FeatureDetail>({
@@ -29,9 +30,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     });
 
     const currentMadsLength = createMemo(()=>currentFeatureMetadata.get().length);
-    
-    const featureName = createMemo(() => currentFeature.get("name"));
-    const featureDesc = createMemo(() => currentFeature.get("description"));
 
     const addNewMetadata = () => {
         const newMetadata = new FormGroup<MadForm>({
@@ -76,6 +74,40 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         currentFeatureMetadata.reset();
     }
 
+    const getFeatureValue = <T extends keyof FeatureDetail >(key: T): FeatureDetail[T]|undefined => {
+        const Feature = feature();
+        
+        if (!Feature) {
+            DebugConsole.error("Couldn't Find The Feature for 'GetFeatureValue' function in 'FeaturePopup' @ line '83'");
+            return;
+        }
+
+        return Feature[key];
+    }
+
+    const setFeatureValue = <T extends keyof FeatureDetail >(key: T, value: FeatureDetail[T]) => {
+        const Feature = feature();
+
+        if (Feature) {
+            if (typeof value === "string") {
+                Feature[key] = value;
+            } else if (typeof value === "object" && key === "metadata") {
+                const val: FeatureMetadata = value;
+
+                Feature['metadata'] = val;
+            }
+
+            console.log(
+                Feature
+            );
+            
+            setFeature(Feature);
+        }
+    }
+
+    const featureName = createMemo(() => getFeatureValue('name') ?? '');
+    const featureDesc = createMemo(() => getFeatureValue('description') ?? '');
+
     const getEmptyFeature = (): FeatureDetail => {
         return {
             name: "",
@@ -89,12 +121,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             }
         }
     }
-
-    // let runOnce = true;
-
+            
     createEffect(()=>{ 
         if (popupRef()) {
             const parentEL = popupRef()!.parentElement;
+            
             if (parentEL) {
                 const parent = parentEL.parentElement;
 
@@ -104,37 +135,27 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     })
 
     createEffect((prevOpen) => {
-        const oldValue = show();
 
-        if (oldValue !== show() || (oldValue && !prevOpen)) {
+        if (show() && !prevOpen) {
             if (props.feature) {
                 const newfeat = structuredClone(feature());
-                currentFeature.set("name", newfeat?.name || "");
-                currentFeature.set("description", newfeat?.description || "");
+                
+                
+                if (newfeat) {
+                    setFeature(newfeat);
 
-                if (newfeat?.metadata?.mads) {
-                    newfeat.metadata.mads.forEach(mad => {
-                        const newMetadata = new FormGroup<MadForm>({
-                            name: [`${currentMadsLength() + 1}`, []],
-                            command: [mad.command, []],
-                            value: [mad.value, []],
-                            type: [mad.type, []],
-                            prerequisites: [mad.prerequisites || [], []],
-                            group: [mad.group || 0, []]
-                        })
-
-                        currentFeatureMetadata.add(newMetadata);
-                    });
-                }
-
-            } else {
-                setFeature(getEmptyFeature());
-                clearInputs();
+                } 
+                
+            } else if (!props.feature) {
+                setFeature(getEmptyFeature());    
             }
         }        
-        
         return show();
     }, false);
+
+    onCleanup(() => {
+        clearInputs();
+    })
 
     return <Modal ref={popupRef} show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>
         <div class={`${styles.wrapper}`} ref={(e)=>setPopupRef(e)}>
@@ -159,12 +180,16 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         <FlatCard headerName="Identity" icon="identity_platform">
                             <FormField name="Feature Name" formName="name">
                                 <Input
+                                    value={featureName()}
+                                    onInput={(e)=>setFeatureValue('name', e.currentTarget.value)}
                                     placeholder="Feature Name..."
                                 />
                             </FormField>
 
                             <FormField name="Feature Desc" formName="description">
                                 <TextArea
+                                    text={featureDesc}
+                                    setText={(e)=>setFeatureValue('description', e.toString())}
                                     placeholder="What does the feature do..."
                                 />
                             </FormField>

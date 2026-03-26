@@ -59,7 +59,10 @@ export const HomebrewBackgrounds: Component = () => {
     // features
     const [features, setFeatures] = createSignal<FeatureDetail[]>([]);
 
-    const [currentFeature,setCurrentFeature] = createSignal<FeatureDetail|undefined>(undefined);
+    const [currentFeature,setCurrentFeature] = createSignal<FeatureDetail>({
+        name: "",
+        description: ""
+    });
 
     // state
     const [searchParam, setSearchParam] = useSearchParams();
@@ -71,6 +74,8 @@ export const HomebrewBackgrounds: Component = () => {
     const [showProfsPopup, setShowProfsPopup] = createSignal(false);
 
     const [showFeaturePopup, setShowFeaturePopup] = createSignal(false);
+
+    const [isEdit, setIsEdit] = createSignal(false);
 
     // data 
     const homebrew = homebrewManager;
@@ -363,6 +368,7 @@ export const HomebrewBackgrounds: Component = () => {
                 features={[features, setFeatures]}
                 showPopup={setShowFeaturePopup}
                 currentFeature={[currentFeature, setCurrentFeature]}
+                setIsEdit={setIsEdit}
             />
 
             <Saving 
@@ -390,6 +396,7 @@ export const HomebrewBackgrounds: Component = () => {
         <FeaturesPopup 
             Show={[showFeaturePopup, setShowFeaturePopup]}
             feature={[currentFeature, setCurrentFeature]}
+            isEdit={isEdit}
             onClose={(data) => {
                 const currentFeatures = features();
                 const featureIndex = currentFeatures.findIndex(f => f.name === data.name);
@@ -400,7 +407,10 @@ export const HomebrewBackgrounds: Component = () => {
                 } else {
                     setFeatures([...currentFeatures, data]);
                 }
-                setCurrentFeature(undefined);
+                setCurrentFeature({
+                    name: "",
+                    description: ""
+                });
             }}
         />
     </Body>
