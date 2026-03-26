@@ -45,9 +45,13 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     }
 
     const save = () => {
-        const name = featureName();
-        const desc = featureDesc();
+        const name = getFeatureValue('name') ?? "";
+        const desc = getFeatureValue('description') ?? "";
+
         const madsData:MadFeature[] = currentFeatureMetadata.get();
+
+        console.log(name);
+        
 
         const newFeature: FeatureDetail = {
             name: name,
@@ -61,7 +65,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             }
         }
 
-        setFeature(structuredClone(newFeature));
+        setFeature(newFeature);
         clearInputs();
         setShow(false);
         if (props.onClose) {
@@ -74,39 +78,27 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         currentFeatureMetadata.reset();
     }
 
-    const getFeatureValue = <T extends keyof FeatureDetail >(key: T): FeatureDetail[T]|undefined => {
+    const getFeatureValue = <T extends keyof FeatureDetail >(key: T): FeatureDetail[T] => {
         const Feature = feature();
-        
-        if (!Feature) {
-            DebugConsole.error("Couldn't Find The Feature for 'GetFeatureValue' function in 'FeaturePopup' @ line '83'");
-            return;
-        }
 
+        console.log("getting: ",Feature);
+        
         return Feature[key];
     }
 
     const setFeatureValue = <T extends keyof FeatureDetail >(key: T, value: FeatureDetail[T]) => {
         const Feature = feature();
+        
+        if (typeof value === "string") {
+            Feature[key] = value;
+        } else if (typeof value === "object" && key === "metadata") {
+            const val: FeatureMetadata = value;
 
-        if (Feature) {
-            if (typeof value === "string") {
-                Feature[key] = value;
-            } else if (typeof value === "object" && key === "metadata") {
-                const val: FeatureMetadata = value;
-
-                Feature['metadata'] = val;
-            }
-
-            console.log(
-                Feature
-            );
-            
-            setFeature(Feature);
+            Feature['metadata'] = val;
         }
-    }
 
-    const featureName = createMemo(() => getFeatureValue('name') ?? '');
-    const featureDesc = createMemo(() => getFeatureValue('description') ?? '');
+        setFeature(Feature);
+    }
 
     const getEmptyFeature = (): FeatureDetail => {
         return {
@@ -121,6 +113,9 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             }
         }
     }
+
+    const featureName = createMemo(() => getFeatureValue('name'));
+    const featureDesc = createMemo(() => getFeatureValue("description"));
             
     createEffect(()=>{ 
         if (popupRef()) {

@@ -310,6 +310,9 @@ export const HomebrewBackgrounds: Component = () => {
         const formName = selectedName();
 
         setSearchParam({name: formName});
+    
+        console.log(features());
+        
     })
     
     return <Body class={`${styles.body}`}>
@@ -398,19 +401,7 @@ export const HomebrewBackgrounds: Component = () => {
             feature={[currentFeature, setCurrentFeature]}
             isEdit={isEdit}
             onClose={(data) => {
-                const currentFeatures = features();
-                const featureIndex = currentFeatures.findIndex(f => f.name === data.name);
-
-                if (featureIndex !== -1) {
-                    currentFeatures[featureIndex] = data;
-                    setFeatures([...currentFeatures]);
-                } else {
-                    setFeatures([...currentFeatures, data]);
-                }
-                setCurrentFeature({
-                    name: "",
-                    description: ""
-                });
+                setFeatures(old=>[...old, data]);
             }}
         />
     </Body>
