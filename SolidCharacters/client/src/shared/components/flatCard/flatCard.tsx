@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, JSX, onCleanup, Show, splitProps } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, JSX, onCleanup, Setter, Show, splitProps } from "solid-js";
 import styles from "./flatCard.module.scss";
 import { Button, Container, Icon } from "coles-solid-library";
 
@@ -10,6 +10,7 @@ interface FlatCardProps extends JSX.HTMLAttributes<HTMLDivElement> {
     startOpen?: boolean;
     extraHeaderJsx?: JSX.Element;
     transparent?: boolean;
+    show?: [Accessor<boolean>, Setter<boolean>]
 }
 
 export const FlatCard:Component<FlatCardProps> = (props) => {
@@ -29,7 +30,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
     const isNoIcon = () => (local.icon === undefined);
     const isTransparent = ():boolean => ("transparent" in props && local.transparent !== false);
     
-    const [showCard,setShowCard] = createSignal<boolean>(isStartOpen());
+    const [showCard,setShowCard] = props.show ? props.show : createSignal<boolean>(isStartOpen());
     const [contentRef, setContentRef] = createSignal<HTMLDialogElement |undefined>();
 
     // helper to animate open/close using measured height

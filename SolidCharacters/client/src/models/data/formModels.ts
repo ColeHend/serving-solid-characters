@@ -40,4 +40,6 @@ export interface BackgroundForm extends HalfBackground {
 
 export interface MadForm extends MadFeature {
     name: string;
+    commandType: string;
+    commandCategory: string;
 }

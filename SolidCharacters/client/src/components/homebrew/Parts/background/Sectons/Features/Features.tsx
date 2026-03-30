@@ -35,7 +35,7 @@ export const OptionalFeatures:Component<SectonProps> = (props) => {
             return;
         }
 
-        if (all.some(x => x.name === current.name)) {
+        if (all.some(x => x.name.trim().toLowerCase() === current.name.trim().toLowerCase())) {
             props.setIsEdit(true);
         } 
 
