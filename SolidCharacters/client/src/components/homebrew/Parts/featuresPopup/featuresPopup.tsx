@@ -1,5 +1,5 @@
 import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea, Form, Option, Select } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, For, onCleanup, Setter, Show } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onCleanup, Setter, Show, Switch } from "solid-js";
 import { MadFeature, MadType } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
@@ -244,17 +244,17 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                         const cardShow = () => getShowCard(key);
                                         const setCard = (val: boolean) => setShowCard(key, val); 
 
-                                        return <FlatCard show={[cardShow, setCard as Setter<boolean>]} headerName={<div style={{display:"flex", "flex-direction": 'column'}}>
-                                            <div>
+                                        return <FlatCard show={[cardShow, setCard as Setter<boolean>]} headerName={<div style={{display:"flex", "flex-direction": 'column', "align-content": 'flex-start',"text-align": "left"}}>
+                                            <div style={{"text-align": "left", width: "100%"}}>
                                                 {metadata.name}
                                             </div>
-                                            <div style={{display: 'flex', "flex-direction": "row", "text-align": "center"}}>
-                                                <span>
-                                                    <span>group:</span>
+                                            <div style={{display: 'flex', "flex-direction": "row"}}>
+                                                <span style={{"text-align": "center", width: "4vw"}}>
+                                                    <span>group: </span>
                                                     <span>0</span>
                                                 </span>
-                                                <span>
-                                                    <span>Type:</span> 
+                                                <span style={{"text-align": "center", width: "7vw"}}>
+                                                    <span>Type: </span> 
                                                     <span>{getType(i()) ?? ""}</span>
                                                 </span>
                                             </div>
@@ -276,6 +276,17 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             <Option value={MadType.Character}>{MadType[0]}</Option>
                                             <Option value={MadType.Info}>{MadType[1]}</Option>
                                         </Select>
+
+                                        <div style={{width: "100%", "text-align": "left"}}>
+                                            <Switch>
+                                                <Match when={getMadFeature("type", i()) === MadType.Character}>
+                                                    changes the character on the character viewer
+                                                </Match>
+                                                <Match when={getMadFeature("type", i())}>
+                                                    Not a character sheet change but more detailed information about the feat/feature like numberOFUses, recharge info, etc.
+                                                </Match>
+                                            </Switch>
+                                        </div>
 
                                         <Show when={getType(i()) !== null}>
                                             Type: {getType(i()) ?? ""}

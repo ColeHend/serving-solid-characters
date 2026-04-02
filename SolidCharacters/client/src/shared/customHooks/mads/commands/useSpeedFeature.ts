@@ -1,5 +1,5 @@
 import { Character } from "../../../../models/character.model";
-import { MadFeature } from "../madModels";
+import { MadFeature, MadType } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addSpeedFeature = (character: Character, feature: MadFeature): Character => {
@@ -26,19 +26,22 @@ function useSpeedFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads as MadFeature;
+        const MadFeature = feature.metadata?.mads as MadFeature[];
 
-        if (MadFeature) {
-            switch (MadFeature.command) {
-                case "AddSpeed":
-                    character = addSpeedFeature(character, MadFeature);
-                    break;
-
-                case "RemoveSpeed":
-                    character = removeSpeedFeature(character, MadFeature);
-                    break;
+        MadFeature.forEach(mads => {
+            if (mads.type === MadType.Character) {
+                switch (mads.command) {
+                    case "AddSpeed":
+                        character = addSpeedFeature(character, mads);
+                        break;
+    
+                    case "RemoveSpeed":
+                        character = removeSpeedFeature(character, mads);
+                        break;
+                }
             }
-        }
+
+        })
     })
 
     return character;

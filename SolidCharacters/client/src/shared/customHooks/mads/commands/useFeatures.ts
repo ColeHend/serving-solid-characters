@@ -5,22 +5,21 @@ import { DebugConsole } from "../../DebugConsole";
 
 const AddFeature = (character: Character, feature: MadFeature) => {
     const newFeatureName = feature.value?.['feature']?.trim() ?? "";
-    const newFeatureDescription = feature.value?.['description']?.trim() ?? "";
     
     if (!newFeatureName) {
         DebugConsole.error("No feature name provided for AddFeature command");
         return character;
     }
 
-    if (!character.features.some( f => f.name === newFeatureName)) {
-        character.features.push({
-            name: newFeatureName,
-            description: newFeatureDescription,
-            metadata: {
-                mads: feature as MadFeat,
-            }
-        });
-    }
+    // if (!character.features.some( f => f.name === newFeatureName)) {
+    //     character.features.push({
+    //         name: newFeatureName,
+    //         description: newFeatureDescription,
+    //         metadata: {
+    //             mads: feature as MadFeat,
+    //         }
+    //     });
+    // }
 
     return character;   
 }

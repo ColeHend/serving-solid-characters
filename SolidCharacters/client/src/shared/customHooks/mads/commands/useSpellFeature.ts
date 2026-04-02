@@ -1,5 +1,5 @@
 import { Character } from "../../../../models/character.model";
-import { MadFeature } from "../madModels";
+import { MadFeature, MadType } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 // add spell feature
@@ -53,13 +53,18 @@ function useSpellFeature(character: Character, spellID: string): Character | und
     // search for applicable mad features for the character and spell
 
     character.features.forEach(feature => {
-        const mads = feature?.metadata?.mads as MadFeature;
+        const madsFeatures = feature?.metadata?.mads as MadFeature[];
         
-        if (mads && mads.command === "AddSpells" && mads.value['ID'] === spellID) {
-            character = AddSpellFeature(character, mads);
-        } else if (mads && mads.command === "RemoveSpells" && mads.value['ID'] === spellID) {
-            character = RemoveSpellFeature(character, mads);
-        }
+        madsFeatures.forEach(mads => {
+            if (mads.type === MadType.Character) {
+                if (mads.command === "AddSpells" && mads.value['ID'] === spellID) {
+                    character = AddSpellFeature(character, mads);
+                } else if (mads.command === "RemoveSpells" && mads.value['ID'] === spellID) {
+                    character = RemoveSpellFeature(character, mads);
+                }
+            } 
+        })
+
 
     });
 
