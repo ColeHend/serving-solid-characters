@@ -8,8 +8,10 @@ type AddRemove<T extends string> = `Add${T}` | `Remove${T}`;
 
 /**
  * Comparison operators used in prerequisites when evaluating character values.
+ * 
+ * @example greater than, less than, less than or equal to, greater than or equal to, equal to, not equal to.
  */
-type OperationType = "<" | ">" | ">=" | "<=";
+type OperationType = "<" | ">" | ">=" | "<=" | "===" | "!==" | "includes" | "excludes";
 
 /**
  * All possible commands that can be applied via a MAD feature. Each command

@@ -1,6 +1,7 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature, MadType } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
+import { checkPrerequisites } from "../checkPreReqs";
 
 // add spell feature
 
@@ -12,7 +13,11 @@ import { DebugConsole } from "../../DebugConsole";
  */
 const AddSpellFeature = (character: Character, feature: MadFeature): Character => {
     const spellName = feature.value?.['ID'] ?? '';
-    if (spellName) {
+    const preReqs = feature.prerequisites ?? [];
+    const preReqsMet = checkPrerequisites(character, preReqs);
+
+    if (spellName && preReqsMet) {
+
         character.spells = [...character.spells, {
             name: spellName,
             prepared: false,
