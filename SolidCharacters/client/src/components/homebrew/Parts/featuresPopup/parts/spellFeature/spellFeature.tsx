@@ -1,44 +1,33 @@
+import { Accessor, Component, createMemo, Show} from "solid-js";
 import { Button, Cell, Column, Header, Table } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, Setter, useContext } from "solid-js";
+import { Markdown } from "../../../../../../shared";
 import { Spell } from "../../../../../../models/generated";
-import { useDnDSpells } from "../../../../../../shared/customHooks/dndInfo/info/all/spells";
-import { SharedHookContext } from "../../../../../rootApp";
+import styles from './spellFeature.module.scss';
 
 
 interface SpellFeatureProps {
-    learnedSpells: [Accessor<string[]>, Setter<string[]>];
+    allSpells: Accessor<Spell[]>;
+    GetMadFeature: Accessor<Record<string, string> | undefined>;
+    toggleSpell: (id: string) => void;
 }
 
-export const spellFeature:Component<SpellFeatureProps> = (props) => {
+export const SpellFeature:Component<SpellFeatureProps> = (props) => {
+    console.log("SpellFeature rendered");
 
-    let columns = ["Spell Name", "Level", "School", "Casting Time", "Range", "Components", "Duration","Actions"];
-    const allSpells = useDnDSpells();
-    const context = useContext(SharedHookContext);
+    const columns = ["Spell Name", "Level", "School", "Actions"];
+    const allSpells = createMemo(() => props.allSpells());
 
-    const isMobile = createMemo(() => context.isMobile());
 
-    const [learnedSpells, setLearnedSpells] = props.learnedSpells;
+    // Create a stable local signal to prevent rerenders from parent prop changes
 
-    const isLearned = (id: string) => learnedSpells().some(spellID => spellID === id);
+    const learnedSpells = createMemo(() => props.GetMadFeature()?.['ID'] ?? "")
+
+    const isLearned = (id: string) => learnedSpells() === id;
 
     const getSpellByID = (id: string) => allSpells().find(spell => spell.id === id);
 
-    const toggleLearnSpell = (id: string) => {
-        if (isLearned(id)) {
-            setLearnedSpells(learnedSpells().filter(spellID => spellID !== id));
-        } else {
-            setLearnedSpells([...learnedSpells(), id]);
-        }
-    }
-
-    createEffect(() => {
-        if (isMobile()) {
-            columns = ["Spell Name", "Level", "School"];
-        }
-    })
-
-    return <div>
-        <div>
+    return <div style={{display:"flex", "flex-direction": "row"}}>
+        <div class={`${styles.spellList}`}> 
             <Table data={allSpells} columns={columns} >
                 <Column name="Spell Name">
                     <Header>Spell Name</Header>
@@ -86,15 +75,33 @@ export const spellFeature:Component<SpellFeatureProps> = (props) => {
                     <Header>Actions</Header>
                     <Cell<Spell>>
                         {spell => (
-                            <Button onClick={() => toggleLearnSpell(spell.id)}>
+                            <Button type="button" onClick={() => {
+                                props.toggleSpell(spell.id);
+                           }}>
                                 {isLearned(spell.id) ? "Unlearn" : "Learn"}
                             </Button>
                         )}
                     </Cell>
                 </Column>
-
-
             </Table>
         </div>
+        <Show when={learnedSpells() !== ""} fallback={<div style={{margin: "1rem"}}>Select a spell to see its details.</div>}>
+            <div>
+                <h2>{getSpellByID(learnedSpells())?.name}</h2>
+
+                <h2>{getSpellByID(learnedSpells())?.level} {getSpellByID(learnedSpells())?.school}</h2>
+
+                <p><strong>Casting Time:</strong> {getSpellByID(learnedSpells())?.castingTime}</p>
+
+                <p><strong>Range:</strong> {getSpellByID(learnedSpells())?.range}</p>
+
+                <p><strong>Components:</strong> {getSpellByID(learnedSpells())?.components}</p>
+
+                <p><strong>Duration:</strong> {getSpellByID(learnedSpells())?.duration}</p>
+
+                {/* <p>{}</p> */}
+                <Markdown text={getSpellByID(learnedSpells())?.description ?? "**No description available.**"} />
+            </div>
+        </Show>
     </div>
 }

@@ -1,0 +1,43 @@
+.spellList{
+    table {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  thead,
+  tbody {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    tr {
+      display: flex;
+      width: 100%;
+    }
+  }
+
+  th,
+  td {
+    flex: 1;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  tbody {
+    height: 39vh;
+    overflow-y: scroll;
+    gap: 0.5rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    table {
+      width: 100%;
+    }
+
+    font-size: .8em;
+  }
+}

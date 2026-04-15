@@ -6,6 +6,10 @@ import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { MadFeature as GeneratedModel } from "../../../../models/generated";
 import styles from "./featuresPopus.module.scss";
 import { MadForm } from "../../../../models/data/formModels";
+import { SpellFeature } from "./parts/spellFeature/spellFeature";
+import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
+import { DebugConsole } from "../../../../shared/customHooks/DebugConsole";
+import { Clone } from "../../../../shared";
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
     feature: [Accessor<FeatureDetail>, Setter<FeatureDetail>];
@@ -19,6 +23,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
 
     const is_edit = createMemo(()=>props.isEdit());
+    const allSpells = useDnDSpells();
 
     const currentFeatureMetadata = new FormArray<MadForm>([]);
 
@@ -106,8 +111,10 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const getMadFeature = <T extends keyof MadForm>(key: T, index: number) => {
         const MadFeature = currentFeatureMetadata.getGroup(index);
 
+        console.trace("getMadFeature ran at index: ", index, " for key: ", key);
+
         if (MadFeature) {
-            return MadFeature.get()[key];
+            return Clone(MadFeature.get()[key]);
         } else {
             return undefined;
         }
@@ -115,20 +122,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const setMadFeature = <T extends keyof MadForm>(key: T, index: number, value: MadForm[T]) => {
         const MadFeature = currentFeatureMetadata.getGroup(index);
-
+        console.trace("setMadFeature ran with value: ", value, " at index: ", index, " for key: ", key);
         if (!MadFeature) {
             return;
         }
-
+        
         MadFeature.set(key, value);
-    }
-
-    const getFullCommand = (index: number) => {
-        const MadFeature = currentFeatureMetadata.getGroup(index);
-
-        if (!MadFeature) return null;
-
-        return `${MadFeature.get().commandType}${MadFeature.get().commandCategory}`;
     }
 
     const getType = (index: number) => {
@@ -174,6 +173,67 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         'Speed',
         'AllProficiencies',
     ]
+
+    const getSpellFeature = (index: number) => {
+        return createMemo(() => getMadFeature("value", index) ?? {})
+    }
+
+    const getMadType = (index: number) => {
+        const type = getMadFeature("type", index);
+
+        if (type === undefined) return null;
+
+        return createMemo(() => type);
+    }
+
+    const getMaDCommand = (index: number) => {
+        const commandType = getMadFeature("commandType", index);
+        const commandCategory = getMadFeature("commandCategory", index);
+        
+        if (commandType === undefined || commandCategory === undefined) return null;
+
+        return createMemo(() => `${commandType}${commandCategory}`);
+    }
+
+    const getMadCommandCategory = (index: number) => {
+        const commandCategory = getMadFeature("commandCategory", index);
+
+        if (commandCategory === undefined) return null;
+
+        return createMemo(() => commandCategory);
+    }
+
+    const getMadCommandType = (index: number) => {
+        const commandType = getMadFeature("commandType", index);
+
+        if (commandType === undefined) return null;
+
+        return createMemo(() => commandType);
+    }
+
+    const getMadPrerequisites = (index: number) => {
+        const prerequisites = getMadFeature("prerequisites", index);
+
+        if (prerequisites === undefined) return null;
+
+        return createMemo(() => prerequisites);
+    }
+
+    const getMadGroup = (index: number) => {
+        const group = getMadFeature("group", index);
+
+        if (group === undefined) return null;
+
+        return createMemo(() => group);
+    }
+
+    const getMadValue = (index: number) => {
+        const value = getMadFeature("value", index);
+
+        if (value === undefined) return null;
+        
+        return createMemo(() => value);
+    }
 
     createEffect(()=>{ 
         if (popupRef()) {
@@ -260,39 +320,45 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             </div>
                                         </div>}>
                                         <div style={{display: 'flex', "flex-direction": "row","margin-bottom": "20px"}}>
-                                            <Select value={getMadFeature("commandType" ,i())} onChange={(value) => setMadFeature('commandType' ,i() ,value)}> 
+                                            <Select value={getMadCommandType(i())?.()} onSelect={(value) => setMadFeature('commandType' ,i() ,value)}> 
                                                 <Option value={"Add"}>Add</Option>
                                                 <Option value={"Remove"}>Remove</Option>
                                             </Select>
 
-                                            <Select value={getMadFeature("commandCategory" ,i())} onChange={(value) => setMadFeature("commandCategory" ,i() ,value)}>
+                                            <Select value={getMadCommandCategory(i())?.()} onSelect={(value) => setMadFeature("commandCategory" ,i() ,value)}>
                                                 <For each={MadCommands}>
                                                     {command => <Option value={command}>{command}</Option>}
                                                 </For>
                                             </Select>
+
                                         </div>
 
-                                        <Select value={getMadFeature("type", i())} onSelect={(val) => setMadFeature("type", i(), val)}>
+                                        <Select value={getMadType(i())?.()} onSelect={(val) => setMadFeature("type", i(), val)}>
                                             <Option value={MadType.Character}>{MadType[0]}</Option>
                                             <Option value={MadType.Info}>{MadType[1]}</Option>
                                         </Select>
 
                                         <div style={{width: "100%", "text-align": "left"}}>
                                             <Switch>
-                                                <Match when={getMadFeature("type", i()) === MadType.Character}>
+                                                <Match when={getMadType(i())?.() === MadType.Character}>
                                                     changes the character on the character viewer
                                                 </Match>
-                                                <Match when={getMadFeature("type", i())}>
+                                                <Match when={getMadType(i())?.() === MadType.Info}>
                                                     Not a character sheet change but more detailed information about the feat/feature like numberOFUses, recharge info, etc.
                                                 </Match>
                                             </Switch>
                                         </div>
 
-                                        <Show when={getType(i()) !== null}>
-                                            Type: {getType(i()) ?? ""}
-                                        </Show>
-
-
+                                        <Switch>
+                                            <Match when={getMaDCommand(i())?.() === "AddSpells" || getMaDCommand(i())?.() === "RemoveSpells"}>
+                                                <SpellFeature allSpells={allSpells} GetMadFeature={getSpellFeature(i())} toggleSpell={(id) => {
+                                                        setMadFeature("value", i(), {"ID": id})
+                                                        setCard(false);
+                                                    }} />
+                                            </Match>
+                                        </Switch>
+                                        
+                                        
                                     </FlatCard>
                                     }}
                                 </For>
