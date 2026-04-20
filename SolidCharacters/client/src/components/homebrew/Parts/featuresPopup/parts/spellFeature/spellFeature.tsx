@@ -7,20 +7,15 @@ import styles from './spellFeature.module.scss';
 
 interface SpellFeatureProps {
     allSpells: Accessor<Spell[]>;
-    GetMadFeature: Accessor<Record<string, string> | undefined>;
+    getValue: Accessor<Record<string, string> | undefined>;
     toggleSpell: (id: string) => void;
 }
 
 export const SpellFeature:Component<SpellFeatureProps> = (props) => {
-    console.log("SpellFeature rendered");
-
     const columns = ["Spell Name", "Level", "School", "Actions"];
     const allSpells = createMemo(() => props.allSpells());
 
-
-    // Create a stable local signal to prevent rerenders from parent prop changes
-
-    const learnedSpells = createMemo(() => props.GetMadFeature()?.['ID'] ?? "")
+    const learnedSpells = createMemo(() => props.getValue()?.['ID'] ?? "");
 
     const isLearned = (id: string) => learnedSpells() === id;
 

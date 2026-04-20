@@ -1,5 +1,6 @@
-import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea, Form, Option, Select } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onCleanup, Setter, Show, Switch } from "solid-js";
+ 
+import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea,   Option, Select } from "coles-solid-library";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onCleanup, Setter, Switch } from "solid-js";
 import { MadFeature, MadType } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
@@ -8,8 +9,13 @@ import styles from "./featuresPopus.module.scss";
 import { MadForm } from "../../../../models/data/formModels";
 import { SpellFeature } from "./parts/spellFeature/spellFeature";
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
-import { DebugConsole } from "../../../../shared/customHooks/DebugConsole";
 import { Clone } from "../../../../shared";
+import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
+import { ItemFeature } from "./parts/itemFeature/ItemFeature";
+import { CurrencyFeature } from "./parts/currencyFeature/currencyFeature";
+import { ACFeature } from "./parts/acFeature/acFeature";
+import { ProficienciesFeature } from "./parts/proficienciesFeature/proficienciesFeature";
+
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
     feature: [Accessor<FeatureDetail>, Setter<FeatureDetail>];
@@ -24,6 +30,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const is_edit = createMemo(()=>props.isEdit());
     const allSpells = useDnDSpells();
+    const allItems = useDnDItems();
 
     const currentFeatureMetadata = new FormArray<MadForm>([]);
 
@@ -111,7 +118,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const getMadFeature = <T extends keyof MadForm>(key: T, index: number) => {
         const MadFeature = currentFeatureMetadata.getGroup(index);
 
-        console.trace("getMadFeature ran at index: ", index, " for key: ", key);
+        // console.trace("getMadFeature ran at index: ", index, " for key: ", key);
 
         if (MadFeature) {
             return Clone(MadFeature.get()[key]);
@@ -122,7 +129,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const setMadFeature = <T extends keyof MadForm>(key: T, index: number, value: MadForm[T]) => {
         const MadFeature = currentFeatureMetadata.getGroup(index);
-        console.trace("setMadFeature ran with value: ", value, " at index: ", index, " for key: ", key);
+        // console.trace("setMadFeature ran with value: ", value, " at index: ", index, " for key: ", key);
         if (!MadFeature) {
             return;
         }
@@ -137,7 +144,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
         const type = MadType[MadFeature.get("type")];
 
-        console.log("type: ", type);
+        // console.log("type: ", type);
         
         return type;
     }
@@ -173,10 +180,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         'Speed',
         'AllProficiencies',
     ]
-
-    const getSpellFeature = (index: number) => {
-        return createMemo(() => getMadFeature("value", index) ?? {})
-    }
 
     const getMadType = (index: number) => {
         const type = getMadFeature("type", index);
@@ -348,13 +351,62 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 </Match>
                                             </Switch>
                                         </div>
-
+                                        <h2>{getMaDCommand(i())?.()}</h2>
                                         <Switch>
                                             <Match when={getMaDCommand(i())?.() === "AddSpells" || getMaDCommand(i())?.() === "RemoveSpells"}>
-                                                <SpellFeature allSpells={allSpells} GetMadFeature={getSpellFeature(i())} toggleSpell={(id) => {
-                                                        setMadFeature("value", i(), {"ID": id})
+                                                <SpellFeature allSpells={allSpells} getValue={getMadValue?.(i()) ?? (() => undefined)} toggleSpell={(id) => {
+                                                        const old = getMadValue(i())?.();
+
+                                                        if (old?.["ID"] === id) {
+                                                            setMadFeature("value", i(), {"ID": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"ID": id})
+                                                        }
+
                                                         setCard(false);
                                                     }} />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddItems" || getMaDCommand(i())?.() === "RemoveItems"}>
+                                                <ItemFeature 
+                                                    allItems={allItems}
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    toggleItem={(id: string) => {
+                                                        const old = getMadValue(i())?.();
+
+                                                        if (old?.["ID"] === id) {
+                                                            setMadFeature("value", i(), {"ID": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"ID": id})
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddCurrency" || getMaDCommand(i())?.() === "RemoveCurrency"}>
+                                                <CurrencyFeature getValue={getMadValue?.(i()) ?? (() => undefined)} setCurrecy={(type, amount) => {
+                                                    const old = getMadValue(i())?.();
+
+                                                    let amt = +(old?.["amount"] ?? '0');
+
+                                                    if (old?.["type"] === type) {
+                                                        setMadFeature("value", i(), {"type": type, "amount": (amt += amount).toString()})
+                                                    } else {
+                                                        setMadFeature("value", i(), {"type": type, "amount": amount.toString()});
+                                                    }
+                                                    setCard(false)
+                                                }}/>
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddArmorClass" || getMaDCommand(i())?.() === "RemoveArmorClass"}>
+                                                <ACFeature toggleAC={(bonus, stats)=>{
+                                                    setMadFeature("value", i(), {"bonus": bonus.toString(), "stats": stats.join(",")})
+                                                    setCard(false);
+                                                }} />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddProficiencies" || getMaDCommand(i())?.() === "RemoveProficiencies"} >
+                                                <ProficienciesFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleProf={(profs) => {
+                                                    setMadFeature("value", i(), {"proficiencies": profs.join(",")});
+                                                    setCard(false);
+                                                }}/>
                                             </Match>
                                         </Switch>
                                         

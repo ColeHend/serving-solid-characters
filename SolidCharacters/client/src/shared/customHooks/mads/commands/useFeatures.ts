@@ -1,31 +1,36 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
-import { MadFeature as MadFeat } from "../../../../models/generated";
+import { Feat, FeatureDetail, MadFeature as MadFeat } from "../../../../models/generated";
 import { DebugConsole } from "../../DebugConsole";
+import { useDndFeature } from "../../dndInfo/useDndFeatures";
+
+const { allFeatures } = useDndFeature();
+
 
 const AddFeature = (character: Character, feature: MadFeature) => {
-    const newFeatureName = feature.value?.['feature']?.trim() ?? "";
-    
-    if (!newFeatureName) {
-        DebugConsole.error("No feature name provided for AddFeature command");
+    const featureName = feature.value?.['name']?.trim() ?? "";
+
+    const features = allFeatures();
+
+    const featureToAdd = features.find(f => f.name === featureName);
+
+    if (!featureToAdd) {
+        DebugConsole.error(`Feature ${featureName} not found in DnD features list`);
         return character;
     }
 
-    // if (!character.features.some( f => f.name === newFeatureName)) {
-    //     character.features.push({
-    //         name: newFeatureName,
-    //         description: newFeatureDescription,
-    //         metadata: {
-    //             mads: feature as MadFeat,
-    //         }
-    //     });
-    // }
+    if (character.features.some( f => f.name === featureToAdd.name)) {
+        DebugConsole.warn(`Character already has feature ${featureToAdd.name}, skipping AddFeature command`);
+        return character;
+    }
+    
+    character.features.push(featureToAdd as FeatureDetail);
 
     return character;   
 }
 
 const RemoveFeature = (character: Character, feature: MadFeature) => {
-    const featureNameToRemove = feature.value?.['feature']?.trim() ?? "";
+    const featureNameToRemove = feature.value?.['name']?.trim() ?? "";
 
     if (!featureNameToRemove) {
         DebugConsole.error("No feature name provided for RemoveFeature command");
@@ -46,18 +51,21 @@ function useFeatures (character: Character) {
 
     character.features.forEach(feature => {
         if (feature.metadata?.mads) {
-            const madFeature = feature.metadata.mads as MadFeature;
+            const madFeature = feature.metadata.mads as MadFeature[];
+
+            madFeature.forEach(mads => {
+                switch (mads.command) {
+                    case 'AddFeatures':
+                        AddFeature(character, mads);
+                        break;
+                    case 'RemoveFeatures':
+                        RemoveFeature(character, mads);
+                        break;
+                    default:
+                        break;
+                }
+            })
             
-            switch (madFeature.command) {
-                case 'AddFeatures':
-                    AddFeature(character, madFeature);
-                    break;
-                case 'RemoveFeatures':
-                    RemoveFeature(character, madFeature);
-                    break;
-                default:
-                    break;
-            }
         }
     });
 

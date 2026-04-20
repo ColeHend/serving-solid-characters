@@ -37,13 +37,16 @@ function useCurrencyFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const mads = feature.metadata?.mads as MadFeature;
+        const madsArr = feature.metadata?.mads as MadFeature[];
 
-        if (mads && mads.command === 'AddCurrency') {
-            character = AddCurrencyFeature(character, mads);
-        } else if (mads && mads.command === 'RemoveCurrency') {
-            character = RemoveCurrencyFeature(character, mads);
-        }
+        madsArr.forEach(mads => {
+            if (mads && mads.command === 'AddCurrency') {
+                character = AddCurrencyFeature(character, mads);
+            } else if (mads && mads.command === 'RemoveCurrency') {
+                character = RemoveCurrencyFeature(character, mads);
+            }
+        })
+
 
     });
 

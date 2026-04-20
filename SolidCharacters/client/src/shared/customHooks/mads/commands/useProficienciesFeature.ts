@@ -64,15 +64,18 @@ function useProficienciesFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const mads = feature.metadata?.mads as MadFeature;
+        const mads = feature.metadata?.mads as MadFeature[];
         
-        if (mads) {
-            if (mads.command === 'AddProficiencies') {
-                character = addProficienciesFeature(character, mads);
-            } else if (mads.command === 'RemoveProficiencies') {
-                character = RemoveProficienciesFeature(character, mads);
-            }
-        }   
+        mads.forEach(mads => {
+            if (mads) {
+                if (mads.command === 'AddProficiencies') {
+                    character = addProficienciesFeature(character, mads);
+                } else if (mads.command === 'RemoveProficiencies') {
+                    character = RemoveProficienciesFeature(character, mads);
+                }
+            }   
+        })
+
     });
 
     return character;
