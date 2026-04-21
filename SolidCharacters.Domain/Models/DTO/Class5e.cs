@@ -17,6 +17,7 @@ public class Feat
 /// <summary>Describes a feature selectable by class, race, feat, etc.</summary>
 public class FeatureDetail
 {
+  [JsonProperty("id")] public string Id {get; set;} = null!;
   [JsonProperty("name")] public string Name { get; set; } = null!;
   [JsonProperty("description")] public string Description { get; set; } = null!;
   [JsonProperty("choiceKey")] public string? ChoiceKey { get; set; }

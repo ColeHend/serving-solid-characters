@@ -8,14 +8,14 @@ const { allFeatures } = useDndFeature();
 
 
 const AddFeature = (character: Character, feature: MadFeature) => {
-    const featureName = feature.value?.['name']?.trim() ?? "";
+    const featureID = feature.value?.['ID']?.trim() ?? "";
 
     const features = allFeatures();
 
-    const featureToAdd = features.find(f => f.name === featureName);
+    const featureToAdd = features.find(f => f.id === featureID);
 
     if (!featureToAdd) {
-        DebugConsole.error(`Feature ${featureName} not found in DnD features list`);
+        DebugConsole.error(`Feature ${featureID} not found in DnD features list`);
         return character;
     }
 
@@ -30,14 +30,14 @@ const AddFeature = (character: Character, feature: MadFeature) => {
 }
 
 const RemoveFeature = (character: Character, feature: MadFeature) => {
-    const featureNameToRemove = feature.value?.['name']?.trim() ?? "";
+    const featureID = feature.value?.['ID']?.trim() ?? "";
 
-    if (!featureNameToRemove) {
+    if (!featureID) {
         DebugConsole.error("No feature name provided for RemoveFeature command");
         return character;
     }
 
-    character.features = character.features.filter(f => f.name !== featureNameToRemove);
+    character.features = character.features.filter(f => f.id !== featureID);
 
     return character;   
 }

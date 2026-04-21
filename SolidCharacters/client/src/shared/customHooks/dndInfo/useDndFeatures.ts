@@ -5,7 +5,7 @@ import { useDnDRaces } from "./info/all/races";
 import { useDnDSubraces } from "./info/all/subraces";
 import { useDnDSubclasses } from "./info/all/subclasses";
 import { createSignal } from "solid-js";
-import { FeatureDetail } from "../../../models/data";
+import { FeatureDetail } from "../../../models/generated";
 import { DebugConsole } from "../DebugConsole";
 
 const backgrounds = useDnDBackgrounds();
@@ -24,7 +24,7 @@ export const useDndFeature = () => {
 
         for (let i = 1; i <= 20; i++) {
             if (x.features) {
-               x.features[i].forEach(feature => features.push(feature as FeatureDetail));
+               x.features[i]?.forEach(feature => features.push(feature as FeatureDetail));
             } else {               
                 DebugConsole.warn(`Class ${x.name} has no features defined for level ${i}`);
             }
@@ -37,7 +37,7 @@ export const useDndFeature = () => {
 
         for (let i = 1; i <= 20; i++) {
             if (x.features) {
-               x.features[i].forEach(feature => features.push(feature as FeatureDetail));
+               x.features[i]?.forEach(feature => features.push(feature as FeatureDetail));
             } else {               
                 DebugConsole.warn(`Subclass ${x.name} has no features defined for level ${i}`);
             }

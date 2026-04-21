@@ -15,6 +15,8 @@ import { ItemFeature } from "./parts/itemFeature/ItemFeature";
 import { CurrencyFeature } from "./parts/currencyFeature/currencyFeature";
 import { ACFeature } from "./parts/acFeature/acFeature";
 import { ProficienciesFeature } from "./parts/proficienciesFeature/proficienciesFeature";
+import { ExistingFeature } from "./parts/existingFeature/existingFeature";
+import { useDndFeature } from "../../../../shared/customHooks/dndInfo/useDndFeatures";
 
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
@@ -31,6 +33,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const is_edit = createMemo(()=>props.isEdit());
     const allSpells = useDnDSpells();
     const allItems = useDnDItems();
+    const {allFeatures} = useDndFeature();
 
     const currentFeatureMetadata = new FormArray<MadForm>([]);
 
@@ -66,6 +69,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         });
         
         const newFeature: FeatureDetail = {
+            id: "",
             name: name,
             description: desc,
             metadata: {
@@ -87,6 +91,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const clearInputs = () => {
         setFeature({
+            id: "",
             name: "",
             description: ""
         })
@@ -407,6 +412,13 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     setMadFeature("value", i(), {"proficiencies": profs.join(",")});
                                                     setCard(false);
                                                 }}/>
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddFeatures" || getMaDCommand(i())?.() === "RemoveFeatures"}>
+                                                <ExistingFeature 
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    allFeatures={allFeatures}
+                                                    toggleFeature={(featureName) => {}}
+                                                />
                                             </Match>
                                         </Switch>
                                         
