@@ -63,13 +63,24 @@ function useExpertiseFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const mads = feature.metadata?.mads as MadFeature;
+        const mads = feature.metadata?.mads as MadFeature[];
 
-        if (mads && mads.command === 'AddExpertise') {
-            character = addExpertiseFeature(character, mads);
-        } else if (mads && mads.command === 'RemoveExpertise') {
-            character = removeExpertiseFeature(character, mads);
-        }
+        mads.reduce((updatedCharacter, madFeature) => {
+            switch (madFeature.command) {
+                case "AddExpertise":
+                    updatedCharacter = addExpertiseFeature(updatedCharacter, madFeature);
+                    break;
+                case "RemoveExpertise":
+                    updatedCharacter = removeExpertiseFeature(updatedCharacter, madFeature);
+                    break;
+                default:
+                    break;
+            }
+            
+            return updatedCharacter;
+            
+        }, character);
+
     });
 
     return character;

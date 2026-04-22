@@ -15,7 +15,8 @@
           "name": "Draconic Ancestry",
           "description": "Choose a dragon lineage (Black/Acid, Blue/Lightning, Brass/Fire, Bronze/Lightning, Copper/Acid, Gold/Fire, Green/Poison, Red/Fire, Silver/Cold, White/Cold】. This determines the damage type of your other traits (Breath Weapon and Resistance) and influences your appearance (scale color)."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "e24527bd-ff2f-465d-988c-4d79866e09f0"
       },
       {
         "details": {
@@ -25,21 +26,24 @@
             "uses": 2
           }
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "23e86a9a-41bd-47b8-8014-c6a8420f1d0a"
       },
       {
         "details": {
           "name": "Damage Resistance",
           "description": "You have resistance to the damage type associated with your Draconic Ancestry (e.g. a Gold dragonborn has resistance to fire damage】."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "3c5c627b-5607-4220-a1ec-612945005fdc"
       },
       {
         "details": {
           "name": "Darkvision",
           "description": "Thanks to your draconic senses, you have Darkvision out to 60 feet. You can see in dim light as if it were bright light and in darkness as if it were dim light."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "a247a98e-8631-416c-bc1b-6638c37201c7"
       },
       {
         "details": {
@@ -49,7 +53,8 @@
             "recharge": "long rest"
           }
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "2ef84e32-a99c-4f98-bff8-967458886887"
       }
     ],
     "descriptions": {
@@ -102,21 +107,24 @@
           "name": "Darkvision",
           "description": "Accustomed to life underground, you have superior vision in dark conditions. You have Darkvision with a range of 120 fee】."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "303a6dca-0dcc-47d6-8adb-c13193000cd9"
       },
       {
         "details": {
           "name": "Dwarven Resilience",
           "description": "You have resistance to poison damage, and you have advantage on saving throws to avoid or end the Poisoned condition on yoursel】."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "012d45d8-a278-4353-8b3c-14ad8cc09410"
       },
       {
         "details": {
           "name": "Dwarven Toughness",
           "description": "Your hit point maximum increases by 1, and it increases by an additional 1 every time you gain a leve】 (reflecting dwarven hardiness)."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "cd2d127b-5076-4724-a5e1-1d318ad15088"
       },
       {
         "details": {
@@ -127,7 +135,8 @@
             "uses": 2
           }
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "1a42e33b-d735-4593-b8d1-2e0a5ee425d5"
       }
     ],
     "descriptions": {
@@ -180,28 +189,32 @@
           "name": "Darkvision",
           "description": "Accustomed to twilit forests and night skies, you have Darkvision out to 60 fee】."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "9df3eda6-5cf8-40e6-ab01-36c10dac489c"
       },
       {
         "details": {
           "name": "Fey Ancestry",
           "description": "You have advantage on saving throws to avoid or end the charmed condition on yourself (magic can’t put you to sleep】."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "e07247da-06f6-4192-ac68-0c6b2c4f9ca3"
       },
       {
         "details": {
           "name": "Keen Senses",
           "description": "You have proficiency in one of the following: Insight, Perception, or Survival (your attunement to natural surroundings grants acute senses】."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "865c3015-703f-414c-a7a0-ee9e407bfb0f"
       },
       {
         "details": {
           "name": "Trance",
           "description": "Elves do not need to sleep. Instead, you meditate deeply for 4 hours a day, remaining semi-conscious. After resting in this way, you gain the same benefit that a human does from 8 hours of slee】."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "b47af5cb-5b11-49db-b2aa-69ed207c0bd6"
       }
     ],
     "descriptions": {
@@ -278,14 +291,16 @@
           "name": "Darkvision",
           "description": "Accustomed to life underground in burrows, you have Darkvision out to 60 fee】."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "7bde482b-68ea-4810-8e2a-b72d67fa1411"
       },
       {
         "details": {
           "name": "Gnomish Cunning",
           "description": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magi】 (reflecting innate gnome resistance to magical effects)."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "f2b3e01e-2cba-4179-b412-2715a913f307"
       }
     ],
     "descriptions": {
@@ -357,14 +372,16 @@
           "name": "Powerful Build",
           "description": "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift (goliaths are incredibly strong for their size)."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "421bff61-1267-4a3d-8706-64344a771df7"
       },
       {
         "details": {
           "name": "Mountain Born",
           "description": "You have resistance to cold damage, and you’re acclimated to high altitude (you do not suffer penalties in high-altitude environments)."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "848fc93d-98f6-452c-8e0c-0684cff02199"
       }
     ],
     "descriptions": {
@@ -433,28 +450,32 @@
           "name": "Brave",
           "description": "You have advantage on saving throws against being frightene】. Halflings have an uncommon valor that steels them against fear."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "a7b0724b-0b8f-4c32-9320-6709bcc29fe7"
       },
       {
         "details": {
           "name": "Halfling Nimbleness",
           "description": "You can move through the space of any creature that is of a size larger than yours (you can’t stop in their space, but you can slip by in combat】. This reflects your small stature and agility."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "c404dd9c-c6c5-407c-aa4e-96b234c2d2d5"
       },
       {
         "details": {
           "name": "Lucky (Halfling)",
           "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and **must** use the new rol】. (This trait is different from the Lucky feat; it represents the halfling’s general good fortune.)"
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "52a8cb50-32fa-43f9-bc7d-bad1c2e9758b"
       },
       {
         "details": {
           "name": "Naturally Stealthy",
           "description": "You can attempt to hide even when you are only obscured by a creature that is one size larger than yo】. For example, you can hide behind a Medium ally during combat."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "15cd220a-6526-44be-8e2d-14f6e5cc5f6d"
       }
     ],
     "descriptions": {
@@ -506,21 +527,24 @@
           "name": "Resourceful",
           "description": "Humans are known for their ingenuity. You gain Heroic Inspiration (one free reroll, also called Inspiration) whenever you finish a Long Res】. (If you already have Inspiration, you don’t gain another; essentially you often start each adventuring day with Inspiration.)"
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "3026fb67-3179-4bfd-a191-a998390aa294"
       },
       {
         "details": {
           "name": "Skillful",
           "description": "You gain proficiency in one skill of your choic】. Humans have a wide range of talents, so you pick up an extra trained skill."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "78f464d9-72d8-475b-964f-2a6123fb1cc6"
       },
       {
         "details": {
           "name": "Versatile",
           "description": "You gain one *Origin feat* of your choice at 1st level (representing the diverse backgrounds of humans】. For example, many humans choose the Skilled feat as recommended, but you may choose any feat with the 'Origin' category."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "a2330fed-ab1c-4634-b272-b02b2530a5d1"
       }
     ],
     "descriptions": {
@@ -583,21 +607,24 @@
             "uses": 2
           }
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "eb1ed412-d218-4b5d-9962-a86064522d69"
       },
       {
         "details": {
           "name": "Darkvision",
           "description": "You have superior vision in dark conditions. You can see in dim light within 120 feet as if it were bright light, and in darkness as if it were dim ligh】. Your orcish heritage grants you exceptional night vision."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "74ea1671-7b7a-45ad-b768-d142747cfa67"
       },
       {
         "details": {
           "name": "Relentless Endurance",
           "description": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instea】. Once you use this trait, you can’t do so again until you finish a Long Rest. (Your ferocity allows you to fight on when others would fall.)"
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "44f2aa1d-2739-46fb-86e3-05b33315d9e4"
       }
     ],
     "descriptions": {
@@ -650,7 +677,8 @@
           "name": "Darkvision",
           "description": "Thanks to your infernal heritage, you have Darkvision out to 60 fee】. You can see in dim light and darkness as other tieflings do, with hues of heat and shadow."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "03fbd253-522d-4f54-b04c-1b7984c05198"
       },
       {
         "details": {
@@ -662,7 +690,8 @@
             ]
           }
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "7f42895a-788c-45e8-af17-dfd5fdc0a02d"
       }
     ],
     "descriptions": {

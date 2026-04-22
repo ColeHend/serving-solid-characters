@@ -1,10 +1,10 @@
-import { Accessor, Component, createMemo } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, Show } from "solid-js";
 import { Clone, FeatureDetail } from "../../../../../../shared";
 import { Button, Cell, Column, Header, Table } from "coles-solid-library";
-import { DebugConsole } from "../../../../../../shared/customHooks/DebugConsole";
+import styles from "./existingFeature.module.scss";
 
 interface props {
-    toggleFeature: (featureName: string) => void;
+    toggleFeature: (featureID: string) => void;
     allFeatures: Accessor<FeatureDetail[]>;
     getValue: Accessor<Record<string, string> | undefined>;
 }
@@ -35,10 +35,10 @@ export const ExistingFeature: Component<props> = (props) => {
     const columns = ["name","short desc","action"]
     
     const shortDesc = (desc: string): string|null => {
-        const splitDesc = desc.substring(0, 35).split("\n");
-        
+        let splitDesc = desc.substring(0, 45);
+
         if (splitDesc) {
-            const toReturn = splitDesc[0] += "...";
+            const toReturn = splitDesc += "...";
 
             return toReturn;
         }
@@ -46,8 +46,12 @@ export const ExistingFeature: Component<props> = (props) => {
         return null;
     } 
 
-    return <div>
-        <div>
+    createEffect((() => {
+        console.log("features: ", allFeatures());
+    }))
+
+    return <div style={{display: "flex", "flex-direction": "row", gap: "1rem"}}>
+        <div class={`${styles.FeatureTable}`}>
             <Table data={allFeatures} columns={columns}>
                 <Column name="name">
                     <Header>Header</Header>
@@ -71,10 +75,36 @@ export const ExistingFeature: Component<props> = (props) => {
                 <Column name="action">
                     <Header><></></Header>
                     <Cell<FeatureDetail>>
-                        {feature => <Button>{!isCurrent(feature.id) ? "learn" : "unlearn"}</Button>}
+                        {feature => <Button onClick={()=>props.toggleFeature(feature.id)}>{!isCurrent(feature.id) ? "learn" : "unlearn"}</Button>}
                     </Cell>
                 </Column>
             </Table>
+        </div>
+        <div>
+            <p>
+                <strong>Name: </strong>
+                {currentFeature()?.name}
+            </p>
+
+            <p>
+                <strong>Description: </strong>
+            </p>
+            <p>
+                {currentFeature()?.description}
+            </p>
+
+            <Show when={currentFeature()?.metadata?.mads} fallback={<p><strong>Character Changes:</strong> None</p>}>
+                <p>
+                    <strong>Character Changes:</strong>
+                    {currentFeature()?.metadata?.mads?.map(mad => {
+                        const keys = Object.keys(mad.value);
+                        
+                        return <span>
+                            {mad.command} {keys.map(key => `${key}: ${mad.value[key]}`).join(", ")}
+                        </span>
+                    })}
+                </p>
+            </Show>
         </div>
     </div>
 } 

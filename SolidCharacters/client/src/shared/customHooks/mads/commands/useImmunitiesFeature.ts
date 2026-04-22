@@ -3,7 +3,7 @@ import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addImmunities = (character: Character, feature: MadFeature): Character => {
-    const type = feature.value?.['immunity']?.trim() ?? "";
+    const type = feature.value?.['damageType']?.trim() ?? "";
 
     if (!type) {
         DebugConsole.error("No immunity type provided for AddImmunities command");
@@ -18,7 +18,7 @@ const addImmunities = (character: Character, feature: MadFeature): Character => 
 }
 
 const removeImmunities = (character: Character, feature: MadFeature): Character => {
-    const type = feature.value?.['immunity']?.trim() ?? "";
+    const type = feature.value?.['damageType']?.trim() ?? "";
 
     if (!type) {
         DebugConsole.error("No immunity type provided for RemoveImmunities command");
@@ -38,20 +38,22 @@ function useImmunitiesFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const madFeature = feature.metadata?.mads as MadFeature;
+        const madFeature = feature.metadata?.mads as MadFeature[];
 
-        if (madFeature) {
+        madFeature.reduce((updatedCharacter, madFeature) => {
             switch (madFeature.command) {
                 case "AddImmunities":
-                    addImmunities(character, madFeature);
+                    updatedCharacter = addImmunities(updatedCharacter, madFeature);
                     break;
                 case "RemoveImmunities":
-                    removeImmunities(character, madFeature);
+                    updatedCharacter = removeImmunities(updatedCharacter, madFeature);
                     break;
                 default:
                     break;
             }
-        }
+
+            return updatedCharacter;
+        }, character);
     })
 
     return character;

@@ -31,15 +31,23 @@ function useLanguageFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const mads = feature.metadata?.mads as MadFeature;
+        const mads = feature.metadata?.mads as MadFeature[];
 
-        if (mads) {
-            if (mads.command === 'AddLanguages') {
-                character = addLanguageFeature(character, mads);
-            } else if (mads.command === 'RemoveLanguages') {
-                character = removeLanguageFeature(character, mads);
+        mads.reduce((updatedCharacter, madFeature) => {
+            switch (madFeature.command) {
+                case 'AddLanguages':
+                    updatedCharacter = addLanguageFeature(updatedCharacter, madFeature);
+                    break;
+                case 'RemoveLanguages':
+                    updatedCharacter = removeLanguageFeature(updatedCharacter, madFeature);
+                    break;
+                default:
+                    break;
             }
-        }
+
+
+            return updatedCharacter;
+        }, character);
     });
 
     return character;

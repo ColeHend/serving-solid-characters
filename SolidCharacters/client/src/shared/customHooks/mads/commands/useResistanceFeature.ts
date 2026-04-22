@@ -3,7 +3,7 @@ import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addResistanceFeature = (character: Character, feature: MadFeature): Character => {
-    const resistance = feature.value['resistance'].trim() ?? "";
+    const resistance = feature.value['damageType'].trim() ?? "";
 
     if (!resistance) {
         DebugConsole.error("No resistance provided for AddResistances command");
@@ -19,7 +19,7 @@ const addResistanceFeature = (character: Character, feature: MadFeature): Charac
 }
 
 const removeResistanceFeature = (character: Character, feature: MadFeature): Character => {
-    const resistance = feature.value['resistance'].trim() ?? "";
+    const resistance = feature.value['damageType'].trim() ?? "";
 
     if (!resistance) {
         DebugConsole.error("No resistance provided for RemoveResistances command");
@@ -39,18 +39,22 @@ function useResistanceFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads as MadFeature;
+        const MadFeatures = feature.metadata?.mads as MadFeature[];
 
-        if (MadFeature) {
-            switch (MadFeature.command) {
+        MadFeatures.reduce((updatedCharacter, feature) => {
+            switch (feature.command) {
                 case "AddResistances":
-                    character = addResistanceFeature(character, MadFeature);
+                    updatedCharacter = addResistanceFeature(updatedCharacter, feature);
                     break;
                 case "RemoveResistances":
-                    character = removeResistanceFeature(character, MadFeature);
+                    updatedCharacter = removeResistanceFeature(updatedCharacter, feature);
+                    break;
+                default:
                     break;
             }
-        }
+
+            return updatedCharacter;
+        }, character);
     })
 
     return character;

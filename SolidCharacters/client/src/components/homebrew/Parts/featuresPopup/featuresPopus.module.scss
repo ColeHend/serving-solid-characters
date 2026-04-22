@@ -78,3 +78,9 @@
     height: 75% !important;
     margin-bottom: 5%;
 }
+
+.changePopup {
+    :not(:last-child) {
+        border-bottom: none !important;
+    }
+}

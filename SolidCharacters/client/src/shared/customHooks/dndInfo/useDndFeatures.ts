@@ -45,17 +45,11 @@ export const useDndFeature = () => {
 
         return features;
     }) as FeatureDetail[];
-    const featFeatures = feats().flatMap(x => x.details);
-    const raceFeatures = races().flatMap(x => x.traits.flatMap(y => y.details));
-    const subracesFeatures = subraces().flatMap(x => x.traits.flatMap(x => x.details));
 
     const all: FeatureDetail[] = [
         ...bgFeatures as FeatureDetail[],
         ...classFeatures as FeatureDetail[],
         ...subclassFeatures as FeatureDetail[],
-        ...featFeatures as FeatureDetail[],
-        ...raceFeatures as FeatureDetail[],
-        ...subracesFeatures as FeatureDetail[]
     ]
 
     setAllFeatures(all);

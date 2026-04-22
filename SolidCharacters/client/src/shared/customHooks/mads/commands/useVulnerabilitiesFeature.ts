@@ -3,7 +3,7 @@ import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addVulnerabilityFeature = (character: Character, feature: MadFeature) => {
-    const type = feature.value?.["vulnerability"];
+    const type = feature.value?.["damageType"];
 
     if (!type) {
         DebugConsole.error("No vulnerability type provided for AddVulnerability command");
@@ -18,7 +18,7 @@ const addVulnerabilityFeature = (character: Character, feature: MadFeature) => {
 }
 
 const removeVulnerabilityFeature = (character: Character, feature: MadFeature) => {
-    const type = feature.value?.["vulnerability"];
+    const type = feature.value?.["damageType"];
 
     if (!type) {
         DebugConsole.error("No vulnerability type provided for RemoveVulnerability command");
@@ -38,19 +38,23 @@ function useVulnerabilitiesFeature(character: Character) {
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads as MadFeature;
+        const MadFeature = feature.metadata?.mads as MadFeature[];
 
-        if (MadFeature) {
-            switch (MadFeature.command) {
+        MadFeature.reduce((updatedCharacter, feature) => {
+            switch (feature.command) {
                 case "AddVulnerabilities":
-                    character = addVulnerabilityFeature(character, MadFeature);
+                    updatedCharacter = addVulnerabilityFeature(updatedCharacter, feature);
                     break;
 
                 case "RemoveVulnerabilities":
-                    character = removeVulnerabilityFeature(character, MadFeature);
+                    updatedCharacter = removeVulnerabilityFeature(updatedCharacter, feature);
+                    break;
+                default:
                     break;
             }
-        }
+
+            return updatedCharacter
+        }, character);
     })
 
     return character;

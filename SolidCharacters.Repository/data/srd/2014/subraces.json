@@ -18,7 +18,8 @@
           "name": "Dwarven Toughness",
           "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "2d173845-ed27-4633-9176-1bb125facb97"
       }
     ],
     "descriptions": {
@@ -91,7 +92,8 @@
           "name": "Naturally Stealthy",
           "description": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "eae37d85-7d80-4611-ac13-22dfd6509103"
       }
     ],
     "descriptions": {
@@ -123,28 +125,32 @@
           "name": "Darkvision",
           "description": "You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "11e9da96-820a-43e2-a557-180e9371463d"
       },
       {
         "details": {
           "name": "Gnome Cunning",
           "description": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "f4bd3642-161f-43fd-a594-7f2e1323c1e6"
       },
       {
         "details": {
           "name": "Artificer's Lore",
           "description": "Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus, instead of any proficiency bonus you normally apply."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "2323e4e1-7c50-4fb3-a58c-47da4d6fc70b"
       },
       {
         "details": {
           "name": "Tinker",
           "description": "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time.\nWhen you create a device, choose one of the following options:\nClockwork Toy: This toy is a clockwork animal, monster, or person, such as a frog, mouse, bird, dragon, or soldier. When placed on the ground, the toy moves 5 feet across the ground on each of your turns in a random direction. It makes noises as appropriate to the creature it represents.\nFire Starter: The device produces a miniature flame, which you can use to light a candle, torch, or campfire. Using the device requires your action.\nMusic Box: When opened, this music box plays a single song at a moderate volume. The box stops playing when it reaches the song's end or when it is closed."
         },
-        "prerequisites": []
+        "prerequisites": [],
+        "id": "9d0938d7-9276-40b8-99f6-c465b4a8d93b"
       }
     ],
     "descriptions": {

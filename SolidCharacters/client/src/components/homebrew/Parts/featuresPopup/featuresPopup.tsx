@@ -17,6 +17,10 @@ import { ACFeature } from "./parts/acFeature/acFeature";
 import { ProficienciesFeature } from "./parts/proficienciesFeature/proficienciesFeature";
 import { ExistingFeature } from "./parts/existingFeature/existingFeature";
 import { useDndFeature } from "../../../../shared/customHooks/dndInfo/useDndFeatures";
+import { LanguagesFeature } from "./parts/languagesFeature/languagesFeature";
+import { ResistanceFeature } from "./parts/resistanceFeature/resistanceFeature";
+import { SavingThrow } from "./parts/savingThrow/savingThrow";
+import { StatFeature } from "./parts/statFeature/StatFeature";
 
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
@@ -41,7 +45,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const addNewMetadata = () => {
         const newMetadata = new FormGroup<MadForm>({
-            name: [`change ${currentMadsLength() + 1}`, []],
+            name: [`${currentMadsLength() + 1}`, []],
             command: ['', []],
             value: [{}, []],
             type: [0, []],
@@ -277,7 +281,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         <h3>Feature: {featureName()}</h3>
                     </div>
                 </div>
-                <div class={`${styles.scrollBox}`}>
+                <div class={`${styles.scrollBox} ${styles.changePopup}`}>
 
                     <FlatCard headerName="Identity" icon="identity_platform" startOpen>
                         <FormField name="Feature Name" formName="Feature name">
@@ -305,7 +309,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                 </Button>
                             </div>
 
-                            <div>
+                            <div class={`${styles.changePopup}`}>
                                 <For each={currentFeatureMetadata.get()}>
                                     {(metadata, i) => {
                                         const key = metadata.name;
@@ -314,15 +318,15 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
                                         return <FlatCard show={[cardShow, setCard as Setter<boolean>]} headerName={<div style={{display:"flex", "flex-direction": 'column', "align-content": 'flex-start',"text-align": "left"}}>
                                             <div style={{"text-align": "left", width: "100%"}}>
-                                                {metadata.name}
+                                                <strong>Change </strong>{metadata.name}
                                             </div>
                                             <div style={{display: 'flex', "flex-direction": "row"}}>
                                                 <span style={{"text-align": "center", width: "4vw"}}>
-                                                    <span>group: </span>
+                                                    <span><strong>Group:</strong> </span>
                                                     <span>0</span>
                                                 </span>
                                                 <span style={{"text-align": "center", width: "7vw"}}>
-                                                    <span>Type: </span> 
+                                                    <span><strong>Type:</strong> </span> 
                                                     <span>{getType(i()) ?? ""}</span>
                                                 </span>
                                             </div>
@@ -333,7 +337,10 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 <Option value={"Remove"}>Remove</Option>
                                             </Select>
 
-                                            <Select value={getMadCommandCategory(i())?.()} onSelect={(value) => setMadFeature("commandCategory" ,i() ,value)}>
+                                            <Select value={getMadCommandCategory(i())?.()} onSelect={(value) => {
+                                                    setMadFeature("commandCategory" ,i() ,value)
+                                                    setMadFeature("value", i(), {});
+                                                }}>
                                                 <For each={MadCommands}>
                                                     {command => <Option value={command}>{command}</Option>}
                                                 </For>
@@ -407,7 +414,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     setCard(false);
                                                 }} />
                                             </Match>
-                                            <Match when={getMaDCommand(i())?.() === "AddProficiencies" || getMaDCommand(i())?.() === "RemoveProficiencies"} >
+                                            <Match when={getMaDCommand(i())?.() === "AddProficiencies" || getMaDCommand(i())?.() === "RemoveProficiencies" || getMaDCommand(i())?.() === "AddExpertise" || getMaDCommand(i())?.() === "RemoveExpertise"} >
                                                 <ProficienciesFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleProf={(profs) => {
                                                     setMadFeature("value", i(), {"proficiencies": profs.join(",")});
                                                     setCard(false);
@@ -417,7 +424,80 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 <ExistingFeature 
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
                                                     allFeatures={allFeatures}
-                                                    toggleFeature={(featureName) => {}}
+                                                    toggleFeature={(featureID) => {
+                                                        const old = getMadValue(i())?.();
+                                                        console.log("id: ", featureID);
+                                                        
+                                                        if (old?.["ID"] === featureID) {
+                                                            setMadFeature("value", i(), {"ID": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"ID": featureID})
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddLanguages" || getMaDCommand(i())?.() === "RemoveLanguages"}>
+                                                <LanguagesFeature 
+                                                    toggleValue={(language) => {
+                                                        const old = getMadValue(i())?.();
+                                                        
+                                                        if (old?.["name"] === language) {
+                                                            setMadFeature("value", i(), {"name": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"name": language})
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddResistances" || getMaDCommand(i())?.() === "RemoveResistances" || getMaDCommand(i())?.() === "AddVulnerabilities" || getMaDCommand(i())?.() === "RemoveVulnerabilities" || getMaDCommand(i())?.() === "AddImmunities" || getMaDCommand(i())?.() === "RemoveImmunities"}>
+                                                <ResistanceFeature 
+                                                    toggleValue={(dmgType) => {
+                                                        const old = getMadValue(i())?.();
+                                                        
+                                                        if (old?.["damageType"] === dmgType) {
+                                                            setMadFeature("value", i(), {"damageType": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"damageType": dmgType})
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    getCommandCategory={getMadCommandCategory(i())}
+                                                />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddSavingThrows" || getMaDCommand(i())?.() === "RemoveSavingThrows"}>
+                                                <SavingThrow 
+                                                    toggleValue={(stat) => {
+                                                        const old = getMadValue(i())?.();
+                                                        
+                                                        if (old?.["stat"] === stat) {
+                                                            setMadFeature("value", i(), {"stat": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"stat": stat})
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                
+                                                />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddStats" || getMaDCommand(i())?.() === "RemoveStats"}>
+                                                <StatFeature 
+                                                    toggleValue={(stat, value) => {
+                                                        const old = getMadValue(i())?.();
+                                                        
+                                                        if (old?.["stat"] === stat) {
+                                                            setMadFeature("value", i(), {"stat": "", "statValue": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"stat": stat, "statValue": value.toString()})
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                
                                                 />
                                             </Match>
                                         </Switch>
