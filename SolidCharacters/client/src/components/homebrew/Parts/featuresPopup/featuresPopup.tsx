@@ -21,6 +21,8 @@ import { LanguagesFeature } from "./parts/languagesFeature/languagesFeature";
 import { ResistanceFeature } from "./parts/resistanceFeature/resistanceFeature";
 import { SavingThrow } from "./parts/savingThrow/savingThrow";
 import { StatFeature } from "./parts/statFeature/StatFeature";
+import { SpeedFeature } from "./parts/speedFeature/speedFeature";
+import { AllProfsFeature } from "./parts/allProfsFeature/allProfsFeature";
 
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
@@ -498,6 +500,38 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
                                                 
+                                                />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddSpeed" || getMaDCommand(i())?.() === "RemoveSpeed"}>
+                                                <SpeedFeature 
+                                                    toggleValue={(speed) => {
+                                                        const old = getMadValue(i())?.();
+                                                        
+                                                        if (old?.["speed"] === speed.toString()) {
+                                                            setMadFeature("value", i(), {"speed": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"speed": speed.toString()})
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddAllProficiencies" || getMaDCommand(i())?.() === "RemoveAllProficiencies"}>
+                                                <AllProfsFeature 
+                                                    toggleValue={(value, pbChoice) => {
+                                                        const old = getMadValue(i())?.();
+                                                        
+                                                        if (old?.["allProficiencies"] === value) {
+                                                            setMadFeature("value", i(), {"allProficiencies": ""})
+                                                            setMadFeature("value", i(), {"proficiencyBonusChoice": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"allProficiencies": value})
+                                                            setMadFeature("value", i(), {"proficiencyBonusChoice": pbChoice})
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
                                                 />
                                             </Match>
                                         </Switch>
