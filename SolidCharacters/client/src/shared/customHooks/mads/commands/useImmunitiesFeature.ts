@@ -37,10 +37,10 @@ function useImmunitiesFeature (character: Character) {
         return;
     }
 
-    character.features.forEach(feature => {
+    const updated = character.features.reduce((updatedChar,feature) => {
         const madFeature = feature.metadata?.mads as MadFeature[];
 
-        madFeature.reduce((updatedCharacter, madFeature) => {
+        return madFeature.reduce((updatedCharacter, madFeature) => {
             switch (madFeature.command) {
                 case "AddImmunities":
                     updatedCharacter = addImmunities(updatedCharacter, madFeature);
@@ -53,10 +53,10 @@ function useImmunitiesFeature (character: Character) {
             }
 
             return updatedCharacter;
-        }, character);
-    })
+        }, updatedChar);
+    },character)
 
-    return character;
+    return updated;
 }
 
 export default useImmunitiesFeature;

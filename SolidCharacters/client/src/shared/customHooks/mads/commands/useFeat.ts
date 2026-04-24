@@ -3,6 +3,7 @@ import { FeatureDetail } from "../../../../models/generated";
 import { useDnDFeats } from "../../dndInfo/info/all/feats";
 import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
+import { createNewId } from "../../utility/tools/idGen";
 
 const srdFeats = useDnDFeats();
 
@@ -18,6 +19,7 @@ const AddFeat = (character: Character, feature: MadFeature) => {
 
     if (feat) {
         const newFeature: FeatureDetail = {
+            id: createNewId(),
             name: feat.details.name,
             description: feat.details.description,
             choiceKey: feat.details.choiceKey,
@@ -55,23 +57,26 @@ function useFeat (character:Character) {
         return;
     }
 
-    character.features.forEach(feature => {
-        const madFeature = feature.metadata?.mads as MadFeature;
+    const updatedCharacter = character.features.reduce((updatedChar,feature) => {
+        const madFeature = feature.metadata?.mads as MadFeature[];
 
-        if (madFeature) {
-            switch (madFeature.command) {
+        return madFeature.reduce((updatedCharacter, Feature) => {
+            switch (Feature.command) {
                 case "AddFeats":
-                    character = AddFeat(character, madFeature);
+                    updatedCharacter = AddFeat(character, Feature);
                     break;
  
                 case "RemoveFeats":
-                    character = RemoveFeat(character, madFeature);
+                    updatedCharacter = RemoveFeat(character, Feature);
                     break;
             }
-        }
-    })
 
-    return character;
+            return updatedCharacter;
+        }, updatedChar);
+
+    }, character)
+
+    return updatedCharacter;
 }
 
 function getFeat(ID: string) {

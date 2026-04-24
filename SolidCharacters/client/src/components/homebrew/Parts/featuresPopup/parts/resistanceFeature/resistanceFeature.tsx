@@ -12,23 +12,6 @@ export const ResistanceFeature: Component<props> = (props) => {
 
     const madValue = createMemo(() => props.getValue());
 
-    const commandCategory = createMemo(() => props.getCommandCategory ? props.getCommandCategory() : "");
-
-    const getProperName = () => {
-        switch (commandCategory()) {
-            case "Resistances":
-                return "Resistance";
-            case "Vulnerabilities":
-                return "Vulnerability";
-            case "Immunities":
-                return "Immunity";
-            default:
-                return "";
-        }
-    }
-
-    const [currentDmgType, setCurrentDmgType] = createSignal("");
-
     const damageTypes = [
         "Acid",
         "Cold",
@@ -77,31 +60,28 @@ export const ResistanceFeature: Component<props> = (props) => {
     }
 
     const getMadValue = (key: string) => {
-        return madValue()?.[key];
+        return madValue()?.[key] ?? null;
     }
 
-    const damageType = createMemo(() => getMadValue("damageType"));
-    
-    return <>
-        <div class={`${styles.damageTypeInput}`}>
-            <div class={`${styles.damageTypeHeader}`}>
-                <div class={`${styles.damageTypeBar}`} style={{"background-color": `${getDmgTypeColor(currentDmgType())}`}}></div>
-                {/* <strong>{currentDmgType()}</strong> */}
-            </div>
-            <div class={`${styles.damageTypeSelect}`}>
-                <FormField name="Damage Type">
-                    <Select value={damageType() ?? ""} onChange={(val) => setCurrentDmgType(val)}>
-                        <For each={damageTypes}>
-                            {(dmgType) => <Option value={dmgType}>{dmgType}</Option>}
-                        </For>
-                    </Select>
-                </FormField>
-            </div>
+    const damageType = createMemo(() => getMadValue("damageType") ?? "");
 
-            <Button onClick={() => props.toggleValue("damageType")}>Apply</Button>
+    const [localType, setLocalType] = createSignal(damageType());
+    
+    return <div class={`${styles.damageTypeInput}`} style={{"border-block-color": `${getDmgTypeColor(localType())}`}}>
+        <div class={`${styles.damageTypeHeader}`}>
+            <div class={`${styles.damageTypeBar}`} style={{"background-color": `${getDmgTypeColor(localType())}`}}></div>
+            {/* <strong>{currentDmgType()}</strong> */}
         </div>
-        <div>
-            <p style={{"border-bottom": `2px solid ${getDmgTypeColor(currentDmgType())}`, width: "25%"}}>{getProperName()} to {currentDmgType()}</p>
+        <div class={`${styles.damageTypeSelect}`}>
+            <FormField name="Damage Type">
+                <Select value={localType() ?? ""} onChange={(val) => setLocalType(val)}>
+                    <For each={damageTypes}>
+                        {(dmgType) => <Option value={dmgType}>{dmgType}</Option>}
+                    </For>
+                </Select>
+            </FormField>
         </div>
-    </>
+
+        <Button onClick={() => props.toggleValue(localType())}>Set change</Button>
+    </div>
 }

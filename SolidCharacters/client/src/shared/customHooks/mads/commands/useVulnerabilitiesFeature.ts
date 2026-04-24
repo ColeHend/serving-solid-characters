@@ -37,10 +37,10 @@ function useVulnerabilitiesFeature(character: Character) {
         return;
     }
 
-    character.features.forEach(feature => {
+    const updated = character.features.reduce((updatedChar,feature) => {
         const MadFeature = feature.metadata?.mads as MadFeature[];
 
-        MadFeature.reduce((updatedCharacter, feature) => {
+        return MadFeature.reduce((updatedCharacter, feature) => {
             switch (feature.command) {
                 case "AddVulnerabilities":
                     updatedCharacter = addVulnerabilityFeature(updatedCharacter, feature);
@@ -54,10 +54,10 @@ function useVulnerabilitiesFeature(character: Character) {
             }
 
             return updatedCharacter
-        }, character);
-    })
+        }, updatedChar);
+    }, character)
 
-    return character;
+    return updated;
 }
 
 export default useVulnerabilitiesFeature;

@@ -1,4 +1,4 @@
-import { Accessor, Component, createEffect, createMemo, Show } from "solid-js";
+import { Accessor, Component, createMemo, createSignal, Show } from "solid-js";
 import { Clone, FeatureDetail } from "../../../../../../shared";
 import { Button, Cell, Column, Header, Table } from "coles-solid-library";
 import styles from "./existingFeature.module.scss";
@@ -26,11 +26,13 @@ export const ExistingFeature: Component<props> = (props) => {
 
     const featureID = createMemo(() => getMadValue("ID") ?? "");
 
-    const isCurrent = (ID: string) => featureID() === ID;
+    const [localID, setLocalID] = createSignal(featureID());
 
-    const getFeature = (ID: string) => allFeatures().find((feature) => feature.id === ID);
+    const isCurrent = (ID: string) => localID() === ID;
 
-    const currentFeature = createMemo(() => getFeature(featureID()));
+    const getFeature = (ID: string) => allFeatures().find((feature) => feature.id === ID) ?? null;
+
+    const currentFeature = createMemo(() => getFeature(localID()));
 
     const columns = ["name","short desc","action"]
     
@@ -46,9 +48,9 @@ export const ExistingFeature: Component<props> = (props) => {
         return null;
     } 
 
-    createEffect((() => {
-        console.log("features: ", allFeatures());
-    }))
+    const handleSubmit = () => {
+        props.toggleFeature(localID()); 
+    }
 
     return <div style={{display: "flex", "flex-direction": "row", gap: "1rem"}}>
         <div class={`${styles.FeatureTable}`}>
@@ -75,10 +77,18 @@ export const ExistingFeature: Component<props> = (props) => {
                 <Column name="action">
                     <Header><></></Header>
                     <Cell<FeatureDetail>>
-                        {feature => <Button onClick={()=>props.toggleFeature(feature.id)}>{!isCurrent(feature.id) ? "learn" : "unlearn"}</Button>}
+                        {feature => <Button onClick={()=>{
+                            if (isCurrent(feature.id)) {
+                                setLocalID("");
+                            } else {
+                                setLocalID(feature.id);
+                            }
+                        }}>{!isCurrent(feature.id) ? "learn" : "unlearn"}</Button>}
                     </Cell>
                 </Column>
             </Table>
+
+            <Button onClick={handleSubmit}>Set Change</Button>
         </div>
         <div>
             <p>

@@ -57,23 +57,25 @@ function useSpellFeature(character: Character, spellID: string): Character | und
 
     // search for applicable mad features for the character and spell
 
-    character.features.forEach(feature => {
+    const updated = character.features.reduce((updatedCharacter,feature) => {
         const madsFeatures = feature?.metadata?.mads as MadFeature[];
         
-        madsFeatures.forEach(mads => {
+        return madsFeatures.reduce((updatedChar,mads) => {
             if (mads.type === MadType.Character) {
                 if (mads.command === "AddSpells" && mads.value['ID'] === spellID) {
-                    character = AddSpellFeature(character, mads);
+                    updatedChar = AddSpellFeature(character, mads);
                 } else if (mads.command === "RemoveSpells" && mads.value['ID'] === spellID) {
-                    character = RemoveSpellFeature(character, mads);
+                    updatedChar = RemoveSpellFeature(character, mads);
                 }
             } 
-        })
+
+            return updatedChar
+        }, updatedCharacter)
 
 
-    });
+    }, character);
 
-    return character;
+    return updated;
 }
 
 

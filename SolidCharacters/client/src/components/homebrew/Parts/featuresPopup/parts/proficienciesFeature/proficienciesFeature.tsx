@@ -2,7 +2,7 @@ import { Button, FormField, Option, Select } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, For } from "solid-js";
 
 interface props {
-    toggleProf: (proficiencies: string[]) => void;
+    toggleProf: (proficiencies: string) => void;
     getValue: Accessor<Record<string, string> | undefined>;
 }
 
@@ -14,9 +14,9 @@ export const ProficienciesFeature: Component<props> = (props) => {
         return madValue()?.[key];
     }
 
-    const profs = createMemo(() => getMadValue("proficiencies")?.split(",") ?? []);
+    const profs = createMemo(() => getMadValue("proficiency") ?? "");
 
-    const [currProfs, setProfs] = createSignal<string[]>([]);
+    const [currProfs, setProfs] = createSignal<string>(profs());
 
     const skills = [
         "Acrobatics",
@@ -41,7 +41,7 @@ export const ProficienciesFeature: Component<props> = (props) => {
 
     return <div>
         <FormField name="Select Skills">
-            <Select value={profs()} onChange={(val) => setProfs(val)} multiple>
+            <Select value={currProfs()} onChange={(val) => setProfs(val)}>
                 <For each={skills}>
                     {skill => <Option value={skill}>{skill}</Option>}
                 </For>
@@ -49,7 +49,7 @@ export const ProficienciesFeature: Component<props> = (props) => {
         </FormField>
 
         <Button onClick={()=>props.toggleProf(currProfs())}>
-            Set Proficiencies
+            Set Change
         </Button>
     </div>
 }

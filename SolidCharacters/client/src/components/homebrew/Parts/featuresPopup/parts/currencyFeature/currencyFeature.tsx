@@ -94,7 +94,7 @@ export const CurrencyFeature:Component<Props> = (props) => {
                 </Select>
             </FormField>
 
-            <div class={`${styles.currencyDisplay}`}>
+            <div class={`${styles.currencyDisplay}`} style={{"border-block-color": `${getBarColor(currType())}`}}>
                 <span class={`${styles.currencyHeader}`}>
                     <div class={`${styles.currencyBar}`} style={{"background-color": `${getBarColor(currType())}`}}></div>
                     <strong>{switchKeyToType(currType())}</strong>
@@ -108,7 +108,7 @@ export const CurrencyFeature:Component<Props> = (props) => {
         </div>
         
         <Button onClick={()=>props.setCurrecy(currType(), currAmount())}>
-            Set Currency
+            Set Change
         </Button>
 
         

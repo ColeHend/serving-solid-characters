@@ -23,6 +23,8 @@ import { SavingThrow } from "./parts/savingThrow/savingThrow";
 import { StatFeature } from "./parts/statFeature/StatFeature";
 import { SpeedFeature } from "./parts/speedFeature/speedFeature";
 import { AllProfsFeature } from "./parts/allProfsFeature/allProfsFeature";
+import { FeatFeature } from "./parts/featFeature/featFeature";
+import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
@@ -40,6 +42,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const allSpells = useDnDSpells();
     const allItems = useDnDItems();
     const {allFeatures} = useDndFeature();
+    const AllFeats = useDnDFeats();
 
     const currentFeatureMetadata = new FormArray<MadForm>([]);
 
@@ -417,8 +420,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 }} />
                                             </Match>
                                             <Match when={getMaDCommand(i())?.() === "AddProficiencies" || getMaDCommand(i())?.() === "RemoveProficiencies" || getMaDCommand(i())?.() === "AddExpertise" || getMaDCommand(i())?.() === "RemoveExpertise"} >
-                                                <ProficienciesFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleProf={(profs) => {
-                                                    setMadFeature("value", i(), {"proficiencies": profs.join(",")});
+                                                <ProficienciesFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleProf={(prof) => {
+                                                    // const old = getMadValue(i())?.();
+
+                                                   
+                                                    setMadFeature("value", i(), {"proficiency": prof});
                                                     setCard(false);
                                                 }}/>
                                             </Match>
@@ -532,6 +538,22 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         setCard(false);
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                />
+                                            </Match>
+                                            <Match when={getMaDCommand(i())?.() === "AddFeats" || getMaDCommand(i())?.() === "RemoveFeats" }>
+                                                <FeatFeature 
+                                                    toggleValue={(value) => {
+                                                        const old = getMadValue(i())?.();
+
+                                                        if (old?.["ID"] === value) {
+                                                            setMadFeature("value", i(), {"featID": ""})
+                                                        } else {
+                                                            setMadFeature("value", i(), {"featID": value});
+                                                        }
+                                                        setCard(false);
+                                                    }}
+                                                    getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    allFeats={AllFeats}
                                                 />
                                             </Match>
                                         </Switch>

@@ -38,10 +38,10 @@ function useResistanceFeature (character: Character) {
         return;
     }
 
-    character.features.forEach(feature => {
+    const updated = character.features.reduce((updatedChar,feature) => {
         const MadFeatures = feature.metadata?.mads as MadFeature[];
 
-        MadFeatures.reduce((updatedCharacter, feature) => {
+        return MadFeatures.reduce((updatedCharacter, feature) => {
             switch (feature.command) {
                 case "AddResistances":
                     updatedCharacter = addResistanceFeature(updatedCharacter, feature);
@@ -54,10 +54,10 @@ function useResistanceFeature (character: Character) {
             }
 
             return updatedCharacter;
-        }, character);
-    })
+        }, updatedChar);
+    }, character)
 
-    return character;
+    return updated;
 }
 
 export default useResistanceFeature;

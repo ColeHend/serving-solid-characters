@@ -1,4 +1,4 @@
-import { Button, Cell, Column, Header, Input, Option, Select, Table } from "coles-solid-library";
+import { Button, Cell, Column, Header, Option, Select, Table } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, For } from "solid-js";
 
 interface props {
@@ -55,7 +55,7 @@ export const AllProfsFeature: Component<props> = (props) => {
         return Object.keys(skillsToAdd());
     }
 
-    const handleSubmit = (e: Event) => {
+    const handleSubmit = () => {
         const arrayString = getAllSkills().join(",");
         
         props.toggleValue(arrayString, proficiencyChoice());

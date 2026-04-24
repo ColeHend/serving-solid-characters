@@ -39,21 +39,23 @@ function useItemFeature (character: Character) {
         return;
     }
 
-    character.features.forEach(feature => {
+    const updated = character.features.reduce((updatedCharacter,feature) => {
         const madFeatures = feature.metadata?.mads as MadFeature[];
 
-        madFeatures.forEach(mads => {
+        return madFeatures.reduce((updatedChar,mads) => {
             if (mads.type === MadType.Character) {
                 if (mads.command === 'AddItems' ) {
-                    character = AddItemFeature(character, mads);
+                    updatedChar = AddItemFeature(character, mads);
                 } else if (mads.command === 'RemoveItems') {
-                    character = RemoveItemFeature(character, mads);
+                    updatedChar = RemoveItemFeature(character, mads);
                 }
             }
-        })
-    });
+            
+            return updatedChar
+        }, updatedCharacter)
+    },character);
 
-    return character;
+    return updated;
 }
 
 export default useItemFeature;
