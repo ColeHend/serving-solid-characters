@@ -1,14 +1,24 @@
 import { Button, FormField, Input, Option, Select } from "coles-solid-library";
-import { Component, createSignal, For, Show } from "solid-js";
+import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
 
 interface props {
     toggleAC: (bonus: number, stats: string[]) => void;
+    getValue: Accessor<Record<string, string> | undefined>;
 }
 
 export const ACFeature: Component<props> = (props) => {
 
-    const [bonus, setBonus] = createSignal<number>(0);
-    const [selectedStats, setSelectedStats] = createSignal<string[]>([]);
+    const madValue = createMemo(() => props.getValue());
+
+    const getMadValue = (key: string) => {
+        return madValue()?.[key] ?? null;
+    };
+
+    const currBouns = createMemo(() => getMadValue("bonus") ?? "");
+    const currStats = createMemo(() => getMadValue("stats")?.split(",") ?? []);
+
+    const [bonus, setBonus] = createSignal<number>(+currBouns());
+    const [selectedStats, setSelectedStats] = createSignal<string[]>(currStats());
 
     const stats = [
         "str",
@@ -36,6 +46,6 @@ export const ACFeature: Component<props> = (props) => {
             AC = {bonus()} <Show when={selectedStats().length > 0}>+ {selectedStats().map(stat => ` ${stat} mod`).join(" + ")}</Show>
         </p>
 
-        <Button onClick={()=>props.toggleAC(bonus(), selectedStats())}>Set AC Bonus</Button>
+        <Button onClick={()=>props.toggleAC(bonus(), selectedStats())}>Set Change</Button>
     </div>
 }

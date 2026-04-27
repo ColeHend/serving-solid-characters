@@ -25,6 +25,7 @@ import { SpeedFeature } from "./parts/speedFeature/speedFeature";
 import { AllProfsFeature } from "./parts/allProfsFeature/allProfsFeature";
 import { FeatFeature } from "./parts/featFeature/featFeature";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
+import { FeaturePrerequisites } from "./parts/featurePrerequisites/featurePrerequisites";
 
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
@@ -336,6 +337,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 </span>
                                             </div>
                                         </div>}>
+                                        <h2 class={`${styles.leftAlignText}`}>Command</h2>
                                         <div style={{display: 'flex', "flex-direction": "row","margin-bottom": "20px"}}>
                                             <Select value={getMadCommandType(i())?.()} onSelect={(value) => setMadFeature('commandType' ,i() ,value)}> 
                                                 <Option value={"Add"}>Add</Option>
@@ -353,6 +355,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
                                         </div>
 
+                                        <h2 class={`${styles.leftAlignText}`}>type</h2>
+
                                         <Select value={getMadType(i())?.()} onSelect={(val) => setMadFeature("type", i(), val)}>
                                             <Option value={MadType.Character}>{MadType[0]}</Option>
                                             <Option value={MadType.Info}>{MadType[1]}</Option>
@@ -368,6 +372,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 </Match>
                                             </Switch>
                                         </div>
+
+                                        <h2>Prerequisites</h2>
+
+                                        <FeaturePrerequisites />
+
                                         <h2>{getMaDCommand(i())?.()}</h2>
                                         <Switch>
                                             <Match when={getMaDCommand(i())?.() === "AddSpells" || getMaDCommand(i())?.() === "RemoveSpells"}>
@@ -414,7 +423,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 }}/>
                                             </Match>
                                             <Match when={getMaDCommand(i())?.() === "AddArmorClass" || getMaDCommand(i())?.() === "RemoveArmorClass"}>
-                                                <ACFeature toggleAC={(bonus, stats)=>{
+                                                <ACFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleAC={(bonus, stats)=>{
                                                     setMadFeature("value", i(), {"bonus": bonus.toString(), "stats": stats.join(",")})
                                                     setCard(false);
                                                 }} />

@@ -1,14 +1,12 @@
-import { createSignal, Accessor, Setter } from "solid-js";
 import { Character } from "../../../models/character.model";
 import { Clone } from "../utility/tools/Tools";
 
-const exampleCharacters: Character[] = [];
 
 function createExampleCharacter(character: Character) {
   return Clone(character);
 }
 
-const Gandalf = createExampleCharacter({
+export const Gandalf = createExampleCharacter({
   name: "asdfas",
   level: 0,
   levels: [
@@ -19,7 +17,8 @@ const Gandalf = createExampleCharacter({
       hitDie: 6,
       features: [
         {
-          name: "Spellcasting",
+          id: "as12vcr32zxyerwqtxcvd3",
+          name: "Spellcastsing",
           description: "You can cast wizard spells using your spellbook.",
           metadata: {
             category: "Class",
@@ -34,6 +33,7 @@ const Gandalf = createExampleCharacter({
       hitDie: 6,
       features: [
         {
+          id: "mnvw43avcb230796cv120azx1",
           name: "Arcane Recovery",
           description: "You can recover some spell slots during a short rest.",
           metadata: {
@@ -52,6 +52,7 @@ const Gandalf = createExampleCharacter({
     speed: "30ft",
     features: [
       {
+        id: "testRaceFeature1",
         name: "Darkvision",
         description:
           "You can see in dim light within 60 feet as if it were bright light.",
@@ -215,13 +216,3 @@ const Gandalf = createExampleCharacter({
     }
   },
 });
-
-const [characters, setCharacters] =
-  createSignal<Character[]>(exampleCharacters);
-
-export default function useCharacters(): [
-  Accessor<Character[]>,
-  Setter<Character[]>
-] {
-  return [characters, setCharacters];
-}
