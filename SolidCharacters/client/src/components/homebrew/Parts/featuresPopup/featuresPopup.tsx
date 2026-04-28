@@ -373,8 +373,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             </Switch>
                                         </div>
 
-                                        <h2>Prerequisites</h2>
-
                                         <FeaturePrerequisites />
 
                                         <h2>{getMaDCommand(i())?.()}</h2>
