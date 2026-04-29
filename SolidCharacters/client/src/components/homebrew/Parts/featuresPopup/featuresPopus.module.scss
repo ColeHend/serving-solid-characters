@@ -80,8 +80,8 @@
 }
 
 .changePopup {
-    :not(:last-child) {
-        border-bottom: none !important;
+    :not(:last-child):not(._titleBorder_epqpl_56) {
+        border-bottom: none ;
     }
 }
 

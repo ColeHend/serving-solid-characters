@@ -338,6 +338,9 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             </div>
                                         </div>}>
                                         <h2 class={`${styles.leftAlignText}`}>Command</h2>
+                                        <div style={{width: "100%", "text-align": "left", "margin-bottom": "10px"}}>
+                                            Pick whether this change should add or remove something, and choose the category of thing being changed.
+                                        </div>
                                         <div style={{display: 'flex', "flex-direction": "row","margin-bottom": "20px"}}>
                                             <Select value={getMadCommandType(i())?.()} onSelect={(value) => setMadFeature('commandType' ,i() ,value)}> 
                                                 <Option value={"Add"}>Add</Option>
@@ -362,18 +365,21 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             <Option value={MadType.Info}>{MadType[1]}</Option>
                                         </Select>
 
-                                        <div style={{width: "100%", "text-align": "left"}}>
+                                        <div style={{width: "100%", "text-align": "left", "margin-top": "10px"}}>
                                             <Switch>
                                                 <Match when={getMadType(i())?.() === MadType.Character}>
-                                                    changes the character on the character viewer
+                                                    This change updates the visible character sheet values in the viewer.
                                                 </Match>
                                                 <Match when={getMadType(i())?.() === MadType.Info}>
-                                                    Not a character sheet change but more detailed information about the feat/feature like numberOFUses, recharge info, etc.
+                                                    This is extra feature information, like uses or recharge details, and is not a direct character stat change.
                                                 </Match>
                                             </Switch>
                                         </div>
 
-                                        <FeaturePrerequisites />
+                                        <FeaturePrerequisites Submit={(group) => {
+
+                                            return false;
+                                        }} />
 
                                         <h2>{getMaDCommand(i())?.()}</h2>
                                         <Switch>
