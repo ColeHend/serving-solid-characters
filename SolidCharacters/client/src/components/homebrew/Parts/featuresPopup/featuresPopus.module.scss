@@ -80,11 +80,30 @@
 }
 
 .changePopup {
-    :not(:last-child):not(._titleBorder_epqpl_56) {
-        border-bottom: none ;
+    &:not(:only-child) {
+        &:not(:first-child) {
+            border-top: none !important;
+
+        }
+        
     }
 }
 
 .leftAlignText {
     text-align: left;
+}
+
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: var(--secondary-color) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color, blue), transparent);
+    }
 }

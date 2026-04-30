@@ -8,10 +8,10 @@
     padding: 1rem;
 
     // Bottom border between sections
-    border-bottom: 1px solid;
+    border-bottom: 1px solid !important; 
 
     // Top border for the card
-    border-top: 1px solid color-mix(in srgb,white 90%, transparent);
+    border-top: 1px solid color-mix(in srgb,vars.$color-on-surface 90%, transparent);
 
     // Colored bar on the left
     position: relative;
@@ -67,7 +67,7 @@
 
 .titleBorder {
     margin-top: 0.5rem;
-    border-bottom: 1px solid color-mix(in srgb,white 60%, transparent);
+    border-bottom: 1px solid color-mix(in srgb,vars.$color-on-surface 60%, transparent) !important;
     margin-left: 0;
 }
 

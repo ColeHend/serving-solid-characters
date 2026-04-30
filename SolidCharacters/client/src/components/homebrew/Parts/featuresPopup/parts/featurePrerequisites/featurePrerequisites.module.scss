@@ -5,6 +5,38 @@
     width: 50% !important;
 }
 
-.currencySelect {
-    margin-top: 5%;
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: var(--primary-color-varient) !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(var(--secondary-color-varient, blue), transparent);
+    }
+}
+
+.preReqChip {
+    display: block;
+    border: 1px solid !important;
+    width: 35%;
+    border-radius: 14px;
+    padding: 8px;
+    text-wrap: wrap;
+}
+
+.preReqsBox {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2%;
+
+    @media screen and (max-width: 768px){
+        flex-direction: column;
+    }
 }

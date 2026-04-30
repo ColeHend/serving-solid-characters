@@ -2,7 +2,7 @@
 import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea,   Option, Select } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onCleanup, Setter, Switch } from "solid-js";
 import { MadFeature, MadType } from "../../../../shared/customHooks/mads/madModels";
-import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
+import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { MadFeature as GeneratedModel } from "../../../../models/generated";
 import styles from "./featuresPopus.module.scss";
@@ -38,6 +38,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const [show, setShow] = props.Show;
     const [feature, setFeature] = props.feature;
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
+    const [prerequisites, setPrerequisites] = createSignal<Record<string, MadPrerequisite>>({});
 
     const is_edit = createMemo(()=>props.isEdit());
     const allSpells = useDnDSpells();
@@ -322,7 +323,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                         const cardShow = () => getShowCard(key);
                                         const setCard = (val: boolean) => setShowCard(key, val); 
 
-                                        return <FlatCard show={[cardShow, setCard as Setter<boolean>]} headerName={<div style={{display:"flex", "flex-direction": 'column', "align-content": 'flex-start',"text-align": "left"}}>
+                                        return <FlatCard show={[cardShow, setCard as Setter<boolean>]} class={`${styles.cardAlt}`} headerName={<div style={{display:"flex", "flex-direction": 'column', "align-content": 'flex-start',"text-align": "left"}}>
                                             <div style={{"text-align": "left", width: "100%"}}>
                                                 <strong>Change </strong>{metadata.name}
                                             </div>
@@ -357,8 +358,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             </Select>
 
                                         </div>
-
+                                        
+                                        
                                         <h2 class={`${styles.leftAlignText}`}>type</h2>
+                                        <div style={{width: "100%", "text-align": "left",}}>
+                                            What kind of result should this change represent?
+                                        </div>
 
                                         <Select value={getMadType(i())?.()} onSelect={(val) => setMadFeature("type", i(), val)}>
                                             <Option value={MadType.Character}>{MadType[0]}</Option>
@@ -376,7 +381,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             </Switch>
                                         </div>
 
-                                        <FeaturePrerequisites Submit={(group) => {
+                                        <FeaturePrerequisites prereqs={[prerequisites, setPrerequisites]} Submit={(group) => {
 
                                             return false;
                                         }} />

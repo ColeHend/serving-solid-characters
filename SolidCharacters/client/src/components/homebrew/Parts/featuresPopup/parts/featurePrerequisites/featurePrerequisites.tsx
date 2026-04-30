@@ -1,17 +1,30 @@
-import { Component, createEffect, createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
 import { Gandalf } from "../../../../../../shared/customHooks/dndInfo/useExampleChars";
 import { Character, CharacterRace } from "../../../../../../models/character.model";
 import { addSnackbar, Button, Form, FormField, Input, Option, Select } from "coles-solid-library";
 import style from "./featurePrerequisites.module.scss";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
+import { MadPrerequisite } from "../../../../../../shared";
 
 interface props {
     Submit: (group: number, operation: string, value: string, key: string, secondaryKey: string, tertiaryKey: string) => boolean;
-
+    prereqs: [Accessor<Record<string, MadPrerequisite>>, Setter<Record<string, MadPrerequisite>>];
 }
 
 export const FeaturePrerequisites: Component<props> = (props) => {
     
+    const [prerequisites, setPrerequisites] = props.prereqs;
+
+    const prereqKeys = createMemo(() => Object.keys(prerequisites()));
+
+    const getPrerequisites = (name: string) => {
+        return prerequisites()[name];
+    }
+
+    const setPrerequisitesValue = (name: string, value: MadPrerequisite) => {
+        return setPrerequisites(old => ({...old, [name]: value}));
+    }
+
     const characterKeys = createMemo(() => Object.keys(Gandalf));
     const charRaceKeys = createMemo(() => Object.keys(Gandalf.race));
     const charProficienciesKeys = createMemo(() => Object.keys(Gandalf.proficiencies.skills));
@@ -221,9 +234,18 @@ export const FeaturePrerequisites: Component<props> = (props) => {
             return;
         }
         
-        const succses = props.Submit(group, operation, value, FirstKey, SecondaryKey, TertiaryKey);
+        setPrerequisitesValue(`prerequisites ${prereqKeys().length + 1}`, {
+            value: value,
+            operation: operation,
+            keyValue: FirstKey,
+            secondaryValue: SecondaryKey ?? "",
+            tertiaryValue: TertiaryKey ?? "",
+            group: group
+        })
+
+        // const succses = props.Submit(group, operation, value, FirstKey, SecondaryKey, TertiaryKey);
         
-        if (succses) resetForm();
+        // if (succses) resetForm();
     }
 
     createEffect(() => {
@@ -242,7 +264,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
     return <div style={{"text-align": "left"}}>
         <h2>Prerequisites</h2>
 
-        <FlatCard headerName={<strong>Prerequisites</strong>}>
+        <FlatCard headerName={<strong>Prerequisites</strong>} class={`${style.cardAlt}`}>
 
             <h2>Character Property</h2>
                 
@@ -260,7 +282,9 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
             <Switch>
                 <Match when={prereqKey() === "race"}>
-                    Pick the race detail you want to check.
+                    <div>
+                        Pick the race detail you want to check.
+                    </div>
 
                     <FormField name="Race Detail" formName="mad Secondary Key" class={`${style.preReqInput}`}>
                         <Select value={subPrereqKey()} onChange={(value) => setSubPrereqKey(value)}>
@@ -271,7 +295,9 @@ export const FeaturePrerequisites: Component<props> = (props) => {
                     </FormField>
                 </Match>
                 <Match when={prereqKey() === "proficiencies"}>
-                    Pick the proficiency or skill you want to check.
+                    <div>
+                        Pick the proficiency or skill you want to check.
+                    </div>
                     
                     <FormField name="Skill" formName="mad Secondary Key" class={`${style.preReqInput}`}>
                         <Select value={subPrereqKey()} onChange={value => setSubPrereqKey(value)}>
@@ -282,7 +308,9 @@ export const FeaturePrerequisites: Component<props> = (props) => {
                     </FormField>
                 </Match>
                 <Match when={prereqKey() === "health"}>
-                    Which hit point(HP) type do you want to compare?
+                    <div>
+                        Which hit point(HP) type do you want to compare?
+                    </div>
 
                     <FormField name="HP Type" formName="mad Secondary Key" class={`${style.preReqInput}`}>
                         <Select value={subPrereqKey()} onChange={(value) => setSubPrereqKey(value)}>
@@ -293,7 +321,9 @@ export const FeaturePrerequisites: Component<props> = (props) => {
                     </FormField>
                 </Match>
                 <Match when={prereqKey() === "stats"}>
-                    Which stat do you want to compare?
+                    <div>
+                        Which stat do you want to compare?
+                    </div>
                     
                     <FormField name="Stat" formName="mad Secondary Key" class={`${style.preReqInput}`}>
                         <Select value={subPrereqKey()} onChange={value => setSubPrereqKey(value)}>
@@ -304,7 +334,9 @@ export const FeaturePrerequisites: Component<props> = (props) => {
                     </FormField>
                 </Match>
                 <Match when={prereqKey() === "items"}>
-                    Which inventory do you want to compare?
+                    <div>
+                        Which inventory do you want to compare?
+                    </div>
 
                     <FormField name="inventory" formName="mad Secondary Key" class={`${style.preReqInput}`}>
                         <Select value={subPrereqKey()} onChange={value => setSubPrereqKey(value)}>
@@ -315,8 +347,10 @@ export const FeaturePrerequisites: Component<props> = (props) => {
                     </FormField>
 
                     <Show when={subPrereqKey() === "currency"}>
-                        <div class={`${style.currencySelect}`}>
-                            Which currency type do you want to compare?
+                        <div>
+                            <div>
+                                Which currency type do you want to compare?
+                            </div>
 
                             <FormField name="Currency Type" formName="mad Tertiary Key" class={`${style.preReqInput}`}>
                                 <Select value={tertiaryKey()} onChange={value => setTertiaryKey(value)}>
@@ -374,6 +408,40 @@ export const FeaturePrerequisites: Component<props> = (props) => {
             <Button onClick={()=>handleSubmit(hasSecondary(),hasTertiary())}>Add Prerequisite</Button>
         </FlatCard>
 
-        
+        <Show when={prereqKeys().length > 0} fallback={<div>
+            No Prerequisites
+        </div>}>
+            <div class={`${style.preReqsBox}`}>
+                <For each={prereqKeys()}>
+                    {key => {
+                        const prerequisite = getPrerequisites(key);
+
+                        const firstKey = prerequisite.keyValue;
+                        const secondKey = prerequisite.secondaryValue ?? "";
+                        const thirdKey = prerequisite.tertiaryValue ?? "";
+                        const operation = prerequisite.operation ?? "";
+                        const value = prerequisite.value ?? "";
+                        const group = prerequisite.group;
+
+                        
+                        return <span class={`${style.preReqChip}`}>
+                            <div style={{ "margin-bottom": "8px" }}>
+                                <strong>Rule:</strong> {firstKey}
+                                {secondKey !== "" ? ` → ${secondKey}` : ""}
+                                {thirdKey !== "" ? ` → ${thirdKey}` : ""}
+                                <div>
+                                    <strong>{getPrettyOpName(operation)}</strong> {value}
+                                </div>
+                            </div>
+                            <div>
+                                <strong>Group:</strong> {group}
+                            </div>
+                        </span>
+
+                    }}
+                </For>
+            </div>
+        </Show>
+
     </div>
 }

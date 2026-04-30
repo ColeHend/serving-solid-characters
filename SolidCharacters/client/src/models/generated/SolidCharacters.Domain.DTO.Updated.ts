@@ -116,6 +116,8 @@ export interface MadPrerequisite {
   value?: string;
   operation?: string;
   keyValue?: string;
+  secondaryValue: string;
+  tertiaryValue: string;
   group: number;
 }
 
