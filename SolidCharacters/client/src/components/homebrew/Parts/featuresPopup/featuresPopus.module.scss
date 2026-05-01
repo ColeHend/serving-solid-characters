@@ -80,12 +80,18 @@
 }
 
 .changePopup {
-    &:not(:only-child) {
-        &:not(:first-child) {
-            border-top: none !important;
+    // &:not(:only-child) {
+    //     &:not(:first-child) {
+    //         border-top: none !important;
 
-        }
+    //     }
         
+    // }
+
+    :nth-child(n) {
+        &:not(:last-child) {
+            margin-bottom: 0.5px;
+        }
     }
 }
 
@@ -98,12 +104,61 @@
     div { 
 
         svg {
-            fill: var(--secondary-color) !important;
+            fill: vars.$color-secondary !important;
         }
     }
 
     &::before {
 
-        background: linear-gradient(var(--secondary-color, blue), transparent);
+        background: linear-gradient(vars.$color-secondary, transparent) !important;
     }
+}
+
+.changeHeader {
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    text-align: left;
+}
+
+.changeHeaderTitle {
+    text-align: left;
+    width: 100%;
+}
+
+.changeSubheader {
+    display: flex;
+    flex-direction: row;
+}
+
+.changeGroupTitle {
+    text-align: center;
+    width: 4vw;
+}
+
+.changeTypeTitle {
+    text-align: center;
+    width: 7vw;
+}
+
+.commandDesc {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.commandSelectionBox {
+    display: flex;
+    flex-direction: row;
+}
+
+.typeTitle {
+    width: 100%;
+    text-align: left;
+}
+
+.typeDesc {
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
 }

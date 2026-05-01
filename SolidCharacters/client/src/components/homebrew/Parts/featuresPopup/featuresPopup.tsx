@@ -1,4 +1,3 @@
- 
 import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea,   Option, Select } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onCleanup, Setter, Switch } from "solid-js";
 import { MadFeature, MadType } from "../../../../shared/customHooks/mads/madModels";
@@ -133,9 +132,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const getMadFeature = <T extends keyof MadForm>(key: T, index: number) => {
         const MadFeature = currentFeatureMetadata.getGroup(index);
-
-        // console.trace("getMadFeature ran at index: ", index, " for key: ", key);
-
         if (MadFeature) {
             return Clone(MadFeature.get()[key]);
         } else {
@@ -145,7 +141,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const setMadFeature = <T extends keyof MadForm>(key: T, index: number, value: MadForm[T]) => {
         const MadFeature = currentFeatureMetadata.getGroup(index);
-        // console.trace("setMadFeature ran with value: ", value, " at index: ", index, " for key: ", key);
         if (!MadFeature) {
             return;
         }
@@ -159,8 +154,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         if (!MadFeature) return null;
 
         const type = MadType[MadFeature.get("type")];
-
-        // console.log("type: ", type);
         
         return type;
     }
@@ -308,7 +301,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         </FormField>
                     </FlatCard>
 
-                    <FlatCard headerName="Character Changes" icon="key">
+                    <FlatCard headerName="Character Changes" icon="key" getRidOfTopBorder>
                         <div>
                             <div>
                                 <Button onClick={addNewMetadata}>
@@ -323,26 +316,34 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                         const cardShow = () => getShowCard(key);
                                         const setCard = (val: boolean) => setShowCard(key, val); 
 
-                                        return <FlatCard show={[cardShow, setCard as Setter<boolean>]} class={`${styles.cardAlt}`} headerName={<div style={{display:"flex", "flex-direction": 'column', "align-content": 'flex-start',"text-align": "left"}}>
-                                            <div style={{"text-align": "left", width: "100%"}}>
-                                                <strong>Change </strong>{metadata.name}
-                                            </div>
-                                            <div style={{display: 'flex', "flex-direction": "row"}}>
-                                                <span style={{"text-align": "center", width: "4vw"}}>
-                                                    <span><strong>Group:</strong> </span>
-                                                    <span>0</span>
-                                                </span>
-                                                <span style={{"text-align": "center", width: "7vw"}}>
-                                                    <span><strong>Type:</strong> </span> 
-                                                    <span>{getType(i()) ?? ""}</span>
-                                                </span>
-                                            </div>
-                                        </div>}>
+                                        const isLast = createMemo(() => i() === currentFeatureMetadata.get().length);
+                                        const isFirst = createMemo(()=>i() === 0);
+
+                                        const check = createMemo(()=> !isFirst() && !isLast());                                   
+
+                                        return <FlatCard show={[cardShow, setCard as Setter<boolean>]} class={`${styles.cardAlt}`} startOpen={isFirst()} getRidOfTopBorder={check()} 
+                                            headerName={<div class={`${styles.changeHeader}`}>
+                                                <div class={`${styles.changeHeaderTitle}`}>
+                                                    <strong>Change </strong>{metadata.name}
+                                                </div>
+                                                <div class={`${styles.changeSubheader}`}>
+                                                    <span class={`${styles.changeGroupTitle}`}>
+                                                        <span><strong>Group:</strong> </span>
+                                                        <span>0</span>
+                                                    </span>
+                                                    <span class={`${styles.changeTypeTitle}`}>
+                                                        <span><strong>Type:</strong> </span> 
+                                                        <span>{getType(i()) ?? ""}</span>
+                                                    </span>
+                                                </div>
+                                            </div>}>
+
+                                        {/* command */}
                                         <h2 class={`${styles.leftAlignText}`}>Command</h2>
-                                        <div style={{width: "100%", "text-align": "left", "margin-bottom": "10px"}}>
+                                        <div class={`${styles.commandDesc}`}>
                                             Pick whether this change should add or remove something, and choose the category of thing being changed.
                                         </div>
-                                        <div style={{display: 'flex', "flex-direction": "row","margin-bottom": "20px"}}>
+                                        <div class={`${styles.commandSelectionBox}`}>
                                             <Select value={getMadCommandType(i())?.()} onSelect={(value) => setMadFeature('commandType' ,i() ,value)}> 
                                                 <Option value={"Add"}>Add</Option>
                                                 <Option value={"Remove"}>Remove</Option>
@@ -359,9 +360,9 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
                                         </div>
                                         
-                                        
+                                        {/* type */}
                                         <h2 class={`${styles.leftAlignText}`}>type</h2>
-                                        <div style={{width: "100%", "text-align": "left",}}>
+                                        <div class={`${styles.typeTitle}`}>
                                             What kind of result should this change represent?
                                         </div>
 
@@ -370,7 +371,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             <Option value={MadType.Info}>{MadType[1]}</Option>
                                         </Select>
 
-                                        <div style={{width: "100%", "text-align": "left", "margin-top": "10px"}}>
+                                        <div class={`${styles.typeDesc}`}>
                                             <Switch>
                                                 <Match when={getMadType(i())?.() === MadType.Character}>
                                                     This change updates the visible character sheet values in the viewer.
@@ -380,6 +381,28 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 </Match>
                                             </Switch>
                                         </div>
+
+                                        <h2 class={`${styles.leftAlignText}`}>Feature Group</h2>
+                                        <div class={`${styles.leftAlignText}`}>
+                                            <div>
+                                                Assign a group number to related changes. 
+                                                
+                                                <ul>
+                                                    <li>Changes in the same group are treated as alternatives (pick one).</li>
+                                                    <li>Changes in different groups are combined with "and".</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <strong>Example:</strong> 
+                                                <div>
+                                                    (Group 1: Add spell OR add feature) AND (Group 2: +2 damage OR +3 damage) AND (Group 3: Add proficiency)
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <FormField formName="MadFeatureGroup" name="change group">
+                                            <Input min={0} type="number" value={getMadGroup(i())?.()} onInput={(e) => setMadFeature("group",i(), +e.currentTarget.value)}/>
+                                        </FormField>
 
                                         <FeaturePrerequisites prereqs={[prerequisites, setPrerequisites]} Submit={(group) => {
 
@@ -575,8 +598,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 />
                                             </Match>
                                         </Switch>
-                                        
-                                        
                                     </FlatCard>
                                     }}
                                 </For>

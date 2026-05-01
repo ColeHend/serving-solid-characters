@@ -20,7 +20,7 @@ export const AbilityScore: Component<SectionProps> = (props) => {
         formGroup.set("abilityOptions",abilityScores().filter(stat => stat !== value));
     }
 
-    return <FlatCard headerName={`Ability Choices (${abilityScores().length}/3)`} icon="electric_bolt" transparent>
+    return <FlatCard headerName={`Ability Choices (${abilityScores().length}/3)`} icon="electric_bolt" transparent getRidOfTopBorder>
         <FormField name="Add Ability" formName="abilityOptions">
             <Select disabled={abilityScores().length >= 3} multiple onChange={() => {
                 if (abilityScores().length >= 3) {

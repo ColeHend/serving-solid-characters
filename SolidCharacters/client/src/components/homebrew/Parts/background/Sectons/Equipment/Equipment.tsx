@@ -22,7 +22,7 @@ export const Equipment: Component<SectionProps> = (props) => {
         </div>} 
         extraHeaderJsx={<Button onClick={()=>props.setShowItems(old => !old)}>Edit</Button>} 
         icon="home_repair_service" 
-        transparent>
+        transparent getRidOfTopBorder>
             <Show when={startItemKeys().length > 0} fallback={<Chip value="None" />}>
                 <For each={startItemKeys()}>
                     {(key) => <Chip key={key} value={startingEquipment()[key]} />}

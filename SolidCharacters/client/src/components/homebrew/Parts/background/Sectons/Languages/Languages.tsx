@@ -40,7 +40,7 @@ export const Languages: Component<SectionProps> = (props) => {
         <span>
             Languages<Show when={languages().length > 0}>: {languages().join(", ")}</Show>
         </span>
-    </div>} icon="chat" transparent>
+    </div>} icon="chat" transparent getRidOfTopBorder>
         <div class={`${styles.LangSelectBox}`}>
             <FormField name="Select Language" form="langSelect">
                 <Select value={langSelect()} onChange={(e) => setLangSelect(e)}>

@@ -10,7 +10,7 @@ interface SectonProps {
 export const Saving: Component<SectonProps> = (props) => {
     const is_exist = createMemo(() => props.is_exist());
 
-    return <FlatCard headerName="saving" icon="save" alwaysOpen transparent>
+    return <FlatCard headerName="saving" icon="save" alwaysOpen transparent getRidOfTopBorder>
         <Button onClick={props.onSubmit}>{is_exist() ? "Edit" : "Create"}</Button>
     </FlatCard>
 }

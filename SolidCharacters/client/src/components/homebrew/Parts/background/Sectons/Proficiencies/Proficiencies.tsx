@@ -17,7 +17,7 @@ export const Proficiencies: Component<SectionProps> = (props) => {
     const skillProfs = createMemo(() => props.skillProfs());
     const toolProfs = createMemo(() => props.toolProfs());
 
-    return <FlatCard headerName="Proficiencies" extraHeaderJsx={<Button onClick={()=>props.setShowPopup(old => !old)}>Edit</Button>} icon='shield' transparent>
+    return <FlatCard headerName="Proficiencies" extraHeaderJsx={<Button onClick={()=>props.setShowPopup(old => !old)}>Edit</Button>} icon='shield' transparent getRidOfTopBorder>
         <div class={`${styles.ProficiencyBar}`}>
             <span>Weapons: </span>
             <Show when={weaponProfs().length > 0} fallback={<Chip value="None" />}>

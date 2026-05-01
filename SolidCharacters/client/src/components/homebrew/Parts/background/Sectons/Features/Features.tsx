@@ -46,7 +46,7 @@ export const OptionalFeatures:Component<SectonProps> = (props) => {
         props.showPopup(old => !old);
         handleFeatureEdit();
     
-    }}>Add Feature</Button>} icon="star" transparent>
+    }}>Add Feature</Button>} icon="star" transparent getRidOfTopBorder>
         <Show when={features().length > 0} fallback={<Chip value="None" />}>
             <div>
                 <For each={features()}>

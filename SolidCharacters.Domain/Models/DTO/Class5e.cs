@@ -53,6 +53,8 @@ public class MadPrerequisite
   public string? Value {get; set;}
   public string? Operation {get; set;}
   public string? KeyValue {get; set;}
+  public string? secondaryValue {get; set;}
+  public string? tertiaryValue {get; set;}
   public int Group {get; set;}
 }
 

@@ -7,12 +7,9 @@
     gap: 0.5rem;
     padding: 1rem;
 
-    // Bottom border between sections
-    border-bottom: 1px solid !important; 
-
-    // Top border for the card
-    border-top: 1px solid color-mix(in srgb,vars.$color-on-surface 90%, transparent);
-
+    
+    
+    
     // Colored bar on the left
     position: relative;
     &::before {
@@ -24,6 +21,16 @@
         width: 4px;
         background: linear-gradient(var(--primary-color, blue), transparent); // Or any color
     }
+}
+
+.bottomBorder {
+    // Bottom border between sections
+    border-bottom: 1px solid !important; 
+}
+
+.topBorder {
+    // Top border for the card
+    border-top: 1px solid color-mix(in srgb,vars.$color-on-surface 90%, transparent);
 }
 
 .cardHeader {

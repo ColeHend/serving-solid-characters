@@ -1,4 +1,4 @@
-import { Accessor, Component, createEffect, createSignal, JSX, onCleanup, Setter, Show, splitProps } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, JSX, onCleanup, Setter, Show, splitProps } from "solid-js";
 import styles from "./flatCard.module.scss";
 import { Button, Container, Icon } from "coles-solid-library";
 
@@ -11,6 +11,8 @@ interface FlatCardProps extends JSX.HTMLAttributes<HTMLDivElement> {
     extraHeaderJsx?: JSX.Element;
     transparent?: boolean;
     show?: [Accessor<boolean>, Setter<boolean>]
+    getRidOfBottomBorder?: boolean;
+    getRidOfTopBorder?: boolean;
 }
 
 export const FlatCard:Component<FlatCardProps> = (props) => {
@@ -21,7 +23,9 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
         "alwaysOpen",
         "startOpen",
         "extraHeaderJsx",
-        "transparent"
+        "transparent",
+        "getRidOfBottomBorder",
+        "getRidOfTopBorder"
     ])
 
     
@@ -29,7 +33,9 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
     const isStartOpen = () => ("startOpen" in props && local.startOpen !== false);
     const isNoIcon = () => (local.icon === undefined);
     const isTransparent = ():boolean => ("transparent" in props && local.transparent !== false);
-    
+    const getRidOfBtmBorder = () => ("getRidOfBottomBorder" in props && local.getRidOfBottomBorder !== false);
+    const getRidOfTopBorder = () => ("getRidOfTopBorder" in props && local.getRidOfTopBorder !== false);
+
     const [showCard,setShowCard] = props.show ? props.show : createSignal<boolean>(isStartOpen());
     const [contentRef, setContentRef] = createSignal<HTMLDialogElement |undefined>();
 
@@ -107,7 +113,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
         }
     })
 
-    return <Container {...others} theme="surface" class={`${styles.flatCard} ${others.class} ${isTransparent() ? styles.transparent : ''}`}>
+    return <Container {...others} theme="surface" class={`${styles.flatCard} ${others.class ? others.class : ""} ${isTransparent() ? styles.transparent : ''} ${!getRidOfTopBorder() ? styles.topBorder : ""} ${!getRidOfBtmBorder() ? styles.bottomBorder : ""}`}>
         <div class={`${styles.cardHeader}`}>
             <div class={`${styles.iconTitle}`}>
                 <Show when={!isNoIcon()}>

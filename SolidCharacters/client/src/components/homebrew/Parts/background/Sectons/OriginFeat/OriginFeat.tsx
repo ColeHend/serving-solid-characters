@@ -19,7 +19,7 @@ export const OriginFeat:Component<SectionProps> = (props) => {
         <span>
             Origin Feat<Show when={featID() !== ""}>: {props.getSelectedFeat(featID())?.details.name}</Show>
         </span>
-    </div>} icon='stars_2' transparent>
+    </div>} icon='stars_2' transparent getRidOfTopBorder>
         <FormField name="Select Feat" formName="feat">
             <Select>
                 <For each={originFeats()}>

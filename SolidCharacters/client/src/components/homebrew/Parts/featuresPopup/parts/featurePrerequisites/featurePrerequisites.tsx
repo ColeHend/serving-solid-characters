@@ -261,7 +261,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
         setHasTertiary(needsTertiary);
     }, [prereqKey, subPrereqKey])
 
-    return <div style={{"text-align": "left"}}>
+    return <div class={`${style.leftAlignText}`}>
         <h2>Prerequisites</h2>
 
         <FlatCard headerName={<strong>Prerequisites</strong>} class={`${style.cardAlt}`}>
@@ -425,7 +425,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
                         
                         return <span class={`${style.preReqChip}`}>
-                            <div style={{ "margin-bottom": "8px" }}>
+                            <div class={style.preReqRule}>
                                 <strong>Rule:</strong> {firstKey}
                                 {secondKey !== "" ? ` → ${secondKey}` : ""}
                                 {thirdKey !== "" ? ` → ${thirdKey}` : ""}

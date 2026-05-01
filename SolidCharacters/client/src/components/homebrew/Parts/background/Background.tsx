@@ -60,6 +60,7 @@ export const HomebrewBackgrounds: Component = () => {
     const [features, setFeatures] = createSignal<FeatureDetail[]>([]);
 
     const [currentFeature,setCurrentFeature] = createSignal<FeatureDetail>({
+        id: "",
         name: "",
         description: ""
     });
