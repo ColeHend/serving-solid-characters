@@ -177,6 +177,15 @@ export const FeaturePrerequisites: Component<props> = (props) => {
         setPrereqOperation("");
     }
 
+    const fillForm = (key?: string, secondKey?: string, thirdKey?: string, group?: number, value?: string, operation?: string) => {
+        setPrereqKey(key ?? "");
+        setPrereqGroup(group ?? 0);
+        setPrereqValue(value ?? "");
+        setTertiaryKey(thirdKey ?? "");
+        setSubPrereqKey(secondKey ?? "");
+        setPrereqOperation(operation ?? "");
+    }
+
     const handleSubmit = (hasSecondary: boolean, hasTertiary: boolean) => {
         const value = prereqValue();
         const group = prereqGroup();
@@ -241,8 +250,8 @@ export const FeaturePrerequisites: Component<props> = (props) => {
             secondaryValue: SecondaryKey ?? "",
             tertiaryValue: TertiaryKey ?? "",
             group: group
-        })
-
+        });
+        resetForm();
         // const succses = props.Submit(group, operation, value, FirstKey, SecondaryKey, TertiaryKey);
         
         // if (succses) resetForm();
@@ -425,7 +434,21 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
                         
                         return <span class={`${style.preReqChip}`}>
-                            <div class={style.preReqRule}>
+                            <div class={style.preReqRule} onClick={(e)=>{
+                                e.preventDefault();
+                                const yes = confirm("are you sure you want to edit this prerequisite?");
+
+                                if (!yes) return;
+
+                                fillForm(firstKey,secondKey,thirdKey,group,value,operation);
+                                setPrerequisitesValue(key, {
+                                    keyValue: "",
+                                    secondaryValue: "",
+                                    tertiaryValue: "",
+                                    operation: "",
+                                    group: 0,
+                                })
+                            }}>
                                 <strong>Rule:</strong> {firstKey}
                                 {secondKey !== "" ? ` → ${secondKey}` : ""}
                                 {thirdKey !== "" ? ` → ${thirdKey}` : ""}

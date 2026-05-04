@@ -1,6 +1,6 @@
 import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea,   Option, Select } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onCleanup, Setter, Switch } from "solid-js";
-import { MadFeature, MadType } from "../../../../shared/customHooks/mads/madModels";
+import { MadCommands, MadFeature, MadType } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { MadFeature as GeneratedModel } from "../../../../models/generated";
@@ -68,7 +68,9 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         const name = getFeatureValue('name')();
         const desc = getFeatureValue('description')();
 
-        const madsData:MadFeature[] = currentFeatureMetadata.get().flatMap(metadata => {
+
+
+        const madsData = currentFeatureMetadata.get().flatMap(metadata => {
             return {
                 command: metadata.command,
                 value: metadata.value,
@@ -329,7 +331,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 <div class={`${styles.changeSubheader}`}>
                                                     <span class={`${styles.changeGroupTitle}`}>
                                                         <span><strong>Group:</strong> </span>
-                                                        <span>0</span>
+                                                        <span>{getMadGroup(i())?.() ?? 0}</span>
                                                     </span>
                                                     <span class={`${styles.changeTypeTitle}`}>
                                                         <span><strong>Type:</strong> </span> 
@@ -405,7 +407,17 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                         </FormField>
 
                                         <FeaturePrerequisites prereqs={[prerequisites, setPrerequisites]} Submit={(group) => {
+                                            const objKeys = Object.keys(prerequisites());
+                                            const requisites = prerequisites();
 
+                                            const preReqs = objKeys.reduce((preReqs, key) => {
+
+                                                preReqs.push(requisites[key]);
+
+                                                return preReqs;
+                                            }, [] as MadPrerequisite[]);
+
+                                            setMadFeature("prerequisites", i(), preReqs);
                                             return false;
                                         }} />
 
@@ -420,6 +432,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"ID": id})
                                                         }
+
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
 
                                                         setCard(false);
                                                     }} />
@@ -436,6 +450,9 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"ID": id})
                                                         }
+
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+
                                                         setCard(false);
                                                     }}
                                                 />
@@ -451,12 +468,16 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     } else {
                                                         setMadFeature("value", i(), {"type": type, "amount": amount.toString()});
                                                     }
-                                                    setCard(false)
+
+                                                    setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+
+                                                    setCard(false);
                                                 }}/>
                                             </Match>
                                             <Match when={getMaDCommand(i())?.() === "AddArmorClass" || getMaDCommand(i())?.() === "RemoveArmorClass"}>
                                                 <ACFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleAC={(bonus, stats)=>{
-                                                    setMadFeature("value", i(), {"bonus": bonus.toString(), "stats": stats.join(",")})
+                                                    setMadFeature("value", i(), {"bonus": bonus.toString(), "stats": stats.join(",")});
+                                                    setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                     setCard(false);
                                                 }} />
                                             </Match>
@@ -464,7 +485,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                 <ProficienciesFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleProf={(prof) => {
                                                     // const old = getMadValue(i())?.();
 
-                                                   
+                                                    setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                     setMadFeature("value", i(), {"proficiency": prof});
                                                     setCard(false);
                                                 }}/>
@@ -482,6 +503,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"ID": featureID})
                                                         }
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }}
                                                 />
@@ -496,6 +518,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"name": language})
                                                         }
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
@@ -511,6 +534,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"damageType": dmgType})
                                                         }
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
@@ -527,6 +551,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"stat": stat})
                                                         }
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
@@ -543,6 +568,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"stat": stat, "statValue": value.toString()})
                                                         }
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
@@ -559,6 +585,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"speed": speed.toString()})
                                                         }
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
@@ -576,6 +603,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                             setMadFeature("value", i(), {"allProficiencies": value})
                                                             setMadFeature("value", i(), {"proficiencyBonusChoice": pbChoice})
                                                         }
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}
@@ -591,6 +619,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         } else {
                                                             setMadFeature("value", i(), {"featID": value});
                                                         }
+                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }}
                                                     getValue={getMadValue?.(i()) ?? (() => undefined)}

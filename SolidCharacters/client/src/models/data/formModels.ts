@@ -1,7 +1,7 @@
 // Class
 
-import { MadFeature } from "../../shared/customHooks/mads/madModels";
-import { Background } from "../generated";
+// import { MadFeature } from "../../shared/customHooks/mads/madModels";
+import { Background, MadFeature } from "../generated";
 
 
 // Subclass
