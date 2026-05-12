@@ -251,10 +251,9 @@ export const FeaturePrerequisites: Component<props> = (props) => {
             tertiaryValue: TertiaryKey ?? "",
             group: group
         });
+        props.Submit(group, operation, value, FirstKey, SecondaryKey, TertiaryKey);
         resetForm();
-        // const succses = props.Submit(group, operation, value, FirstKey, SecondaryKey, TertiaryKey);
         
-        // if (succses) resetForm();
     }
 
     createEffect(() => {

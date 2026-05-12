@@ -39,6 +39,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
     const [prerequisites, setPrerequisites] = createSignal<Record<string, MadPrerequisite>>({});
 
+    const objKeys = Object.keys(prerequisites());
+
     const is_edit = createMemo(()=>props.isEdit());
     const allSpells = useDnDSpells();
     const allItems = useDnDItems();
@@ -79,6 +81,9 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                 group: metadata.group
             }
         });
+
+        console.log("endData: ", madsData);
+        
         
         const newFeature: FeatureDetail = {
             id: "",
@@ -89,7 +94,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                 recharge: "",
                 spells: [],
                 category: "",
-                mads: madsData as GeneratedModel[],
+                mads: madsData,
             }
         }
 
@@ -249,14 +254,42 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         return createMemo(() => value);
     }
 
+    const fillForm = () => {
+
+        const mads = feature().metadata?.mads ?? [];
+
+        // mads.forEach((mad, i) => {
+        //         const formGroup = new FormGroup<MadForm>({
+        //             group: [ mad.group, []],
+        //             type: [mad.type, []],
+        //             value: [mad.value, []],
+        //             name: [`change ${i + 1}`, []],
+        //             prerequisites: [mad.prerequisites, []],
+        //             commandCategory: [``, []],
+        //             commandType: [``, []],
+        //             command: [mad.command, []],
+        //         })
+                
+
+        //         currentFeatureMetadata.add(formGroup);
+        //     })
+        
+    }
+
     createEffect(()=>{ 
-        if (popupRef()) {
-            const parentEL = popupRef()!.parentElement;
+        const popup = popupRef();
+        if (popup) {
+            const parentEL = popup.parentElement;
             
             if (parentEL) {
                 const parent = parentEL.parentElement;
 
-                if (parent) parent.style.setProperty("padding-bottom","0","important")
+                
+
+                if (parent) {
+                    parent.style.setProperty("padding-bottom","0","important")
+                    // parent.addEventListener("load",() => fillForm());
+                }
             }
         }
     })
@@ -267,6 +300,28 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         } else if (is_edit() && feature().name !== "") {
             setFeatureValue('name', feature().name);
             setFeatureValue('description', feature().description);
+            setFeatureValue("metadata", feature().metadata);
+            
+            const mads = feature().metadata?.mads ?? [];
+            
+            
+
+            // mads.forEach((mad, i) => {
+            //     const formGroup = new FormGroup<MadForm>({
+            //         group: [ mad.group, []],
+            //         type: [mad.type, []],
+            //         value: [mad.value, []],
+            //         name: [`change ${i + 1}`, []],
+            //         prerequisites: [mad.prerequisites, []],
+            //         commandCategory: [``, []],
+            //         commandType: [``, []],
+            //         command: [mad.command, []],
+            //     })
+                
+
+            //     currentFeatureMetadata.add(formGroup);
+            // })
+            
         }   
 
     });
@@ -406,11 +461,13 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             <Input min={0} type="number" value={getMadGroup(i())?.()} onInput={(e) => setMadFeature("group",i(), +e.currentTarget.value)}/>
                                         </FormField>
 
-                                        <FeaturePrerequisites prereqs={[prerequisites, setPrerequisites]} Submit={(group) => {
-                                            const objKeys = Object.keys(prerequisites());
+                                        <FeaturePrerequisites prereqs={[prerequisites, setPrerequisites]} Submit={(group, operation, value, firstKey, secondKey, thirdKey) => {
                                             const requisites = prerequisites();
 
                                             const preReqs = objKeys.reduce((preReqs, key) => {
+
+                                                console.log(key);
+                                                
 
                                                 preReqs.push(requisites[key]);
 
@@ -504,6 +561,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                             setMadFeature("value", i(), {"ID": featureID})
                                                         }
                                                         setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                        
                                                         setCard(false);
                                                     }}
                                                 />

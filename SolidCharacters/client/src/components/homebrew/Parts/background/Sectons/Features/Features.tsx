@@ -19,6 +19,9 @@ export const OptionalFeatures:Component<SectonProps> = (props) => {
 
     const handleFeatureClick = (feature: FeatureDetail) => {
         setCurrentFeature(feature);
+        
+        handleFeatureEdit();
+
         props.showPopup(true);
     }
 
@@ -37,7 +40,7 @@ export const OptionalFeatures:Component<SectonProps> = (props) => {
 
         if (all.some(x => x.name.trim().toLowerCase() === current.name.trim().toLowerCase())) {
             props.setIsEdit(true);
-        } 
+        }
 
         props.setIsEdit(false);
     }
