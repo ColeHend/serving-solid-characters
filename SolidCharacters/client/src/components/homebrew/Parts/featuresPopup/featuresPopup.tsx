@@ -39,8 +39,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
     const [prerequisites, setPrerequisites] = createSignal<Record<string, MadPrerequisite>>({});
 
-    const objKeys = Object.keys(prerequisites());
-
     const is_edit = createMemo(()=>props.isEdit());
     const allSpells = useDnDSpells();
     const allItems = useDnDItems();
@@ -304,23 +302,22 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             
             const mads = feature().metadata?.mads ?? [];
             
-            
-
-            // mads.forEach((mad, i) => {
-            //     const formGroup = new FormGroup<MadForm>({
-            //         group: [ mad.group, []],
-            //         type: [mad.type, []],
-            //         value: [mad.value, []],
-            //         name: [`change ${i + 1}`, []],
-            //         prerequisites: [mad.prerequisites, []],
-            //         commandCategory: [``, []],
-            //         commandType: [``, []],
-            //         command: [mad.command, []],
-            //     })
+            mads.reduce((updated ,mad ,i) => {
+                const formGroup = new FormGroup<MadForm>({
+                    group: [ mad.group, []],
+                    type: [mad.type, []],
+                    value: [mad.value, []],
+                    name: [`change ${i + 1}`, []],
+                    prerequisites: [mad.prerequisites, []],
+                    commandCategory: [``, []],
+                    commandType: [``, []],
+                    command: [mad.command, []],
+                })
                 
 
-            //     currentFeatureMetadata.add(formGroup);
-            // })
+                currentFeatureMetadata.add(formGroup);
+                return updated;
+            })
             
         }   
 
@@ -461,20 +458,18 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                             <Input min={0} type="number" value={getMadGroup(i())?.()} onInput={(e) => setMadFeature("group",i(), +e.currentTarget.value)}/>
                                         </FormField>
 
-                                        <FeaturePrerequisites prereqs={[prerequisites, setPrerequisites]} Submit={(group, operation, value, firstKey, secondKey, thirdKey) => {
+                                        <FeaturePrerequisites prereqs={[prerequisites, setPrerequisites]} Submit={() => {
                                             const requisites = prerequisites();
+                                            const objKeys = Object.keys(prerequisites());
 
-                                            const preReqs = objKeys.reduce((preReqs, key) => {
+                                            const arr:MadPrerequisite[] = [];
+                                            const toAdd = objKeys.reduce((updated, key)=>{
+                                                updated.push(requisites[key]);
 
-                                                console.log(key);
-                                                
+                                                return updated;
+                                            },arr);
 
-                                                preReqs.push(requisites[key]);
-
-                                                return preReqs;
-                                            }, [] as MadPrerequisite[]);
-
-                                            setMadFeature("prerequisites", i(), preReqs);
+                                            setMadFeature("prerequisites", i(), toAdd);
                                             return false;
                                         }} />
 

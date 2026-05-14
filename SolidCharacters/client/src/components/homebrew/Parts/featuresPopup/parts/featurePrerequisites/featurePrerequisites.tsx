@@ -7,7 +7,7 @@ import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard"
 import { MadPrerequisite } from "../../../../../../shared";
 
 interface props {
-    Submit: (group: number, operation: string, value: string, key: string, secondaryKey: string, tertiaryKey: string) => boolean;
+    Submit: (key: string) => boolean;
     prereqs: [Accessor<Record<string, MadPrerequisite>>, Setter<Record<string, MadPrerequisite>>];
 }
 
@@ -251,7 +251,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
             tertiaryValue: TertiaryKey ?? "",
             group: group
         });
-        props.Submit(group, operation, value, FirstKey, SecondaryKey, TertiaryKey);
+        props.Submit(`prerequisites ${prereqKeys().length + 1}`);
         resetForm();
         
     }
