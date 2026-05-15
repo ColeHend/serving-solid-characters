@@ -302,20 +302,21 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             
             const mads = feature().metadata?.mads ?? [];
             
-            mads.reduce((updated ,mad ,i) => {
-                const formGroup = new FormGroup<MadForm>({
-                    group: [ mad.group, []],
-                    type: [mad.type, []],
-                    value: [mad.value, []],
-                    name: [`change ${i + 1}`, []],
-                    prerequisites: [mad.prerequisites, []],
-                    commandCategory: [``, []],
-                    commandType: [``, []],
-                    command: [mad.command, []],
-                })
+            mads.reduce((updated ,mad) => {
+                // const formGroup = new FormGroup<MadForm>({
+                //     group: [ mad.group, []],
+                //     type: [mad.type, []],
+                //     value: [mad.value, []],
+                //     name: [`${currentMadsLength() + 1}`, []],
+                //     prerequisites: [mad.prerequisites, []],
+                //     commandCategory: [``, []],
+                //     commandType: [``, []],
+                //     command: [mad.command, []],
+                // })
                 
 
-                currentFeatureMetadata.add(formGroup);
+                // currentFeatureMetadata.add(formGroup);
+                addNewMetadata()
                 return updated;
             })
             
