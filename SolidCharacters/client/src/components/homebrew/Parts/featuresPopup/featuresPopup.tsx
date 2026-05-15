@@ -355,7 +355,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         </FormField>
                     </FlatCard>
 
-                    <FlatCard headerName="Character Changes" icon="key" getRidOfTopBorder>
+                    <FlatCard headerName="Character Changes" icon="key" getRidOfTopBorder startOpen={is_edit()}>
                         <div>
                             <div>
                                 <Button onClick={addNewMetadata}>

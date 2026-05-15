@@ -291,6 +291,16 @@ export const HomebrewBackgrounds: Component = () => {
 
     }
 
+    const isFeatureEdit = (id: string) => {
+        const item = features().find(x => x.id ===id);
+
+        if (item) {
+            return true
+        } else {
+            return false
+        }
+    };
+
     // effects 
 
     onMount(() => {
@@ -311,9 +321,6 @@ export const HomebrewBackgrounds: Component = () => {
         const formName = selectedName();
 
         setSearchParam({name: formName});
-    
-        console.log(features());
-        
     })
     
     return <Body class={`${styles.body}`}>
@@ -400,7 +407,7 @@ export const HomebrewBackgrounds: Component = () => {
         <FeaturesPopup 
             Show={[showFeaturePopup, setShowFeaturePopup]}
             feature={[currentFeature, setCurrentFeature]}
-            isEdit={isEdit}
+            isEdit={()=>isFeatureEdit(currentFeature().id ?? "")}
             onClose={(data) => {
                 setFeatures(old=>[...old, data]);
             }}
