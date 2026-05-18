@@ -18,3 +18,7 @@ node_modules
 ssl/
 *.pem
 dev-cert.pfx
+
+# C# dev kit files
+*.lscache
+

@@ -254,24 +254,36 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     const fillForm = () => {
 
-        const mads = feature().metadata?.mads ?? [];
-
-        // mads.forEach((mad, i) => {
-        //         const formGroup = new FormGroup<MadForm>({
-        //             group: [ mad.group, []],
-        //             type: [mad.type, []],
-        //             value: [mad.value, []],
-        //             name: [`change ${i + 1}`, []],
-        //             prerequisites: [mad.prerequisites, []],
-        //             commandCategory: [``, []],
-        //             commandType: [``, []],
-        //             command: [mad.command, []],
-        //         })
-                
-
-        //         currentFeatureMetadata.add(formGroup);
-        //     })
+        setFeatureValue('name', feature().name);
+        setFeatureValue('description', feature().description);
+        setFeatureValue("metadata", feature().metadata);
         
+        const mads = feature().metadata?.mads ?? [];
+        
+        const arr = mads.reduce((updated ,mad) => {
+            const formGroup = new FormGroup<MadForm>({
+                group: [ mad.group, []],
+                type: [mad.type, []],
+                value: [mad.value, []],
+                name: [`${currentMadsLength() + 1}`, []],
+                prerequisites: [mad.prerequisites, []],
+                commandCategory: [``, []],
+                commandType: [``, []],
+                command: [mad.command, []],
+            })
+            
+        
+            currentFeatureMetadata.add(formGroup);
+            
+            return updated;
+        })
+
+        // for (let index = 0; index < mads.length; index++) {
+        //     const element = mads[index];
+            
+        //     // addNewMetadata()
+            
+        // }
     }
 
     createEffect(()=>{ 
@@ -286,7 +298,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
                 if (parent) {
                     parent.style.setProperty("padding-bottom","0","important")
-                    // parent.addEventListener("load",() => fillForm());
+                    parent.addEventListener("load",() => fillForm());
                 }
             }
         }
@@ -295,33 +307,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     createEffect(() => {
         if (!show()) {
             clearInputs();
-        } else if (is_edit() && feature().name !== "") {
-            setFeatureValue('name', feature().name);
-            setFeatureValue('description', feature().description);
-            setFeatureValue("metadata", feature().metadata);
-            
-            const mads = feature().metadata?.mads ?? [];
-            
-            mads.reduce((updated ,mad) => {
-                // const formGroup = new FormGroup<MadForm>({
-                //     group: [ mad.group, []],
-                //     type: [mad.type, []],
-                //     value: [mad.value, []],
-                //     name: [`${currentMadsLength() + 1}`, []],
-                //     prerequisites: [mad.prerequisites, []],
-                //     commandCategory: [``, []],
-                //     commandType: [``, []],
-                //     command: [mad.command, []],
-                // })
-                
-
-                // currentFeatureMetadata.add(formGroup);
-                addNewMetadata()
-                return updated;
-            })
-            
-        }   
-
+        } 
     });
 
     onCleanup(() => {
