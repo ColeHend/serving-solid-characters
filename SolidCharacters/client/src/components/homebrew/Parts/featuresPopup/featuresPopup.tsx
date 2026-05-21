@@ -35,7 +35,7 @@ interface popupProps {
 
 export const FeaturesPopup: Component<popupProps> = (props) => {
     const [show, setShow] = props.Show;
-    const [feature, setFeature] = props.feature;
+    const [feature, setFeature] = createSignal<FeatureDetail|null>(null);
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
     const [prerequisites, setPrerequisites] = createSignal<Record<string, MadPrerequisite>>({});
 
@@ -65,10 +65,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     }
 
     const save = () => {
-        const name = getFeatureValue('name')();
-        const desc = getFeatureValue('description')();
-
-
+        const name = getFeatureValue('name')?.() ?? "";
+        const desc = getFeatureValue('description')?.() ?? "";
 
         const madsData = currentFeatureMetadata.get().flatMap(metadata => {
             return {
@@ -80,7 +78,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             }
         });
 
-        console.log("endData: ", madsData);
+        console.log("endData: ", madsData, name, desc);
         
         
         const newFeature: FeatureDetail = {
@@ -96,25 +94,24 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             }
         }
 
-        setFeature(newFeature);
-        clearInputs();
+        setFeature(newFeature);        
         setShow(false);
         if (props.onClose) {
             props.onClose(newFeature);
+            clearInputs();
         }
     }
 
     const clearInputs = () => {
-        setFeature({
-            id: "",
-            name: "",
-            description: ""
-        })
+        setFeature(null);
+        setPrerequisites({});
         currentFeatureMetadata.reset();
     }
 
-    const getFeatureValue = <T extends keyof FeatureDetail >(key: T): Accessor<FeatureDetail[T]> => {
+    const getFeatureValue = <T extends keyof FeatureDetail >(key: T): Accessor<FeatureDetail[T]>|null => {
         const Feature = feature();
+
+        if (!Feature) return null; 
         
         const clone = structuredClone(Feature);
 
@@ -124,6 +121,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const setFeatureValue = <T extends keyof FeatureDetail >(key: T, value: FeatureDetail[T]) => {
         const Feature = feature();
         
+        if (!Feature) return;
+
         if (typeof value === "string") {
             Feature[key] = value;
         } else if (typeof value === "object" && key === "metadata") {
@@ -163,8 +162,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         return type;
     }
 
-    const featureName = createMemo(() => getFeatureValue('name')());
-    const featureDesc = createMemo(() => getFeatureValue("description")());
+    const featureName = createMemo(() => getFeatureValue('name')?.() ?? "");
+    const featureDesc = createMemo(() => getFeatureValue("description")?.() ?? "");
 
     const [showCards, setShowCards] = createSignal<Record<string, boolean>>({});
 
@@ -253,6 +252,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     }
 
     const fillForm = () => {
+        const [feature,] = props.feature;
 
         setFeatureValue('name', feature().name);
         setFeatureValue('description', feature().description);
@@ -260,7 +260,10 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         
         const mads = feature().metadata?.mads ?? [];
         
-        const arr = mads.reduce((updated ,mad) => {
+        console.log("ran!");
+        
+
+        mads.forEach((mad ,i) => {
             const formGroup = new FormGroup<MadForm>({
                 group: [ mad.group, []],
                 type: [mad.type, []],
@@ -274,8 +277,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             
         
             currentFeatureMetadata.add(formGroup);
-            
-            return updated;
         })
 
         // for (let index = 0; index < mads.length; index++) {
@@ -288,7 +289,9 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
     createEffect(()=>{ 
         const popup = popupRef();
+        
         if (popup) {
+            
             const parentEL = popup.parentElement;
             
             if (parentEL) {
@@ -298,20 +301,21 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
                 if (parent) {
                     parent.style.setProperty("padding-bottom","0","important")
-                    parent.addEventListener("load",() => fillForm());
+                    // parent.addEventListener("load",() => fillForm());
+
+                    if (props.feature[0]().name !== "") {
+                        queueMicrotask(() => {
+                            fillForm()
+                        })
+                    }
+
                 }
             }
         }
     })
 
-    createEffect(() => {
-        if (!show()) {
-            clearInputs();
-        } 
-    });
-
     onCleanup(() => {
-        clearInputs();
+        clearInputs();    
     })
 
     return <Modal ref={popupRef} show={[show, setShow]} title={`${is_edit() ? "Edit" : "Add"} Feature`}>

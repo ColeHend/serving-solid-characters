@@ -20,7 +20,18 @@ export const OptionalFeatures:Component<SectonProps> = (props) => {
     const handleFeatureClick = (feature: FeatureDetail) => {
         setCurrentFeature(feature);
         
-        handleFeatureEdit();
+        const isEdit = handleFeatureEdit();
+
+        if (!isEdit) {
+
+            setCurrentFeature({
+                id: "",
+                name: "",
+                description: "",
+                metadata: {}
+            })
+
+        }
 
         props.showPopup(true);
     }
@@ -40,9 +51,11 @@ export const OptionalFeatures:Component<SectonProps> = (props) => {
 
         if (all.some(x => x.name.trim().toLowerCase() === current.name.trim().toLowerCase())) {
             props.setIsEdit(true);
+            return true;
         }
 
         props.setIsEdit(false);
+        return false;
     }
     
     return <FlatCard headerName="Optional Features" extraHeaderJsx={<Button onClick={()=>{
