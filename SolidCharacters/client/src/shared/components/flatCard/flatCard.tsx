@@ -1,4 +1,4 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, JSX, onCleanup, Setter, Show, splitProps } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, JSX, onCleanup, Setter, Show, splitProps } from "solid-js";
 import styles from "./flatCard.module.scss";
 import { Button, Container, Icon } from "coles-solid-library";
 
@@ -119,9 +119,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
                 <Show when={!isNoIcon()}>
                     <Icon name={local.icon ?? "disabled_by_default"} />
                 </Show>
-                <div>
-                    {local.headerName}
-                </div>
+                {local.headerName}
             </div>
             <div>
                 {local.extraHeaderJsx}

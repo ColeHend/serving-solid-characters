@@ -80,14 +80,7 @@
 }
 
 .changePopup {
-    // &:not(:only-child) {
-    //     &:not(:first-child) {
-    //         border-top: none !important;
-
-    //     }
-        
-    // }
-
+    padding-right: 5px;
     :nth-child(n) {
         &:not(:last-child) {
             margin-bottom: 0.5px;
@@ -116,9 +109,10 @@
 
 .changeHeader {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-content: flex-start;
     text-align: left;
+    width: 50%;
 }
 
 .changeHeaderTitle {
@@ -131,14 +125,21 @@
     flex-direction: row;
 }
 
-.changeGroupTitle {
+.commandTitle {
+    border: 1.5px solid vars.$color-primary !important;
+    background: color-mix(in srgb, vars.$color-primary 50%, transparent) !important;
+    padding: 6px !important;
+    border-radius: 12px !important;
+    width: 40% !important;
     text-align: center;
-    width: 4vw;
+    word-wrap: unset;
 }
 
 .changeTypeTitle {
     text-align: center;
     width: 7vw;
+    border: 1.5px solid vars.$color-primary !important;
+    background: color-mix(in srgb, vars.$color-primary 50%, transparent) !important;
 }
 
 .commandDesc {
@@ -161,4 +162,45 @@
     width: 100%;
     text-align: left;
     margin-top: 10px;
+}
+
+.label {
+    display: block;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10.5px;
+    font-weight: 700;
+    // color: rgb(90, 120, 96);
+}
+
+.coreDetails {
+    padding: 2%;
+}
+
+.addChangeBtn {
+    width: 100%;
+    border: 1.5px dashed vars.$color-primary !important;
+    background: color-mix(in srgb, vars.$color-primary 50%, transparent) !important;
+    border-radius: 10px !important;
+    padding: 14px !important;
+    cursor: pointer !important;
+    margin-top: 4px !important;
+    font-weight: bold !important;
+}
+
+.saveBtn {
+    width: 7vw;
+}
+
+.instructions {
+    border: 1.5px solid vars.$color-primary !important;
+    background: color-mix(in srgb, vars.$color-primary 50%, transparent) !important;
+    border-radius: 10px !important;
+    padding: 6px !important;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+    margin: 12px !important;
 }

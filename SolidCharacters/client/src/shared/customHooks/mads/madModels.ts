@@ -1,5 +1,3 @@
-import { Character } from "../../../models/character.model";
-
 /**
  * Utility type to construct add/remove command strings for a given category.
  * For example, `AddSpells` or `RemoveSpells` when `T` is `'Spells'`.
