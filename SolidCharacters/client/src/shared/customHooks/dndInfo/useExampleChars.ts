@@ -43,7 +43,12 @@ export const Gandalf = createExampleCharacter({
       ],
     },
   ],
-  spells: [],
+  spells: [
+    {
+      name: "Fireball",
+      prepared: true
+    }
+  ],
   race: {
     species: "elf",
     subrace: "woodElf",
@@ -64,11 +69,40 @@ export const Gandalf = createExampleCharacter({
   subclass: ["Evocation"],
   ArmorClass: 12,
   Speed: 30,
-  resistances: [],
-  immunities: [],
-  vulnerabilities: [],
-  features: [],
-  savingThrows: [],
+  resistances: [
+     {
+      type: "fire",
+      value: true
+    }
+  ],
+  immunities: [
+     {
+      type: "fire",
+      value: true
+    }
+  ],
+  vulnerabilities: [
+    {
+      type: "fire",
+      value: true
+    }
+  ],
+  features: [
+    {
+      id: "astasedt",
+      name: "",
+      description: "",
+      metadata: {
+        mads: []
+      }
+    }
+  ],
+  savingThrows: [
+    {
+      stat: "str",
+      proficient: true
+    }
+  ],
   background: "Noble",
   alignment: "neutral",
   proficiencies: {

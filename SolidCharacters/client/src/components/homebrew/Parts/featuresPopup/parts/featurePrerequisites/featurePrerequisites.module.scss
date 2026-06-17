@@ -48,3 +48,39 @@
 .preReqRule {
     margin-bottom: 8px;
 }
+
+.prerequisites {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.prereqItem {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+
+    div {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        justify-content: flex-start;
+        align-items: center;
+    }
+}
+
+.prereqBox {
+    border-radius: 12px;
+}
+
+.keyValueInput {
+    width: 25%;
+}
+
+.operationInput {
+    width: 25%;
+}
+
+.keyInput {
+    width: 30%;
+}

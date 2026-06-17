@@ -53,9 +53,7 @@ export interface Madprerequisite {
      * The key on the character to check the prerequisite against. For example, if the prerequisite is "Strength Score >= 15", the value would be "Strength Score".
      */
     value: string;
-    secondaryValue: string;
-    tertiaryValue: string;
-
+    
     /**
      * The operation to compare the character's value to the keyValue. For example, if the prerequisite is "Strength Score >= 15", the operation would be ">=".
      */

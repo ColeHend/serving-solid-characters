@@ -1,14 +1,13 @@
 import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea,   Option, Select, TabBar, Chip } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onCleanup, Setter, Show, Switch } from "solid-js";
-import { MadCommands, MadFeature, MadType } from "../../../../shared/customHooks/mads/madModels";
+import { MadCommands, MadType } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { MadFeature as GeneratedModel } from "../../../../models/generated";
 import styles from "./featuresPopus.module.scss";
-import { MadForm } from "../../../../models/data/formModels";
+import { MadForm, MadPrereqForm } from "../../../../models/data/formModels";
 import { SpellFeature } from "./parts/spellFeature/spellFeature";
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
-import { Clone, getUserSettings, useStyle, useUserStyles } from "../../../../shared";
+import { Clone, useUserStyles } from "../../../../shared";
 import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
 import { ItemFeature } from "./parts/itemFeature/ItemFeature";
 import { CurrencyFeature } from "./parts/currencyFeature/currencyFeature";
@@ -47,10 +46,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
     const AllFeats = useDnDFeats();
 
     const currentFeatureMetadata = new FormArray<MadForm>([]);
+    const currentFeaturePrerequisites = new FormArray<MadPrereqForm>([]);
 
     const currentMadsLength = createMemo(()=>currentFeatureMetadata.get().length);
 
-    const themeStyles = useUserStyles()
+    // const themeStyles = useUserStyles()
 
 
     const addNewMetadata = () => {
@@ -267,7 +267,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         console.log("ran!");
         
 
-        mads.forEach((mad ,i) => {
+        mads.forEach((mad) => {
             const formGroup = new FormGroup<MadForm>({
                 group: [ mad.group, []],
                 type: [mad.type, []],
@@ -351,9 +351,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                 </div>
                 <div class={`${styles.scrollBox} ${styles.changePopup}`}>
 
-                    <TabBar tabs={["Core Details", `Character Changes ${currentFeatureMetadata.get().length}`]} activeTab={activeTab()} onTabChange={(label, i) => setActiveTab(i)} colors={{
-                        indicator: themeStyles().primary
-                    }}/>
+                    <TabBar tabs={["Core Details", `Character Changes ${currentFeatureMetadata.get().length}`]} activeTab={activeTab()} onTabChange={(label, i) => setActiveTab(i)}/>
 
                     <Switch>
                         <Match when={activeTab() === 0}>
@@ -416,9 +414,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         </span>
                                                     </div> */}
                                                     <Chip value={`G${getMadGroup(i())?.() ?? 0}`} /> 
-                                                    <span class={`${styles.commandTitle}`}>
-                                                        {prettyCommand(getMaDCommand(i())?.() ?? "No Command Selected")}
-                                                    </span>
+                                                    <Show when={getMaDCommand(i())?.() !== ""}>
+                                                        <span class={`${styles.commandTitle}`}>
+                                                            {prettyCommand(getMaDCommand(i())?.() ?? "No Command Selected")}
+                                                        </span>
+                                                    </Show>
                                                     <span>
                                                         {getType(i()) ?? ""}
                                                     </span>
@@ -446,50 +446,62 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
                                             </div>
                                             
-                                            {/* type */}
-                                            <h2 class={`${styles.leftAlignText}`}>type</h2>
-                                            <div class={`${styles.typeTitle}`}>
-                                                What kind of result should this change represent?
+                                            <div style={{display:"flex", "flex-direction": "row","justify-content":"center", "align-content": "center"}}>
+                                                <div style={{width: "75%"}}>
+                                                    {/* type */}
+                                                    <h2 class={`${styles.leftAlignText}`}>type</h2>
+
+                                                    <Select value={getMadType(i())?.()} onSelect={(val) => setMadFeature("type", i(), val)}>
+                                                        <Option value={MadType.Character}>{MadType[0]}</Option>
+                                                        <Option value={MadType.Info}>{MadType[1]}</Option>
+                                                    </Select>
+
+                                                    <div class={`${styles.typeDesc}`}>
+                                                        <Switch>
+                                                            <Match when={getMadType(i())?.() === MadType.Character}>
+                                                                This change updates the visible character sheet values in the viewer.
+                                                            </Match>
+                                                            <Match when={getMadType(i())?.() === MadType.Info}>
+                                                                This is extra feature information, like uses or recharge details, and is not a direct character stat change.
+                                                            </Match>
+                                                        </Switch>
+                                                    </div>
+
+                                                </div>
+
+                                                <div style={{width: "25%"}}>
+                                                    <h2 class={`${styles.leftAlignText}`}>Feature Group</h2>
+
+                                                    <div>
+
+                                                    </div>
+
+                                                    <FormField formName="MadFeatureGroup" name="change group">
+                                                        <Input min={0} type="number" value={getMadGroup(i())?.()} onInput={(e) => setMadFeature("group",i(), +e.currentTarget.value)}/>
+                                                    </FormField>
+                                                </div>
+
                                             </div>
 
-                                            <Select value={getMadType(i())?.()} onSelect={(val) => setMadFeature("type", i(), val)}>
-                                                <Option value={MadType.Character}>{MadType[0]}</Option>
-                                                <Option value={MadType.Info}>{MadType[1]}</Option>
-                                            </Select>
 
-                                            <div class={`${styles.typeDesc}`}>
-                                                <Switch>
-                                                    <Match when={getMadType(i())?.() === MadType.Character}>
-                                                        This change updates the visible character sheet values in the viewer.
-                                                    </Match>
-                                                    <Match when={getMadType(i())?.() === MadType.Info}>
-                                                        This is extra feature information, like uses or recharge details, and is not a direct character stat change.
-                                                    </Match>
-                                                </Switch>
-                                            </div>
 
-                                            <h2 class={`${styles.leftAlignText}`}>Feature Group</h2>
+                                            <FeaturePrerequisites prereqForm={currentFeaturePrerequisites} prereqs={[prerequisites, setPrerequisites]} Submit={() => {
+                                                // const requisites = prerequisites();
+                                                // const objKeys = Object.keys(prerequisites());
 
-                                            <FormField formName="MadFeatureGroup" name="change group">
-                                                <Input min={0} type="number" value={getMadGroup(i())?.()} onInput={(e) => setMadFeature("group",i(), +e.currentTarget.value)}/>
-                                            </FormField>
+                                                // const arr:MadPrerequisite[] = [];
+                                                // const toAdd = objKeys.reduce((updated, key)=>{
+                                                //     updated.push(requisites[key]);
 
-                                            <FeaturePrerequisites prereqs={[prerequisites, setPrerequisites]} Submit={() => {
-                                                const requisites = prerequisites();
-                                                const objKeys = Object.keys(prerequisites());
+                                                //     return updated;
+                                                // },arr);
 
-                                                const arr:MadPrerequisite[] = [];
-                                                const toAdd = objKeys.reduce((updated, key)=>{
-                                                    updated.push(requisites[key]);
-
-                                                    return updated;
-                                                },arr);
-
-                                                setMadFeature("prerequisites", i(), toAdd);
-                                                return false;
+                                                // setMadFeature("prerequisites", i(), toAdd);
+                                                // return false;
                                             }} />
 
-                                            <h2>{getMaDCommand(i())?.()}</h2>
+                                            <h2>{prettyCommand(getMaDCommand(i())?.() ?? "")}</h2>
+                                            
                                             <Switch>
                                                 <Match when={getMaDCommand(i())?.() === "AddSpells" || getMaDCommand(i())?.() === "RemoveSpells"}>
                                                     <SpellFeature allSpells={allSpells} getValue={getMadValue?.(i()) ?? (() => undefined)} toggleSpell={(id) => {
