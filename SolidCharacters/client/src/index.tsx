@@ -83,7 +83,7 @@ if (root) {
             <Route path="/" component={Characters} />
             <Route path="/view" component={CharacterView} />
             <Route path="/create" component={CharacterCreate} />
-            {/* <Route path="/pdfCreate" component={CreateCharacterPDF} /> */}
+            <Route path="/pdfCreate" component={CreateCharacterPDF} />
           </Route>
           <Route path="/info" >
             <Route path="/races" component={races} />
