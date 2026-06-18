@@ -115,8 +115,6 @@ export const FeaturePrerequisites: Component<props> = (props) => {
         "!==",
         "includes",
         "excludes",
-        "startsWith",
-        "endsWith"
     ]
 
     const getPrettyOpName = (operation: string) => {
