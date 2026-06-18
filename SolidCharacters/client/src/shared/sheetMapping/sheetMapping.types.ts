@@ -20,20 +20,42 @@
  * v4: page-1 attack-cantrip and page-2 spell table geometry are now persisted
  * (`spellTable` / `attackCantripTable`) and editable on the mapping screen.
  * Bumped so cached v3 records reseed and gain the default table configs.
+ * v5: split the merged `features` blob into three `renderMode: 'featureList'`
+ * fields (`classFeatures`/`speciesTraits`/`feats`) that draw name + truncated
+ * description in columns; added `renderMode: 'static'` user-text fields; and
+ * relocated resistances/vulnerabilities/immunities out of the species box.
+ * Bumped so cached v4 records reseed onto the new default layout.
+ * v6: redefined `featureList` `(x, y)` to be the BOX TOP-LEFT corner (the list
+ * flows DOWN to `y - boxHeight`) instead of the first line's baseline, and
+ * recalibrated the three feature boxes to the printed rules. Bumped so cached v5
+ * records reseed onto the corrected coordinates.
  */
-export const MAPPING_SCHEMA_VERSION = 4;
+export const MAPPING_SCHEMA_VERSION = 6;
 
 /** StandardFonts only (no fontkit / custom TTF available). */
 export type SheetFontName = 'Helvetica' | 'TimesRoman' | 'Courier';
 
 export type TextAlign = 'left' | 'center' | 'right';
 
+/**
+ * How a placement turns into PDF text:
+ *  - `'text'` (default/undefined): draw the character value `values[fieldKey]`.
+ *  - `'featureList'`: draw the `FeatureDetail[]` for `fieldKey` as columns of
+ *    bold name + ellipsis-truncated description (see `drawFeatureList`).
+ *  - `'static'`: draw the field's own `staticText` verbatim (no data binding).
+ */
+export type SheetRenderMode = 'text' | 'featureList' | 'static';
+
 export interface PlacedField {
   /** Key into `characterToSheetValues()` output and `SHEET_FIELD_DEFS`. */
   fieldKey: string;
   /** 0 | 1 — which page of the 2-page sheet. */
   pageIndex: number;
-  /** PDF points, bottom-left origin, baseline-left. */
+  /**
+   * PDF points, bottom-left origin. For `'text'`/`'static'` fields this is the
+   * text baseline-left anchor. For `'featureList'` fields it is the BOX TOP-LEFT
+   * corner — the list flows DOWN from here to `y - boxHeight` (see `boxHeight`).
+   */
   x: number;
   y: number;
   /** Point size; default 10. */
@@ -44,6 +66,22 @@ export interface PlacedField {
   maxWidth?: number;
   /** Text color as a `#rrggbb` hex string. Defaults to black (`#000000`) when unset. */
   color?: string;
+  /** Render strategy; undefined ⇒ `'text'` (back-compat with pre-v5 records). */
+  renderMode?: SheetRenderMode;
+  // ── `featureList`-only layout (ignored by other modes) ──
+  /** Box height in points; the list flows DOWN from the box top `y` and stops at `y - boxHeight`. Default 120. */
+  boxHeight?: number;
+  /** Number of columns the features flow through (1–3). Default 2. */
+  columns?: number;
+  /** Gap between columns in points. Default 12. */
+  columnGap?: number;
+  /** Truncate each description to this many chars (then `…`). Default 80; 0 ⇒ none. */
+  descMaxChars?: number;
+  /** Draw descriptions beneath each name. Default true. */
+  showDescriptions?: boolean;
+  // ── `static`-only ──
+  /** Literal text drawn verbatim for `renderMode: 'static'` fields. */
+  staticText?: string;
 }
 
 /**

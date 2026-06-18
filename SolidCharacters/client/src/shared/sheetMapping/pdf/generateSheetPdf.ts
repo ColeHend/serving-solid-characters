@@ -1,6 +1,8 @@
 import { PDFDocument, PDFFont, PDFPage, RGB, StandardFonts, rgb } from 'pdf-lib';
 import templateUrl from '../../../assets/dnd-character-sheet.standard.empty.en.us-letter.pdf';
-import { AttackCantripConfig, SheetFontName, SheetTemplate, SpellTableConfig } from '../sheetMapping.types';
+import { FeatureDetail } from '../../../models/generated';
+import { clamp } from '../sheetConstants';
+import { AttackCantripConfig, PlacedField, SheetFontName, SheetTemplate, SpellTableConfig } from '../sheetMapping.types';
 import {
   ATTACK_CANTRIP_TABLE,
   SPELL_TABLE,
@@ -28,6 +30,13 @@ const STANDARD: Record<SheetFontName, StandardFonts> = {
   Courier: StandardFonts.Courier,
 };
 
+/** Bold sibling of each StandardFont, used for `featureList` feature names. */
+const BOLD: Record<SheetFontName, StandardFonts> = {
+  Helvetica: StandardFonts.HelveticaBold,
+  TimesRoman: StandardFonts.TimesRomanBold,
+  Courier: StandardFonts.CourierBold,
+};
+
 /** `#rrggbb` (or `#rgb`) → pdf-lib `rgb()` in 0–1 space. Falls back to black on bad input. */
 function hexToRgb(hex: string | undefined) {
   const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((hex ?? '').trim());
@@ -42,27 +51,39 @@ export async function generateSheetPdf(
   values: Record<string, string>,
   template: SheetTemplate,
   spells?: SpellRow[],
+  featureLists?: Record<string, FeatureDetail[]>,
 ): Promise<Uint8Array> {
   const templateBytes = await fetch(templateUrl).then((r) => r.arrayBuffer());
   const doc = await PDFDocument.load(templateBytes);
   const pages = doc.getPages();
 
-  // Embed each StandardFont at most once.
-  const fontCache = new Map<SheetFontName, PDFFont>();
-  const getFont = async (name: SheetFontName): Promise<PDFFont> => {
-    let font = fontCache.get(name);
+  // Embed each StandardFont (regular + bold variants) at most once.
+  const fontCache = new Map<string, PDFFont>();
+  const loadFont = async (name: SheetFontName, bold: boolean): Promise<PDFFont> => {
+    const key = bold ? `${name}|bold` : name;
+    let font = fontCache.get(key);
     if (!font) {
-      font = await doc.embedFont(STANDARD[name] ?? StandardFonts.Helvetica);
-      fontCache.set(name, font);
+      font = await doc.embedFont((bold ? BOLD[name] : STANDARD[name]) ?? StandardFonts.Helvetica);
+      fontCache.set(key, font);
     }
     return font;
   };
+  const getFont = (name: SheetFontName): Promise<PDFFont> => loadFont(name, false);
+  const getBoldFont = (name: SheetFontName): Promise<PDFFont> => loadFont(name, true);
 
   for (const field of template.fields) {
-    const value = values[field.fieldKey] ?? '';
-    if (!value) continue; // skip empties
     if (field.pageIndex < 0 || field.pageIndex >= pages.length) continue; // skip out-of-range
     const page = pages[field.pageIndex];
+
+    // Feature-list placements draw their structured FeatureDetail[] in columns.
+    if (field.renderMode === 'featureList') {
+      await drawFeatureList(page, field, featureLists?.[field.fieldKey] ?? [], getFont, getBoldFont);
+      continue;
+    }
+
+    // Static fields draw their own literal text; everything else draws the data value.
+    const value = field.renderMode === 'static' ? field.staticText ?? '' : values[field.fieldKey] ?? '';
+    if (!value) continue; // skip empties
     const font = await getFont(field.font);
 
     try {
@@ -205,4 +226,119 @@ function fitText(text: string, maxWidth: number, size: number, font: PDFFont): s
   let t = text;
   while (t.length > 1 && font.widthOfTextAtSize(`${t}…`, size) > maxWidth) t = t.slice(0, -1);
   return `${t}…`;
+}
+
+/**
+ * Greedy word-wrap by measured width: each returned line fits `width` at `size`.
+ * A single word wider than `width` gets its own line (the `!cur` guard forces
+ * forward progress); pdf-lib clips it at draw — preferable to an infinite loop.
+ */
+function wrapText(text: string, width: number, size: number, font: PDFFont): string[] {
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let cur = '';
+  for (const w of words) {
+    const tryLine = cur ? `${cur} ${w}` : w;
+    if (!cur || font.widthOfTextAtSize(tryLine, size) <= width) cur = tryLine;
+    else {
+      lines.push(cur);
+      cur = w;
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+/** Truncate `s` to at most `max` characters, appending `…` when cut. `max <= 0` ⇒ `''`. */
+function truncateChars(s: string, max: number): string {
+  if (max <= 0 || !s) return '';
+  return s.length <= max ? s : `${s.slice(0, max).trimEnd()}…`;
+}
+
+/** Top pad (≈ one ascent) below the box top where the first glyph row's baseline sits. */
+const FEATURE_TOP_PAD_RATIO = 0.8;
+
+/** One positioned line of a `featureList` layout: where and in which weight to draw `text`. */
+export interface FeatureLine {
+  text: string;
+  x: number;
+  y: number;
+  bold: boolean;
+}
+
+/**
+ * Pure layout pass for a `featureList` placement — extracted from {@link drawFeatureList}
+ * so the geometry is unit-testable without a `PDFPage`. `(field.x, field.y)` is the
+ * box TOP-LEFT; the first baseline sits `fontSize * FEATURE_TOP_PAD_RATIO` below the
+ * top edge so glyph tops fall inside the box. Each feature is its bold name (wrapped)
+ * then — unless `showDescriptions` is false — its ellipsis-truncated description
+ * (wrapped). Features flow DOWN a column to `field.y - boxHeight` and spill into the
+ * next; once every column is full the remaining features are dropped.
+ */
+export function layoutFeatureList(field: PlacedField, items: FeatureDetail[], reg: PDFFont, bold: PDFFont): FeatureLine[] {
+  const out: FeatureLine[] = [];
+  if (!items.length) return out;
+  const size = field.fontSize;
+  const lineH = size * 1.2;
+  const cols = clamp(Math.round(field.columns ?? 2), 1, 3);
+  const gap = field.columnGap ?? 12;
+  const boxW = field.maxWidth ?? 270;
+  const boxH = field.boxHeight ?? 120;
+  const colW = Math.max(1, (boxW - gap * (cols - 1)) / cols);
+  const showDesc = field.showDescriptions !== false;
+  const descMax = field.descMaxChars ?? 80;
+  const colTop = field.y - size * FEATURE_TOP_PAD_RATIO; // first baseline, one ascent below the box top
+  const bottom = field.y - boxH;
+  const colX = (c: number): number => field.x + c * (colW + gap);
+
+  let col = 0;
+  let y = colTop;
+
+  for (const item of items) {
+    const nameLines = wrapText(item?.name ?? '', colW, size, bold);
+    const descLines =
+      showDesc && descMax > 0 ? wrapText(truncateChars(item?.description ?? '', descMax), colW, size, reg) : [];
+    if (!nameLines.length && !descLines.length) continue;
+    const blockH = (nameLines.length + descLines.length) * lineH;
+
+    // Advance to the next column when the block won't fit below the cursor — but
+    // never at a fresh column top (`y < colTop`), so an over-tall feature still
+    // draws (overflowing) rather than looping columns and dropping everything.
+    if (y - blockH < bottom && y < colTop) {
+      col++;
+      if (col >= cols) return out; // box full — drop the rest
+      y = colTop;
+    }
+    for (const ln of nameLines) {
+      out.push({ text: ln, x: colX(col), y, bold: true });
+      y -= lineH;
+    }
+    for (const ln of descLines) {
+      out.push({ text: ln, x: colX(col), y, bold: false });
+      y -= lineH;
+    }
+    y -= lineH * 0.25; // small inter-feature gap
+  }
+  return out;
+}
+
+/**
+ * Draw a `featureList` placement onto `page` using the positions from
+ * {@link layoutFeatureList}. `(field.x, field.y)` is the box top-left.
+ */
+async function drawFeatureList(
+  page: PDFPage,
+  field: PlacedField,
+  items: FeatureDetail[],
+  getFont: (name: SheetFontName) => Promise<PDFFont>,
+  getBoldFont: (name: SheetFontName) => Promise<PDFFont>,
+): Promise<void> {
+  if (!items.length) return;
+  const reg = await getFont(field.font);
+  const bold = await getBoldFont(field.font);
+  const color = hexToRgb(field.color);
+  const size = field.fontSize;
+  for (const line of layoutFeatureList(field, items, reg, bold)) {
+    drawSpellCell(page, line.text, line.x, line.y, size, line.bold ? bold : reg, color);
+  }
 }

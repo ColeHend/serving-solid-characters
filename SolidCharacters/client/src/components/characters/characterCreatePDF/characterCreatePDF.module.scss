@@ -359,6 +359,28 @@ $mobile: 768px;
   opacity: 1;
 }
 
+// ── Feature-box outlines (classFeatures/speciesTraits/feats) ──
+// Non-interactive guides mirroring the region `drawFeatureList` fills: the box
+// rectangle plus one divider per inter-column gap. `pointer-events: none` so they
+// never intercept dragging/selecting the chip painted on top.
+.featureBox {
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--primary-color) 6%, transparent);
+  outline: 1px dashed color-mix(in srgb, var(--primary-color) 45%, transparent);
+  outline-offset: -1px;
+}
+
+.featureBoxDivider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--primary-color) 35%, transparent);
+}
+
 // ── Spell/attack table column guides (page-2 / page-1 table geometry editor) ──
 // Rendered BEFORE the placed chips in the DOM so chips paint on top; a selected
 // guide lifts to z-index 1 (still below a selected chip's 2).

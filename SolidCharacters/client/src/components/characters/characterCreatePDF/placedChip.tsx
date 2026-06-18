@@ -1,6 +1,6 @@
 import { Component, createMemo, JSX } from 'solid-js';
 import { createDraggable } from '../../../shared/dnd';
-import { FIELD_LABELS, PlacedField, pdfToScreen } from '../../../shared/sheetMapping';
+import { FIELD_LABELS, PlacedField, STATIC_FIELD_LABEL, pdfToScreen } from '../../../shared/sheetMapping';
 import { DEFAULT_FIELD_COLOR } from './placement';
 import styles from './characterCreatePDF.module.scss';
 
@@ -23,6 +23,11 @@ interface PlacedChipProps {
  * WYSIWYG preview — falling back to the field label (dimmed) when the value is
  * empty so the chip stays visible and grabbable. Re-draggable; the engine's
  * `DragOverlay` shows the moving preview while this stays put.
+ *
+ * APPROXIMATE for `featureList`/`static` fields: a feature-list chip shows the
+ * comma-joined feature names (not the columned name+description layout) and a
+ * static chip shows its own `staticText`. The iframe PDF preview is the true
+ * WYSIWYG; the chip exists for selection/positioning.
  */
 export const PlacedChip: Component<PlacedChipProps> = (props) => {
   const drag = createDraggable(() => ({
@@ -38,8 +43,14 @@ export const PlacedChip: Component<PlacedChipProps> = (props) => {
   const down = { x: 0, y: 0, id: -1 };
 
   const pos = createMemo(() => pdfToScreen(props.field.x, props.field.y, props.zoom()));
-  const label = () => FIELD_LABELS[props.field.fieldKey] ?? props.field.fieldKey;
-  const value = () => props.value?.() ?? '';
+  const isStatic = () => props.field.renderMode === 'static';
+  const isFeatureList = () => props.field.renderMode === 'featureList';
+  const label = () =>
+    isStatic()
+      ? props.field.staticText || STATIC_FIELD_LABEL
+      : FIELD_LABELS[props.field.fieldKey] ?? props.field.fieldKey;
+  // Static fields render their own text; everything else renders the resolved value.
+  const value = () => (isStatic() ? props.field.staticText ?? '' : props.value?.() ?? '');
   const isPlaceholder = () => value() === '';
   const display = () => (isPlaceholder() ? label() : value());
 
@@ -50,7 +61,17 @@ export const PlacedChip: Component<PlacedChipProps> = (props) => {
       color: props.field.color ?? DEFAULT_FIELD_COLOR,
       'font-size': `${props.field.fontSize * props.zoom()}px`,
     };
-    if (props.field.maxWidth) {
+    if (isFeatureList()) {
+      // `(x, y)` is the box TOP-LEFT for featureList: anchor the chip's top-left at
+      // `pos` (cancel the baseline `translateY(-100%)`) and fill the box so the
+      // names flow down from the top, mirroring `drawFeatureList`.
+      s.transform = 'none';
+      s['align-items'] = 'flex-start';
+      s.width = `${(props.field.maxWidth ?? 270) * props.zoom()}px`;
+      s.height = `${(props.field.boxHeight ?? 120) * props.zoom()}px`;
+      s['white-space'] = 'normal';
+      s.overflow = 'hidden';
+    } else if (props.field.maxWidth) {
       s.width = `${props.field.maxWidth * props.zoom()}px`;
       s['white-space'] = 'normal';
     }

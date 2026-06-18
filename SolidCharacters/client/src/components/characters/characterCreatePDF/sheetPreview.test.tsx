@@ -44,9 +44,22 @@ describe('SheetPreview live regen', () => {
     await vi.advanceTimersByTimeAsync(250);
 
     expect(genMock).toHaveBeenCalledTimes(1);
-    // Third arg is the spell rows; defaults to [] when no `spells` prop is passed.
-    expect(genMock).toHaveBeenLastCalledWith({ a: '3' }, tmpl(1), []);
+    // Third arg = spell rows ([] with no `spells` prop); fourth = feature lists ({} with no `featureLists` prop).
+    expect(genMock).toHaveBeenLastCalledWith({ a: '3' }, tmpl(1), [], {});
     expect(container.querySelector('iframe')?.getAttribute('src')).toBe('blob:1');
+  });
+
+  it('forwards the featureLists accessor as the fourth generate arg', async () => {
+    const [values] = createSignal<Record<string, string>>({ a: '1' });
+    const [template] = createSignal(tmpl(1));
+    const [page] = createSignal(0);
+    const lists = { classFeatures: [{ name: 'X', description: 'y' }] } as any;
+    const [featureLists] = createSignal(lists);
+    render(() => (
+      <SheetPreview values={values} template={template} activePage={page} featureLists={featureLists} />
+    ));
+    await vi.advanceTimersByTimeAsync(250);
+    expect(genMock).toHaveBeenLastCalledWith({ a: '1' }, tmpl(1), [], lists);
   });
 
   it('revokes the previous object URL on the next regen', async () => {

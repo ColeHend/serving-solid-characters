@@ -17,6 +17,8 @@ interface FieldSidebarProps {
   values: () => Record<string, string>;
   onGrab: (x: number, y: number) => void;
   onAdd: (fieldKey: string) => void;
+  /** Add a fresh static-text field (palette "Static Text" card). */
+  onAddStatic: () => void;
   // Edit tab (inspector)
   field: () => PlacedField | null;
   templateId: string;
@@ -46,7 +48,13 @@ export const FieldSidebar: Component<FieldSidebarProps> = (props) => {
       <TabBar tabs={TABS} activeTab={props.tab()} onTabChange={(_l, i) => props.setTab(i)} tabPosition="stretch" />
       <div class={styles.sidebarBody}>
         <div classList={{ [styles.hiddenTab]: props.tab() !== 0 }}>
-          <FieldPalette placedKeys={props.placedKeys} values={props.values} onGrab={props.onGrab} onAdd={props.onAdd} />
+          <FieldPalette
+            placedKeys={props.placedKeys}
+            values={props.values}
+            onGrab={props.onGrab}
+            onAdd={props.onAdd}
+            onAddStatic={props.onAddStatic}
+          />
         </div>
         <div classList={{ [styles.hiddenTab]: props.tab() !== 1 }}>
           <Show

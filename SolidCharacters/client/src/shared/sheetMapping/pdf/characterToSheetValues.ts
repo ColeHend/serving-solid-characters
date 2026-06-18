@@ -74,7 +74,13 @@ export function characterToSheetValues(
   Object.assign(out, spellValues(char, stats, pb));
 
   // ── Features / defenses / proficiencies ──
+  // `features` stays the legacy merged name list; the three split keys feed the
+  // canvas-chip placeholder only (the PDF draws their FeatureDetail[] structurally
+  // via `characterToFeatureLists` → `generateSheetPdf`'s 4th arg).
   out.features = featureNames(char);
+  out.classFeatures = names(classFeatures(char));
+  out.speciesTraits = names(char.race?.features);
+  out.feats = names(char.features);
   out.languages = languageList(char.languages);
   out.resistances = damageTypes(char.resistances);
   out.vulnerabilities = damageTypes(char.vulnerabilities);
@@ -112,13 +118,33 @@ function hitDice(char: Character): string {
     .join(', ');
 }
 
+/** All class features, flattened across every level (drops nameless entries). */
+function classFeatures(char: Character): FeatureDetail[] {
+  return (char.levels ?? []).flatMap((l) => l.features ?? []).filter((f) => f?.name);
+}
+
+/** Comma-joined feature NAMES (nameless entries dropped). */
+function names(arr: FeatureDetail[] | undefined): string {
+  return (arr ?? []).map((f) => f?.name).filter(Boolean).join(', ');
+}
+
 function featureNames(char: Character): string {
-  const all: FeatureDetail[] = [
-    ...(char.features ?? []),
-    ...(char.race?.features ?? []),
-    ...(char.levels ?? []).flatMap((l) => l.features ?? []),
-  ];
-  return all.map((f) => f?.name).filter(Boolean).join(', ');
+  return names([...(char.features ?? []), ...(char.race?.features ?? []), ...classFeatures(char)]);
+}
+
+/**
+ * Structured feature lists for the three `featureList` placements, keyed exactly
+ * like their `fieldKey`s. Pure (no Solid owner); fed to `generateSheetPdf` as its
+ * 4th arg so the PDF can draw name + description in columns. Returns `{}` for no
+ * character so callers can spread it unconditionally.
+ */
+export function characterToFeatureLists(char: Character | undefined): Record<string, FeatureDetail[]> {
+  if (!char) return {};
+  return {
+    classFeatures: classFeatures(char),
+    speciesTraits: (char.race?.features ?? []).filter((f) => f?.name),
+    feats: (char.features ?? []).filter((f) => f?.name),
+  };
 }
 
 function languageList(langs: string[] | undefined): string {

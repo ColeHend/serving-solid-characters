@@ -1,7 +1,7 @@
 import { Component, Show } from 'solid-js';
 import { Container, Icon } from 'coles-solid-library';
 import { createDraggable } from '../../../shared/dnd';
-import { SheetFieldDef } from '../../../shared/sheetMapping';
+import { SheetFieldDef, STATIC_FIELD_LABEL } from '../../../shared/sheetMapping';
 import styles from './characterCreatePDF.module.scss';
 
 // Pointer travel (px) below which a press counts as a tap, not a drag. Matches the
@@ -68,6 +68,55 @@ export const FieldCard: Component<FieldCardProps> = (props) => {
           {sample()}
         </span>
       </Show>
+    </Container>
+  );
+};
+
+interface StaticFieldCardProps {
+  onGrab: (x: number, y: number) => void;
+  /** Tap (no drag) → add a fresh static-text field at the page center. */
+  onAdd: () => void;
+}
+
+/**
+ * The Add palette's "Static Text" entry. Unlike a {@link FieldCard} it binds to no
+ * character field — each drag/tap mints a brand-new `static:<id>` placement (drag
+ * data `{ kind: 'staticPalette' }`), so several independent labels can coexist.
+ */
+export const StaticFieldCard: Component<StaticFieldCardProps> = (props) => {
+  const drag = createDraggable(() => ({
+    id: 'palette:static',
+    type: 'field',
+    data: { kind: 'staticPalette' },
+  }));
+  const down = { x: 0, y: 0, id: -1 };
+
+  return (
+    <Container
+      theme="surface"
+      ref={drag.ref}
+      class={styles.fieldCard}
+      classList={{ [styles.dragging]: drag.isActive() }}
+      onPointerDown={(e: PointerEvent) => {
+        props.onGrab(e.clientX, e.clientY);
+        down.x = e.clientX;
+        down.y = e.clientY;
+        down.id = e.pointerId;
+      }}
+      onPointerUp={(e: PointerEvent) => {
+        if (e.pointerId !== down.id) return;
+        const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+        down.id = -1;
+        if (moved < TAP_THRESHOLD) props.onAdd(); // tap, not a drag
+      }}
+    >
+      <span ref={drag.handleRef} class={styles.fieldCardHandle} aria-label="Drag to place">
+        <Icon name="drag_indicator" />
+      </span>
+      <div class={styles.fieldCardText}>
+        <div class={styles.fieldCardLabel}>{STATIC_FIELD_LABEL}</div>
+        <div class={styles.fieldCardDesc}>Custom title/label text you type in.</div>
+      </div>
     </Container>
   );
 };

@@ -27,6 +27,23 @@ describe('mappingStore persistence (fake-indexeddb)', () => {
     expect(t.fields.length).toBe(DEFAULT_SHEET_TEMPLATE.fields.length);
   });
 
+  // v6 redefined featureList (x,y) to the box top-left and recalibrated the three
+  // boxes. A cached v5 record must reseed onto those corrected defaults.
+  it('reseeds a stale v5 record onto the v6 box-top-left feature defaults', async () => {
+    await mappingDB.mappings.put({ templateId: 'default', name: 'v5', version: 5, fields: [], updatedAt: 0 });
+    const t = await mappingStore.loadTemplate('default');
+    expect(t.version).toBe(MAPPING_SCHEMA_VERSION);
+    const seeded = t.fields.find((f) => f.fieldKey === 'classFeatures');
+    const def = DEFAULT_SHEET_TEMPLATE.fields.find((f) => f.fieldKey === 'classFeatures');
+    expect(seeded).toMatchObject({
+      renderMode: 'featureList',
+      x: def!.x,
+      y: def!.y,
+      boxHeight: def!.boxHeight,
+      columns: def!.columns,
+    });
+  });
+
   it('round-trips a saved template through the DB', async () => {
     const custom: SheetTemplate = {
       templateId: 'default',
@@ -61,6 +78,48 @@ describe('mappingStore persistence (fake-indexeddb)', () => {
     expect(mappingStore.template()).toBe(before); // unchanged → no signal notification
     mappingStore.upsertField('default', { ...placement, x: 2 }); // real change
     expect(mappingStore.template()).not.toBe(before);
+  });
+
+  // Proves the new v5 render props (renderMode/columns/boxHeight/staticText/…) were
+  // added to PLACEMENT_KEYS — else `samePlacement` would miss these edits and the
+  // inspector's reactive onChange would never re-render (or worse, loop).
+  it('upsertField change-detects the new featureList/static props', () => {
+    const base = {
+      fieldKey: 'classFeatures',
+      pageIndex: 0,
+      x: 1,
+      y: 1,
+      fontSize: 8,
+      font: 'Helvetica' as const,
+      align: 'left' as const,
+      renderMode: 'featureList' as const,
+      columns: 2,
+      boxHeight: 120,
+    };
+    mappingStore.upsertField('default', { ...base });
+    const before = mappingStore.template();
+    mappingStore.upsertField('default', { ...base }); // identical → no-op
+    expect(mappingStore.template()).toBe(before);
+    mappingStore.upsertField('default', { ...base, columns: 3 }); // real change
+    expect(mappingStore.template()).not.toBe(before);
+
+    const stat = {
+      fieldKey: 'static:test',
+      pageIndex: 0,
+      x: 1,
+      y: 1,
+      fontSize: 8,
+      font: 'Helvetica' as const,
+      align: 'left' as const,
+      renderMode: 'static' as const,
+      staticText: 'A',
+    };
+    mappingStore.upsertField('default', { ...stat });
+    const beforeStatic = mappingStore.template();
+    mappingStore.upsertField('default', { ...stat }); // identical → no-op
+    expect(mappingStore.template()).toBe(beforeStatic);
+    mappingStore.upsertField('default', { ...stat, staticText: 'B' }); // real change
+    expect(mappingStore.template()).not.toBe(beforeStatic);
   });
 
   it('reseeds with the default spell/attack table configs', async () => {

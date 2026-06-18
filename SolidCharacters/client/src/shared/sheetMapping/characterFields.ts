@@ -129,7 +129,10 @@ const spellcasting: SheetFieldDef[] = [
 ];
 
 const features: SheetFieldDef[] = [
-  def('features', 'Features & Traits', 'Features', 'Class and feat features & traits.'),
+  def('classFeatures', 'Class Features', 'Features', 'Class features (per level): name + description, in columns.'),
+  def('speciesTraits', 'Species Traits', 'Features', 'Race/species traits: name + description, in columns.'),
+  def('feats', 'Feats & Other Features', 'Features', 'Feats / general features: name + description, in columns.'),
+  def('features', 'Features & Traits (all)', 'Features', 'Legacy: every feature name from all sources, merged.'),
   def('languages', 'Languages', 'Features', 'Languages the character speaks.'),
   def('resistances', 'Resistances', 'Features', 'Damage resistances.'),
   def('vulnerabilities', 'Vulnerabilities', 'Features', 'Damage vulnerabilities.'),
@@ -172,3 +175,17 @@ export const FIELD_LABELS: Record<string, string> = Object.fromEntries(
 export const FIELD_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
   SHEET_FIELD_DEFS.map((d) => [d.key, d.description]),
 );
+
+// ── Static-text fields ──
+// Static text is NOT a `SheetFieldDef` (it has no fixed key and no character
+// value); it gets its own palette card and a unique `static:<id>` fieldKey per
+// instance. These constants drive the palette card and chip/inspector fallbacks.
+
+/** Prefix every static-text field's unique `fieldKey` carries. */
+export const STATIC_FIELD_PREFIX = 'static:';
+
+/** Human label used wherever a static field has no entry in `FIELD_LABELS`. */
+export const STATIC_FIELD_LABEL = 'Static Text';
+
+/** The starter content a freshly added static-text field is seeded with. */
+export const STATIC_FIELD_DEFAULT_TEXT = 'Label';

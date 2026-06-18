@@ -1,7 +1,32 @@
-import { DEFAULT_FONT_SIZE, PDF_PAGE_H, PDF_PAGE_W, PlacedField, clamp, screenToPdf } from '../../../shared/sheetMapping';
+import {
+  DEFAULT_FONT_SIZE,
+  PDF_PAGE_H,
+  PDF_PAGE_W,
+  PlacedField,
+  STATIC_FIELD_DEFAULT_TEXT,
+  STATIC_FIELD_PREFIX,
+  clamp,
+  screenToPdf,
+} from '../../../shared/sheetMapping';
 
 /** Default text color for a freshly placed field — black so it is always visible. */
 export const DEFAULT_FIELD_COLOR = '#000000';
+
+let staticCounter = 0;
+
+/**
+ * A fresh, unique `fieldKey` for a static-text field. Static fields dedupe in the
+ * store by key (one placement per key), so each new label needs its own key.
+ * Prefers `crypto.randomUUID`; falls back to a monotonic counter where it is
+ * unavailable (keeps the helper safe in non-browser/older test environments).
+ */
+export function newStaticKey(): string {
+  const id =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${staticCounter++}-${PDF_PAGE_W}`;
+  return `${STATIC_FIELD_PREFIX}${id}`;
+}
 
 /** Shared defaults for a brand-new placement (font/size/align/color). */
 const newFieldDefaults = (fieldKey: string): Pick<PlacedField, 'fieldKey' | 'fontSize' | 'font' | 'align' | 'color'> => ({
@@ -31,12 +56,22 @@ export interface DropGeometry {
 
 const scaleFromRect = (g: DropGeometry): number => g.rect.width / PDF_PAGE_W || g.fallbackScale;
 
-/** New/re-homed placement from a palette drop: final pointer relative to overlay, Y-flipped. */
-export function placedFromPalette(fieldKey: string, existing: PlacedField | undefined, g: DropGeometry): PlacedField {
+/**
+ * New/re-homed placement from a palette drop: final pointer relative to overlay,
+ * Y-flipped. `seed` carries extra defaults for a BRAND-NEW field (e.g. a static
+ * field's `renderMode`/`staticText`); it is ignored when re-homing an `existing`
+ * placement so its tuned props survive the move.
+ */
+export function placedFromPalette(
+  fieldKey: string,
+  existing: PlacedField | undefined,
+  g: DropGeometry,
+  seed?: Partial<PlacedField>,
+): PlacedField {
   const scale = scaleFromRect(g);
   const { x, y } = screenToPdf(g.dragStart.x + g.delta.x - g.rect.left, g.dragStart.y + g.delta.y - g.rect.top, scale);
   return {
-    ...(existing ?? newFieldDefaults(fieldKey)),
+    ...(existing ?? { ...newFieldDefaults(fieldKey), ...seed }),
     fieldKey,
     pageIndex: g.pageIndex,
     x,
@@ -56,6 +91,18 @@ export function placedAtCenter(fieldKey: string, pageIndex: number, existing?: P
     pageIndex,
     x: PDF_PAGE_W / 2,
     y: PDF_PAGE_H / 2,
+  };
+}
+
+/** Tap-to-add a brand-new static-text field (fresh unique key) at the page center. */
+export function placedStaticAtCenter(pageIndex: number): PlacedField {
+  return {
+    ...newFieldDefaults(newStaticKey()),
+    pageIndex,
+    x: PDF_PAGE_W / 2,
+    y: PDF_PAGE_H / 2,
+    renderMode: 'static',
+    staticText: STATIC_FIELD_DEFAULT_TEXT,
   };
 }
 

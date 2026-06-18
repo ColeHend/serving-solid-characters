@@ -19,7 +19,7 @@ vi.mock('../../customHooks/dndInfo/info/all/classes', () => ({
   useDnDClasses: () => () => mockClasses,
 }));
 
-import { characterToSheetValues } from './characterToSheetValues';
+import { characterToFeatureLists, characterToSheetValues } from './characterToSheetValues';
 
 const FULL_STATS: Stats = { str: 8, dex: 15, con: 10, int: 18, wis: 12, cha: 13 };
 
@@ -124,6 +124,45 @@ describe('characterToSheetValues — derivations', () => {
     expect(out.spellsKnown).toBe('Fireball, Mage Hand');
     expect(out.spellsPrepared).toBe('Fireball');
     expect(out.languages).toBe('Common, Elvish');
+  });
+});
+
+describe('characterToSheetValues — feature split', () => {
+  function withFeatures(): Character {
+    const char = wizard();
+    char.levels = [
+      { class: 'Wizard', level: 1, hitDie: 6, features: [{ name: 'Spellcasting', description: 'Cast wizard spells.' }] },
+      { class: 'Wizard', level: 2, hitDie: 6, features: [{ name: 'Arcane Recovery', description: 'Regain slots on a rest.' }] },
+    ];
+    char.race = { species: 'Elf', features: [{ name: 'Darkvision', description: 'See in dim light 60ft.' }] };
+    char.features = [{ name: 'Lucky', description: 'Reroll three dice per day.' }];
+    return char;
+  }
+
+  it('splits class / species / feat NAMES into their own keys', () => {
+    const out = characterToSheetValues(withFeatures(), FULL_STATS);
+    expect(out.classFeatures).toBe('Spellcasting, Arcane Recovery');
+    expect(out.speciesTraits).toBe('Darkvision');
+    expect(out.feats).toBe('Lucky');
+  });
+
+  it('keeps the legacy `features` key as the merged list of every source', () => {
+    const out = characterToSheetValues(withFeatures(), FULL_STATS);
+    for (const name of ['Lucky', 'Darkvision', 'Spellcasting', 'Arcane Recovery']) {
+      expect(out.features).toContain(name);
+    }
+  });
+
+  it('characterToFeatureLists returns structured FeatureDetail[] per box', () => {
+    const lists = characterToFeatureLists(withFeatures());
+    expect(lists.classFeatures.map((f) => f.name)).toEqual(['Spellcasting', 'Arcane Recovery']);
+    expect(lists.classFeatures[0].description).toBe('Cast wizard spells.');
+    expect(lists.speciesTraits.map((f) => f.name)).toEqual(['Darkvision']);
+    expect(lists.feats.map((f) => f.name)).toEqual(['Lucky']);
+  });
+
+  it('characterToFeatureLists returns {} for no character', () => {
+    expect(characterToFeatureLists(undefined)).toEqual({});
   });
 });
 

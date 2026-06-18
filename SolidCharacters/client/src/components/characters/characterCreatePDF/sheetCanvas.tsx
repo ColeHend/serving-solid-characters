@@ -2,6 +2,7 @@ import { Component, For, Show, createMemo } from 'solid-js';
 import { createDroppable } from '../../../shared/dnd';
 import { PDF_PAGE_H, PDF_PAGE_W, PlacedField, SheetTemplate } from '../../../shared/sheetMapping';
 import { PlacedChip } from './placedChip';
+import { FeatureBoxOutline } from './featureBoxOutline';
 import { TableGuidesOverlay, TableSelection } from './tableGuidesOverlay';
 import sheet1 from '../../../assets/sheet/sheet-1.png';
 import sheet2 from '../../../assets/sheet/sheet-2.png';
@@ -89,6 +90,11 @@ export const SheetCanvas: Component<SheetCanvasProps> = (props) => {
               />
             )}
           </Show>
+          {/* Feature-box outlines + column dividers render BEFORE the chips so the
+              chips (and their drag targets) paint on top. Non-interactive guides. */}
+          <For each={pageFields().filter((f) => f.renderMode === 'featureList')}>
+            {(field) => <FeatureBoxOutline field={field} zoom={props.zoom} />}
+          </For>
           <For each={pageFields()}>
             {(field) => (
               <PlacedChip

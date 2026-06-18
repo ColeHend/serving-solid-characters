@@ -1,11 +1,12 @@
 import { Component, Show } from 'solid-js';
-import { Button, Icon, Input, Option, Select } from 'coles-solid-library';
+import { Button, Checkbox, Icon, Input, Option, Select } from 'coles-solid-library';
 import {
   FIELD_LABELS,
   PAGE_COUNT,
   PDF_PAGE_H,
   PDF_PAGE_W,
   PlacedField,
+  STATIC_FIELD_LABEL,
   SheetFontName,
   TextAlign,
   clamp,
@@ -59,7 +60,10 @@ export const FieldInspector: Component<FieldInspectorProps> = (props) => {
     >
       {(field) => (
         <div class={styles.inspector}>
-          <div class={styles.inspectorTitle}>{FIELD_LABELS[field().fieldKey] ?? field().fieldKey}</div>
+          <div class={styles.inspectorTitle}>
+            {FIELD_LABELS[field().fieldKey] ??
+              (field().renderMode === 'static' ? field().staticText || STATIC_FIELD_LABEL : field().fieldKey)}
+          </div>
 
           <label class={styles.colorRow}>
             Color
@@ -161,6 +165,65 @@ export const FieldInspector: Component<FieldInspectorProps> = (props) => {
               />
             </label>
           </div>
+
+          {/* Static-text content. */}
+          <Show when={field().renderMode === 'static'}>
+            <label class={styles.colorRow}>
+              Text
+              <Input
+                value={field().staticText ?? ''}
+                onChange={(e) => update({ staticText: e.currentTarget.value })}
+              />
+            </label>
+          </Show>
+
+          {/* Feature-list layout (columns / truncation). */}
+          <Show when={field().renderMode === 'featureList'}>
+            <div class={styles.configGrid}>
+              <label>
+                Columns
+                <Select
+                  value={String(field().columns ?? 2)}
+                  onChange={(v: string) => update({ columns: clamp(parseInt(v, 10) || 1, 1, 3) })}
+                >
+                  <Option value="1">1</Option>
+                  <Option value="2">2</Option>
+                  <Option value="3">3</Option>
+                </Select>
+              </label>
+              <label>
+                Column gap (pt)
+                <Input
+                  type="number"
+                  value={field().columnGap ?? 12}
+                  onChange={(e) => update({ columnGap: clamp(toNum(e.currentTarget.value, 12), 0, 100) })}
+                />
+              </label>
+              <label>
+                Box height (pt)
+                <Input
+                  type="number"
+                  value={field().boxHeight ?? 120}
+                  onChange={(e) => update({ boxHeight: clamp(toNum(e.currentTarget.value, 120), 10, PDF_PAGE_H) })}
+                />
+              </label>
+              <label>
+                Description max chars
+                <Input
+                  type="number"
+                  value={field().descMaxChars ?? 80}
+                  onChange={(e) => update({ descMaxChars: clamp(toNum(e.currentTarget.value, 80), 0, 400) })}
+                />
+              </label>
+            </div>
+            <label class={styles.colorRow}>
+              Show descriptions
+              <Checkbox
+                checked={field().showDescriptions !== false}
+                onChange={(checked: boolean) => update({ showDescriptions: checked })}
+              />
+            </label>
+          </Show>
 
           <Button borderTheme="error" transparent onClick={() => props.onRemove(field().fieldKey)}>
             <Icon name="delete" /> Remove field

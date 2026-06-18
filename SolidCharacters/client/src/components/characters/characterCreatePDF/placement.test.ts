@@ -1,13 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { PDF_PAGE_H, PDF_PAGE_W, PlacedField } from '../../../shared/sheetMapping';
+import { PDF_PAGE_H, PDF_PAGE_W, PlacedField, STATIC_FIELD_PREFIX } from '../../../shared/sheetMapping';
 import {
   DEFAULT_FIELD_COLOR,
   DropGeometry,
   MIN_TABLE_COL_W,
   movedTableTop,
   movedTableX,
+  newStaticKey,
   placedAtCenter,
   placedFromPalette,
+  placedStaticAtCenter,
   resizedTableWidth,
 } from './placement';
 
@@ -57,6 +59,44 @@ describe('placedAtCenter (tap-to-add)', () => {
       fieldKey: 'str', pageIndex: 0, x: 40, y: 700, fontSize: 12, font: 'Courier', align: 'right', color: '#00ff00',
     };
     expect(placedAtCenter('str', 1, existing)).toBe(existing);
+  });
+});
+
+describe('static-text placements', () => {
+  const g: DropGeometry = {
+    rect: { left: 0, top: 0, width: 612 },
+    dragStart: { x: 100, y: 200 },
+    delta: { x: 0, y: 0 },
+    pageIndex: 0,
+    fallbackScale: 1,
+  };
+
+  it('newStaticKey returns unique, prefixed keys', () => {
+    const a = newStaticKey();
+    const b = newStaticKey();
+    expect(a.startsWith(STATIC_FIELD_PREFIX)).toBe(true);
+    expect(a).not.toBe(b);
+  });
+
+  it('placedStaticAtCenter builds a static field at the page center', () => {
+    const field = placedStaticAtCenter(1);
+    expect(field.renderMode).toBe('static');
+    expect(field.staticText).toBeTruthy();
+    expect(field.fieldKey.startsWith(STATIC_FIELD_PREFIX)).toBe(true);
+    expect(field.x).toBe(PDF_PAGE_W / 2);
+    expect(field.y).toBe(PDF_PAGE_H / 2);
+    expect(field.pageIndex).toBe(1);
+  });
+
+  it('placedFromPalette applies a seed for a brand-new field but not when re-homing', () => {
+    const fresh = placedFromPalette('static:x', undefined, g, { renderMode: 'static', staticText: 'Hi' });
+    expect(fresh.renderMode).toBe('static');
+    expect(fresh.staticText).toBe('Hi');
+
+    const existing: PlacedField = { fieldKey: 'name', pageIndex: 0, x: 0, y: 0, fontSize: 10, font: 'Helvetica', align: 'left' };
+    const rehomed = placedFromPalette('name', existing, g, { renderMode: 'static', staticText: 'Hi' });
+    expect(rehomed.renderMode).toBeUndefined(); // seed ignored — existing props win
+    expect(rehomed.staticText).toBeUndefined();
   });
 });
 

@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { PDFDocument } from 'pdf-lib';
-import { SheetTemplate } from '../sheetMapping.types';
-import { generateSheetPdf } from './generateSheetPdf';
+import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { FeatureDetail } from '../../../models/generated';
+import { PlacedField, SheetTemplate } from '../sheetMapping.types';
+import { generateSheetPdf, layoutFeatureList } from './generateSheetPdf';
 import { SpellRow, defaultAttackCantripConfig, defaultSpellTableConfig } from './spellTable';
 
 // Serve the real template bytes to `generateSheetPdf`'s internal fetch().
@@ -89,6 +90,135 @@ describe('generateSheetPdf', () => {
       template([{ fieldKey: 'features', pageIndex: 0, x: 415, y: 560, fontSize: 8, font: 'Helvetica', align: 'left', maxWidth: 170 }]),
     );
     expect(startsWithPdf(bytes)).toBe(true);
+  });
+});
+
+describe('generateSheetPdf — feature lists & static text', () => {
+  const feat = (name: string, description = ''): FeatureDetail => ({ name, description });
+
+  it('renders a two-column featureList (name + truncated description) as a valid PDF', async () => {
+    const items = [
+      feat('Darkvision', 'You can see in dim light within 60 feet as if it were bright light.'),
+      feat('Spellcasting', 'You can cast wizard spells using Intelligence as your spellcasting ability.'),
+      feat('Arcane Recovery', 'Once per day on a short rest you regain expended spell slots.'),
+    ];
+    const bytes = await generateSheetPdf(
+      {},
+      template([
+        {
+          fieldKey: 'classFeatures', pageIndex: 0, x: 320, y: 440, fontSize: 8, font: 'Helvetica', align: 'left',
+          maxWidth: 272, renderMode: 'featureList', columns: 2, boxHeight: 180, descMaxChars: 60,
+        },
+      ]),
+      undefined,
+      { classFeatures: items },
+    );
+    expect(startsWithPdf(bytes)).toBe(true);
+  });
+
+  it('tolerates empty descriptions, descriptions-off, columns=3 and a giant single word', async () => {
+    const items = [feat('NoDesc', ''), feat('LongWord', 'a'.repeat(400)), feat('X'.repeat(120), 'short')];
+    const bytes = await generateSheetPdf(
+      {},
+      template([
+        {
+          fieldKey: 'feats', pageIndex: 0, x: 30, y: 400, fontSize: 7, font: 'TimesRoman', align: 'left',
+          maxWidth: 200, renderMode: 'featureList', columns: 3, boxHeight: 100, descMaxChars: 50, showDescriptions: false,
+        },
+      ]),
+      undefined,
+      { feats: items },
+    );
+    expect(startsWithPdf(bytes)).toBe(true);
+  });
+
+  it('draws a static field from staticText and ignores values[fieldKey]', async () => {
+    const bytes = await generateSheetPdf(
+      { 'static:1': 'IGNORED' },
+      template([
+        { fieldKey: 'static:1', pageIndex: 0, x: 40, y: 700, fontSize: 10, font: 'Helvetica', align: 'left', renderMode: 'static', staticText: 'Resistances:' },
+      ]),
+    );
+    expect(startsWithPdf(bytes)).toBe(true);
+  });
+
+  it('skips a featureList with no items and an empty static field', async () => {
+    const bytes = await generateSheetPdf(
+      {},
+      template([
+        { fieldKey: 'classFeatures', pageIndex: 0, x: 320, y: 440, fontSize: 8, font: 'Helvetica', align: 'left', renderMode: 'featureList' },
+        { fieldKey: 'static:2', pageIndex: 0, x: 40, y: 680, fontSize: 10, font: 'Helvetica', align: 'left', renderMode: 'static', staticText: '' },
+      ]),
+      undefined,
+      {},
+    );
+    expect(startsWithPdf(bytes)).toBe(true);
+  });
+
+  it('embeds bold feature-name fonts for every StandardFont without throwing', async () => {
+    for (const font of ['Helvetica', 'TimesRoman', 'Courier'] as const) {
+      const bytes = await generateSheetPdf(
+        {},
+        template([
+          { fieldKey: 'speciesTraits', pageIndex: 0, x: 200, y: 300, fontSize: 8, font, align: 'left', maxWidth: 180, renderMode: 'featureList', columns: 1, boxHeight: 100 },
+        ]),
+        undefined,
+        { speciesTraits: [feat('Bold Name', 'a description')] },
+      );
+      expect(startsWithPdf(bytes)).toBe(true);
+    }
+  });
+});
+
+describe('layoutFeatureList — box-top-left geometry', () => {
+  const feat = (name: string, description = ''): FeatureDetail => ({ name, description });
+
+  // `(x, y)` is the box top-left; box spans [y - boxHeight, y]. fontSize 8 → topPad 6.4.
+  const box: PlacedField = {
+    fieldKey: 'classFeatures', pageIndex: 0, x: 320, y: 440, fontSize: 8, font: 'Helvetica', align: 'left',
+    maxWidth: 272, renderMode: 'featureList', columns: 2, columnGap: 12, boxHeight: 40, showDescriptions: false,
+  };
+
+  it('starts the first baseline one ascent below the box top and flows down inside the box', async () => {
+    const doc = await PDFDocument.create();
+    const reg = await doc.embedFont(StandardFonts.Helvetica);
+    const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+    const lines = layoutFeatureList(box, [feat('Alpha'), feat('Beta'), feat('Gamma'), feat('Delta')], reg, bold);
+
+    const colTop = box.y - box.fontSize * 0.8; // 433.6
+    const bottom = box.y - (box.boxHeight ?? 0); // 400
+    expect(lines[0]).toMatchObject({ text: 'Alpha', x: 320, bold: true });
+    expect(lines[0].y).toBeCloseTo(colTop, 5); // first baseline = box top − ascent
+    // Every baseline sits inside the box (between the bottom edge and the first-line top).
+    for (const ln of lines) {
+      expect(ln.y).toBeLessThanOrEqual(colTop + 1e-6);
+      expect(ln.y).toBeGreaterThanOrEqual(bottom - 1e-6);
+    }
+  });
+
+  it('spills into column 2 at x = x + colW + gap and resets to the column top', async () => {
+    const doc = await PDFDocument.create();
+    const reg = await doc.embedFont(StandardFonts.Helvetica);
+    const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+    const lines = layoutFeatureList(box, [feat('Alpha'), feat('Beta'), feat('Gamma'), feat('Delta')], reg, bold);
+
+    const colW = ((box.maxWidth ?? 0) - (box.columnGap ?? 0)) / 2; // 130
+    const col2X = box.x + colW + (box.columnGap ?? 0); // 462
+    const colTop = box.y - box.fontSize * 0.8;
+    const col2 = lines.find((l) => l.x === col2X);
+    expect(col2).toBeTruthy();
+    expect(col2!.y).toBeCloseTo(colTop, 5); // column 2 restarts at the box top
+  });
+
+  it('drops features once every column is full (returns no items past the box)', async () => {
+    const doc = await PDFDocument.create();
+    const reg = await doc.embedFont(StandardFonts.Helvetica);
+    const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+    const tiny: PlacedField = { ...box, columns: 1, boxHeight: 12 }; // ~1 line tall
+    const lines = layoutFeatureList(tiny, [feat('One'), feat('Two'), feat('Three')], reg, bold);
+    // First feature draws (never dropped at a fresh column top); the rest spill past
+    // the single column and are dropped.
+    expect(lines.map((l) => l.text)).toEqual(['One']);
   });
 });
 

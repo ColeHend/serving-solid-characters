@@ -41,7 +41,14 @@ function mergeAttackCantrip(base: AttackCantripConfig, patch: DeepPartial<Attack
   };
 }
 
-/** Every field of a placement that defines its identity, for cheap change detection. */
+/**
+ * Every field of a placement that defines its identity, for cheap change
+ * detection. EVERY persisted prop must be listed: a missing key makes
+ * `samePlacement` treat a real edit as a no-op (silent stale render) — and for a
+ * prop the inspector edits, lets the reactive `Select`/`Input` onChange churn the
+ * reference into the documented infinite update loop. All values are primitives,
+ * so the strict `===` per key in `samePlacement` is correct.
+ */
 const PLACEMENT_KEYS: (keyof PlacedField)[] = [
   'fieldKey',
   'pageIndex',
@@ -52,6 +59,13 @@ const PLACEMENT_KEYS: (keyof PlacedField)[] = [
   'align',
   'maxWidth',
   'color',
+  'renderMode',
+  'boxHeight',
+  'columns',
+  'columnGap',
+  'descMaxChars',
+  'showDescriptions',
+  'staticText',
 ];
 
 /** True when two placements are field-for-field equal (so an upsert is a no-op). */

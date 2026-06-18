@@ -28,7 +28,22 @@ const PAGE_H = 792;
 const top = (yFromTop: number): number => PAGE_H - yFromTop;
 const center: TextAlign = 'center';
 
-type FieldExtra = Partial<Pick<PlacedField, 'fontSize' | 'font' | 'align' | 'maxWidth'>>;
+type FieldExtra = Partial<
+  Pick<
+    PlacedField,
+    | 'fontSize'
+    | 'font'
+    | 'align'
+    | 'maxWidth'
+    | 'renderMode'
+    | 'boxHeight'
+    | 'columns'
+    | 'columnGap'
+    | 'descMaxChars'
+    | 'showDescriptions'
+    | 'staticText'
+  >
+>;
 
 /** Field factory. `yFromTop` is the baseline distance from the page top (see header). */
 const f = (fieldKey: string, pageIndex: number, x: number, yFromTop: number, extra: FieldExtra = {}): PlacedField => ({
@@ -39,7 +54,15 @@ const f = (fieldKey: string, pageIndex: number, x: number, yFromTop: number, ext
   fontSize: extra.fontSize ?? 10,
   font: extra.font ?? 'Helvetica',
   align: extra.align ?? 'left',
+  // Spread optional props only when set so seeded records stay minimal.
   ...(extra.maxWidth ? { maxWidth: extra.maxWidth } : {}),
+  ...(extra.renderMode ? { renderMode: extra.renderMode } : {}),
+  ...(extra.boxHeight != null ? { boxHeight: extra.boxHeight } : {}),
+  ...(extra.columns != null ? { columns: extra.columns } : {}),
+  ...(extra.columnGap != null ? { columnGap: extra.columnGap } : {}),
+  ...(extra.descMaxChars != null ? { descMaxChars: extra.descMaxChars } : {}),
+  ...(extra.showDescriptions != null ? { showDescriptions: extra.showDescriptions } : {}),
+  ...(extra.staticText != null ? { staticText: extra.staticText } : {}),
 });
 
 // Column anchors shared by ability boxes, saves and skills. L = STR/DEX/CON
@@ -156,11 +179,48 @@ const PAGE_1_FIELDS: PlacedField[] = [
   f('hpTemp', 0, 426, 48, { fontSize: 11, align: center }),
   f('hitDice', 0, 485, 73, { fontSize: 10, align: center }),
 
-  // ── Prose blocks (wrap via maxWidth) ──
-  f('features', 0, 315, 348, { fontSize: 8, maxWidth: 270 }), // CLASS FEATURES box
-  f('resistances', 0, 272, 585, { fontSize: 8, maxWidth: 170 }), // SPECIES TRAITS box (defenses stacked)
-  f('vulnerabilities', 0, 272, 618, { fontSize: 8, maxWidth: 170 }),
-  f('immunities', 0, 272, 651, { fontSize: 8, maxWidth: 170 }),
+  // ── Feature boxes (bold name + ellipsis-truncated description, in columns) ──
+  // For `featureList`, `(x, yFromTop)` is the BOX TOP-LEFT (the list flows down to
+  // `top - boxHeight`). Calibrated to the printed rules read off the rendered sheet:
+  //  • CLASS FEATURES box: x 212→597.6, top rule 335.7, bottom 544.5, CENTER divider
+  //    at 404.8 → two equal columns (x 216, w 378, gap 12 ⇒ colW 183, divider 405).
+  //  • SPECIES TRAITS box: x 212→400, header bottom 572.4 (single column).
+  //  • FEATS box: x 410→597.6, header bottom 572.4 (single column).
+  f('classFeatures', 0, 216, 340, {
+    fontSize: 8,
+    maxWidth: 378,
+    renderMode: 'featureList',
+    columns: 2,
+    columnGap: 12,
+    boxHeight: 202,
+    descMaxChars: 70,
+  }), // CLASS FEATURES box (two equal columns, divider at x≈405: 340 → 542)
+  f('speciesTraits', 0, 216, 576, {
+    fontSize: 7,
+    maxWidth: 180,
+    renderMode: 'featureList',
+    columns: 1,
+    boxHeight: 120,
+    descMaxChars: 50,
+  }), // SPECIES TRAITS box (bottom-left, single column: 576 → 696)
+  f('feats', 0, 414, 576, {
+    fontSize: 7,
+    maxWidth: 180,
+    renderMode: 'featureList',
+    columns: 1,
+    boxHeight: 150,
+    descMaxChars: 50,
+  }), // FEATS box (bottom-right, single column: 576 → 726)
+
+  // ── Relocated defenses (moved out of the species box) + editable static titles ──
+  // TODO calibrate: best-guess stacked block below the feature boxes; drag freely.
+  f('static:resistances-label', 0, 190, 705, { fontSize: 8, renderMode: 'static', staticText: 'Resistances:' }),
+  f('resistances', 0, 268, 705, { fontSize: 8, maxWidth: 130 }),
+  f('static:vulnerabilities-label', 0, 190, 722, { fontSize: 8, renderMode: 'static', staticText: 'Vulnerabilities:' }),
+  f('vulnerabilities', 0, 268, 722, { fontSize: 8, maxWidth: 130 }),
+  f('static:immunities-label', 0, 190, 739, { fontSize: 8, renderMode: 'static', staticText: 'Immunities:' }),
+  f('immunities', 0, 268, 739, { fontSize: 8, maxWidth: 130 }),
+
   f('otherProficiencies', 0, 22, 682, { fontSize: 8, maxWidth: 165 }), // EQUIPMENT TRAINING box
 ];
 

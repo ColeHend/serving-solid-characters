@@ -11,8 +11,11 @@ import {
   FIELD_LABELS,
   PAGE_COUNT,
   PlacedField,
+  STATIC_FIELD_DEFAULT_TEXT,
+  STATIC_FIELD_LABEL,
   SpellTableConfig,
   SpellTextCol,
+  characterToFeatureLists,
   characterToSheetValues,
   clamp,
   mappingStore,
@@ -24,8 +27,10 @@ import {
   movedPlaced,
   movedTableTop,
   movedTableX,
+  newStaticKey,
   placedAtCenter,
   placedFromPalette,
+  placedStaticAtCenter,
   resizedTableWidth,
 } from './placement';
 import { FieldSidebar } from './fieldSidebar';
@@ -36,7 +41,11 @@ import { TableDragData, TableSelection } from './tableGuidesOverlay';
 import styles from './characterCreatePDF.module.scss';
 
 const TEMPLATE_ID = 'default';
-type DragData = { kind: 'palette'; fieldKey: string } | { kind: 'placed'; field: PlacedField } | TableDragData;
+type DragData =
+  | { kind: 'palette'; fieldKey: string }
+  | { kind: 'staticPalette' }
+  | { kind: 'placed'; field: PlacedField }
+  | TableDragData;
 type PageData = { pageIndex: number; getRect: () => DOMRect };
 
 /** Sparse per-column patches accepted by the store's table updaters. */
@@ -96,6 +105,8 @@ export const CreateCharacterPDF: Component = () => {
   // Effective stats + sheet values for the live preview / canvas, computed in owner context.
   const fullStats = useExportFullStats(() => previewCharacter());
   const values = createMemo(() => characterToSheetValues(previewCharacter(), fullStats()));
+  // Structured feature lists for the `featureList` placements (drawn as name + description columns).
+  const featureLists = createMemo(() => characterToFeatureLists(previewCharacter()));
   // Sorted spell rows for the page-2 table (re-runs when the character or the SRD spell list loads).
   const spellRows = createMemo(() => spellTableRows(previewCharacter()));
 
@@ -188,6 +199,13 @@ export const CreateCharacterPDF: Component = () => {
     focusField(fieldKey, true);
   };
 
+  /** Tap-to-add a brand-new static-text field (unique key) at the page center. */
+  const onAddStatic = () => {
+    const field = placedStaticAtCenter(activePage());
+    mappingStore.upsertField(TEMPLATE_ID, field);
+    focusField(field.fieldKey, true);
+  };
+
   const onRemove = (key: string) => {
     mappingStore.removeField(TEMPLATE_ID, key);
     if (selectedFieldKey() === key) setSelectedFieldKey(null);
@@ -209,10 +227,18 @@ export const CreateCharacterPDF: Component = () => {
       applyTableDrag(data, geometry);
       return;
     }
-    const field =
-      data.kind === 'placed'
-        ? movedPlaced(data.field, geometry)
-        : placedFromPalette(data.fieldKey, template().fields.find((f) => f.fieldKey === data.fieldKey), geometry);
+    let field: PlacedField;
+    if (data.kind === 'placed') {
+      field = movedPlaced(data.field, geometry);
+    } else if (data.kind === 'staticPalette') {
+      // Each static drop mints a fresh key so multiple labels can coexist.
+      field = placedFromPalette(newStaticKey(), undefined, geometry, {
+        renderMode: 'static',
+        staticText: STATIC_FIELD_DEFAULT_TEXT,
+      });
+    } else {
+      field = placedFromPalette(data.fieldKey, template().fields.find((f) => f.fieldKey === data.fieldKey), geometry);
+    }
     mappingStore.upsertField(TEMPLATE_ID, field);
     // focusField defers the tab switch to a microtask, so it never restructures
     // the tree inside this drag-end flush. Drag never opens the mobile modal.
@@ -222,7 +248,7 @@ export const CreateCharacterPDF: Component = () => {
   const onGenerate = async () => {
     const char = selectedCharacter() ?? previewCharacter();
     try {
-      downloadPdf(await generateSheetPdf(values(), template(), spellRows()), char.name || 'character');
+      downloadPdf(await generateSheetPdf(values(), template(), spellRows(), featureLists()), char.name || 'character');
     } catch {
       addSnackbar({ message: 'Failed to generate sheet', severity: 'error' });
     }
@@ -235,6 +261,8 @@ export const CreateCharacterPDF: Component = () => {
         return FIELD_LABELS[data.field.fieldKey] ?? data.field.fieldKey;
       case 'palette':
         return FIELD_LABELS[data.fieldKey] ?? data.fieldKey;
+      case 'staticPalette':
+        return STATIC_FIELD_LABEL;
       case 'tableMove':
         return 'Move table';
       case 'tableMarker':
@@ -255,6 +283,7 @@ export const CreateCharacterPDF: Component = () => {
       values={values}
       onGrab={(x, y) => setDragStart({ x, y })}
       onAdd={onAdd}
+      onAddStatic={onAddStatic}
       field={selectedField}
       templateId={TEMPLATE_ID}
       onRemove={onRemove}
@@ -327,7 +356,13 @@ export const CreateCharacterPDF: Component = () => {
 
         <Modal title="Sheet preview" show={[showPreview, setShowPreview]} width="90vw" height="92vh">
           <Show when={showPreview()}>
-            <SheetPreview values={values} template={template} activePage={activePage} spells={spellRows} />
+            <SheetPreview
+              values={values}
+              template={template}
+              activePage={activePage}
+              spells={spellRows}
+              featureLists={featureLists}
+            />
           </Show>
         </Modal>
 

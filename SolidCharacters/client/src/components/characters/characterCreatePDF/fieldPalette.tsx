@@ -1,7 +1,7 @@
-import { Component, For, createMemo } from 'solid-js';
+import { Component, For, Show, createMemo } from 'solid-js';
 import { FlatCard } from '../../../shared/components/flatCard/flatCard';
 import { SHEET_FIELD_DEFS, SheetFieldDef, SheetFieldGroup } from '../../../shared/sheetMapping';
-import { FieldCard } from './fieldCard';
+import { FieldCard, StaticFieldCard } from './fieldCard';
 import styles from './characterCreatePDF.module.scss';
 
 /** Material Symbol per category, shown in each group's collapsible header. */
@@ -24,6 +24,8 @@ interface FieldPaletteProps {
   values: () => Record<string, string>;
   onGrab: (x: number, y: number) => void;
   onAdd: (fieldKey: string) => void;
+  /** Add a fresh static-text field (tap on the palette's "Static Text" card). */
+  onAddStatic: () => void;
 }
 
 /**
@@ -49,6 +51,10 @@ export const FieldPalette: Component<FieldPaletteProps> = (props) => {
         {([group, defs], i) => (
           <FlatCard headerName={group} icon={GROUP_ICONS[group]} startOpen={i() === 0} transparent>
             <div class={styles.paletteGroupBody}>
+              {/* Static text lives in the Features group — it labels the relocated defenses. */}
+              <Show when={group === 'Features'}>
+                <StaticFieldCard onGrab={props.onGrab} onAdd={props.onAddStatic} />
+              </Show>
               <For each={defs}>
                 {(def) => (
                   <FieldCard

@@ -1,6 +1,7 @@
 import { Component, Show, createEffect, createSignal, onCleanup } from 'solid-js';
 import { Container } from 'coles-solid-library';
 import { SheetTemplate } from '../../../shared/sheetMapping';
+import { FeatureDetail } from '../../../models/generated';
 import { generateSheetPdf } from '../../../shared/sheetMapping/pdf/generateSheetPdf';
 import { SpellRow } from '../../../shared/sheetMapping/pdf/spellTable';
 import styles from './characterCreatePDF.module.scss';
@@ -12,6 +13,8 @@ interface SheetPreviewProps {
   activePage: () => number;
   /** Sorted spell rows for the page-2 table (owned by the shell). */
   spells?: () => SpellRow[];
+  /** Structured feature lists for `featureList` placements (owned by the shell). */
+  featureLists?: () => Record<string, FeatureDetail[]>;
 }
 
 const DEBOUNCE_MS = 250;
@@ -35,12 +38,13 @@ export const SheetPreview: Component<SheetPreviewProps> = (props) => {
     const values = props.values();
     const template = props.template();
     const spells = props.spells?.() ?? [];
+    const featureLists = props.featureLists?.() ?? {};
     void props.activePage();
 
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
       const myToken = ++token;
-      void generateSheetPdf(values, template, spells)
+      void generateSheetPdf(values, template, spells, featureLists)
         .then((bytes) => {
           if (myToken !== token) return; // a newer regen superseded this one
           const url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'application/pdf' }));
