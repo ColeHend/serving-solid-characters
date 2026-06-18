@@ -86,9 +86,20 @@ describe('characterToSheetValues — derivations', () => {
 
   it('sparse saving throws default to non-proficient', () => {
     expect(out.intSave).toBe('+7'); // +4 + pb 3
-    expect(out.intSaveProf).toBe('●');
+    expect(out.intSaveProf).toBe('•'); // WinAnsi-safe bullet
     expect(out.strSave).toBe('-1'); // -1 + 0 (not proficient)
     expect(out.strSaveProf).toBe('');
+  });
+
+  it('proficiency dots use WinAnsi-safe glyphs (•, •• for expertise)', () => {
+    expect(out.arcanaProf).toBe('•'); // proficient
+    expect(out.sleightOfHandProf).toBe('••'); // expertise
+    expect(out.athleticsProf).toBe(''); // neither
+  });
+
+  it('ArmorClass/Speed stored as 0 render blank / fall back to race speed', () => {
+    expect(out.armorClass).toBe(''); // stored ArmorClass is always 0 → blank
+    expect(out.speed).toBe('30ft'); // Speed 0 → falls back to race.speed
   });
 
   it('initiative, passive perception, spell DC/attack', () => {

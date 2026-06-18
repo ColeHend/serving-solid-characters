@@ -7,7 +7,9 @@ import sheet2 from '../../../assets/sheet/sheet-2.png';
 import styles from './characterCreatePDF.module.scss';
 
 const PAGE_IMAGES = [sheet1, sheet2];
-const FALLBACK_RECT = { left: 0, top: 0, width: PDF_PAGE_W, height: PDF_PAGE_H } as DOMRect;
+// width 0 → `scaleFromRect` falls back to the caller's `fallbackScale` (zoom) when
+// the overlay hasn't been measured yet (drop before first paint).
+const FALLBACK_RECT = { left: 0, top: 0, width: 0, height: 0 } as DOMRect;
 
 interface SheetCanvasProps {
   activePage: () => number;

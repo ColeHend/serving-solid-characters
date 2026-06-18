@@ -11,9 +11,9 @@ import {
   PlacedField,
   characterToSheetValues,
   clamp,
-  generateSheetPdf,
   mappingStore,
 } from '../../../shared/sheetMapping';
+import { generateSheetPdf } from '../../../shared/sheetMapping/pdf/generateSheetPdf';
 import { DropGeometry, movedPlaced, placedFromPalette } from './placement';
 import { FieldPalette } from './fieldPalette';
 import { SheetCanvas } from './sheetCanvas';
@@ -22,6 +22,7 @@ import { SheetPreview } from './sheetPreview';
 import styles from './characterCreatePDF.module.scss';
 
 const TEMPLATE_ID = 'default';
+const EMPTY_CHARACTER = new Character(); // type-safe stand-in when no character is selected
 type DragData = { kind: 'palette'; fieldKey: string } | { kind: 'placed'; field: PlacedField };
 type PageData = { pageIndex: number; getRect: () => DOMRect };
 
@@ -33,13 +34,15 @@ function downloadPdf(bytes: Uint8Array, filename: string) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  // Defer revoke so the click's download has been initiated first.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 /** Drag-and-drop character-sheet field mapper (the `/characters/pdfCreate` screen). */
 export const CreateCharacterPDF: Component = () => {
   const [searchParams] = useSearchParams();
-  const [characters] = createSignal<Character[]>(characterManager.characters());
+  // Reactive accessor onto the Dexie-backed store so async loads / new characters appear.
+  const characters = characterManager.characters;
 
   const initialName = () => {
     const p = searchParams.name;
@@ -47,7 +50,8 @@ export const CreateCharacterPDF: Component = () => {
   };
   const [selectedName, setSelectedName] = createSignal<string | undefined>(initialName());
 
-  // Memo so the Dexie-backed character store can resolve async without crashing.
+  // Memo resolves the name (which may be stale/invalid) against the live list,
+  // falling back to the first character so the Select and preview stay in sync.
   const selectedCharacter = createMemo<Character | undefined>(() => {
     const list = characters();
     if (!list.length) return undefined;
@@ -55,7 +59,7 @@ export const CreateCharacterPDF: Component = () => {
   });
 
   // Effective stats + sheet values for the live preview, computed in owner context.
-  const fullStats = useExportFullStats(() => selectedCharacter() as Character);
+  const fullStats = useExportFullStats(() => selectedCharacter() ?? EMPTY_CHARACTER);
   const values = createMemo(() => characterToSheetValues(selectedCharacter(), fullStats()));
 
   const [zoom, setZoom] = createSignal(1);
@@ -111,7 +115,7 @@ export const CreateCharacterPDF: Component = () => {
       <DragDropProvider collisionDetection={pointerWithin} onDragEnd={onDragEnd}>
         <div class={styles.toolbar}>
           <Show when={characters().length} fallback={<span>No characters yet — create one first.</span>}>
-            <Select value={selectedName() ?? characters()[0]?.name} onChange={(n: string) => setSelectedName(n)}>
+            <Select value={selectedCharacter()?.name ?? ''} onChange={(n: string) => setSelectedName(n)}>
               <For each={characters()}>{(c) => <Option value={c.name}>{c.name}</Option>}</For>
             </Select>
           </Show>

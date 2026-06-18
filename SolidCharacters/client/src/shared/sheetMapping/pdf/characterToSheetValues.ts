@@ -42,7 +42,7 @@ export function characterToSheetValues(
 
   // ── Abilities ──
   for (const ability of ABILITIES) {
-    const score = stats?.[ability.key] ?? 0;
+    const score = stats?.[ability.key] ?? 10; // missing/undefined → neutral baseline (mod 0)
     out[ability.key] = String(score);
     out[`${ability.key}Mod`] = signed(getAbilityModifier(score));
   }
@@ -56,13 +56,13 @@ export function characterToSheetValues(
   const profSaves = new Set((char.savingThrows ?? []).filter((s) => s.proficient).map((s) => s.stat));
   for (const ability of ABILITIES) {
     const proficient = profSaves.has(ability.key);
-    out[`${ability.key}Save`] = signed(getAbilityModifier(stats?.[ability.key] ?? 0) + (proficient ? pb : 0));
-    out[`${ability.key}SaveProf`] = proficient ? '●' : '';
+    out[`${ability.key}Save`] = signed(getAbilityModifier(stats?.[ability.key] ?? 10) + (proficient ? pb : 0));
+    out[`${ability.key}SaveProf`] = proficient ? '•' : ''; // WinAnsi-safe bullet
   }
 
   // ── Combat / vitals ──
   out.armorClass = char.ArmorClass ? String(char.ArmorClass) : ''; // stored value is always 0 → blank
-  out.initiative = signed(getAbilityModifier(stats?.dex ?? 0));
+  out.initiative = signed(getAbilityModifier(stats?.dex ?? 10));
   out.speed = char.Speed ? String(char.Speed) : char.race?.speed ?? '';
   out.hpMax = String(char.health?.max ?? 0);
   out.hpCurrent = String(char.health?.current ?? 0);

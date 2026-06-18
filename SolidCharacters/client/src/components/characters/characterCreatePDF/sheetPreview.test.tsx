@@ -4,7 +4,7 @@ import { render, cleanup } from '@solidjs/testing-library';
 
 // Mock the single render path so the preview is exercised without real pdf-lib.
 const { genMock } = vi.hoisted(() => ({ genMock: vi.fn() }));
-vi.mock('../../../shared/sheetMapping', () => ({ generateSheetPdf: genMock }));
+vi.mock('../../../shared/sheetMapping/pdf/generateSheetPdf', () => ({ generateSheetPdf: genMock }));
 
 import { SheetPreview } from './sheetPreview';
 

@@ -44,21 +44,27 @@ export async function generateSheetPdf(
     const page = pages[field.pageIndex];
     const font = await getFont(field.font);
 
-    let x = field.x;
-    // Single-line align offset (full-string width). Wrapped fields stay left-anchored.
-    if (field.align !== 'left' && !field.maxWidth) {
-      const w = font.widthOfTextAtSize(value, field.fontSize);
-      x -= field.align === 'center' ? w / 2 : w;
-    }
+    try {
+      let x = field.x;
+      // Single-line align offset (full-string width). Wrapped fields stay left-anchored.
+      if (field.align !== 'left' && !field.maxWidth) {
+        const w = font.widthOfTextAtSize(value, field.fontSize);
+        x -= field.align === 'center' ? w / 2 : w;
+      }
 
-    page.drawText(value, {
-      x,
-      y: field.y,
-      size: field.fontSize,
-      font,
-      color: rgb(0, 0, 0),
-      ...(field.maxWidth ? { maxWidth: field.maxWidth, lineHeight: field.fontSize * 1.15 } : {}),
-    });
+      page.drawText(value, {
+        x,
+        y: field.y,
+        size: field.fontSize,
+        font,
+        color: rgb(0, 0, 0),
+        ...(field.maxWidth ? { maxWidth: field.maxWidth, lineHeight: field.fontSize * 1.15 } : {}),
+      });
+    } catch (err) {
+      // StandardFonts (WinAnsi, no fontkit) can't encode every character; skip the
+      // offending field rather than failing the whole document / live preview.
+      console.warn(`generateSheetPdf: skipped field "${field.fieldKey}"`, err);
+    }
   }
 
   return doc.save();

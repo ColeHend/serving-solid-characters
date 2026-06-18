@@ -1,6 +1,7 @@
 import { Component, Show, createEffect, createSignal, onCleanup } from 'solid-js';
 import { Container } from 'coles-solid-library';
-import { SheetTemplate, generateSheetPdf } from '../../../shared/sheetMapping';
+import { SheetTemplate } from '../../../shared/sheetMapping';
+import { generateSheetPdf } from '../../../shared/sheetMapping/pdf/generateSheetPdf';
 import styles from './characterCreatePDF.module.scss';
 
 interface SheetPreviewProps {

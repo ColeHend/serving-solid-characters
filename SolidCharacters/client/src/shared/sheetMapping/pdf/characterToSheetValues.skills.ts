@@ -34,7 +34,8 @@ export function skillValues(
     const expertise = !!entry?.expertise;
     const mod = getAbilityModifier(fullStats[skill.stat] ?? 10) + (proficient ? pb : 0) + (expertise ? pb : 0);
     values[skill.key] = signed(mod);
-    values[`${skill.key}Prof`] = expertise ? '◉' : proficient ? '●' : '';
+    // WinAnsi-safe glyphs only (StandardFonts have no fontkit): '•' = U+2022 (CP1252 0x95).
+    values[`${skill.key}Prof`] = expertise ? '••' : proficient ? '•' : '';
     if (skill.key === 'perception') perceptionMod = mod;
   }
 
