@@ -6,8 +6,15 @@
  * points (bottom-left origin) — see `sheetConstants.ts` for the single Y-flip.
  */
 
-/** Bump when {@link PlacedField}/{@link SheetTemplate} shape changes → triggers a reseed. */
-export const MAPPING_SCHEMA_VERSION = 1;
+/**
+ * Bump when {@link PlacedField}/{@link SheetTemplate} shape changes, OR when the
+ * shipped {@link SheetTemplate} default data changes and existing cached records
+ * should be reseeded → triggers a reseed in `mappingStore` (see R6).
+ *
+ * v2: Phase 7 replaced the hand-seeded starter placements with the full
+ * pixel-calibrated default mapping.
+ */
+export const MAPPING_SCHEMA_VERSION = 2;
 
 /** StandardFonts only (no fontkit / custom TTF available). */
 export type SheetFontName = 'Helvetica' | 'TimesRoman' | 'Courier';

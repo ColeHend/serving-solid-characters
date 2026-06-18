@@ -35,15 +35,7 @@ const Navbar: Component<Props> = (props) => {
         </span>
 
         <ul style={other.isMobile ? {margin: "0 auto", width: "min-content"} :{}}>
-          <Show when={other.isMobile}>
-            <li >
-              <div>
-                <A href="/">
-                  MySite
-                </A>
-              </div>
-            </li> 
-          </Show>
+        
         </ul>
 
         <div class={`${navStyles.toolBar}`}> 
