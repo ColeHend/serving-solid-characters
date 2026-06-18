@@ -17,6 +17,7 @@ import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items"
 import { characterManager, Clone } from "../../../shared";
 import { SpellTable } from "./SpellTable/SpellTable";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
+import { CreateSheetButton } from "../createSheetButton";
 
 const CharacterView: Component = () => {
   const [userSettings] = getUserSettings();
@@ -136,6 +137,7 @@ const CharacterView: Component = () => {
                 <Option value={character}>{character.name}</Option>
               )}</For>
             </Select>
+            <CreateSheetButton character={currentCharacter()} />
 
             <div class={`${styles.innerBoxInfoRow}`}>
               <div class={`${styles.infoBox}`}>

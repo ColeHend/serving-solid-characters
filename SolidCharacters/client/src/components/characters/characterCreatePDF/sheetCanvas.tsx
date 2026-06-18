@@ -15,6 +15,8 @@ interface SheetCanvasProps {
   activePage: () => number;
   template: () => SheetTemplate;
   zoom: () => number;
+  /** Resolved character → sheet values, so chips can show sample/real text. */
+  values?: () => Record<string, string>;
   selectedFieldKey: () => string | null;
   onSelect: (key: string) => void;
   onEdit: (key: string) => void;
@@ -65,6 +67,7 @@ export const SheetCanvas: Component<SheetCanvasProps> = (props) => {
               <PlacedChip
                 field={field}
                 zoom={props.zoom}
+                value={() => props.values?.()[field.fieldKey] ?? ''}
                 selected={props.selectedFieldKey() === field.fieldKey}
                 onSelect={() => props.onSelect(field.fieldKey)}
                 onEdit={() => props.onEdit(field.fieldKey)}

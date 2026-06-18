@@ -2,6 +2,8 @@ import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { Component, createMemo, createSignal } from "solid-js";
 import { Character } from "../../../models/character.model";
+import useExportFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
+import { createCharacterSheet } from "../../../shared/sheetMapping/pdf/createCharacterSheet";
 import styles from "../characters.module.scss";
 
 interface menuProps {
@@ -15,6 +17,9 @@ export const CharacterMenu: Component<menuProps> = (props) => {
     const navigate = useNavigate();
 
     const character = createMemo(() => props.character);
+    // Effective stats for the sheet, computed in owner context (headless
+    // createCharacterSheet must not call the hook itself).
+    const fullStats = useExportFullStats(character);
 
     return <span class={`${styles.menuButton}`}>
         <Button ref={setAnchorEle} onClick={()=>setShowMenu((old)=>!old)} transparent>
@@ -23,6 +28,9 @@ export const CharacterMenu: Component<menuProps> = (props) => {
         <Menu anchorElement={anchorEle} show={[showMenu,setShowMenu]} position="left" class={`${styles.menu}`} >
             <MenuItem onClick={() => navigate(`/characters/create?name=${character().name}`)}>
             Edit
+            </MenuItem>
+            <MenuItem onClick={() => createCharacterSheet(character(), fullStats())}>
+            Create Character Sheet
             </MenuItem>
         </Menu>
     </span>

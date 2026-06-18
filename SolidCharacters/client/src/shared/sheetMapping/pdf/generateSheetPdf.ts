@@ -18,6 +18,16 @@ const STANDARD: Record<SheetFontName, StandardFonts> = {
   Courier: StandardFonts.Courier,
 };
 
+/** `#rrggbb` (or `#rgb`) → pdf-lib `rgb()` in 0–1 space. Falls back to black on bad input. */
+function hexToRgb(hex: string | undefined) {
+  const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((hex ?? '').trim());
+  if (!m) return rgb(0, 0, 0);
+  let h = m[1];
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  const n = parseInt(h, 16);
+  return rgb(((n >> 16) & 0xff) / 255, ((n >> 8) & 0xff) / 255, (n & 0xff) / 255);
+}
+
 export async function generateSheetPdf(
   values: Record<string, string>,
   template: SheetTemplate,
@@ -57,7 +67,7 @@ export async function generateSheetPdf(
         y: field.y,
         size: field.fontSize,
         font,
-        color: rgb(0, 0, 0),
+        color: hexToRgb(field.color),
         ...(field.maxWidth ? { maxWidth: field.maxWidth, lineHeight: field.fontSize * 1.15 } : {}),
       });
     } catch (err) {

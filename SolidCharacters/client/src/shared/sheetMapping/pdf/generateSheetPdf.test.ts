@@ -69,6 +69,17 @@ describe('generateSheetPdf', () => {
     expect(startsWithPdf(bytes)).toBe(true);
   });
 
+  it('draws fields with an explicit color and tolerates a malformed hex (falls back to black)', async () => {
+    const bytes = await generateSheetPdf(
+      { name: 'Red', species: 'Bad' },
+      template([
+        { fieldKey: 'name', pageIndex: 0, x: 40, y: 730, fontSize: 12, font: 'Helvetica', align: 'left', color: '#ff0000' },
+        { fieldKey: 'species', pageIndex: 0, x: 40, y: 700, fontSize: 12, font: 'Helvetica', align: 'left', color: 'not-a-color' },
+      ]),
+    );
+    expect(startsWithPdf(bytes)).toBe(true);
+  });
+
   it('honours a maxWidth wrap field', async () => {
     const long = 'Darkvision, Keen Senses, Fey Ancestry, Trance, Elf Weapon Training, Cantrip';
     const bytes = await generateSheetPdf(

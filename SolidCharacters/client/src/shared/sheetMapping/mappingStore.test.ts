@@ -47,4 +47,18 @@ describe('mappingStore persistence (fake-indexeddb)', () => {
     expect(matches).toHaveLength(1);
     expect(matches[0]).toMatchObject({ pageIndex: 1, x: 5 });
   });
+
+  // Regression: an identical upsert must NOT emit a new template reference. The coles
+  // `Select` calls its `onChange` from a reactive effect tracking `value`; the inspector's
+  // onChange writes back here, so a non-idempotent no-op write would churn the reference
+  // every tick and spin into an infinite update loop the moment a field is selected.
+  it('upsertField is a no-op (same reference) when the placement is unchanged', () => {
+    const placement = { fieldKey: 'name', pageIndex: 0, x: 1, y: 1, fontSize: 10, font: 'Helvetica' as const, align: 'left' as const };
+    mappingStore.upsertField('default', { ...placement });
+    const before = mappingStore.template();
+    mappingStore.upsertField('default', { ...placement }); // identical values, new object
+    expect(mappingStore.template()).toBe(before); // unchanged → no signal notification
+    mappingStore.upsertField('default', { ...placement, x: 2 }); // real change
+    expect(mappingStore.template()).not.toBe(before);
+  });
 });

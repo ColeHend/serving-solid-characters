@@ -28,6 +28,8 @@ export interface PlacedField {
   align: TextAlign;
   /** Optional wrap width in points. When set, text wraps to multiple lines. */
   maxWidth?: number;
+  /** Text color as a `#rrggbb` hex string. Defaults to black (`#000000`) when unset. */
+  color?: string;
 }
 
 export interface SheetTemplate {

@@ -1,26 +1,87 @@
 @use 'coles-solid-library/themes/themes.scss';
 
+$mobile: 768px;
+
+// Page surface — matches the Characters / Create pages (semi-transparent themed
+// card over the `character-create-bg` body background).
+.page {
+  width: 92%;
+  margin: 16px auto;
+  border-radius: 15px;
+  padding: var(--spacing-2);
+  background-color: color-mix(in srgb, var(--surface-color) 60%, transparent) !important;
+
+  @media screen and (max-width: $mobile) {
+    width: 98%;
+    margin: 8px auto;
+    padding: var(--spacing-1);
+  }
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-2);
   padding: var(--spacing-2);
+
+  @media screen and (max-width: $mobile) {
+    gap: var(--spacing-1);
+    padding: var(--spacing-1);
+    justify-content: center;
+  }
 }
 
-// Side-by-side palette + drag canvas + live preview. No transform/overflow:hidden
-// ancestor here so the DnD DragOverlay portal (document.body) is never clipped.
+.hint {
+  opacity: 0.8;
+  font-size: var(--font-size-small);
+}
+
+// Side-by-side drag canvas + docked sidebar. No transform/overflow:hidden ancestor
+// here so the DnD DragOverlay portal (document.body) is never clipped.
 .editorRow {
   display: flex;
   gap: var(--spacing-2);
   align-items: flex-start;
   min-height: 60vh;
+
+  @media screen and (max-width: $mobile) {
+    flex-direction: column;
+    min-height: auto;
+  }
 }
 
-.palette {
-  flex: 0 0 220px;
+// ── Sidebar (Add / Edit tabs) ──
+.sidebar {
+  flex: 0 0 320px;
+  max-width: 360px;
   max-height: 80vh;
-  overflow-y: auto;
+  overflow: auto;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--surface-color) 70%, transparent);
+}
+
+.sidebarInner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebarBody {
+  padding: var(--spacing-1);
+  overflow: auto;
+}
+
+// Inactive tab pane stays mounted but hidden (no dispose/rebuild on tab switch).
+.hiddenTab {
+  display: none;
+}
+
+// ── Field palette (Add tab) ──
+.palette {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
 }
 
 .paletteHeader {
@@ -47,8 +108,93 @@
   }
 }
 
+// ── Field inspector (Edit tab) ──
+.inspector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-1);
+}
+
+.inspectorEmpty {
+  padding: var(--spacing-2);
+  opacity: 0.7;
+}
+
+.inspectorTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.colorRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.colorControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.colorSwatch {
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--surface-color);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+}
+
+.nudgeRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.nudgePad {
+  display: grid;
+  grid-template-columns: repeat(3, 36px);
+  grid-template-rows: repeat(2, 36px);
+  gap: 2px;
+  width: max-content;
+}
+
+.nudgeUp {
+  grid-column: 2;
+  grid-row: 1;
+}
+.nudgeLeft {
+  grid-column: 1;
+  grid-row: 2;
+}
+.nudgeDown {
+  grid-column: 2;
+  grid-row: 2;
+}
+.nudgeRight {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.configGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-2);
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+}
+
+// ── Canvas / page backdrop ──
 .canvasScroll {
   flex: 1 1 auto;
+  max-width: 100%;
   overflow: auto;
 }
 
@@ -74,25 +220,69 @@
   }
 }
 
+// ── Placed field chip (renders the field's value in its color, baseline-anchored) ──
 .placedChip {
   position: absolute;
   transform: translateY(-100%);
+  display: inline-flex;
+  align-items: flex-end;
   cursor: grab;
+  line-height: 1.15;
   white-space: nowrap;
   touch-action: none;
+  background: color-mix(in srgb, var(--surface-color) 30%, transparent);
+  outline: 1px dashed color-mix(in srgb, var(--primary-color) 55%, transparent);
+  outline-offset: 1px;
 
   &.selected {
     outline: 2px solid var(--primary-color);
+    z-index: 2;
   }
 
   &.dragging {
     opacity: 0.4;
   }
+
+  &.placeholder .placedChipText {
+    opacity: 0.55;
+    font-style: italic;
+  }
 }
 
+.placedChipText {
+  pointer-events: none;
+}
+
+.placedChipRemove {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--error-color, #cf6679);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.placedChip:hover .placedChipRemove,
+.placedChip.selected .placedChipRemove {
+  opacity: 1;
+}
+
+// ── Live preview (inside the preview modal) ──
 .previewPane {
-  flex: 1 1 460px;
-  height: 80vh;
+  width: 100%;
+  height: 100%;
+  min-height: 75vh;
 }
 
 .previewFrame {
@@ -106,18 +296,7 @@
   opacity: 0.7;
 }
 
-.configGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-2);
-
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
-  }
-}
-
+// ── Drag overlay chip (the moving label preview) ──
 .dragChip {
   padding: 2px 8px;
   border-radius: 12px;
