@@ -5,6 +5,7 @@ import { downloadBlob } from '../../customHooks/utility/tools/downloadBlob';
 import { mappingStore } from '../mappingStore';
 import { characterToSheetValues } from './characterToSheetValues';
 import { generateSheetPdf } from './generateSheetPdf';
+import { spellTableRows } from './spellTable';
 
 /**
  * The orchestrator behind every "Create Character Sheet" button: runs the saved
@@ -24,7 +25,7 @@ export async function createCharacterSheet(char: Character | undefined, fullStat
 
   try {
     const values = characterToSheetValues(char, fullStats);
-    const bytes = await generateSheetPdf(values, mappingStore.template());
+    const bytes = await generateSheetPdf(values, mappingStore.template(), spellTableRows(char));
     // Wrap in a fresh Uint8Array so the bytes satisfy `BlobPart` (pdf-lib's
     // typed-array buffer type is otherwise too wide for the DOM Blob lib types).
     downloadBlob(new Uint8Array(bytes), `${char.name || 'character'}.pdf`, 'application/pdf');

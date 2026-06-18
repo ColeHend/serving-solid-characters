@@ -7,23 +7,41 @@ import useExportFullStats from '../../../shared/customHooks/dndInfo/useGetFullSt
 import { EXAMPLE_CHARACTER } from '../../../shared/customHooks/dndInfo/useExampleChars';
 import { Character } from '../../../models/character.model';
 import {
+  AttackCantripConfig,
   FIELD_LABELS,
   PAGE_COUNT,
   PlacedField,
+  SpellTableConfig,
+  SpellTextCol,
   characterToSheetValues,
   clamp,
   mappingStore,
 } from '../../../shared/sheetMapping';
 import { generateSheetPdf } from '../../../shared/sheetMapping/pdf/generateSheetPdf';
-import { DropGeometry, movedPlaced, placedAtCenter, placedFromPalette } from './placement';
+import { spellTableRows } from '../../../shared/sheetMapping/pdf/spellTable';
+import {
+  DropGeometry,
+  movedPlaced,
+  movedTableTop,
+  movedTableX,
+  placedAtCenter,
+  placedFromPalette,
+  resizedTableWidth,
+} from './placement';
 import { FieldSidebar } from './fieldSidebar';
+import { FieldDragPreview } from './fieldDragPreview';
 import { SheetCanvas } from './sheetCanvas';
 import { SheetPreview } from './sheetPreview';
+import { TableDragData, TableSelection } from './tableGuidesOverlay';
 import styles from './characterCreatePDF.module.scss';
 
 const TEMPLATE_ID = 'default';
-type DragData = { kind: 'palette'; fieldKey: string } | { kind: 'placed'; field: PlacedField };
+type DragData = { kind: 'palette'; fieldKey: string } | { kind: 'placed'; field: PlacedField } | TableDragData;
 type PageData = { pageIndex: number; getRect: () => DOMRect };
+
+/** Sparse per-column patches accepted by the store's table updaters. */
+type SpellColsPatch = Partial<Record<keyof SpellTableConfig['cols'], Partial<SpellTextCol>>>;
+type AttackColsPatch = Partial<Record<keyof AttackCantripConfig['cols'], Partial<SpellTextCol>>>;
 
 function downloadPdf(bytes: Uint8Array, filename: string) {
   const url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'application/pdf' }));
@@ -78,10 +96,15 @@ export const CreateCharacterPDF: Component = () => {
   // Effective stats + sheet values for the live preview / canvas, computed in owner context.
   const fullStats = useExportFullStats(() => previewCharacter());
   const values = createMemo(() => characterToSheetValues(previewCharacter(), fullStats()));
+  // Sorted spell rows for the page-2 table (re-runs when the character or the SRD spell list loads).
+  const spellRows = createMemo(() => spellTableRows(previewCharacter()));
 
   const [zoom, setZoom] = createSignal(1);
   const [activePage, setActivePage] = createSignal(0);
   const [selectedFieldKey, setSelectedFieldKey] = createSignal<string | null>(null);
+  // Table-guide selection (spell/attack columns & markers). Mutually exclusive
+  // with `selectedFieldKey` — the Edit tab shows one inspector at a time.
+  const [selectedTable, setSelectedTable] = createSignal<TableSelection | null>(null);
   const [showPreview, setShowPreview] = createSignal(false);
   const [showSidebar, setShowSidebar] = createSignal(false); // mobile sidebar modal
   const [sidebarTab, setSidebarTab] = createSignal(0); // 0 = Add, 1 = Edit
@@ -100,13 +123,63 @@ export const CreateCharacterPDF: Component = () => {
    * cascades into a "too much recursion" cleanup crash.
    */
   const focusField = (key: string, openModal = false) => {
-    setSelectedFieldKey(key);
+    // Selection + tab switch are DEFERRED to a microtask so the field↔table
+    // inspector swap and the Add→Edit palette dispose never restructure the tree
+    // inside the current pointer/drag-end flush (the "too much recursion" guard).
     queueMicrotask(() => {
+      setSelectedTable(null);
+      setSelectedFieldKey(key);
       setSidebarTab(1);
       if (openModal && isMobile()) setShowSidebar(true);
     });
   };
   const selectField = (key: string) => focusField(key, true);
+
+  /** Select a table guide (clears field selection); mirrors `focusField`'s deferred swap. */
+  const focusTable = (sel: TableSelection, openModal = false) => {
+    queueMicrotask(() => {
+      setSelectedFieldKey(null);
+      setSelectedTable(sel);
+      setSidebarTab(1);
+      if (openModal && isMobile()) setShowSidebar(true);
+    });
+  };
+  const selectTable = (sel: TableSelection) => focusTable(sel, true);
+
+  /** Apply a table-guide drag to the persisted geometry, then select the dragged part. */
+  const applyTableDrag = (data: TableDragData, g: DropGeometry) => {
+    const t = template();
+    const cfg = data.table === 'spell' ? t.spellTable : t.attackCantripTable;
+    if (!cfg) return;
+
+    if (data.kind === 'tableMove') {
+      const patch = { firstRowTopFromTop: movedTableTop(cfg.firstRowTopFromTop, g) };
+      if (data.table === 'spell') mappingStore.updateSpellTable(TEMPLATE_ID, patch);
+      else mappingStore.updateAttackCantripTable(TEMPLATE_ID, patch);
+      focusTable({ table: data.table, part: { kind: 'move' } });
+      return;
+    }
+
+    if (data.kind === 'tableMarker') {
+      const spell = t.spellTable;
+      if (!spell) return;
+      const key = data.marker as 'concentration' | 'ritual' | 'material';
+      mappingStore.updateSpellTable(TEMPLATE_ID, { markers: { [key]: { x: movedTableX(spell.markers[key].x, g) } } });
+      focusTable({ table: 'spell', part: { kind: 'marker', key: data.marker } });
+      return;
+    }
+
+    // tableCol (move x) / tableColResize (change width; x preserved by the merge).
+    const col = (cfg.cols as Record<string, SpellTextCol>)[data.col];
+    if (!col) return;
+    const patch: Partial<SpellTextCol> =
+      data.kind === 'tableColResize'
+        ? { maxWidth: resizedTableWidth(col.x, col.maxWidth, g) }
+        : { x: movedTableX(col.x, g) };
+    if (data.table === 'spell') mappingStore.updateSpellTable(TEMPLATE_ID, { cols: { [data.col]: patch } as SpellColsPatch });
+    else mappingStore.updateAttackCantripTable(TEMPLATE_ID, { cols: { [data.col]: patch } as AttackColsPatch });
+    focusTable({ table: data.table, part: { kind: 'col', key: data.col } });
+  };
 
   /** Tap-to-add (and desktop click): place at page center, or select if already placed. */
   const onAdd = (fieldKey: string) => {
@@ -131,6 +204,11 @@ export const CreateCharacterPDF: Component = () => {
       pageIndex: page.pageIndex,
       fallbackScale: zoom(),
     };
+    // Table-guide drags edit the persisted table geometry, not a placed field.
+    if (data.kind === 'tableCol' || data.kind === 'tableColResize' || data.kind === 'tableMarker' || data.kind === 'tableMove') {
+      applyTableDrag(data, geometry);
+      return;
+    }
     const field =
       data.kind === 'placed'
         ? movedPlaced(data.field, geometry)
@@ -144,15 +222,29 @@ export const CreateCharacterPDF: Component = () => {
   const onGenerate = async () => {
     const char = selectedCharacter() ?? previewCharacter();
     try {
-      downloadPdf(await generateSheetPdf(values(), template()), char.name || 'character');
+      downloadPdf(await generateSheetPdf(values(), template(), spellRows()), char.name || 'character');
     } catch {
       addSnackbar({ message: 'Failed to generate sheet', severity: 'error' });
     }
   };
 
   const overlayLabel = (data: DragData | undefined) => {
-    const key = data?.kind === 'placed' ? data.field.fieldKey : data?.fieldKey;
-    return key ? FIELD_LABELS[key] ?? key : '';
+    if (!data) return '';
+    switch (data.kind) {
+      case 'placed':
+        return FIELD_LABELS[data.field.fieldKey] ?? data.field.fieldKey;
+      case 'palette':
+        return FIELD_LABELS[data.fieldKey] ?? data.fieldKey;
+      case 'tableMove':
+        return 'Move table';
+      case 'tableMarker':
+        return `Marker: ${data.marker}`;
+      case 'tableCol':
+      case 'tableColResize':
+        return `Column: ${data.col}`;
+      default:
+        return '';
+    }
   };
 
   const sidebar = () => (
@@ -160,11 +252,14 @@ export const CreateCharacterPDF: Component = () => {
       tab={sidebarTab}
       setTab={setSidebarTab}
       placedKeys={placedKeys}
+      values={values}
       onGrab={(x, y) => setDragStart({ x, y })}
       onAdd={onAdd}
       field={selectedField}
       templateId={TEMPLATE_ID}
       onRemove={onRemove}
+      template={template}
+      selectedTable={selectedTable}
     />
   );
 
@@ -216,6 +311,8 @@ export const CreateCharacterPDF: Component = () => {
             onSelect={selectField}
             onEdit={selectField}
             onRemove={onRemove}
+            selectedTable={selectedTable}
+            onSelectTable={selectTable}
           />
           <Show when={!isMobile()}>
             <div class={styles.sidebar}>{sidebar()}</div>
@@ -230,16 +327,21 @@ export const CreateCharacterPDF: Component = () => {
 
         <Modal title="Sheet preview" show={[showPreview, setShowPreview]} width="90vw" height="92vh">
           <Show when={showPreview()}>
-            <SheetPreview values={values} template={template} activePage={activePage} />
+            <SheetPreview values={values} template={template} activePage={activePage} spells={spellRows} />
           </Show>
         </Modal>
 
         <DragOverlay>
-          {(active) => (
-            <Show when={active}>
-              <div class={styles.dragChip}>{overlayLabel(active?.data as DragData | undefined)}</div>
-            </Show>
-          )}
+          {(active) => {
+            const data = active?.data as DragData | undefined;
+            if (!data) return null;
+            // Field drags preview the field as it lands on the sheet; table-guide
+            // drags keep the simple moving label.
+            if (data.kind === 'palette' || data.kind === 'placed') {
+              return <FieldDragPreview data={data} zoom={zoom} values={values} dragStart={dragStart} />;
+            }
+            return <div class={styles.dragChip}>{overlayLabel(data)}</div>;
+          }}
         </DragOverlay>
       </DragDropProvider>
     </Body>

@@ -44,7 +44,8 @@ describe('SheetPreview live regen', () => {
     await vi.advanceTimersByTimeAsync(250);
 
     expect(genMock).toHaveBeenCalledTimes(1);
-    expect(genMock).toHaveBeenLastCalledWith({ a: '3' }, tmpl(1));
+    // Third arg is the spell rows; defaults to [] when no `spells` prop is passed.
+    expect(genMock).toHaveBeenLastCalledWith({ a: '3' }, tmpl(1), []);
     expect(container.querySelector('iframe')?.getAttribute('src')).toBe('blob:1');
   });
 

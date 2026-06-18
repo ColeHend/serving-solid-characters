@@ -1,7 +1,8 @@
-import { Component, For, createMemo } from 'solid-js';
+import { Component, For, Show, createMemo } from 'solid-js';
 import { createDroppable } from '../../../shared/dnd';
 import { PDF_PAGE_H, PDF_PAGE_W, PlacedField, SheetTemplate } from '../../../shared/sheetMapping';
 import { PlacedChip } from './placedChip';
+import { TableGuidesOverlay, TableSelection } from './tableGuidesOverlay';
 import sheet1 from '../../../assets/sheet/sheet-1.png';
 import sheet2 from '../../../assets/sheet/sheet-2.png';
 import styles from './characterCreatePDF.module.scss';
@@ -21,6 +22,9 @@ interface SheetCanvasProps {
   onSelect: (key: string) => void;
   onEdit: (key: string) => void;
   onRemove: (key: string) => void;
+  /** Current table-guide selection (mutually exclusive with `selectedFieldKey`). */
+  selectedTable: () => TableSelection | null;
+  onSelectTable: (sel: TableSelection) => void;
 }
 
 /**
@@ -62,6 +66,29 @@ export const SheetCanvas: Component<SheetCanvasProps> = (props) => {
           class={styles.overlay}
           classList={{ [styles.over]: drop.isOver() }}
         >
+          {/* Table guides render BEFORE the chips so field chips paint on top. */}
+          <Show when={props.activePage() === 1 && props.template().spellTable}>
+            {(cfg) => (
+              <TableGuidesOverlay
+                table="spell"
+                cfg={cfg}
+                zoom={props.zoom}
+                selected={props.selectedTable}
+                onSelect={props.onSelectTable}
+              />
+            )}
+          </Show>
+          <Show when={props.activePage() === 0 && props.template().attackCantripTable}>
+            {(cfg) => (
+              <TableGuidesOverlay
+                table="attack"
+                cfg={cfg}
+                zoom={props.zoom}
+                selected={props.selectedTable}
+                onSelect={props.onSelectTable}
+              />
+            )}
+          </Show>
           <For each={pageFields()}>
             {(field) => (
               <PlacedChip

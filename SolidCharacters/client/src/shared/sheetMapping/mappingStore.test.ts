@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import mappingDB from '../customHooks/utility/localDB/mappingDB';
 import { mappingStore } from './mappingStore';
 import { DEFAULT_SHEET_TEMPLATE } from './defaultSheetTemplate';
+import { defaultAttackCantripConfig, defaultSpellTableConfig } from './pdf/spellTable';
 import { MAPPING_SCHEMA_VERSION, SheetTemplate } from './sheetMapping.types';
 
 describe('mappingStore persistence (fake-indexeddb)', () => {
@@ -60,5 +61,51 @@ describe('mappingStore persistence (fake-indexeddb)', () => {
     expect(mappingStore.template()).toBe(before); // unchanged → no signal notification
     mappingStore.upsertField('default', { ...placement, x: 2 }); // real change
     expect(mappingStore.template()).not.toBe(before);
+  });
+
+  it('reseeds with the default spell/attack table configs', async () => {
+    const t = await mappingStore.loadTemplate('default');
+    expect(t.spellTable).toEqual(defaultSpellTableConfig());
+    expect(t.attackCantripTable).toEqual(defaultAttackCantripConfig());
+  });
+
+  it('round-trips a mutated spellTable config through the DB', async () => {
+    const spellTable = defaultSpellTableConfig();
+    spellTable.cols.name.x = 77;
+    const custom: SheetTemplate = {
+      templateId: 'default',
+      name: 'Custom',
+      version: MAPPING_SCHEMA_VERSION,
+      fields: [],
+      spellTable,
+      attackCantripTable: defaultAttackCantripConfig(),
+      updatedAt: 0,
+    };
+    await mappingStore.saveTemplate(custom);
+    const loaded = await mappingStore.loadTemplate('default');
+    expect(loaded.spellTable?.cols.name.x).toBe(77);
+  });
+
+  it('updateSpellTable merges a column patch in memory', () => {
+    mappingStore.updateSpellTable('default', { cols: { name: { x: 123 } } });
+    expect(mappingStore.template().spellTable?.cols.name.x).toBe(123);
+  });
+
+  // Same idempotency contract as upsertField — an unchanged config must NOT churn
+  // the template reference (else the inspector's reactive onChange loops).
+  it('updateSpellTable is a no-op (same reference) when unchanged', () => {
+    mappingStore.updateSpellTable('default', { cols: { castingTime: { x: 160 } } });
+    const before = mappingStore.template();
+    mappingStore.updateSpellTable('default', { cols: { castingTime: { x: 160 } } }); // identical
+    expect(mappingStore.template()).toBe(before);
+    mappingStore.updateSpellTable('default', { cols: { castingTime: { x: 161 } } }); // real change
+    expect(mappingStore.template()).not.toBe(before);
+  });
+
+  it('resetToDefault restores a mutated spellTable', async () => {
+    mappingStore.updateSpellTable('default', { cols: { name: { x: 999 } } });
+    expect(mappingStore.template().spellTable?.cols.name.x).toBe(999);
+    await mappingStore.resetToDefault('default');
+    expect(mappingStore.template().spellTable?.cols.name.x).toBe(defaultSpellTableConfig().cols.name.x);
   });
 });

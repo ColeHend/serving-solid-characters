@@ -1,8 +1,45 @@
 import { createRoot, createSignal } from 'solid-js';
 import { addSnackbar } from 'coles-solid-library';
 import mappingDB from '../customHooks/utility/localDB/mappingDB';
-import { MAPPING_SCHEMA_VERSION, PlacedField, SheetTemplate } from './sheetMapping.types';
+import { AttackCantripConfig, MAPPING_SCHEMA_VERSION, PlacedField, SheetTemplate, SpellTableConfig } from './sheetMapping.types';
 import { DEFAULT_SHEET_TEMPLATE } from './defaultSheetTemplate';
+import { defaultAttackCantripConfig, defaultSpellTableConfig } from './pdf/spellTable';
+
+/** Recursive partial — table updaters take a sparse patch (e.g. `{ cols: { name: { x } } }`). */
+type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] };
+
+/** Merge a sparse patch onto a spell-table config (cols/markers merged per sub-object). */
+function mergeSpellTable(base: SpellTableConfig, patch: DeepPartial<SpellTableConfig>): SpellTableConfig {
+  return {
+    ...base,
+    ...patch,
+    cols: {
+      level: { ...base.cols.level, ...patch.cols?.level },
+      name: { ...base.cols.name, ...patch.cols?.name },
+      castingTime: { ...base.cols.castingTime, ...patch.cols?.castingTime },
+      range: { ...base.cols.range, ...patch.cols?.range },
+    },
+    markers: {
+      ...base.markers,
+      ...patch.markers,
+      concentration: { ...base.markers.concentration, ...patch.markers?.concentration },
+      ritual: { ...base.markers.ritual, ...patch.markers?.ritual },
+      material: { ...base.markers.material, ...patch.markers?.material },
+    },
+  };
+}
+
+/** Merge a sparse patch onto an attack-cantrip config (cols merged per sub-object). */
+function mergeAttackCantrip(base: AttackCantripConfig, patch: DeepPartial<AttackCantripConfig>): AttackCantripConfig {
+  return {
+    ...base,
+    ...patch,
+    cols: {
+      name: { ...base.cols.name, ...patch.cols?.name },
+      detail: { ...base.cols.detail, ...patch.cols?.detail },
+    },
+  };
+}
 
 /** Every field of a placement that defines its identity, for cheap change detection. */
 const PLACEMENT_KEYS: (keyof PlacedField)[] = [
@@ -37,6 +74,9 @@ function createMappingStore() {
       ...DEFAULT_SHEET_TEMPLATE,
       version: MAPPING_SCHEMA_VERSION,
       fields: DEFAULT_SHEET_TEMPLATE.fields.map((field) => ({ ...field })),
+      // Fresh copies so the reactive store never shares the default's nested objects.
+      spellTable: defaultSpellTableConfig(),
+      attackCantripTable: defaultAttackCantripConfig(),
       updatedAt: Date.now(),
     };
   }
@@ -56,6 +96,11 @@ function createMappingStore() {
         setTemplate(seeded);
         return seeded;
       }
+      // Defensive backfill: a version-matched record missing a table config (e.g.
+      // a partial write) still gets defaults so the canvas/inspector can assume
+      // `spellTable`/`attackCantripTable` are always defined.
+      if (!record.spellTable) record.spellTable = defaultSpellTableConfig();
+      if (!record.attackCantripTable) record.attackCantripTable = defaultAttackCantripConfig();
       setTemplate(record);
       return record;
     } catch {
@@ -99,6 +144,32 @@ function createMappingStore() {
     setTemplate((t) => (t.templateId !== id ? t : { ...t, fields: t.fields.filter((f) => f.fieldKey !== key) }));
   }
 
+  /**
+   * Merge a sparse patch into the page-2 spell table geometry (in memory only;
+   * `saveTemplate` persists). Idempotent like {@link upsertField}: an unchanged
+   * result returns the same template reference so the signal does NOT notify —
+   * essential because the inspector's `Input`/`Select` re-emit `onChange` from a
+   * reactive effect, so a churning reference would spin into an update loop.
+   */
+  function updateSpellTable(id: string, patch: DeepPartial<SpellTableConfig>): void {
+    setTemplate((t) => {
+      if (t.templateId !== id) return t;
+      const next = mergeSpellTable(t.spellTable ?? defaultSpellTableConfig(), patch);
+      if (t.spellTable && JSON.stringify(t.spellTable) === JSON.stringify(next)) return t;
+      return { ...t, spellTable: next };
+    });
+  }
+
+  /** As {@link updateSpellTable} but for the page-1 attack-cantrip box geometry. */
+  function updateAttackCantripTable(id: string, patch: DeepPartial<AttackCantripConfig>): void {
+    setTemplate((t) => {
+      if (t.templateId !== id) return t;
+      const next = mergeAttackCantrip(t.attackCantripTable ?? defaultAttackCantripConfig(), patch);
+      if (t.attackCantripTable && JSON.stringify(t.attackCantripTable) === JSON.stringify(next)) return t;
+      return { ...t, attackCantripTable: next };
+    });
+  }
+
   async function resetToDefault(id = 'default'): Promise<SheetTemplate> {
     const seeded = freshDefault();
     seeded.templateId = id;
@@ -115,7 +186,16 @@ function createMappingStore() {
   // Eager-load the default template (reseeds on first run / version mismatch).
   void loadTemplate('default');
 
-  return { template, loadTemplate, saveTemplate, upsertField, removeField, resetToDefault };
+  return {
+    template,
+    loadTemplate,
+    saveTemplate,
+    upsertField,
+    removeField,
+    resetToDefault,
+    updateSpellTable,
+    updateAttackCantripTable,
+  };
 }
 
 export const mappingStore = createRoot(createMappingStore);

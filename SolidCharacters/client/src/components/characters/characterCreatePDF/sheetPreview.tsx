@@ -2,6 +2,7 @@ import { Component, Show, createEffect, createSignal, onCleanup } from 'solid-js
 import { Container } from 'coles-solid-library';
 import { SheetTemplate } from '../../../shared/sheetMapping';
 import { generateSheetPdf } from '../../../shared/sheetMapping/pdf/generateSheetPdf';
+import { SpellRow } from '../../../shared/sheetMapping/pdf/spellTable';
 import styles from './characterCreatePDF.module.scss';
 
 interface SheetPreviewProps {
@@ -9,6 +10,8 @@ interface SheetPreviewProps {
   values: () => Record<string, string>;
   template: () => SheetTemplate;
   activePage: () => number;
+  /** Sorted spell rows for the page-2 table (owned by the shell). */
+  spells?: () => SpellRow[];
 }
 
 const DEBOUNCE_MS = 250;
@@ -31,12 +34,13 @@ export const SheetPreview: Component<SheetPreviewProps> = (props) => {
     // re-subscribes on every change to values / template / active page.
     const values = props.values();
     const template = props.template();
+    const spells = props.spells?.() ?? [];
     void props.activePage();
 
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
       const myToken = ++token;
-      void generateSheetPdf(values, template)
+      void generateSheetPdf(values, template, spells)
         .then((bytes) => {
           if (myToken !== token) return; // a newer regen superseded this one
           const url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'application/pdf' }));

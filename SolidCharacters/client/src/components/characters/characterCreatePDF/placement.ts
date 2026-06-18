@@ -68,3 +68,25 @@ export function movedPlaced(field: PlacedField, g: DropGeometry): PlacedField {
     y: clamp(field.y - g.delta.y / scale, 0, PDF_PAGE_H),
   };
 }
+
+/** Smallest a table column may be dragged to (points) — keeps a grabbable sliver. */
+export const MIN_TABLE_COL_W = 4;
+
+/** New page-left x for a horizontally-dragged table column / marker (points = px / scale). */
+export function movedTableX(x: number, g: DropGeometry): number {
+  return clamp(x + g.delta.x / scaleFromRect(g), 0, PDF_PAGE_W);
+}
+
+/** New column clip width from a right-edge resize drag; floored and kept on-page. */
+export function resizedTableWidth(x: number, width: number, g: DropGeometry): number {
+  return clamp(width + g.delta.x / scaleFromRect(g), MIN_TABLE_COL_W, PDF_PAGE_W - x);
+}
+
+/**
+ * New `firstRowTopFromTop` for a vertical table-move drag. Unlike {@link movedPlaced}
+ * (bottom-up `y`, subtracts the delta), table row anchors are measured TOP-DOWN
+ * from the page top, so a downward screen drag (+delta.y) INCREASES the value.
+ */
+export function movedTableTop(topFromTop: number, g: DropGeometry): number {
+  return clamp(topFromTop + g.delta.y / scaleFromRect(g), 0, PDF_PAGE_H);
+}

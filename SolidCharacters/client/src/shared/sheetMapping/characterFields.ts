@@ -25,6 +25,8 @@ export interface SheetFieldDef {
   key: string;
   label: string;
   group: SheetFieldGroup;
+  /** Short human description of the field, shown on the Add-palette card. */
+  description: string;
 }
 
 export interface SkillDef {
@@ -66,80 +68,87 @@ export const SKILLS: SkillDef[] = [
   { key: 'survival', label: 'Survival', stat: 'wis', profKey: 'Survival' },
 ];
 
-const def = (key: string, label: string, group: SheetFieldGroup): SheetFieldDef => ({ key, label, group });
+const def = (key: string, label: string, group: SheetFieldGroup, description: string): SheetFieldDef => ({
+  key,
+  label,
+  group,
+  description,
+});
 
 const identity: SheetFieldDef[] = [
-  def('name', 'Character Name', 'Identity'),
-  def('className', 'Class', 'Identity'),
-  def('level', 'Level', 'Identity'),
-  def('classAndLevel', 'Class & Level', 'Identity'),
-  def('subclass', 'Subclass', 'Identity'),
-  def('background', 'Background', 'Identity'),
-  def('alignment', 'Alignment', 'Identity'),
-  def('species', 'Species', 'Identity'),
-  def('subrace', 'Subrace', 'Identity'),
-  def('size', 'Size', 'Identity'),
-  def('age', 'Age', 'Identity'),
-  def('xp', 'Experience Points', 'Identity'),
-  def('inspiration', 'Inspiration', 'Identity'),
+  def('name', 'Character Name', 'Identity', "The character's name."),
+  def('className', 'Class', 'Identity', 'Primary class name.'),
+  def('level', 'Level', 'Identity', 'Total character level.'),
+  def('classAndLevel', 'Class & Level', 'Identity', "Class and level, e.g. 'Wizard 5'."),
+  def('subclass', 'Subclass', 'Identity', 'Chosen subclass or archetype.'),
+  def('background', 'Background', 'Identity', "Character's background."),
+  def('alignment', 'Alignment', 'Identity', 'Moral and ethical alignment.'),
+  def('species', 'Species', 'Identity', 'Character species or race.'),
+  def('subrace', 'Subrace', 'Identity', 'Subrace or lineage variant.'),
+  def('size', 'Size', 'Identity', 'Size category, e.g. Medium.'),
+  def('age', 'Age', 'Identity', "The character's age."),
+  def('xp', 'Experience Points', 'Identity', 'Accumulated experience points.'),
+  def('inspiration', 'Inspiration', 'Identity', 'Whether the character has inspiration.'),
 ];
 
 const abilities: SheetFieldDef[] = [
-  ...ABILITIES.map((a) => def(a.key, `${a.label} Score`, 'Abilities')),
-  ...ABILITIES.map((a) => def(`${a.key}Mod`, `${a.label} Modifier`, 'Abilities')),
-  def('proficiencyBonus', 'Proficiency Bonus', 'Abilities'),
+  ...ABILITIES.map((a) => def(a.key, `${a.label} Score`, 'Abilities', `${a.label} ability score.`)),
+  ...ABILITIES.map((a) => def(`${a.key}Mod`, `${a.label} Modifier`, 'Abilities', `${a.label} ability modifier.`)),
+  def('proficiencyBonus', 'Proficiency Bonus', 'Abilities', 'Bonus added to proficient rolls.'),
 ];
 
 const skills: SheetFieldDef[] = SKILLS.flatMap((s) => [
-  def(s.key, `${s.label} (mod)`, 'Skills'),
-  def(`${s.key}Prof`, `${s.label} (proficiency)`, 'Skills'),
+  def(s.key, `${s.label} (mod)`, 'Skills', `${s.label} skill modifier.`),
+  def(`${s.key}Prof`, `${s.label} (proficiency)`, 'Skills', `Proficiency marker for ${s.label}.`),
 ]);
 
 const saves: SheetFieldDef[] = ABILITIES.flatMap((a) => [
-  def(`${a.key}Save`, `${a.label} Save`, 'Saves'),
-  def(`${a.key}SaveProf`, `${a.label} Save (proficiency)`, 'Saves'),
+  def(`${a.key}Save`, `${a.label} Save`, 'Saves', `${a.label} saving-throw modifier.`),
+  def(`${a.key}SaveProf`, `${a.label} Save (proficiency)`, 'Saves', `Proficiency marker for the ${a.label} save.`),
 ]);
 
 const combat: SheetFieldDef[] = [
-  def('armorClass', 'Armor Class', 'Combat'),
-  def('initiative', 'Initiative', 'Combat'),
-  def('speed', 'Speed', 'Combat'),
-  def('hpMax', 'Max HP', 'Combat'),
-  def('hpCurrent', 'Current HP', 'Combat'),
-  def('hpTemp', 'Temp HP', 'Combat'),
-  def('hitDice', 'Hit Dice', 'Combat'),
-  def('passivePerception', 'Passive Perception', 'Combat'),
+  def('armorClass', 'Armor Class', 'Combat', 'Armor Class (AC).'),
+  def('initiative', 'Initiative', 'Combat', 'Initiative modifier.'),
+  def('speed', 'Speed', 'Combat', 'Walking speed in feet.'),
+  def('hpMax', 'Max HP', 'Combat', 'Maximum hit points.'),
+  def('hpCurrent', 'Current HP', 'Combat', 'Current hit points.'),
+  def('hpTemp', 'Temp HP', 'Combat', 'Temporary hit points.'),
+  def('hitDice', 'Hit Dice', 'Combat', 'Hit dice pool.'),
+  def('passivePerception', 'Passive Perception', 'Combat', '10 + Perception modifier (no roll).'),
 ];
 
 const spellcasting: SheetFieldDef[] = [
-  def('spellSaveDC', 'Spell Save DC', 'Spellcasting'),
-  def('spellAttack', 'Spell Attack Bonus', 'Spellcasting'),
-  ...Array.from({ length: 9 }, (_, i) => def(`spellSlotsLevel${i + 1}`, `Spell Slots (Lv ${i + 1})`, 'Spellcasting')),
-  def('spellsKnown', 'Spells Known', 'Spellcasting'),
-  def('spellsPrepared', 'Spells Prepared', 'Spellcasting'),
+  def('spellSaveDC', 'Spell Save DC', 'Spellcasting', "DC for the character's spells."),
+  def('spellAttack', 'Spell Attack Bonus', 'Spellcasting', 'Spell attack roll bonus.'),
+  ...Array.from({ length: 9 }, (_, i) =>
+    def(`spellSlotsLevel${i + 1}`, `Spell Slots (Lv ${i + 1})`, 'Spellcasting', `Total level-${i + 1} spell slots.`),
+  ),
+  def('spellsKnown', 'Spells Known', 'Spellcasting', 'Number of spells known.'),
+  def('spellsPrepared', 'Spells Prepared', 'Spellcasting', 'Number of spells prepared.'),
 ];
 
 const features: SheetFieldDef[] = [
-  def('features', 'Features & Traits', 'Features'),
-  def('languages', 'Languages', 'Features'),
-  def('resistances', 'Resistances', 'Features'),
-  def('vulnerabilities', 'Vulnerabilities', 'Features'),
-  def('immunities', 'Immunities', 'Features'),
-  def('otherProficiencies', 'Other Proficiencies', 'Features'),
+  def('features', 'Features & Traits', 'Features', 'Class and feat features & traits.'),
+  def('languages', 'Languages', 'Features', 'Languages the character speaks.'),
+  def('resistances', 'Resistances', 'Features', 'Damage resistances.'),
+  def('vulnerabilities', 'Vulnerabilities', 'Features', 'Damage vulnerabilities.'),
+  def('immunities', 'Immunities', 'Features', 'Damage and condition immunities.'),
+  def('otherProficiencies', 'Other Proficiencies', 'Features', 'Tool, weapon & armor proficiencies.'),
 ];
 
 const equipment: SheetFieldDef[] = [
-  def('inventory', 'Inventory', 'Equipment'),
-  def('equipped', 'Equipped', 'Equipment'),
-  def('attuned', 'Attuned', 'Equipment'),
+  def('inventory', 'Inventory', 'Equipment', 'Carried items and gear.'),
+  def('equipped', 'Equipped', 'Equipment', 'Currently equipped items.'),
+  def('attuned', 'Attuned', 'Equipment', 'Items the character is attuned to.'),
 ];
 
 const currency: SheetFieldDef[] = [
-  def('currencyPP', 'Platinum (pp)', 'Currency'),
-  def('currencyGP', 'Gold (gp)', 'Currency'),
-  def('currencyEP', 'Electrum (ep)', 'Currency'),
-  def('currencySP', 'Silver (sp)', 'Currency'),
-  def('currencyCP', 'Copper (cp)', 'Currency'),
+  def('currencyPP', 'Platinum (pp)', 'Currency', 'Platinum pieces carried.'),
+  def('currencyGP', 'Gold (gp)', 'Currency', 'Gold pieces carried.'),
+  def('currencyEP', 'Electrum (ep)', 'Currency', 'Electrum pieces carried.'),
+  def('currencySP', 'Silver (sp)', 'Currency', 'Silver pieces carried.'),
+  def('currencyCP', 'Copper (cp)', 'Currency', 'Copper pieces carried.'),
 ];
 
 export const SHEET_FIELD_DEFS: SheetFieldDef[] = [
@@ -157,4 +166,9 @@ export const SHEET_FIELD_DEFS: SheetFieldDef[] = [
 /** key → human label, for chip/overlay rendering. */
 export const FIELD_LABELS: Record<string, string> = Object.fromEntries(
   SHEET_FIELD_DEFS.map((d) => [d.key, d.label]),
+);
+
+/** key → short human description, for the Add-palette field cards. */
+export const FIELD_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
+  SHEET_FIELD_DEFS.map((d) => [d.key, d.description]),
 );

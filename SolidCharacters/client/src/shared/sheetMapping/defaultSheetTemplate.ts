@@ -1,4 +1,5 @@
 import { MAPPING_SCHEMA_VERSION, PlacedField, SheetTemplate, TextAlign } from './sheetMapping.types';
+import { defaultAttackCantripConfig, defaultSpellTableConfig } from './pdf/spellTable';
 
 /**
  * FULL default placements for the shipped 2-page sheet (`templateId: 'default'`,
@@ -16,8 +17,9 @@ import { MAPPING_SCHEMA_VERSION, PlacedField, SheetTemplate, TextAlign } from '.
  *
  * Coverage: every `SHEET_FIELD_DEFS` / `characterToSheetValues` key is placed
  * EXCEPT — `classAndLevel` (redundant; `className`+`level` placed separately),
- * `subrace`/`age` (no field on this sheet), `spellsKnown` (redundant with
- * `spellsPrepared`). Keys blank in the model today (`armorClass`, `speed`, `xp`,
+ * `subrace`/`age` (no field on this sheet), and `spellsKnown`/`spellsPrepared`
+ * (the spell table is drawn directly by `generateSheetPdf`, not as flat fields).
+ * Keys blank in the model today (`armorClass`, `speed`, `xp`,
  * `inspiration`) are still placed so they fill once a value exists; the generator
  * skips empty strings.
  */
@@ -166,8 +168,9 @@ const PAGE_2_FIELDS: PlacedField[] = [
   // SPELLCASTING ABILITY box (narrow left value column; labels on the right).
   f('spellSaveDC', 1, 31, 89, { fontSize: 13, align: center }),
   f('spellAttack', 1, 31, 117, { fontSize: 13, align: center }),
-  // Prepared-spell list flows down the table's Name column.
-  f('spellsPrepared', 1, 66, 202, { fontSize: 8, maxWidth: 84 }),
+  // The "CANTRIPS & PREPARED SPELLS" table is rendered directly by
+  // generateSheetPdf (one spell per row, sorted, with overflow pages), so
+  // `spellsPrepared` is intentionally NOT placed here.
   // Right-hand boxes.
   f('alignment', 1, 415, 311, { fontSize: 9 }), // line at the bottom of BACKSTORY box
   f('languages', 1, 414, 362, { fontSize: 9, maxWidth: 180 }),
@@ -196,5 +199,9 @@ export const DEFAULT_SHEET_TEMPLATE: SheetTemplate = {
   name: 'Standard D&D 5e Sheet',
   version: MAPPING_SCHEMA_VERSION,
   fields: FIELDS,
+  // Table geometry the "CANTRIPS & PREPARED SPELLS" (page 2) and "WEAPONS &
+  // DAMAGE CANTRIPS" (page 1) tables are drawn at; editable on the mapping screen.
+  spellTable: defaultSpellTableConfig(),
+  attackCantripTable: defaultAttackCantripConfig(),
   updatedAt: 0,
 };

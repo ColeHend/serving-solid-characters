@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { PDFDocument } from 'pdf-lib';
 import { SheetTemplate } from '../sheetMapping.types';
 import { generateSheetPdf } from './generateSheetPdf';
+import { SpellRow, defaultAttackCantripConfig, defaultSpellTableConfig } from './spellTable';
 
 // Serve the real template bytes to `generateSheetPdf`'s internal fetch().
 beforeAll(() => {
@@ -86,6 +88,78 @@ describe('generateSheetPdf', () => {
       { features: long },
       template([{ fieldKey: 'features', pageIndex: 0, x: 415, y: 560, fontSize: 8, font: 'Helvetica', align: 'left', maxWidth: 170 }]),
     );
+    expect(startsWithPdf(bytes)).toBe(true);
+  });
+});
+
+describe('generateSheetPdf — spell table overflow', () => {
+  const spellRow = (i: number, over: Partial<SpellRow> = {}): SpellRow => ({
+    level: i % 10,
+    name: `Spell ${i}`,
+    castingTime: '1 action',
+    range: '60 feet',
+    concentration: false,
+    ritual: false,
+    material: false,
+    damageType: '',
+    ...over,
+  });
+  const rows = (n: number) => Array.from({ length: n }, (_, i) => spellRow(i));
+  const pageCount = async (bytes: Uint8Array) => (await PDFDocument.load(bytes)).getPageCount();
+
+  it('keeps the 2-page template when spells fit on one table page (≤30)', async () => {
+    expect(await pageCount(await generateSheetPdf({}, template([]), rows(30)))).toBe(2);
+  });
+
+  it('appends one continuation page at 31 spells', async () => {
+    expect(await pageCount(await generateSheetPdf({}, template([]), rows(31)))).toBe(3);
+  });
+
+  it('appends two continuation pages at 61 spells', async () => {
+    expect(await pageCount(await generateSheetPdf({}, template([]), rows(61)))).toBe(4);
+  });
+
+  it('draws no table (page count unchanged) for an empty spell list', async () => {
+    expect(await pageCount(await generateSheetPdf({}, template([]), []))).toBe(2);
+    expect(await pageCount(await generateSheetPdf({}, template([])))).toBe(2);
+  });
+
+  it('renders markers, a long name, and an attack cantrip without throwing', async () => {
+    const bytes = await generateSheetPdf(
+      { spellAttack: '+7' },
+      template([]),
+      [
+        spellRow(0, { name: 'A Spell With An Extremely Long Name That Must Be Truncated To One Line', concentration: true, ritual: true, material: true }),
+        spellRow(1, { level: 0, name: 'Fire Bolt', damageType: 'fire' }),
+      ],
+    );
+    expect(startsWithPdf(bytes)).toBe(true);
+  });
+
+  // ── persisted (editable) table geometry ──
+  it('honours a persisted spellTable config and keeps overflow behavior', async () => {
+    const spellTable = defaultSpellTableConfig();
+    spellTable.cols.name.x = 80; // user-retuned column
+    spellTable.firstRowTopFromTop = 220;
+    const t: SheetTemplate = { ...template([]), spellTable };
+    const bytes = await generateSheetPdf({}, t, rows(31));
+    expect(startsWithPdf(bytes)).toBe(true);
+    expect(await pageCount(bytes)).toBe(3); // 31 spells still overflows to 1 continuation page
+  });
+
+  it('honours a custom rowsPerPage when paginating', async () => {
+    const spellTable = defaultSpellTableConfig();
+    spellTable.rowsPerPage = 10;
+    const t: SheetTemplate = { ...template([]), spellTable };
+    // 21 rows → chunks [10,10,1] → 2 base pages + 2 continuation pages.
+    expect(await pageCount(await generateSheetPdf({}, t, rows(21)))).toBe(4);
+  });
+
+  it('honours a persisted attackCantripTable config', async () => {
+    const attackCantripTable = defaultAttackCantripConfig();
+    attackCantripTable.cols.detail.x = 300;
+    const t: SheetTemplate = { ...template([]), attackCantripTable };
+    const bytes = await generateSheetPdf({ spellAttack: '+5' }, t, [spellRow(0, { level: 0, name: 'Fire Bolt', damageType: 'fire' })]);
     expect(startsWithPdf(bytes)).toBe(true);
   });
 });

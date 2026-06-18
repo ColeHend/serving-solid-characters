@@ -1,6 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { PDF_PAGE_H, PDF_PAGE_W, PlacedField } from '../../../shared/sheetMapping';
-import { DEFAULT_FIELD_COLOR, placedAtCenter, placedFromPalette } from './placement';
+import {
+  DEFAULT_FIELD_COLOR,
+  DropGeometry,
+  MIN_TABLE_COL_W,
+  movedTableTop,
+  movedTableX,
+  placedAtCenter,
+  placedFromPalette,
+  resizedTableWidth,
+} from './placement';
 
 describe('placedFromPalette default color', () => {
   it('gives a brand-new field the default (black) color', () => {
@@ -48,5 +57,34 @@ describe('placedAtCenter (tap-to-add)', () => {
       fieldKey: 'str', pageIndex: 0, x: 40, y: 700, fontSize: 12, font: 'Courier', align: 'right', color: '#00ff00',
     };
     expect(placedAtCenter('str', 1, existing)).toBe(existing);
+  });
+});
+
+describe('table guide drop math', () => {
+  const g = (dx: number, dy: number, width = 612): DropGeometry => ({
+    rect: { left: 0, top: 0, width },
+    dragStart: { x: 0, y: 0 },
+    delta: { x: dx, y: dy },
+    pageIndex: 1,
+    fallbackScale: 1,
+  });
+
+  it('movedTableX adds delta.x in points (scale from rect width) and clamps to the page', () => {
+    expect(movedTableX(100, g(40, 0, 1224))).toBe(120); // 40px ÷ scale 2
+    expect(movedTableX(0, g(-50, 0))).toBe(0); // clamp at left edge
+    expect(movedTableX(PDF_PAGE_W, g(50, 0))).toBe(PDF_PAGE_W); // clamp at right edge
+  });
+
+  it('resizedTableWidth grows/shrinks width, floored and kept on-page', () => {
+    expect(resizedTableWidth(100, 50, g(20, 0))).toBe(70);
+    expect(resizedTableWidth(100, 50, g(-1000, 0))).toBe(MIN_TABLE_COL_W); // floor
+    expect(resizedTableWidth(100, 50, g(10000, 0))).toBe(PDF_PAGE_W - 100); // can't extend past page right
+  });
+
+  it('movedTableTop adds delta.y (TOP-DOWN) — opposite of movedPlaced (bottom-up)', () => {
+    expect(movedTableTop(200, g(0, 30))).toBe(230); // dragging down increases distance-from-top
+    expect(movedTableTop(200, g(0, -50))).toBe(150); // dragging up decreases it
+    expect(movedTableTop(10, g(0, -100))).toBe(0); // clamp at top
+    expect(movedTableTop(PDF_PAGE_H, g(0, 50))).toBe(PDF_PAGE_H); // clamp at bottom
   });
 });

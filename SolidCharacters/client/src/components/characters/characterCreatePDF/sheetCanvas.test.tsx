@@ -3,6 +3,7 @@ import { createSignal } from 'solid-js';
 import { render } from '@solidjs/testing-library';
 import { DragDropProvider } from '../../../shared/dnd';
 import { PDF_PAGE_H, PlacedField, SheetTemplate } from '../../../shared/sheetMapping';
+import { defaultAttackCantripConfig, defaultSpellTableConfig } from '../../../shared/sheetMapping/pdf/spellTable';
 import { movedPlaced, placedFromPalette } from './placement';
 import { SheetCanvas } from './sheetCanvas';
 
@@ -71,10 +72,42 @@ describe('SheetCanvas render', () => {
           onSelect={() => {}}
           onEdit={() => {}}
           onRemove={() => {}}
+          selectedTable={() => null}
+          onSelectTable={() => {}}
         />
       </DragDropProvider>
     ));
     expect(container.textContent).toContain('Character Name'); // page-0 field
     expect(container.textContent).not.toContain('Strength Score'); // page-1 field hidden
+  });
+
+  it('renders spell-table column + marker guides on page 2', () => {
+    const template: SheetTemplate = {
+      templateId: 'default',
+      name: 't',
+      version: 4,
+      fields: [],
+      spellTable: defaultSpellTableConfig(),
+      attackCantripTable: defaultAttackCantripConfig(),
+      updatedAt: 0,
+    };
+    const [page] = createSignal(1);
+    const { container } = render(() => (
+      <DragDropProvider>
+        <SheetCanvas
+          activePage={page}
+          template={() => template}
+          zoom={() => 1}
+          selectedFieldKey={() => null}
+          onSelect={() => {}}
+          onEdit={() => {}}
+          onRemove={() => {}}
+          selectedTable={() => null}
+          onSelectTable={() => {}}
+        />
+      </DragDropProvider>
+    ));
+    expect(container.textContent).toContain('Casting Time'); // a column-guide label
+    expect(container.textContent).toContain('Conc.'); // a marker-guide label
   });
 });

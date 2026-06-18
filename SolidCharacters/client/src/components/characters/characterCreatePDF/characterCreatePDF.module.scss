@@ -84,20 +84,22 @@ $mobile: 768px;
   gap: var(--spacing-1);
 }
 
-.paletteHeader {
-  font-weight: 600;
-}
-
-.paletteBody {
+// Vertical stack of field cards inside a category's collapsible (FlatCard) body.
+.paletteGroupBody {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: var(--spacing-1);
-  padding: var(--spacing-1) 0;
 }
 
-.paletteChip {
-  cursor: grab;
-  touch-action: none;
+// A single draggable field: [handle] [label + description] [sample value].
+.fieldCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
 
   &.placed {
     opacity: 0.45;
@@ -106,6 +108,53 @@ $mobile: 768px;
   &.dragging {
     opacity: 0.6;
   }
+}
+
+// Drag handle — the only part of the card that initiates a drag.
+.fieldCardHandle {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  cursor: grab;
+  touch-action: none;
+  opacity: 0.7;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// Label + description column; min-width:0 lets long text wrap instead of overflowing.
+.fieldCardText {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fieldCardLabel {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.fieldCardDesc {
+  font-size: var(--font-size-small);
+  opacity: 0.7;
+  line-height: 1.2;
+}
+
+// Sample-value pill — the same text the drag preview renders on the sheet.
+.fieldCardValue {
+  flex: 0 0 auto;
+  max-width: 35%;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: var(--font-size-small);
+  background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // ── Field inspector (Edit tab) ──
@@ -136,9 +185,11 @@ $mobile: 768px;
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
+  min-width: 0;
 }
 
 .colorSwatch {
+  flex: 0 0 auto;
   width: 44px;
   height: 32px;
   padding: 0;
@@ -181,14 +232,44 @@ $mobile: 768px;
 
 .configGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  // minmax(0, 1fr) (not 1fr) lets the tracks shrink below their content so the
+  // number inputs / selects never force a horizontal scrollbar in the sidebar.
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--spacing-2);
 
   label {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-1);
+    min-width: 0;
   }
+
+  // The coles Select renders a fixed 200px control with 6px side margins; constrain
+  // it (scoped to this grid only) so two side-by-side selects can't overflow.
+  :global(.solid_select) {
+    width: 100%;
+    margin: 0;
+  }
+
+  :global(.solid_select__control_no_form) {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+// Horizontal-only nudge pair (table column / marker x, table vertical position).
+.nudgePadRow {
+  display: flex;
+  gap: 2px;
+  width: max-content;
+}
+
+// Section divider inside the table inspector.
+.inspectorSubhead {
+  margin-top: var(--spacing-1);
+  font-weight: 600;
+  font-size: 0.95rem;
+  opacity: 0.85;
 }
 
 // ── Canvas / page backdrop ──
@@ -278,6 +359,120 @@ $mobile: 768px;
   opacity: 1;
 }
 
+// ── Spell/attack table column guides (page-2 / page-1 table geometry editor) ──
+// Rendered BEFORE the placed chips in the DOM so chips paint on top; a selected
+// guide lifts to z-index 1 (still below a selected chip's 2).
+.tableColGuide {
+  position: absolute;
+  box-sizing: border-box;
+  cursor: grab;
+  touch-action: none;
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+  outline: 1px dashed color-mix(in srgb, var(--primary-color) 50%, transparent);
+  outline-offset: -1px;
+
+  &.selected {
+    background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+    outline: 2px solid var(--primary-color);
+    z-index: 1;
+  }
+
+  &.dragging {
+    opacity: 0.4;
+  }
+}
+
+.tableGuideLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-100%);
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+  background: var(--primary-color);
+  color: var(--on-primary-color);
+  pointer-events: none;
+}
+
+.tableColResizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  touch-action: none;
+  background: color-mix(in srgb, var(--primary-color) 30%, transparent);
+
+  &:hover,
+  &.dragging {
+    background: color-mix(in srgb, var(--primary-color) 60%, transparent);
+  }
+}
+
+.tableMarkerGuide {
+  position: absolute;
+  width: 2px;
+  transform: translateX(-50%);
+  cursor: grab;
+  touch-action: none;
+  background: color-mix(in srgb, var(--secondary-color, var(--primary-color)) 70%, transparent);
+
+  &.selected {
+    width: 3px;
+    background: var(--primary-color);
+    z-index: 1;
+  }
+
+  &.dragging {
+    opacity: 0.4;
+  }
+}
+
+.tableMarkerLabel {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  padding: 0 3px;
+  font-size: 9px;
+  line-height: 1.4;
+  white-space: nowrap;
+  background: var(--primary-color);
+  color: var(--on-primary-color);
+  pointer-events: none;
+}
+
+.tableMoveHandle {
+  position: absolute;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  touch-action: none;
+  font-size: 8px;
+  line-height: 1;
+  color: var(--on-primary-color);
+  background: color-mix(in srgb, var(--primary-color) 55%, transparent);
+  border-radius: 3px;
+
+  &.selected {
+    background: var(--primary-color);
+    z-index: 1;
+  }
+
+  &.dragging {
+    opacity: 0.4;
+  }
+}
+
+.tableMoveLabel {
+  pointer-events: none;
+}
+
 // ── Live preview (inside the preview modal) ──
 .previewPane {
   width: 100%;
@@ -296,7 +491,7 @@ $mobile: 768px;
   opacity: 0.7;
 }
 
-// ── Drag overlay chip (the moving label preview) ──
+// ── Drag overlay chip (the moving label preview — table-guide drags) ──
 .dragChip {
   padding: 2px 8px;
   border-radius: 12px;
@@ -304,4 +499,22 @@ $mobile: 768px;
   color: var(--on-primary-color);
   font-size: var(--font-size-small);
   white-space: nowrap;
+}
+
+// ── Drag overlay: sheet-accurate field preview (palette & placed field drags) ──
+// Drawn the way the field lands on the sheet — the value in its color at on-sheet
+// (zoom-scaled) size, baseline-anchored, with a thin underline guide to register
+// against the printed blank. Absolutely positioned inside the overlay's fixed div.
+.dragFieldPreview {
+  position: absolute;
+  transform: translateY(-100%);
+  display: inline-block;
+  line-height: 1.15;
+  white-space: nowrap;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 60%, transparent);
+
+  &.placeholder {
+    opacity: 0.7;
+    font-style: italic;
+  }
 }
