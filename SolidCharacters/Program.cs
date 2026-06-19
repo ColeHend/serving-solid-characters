@@ -252,25 +252,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-if (app.Environment.IsDevelopment())
-{
-    Console.WriteLine("[spa] Using Vite dev server proxy (https://localhost:3000)");
-    app.UseWhen(
-        ctx => !ctx.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase),
-        spaApp =>
-        {
-            spaApp.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "client";
-                spa.UseProxyToSpaDevelopmentServer("https://localhost:3000");
-            });
-        });
-}
-else
-{
-    // Production SPA fallback: serve pre-built index.html from client/dist
-    app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
-}
+app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
 
 
 // 9. Fallback to index.html for client‑side routing (after controllers). For production built assets.

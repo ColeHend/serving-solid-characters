@@ -3,6 +3,7 @@ import solidPlugin from 'vite-plugin-solid';
 import { ManifestOptions, VitePWA } from 'vite-plugin-pwa';
 import devtools from 'solid-devtools/vite'
 import eslint from 'vite-plugin-eslint'
+import colesSolidLibrary from 'coles-solid-library/vite'
 import fs from 'node:fs'
 import path from 'node:path'
 import esbuild from 'esbuild'
@@ -43,64 +44,19 @@ function resolveBackendTarget() {
   return hasBackendHttpsCert() ? 'https://localhost:5000' : 'http://localhost:5000';
 }
 
-// Stub coles-solid-library's runtime icon registry. The app uses only the
-// tree-shakeable `<Icon icon={X}>` form (no runtime `<Icon name=>`), so the
-// registry is dead code. Without this, Vite/Rollup follow its ~23k dynamic
-// imports and emit a chunk per icon (127MB dist / huge .vite/deps / 16MB SW
-// precache), which made the app load extremely slowly.
-const ICON_REGISTRY_RE =
-  /coles-solid-library[\\/]dist[\\/]generated[\\/]registries[\\/](outlined|rounded|sharp)\.js$/;
-const ICON_REGISTRY_STUB =
-  'export function has(){return false}\nexport function load(){return undefined}\n';
-
-function stubColesIconRegistry() {
-  return {
-    name: 'stub-coles-icon-registry',
-    enforce: 'pre' as const,
-    // build (Rollup) + dev module graph
-    load(id: string) {
-      return ICON_REGISTRY_RE.test(id) ? ICON_REGISTRY_STUB : null;
-    },
-    // dev dependency pre-bundling (esbuild) — Rollup hooks don't run there
-    config() {
-      return {
-        optimizeDeps: {
-          include: ['coles-solid-library', 'coles-solid-library/icons'],
-          esbuildOptions: {
-            plugins: [{
-              name: 'stub-coles-icon-registry-esbuild',
-              setup(build: { onLoad: (opts: { filter: RegExp }, cb: () => { contents: string; loader: 'js' }) => void }) {
-                build.onLoad({ filter: ICON_REGISTRY_RE }, () => ({
-                  contents: ICON_REGISTRY_STUB, loader: 'js',
-                }));
-              },
-            }],
-          },
-        },
-      };
-    },
-  };
-}
-
 export default defineConfig({
   define: {
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(process.env.GIT_COMMIT || process.env.npm_package_version || 'dev'),
     'import.meta.env.VITE_BUILD_TIME': JSON.stringify(new Date().toISOString())
   },
-  resolve: {
-    // The npm-linked coles-solid-library brings its own solid-js@1.9.5 (peerDep),
-    // and Vite resolves the library's bare `import 'solid-js'` at the symlink's real
-    // path. Without dedupe that loads a SECOND solid-js instance, splitting Solid's
-    // reactive graph so library effects (e.g. Select's useOverlayPosition) never run.
-    // Dedupe forces every solid-js import onto the app's single copy.
-    dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
-  },
   plugins: [
-    stubColesIconRegistry(),
     devtools({
       autoname: true, // e.g. enable autoname
     }),
     solidPlugin(),
+    // Supplies solid-js dedupe + the library/icon-barrel optimizeDeps.include this app needs
+    // (forces a single solid-js instance and tree-shakes the icon barrels in dev).
+    colesSolidLibrary(),
   VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
