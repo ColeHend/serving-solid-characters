@@ -35,11 +35,13 @@ export const FeaturePrerequisites: Component<props> = (props) => {
     const setPrereq = <T  extends keyof MadPrereqForm>(key: T, index: number, value: MadPrereqForm[T]) => {
         const form = formGroup.getGroup(index);
 
-        if (!form) {
+
+        if (!form || value === undefined) {
             return;
         }
+
         
-        form.set(key, value);
+        form.set(key, value); 
     }
 
     const getPrereq = <T extends keyof MadPrereqForm>(key: T, index: number) => {
@@ -64,6 +66,8 @@ export const FeaturePrerequisites: Component<props> = (props) => {
     const charStatKeys = createMemo(() => Object.keys(Gandalf.stats));
     const charItemKeys = createMemo(() => Object.keys(Gandalf.items));
     const charCurrencyKeys = createMemo(() => Object.keys(Gandalf.items.currency));
+
+    const prerequisites = createMemo(() => formGroup.get());
 
     const keys = [
         "Name",
@@ -445,7 +449,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
         </div>
 
         <div class={`${style.prerequisites}`}>
-            <For each={formGroup.get()}>
+            <For each={prerequisites()}>
                 {(form, i) => <Container theme="container" class={`${style.prereqBox}`}>
                     <div class={`${style.prereqItem}`}>
                         <div>
@@ -453,7 +457,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
                             
                             <div class={`${style.keyInput}`}>
                                 <FormField name="key">
-                                    <Select value={getPrereq("value", i()) ?? ""} onSelect={(value) => setPrereq("value", i(), value)}>
+                                    <Select value={getPrereq("value", i()) ?? ""} onChange={(value) => setPrereq("value", i(), value)} class={`${style.inputBorder}`}>
                                         <For each={keys}>
                                             {key => <Option value={key}>{key}</Option>}
                                         </For>
@@ -465,10 +469,14 @@ export const FeaturePrerequisites: Component<props> = (props) => {
                                 <FormField name="operation">
                                     <Switch>
                                         <Match when={getCharacterKeyType(getPrereq("value", i()) ?? "") === "string"}>
-                                            x
+                                            <Select defaultValue="===" value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)} class={`${style.inputBorder}`}>
+                                                <For each={stringOperations}>
+                                                    {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
+                                                </For>
+                                            </Select>
                                         </Match>
                                         <Match when={getCharacterKeyType(getPrereq("value", i()) ?? "") === "number" || getCharacterKeyType(getPrereq("value", i()) ?? "") === "bigint" }>
-                                            <Select value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)}>
+                                            <Select value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)} class={`${style.inputBorder}`}>
                                                 <For each={numberOperations}>
                                                     {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
                                                 </For>
@@ -482,22 +490,26 @@ export const FeaturePrerequisites: Component<props> = (props) => {
                                 <Switch>
                                     <Match when={getCharacterKeyType(getPrereq("value", i()) ?? "") === "string"}>
                                         <FormField name={`${getPrereq("value", i())}`}>
-                                            <Input placeholder="" type="text" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} class="keyValueInput" />
+                                            <Input placeholder="" type="text" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} class={`${style.keyValueInput} ${style.inputBorder}`} />
                                         </FormField>
                                     </Match>
                                     <Match when={getCharacterKeyType(getPrereq("value", i()) ?? "") === "number" || getCharacterKeyType(getPrereq("value", i()) ?? "") === "bigint" }>
                                         <FormField name={`${getPrereq("value", i())}`}>
-                                            <Input type="number" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} class="keyValueInput" />
+                                            <Input type="number" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} class={`${style.keyValueInput} ${style.inputBorder}`} />
                                         </FormField>
                                     </Match>
                                 </Switch>
                             </div>
-                            <div>
-
-                            </div>
                         </div>
-                        
+                        <div class={`${style.bottomHalf}`}>
+                            <div class={`${style.groupInput}`}>
+                                <FormField name="Group">
+                                    <Input type="number" value={getPrereq("group", i()) ?? 0} onInput={(e) => setPrereq("group", i(), +e.currentTarget.value)}/>
+                                </FormField>
+                            </div>
 
+                            <Button>X</Button>
+                        </div>
                     </div>
                 </Container>}
             </For>
