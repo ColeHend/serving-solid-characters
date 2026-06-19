@@ -2,6 +2,7 @@ import { Component, createSignal, createMemo, createEffect, onMount, onCleanup }
 import { useSearchParams } from "@solidjs/router";
 import { ArrayValidation, ValidatorResult } from "coles-solid-library/dist/components/Form/formHelp/models";
 import { addSnackbar, Button, Container, Form, FormGroup, Validators } from "coles-solid-library";
+import { DeployedCode, HomeRepairService, IdentityPlatform, Save, Star } from "coles-solid-library/icons";
 import { Proficiencies } from "./proficiencies";
 import { toClass5E } from "./classAdapter";
 // Use unified homebrewManager so new classes immediately appear in homebrew views
@@ -477,24 +478,24 @@ export const Classes: Component = () => {
       <h2>Class Creator</h2>
       <Form data={ClassFormGroup} onSubmit={onSubmit}>
         <div >
-          <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
+          <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} transparent>
             <div class={styles.body}>
               <Header resetNonce={resetNonce()} />
               <Stats />
             </div>
           </FlatCard>
-          <FlatCard icon="deployed_code" headerName="Proficiencies" transparent>
+          <FlatCard icon={DeployedCode} headerName="Proficiencies" transparent>
             <Proficiencies setProfStore={setProfStore} formGroup={ClassFormGroup} />
           </FlatCard>
-          <FlatCard icon="home_repair_service" headerName="Starting Equipment" transparent>
+          <FlatCard icon={HomeRepairService} headerName="Starting Equipment" transparent>
             <Items formGroup={ClassFormGroup} />
           </FlatCard>
-          <FlatCard icon="star" headerName="Features" transparent>
+          <FlatCard icon={Star} headerName="Features" transparent>
             <FeatureTable tableData={classLevels} setTableData={setClassLevels} formGroup={ClassFormGroup} />
           </FlatCard>
         </div>
         <FlatCard
-          icon="save"
+          icon={Save}
           headerName="Save"
           alwaysOpen
           transparent

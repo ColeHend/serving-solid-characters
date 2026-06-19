@@ -15,6 +15,12 @@ function log(msg: string) {
 }
 
 export function registerServiceWorker() {
+  // Only run the SW in production builds. In dev it has no precache manifest and a
+  // stale prod SW would precache/serve the built asset set, starving page loads.
+  if (!import.meta.env.PROD) {
+    log('[sw-reg] skipped (dev)');
+    return;
+  }
   if (!('serviceWorker' in navigator)) {
     log('[sw-reg] serviceWorker not supported');
     return;

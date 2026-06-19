@@ -1,5 +1,6 @@
 import { Component, Show, createMemo } from 'solid-js';
 import { Button, Icon, Input } from 'coles-solid-library';
+import { KeyboardArrowDown, KeyboardArrowLeft, KeyboardArrowRight, KeyboardArrowUp } from 'coles-solid-library/icons';
 import {
   AttackCantripConfig,
   PDF_PAGE_H,
@@ -103,14 +104,14 @@ export const TableInspector: Component<TableInspectorProps> = (props) => {
                       onClick={(e) => updateCol(colKey()!, { x: nudge(c().x, e.shiftKey ? -10 : -1, 0, PDF_PAGE_W) })}
                       title="Move left (Shift = 10pt)"
                     >
-                      <Icon name="keyboard_arrow_left" />
+                      <Icon icon={KeyboardArrowLeft} />
                     </Button>
                     <Button
                       transparent
                       onClick={(e) => updateCol(colKey()!, { x: nudge(c().x, e.shiftKey ? 10 : 1, 0, PDF_PAGE_W) })}
                       title="Move right (Shift = 10pt)"
                     >
-                      <Icon name="keyboard_arrow_right" />
+                      <Icon icon={KeyboardArrowRight} />
                     </Button>
                   </div>
                 </div>
@@ -146,14 +147,14 @@ export const TableInspector: Component<TableInspectorProps> = (props) => {
                   onClick={(e) => updateMarker(markerKey()!, nudge(markerX()!, e.shiftKey ? -10 : -1, 0, PDF_PAGE_W))}
                   title="Move left (Shift = 10pt)"
                 >
-                  <Icon name="keyboard_arrow_left" />
+                  <Icon icon={KeyboardArrowLeft} />
                 </Button>
                 <Button
                   transparent
                   onClick={(e) => updateMarker(markerKey()!, nudge(markerX()!, e.shiftKey ? 10 : 1, 0, PDF_PAGE_W))}
                   title="Move right (Shift = 10pt)"
                 >
-                  <Icon name="keyboard_arrow_right" />
+                  <Icon icon={KeyboardArrowRight} />
                 </Button>
               </div>
             </div>
@@ -179,14 +180,14 @@ export const TableInspector: Component<TableInspectorProps> = (props) => {
                 onClick={(e) => updateGeom({ firstRowTopFromTop: nudge(config().firstRowTopFromTop, e.shiftKey ? -10 : -1, 0, PDF_PAGE_H) })}
                 title="Move up (Shift = 10pt)"
               >
-                <Icon name="keyboard_arrow_up" />
+                <Icon icon={KeyboardArrowUp} />
               </Button>
               <Button
                 transparent
                 onClick={(e) => updateGeom({ firstRowTopFromTop: nudge(config().firstRowTopFromTop, e.shiftKey ? 10 : 1, 0, PDF_PAGE_H) })}
                 title="Move down (Shift = 10pt)"
               >
-                <Icon name="keyboard_arrow_down" />
+                <Icon icon={KeyboardArrowDown} />
               </Button>
             </div>
           </div>

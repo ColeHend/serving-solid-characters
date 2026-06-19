@@ -1,5 +1,6 @@
 import { Component, For } from "solid-js";
 import { FormField, Input, Chip, TextArea } from "coles-solid-library";
+import { Chat } from "coles-solid-library/icons";
 import styles from "./subraces.module.scss";
 import { SubraceEditorApi } from "./useSubraceEditor";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
@@ -19,7 +20,7 @@ export const LanguageSection: Component<Props> = (p) => {
     toggle,
   } = p.api;
   return (
-    <FlatCard icon="chat" headerName="languages" transparent>
+    <FlatCard icon={Chat} headerName="languages" transparent>
       <div class="inlineRow inlineDense" style={{ "margin-top": ".25rem" }}>
         <FormField name="Add Lang">
           <Input

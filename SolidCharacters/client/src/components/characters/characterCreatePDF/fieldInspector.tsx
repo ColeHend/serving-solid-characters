@@ -1,5 +1,6 @@
 import { Component, Show } from 'solid-js';
 import { Button, Checkbox, Icon, Input, Option, Select } from 'coles-solid-library';
+import { Delete, KeyboardArrowDown, KeyboardArrowLeft, KeyboardArrowRight, KeyboardArrowUp } from 'coles-solid-library/icons';
 import {
   FIELD_LABELS,
   PAGE_COUNT,
@@ -88,16 +89,16 @@ export const FieldInspector: Component<FieldInspectorProps> = (props) => {
             <span>Position</span>
             <div class={styles.nudgePad}>
               <Button transparent class={styles.nudgeUp} onClick={(e) => nudge(0, 1, e.shiftKey)} title="Move up (Shift = 10pt)">
-                <Icon name="keyboard_arrow_up" />
+                <Icon icon={KeyboardArrowUp} />
               </Button>
               <Button transparent class={styles.nudgeLeft} onClick={(e) => nudge(-1, 0, e.shiftKey)} title="Move left">
-                <Icon name="keyboard_arrow_left" />
+                <Icon icon={KeyboardArrowLeft} />
               </Button>
               <Button transparent class={styles.nudgeRight} onClick={(e) => nudge(1, 0, e.shiftKey)} title="Move right">
-                <Icon name="keyboard_arrow_right" />
+                <Icon icon={KeyboardArrowRight} />
               </Button>
               <Button transparent class={styles.nudgeDown} onClick={(e) => nudge(0, -1, e.shiftKey)} title="Move down">
-                <Icon name="keyboard_arrow_down" />
+                <Icon icon={KeyboardArrowDown} />
               </Button>
             </div>
           </div>
@@ -226,7 +227,7 @@ export const FieldInspector: Component<FieldInspectorProps> = (props) => {
           </Show>
 
           <Button borderTheme="error" transparent onClick={() => props.onRemove(field().fieldKey)}>
-            <Icon name="delete" /> Remove field
+            <Icon icon={Delete} /> Remove field
           </Button>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup } from "coles-solid-library";
+import { Hexagon, IdentityPlatform, Key } from "coles-solid-library/icons";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter } from "solid-js";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
@@ -81,7 +82,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                 <div>
                     <For each={currentFeatures.get()}>
                         {(feature, i) => <div class={`${styles.selectBox}`} onClick={(e) => setCurrentIndex(i())}>
-                            <Icon name="hexagon" size={"small"}/> 
+                            <Icon icon={Hexagon} size={"small"}/>
 
                             <span>
                                 {feature.name}
@@ -106,7 +107,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                     </div>
                 </div>
                 <div class={`${styles.scrollBox}`}>
-                    <FlatCard headerName="Identity" icon="identity_platform">
+                    <FlatCard headerName="Identity" icon={IdentityPlatform}>
                         <FormField name="Feature Name" formName="featureName">
                             <Input 
                                 value={getFeatureValue(currentIndex(), "name") ?? ""} 
@@ -124,7 +125,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         </FormField>
                     </FlatCard>
 
-                    <FlatCard headerName="Character Changes" icon="key">
+                    <FlatCard headerName="Character Changes" icon={Key}>
                         Placeholder Text
                     </FlatCard>
                 </div>

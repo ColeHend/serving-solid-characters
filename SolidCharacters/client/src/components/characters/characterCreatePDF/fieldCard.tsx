@@ -1,5 +1,6 @@
 import { Component, Show } from 'solid-js';
 import { Container, Icon } from 'coles-solid-library';
+import { DragIndicator } from 'coles-solid-library/icons';
 import { createDraggable } from '../../../shared/dnd';
 import { SheetFieldDef, STATIC_FIELD_LABEL } from '../../../shared/sheetMapping';
 import styles from './characterCreatePDF.module.scss';
@@ -57,7 +58,7 @@ export const FieldCard: Component<FieldCardProps> = (props) => {
       }}
     >
       <span ref={drag.handleRef} class={styles.fieldCardHandle} aria-label="Drag to place">
-        <Icon name="drag_indicator" />
+        <Icon icon={DragIndicator} />
       </span>
       <div class={styles.fieldCardText}>
         <div class={styles.fieldCardLabel}>{props.def.label}</div>
@@ -111,7 +112,7 @@ export const StaticFieldCard: Component<StaticFieldCardProps> = (props) => {
       }}
     >
       <span ref={drag.handleRef} class={styles.fieldCardHandle} aria-label="Drag to place">
-        <Icon name="drag_indicator" />
+        <Icon icon={DragIndicator} />
       </span>
       <div class={styles.fieldCardText}>
         <div class={styles.fieldCardLabel}>{STATIC_FIELD_LABEL}</div>

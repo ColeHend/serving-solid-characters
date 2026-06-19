@@ -1,4 +1,5 @@
 import { Button, Container, Icon, Input, Select,Option } from "coles-solid-library";
+import { Delete } from "coles-solid-library/icons";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, JSX, Match, Setter, Show, splitProps, Switch } from "solid-js";
 import { AbilityScores, StatBonus } from "../../../../../models/data";
 import styles from "./statBox.module.scss";
@@ -155,7 +156,7 @@ export const StatBox:Component<boxProps> = (props) => {
                     props.setCurrStats(old => old.filter(stat => stat !== currentScore()))
                     setAbilityScore(getStatName(),0)
                 }}>
-                    <Icon name="delete" size={"medium"} color="red"/>
+                    <Icon icon={Delete} size={"medium"} color="red"/>
                 </Button>
             </Show>
         </div>

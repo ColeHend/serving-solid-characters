@@ -2,6 +2,7 @@ import { Accessor, Component, createMemo, For, Setter, Show, Switch, Match, crea
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { Background, ChoiceDetail, Class5E, Item, Race } from "../../../../models/generated";
 import { Button, Checkbox, Chip, FormField, FormGroup, Input, RadioGroup } from "coles-solid-library";
+import { Backpack } from "coles-solid-library/icons";
 import styles from "./itemSection.module.scss";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import { CharacterForm } from "../../../../models/character.model";
@@ -185,7 +186,7 @@ export const ItemSection:Component<sectionProps> = (props) => {
         setInventory(old => old.filter(x => x !== item));
     }
 
-    return <FlatCard icon="backpack" headerName="Equipment" transparent>
+    return <FlatCard icon={Backpack} headerName="Equipment" transparent>
         <Show when={!exist()}>
             <FlatCard headerName={<strong>Starting Equipment</strong>} transparent>
                 <div>

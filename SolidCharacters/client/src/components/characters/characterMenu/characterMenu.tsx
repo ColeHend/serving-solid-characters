@@ -1,5 +1,6 @@
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
+import { MoreVert } from "coles-solid-library/icons";
 import { Component, createMemo, createSignal } from "solid-js";
 import { Character } from "../../../models/character.model";
 import useExportFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
@@ -25,7 +26,7 @@ export const CharacterMenu: Component<menuProps> = (props) => {
 
     return <span class={`${styles.menuButton}`}>
         <Button ref={setAnchorEle} onClick={()=>setShowMenu((old)=>!old)} transparent>
-            <Icon name="more_vert"/>
+            <Icon icon={MoreVert}/>
         </Button>
         <Menu anchorElement={anchorEle} show={[showMenu,setShowMenu]} position="left" class={`${styles.menu}`} >
             <MenuItem onClick={() => navigate(`/characters/create?name=${character().name}`)}>

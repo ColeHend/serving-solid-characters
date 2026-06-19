@@ -4,6 +4,7 @@ import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/
 import { ItemType } from "../../../../../models/data/items";
 import { Stat } from "../../../../../shared/models/stats";
 import { Button, Chipbar, ChipType, FormField, FormGroup, Icon, Input, Modal, Option, Select } from "coles-solid-library";
+import { Add } from "coles-solid-library/icons";
 import { ClassForm, ProfStore } from "./classes";
 
 interface ProficienciesProps {
@@ -81,7 +82,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 props.formGroup.set("armorProficiencies", [...currentArmor, ...selectedArmor()]);
                 setSelectedArmor([]);
                 props.setProfStore((prev) => ({ ...prev, armor: [...prev.armor || [], ...selectedArmor()] }));
-              }}><Icon name="add" /></Button>
+              }}><Icon icon={Add} /></Button>
               <Select multiple value={selectedArmor()} onChange={setSelectedArmor} class={`${styles.transparent}`}>
                 <Option value="Light">Light</Option>
                 <Option value="Medium">Medium</Option>
@@ -106,7 +107,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 props.formGroup.set("weaponProficiencies", [...currentWeapons, ...selectedWeapons()]);
                 setSelectedWeapons([]);
                 props.setProfStore((prev) => ({ ...prev, weapons: [...prev.weapons || [], ...selectedWeapons()] }));
-              }}><Icon name="add" /></Button>
+              }}><Icon icon={Add} /></Button>
               <Select multiple value={selectedWeapons()} onChange={setSelectedWeapons} class={`${styles.transparent}`}>
                 <Option value="Simple">Simple</Option>
                 <Option value="Martial">Martial</Option>
@@ -129,7 +130,7 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
                 props.formGroup.set("toolProficiencies", [...currentTools, ...selectedItems()]);
                 setSelectedItems([]);
                 props.setProfStore((prev) => ({ ...prev, tools: [...prev.tools || [], ...selectedItems()] }));
-              }}><Icon name="add" /></Button>
+              }}><Icon icon={Add} /></Button>
               <Select multiple value={selectedItems()} onChange={setSelectedItems} class={`${styles.transparent}`}>
                 <For each={allItems().filter(item => item.type === ItemType.Tool)}>
                   {(item) => <Option value={item.name}>{item.name}</Option>}

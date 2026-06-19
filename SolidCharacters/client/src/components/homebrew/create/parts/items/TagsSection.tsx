@@ -1,5 +1,6 @@
 import { Component, For } from "solid-js";
 import { Chip, Select, Option } from "coles-solid-library";
+import { DeployedCode } from "coles-solid-library/icons";
 import { itemsStore } from "./itemsStore";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 import styles from "./items.module.scss";
@@ -39,7 +40,7 @@ export const TagsSection: Component<Props> = (p) => {
   }
   return (
     <FlatCard
-     icon="deployed_code"
+     icon={DeployedCode}
      headerName="Tags"
      transparent
     >

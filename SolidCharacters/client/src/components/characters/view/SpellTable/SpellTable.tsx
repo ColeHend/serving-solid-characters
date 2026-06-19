@@ -1,6 +1,7 @@
 import { Accessor, Component, createMemo, Setter } from "solid-js";
 import { Spell } from "../../../../models/generated";
 import { Table, Column, Header, Cell, Row, Button, Icon, Checkbox, addSnackbar } from "coles-solid-library";
+import { Delete } from "coles-solid-library/icons";
 import { Character, CharacterSpell } from "../../../../models/character.model";
 import styles from "./SpellTable.module.scss";
 import { characterManager } from "../../../../shared";
@@ -79,7 +80,7 @@ export const SpellTable:Component<tableProps> = (props) => {
                         const confirm = window.confirm("Are you sure?");
 
                         if (confirm) characterManager.deleteCharSpell(props.currentCharacter().name, spell.name);
-                    }}><Icon color="red" name="delete" /></Button>
+                    }}><Icon color="red" icon={Delete} /></Button>
                 </span>}</Cell>
             </Column>
 

@@ -1,5 +1,6 @@
 import { Component, For, Show, createSignal } from "solid-js";
 import { Button, Chip, Modal, Input, FormField } from "coles-solid-library";
+import { HomeRepairService } from "coles-solid-library/icons";
 import styles from "../backgrounds.module.scss";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 
@@ -81,7 +82,7 @@ const EquipmentSection: Component<Props> = (p) => {
   };
   return (
     <FlatCard
-      icon="home_repair_service"
+      icon={HomeRepairService}
       headerName="Equipment"
       extraHeaderJsx={
         <div>

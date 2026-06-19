@@ -2,6 +2,7 @@ import { Component, createSignal } from "solid-js";
 import { srdItem } from "../../../../../models/data/generated";
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
+import { MoreVert } from "coles-solid-library/icons";
 import { homebrewManager } from "../../../../../shared";
 
 
@@ -26,7 +27,7 @@ export const ItemsMenu:Component<menuProps> = (props) => {
 
     return <>
         <Button ref={setAnchorEl} onClick={()=>setShowMenu(old=>!old)}>
-            <Icon name="more_vert"/>
+            <Icon icon={MoreVert}/>
         </Button>
 
         <Menu anchorElement={anchorEl} show={[showMenu, setShowMenu]}>

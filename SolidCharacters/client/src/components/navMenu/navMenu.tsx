@@ -6,6 +6,7 @@ import { ExtendedTab } from "../../models/extendedTab";
 import SettingsPopup from "./settingsPopup";
 import styles from "./navMenu.module.scss";
 import { Button, Menu, MenuItem, Modal, MenuDropdown, Icon } from "coles-solid-library";
+import { Edit, Settings, Visibility } from "coles-solid-library/icons";
 
 /* 
 
@@ -90,7 +91,7 @@ const NavMenu: Component<Props> = (props) => {
             e.stopPropagation();
             setShowSettings(old=>!old);
           }} >
-            <Icon name="settings" size={'large'} />
+            <Icon icon={Settings} size={'large'} />
           </Button>
         </MenuItem>
         <MenuDropdown header={()=>"User Settings"} >
@@ -123,13 +124,13 @@ const NavMenu: Component<Props> = (props) => {
                       Navigate(child.Link);
                       props.setDefaultShowList(false);
                     }} >
-                      <Icon name="visibility" size={'small'} />
+                      <Icon icon={Visibility} size={'small'} />
                     </Button>
                     <Button transparent onClick={()=>{
                       Navigate(convertHombrewViewToCreate(child.Link));
                       props.setDefaultShowList(false);
                     }}>
-                      <Icon name="edit" size={'small'} />
+                      <Icon icon={Edit} size={'small'} />
                     </Button>
                   </MenuItem>
                 )}</For>

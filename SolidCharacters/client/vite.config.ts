@@ -42,6 +42,46 @@ function resolveBackendTarget() {
   if (process.env.BACKEND_URL) return process.env.BACKEND_URL;
   return hasBackendHttpsCert() ? 'https://localhost:5000' : 'http://localhost:5000';
 }
+
+// Stub coles-solid-library's runtime icon registry. The app uses only the
+// tree-shakeable `<Icon icon={X}>` form (no runtime `<Icon name=>`), so the
+// registry is dead code. Without this, Vite/Rollup follow its ~23k dynamic
+// imports and emit a chunk per icon (127MB dist / huge .vite/deps / 16MB SW
+// precache), which made the app load extremely slowly.
+const ICON_REGISTRY_RE =
+  /coles-solid-library[\\/]dist[\\/]generated[\\/]registries[\\/](outlined|rounded|sharp)\.js$/;
+const ICON_REGISTRY_STUB =
+  'export function has(){return false}\nexport function load(){return undefined}\n';
+
+function stubColesIconRegistry() {
+  return {
+    name: 'stub-coles-icon-registry',
+    enforce: 'pre' as const,
+    // build (Rollup) + dev module graph
+    load(id: string) {
+      return ICON_REGISTRY_RE.test(id) ? ICON_REGISTRY_STUB : null;
+    },
+    // dev dependency pre-bundling (esbuild) — Rollup hooks don't run there
+    config() {
+      return {
+        optimizeDeps: {
+          include: ['coles-solid-library', 'coles-solid-library/icons'],
+          esbuildOptions: {
+            plugins: [{
+              name: 'stub-coles-icon-registry-esbuild',
+              setup(build: { onLoad: (opts: { filter: RegExp }, cb: () => { contents: string; loader: 'js' }) => void }) {
+                build.onLoad({ filter: ICON_REGISTRY_RE }, () => ({
+                  contents: ICON_REGISTRY_STUB, loader: 'js',
+                }));
+              },
+            }],
+          },
+        },
+      };
+    },
+  };
+}
+
 export default defineConfig({
   define: {
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(process.env.GIT_COMMIT || process.env.npm_package_version || 'dev'),
@@ -56,6 +96,7 @@ export default defineConfig({
     dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
   },
   plugins: [
+    stubColesIconRegistry(),
     devtools({
       autoname: true, // e.g. enable autoname
     }),

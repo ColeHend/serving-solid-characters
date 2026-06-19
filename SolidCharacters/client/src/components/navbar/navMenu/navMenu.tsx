@@ -1,5 +1,6 @@
 import { Component, For, Show, createSignal } from "solid-js";
 import { Icon, Modal } from "coles-solid-library";
+import { Settings } from "coles-solid-library/icons";
 import useStyle from "../../../shared/customHooks/utility/style/styleHook";
 import menuStyles from "./navMenu.module.scss";
 
@@ -44,7 +45,7 @@ const NavMenu: Component = () => {
   return (
     <>
       <button type="button" class={`${stylin.accent} ${stylin.hover}`} onClick={()=>setShowMenu(old =>!old)}>
-        <Icon name="settings" />
+        <Icon icon={Settings} />
       </button>
       <Show when={showMenu()}>
         <Modal title="menu" width="10%" height="25%" translate={{x:"36vw",y:"-40vh"}}  show={[showMenu, setShowMenu]} >

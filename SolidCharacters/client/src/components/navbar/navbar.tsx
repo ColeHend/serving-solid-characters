@@ -4,7 +4,7 @@ import { A } from "@solidjs/router";
 import getUserSettings from "../../shared/customHooks/userSettings";
 import { Button, Container, Icon } from "coles-solid-library";
 import DataTransferModal from "../DataTransfering/dataTransferModal";
-import { FileExport } from "coles-solid-library/icons";
+import { FileExport, Menu } from "coles-solid-library/icons";
 
 type Props = {
     style?: CSSModuleClasses[string],
@@ -54,7 +54,7 @@ const Navbar: Component<Props> = (props) => {
         
 
           <Button transparent ref={props.setAnchor} onClick={()=>(local.list[1](true))} >
-            <Icon name="menu" size="large" />
+            <Icon icon={Menu} size="large" />
           </Button>
         </div>
                 

@@ -3,6 +3,7 @@ import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { AbilityScores, Race, Subrace } from "../../../../models/generated";
 import styles from "./raceSection.module.scss";
 import { FormField, Select, Option, ExpansionPanel, FormGroup } from "coles-solid-library";
+import { Person } from "coles-solid-library/icons";
 import { useDnDSubraces } from "../../../../shared/customHooks/dndInfo/info/all/subraces";
 import { CharacterForm } from "../../../../models/character.model";
 
@@ -31,7 +32,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
     const currentSubrace = createMemo(()=>subraces().find(sr=> sr.name === charSubrace()));
     const subraceDescKeys = createMemo(()=>Object.keys(currentSubrace()?.descriptions ?? {}))
 
-    return <FlatCard headerName={`Species: ${[charRace().name]}`} icon="person" transparent>
+    return <FlatCard headerName={`Species: ${[charRace().name]}`} icon={Person} transparent>
         <div class={`${styles.raceSection}`}>
             <p>
                 <For each={descKeys()}>

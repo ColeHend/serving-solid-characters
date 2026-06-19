@@ -2,6 +2,7 @@ import { Component, createEffect, createMemo, createSignal, For, Match, Setter, 
 import { LevelEntity } from "../../../../../models/old/class.model";
 import { CasterType } from "../../../../../models/old/core.model";
 import { Button, FormGroup, Icon, Input, Modal } from "coles-solid-library";
+import { AddBox, Delete } from "coles-solid-library/icons";
 import { ClassForm } from "./classes";
 import styles from "./classes.module.scss";
 import { SpellsKnown } from "../../../../../shared/models/casting";
@@ -136,7 +137,7 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
                   setSelectedFeature('');
                   setShowAddFeature(true);
                 }} class={styles.addFeatureBtn}>
-                  <Icon name="add_box" size={'small'} />
+                  <Icon icon={AddBox} size={'small'} />
                 </Button>
               </span>
             </span>
@@ -165,7 +166,7 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
                           newLevel.features = newLevel.features.filter(f => f.name !== feature.name);
                           props.setData((prev)=>([...prev.map(l => l.level === row.level ? newLevel : l)]));
                         }}>
-                          <Icon name="delete" size={'small'} />
+                          <Icon icon={Delete} size={'small'} />
                         </span>
                         <span class={styles.singleFeature} onClick={()=>{
                           setSelectedFeature(feature.name);

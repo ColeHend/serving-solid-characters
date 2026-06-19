@@ -10,7 +10,6 @@ using SolidCharacters.Domain.RacesEntity;
 using SolidCharacters.Domain.Entities;
 using SolidCharacters.Domain.FeatsEntity;
 using SolidCharacters.Domain.BackgroundsEntity;
-using Microsoft.OpenApi.Any;
 
 [ApiController]
 [Route("api/[controller]")]

@@ -1,4 +1,5 @@
 import { FormField, Select, Option, FormGroup, Chip } from "coles-solid-library";
+import { Chat } from "coles-solid-library/icons";
 import { Component, createMemo, For, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import styles from "./languageSection.module.scss";
@@ -36,7 +37,7 @@ export const LanguageSection:Component<sectionProps> = (props) => {
         return form.get().languages;
     }
 
-    return <FlatCard icon="chat" headerName={<div>
+    return <FlatCard icon={Chat} headerName={<div>
         Languages: Common<Show when={getLanguages().length > 0}>,</Show> {getLanguages().join(", ")}
     </div>} transparent>
         <div class={`${styles.languageSection}`}>

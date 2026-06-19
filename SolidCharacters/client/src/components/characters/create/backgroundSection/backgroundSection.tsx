@@ -5,6 +5,7 @@ import { Markdown } from "../../../../shared";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import styles from "./backgroundSection.module.scss";
 import { FormGroup, Select, Option, FormField } from "coles-solid-library";
+import { Home } from "coles-solid-library/icons";
 import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
@@ -51,7 +52,7 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
         }
     })
 
-    return <FlatCard icon="home" headerName={`Background: ${selBackground()?.name ?? ""}`} transparent>
+    return <FlatCard icon={Home} headerName={`Background: ${selBackground()?.name ?? ""}`} transparent>
         <div>
             <div style={{"margin-bottom": "2%"}}>
                 <Markdown 

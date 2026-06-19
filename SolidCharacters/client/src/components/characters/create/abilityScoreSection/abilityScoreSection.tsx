@@ -1,6 +1,7 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { FormField, Select, Option, Chipbar, ChipType, Checkbox, Chip } from "coles-solid-library";
+import { Star } from "coles-solid-library/icons";
 import styles from "./abilityScoreSection.module.scss";
 import { StatBox } from "./statBox/statbox";
 
@@ -169,7 +170,7 @@ export const Ass:Component<assProps> = (props) => {
         modChips().forEach((chip)=>setStatMod(chip.key,+chip.value))
     })
 
-    return <FlatCard icon="star" headerName={<div class={`${styles.headerTextWrapper}`}>
+    return <FlatCard icon={Star} headerName={<div class={`${styles.headerTextWrapper}`}>
         <span>Stats: </span>
         <span class={`${styles.headerText}`}>str<div>({strength() + strengthMod()})</div></span>
         <span class={`${styles.headerText}`}>dex<div>({dexterity() + dexterityMod()})</div></span>

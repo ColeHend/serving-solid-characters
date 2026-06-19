@@ -1,4 +1,5 @@
 import { Cell, Column, FormGroup, Header, Icon, Modal, Row, Table } from "coles-solid-library";
+import { Check, Close } from "coles-solid-library/icons";
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 import { Class5E } from "../../../../../models/generated";
 import styles from "./AddClass.module.scss";
@@ -143,8 +144,8 @@ export const AddClass: Component<modalProps> = (props) => {
                                                 "border-bottom": meetsRequirement() ? "2px solid green" : "2px solid red",
                                             }}>
                                                 <span>{trimmedStat} of 13</span>
-                                                <Show when={meetsRequirement()} fallback={<Icon name="close" size="small" color="red"/>}>
-                                                    <Icon name="check" size="small" color="green"/>
+                                                <Show when={meetsRequirement()} fallback={<Icon icon={Close} size="small" color="red"/>}>
+                                                    <Icon icon={Check} size="small" color="green"/>
                                                 </Show>
                                             </span>
                                         );

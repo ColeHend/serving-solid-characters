@@ -1,4 +1,5 @@
 import { Chip, FormGroup } from "coles-solid-library"
+import { BookRibbon } from "coles-solid-library/icons"
 import { Component, createMemo, createSignal, Show, For, Accessor, Setter } from "solid-js"
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard"
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
@@ -55,7 +56,7 @@ export const SpellsSection:Component<SectionProps> = (props) => {
         return null;
     }
  
-    return <FlatCard icon="book_ribbon" headerName={`Spells (${characterSpells().length})`} transparent>
+    return <FlatCard icon={BookRibbon} headerName={`Spells (${characterSpells().length})`} transparent>
         <div class={`${styles.spellChips}`}>
             <For each={characterSpells()}>
                 {(spell) => <Chip value={spell} onClick={(()=>{

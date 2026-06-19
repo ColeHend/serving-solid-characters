@@ -4,6 +4,7 @@ import { Subclass as OldSubclass } from "../../../../../models/old/class.model";
 import { A, useSearchParams } from "@solidjs/router";
 // Removed old Feature generic import; now using new data FeatureDetail shape directly
 import { Body, FormGroup, Validators, Select } from "coles-solid-library";
+import { Equalizer, IdentityPlatform, Save, Star } from "coles-solid-library/icons";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../../../models";
 import { buildDataSpellcasting, parseDataSpellcasting } from './subclassAdapter';
@@ -374,12 +375,12 @@ const Subclasses: Component = () => {
           </div>
         </Show>
       </div>
-      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
+      <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} transparent>
         <ClassSelection form={SubclassFormGroup as any} allClassNames={allClassNames} getSubclassLevels={getSubclassLevels} setToAddFeatureLevel={setToAddFeatureLevel} updateParamsIfReady={updateParamsIfReady} />
         <CoreFields form={SubclassFormGroup as any} updateParamsIfReady={updateParamsIfReady} onNameInput={markDirty} onDescriptionInput={markDirty} />
       </FlatCard>
       <Show when={SubclassFormGroup.get('parent_class') && SubclassFormGroup.get('name')}>
-        <FlatCard icon="star" headerName="Features" transparent>
+        <FlatCard icon={Star} headerName="Features" transparent>
           <FeaturesSection 
             form={SubclassFormGroup as any} 
             getSubclassLevels={getSubclassLevels} 
@@ -389,7 +390,7 @@ const Subclasses: Component = () => {
             setEditIndex={setEditIndex}
             getEditIndex={editIndex} />
         </FlatCard>
-        <FlatCard icon="equalizer" headerName="Spellcasting" transparent>
+        <FlatCard icon={Equalizer} headerName="Spellcasting" transparent>
           <SpellcastingSection
             form={SubclassFormGroup as any}
             toAddKnownLevel={toAddKnownLevel}
@@ -416,7 +417,7 @@ const Subclasses: Component = () => {
             }}
           />
         </FlatCard>
-        <FlatCard icon="save" headerName="save" alwaysOpen transparent>
+        <FlatCard icon={Save} headerName="save" alwaysOpen transparent>
           <div style={{ display: 'flex', 'gap': '0.75rem', 'margin-top': '0.75rem', 'flex-wrap':'wrap' }}>
             <button
               disabled={!canAddSubclass() || (activeKey() !== '__new__' && !(isModifiedFlag() || userDirty()))}

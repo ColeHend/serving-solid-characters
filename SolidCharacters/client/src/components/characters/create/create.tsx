@@ -25,6 +25,7 @@ import {
   Option,
   ChipType
 } from "coles-solid-library";
+import { IdentityPlatform, PictureAsPdf, Save } from "coles-solid-library/icons";
 import { Character, CharacterForm } from "../../../models/character.model";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
 import { toCharacter5e } from "./characterMapper";
@@ -466,7 +467,7 @@ const CharacterCreate: Component = () => {
     <Body class={`${stylin().accent} ${styles.body}`}>
       <h2>Character Creator</h2>
       <Form data={group} onSubmit={handleSubmit}>
-        <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} extraHeaderJsx={
+        <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} extraHeaderJsx={
           <Show when={exist()}>
               <Button onClick={()=>{}}>Fill Info</Button>
               <Button onClick={handleDelete}>Delete</Button>
@@ -599,12 +600,12 @@ const CharacterCreate: Component = () => {
           />
         </Show>
        
-        <FlatCard icon="save" headerName="Save" alwaysOpen transparent>
+        <FlatCard icon={Save} headerName="Save" alwaysOpen transparent>
           <Button type="submit" aria-label="submit btn" disabled={isDisabled()}>
             {exist() ? "update" : "save"}
           </Button>
           <Button type="button" aria-label="create character sheet" onClick={handleCreateSheet} disabled={isDisabled()}>
-            <Icon name="picture_as_pdf" /> Create Character Sheet
+            <Icon icon={PictureAsPdf} /> Create Character Sheet
           </Button>
         </FlatCard>
       </Form>

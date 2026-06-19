@@ -1,5 +1,6 @@
 import { Component, Show } from "solid-js";
 import { Button } from "coles-solid-library";
+import { Save } from "coles-solid-library/icons";
 import { itemsStore } from "./itemsStore";
 import styles from "./items.module.scss";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
@@ -14,7 +15,7 @@ export const SaveSection: Component<Props> = (p) => {
   const store = itemsStore;
   return (
     <FlatCard
-      icon="save"
+      icon={Save}
       headerName="Save"
       alwaysOpen
       transparent

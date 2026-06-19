@@ -1,12 +1,14 @@
 #################################################################
 # Build stage for .NET + Client (SolidJS)                        #
 #################################################################
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy project files first for restore caching
+# global.json (SDK pin) must be present before restore so restore and publish select the same SDK
+COPY global.json ./
 COPY SolidCharacters/SolidCharacters.csproj SolidCharacters/
 COPY SolidCharacters.Domain/SolidCharacters.Domain.csproj SolidCharacters.Domain/
 COPY SolidCharacters.Repository/SolidCharacters.Repository.csproj SolidCharacters.Repository/
@@ -34,7 +36,7 @@ RUN dotnet publish "SolidCharacters/SolidCharacters.csproj" -c ${BUILD_CONFIGURA
 #################################################################
 # Final runtime image                                            #
 #################################################################
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 # Environment setup

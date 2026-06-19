@@ -1,6 +1,7 @@
 import { Component, For, Show, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
 import { Body, Button, Icon, Modal, Option, Select, TabBar, addSnackbar } from 'coles-solid-library';
+import { List, PictureAsPdf, Save, Visibility } from 'coles-solid-library/icons';
 import { DragDropProvider, DragOverlay, pointerWithin, type DefaultDataMap, type DragEndEvent } from '../../../shared/dnd';
 import { characterManager } from '../../../shared';
 import useExportFullStats from '../../../shared/customHooks/dndInfo/useGetFullStats';
@@ -313,20 +314,20 @@ export const CreateCharacterPDF: Component = () => {
           />
           <Show when={isMobile()}>
             <Button transparent onClick={() => setShowSidebar(true)}>
-              <Icon name="list" /> Fields
+              <Icon icon={List} /> Fields
             </Button>
           </Show>
           <Button onClick={() => mappingStore.saveTemplate(template())}>
-            <Icon name="save" /> Save
+            <Icon icon={Save} /> Save
           </Button>
           <Button borderTheme="error" transparent onClick={() => mappingStore.resetToDefault(TEMPLATE_ID)}>
             Reset
           </Button>
           <Button onClick={onGenerate}>
-            <Icon name="picture_as_pdf" /> Generate
+            <Icon icon={PictureAsPdf} /> Generate
           </Button>
           <Button transparent onClick={() => setShowPreview(true)}>
-            <Icon name="visibility" /> Preview
+            <Icon icon={Visibility} /> Preview
           </Button>
           <Button transparent onClick={() => setZoom((z) => clamp(+(z - 0.1).toFixed(2), 0.5, 2))}>−</Button>
           <Button transparent onClick={() => setZoom((z) => clamp(+(z + 0.1).toFixed(2), 0.5, 2))}>+</Button>

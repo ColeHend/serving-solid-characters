@@ -4,6 +4,7 @@ import { useNavigate } from "@solidjs/router";
 import { Portal } from "solid-js/web";
 import { ExtendedTab } from "../../models/extendedTab";
 import { Button, Container, Icon, Modal } from "coles-solid-library";
+import { Settings } from "coles-solid-library/icons";
 import styles from "./SideMenu.module.scss";
 import useClickOutside from "solid-click-outside";
 import { FlatCard } from "../../shared/components/flatCard/flatCard";
@@ -155,7 +156,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
                         }}>Naviagtion</h3>
 
                         <Button onClick={()=>setShowSettings(old=>!old)}>
-                            <Icon name="settings" size={'large'} />
+                            <Icon icon={Settings} size={'large'} />
                         </Button>
                     </li>
 

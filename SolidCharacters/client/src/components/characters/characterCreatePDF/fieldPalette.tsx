@@ -1,20 +1,21 @@
 import { Component, For, Show, createMemo } from 'solid-js';
+import { Backpack, Badge, FitnessCenter, Paid, Psychology, Shield, Star, Swords, WandStars } from 'coles-solid-library/icons';
 import { FlatCard } from '../../../shared/components/flatCard/flatCard';
 import { SHEET_FIELD_DEFS, SheetFieldDef, SheetFieldGroup } from '../../../shared/sheetMapping';
 import { FieldCard, StaticFieldCard } from './fieldCard';
 import styles from './characterCreatePDF.module.scss';
 
-/** Material Symbol per category, shown in each group's collapsible header. */
+/** Pre-imported (tree-shakeable) Material Symbol per category, shown in each group's collapsible header. */
 const GROUP_ICONS: Record<SheetFieldGroup, string> = {
-  Identity: 'badge',
-  Abilities: 'fitness_center',
-  Skills: 'psychology',
-  Saves: 'shield',
-  Combat: 'swords',
-  Spellcasting: 'wand_stars',
-  Features: 'star',
-  Equipment: 'backpack',
-  Currency: 'paid',
+  Identity: Badge,
+  Abilities: FitnessCenter,
+  Skills: Psychology,
+  Saves: Shield,
+  Combat: Swords,
+  Spellcasting: WandStars,
+  Features: Star,
+  Equipment: Backpack,
+  Currency: Paid,
 };
 
 interface FieldPaletteProps {

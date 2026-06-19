@@ -1,6 +1,7 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, splitProps, Switch } from "solid-js";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import { Table, Column, Row, Header, Cell, TabBar, FormGroup, FormField, Input, Icon, Button, Select, Option, Checkbox } from "coles-solid-library";
+import { AddBox, Delete } from "coles-solid-library/icons";
 import styles from "./classes.module.scss";
 import { ClassForm } from "./classes";
 import { CasterType, FeatureTypes } from "../../../../../models/old/core.model";
@@ -55,7 +56,7 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
                     return level;
                   })]));
                   setNewColumnName(''); // Clear the input field after adding
-                }}><Icon name="add_box" /></Button>
+                }}><Icon icon={AddBox} /></Button>
               </div>
               <div class={`${styles.classSpecific}`}>
                 <For each={Object.keys(tableData()[0].classSpecific)}>{(key)=>
@@ -64,7 +65,7 @@ export const FeatureTable: Component<FeatureTableProps> = (props) => {
                       delete level.classSpecific[key];
                       return level;
                     })]));
-                  }} ><Icon name="delete" size={'medium'}/> {key}</Button>
+                  }} ><Icon icon={Delete} size={'medium'}/> {key}</Button>
                 }</For>
               </div>
             </Match>

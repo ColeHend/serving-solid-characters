@@ -1,5 +1,6 @@
 import { Component, createMemo } from 'solid-js';
 import { Button, Icon } from 'coles-solid-library';
+import { PictureAsPdf } from 'coles-solid-library/icons';
 import { Character } from '../../models/character.model';
 import useExportFullStats from '../../shared/customHooks/dndInfo/useGetFullStats';
 import useExportProficiencies from '../../shared/customHooks/dndInfo/useExportProficiencies';
@@ -35,7 +36,7 @@ export const CreateSheetButton: Component<Props> = (props) => {
       disabled={!character()}
       onClick={() => void createCharacterSheet(character(), fullStats(), profs())}
     >
-      <Icon name="picture_as_pdf" /> {props.label ?? 'Create Character Sheet'}
+      <Icon icon={PictureAsPdf} /> {props.label ?? 'Create Character Sheet'}
     </Button>
   );
 };
