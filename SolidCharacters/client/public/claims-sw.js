@@ -1,6 +1,6 @@
 // node_modules/workbox-core/_version.js
 try {
-  self["workbox:core:7.3.0"] && _();
+  self["workbox:core:7.4.0"] && _();
 } catch (e) {
 }
 
@@ -349,7 +349,7 @@ function waitUntil(event, asyncFn) {
 
 // node_modules/workbox-precaching/_version.js
 try {
-  self["workbox:precaching:7.3.0"] && _();
+  self["workbox:precaching:7.4.0"] && _();
 } catch (e) {
 }
 
@@ -574,7 +574,7 @@ function timeout(ms) {
 
 // node_modules/workbox-strategies/_version.js
 try {
-  self["workbox:strategies:7.3.0"] && _();
+  self["workbox:strategies:7.4.0"] && _();
 } catch (e) {
 }
 
@@ -1570,7 +1570,7 @@ var getOrCreatePrecacheController = () => {
 
 // node_modules/workbox-routing/_version.js
 try {
-  self["workbox:routing:7.3.0"] && _();
+  self["workbox:routing:7.4.0"] && _();
 } catch (e) {
 }
 
@@ -2839,7 +2839,7 @@ replaceTraps((oldTraps) => ({
 
 // node_modules/workbox-expiration/_version.js
 try {
-  self["workbox:expiration:7.3.0"] && _();
+  self["workbox:expiration:7.4.0"] && _();
 } catch (e) {
 }
 
@@ -3295,7 +3295,7 @@ var ExpirationPlugin = class {
 
 // node_modules/workbox-cacheable-response/_version.js
 try {
-  self["workbox:cacheable-response:7.3.0"] && _();
+  self["workbox:cacheable-response:7.4.0"] && _();
 } catch (e) {
 }
 
