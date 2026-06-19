@@ -1,7 +1,6 @@
 import { Character } from '../../../models/character.model';
 import { Stats } from '../../customHooks/dndInfo/useCharacters';
 import { getAbilityModifier } from '../../customHooks/utility/tools/dndMath';
-import getSpellAndCasterLevel from '../../customHooks/utility/tools/getSpellAndCasterLevel';
 import { useDnDClasses } from '../../customHooks/dndInfo/info/all/classes';
 import { AbilityKey } from '../characterFields';
 
@@ -47,8 +46,11 @@ export function spellValues(char: Character, fullStats: Stats, pb: number): Reco
     if (distinctClasses.size <= 1) {
       const class5e = useDnDClasses()().find((c) => c.name?.toLowerCase() === className);
       if (class5e?.spellcasting) {
-        const casterLevel = getSpellAndCasterLevel(class5e, 'caster', char.level);
-        const slots = class5e.spellcasting.metadata?.slots?.[casterLevel] as Record<string, number | undefined> | undefined;
+        // `metadata.slots` is keyed by CLASS LEVEL (1–20) — see featureTable.tsx's
+        // `slots?.[+level]`. Single-class only here, so the character level IS the
+        // class level. (Indexing by a reduced "caster level" mis-keyed half/third
+        // casters, e.g. Paladin 10 → slot row 5, Eldritch Knight 12 → row 4.)
+        const slots = class5e.spellcasting.metadata?.slots?.[char.level] as Record<string, number | undefined> | undefined;
         if (slots) {
           for (let i = 1; i <= 9; i++) {
             const n = slots[`spellSlotsLevel${i}`];

@@ -124,8 +124,8 @@ const spellcasting: SheetFieldDef[] = [
   ...Array.from({ length: 9 }, (_, i) =>
     def(`spellSlotsLevel${i + 1}`, `Spell Slots (Lv ${i + 1})`, 'Spellcasting', `Total level-${i + 1} spell slots.`),
   ),
-  def('spellsKnown', 'Spells Known', 'Spellcasting', 'Number of spells known.'),
-  def('spellsPrepared', 'Spells Prepared', 'Spellcasting', 'Number of spells prepared.'),
+  def('spellsKnown', 'Spells Known', 'Spellcasting', 'Comma-separated list of spells known.'),
+  def('spellsPrepared', 'Spells Prepared', 'Spellcasting', 'Comma-separated list of prepared spells.'),
 ];
 
 const features: SheetFieldDef[] = [
@@ -177,11 +177,6 @@ export const SHEET_FIELD_DEFS: SheetFieldDef[] = [
 /** key → human label, for chip/overlay rendering. */
 export const FIELD_LABELS: Record<string, string> = Object.fromEntries(
   SHEET_FIELD_DEFS.map((d) => [d.key, d.label]),
-);
-
-/** key → short human description, for the Add-palette field cards. */
-export const FIELD_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
-  SHEET_FIELD_DEFS.map((d) => [d.key, d.description]),
 );
 
 // ── Static-text fields ──

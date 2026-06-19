@@ -12,6 +12,7 @@ import {
   TextAlign,
   clamp,
   mappingStore,
+  toNum,
 } from '../../../shared/sheetMapping';
 import { DEFAULT_FIELD_COLOR } from './placement';
 import styles from './characterCreatePDF.module.scss';
@@ -23,11 +24,6 @@ interface FieldInspectorProps {
   /** Remove the selected field from the sheet. */
   onRemove: (key: string) => void;
 }
-
-const toNum = (raw: string, fallback: number): number => {
-  const n = parseFloat(raw);
-  return Number.isFinite(n) ? n : fallback;
-};
 
 /**
  * Docked metadata editor for the selected placement (replaces the old

@@ -21,6 +21,6 @@ import { DragDropProvider, createDraggable, createDroppable, pointerWithin } fro
 
 - Source of truth: the vendored tree under this folder. The original
   `To_Adapt_And_Delete/` copy is deleted once the full sheet-mapper build is green.
-- `state.ts` is the one file exceeding the repo's ≤200-line rule (285 lines); it
+- `state.ts` is the one file exceeding the repo's ≤200-line rule (290 lines); it
   carries a header comment explaining the documented exception.
 - This is a fork-by-copy: fixes are made here, not upstream.

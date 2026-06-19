@@ -9,13 +9,13 @@ import useExportProficiencies from '../../../shared/customHooks/dndInfo/useExpor
 import { EXAMPLE_CHARACTER } from '../../../shared/customHooks/dndInfo/useExampleChars';
 import { Character } from '../../../models/character.model';
 import {
-  AttackCantripConfig,
+  AttackColsPatch,
   FIELD_LABELS,
   PAGE_COUNT,
   PlacedField,
   STATIC_FIELD_DEFAULT_TEXT,
   STATIC_FIELD_LABEL,
-  SpellTableConfig,
+  SpellColsPatch,
   SpellTextCol,
   characterToFeatureLists,
   characterToSheetValues,
@@ -24,6 +24,7 @@ import {
 } from '../../../shared/sheetMapping';
 import { generateSheetPdf } from '../../../shared/sheetMapping/pdf/generateSheetPdf';
 import { spellTableRows } from '../../../shared/sheetMapping/pdf/spellTable';
+import { downloadBlob } from '../../../shared/customHooks/utility/tools/downloadBlob';
 import {
   DropGeometry,
   movedPlaced,
@@ -49,22 +50,6 @@ type DragData =
   | { kind: 'placed'; field: PlacedField }
   | TableDragData;
 type PageData = { pageIndex: number; getRect: () => DOMRect };
-
-/** Sparse per-column patches accepted by the store's table updaters. */
-type SpellColsPatch = Partial<Record<keyof SpellTableConfig['cols'], Partial<SpellTextCol>>>;
-type AttackColsPatch = Partial<Record<keyof AttackCantripConfig['cols'], Partial<SpellTextCol>>>;
-
-function downloadPdf(bytes: Uint8Array, filename: string) {
-  const url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'application/pdf' }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  // Defer revoke so the click's download has been initiated first.
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 /** Drag-and-drop character-sheet field mapper (the `/characters/pdfCreate` screen). */
 export const CreateCharacterPDF: Component = () => {
@@ -125,7 +110,7 @@ export const CreateCharacterPDF: Component = () => {
   const [dragStart, setDragStart] = createSignal({ x: 0, y: 0 });
 
   const template = mappingStore.template;
-  const placedKeys = () => new Set(template().fields.map((f) => f.fieldKey));
+  const placedKeys = createMemo(() => new Set(template().fields.map((f) => f.fieldKey)));
   const selectedField = createMemo(() => template().fields.find((f) => f.fieldKey === selectedFieldKey()) ?? null);
 
   /**
@@ -251,10 +236,21 @@ export const CreateCharacterPDF: Component = () => {
   const onGenerate = async () => {
     const char = selectedCharacter() ?? previewCharacter();
     try {
-      downloadPdf(await generateSheetPdf(values(), template(), spellRows(), featureLists()), char.name || 'character');
+      const bytes = await generateSheetPdf(values(), template(), spellRows(), featureLists());
+      const name = char.name || 'character';
+      // Copy into a fresh ArrayBuffer-backed view so it's a plain BlobPart.
+      downloadBlob(new Uint8Array(bytes), name.endsWith('.pdf') ? name : `${name}.pdf`, 'application/pdf');
     } catch {
       addSnackbar({ message: 'Failed to generate sheet', severity: 'error' });
     }
+  };
+
+  /** Reset to the shipped default; also clear the now-stale selection (the default's
+   *  fields/tables differ, so a lingering selectedFieldKey/selectedTable points at nothing). */
+  const onReset = () => {
+    mappingStore.resetToDefault(TEMPLATE_ID);
+    setSelectedFieldKey(null);
+    setSelectedTable(null);
   };
 
   const overlayLabel = (data: DragData | undefined) => {
@@ -297,7 +293,25 @@ export const CreateCharacterPDF: Component = () => {
 
   return (
     <Body class={styles.page}>
-      <DragDropProvider collisionDetection={pointerWithin} onDragEnd={onDragEnd}>
+      <DragDropProvider
+        collisionDetection={pointerWithin}
+        onDragEnd={onDragEnd}
+        announcements={{
+          // Reuse the same human labels the drag overlay shows, instead of the
+          // engine's default internal ids (`placed:armorClass on page:0`).
+          onDragStart: (e) => `Picked up ${overlayLabel(e.active.data as DragData)}.`,
+          onDragOver: (e) => {
+            const p = e.over?.data as PageData | undefined;
+            return p ? `Over page ${p.pageIndex + 1}.` : 'Not over a page.';
+          },
+          onDragEnd: (e) => {
+            const label = overlayLabel(e.active.data as DragData);
+            const p = e.over?.data as PageData | undefined;
+            return p ? `Placed ${label} on page ${p.pageIndex + 1}.` : `Dropped ${label}.`;
+          },
+          onDragCancel: (e) => `Cancelled moving ${overlayLabel(e.active.data as DragData)}.`,
+        }}
+      >
         <div class={styles.toolbar}>
           <Show
             when={characters().length}
@@ -320,7 +334,7 @@ export const CreateCharacterPDF: Component = () => {
           <Button onClick={() => mappingStore.saveTemplate(template())}>
             <Icon icon={Save} /> Save
           </Button>
-          <Button borderTheme="error" transparent onClick={() => mappingStore.resetToDefault(TEMPLATE_ID)}>
+          <Button borderTheme="error" transparent onClick={onReset}>
             Reset
           </Button>
           <Button onClick={onGenerate}>

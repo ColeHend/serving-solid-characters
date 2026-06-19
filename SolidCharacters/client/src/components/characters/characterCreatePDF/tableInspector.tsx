@@ -2,14 +2,16 @@ import { Component, Show, createMemo } from 'solid-js';
 import { Button, Icon, Input } from 'coles-solid-library';
 import { KeyboardArrowDown, KeyboardArrowLeft, KeyboardArrowRight, KeyboardArrowUp } from 'coles-solid-library/icons';
 import {
-  AttackCantripConfig,
+  AnyTableConfig,
+  AttackColsPatch,
   PDF_PAGE_H,
   PDF_PAGE_W,
   SheetTemplate,
-  SpellTableConfig,
+  SpellColsPatch,
   SpellTextCol,
   clamp,
   mappingStore,
+  toNum,
 } from '../../../shared/sheetMapping';
 import { COL_LABELS, MARKER_FULL_LABELS, TableSelection } from './tableGuidesOverlay';
 import styles from './characterCreatePDF.module.scss';
@@ -20,15 +22,7 @@ interface TableInspectorProps {
   templateId: string;
 }
 
-type AnyTableConfig = SpellTableConfig | AttackCantripConfig;
-type SpellColsPatch = Partial<Record<keyof SpellTableConfig['cols'], Partial<SpellTextCol>>>;
-type AttackColsPatch = Partial<Record<keyof AttackCantripConfig['cols'], Partial<SpellTextCol>>>;
 type MarkerKey = 'concentration' | 'ritual' | 'material';
-
-const toNum = (raw: string, fallback: number): number => {
-  const n = parseFloat(raw);
-  return Number.isFinite(n) ? n : fallback;
-};
 
 /**
  * Docked editor for the selected spell/attack table guide (sibling of

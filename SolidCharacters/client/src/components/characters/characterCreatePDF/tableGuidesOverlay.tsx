@@ -1,6 +1,6 @@
 import { Component, For, JSX, Show, createMemo } from 'solid-js';
 import { createDraggable } from '../../../shared/dnd';
-import { AttackCantripConfig, SpellTableConfig, SpellTextCol } from '../../../shared/sheetMapping';
+import { AnyTableConfig, SpellTableConfig, SpellTextCol } from '../../../shared/sheetMapping';
 import styles from './characterCreatePDF.module.scss';
 
 /** Which printed table a guide belongs to. */
@@ -50,7 +50,6 @@ const COL_ORDER: Record<TableId, string[]> = {
 };
 const MARKER_ORDER = ['concentration', 'ritual', 'material'] as const;
 
-type AnyTableConfig = SpellTableConfig | AttackCantripConfig;
 const rowCount = (c: AnyTableConfig): number => ('rowsPerPage' in c ? c.rowsPerPage : c.maxRows);
 const colOf = (c: AnyTableConfig, key: string): SpellTextCol => (c.cols as Record<string, SpellTextCol>)[key];
 const partKey = (p: TablePart): string => (p.kind === 'move' ? 'move' : `${p.kind}:${p.key}`);

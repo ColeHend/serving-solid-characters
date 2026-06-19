@@ -26,6 +26,12 @@ export function clamp(n: number, lo: number, hi: number): number {
   return Math.min(Math.max(n, lo), hi);
 }
 
+/** Parse a numeric input string; returns `fallback` when empty/NaN. (Shared by the inspectors.) */
+export function toNum(raw: string, fallback: number): number {
+  const n = parseFloat(raw);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 /**
  * Screen pixels (top-left origin) → PDF points (bottom-left origin, baseline-left).
  * The lone Y-flip lives here. Result is clamped to the page box.

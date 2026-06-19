@@ -134,6 +134,13 @@ export interface AttackCantripConfig extends TableRowGeometry {
   cols: { name: SpellTextCol; detail: SpellTextCol };
 }
 
+/** Either persisted table config (page-2 spell table or page-1 attack/cantrip box). */
+export type AnyTableConfig = SpellTableConfig | AttackCantripConfig;
+
+/** Sparse per-column patches accepted by the store's table updaters. */
+export type SpellColsPatch = Partial<Record<keyof SpellTableConfig['cols'], Partial<SpellTextCol>>>;
+export type AttackColsPatch = Partial<Record<keyof AttackCantripConfig['cols'], Partial<SpellTextCol>>>;
+
 export interface SheetTemplate {
   /** 'default' for the shipped sheet; other ids reserved for future templates. */
   templateId: string;

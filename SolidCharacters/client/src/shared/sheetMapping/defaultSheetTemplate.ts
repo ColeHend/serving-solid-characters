@@ -17,8 +17,11 @@ import { defaultAttackCantripConfig, defaultSpellTableConfig } from './pdf/spell
  *
  * Coverage: every `SHEET_FIELD_DEFS` / `characterToSheetValues` key is placed
  * EXCEPT — `classAndLevel` (redundant; `className`+`level` placed separately),
- * `subrace`/`age` (no field on this sheet), and `spellsKnown`/`spellsPrepared`
- * (the spell table is drawn directly by `generateSheetPdf`, not as flat fields).
+ * `subrace`/`age` (no field on this sheet), `spellsKnown`/`spellsPrepared`
+ * (the spell table is drawn directly by `generateSheetPdf`, not as flat fields),
+ * `features` (legacy merged list, superseded by `classFeatures`/`speciesTraits`/
+ * `feats`), and `otherProficiencies` (superseded by the per-category
+ * `armor*`/`weaponProficiencies`/`toolProficiencies` placements in the box).
  * Keys blank in the model today (`armorClass`, `speed`, `xp`,
  * `inspiration`) are still placed so they fill once a value exists; the generator
  * skips empty strings.

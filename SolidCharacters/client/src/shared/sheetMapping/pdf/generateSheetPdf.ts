@@ -37,6 +37,17 @@ const BOLD: Record<SheetFontName, StandardFonts> = {
   Courier: StandardFonts.CourierBold,
 };
 
+/**
+ * The blank template never changes — fetch+buffer it once and reuse the bytes for
+ * every render. The live preview regenerates several times per second while the
+ * user drags, so re-fetching the asset each time was pure waste. Each
+ * `PDFDocument.load` reparses the bytes into its own mutable doc, so sharing this
+ * read-only ArrayBuffer across calls is safe.
+ */
+let templateBytesPromise: Promise<ArrayBuffer> | undefined;
+const loadTemplateBytes = (): Promise<ArrayBuffer> =>
+  (templateBytesPromise ??= fetch(templateUrl).then((r) => r.arrayBuffer()));
+
 /** `#rrggbb` (or `#rgb`) → pdf-lib `rgb()` in 0–1 space. Falls back to black on bad input. */
 function hexToRgb(hex: string | undefined) {
   const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((hex ?? '').trim());
@@ -53,7 +64,7 @@ export async function generateSheetPdf(
   spells?: SpellRow[],
   featureLists?: Record<string, FeatureDetail[]>,
 ): Promise<Uint8Array> {
-  const templateBytes = await fetch(templateUrl).then((r) => r.arrayBuffer());
+  const templateBytes = await loadTemplateBytes();
   const doc = await PDFDocument.load(templateBytes);
   const pages = doc.getPages();
 
@@ -88,10 +99,14 @@ export async function generateSheetPdf(
 
     try {
       let x = field.x;
-      // Single-line align offset (full-string width). Wrapped fields stay left-anchored.
-      if (field.align !== 'left' && !field.maxWidth) {
+      // Align offset (full-string width). Applies to any single line — including a
+      // maxWidth field whose value still fits on one line. Once the text actually
+      // wraps, pdf-lib left-anchors each wrapped line, so we leave x at the left edge.
+      if (field.align !== 'left') {
         const w = font.widthOfTextAtSize(value, field.fontSize);
-        x -= field.align === 'center' ? w / 2 : w;
+        if (!field.maxWidth || w <= field.maxWidth) {
+          x -= field.align === 'center' ? w / 2 : w;
+        }
       }
 
       page.drawText(value, {
@@ -112,7 +127,7 @@ export async function generateSheetPdf(
   if (spells && spells.length) {
     // Use the template's persisted (possibly retuned) geometry; fall back to the
     // shipped defaults so callers/tests passing a bare template are unaffected.
-    await drawSpellTable(doc, spells, getFont, template.spellTable ?? SPELL_TABLE);
+    await drawSpellTable(doc, spells, getFont, template.spellTable ?? SPELL_TABLE, templateBytes);
     await drawAttackCantrips(doc, spells, values.spellAttack ?? '', getFont, template.attackCantripTable ?? ATTACK_CANTRIP_TABLE);
   }
 
@@ -122,14 +137,17 @@ export async function generateSheetPdf(
 /**
  * Render the sorted spell rows into the printed page-2 table, spilling onto
  * additional copies of page 2 when there are more than `rowsPerPage` spells.
- * Continuation pages are full copies of the original page 2 (their right-side
- * boxes stay blank — no template field targets the new page indices).
+ * Continuation pages are CLEAN copies of page 2 — copied from a pristine doc
+ * reloaded from `templateBytes`, NOT from the live `doc` (whose page 2 already
+ * has the right-side field text drawn on it by the field loop above; copying that
+ * would repeat the spell-save-DC / currency / equipment text on every overflow page).
  */
 async function drawSpellTable(
   doc: PDFDocument,
   spells: SpellRow[],
   getFont: (name: SheetFontName) => Promise<PDFFont>,
   cfg: SpellTableConfig,
+  templateBytes: ArrayBuffer,
 ): Promise<void> {
   const pages = doc.getPages();
   if (cfg.pageIndex >= pages.length) return; // template missing page 2 → bail safely
@@ -138,12 +156,13 @@ async function drawSpellTable(
   const font = await getFont(cfg.font);
   const black = rgb(0, 0, 0);
 
-  // Resolve all target pages BEFORE drawing: copy from the still-clean original
-  // page 2 each time (drawing on it first would otherwise be copied along).
   const targetPages: PDFPage[] = [pages[cfg.pageIndex]];
-  for (let c = 1; c < chunks.length; c++) {
-    const [copied] = await doc.copyPages(doc, [cfg.pageIndex]);
-    targetPages.push(doc.addPage(copied));
+  if (chunks.length > 1) {
+    const cleanDoc = await PDFDocument.load(templateBytes); // pristine page 2 source
+    for (let c = 1; c < chunks.length; c++) {
+      const [copied] = await doc.copyPages(cleanDoc, [cfg.pageIndex]);
+      targetPages.push(doc.addPage(copied));
+    }
   }
 
   chunks.forEach((chunk, i) => drawSpellChunk(targetPages[i], chunk, font, black, cfg));
