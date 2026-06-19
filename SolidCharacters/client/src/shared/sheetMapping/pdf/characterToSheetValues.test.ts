@@ -166,6 +166,42 @@ describe('characterToSheetValues — feature split', () => {
   });
 });
 
+describe('characterToSheetValues — equipment training & proficiencies', () => {
+  const profs = { armor: ['Light', 'Medium', 'Heavy', 'Shields'], weapons: ['Simple', 'Martial'], tools: ["Thieves' Tools"] };
+
+  it('marks held armor categories with an X and lists weapons/tools', () => {
+    const out = characterToSheetValues(wizard(), FULL_STATS, undefined, profs);
+    expect(out.armorLight).toBe('X');
+    expect(out.armorMedium).toBe('X');
+    expect(out.armorHeavy).toBe('X');
+    expect(out.armorShields).toBe('X');
+    expect(out.weaponProficiencies).toBe('Simple, Martial');
+    expect(out.toolProficiencies).toBe("Thieves' Tools");
+  });
+
+  it('leaves un-held armor categories blank (generator skips empties)', () => {
+    const out = characterToSheetValues(wizard(), FULL_STATS, undefined, { armor: ['Light'], weapons: [], tools: [] });
+    expect(out.armorLight).toBe('X');
+    expect(out.armorMedium).toBe('');
+    expect(out.armorHeavy).toBe('');
+    expect(out.armorShields).toBe('');
+    expect(out.weaponProficiencies).toBe('');
+    expect(out.toolProficiencies).toBe('');
+  });
+
+  it('accepts the singular "Shield" spelling for the shields checkbox', () => {
+    const out = characterToSheetValues(wizard(), FULL_STATS, undefined, { armor: ['Shield'], weapons: [], tools: [] });
+    expect(out.armorShields).toBe('X');
+  });
+
+  it('omitting profs yields blank armor/weapon/tool keys (key parity holds)', () => {
+    const out = characterToSheetValues(wizard(), FULL_STATS);
+    for (const k of ['armorLight', 'armorMedium', 'armorHeavy', 'armorShields', 'weaponProficiencies', 'toolProficiencies']) {
+      expect(out[k]).toBe('');
+    }
+  });
+});
+
 describe('characterToSheetValues — guards', () => {
   it('tolerates empty/malformed levels', () => {
     const char = new Character();

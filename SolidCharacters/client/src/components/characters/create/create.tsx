@@ -29,6 +29,7 @@ import { Character, CharacterForm } from "../../../models/character.model";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
 import { toCharacter5e } from "./characterMapper";
 import { createCharacterSheet } from "../../../shared/sheetMapping/pdf/createCharacterSheet";
+import useExportProficiencies from "../../../shared/customHooks/dndInfo/useExportProficiencies";
 import { SpellsSection } from "./spellsSection/spellsSection";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
 import { useSearchParams } from "@solidjs/router";
@@ -245,6 +246,12 @@ const CharacterCreate: Component = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     toCharacter5e(fullData, charClasses, [classLevels, setClassLevels], selectedRace as any, buildStats(), knownSpells, inventory, equipped, attuned);
 
+  // Armor/weapon/tool proficiencies for the live (unsaved) character. The built
+  // character is stashed in a signal so the resolver memo can read it in owner
+  // context; reading `sheetProfs()` after the set recomputes with the new value.
+  const [sheetChar, setSheetChar] = createSignal<Character | undefined>(undefined);
+  const sheetProfs = useExportProficiencies(sheetChar);
+
   /** Generate a sheet from the live (unsaved) form without persisting the character. */
   const handleCreateSheet = () => {
     try {
@@ -255,7 +262,8 @@ const CharacterCreate: Component = () => {
       // Overlay the live values so the generated sheet reflects what the user entered.
       character.ArmorClass = data.ArmorClass;
       character.Speed = data.Speed;
-      void createCharacterSheet(character, buildStats());
+      setSheetChar(character);
+      void createCharacterSheet(character, buildStats(), sheetProfs());
     } catch (err) {
       console.error("handleCreateSheet failed", err);
       addSnackbar({ message: "Add a class and level before creating a sheet", severity: "warning" });

@@ -47,6 +47,14 @@ export default defineConfig({
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(process.env.GIT_COMMIT || process.env.npm_package_version || 'dev'),
     'import.meta.env.VITE_BUILD_TIME': JSON.stringify(new Date().toISOString())
   },
+  resolve: {
+    // The npm-linked coles-solid-library brings its own solid-js@1.9.5 (peerDep),
+    // and Vite resolves the library's bare `import 'solid-js'` at the symlink's real
+    // path. Without dedupe that loads a SECOND solid-js instance, splitting Solid's
+    // reactive graph so library effects (e.g. Select's useOverlayPosition) never run.
+    // Dedupe forces every solid-js import onto the app's single copy.
+    dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
+  },
   plugins: [
     devtools({
       autoname: true, // e.g. enable autoname

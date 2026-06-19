@@ -29,8 +29,13 @@
  * flows DOWN to `y - boxHeight`) instead of the first line's baseline, and
  * recalibrated the three feature boxes to the printed rules. Bumped so cached v5
  * records reseed onto the corrected coordinates.
+ * v7: filled the EQUIPMENT TRAINING & PROFICIENCIES box — added per-category armor
+ * checkbox marks (`armorLight`/`armorMedium`/`armorHeavy`/`armorShields`) and
+ * `weaponProficiencies`/`toolProficiencies` placements, dropped the unused combined
+ * `otherProficiencies` placement, and moved resistances/vulnerabilities/immunities
+ * inside the box along its bottom. Bumped so cached v6 records reseed.
  */
-export const MAPPING_SCHEMA_VERSION = 6;
+export const MAPPING_SCHEMA_VERSION = 7;
 
 /** StandardFonts only (no fontkit / custom TTF available). */
 export type SheetFontName = 'Helvetica' | 'TimesRoman' | 'Courier';

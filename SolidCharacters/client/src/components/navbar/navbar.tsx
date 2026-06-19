@@ -4,6 +4,7 @@ import { A } from "@solidjs/router";
 import getUserSettings from "../../shared/customHooks/userSettings";
 import { Button, Container, Icon } from "coles-solid-library";
 import DataTransferModal from "../DataTransfering/dataTransferModal";
+import { FileExport } from "coles-solid-library/icons";
 
 type Props = {
     style?: CSSModuleClasses[string],
@@ -47,7 +48,7 @@ const Navbar: Component<Props> = (props) => {
             transparent
             title='Import & Export'  
             onClick={() => setShowDataTransfer(!showDataTransfer())}>
-            <Icon name="file_export" size="large"></Icon>
+            <Icon icon={FileExport} size="large"></Icon>
           </Button>
 
         

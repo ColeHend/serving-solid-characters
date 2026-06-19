@@ -17,14 +17,18 @@ import { spellTableRows } from './spellTable';
  * caller in-component via `useExportFullStats`. This module is headless (no Solid
  * owner), so it must NEVER call that hook itself.
  */
-export async function createCharacterSheet(char: Character | undefined, fullStats: Stats): Promise<void> {
+export async function createCharacterSheet(
+  char: Character | undefined,
+  fullStats: Stats,
+  profs?: { armor: string[]; weapons: string[]; tools: string[] },
+): Promise<void> {
   if (!char) {
     addSnackbar({ message: 'No character selected', severity: 'warning' });
     return;
   }
 
   try {
-    const values = characterToSheetValues(char, fullStats);
+    const values = characterToSheetValues(char, fullStats, undefined, profs);
     const bytes = await generateSheetPdf(values, mappingStore.template(), spellTableRows(char), characterToFeatureLists(char));
     // Wrap in a fresh Uint8Array so the bytes satisfy `BlobPart` (pdf-lib's
     // typed-array buffer type is otherwise too wide for the DOM Blob lib types).

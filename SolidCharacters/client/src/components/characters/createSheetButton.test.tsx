@@ -11,6 +11,12 @@ vi.mock('../../shared/customHooks/dndInfo/useGetFullStats', () => ({
   default: () => () => STATS,
 }));
 
+// Stub the proficiency resolver too (keeps the button off the real SRD data layer).
+const PROFS = { armor: [], weapons: [], tools: [] };
+vi.mock('../../shared/customHooks/dndInfo/useExportProficiencies', () => ({
+  default: () => () => PROFS,
+}));
+
 import { CreateSheetButton } from './createSheetButton';
 import { Character } from '../../models/character.model';
 
@@ -30,6 +36,7 @@ describe('CreateSheetButton', () => {
     expect(sheetMock).toHaveBeenCalledTimes(1);
     expect(sheetMock.mock.calls[0][0].name).toBe('Gandalf');
     expect(sheetMock.mock.calls[0][1]).toEqual(STATS);
+    expect(sheetMock.mock.calls[0][2]).toEqual(PROFS);
   });
 
   it('disables and never generates when no character is selected', () => {

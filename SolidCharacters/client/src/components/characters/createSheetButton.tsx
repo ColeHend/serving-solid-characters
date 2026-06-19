@@ -2,6 +2,7 @@ import { Component, createMemo } from 'solid-js';
 import { Button, Icon } from 'coles-solid-library';
 import { Character } from '../../models/character.model';
 import useExportFullStats from '../../shared/customHooks/dndInfo/useGetFullStats';
+import useExportProficiencies from '../../shared/customHooks/dndInfo/useExportProficiencies';
 import { createCharacterSheet } from '../../shared/sheetMapping/pdf/createCharacterSheet';
 
 interface Props {
@@ -25,13 +26,14 @@ export const CreateSheetButton: Component<Props> = (props) => {
   // useExportFullStats reads race.species defensively, so an undefined character
   // yields neutral stats rather than throwing; the disabled guard blocks generation.
   const fullStats = useExportFullStats(() => character() as Character);
+  const profs = useExportProficiencies(character);
 
   return (
     <Button
       type="button"
       transparent={props.transparent}
       disabled={!character()}
-      onClick={() => void createCharacterSheet(character(), fullStats())}
+      onClick={() => void createCharacterSheet(character(), fullStats(), profs())}
     >
       <Icon name="picture_as_pdf" /> {props.label ?? 'Create Character Sheet'}
     </Button>

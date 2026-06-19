@@ -212,16 +212,28 @@ const PAGE_1_FIELDS: PlacedField[] = [
     descMaxChars: 50,
   }), // FEATS box (bottom-right, single column: 576 → 726)
 
-  // ── Relocated defenses (moved out of the species box) + editable static titles ──
-  // TODO calibrate: best-guess stacked block below the feature boxes; drag freely.
-  f('static:resistances-label', 0, 190, 705, { fontSize: 8, renderMode: 'static', staticText: 'Resistances:' }),
-  f('resistances', 0, 268, 705, { fontSize: 8, maxWidth: 130 }),
-  f('static:vulnerabilities-label', 0, 190, 722, { fontSize: 8, renderMode: 'static', staticText: 'Vulnerabilities:' }),
-  f('vulnerabilities', 0, 268, 722, { fontSize: 8, maxWidth: 130 }),
-  f('static:immunities-label', 0, 190, 739, { fontSize: 8, renderMode: 'static', staticText: 'Immunities:' }),
-  f('immunities', 0, 268, 739, { fontSize: 8, maxWidth: 130 }),
+  // ── EQUIPMENT TRAINING & PROFICIENCIES box (page 1, bottom-left) ──
+  // Box bounds ≈ x14→199, top y607, bottom y780. Armor entries draw an X centered
+  // (align center) on each printed ◇ checkbox; weapons/tools fill their sections.
+  // The ◇ glyphs and box rules are vector art (not in the text layer), so these
+  // x/y are best-fit from a 300-DPI render + `pdftotext -bbox` of the labels —
+  // nudge in the live mapper to pixel-fit.
+  f('armorLight', 0, 83, 638, { fontSize: 8, align: center }), // ◇ before "Light"   (label x89.5)
+  f('armorMedium', 0, 83, 647, { fontSize: 8, align: center }), // ◇ before "Medium"  (label x89.5)
+  f('armorHeavy', 0, 143, 638, { fontSize: 8, align: center }), // ◇ before "Heavy"   (label x149.9)
+  f('armorShields', 0, 143, 647, { fontSize: 8, align: center }), // ◇ before "Shields" (label x149.9)
+  f('weaponProficiencies', 0, 22, 680, { fontSize: 8, maxWidth: 168 }), // under WEAPONS label (y666)
+  f('toolProficiencies', 0, 22, 741, { fontSize: 8, maxWidth: 168 }), // under TOOLS label (y729)
 
-  f('otherProficiencies', 0, 22, 682, { fontSize: 8, maxWidth: 165 }), // EQUIPMENT TRAINING box
+  // Resistances / Vulnerabilities / Immunities — moved INSIDE the box, stacked
+  // along its bottom (box bottom ≈ y779) at fontSize 7. Previously floated at
+  // x190 and overlapped the neighbouring box's rules.
+  f('static:resistances-label', 0, 18, 751, { fontSize: 7, renderMode: 'static', staticText: 'Resistances:' }),
+  f('resistances', 0, 78, 751, { fontSize: 7, maxWidth: 114 }),
+  f('static:vulnerabilities-label', 0, 18, 762, { fontSize: 7, renderMode: 'static', staticText: 'Vulnerabilities:' }),
+  f('vulnerabilities', 0, 78, 762, { fontSize: 7, maxWidth: 114 }),
+  f('static:immunities-label', 0, 18, 773, { fontSize: 7, renderMode: 'static', staticText: 'Immunities:' }),
+  f('immunities', 0, 78, 773, { fontSize: 7, maxWidth: 114 }),
 ];
 
 const PAGE_2_FIELDS: PlacedField[] = [

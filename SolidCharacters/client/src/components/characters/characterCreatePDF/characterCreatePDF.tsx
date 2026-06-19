@@ -4,6 +4,7 @@ import { Body, Button, Icon, Modal, Option, Select, TabBar, addSnackbar } from '
 import { DragDropProvider, DragOverlay, pointerWithin, type DefaultDataMap, type DragEndEvent } from '../../../shared/dnd';
 import { characterManager } from '../../../shared';
 import useExportFullStats from '../../../shared/customHooks/dndInfo/useGetFullStats';
+import useExportProficiencies from '../../../shared/customHooks/dndInfo/useExportProficiencies';
 import { EXAMPLE_CHARACTER } from '../../../shared/customHooks/dndInfo/useExampleChars';
 import { Character } from '../../../models/character.model';
 import {
@@ -104,7 +105,8 @@ export const CreateCharacterPDF: Component = () => {
 
   // Effective stats + sheet values for the live preview / canvas, computed in owner context.
   const fullStats = useExportFullStats(() => previewCharacter());
-  const values = createMemo(() => characterToSheetValues(previewCharacter(), fullStats()));
+  const profs = useExportProficiencies(() => previewCharacter());
+  const values = createMemo(() => characterToSheetValues(previewCharacter(), fullStats(), undefined, profs()));
   // Structured feature lists for the `featureList` placements (drawn as name + description columns).
   const featureLists = createMemo(() => characterToFeatureLists(previewCharacter()));
   // Sorted spell rows for the page-2 table (re-runs when the character or the SRD spell list loads).

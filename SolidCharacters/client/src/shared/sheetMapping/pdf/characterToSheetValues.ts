@@ -18,6 +18,7 @@ export function characterToSheetValues(
   char: Character | undefined,
   fullStats: Stats,
   profBonus?: number,
+  profs?: { armor: string[]; weapons: string[]; tools: string[] },
 ): Record<string, string> {
   const out: Record<string, string> = {};
   if (!char) return out; // empty store / no selection → all blank
@@ -89,6 +90,19 @@ export function characterToSheetValues(
     .filter(([, v]) => v)
     .map(([k]) => k)
     .join(', ');
+
+  // Equipment Training & Proficiencies box. Armor training is a per-category
+  // checkbox (X drawn centered on the printed ◇); weapons/tools are free lists.
+  // `profs` is resolved in-component (see `useExportProficiencies`) and passed in
+  // so this mapper stays headless. Missing → blanks (the generator skips empties).
+  const ARMOR_MARK = 'X'; // WinAnsi-safe; matches the spell-table checkbox glyph
+  const hasArmor = (k: string): boolean => (profs?.armor ?? []).some((a) => a.toLowerCase() === k.toLowerCase());
+  out.armorLight = hasArmor('Light') ? ARMOR_MARK : '';
+  out.armorMedium = hasArmor('Medium') ? ARMOR_MARK : '';
+  out.armorHeavy = hasArmor('Heavy') ? ARMOR_MARK : '';
+  out.armorShields = hasArmor('Shields') || hasArmor('Shield') ? ARMOR_MARK : '';
+  out.weaponProficiencies = (profs?.weapons ?? []).join(', ');
+  out.toolProficiencies = (profs?.tools ?? []).join(', ');
 
   // ── Equipment ──
   out.inventory = (char.items?.inventory ?? []).join(', ');

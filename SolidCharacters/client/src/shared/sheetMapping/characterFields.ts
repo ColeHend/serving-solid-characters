@@ -137,7 +137,15 @@ const features: SheetFieldDef[] = [
   def('resistances', 'Resistances', 'Features', 'Damage resistances.'),
   def('vulnerabilities', 'Vulnerabilities', 'Features', 'Damage vulnerabilities.'),
   def('immunities', 'Immunities', 'Features', 'Damage and condition immunities.'),
-  def('otherProficiencies', 'Other Proficiencies', 'Features', 'Tool, weapon & armor proficiencies.'),
+  def('otherProficiencies', 'Other Proficiencies', 'Features', 'Tool, weapon & armor proficiencies (combined).'),
+  // Equipment Training & Proficiencies box. Armor entries draw an X centered on
+  // the printed ◇ checkbox; weapons/tools draw their comma-joined lists.
+  def('armorLight', 'Armor: Light', 'Features', 'X mark if proficient with light armor.'),
+  def('armorMedium', 'Armor: Medium', 'Features', 'X mark if proficient with medium armor.'),
+  def('armorHeavy', 'Armor: Heavy', 'Features', 'X mark if proficient with heavy armor.'),
+  def('armorShields', 'Armor: Shields', 'Features', 'X mark if proficient with shields.'),
+  def('weaponProficiencies', 'Weapon Proficiencies', 'Features', 'Weapon proficiencies (e.g. Simple, Martial).'),
+  def('toolProficiencies', 'Tool Proficiencies', 'Features', 'Tool proficiencies.'),
 ];
 
 const equipment: SheetFieldDef[] = [
