@@ -201,7 +201,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
                </ul>
             </Container>
         </Portal>
-        <Modal title="Settings" show={[showSettings, setShowSettings]}>
+        <Modal title="Settings" show={[showSettings, setShowSettings]} width="640px" height="70vh">
             <SettingsPopup 
                 defaultUserSettings={userSettings} 
                 setDefaultUserSettings={setUserSettings} />
