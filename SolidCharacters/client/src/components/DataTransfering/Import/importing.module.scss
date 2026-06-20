@@ -1,11 +1,42 @@
-.importInput {
-    width: 100%;
-    background: transparent;
+.dropZone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-1);
+    width: 92%;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: var(--spacing-4);
+    border: 2px dashed color-mix(in srgb, var(--on-surface-color) 35%, transparent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface-color) 45%, transparent);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 120ms ease, background 120ms ease;
+    margin-left: 21px;
 
-    input { 
-        margin: 0 auto;
-        &:hover {
-            cursor: pointer;
-        }
+    &:hover {
+        border-color: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
     }
+}
+
+// Active while a file is dragged over the zone.
+.dragActive {
+    border-color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+}
+
+.dropTitle {
+    font-size: var(--font-size-h3);
+    font-weight: 600;
+}
+
+.dropHint {
+    font-size: var(--font-size-small);
+    opacity: 0.7;
+}
+
+.hiddenInput {
+    display: none;
 }

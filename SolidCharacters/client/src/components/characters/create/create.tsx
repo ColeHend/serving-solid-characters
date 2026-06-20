@@ -562,13 +562,11 @@ const CharacterCreate: Component = () => {
           />
         </Show>
 
-        <Ass 
+        <Ass
           stats={[charStats, setCharStats]}
           modifers={[statMods, setStatMods]}
           genMethod={[genMethod, setGenMethod]}
           pbPoints={[pbPoints,setPBPoints]}
-          selectedStat={[selectedStat, setSelectedStat]}
-          selectedStats={[selectedStats, setSelectedStats]}
           modChips={[modChips, setModChips]}
           modStat={[modStat, setModStat]}
           isFocus={[isFocus, setIsFocus]}
