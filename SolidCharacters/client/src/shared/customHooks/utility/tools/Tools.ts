@@ -347,8 +347,8 @@ export const getAddNumberAccent = (num: number)=>{
  * @returns A deep copy of the object.
  * @template T - The type of the object.
  */
-export function Clone<T>(object: T) {
-  return JSON.parse(JSON.stringify(object)) as T;
+export function Clone<T>(object: T, options?: StructuredSerializeOptions) {
+  return structuredClone(object, options) as T;
 }
 
 /**
