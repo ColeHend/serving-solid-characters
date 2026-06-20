@@ -11,6 +11,13 @@ import { UserSettings } from "../models/userSettings";
 import { useDnDSpells } from "../shared/customHooks/dndInfo/info/all/spells";
 import styles from './rootApp.module.scss';
 import { SideMenu } from "./sideMenu/SideMenu";
+import InstallControl from "../pwa/InstallControl";
+import { recoverFromChunkError } from "../pwa/preloadRecovery";
+
+// A lazy route whose JS/CSS chunk fails to load (typically a stale-SW transition) throws
+// one of these. Detect it so the ErrorBoundary can self-heal instead of dead-ending.
+const isChunkLoadError = (err: unknown) =>
+  /preload|dynamically imported|Importing a module|Failed to fetch/i.test(String((err as any)?.message ?? err));
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
@@ -140,7 +147,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
             style={"margin-bottom: 15px;"} 
             list={[defaultShowList, setDefaultShowList]} />
           <Container theme="subheader"   class={`${styles.subheader}`}>
-            <span></span> {/* empty span to push buttons over */}
+            <InstallControl /> {/* install + offline-data download; also pushes quick links right */}
             <For each={quickLinks()}>
               {(quickLink)=><>
                 <Button transparent onClick={()=>navigate(quickLink.link)}>
@@ -156,6 +163,14 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           <div class={`body ${styles.rootBody}`}>
             <ErrorBoundary fallback={(err) => {
               console.error("Error in route content:", err);
+              if (isChunkLoadError(err)) {
+                recoverFromChunkError(); // activate the up-to-date SW + reload
+                return (
+                  <div style="padding: 20px;">
+                    <h3>Updating to the latest version…</h3>
+                  </div>
+                );
+              }
               return (
                 <div style="padding: 20px; color: red;">
                   <h3>Error rendering this route</h3>

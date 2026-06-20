@@ -1,43 +1,23 @@
 import { MagicItem } from "../../../../../models/generated";
-import HttpClient$ from "../../../utility/tools/httpClientObs";
-import { concatMap, of, take, tap } from "rxjs";
+import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
-import { Accessor, createMemo, createSignal } from "solid-js";
+import { makeSrdLoader } from "./loadSrdTable";
 
 const [magicItems2014, setMagicItems2014] = createSignal<MagicItem[]>([]);
 const [magicItems2024, setMagicItems2024] = createSignal<MagicItem[]>([]);
-let loading2014 = false;
-let loading2024 = false;
+
+const load2014 = makeSrdLoader<MagicItem>({ table: SrdDB.magicItems, endpoint: '/api/2014/MagicItems', label: '2014 magicItems', setSignal: setMagicItems2014 });
+const load2024 = makeSrdLoader<MagicItem>({ table: SrdDB2024.magicItems, endpoint: '/api/2024/MagicItems', label: '2024 magicItems', setSignal: setMagicItems2024 });
+
+/** Ensure a version's magic items are loaded into IndexedDB + memory. Awaitable for offline preload. */
+export function loadSrdMagicItems(version: '2014' | '2024'): Promise<MagicItem[]> {
+  return version === '2024' ? load2024() : load2014();
+}
 
 export function useGetSrdMagicItems(version: '2014' | '2024' | 'both' | string): Accessor<MagicItem[]> {
-  if ((version === '2014' || version === 'both') && magicItems2014().length === 0 && !loading2014) {
-    loading2014 = true;
-    const local$ = HttpClient$.toObservable(SrdDB.magicItems.toArray());
-    local$.pipe(
-      take(1),
-      concatMap(cached => cached.length ? of(cached) : fetchMagicItems('2014')),
-      tap(list => { if (list?.length) SrdDB.magicItems.bulkPut(list).catch(err => console.error('Error saving 2014 magicItems:', err)); })
-    ).subscribe({
-      next: list => setMagicItems2014(list),
-      error: e => console.error('2014 magicItems load error', e),
-      complete: () => { loading2014 = false; }
-    });
-  }
-
-  if ((version === '2024' || version === 'both') && magicItems2024().length === 0 && !loading2024) {
-    loading2024 = true;
-    const local$ = HttpClient$.toObservable(SrdDB2024.magicItems.toArray());
-    local$.pipe(
-      take(1),
-      concatMap(cached => cached.length ? of(cached) : fetchMagicItems('2024')),
-      tap(list => { if (list?.length) SrdDB2024.magicItems.bulkPut(list).catch(err => console.error('Error saving 2024 magicItems:', err)); })
-    ).subscribe({
-      next: list => setMagicItems2024(list),
-      error: e => console.error('2024 magicItems load error', e),
-      complete: () => { loading2024 = false; }
-    });
-  }
+  if ((version === '2014' || version === 'both') && magicItems2014().length === 0) load2014();
+  if ((version === '2024' || version === 'both') && magicItems2024().length === 0) load2024();
 
   return createMemo<MagicItem[]>(() => {
     if (version === '2014') return magicItems2014();
@@ -45,8 +25,4 @@ export function useGetSrdMagicItems(version: '2014' | '2024' | 'both' | string):
     if (version === 'both') return [...magicItems2014(), ...magicItems2024()];
     return magicItems2014().length ? magicItems2014() : magicItems2024();
   });
-}
-
-function fetchMagicItems(version: '2014' | '2024') {
-  return HttpClient$.get<MagicItem[]>(`/api/${version}/MagicItems`).pipe(take(1));
 }

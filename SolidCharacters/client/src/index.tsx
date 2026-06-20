@@ -7,7 +7,12 @@ import App from "./App";
 import 'solid-devtools';
 import ReloadPrompt from "./ReloadPrompt";
 import { registerServiceWorker, needRefresh, offlineReady, swVersion, swBuildTime, applyUpdateAndReload } from './pwa/register';
+import { initInstallFlow } from './pwa/install';
+import { initPreloadRecovery } from './pwa/preloadRecovery';
 import RootApp from "./components/rootApp";
+
+// Auto-heal lazy chunk / CSS preload failures (stale-SW transitions) before anything renders.
+initPreloadRecovery();
 
 // Route components are lazy-loaded so each splits into its own chunk, keeping the initial
 // bundle small. Heavy, route-local deps (e.g. pdf-lib via the PDF route) ride along with
@@ -116,4 +121,7 @@ if (root) {
   }, 100);
 }
 
-if (root) registerServiceWorker();
+if (root) {
+  registerServiceWorker();
+  initInstallFlow();
+}

@@ -5,3 +5,8 @@ node_modules
 ./.env
 ./dev-dist
 ../wwwroot
+
+# Dev-only service worker built by the dev-sw-builder plugin (vite.config.ts) during serve.
+# The production SW is generated into dist/ by vite-plugin-pwa's injectManifest.
+public/claims-sw.js
+public/claims-sw.js.map

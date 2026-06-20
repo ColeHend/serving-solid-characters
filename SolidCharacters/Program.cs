@@ -208,23 +208,20 @@ var publicPath = Path.Combine(clientRoot, "client", "public");
 if (Directory.Exists(publicPath))
 {
     Console.WriteLine($"Serving static public assets from: {publicPath}");
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        FileProvider = new PhysicalFileProvider(publicPath),
-        OnPrepareResponse = ctx =>
+    // IMPORTANT: exclude the service worker from the public handler. A leftover dev-built
+    // public/claims-sw.js has no precache manifest, so letting it shadow the real
+    // dist/claims-sw.js makes the installed app cache nothing and fail offline.
+    app.UseWhen(
+        ctx => !ctx.Request.Path.Equals("/claims-sw.js", StringComparison.OrdinalIgnoreCase)
+            && !ctx.Request.Path.Equals("/claims-sw.js.map", StringComparison.OrdinalIgnoreCase),
+        branch => branch.UseStaticFiles(new StaticFileOptions
         {
-            var headers = ctx.Context.Response.Headers;
-            if (ctx.File.Name == "claims-sw.js")
+            FileProvider = new PhysicalFileProvider(publicPath),
+            OnPrepareResponse = ctx =>
             {
-                // Always fetch fresh SW in dev to detect updates
-                headers["Cache-Control"] = "no-store";
+                ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=3600"; // 1 hour
             }
-            else
-            {
-                headers["Cache-Control"] = "public,max-age=3600"; // 1 hour for other public assets
-            }
-        }
-    });
+        }));
 }
 
 string path = Path.Combine(clientRoot, "client", "dist");
@@ -235,7 +232,13 @@ app.UseStaticFiles(new StaticFileOptions
     OnPrepareResponse = ctx =>
     {
         var headers = ctx.Context.Response.Headers;
-        headers["Cache-Control"] = "public,max-age=604800"; // 7 days
+        var name = ctx.File.Name;
+        if (name.Equals("claims-sw.js", StringComparison.OrdinalIgnoreCase))
+            headers["Cache-Control"] = "no-store"; // never cache the SW script
+        else if (name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+            headers["Cache-Control"] = "no-cache"; // always revalidate the app shell
+        else
+            headers["Cache-Control"] = "public,max-age=604800,immutable"; // hashed assets
     }
 });
 //    - then: SPA static files
@@ -251,6 +254,29 @@ app.UseAuthorization();
 // 7. Map API controllers (protected by your policies as needed)
 app.MapControllers();
 
+
+// 8. Guard the SPA fallback:
+//    - A missing /assets/* (hashed chunk) must 404, not fall back to index.html. Returning
+//      HTML where JS/CSS is expected is what produces "Unable to preload CSS" on the client.
+//    - The SPA shell (index.html fallback) must always revalidate so new deploys are picked up.
+app.Use(async (context, next) =>
+{
+    var reqPath = context.Request.Path;
+    if (reqPath.StartsWithSegments("/assets"))
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return;
+    }
+    if (!reqPath.StartsWithSegments("/api"))
+    {
+        context.Response.OnStarting(() =>
+        {
+            context.Response.Headers["Cache-Control"] = "no-cache";
+            return Task.CompletedTask;
+        });
+    }
+    await next();
+});
 
 app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
 

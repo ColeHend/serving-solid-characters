@@ -44,10 +44,18 @@ function resolveBackendTarget() {
   return hasBackendHttpsCert() ? 'https://localhost:5000' : 'http://localhost:5000';
 }
 
+const APP_VERSION = process.env.GIT_COMMIT || process.env.npm_package_version || 'dev';
+const BUILD_TIME = new Date().toISOString();
+
 export default defineConfig({
   define: {
-    'import.meta.env.VITE_APP_VERSION': JSON.stringify(process.env.GIT_COMMIT || process.env.npm_package_version || 'dev'),
-    'import.meta.env.VITE_BUILD_TIME': JSON.stringify(new Date().toISOString())
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(APP_VERSION),
+    'import.meta.env.VITE_BUILD_TIME': JSON.stringify(BUILD_TIME),
+    // Plain global defines so the injectManifest SW build (a separate pass) also gets
+    // accurate build metadata regardless of import.meta.env propagation.
+    '__APP_VERSION__': JSON.stringify(APP_VERSION),
+    '__BUILD_TIME__': JSON.stringify(BUILD_TIME),
+    '__SW_DEBUG__': JSON.stringify(false)
   },
   plugins: [
     devtools({
@@ -58,19 +66,18 @@ export default defineConfig({
     // (forces a single solid-js instance and tree-shakes the icon barrels in dev).
     colesSolidLibrary(),
   VitePWA({
+      // Auto-update: a new SW activates and the page reloads automatically (driven in
+      // register.ts). Critical for the installed/offline case — it guarantees the corrected
+      // SW (with the complete precache) takes control instead of stranding behind an old SW.
+      // A vite:preloadError safety net (preloadRecovery.ts) auto-heals any chunk mismatch.
       registerType: 'autoUpdate',
       devOptions: {
     enabled: false, // we'll manage dev SW manually
     type: 'module',
     navigateFallback: '/index.html'
       },
-      includeAssets: ["**/*.{png,svg,ico,json,jpg}"],
-      workbox: {
-        globPatterns: [
-          "**/*.{js,jsx,css,scss,ts,tsx,html,woff,woff2,otf}"
-        ],
-        maximumFileSizeToCacheInBytes: 5020000
-      },
+      // No includeAssets: globPatterns below globs the built dist (which already includes
+      // copied public/ assets), so a single precache source keeps globIgnores authoritative.
       minify: true,
   // We'll manually register in index.tsx to control timing
   injectRegister: null,
@@ -78,10 +85,21 @@ export default defineConfig({
       strategies: 'injectManifest',
       // Change the filename to match what registerSW.js is looking for
       filename: 'claims-sw.js',
+      // NOTE: with the injectManifest strategy, precache globbing is configured HERE,
+      // not under `workbox` (that block only applies to the generateSW strategy and was
+      // being silently ignored). Patterns target the built `dist/` output, so we glob the
+      // real emitted extensions plus fonts, the PDF template, and images for full offline.
       injectManifest: {
-        minify: false,
-        enableWorkboxModulesLogs: true,
-        maximumFileSizeToCacheInBytes: 5000000,
+        minify: false, // keep the SW readable for debugging; the pwa:smoke test scans it as text
+        // enableWorkboxModulesLogs omitted (defaults off) — keep workbox internals quiet in prod
+        globPatterns: [
+          '**/*.{js,css,html,woff,woff2,otf,png,jpg,jpeg,svg,webp,pdf,json,ico,webmanifest}'
+        ],
+        // Precache everything for full offline, including the large arcane_dictionary_* About
+        // images (~2.5MB each). Only source maps are excluded. The size cap is set above the
+        // largest asset so nothing is silently dropped — this makes the install heavier (~31MB).
+        globIgnores: ['**/*.map'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         swSrc: 'src/pwa/claims-sw.ts'
       },
       manifest: manifest,
@@ -197,7 +215,10 @@ async function buildDevSw() {
       sourcemap: true,
       outfile: out,
       define: {
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+        '__APP_VERSION__': JSON.stringify(APP_VERSION),
+        '__BUILD_TIME__': JSON.stringify(BUILD_TIME),
+        '__SW_DEBUG__': JSON.stringify(true)
       }
     });
     console.log('[dev-sw-builder] built claims-sw.js');
