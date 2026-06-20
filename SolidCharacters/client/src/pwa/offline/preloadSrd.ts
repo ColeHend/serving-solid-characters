@@ -31,8 +31,9 @@ function buildTasks(versions: SrdVersion[]): PreloadTask[] {
     tasks.push({ label: `${v} backgrounds`, run: () => loadSrdBackgrounds(v) });
     tasks.push({ label: `${v} items`, run: () => loadSrdItems(v) });
     tasks.push({ label: `${v} subclasses`, run: () => loadSrdSubclasses(v) });
-    tasks.push({ label: `${v} magic items`, run: () => loadSrdMagicItems(v) });
   }
+  // Magic items are a 2024-only, version-agnostic dataset — load once (no /api/2014/MagicItems).
+  tasks.push({ label: 'magic items', run: () => loadSrdMagicItems() });
   // Weapon masteries are a 2024-only dataset.
   if (versions.includes('2024')) tasks.push({ label: 'masteries', run: () => loadSrdMasteries() });
   return tasks;
