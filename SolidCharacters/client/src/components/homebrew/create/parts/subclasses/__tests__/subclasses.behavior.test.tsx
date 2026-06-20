@@ -54,7 +54,6 @@ vi.mock('../FeaturesSection', () => ({ FeaturesSection: () => <div data-sec="fea
 vi.mock('../SpellcastingSection', () => ({ SpellcastingSection: () => <div data-sec="spellcasting" /> }));
 
 // Import after mocks
-// eslint-disable-next-line import/first
 import Subclasses from '../subclasses';
 
 let mockSubclasses: any[] = [];

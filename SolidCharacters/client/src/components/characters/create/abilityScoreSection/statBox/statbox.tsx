@@ -1,11 +1,9 @@
-import { Button, Container, Icon, Input, Select,Option } from "coles-solid-library";
+import { Button, Icon, Input, Select,Option } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, JSX, Match, Setter, Show, splitProps, Switch } from "solid-js";
-import { AbilityScores, StatBonus } from "../../../../../models/data";
 import styles from "./statBox.module.scss";
 
 type GenMethod = "Standard Array"|"Custom Standard Array"|"Manual/Rolled"|"Point Buy" |"Extended Point Buy";
-type stat = "str"|"dex"|"con"|"int"|"wis"|"cha";
 
 interface boxProps extends JSX.HTMLAttributes<HTMLDivElement> {
     statName: string;
@@ -112,8 +110,6 @@ export const StatBox:Component<boxProps> = (props) => {
         setTotalPoints(old => old + diff)
         setAbilityScore(getStatName(), targetStat)
     }
-
-    const StatBonus = createMemo(()=>Math.floor(((currentScore() + getModifer()) - 10)/2));
 
     createEffect(()=>{
         if (genMethod() === "Point Buy") {

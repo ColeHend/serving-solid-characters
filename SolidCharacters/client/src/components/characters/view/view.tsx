@@ -6,7 +6,7 @@ import { effect } from "solid-js/web";
 import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, ExpansionPanel } from "coles-solid-library";
+import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row } from "coles-solid-library";
 import { Character } from "../../../models/character.model";
 import { Spell } from "../../../models/generated";
 import { srdItem } from "../../../models/data/generated";

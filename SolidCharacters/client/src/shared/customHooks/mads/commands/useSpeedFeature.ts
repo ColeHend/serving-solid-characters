@@ -26,16 +26,16 @@ function useSpeedFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads as MadFeature;
+        const mads = feature.metadata?.mads ?? [];
 
-        if (MadFeature) {
-            switch (MadFeature.command) {
+        for (const mad of mads) {
+            switch (mad.command) {
                 case "AddSpeed":
-                    character = addSpeedFeature(character, MadFeature);
+                    character = addSpeedFeature(character, mad as MadFeature);
                     break;
 
                 case "RemoveSpeed":
-                    character = removeSpeedFeature(character, MadFeature);
+                    character = removeSpeedFeature(character, mad as MadFeature);
                     break;
             }
         }

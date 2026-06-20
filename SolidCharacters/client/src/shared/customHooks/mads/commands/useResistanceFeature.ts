@@ -39,15 +39,15 @@ function useResistanceFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads as MadFeature;
+        const mads = (feature.metadata?.mads ?? []) as MadFeature[];
 
-        if (MadFeature) {
-            switch (MadFeature.command) {
+        for (const mad of mads) {
+            switch (mad.command) {
                 case "AddResistances":
-                    character = addResistanceFeature(character, MadFeature);
+                    character = addResistanceFeature(character, mad);
                     break;
                 case "RemoveResistances":
-                    character = removeResistanceFeature(character, MadFeature);
+                    character = removeResistanceFeature(character, mad);
                     break;
             }
         }

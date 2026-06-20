@@ -1,7 +1,15 @@
 import { Accessor, Component, For, Setter, Show } from "solid-js";
-import { Weapon } from "../../../../../../../shared";
 import { Button, FormField, Input, Select, Option, Chip, TextArea } from "coles-solid-library";
 import { SetStoreFunction } from "solid-js/store";
+
+// Local weapon-draft shape for this editor (replaces the removed shared `Weapon` export).
+interface Weapon {
+  weaponCategory: string;
+  weaponRange: string;
+  damage: { damageDice: string; damageType: string; damageBonus: number }[];
+  range: { normal: number; long: number };
+  weight: number;
+}
 
 interface props {
     currentWeapon: Weapon,

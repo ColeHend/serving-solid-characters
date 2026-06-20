@@ -1,13 +1,26 @@
 import { Component, createMemo, createSignal, For, Setter } from "solid-js";
 import styles from "./classes.module.scss";
-import { Armor, Clone, useGetArmor,  useGetWeapons, Weapon } from "../../../../../shared";
-import { Modal, Select, Option, Input, FormField, Table, Column, Header, Cell, Row, FormGroup, Button, Icon } from "coles-solid-library";
+import { Modal, Table, Column, Header, Cell, Row, FormGroup, Button, Icon } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
 import { ClassForm } from "./classes";
 import { Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { ItemMenuButton } from "./itemMenuButton";
 import { Item } from "../../../../../models/data";
 import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
+
+// Local row shapes for the weapon/armor table cells (the SRD item shape these columns read
+// from). Replaces the removed `Armor`/`Weapon` exports; fields mirror exactly what is rendered.
+interface WeaponRow {
+  damage?: { damageDice?: string; damageBonus?: number | string; damageType?: string }[];
+  weaponRange?: string;
+  weaponCategory?: string;
+}
+interface ArmorRow {
+  armorClass?: number | string;
+  stealthDisadvantage?: boolean;
+  strMin?: number;
+  armorCategory?: string;
+}
 
 export interface AddItem<T=Item> {
   item: T;
@@ -24,9 +37,6 @@ export const Items: Component<ItemProps> = (props) => {
   const [showModal, setShowModal] = createSignal<boolean>(false);
   const [modalShown, setModalShown] = createSignal<undefined | 'items' | 'weapons' | 'armor'>();
 
-  const [choiceAmnt, setChoiceAmnt] = createSignal<number>(0);
-  const [selectedChoice, setSelectedChoice] = createSignal<number>(0);
-  
   const [modalColumns, setModalColumns] = createSignal<string[]>(['name', 'description', 'weight', 'cost']);
   const [empty,] = createSignal<Item[]>([]);
   const allItems = useDnDItems();
@@ -254,34 +264,34 @@ export const Items: Component<ItemProps> = (props) => {
 
               <Column name="damage">
                 <Header>Damage</Header>
-                <Cell<Weapon> >{(weapon)=><>
+                <Cell<WeaponRow> >{(weapon)=><>
                   {weapon?.damage?.map((d)=>`${d.damageDice}${d.damageBonus ? `+ ${d.damageBonus}` : ''}${' ' + d.damageType}`).join(',\n')}
                 </>}</Cell>
               </Column>
               <Column name="range">
                 <Header>Range</Header>
-                <Cell<Weapon> >{(item)=> <>{item?.weaponRange ?? ''}</>}</Cell>
+                <Cell<WeaponRow> >{(item)=> <>{item?.weaponRange ?? ''}</>}</Cell>
               </Column>
               <Column name="weaponCategory">
                 <Header>Weapon Category</Header>
-                <Cell<Weapon> >{(item)=> <>{item?.weaponCategory ?? ''}</>}</Cell>
+                <Cell<WeaponRow> >{(item)=> <>{item?.weaponCategory ?? ''}</>}</Cell>
               </Column>
 
               <Column name="armorClass">
                 <Header>Armor Class</Header>
-                <Cell<Armor> >{(item)=> <>{item?.armorClass ?? ''}</>}</Cell>
+                <Cell<ArmorRow> >{(item)=> <>{item?.armorClass ?? ''}</>}</Cell>
               </Column>
               <Column name="armorDisadv">
                 <Header>Stealth DisAdv</Header>
-                <Cell<Armor> >{(item)=> <>{item?.stealthDisadvantage ?? ''}</>}</Cell>
+                <Cell<ArmorRow> >{(item)=> <>{item?.stealthDisadvantage ?? ''}</>}</Cell>
               </Column>
               <Column name="armorType">
                 <Header>Min STR</Header>
-                <Cell<Armor> >{(item)=> <>{item?.strMin && item.strMin > 0 ? item.strMin : '-'}</>}</Cell>
+                <Cell<ArmorRow> >{(item)=> <>{item?.strMin && item.strMin > 0 ? item.strMin : '-'}</>}</Cell>
               </Column>
               <Column name="armorCategory">
                 <Header>Armor Category</Header>
-                <Cell<Armor> >{(item)=> <>{item?.armorCategory ?? ''}</>}</Cell>
+                <Cell<ArmorRow> >{(item)=> <>{item?.armorCategory ?? ''}</>}</Cell>
               </Column>
 
               <Column name="menu">

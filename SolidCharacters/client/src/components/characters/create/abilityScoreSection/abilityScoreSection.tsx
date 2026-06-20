@@ -1,6 +1,6 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, For, Match, Setter, Show, Switch } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { FormField, Select, Option, Chipbar, ChipType, Checkbox, Chip } from "coles-solid-library";
+import { FormField, Select, Option, ChipType, Checkbox, Chip } from "coles-solid-library";
 import { Star } from "coles-solid-library/icons";
 import styles from "./abilityScoreSection.module.scss";
 import { StatBox } from "./statBox/statbox";
@@ -71,20 +71,12 @@ export const Ass:Component<assProps> = (props) => {
         setCharStats((old)=>({...old,[name]: score}))
     }
 
-    const clearStats = ():void => {
-        setCharStats({});
-    }
-
     const getStatMod = (name: string):number => {
         return statMods()[name]
     }
 
     const setStatMod = (name: string, score: number):void => {
         setStatMods(old => ({...old,[name]: score}))
-    }
-
-    const clearStatMods = ():void => {
-        setStatMods({});
     }
 
     const handleClick = (statName: stat, currentStat: number ) => {
@@ -117,16 +109,6 @@ export const Ass:Component<assProps> = (props) => {
 
     const standardSelection = createMemo(()=>startardArray.filter(stat => !selectedStats().includes(stat)))
     const customSelection = createMemo(()=>customStandardArray.filter(stat => !selectedStats().includes(stat)))
-    const currentStatArray = createMemo(()=>{
-        switch (genMethod()) {
-            case "Standard Array":
-                return standardSelection();
-            case "Custom Standard Array":
-                return customSelection();
-            default:
-                return [];
-        } 
-    })
 
     const displayStat = (stat: string) => {
 

@@ -25,7 +25,7 @@ const builtInTags = [
   "Consumable",
 ];
 
-export const TagsSection: Component<Props> = (p) => {
+export const TagsSection: Component<Props> = () => {
   const store = itemsStore;
   function addTag(tag: string) {
     if (!store.state.form) return;

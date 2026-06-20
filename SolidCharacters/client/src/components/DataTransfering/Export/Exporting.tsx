@@ -1,11 +1,11 @@
 import { Component, createMemo, createSignal, For, Show } from "solid-js";
 import styles from "./Exporting.module.scss";
-import { characterManager, homebrewManager, isNullish, spellComponents } from "../../../shared";
+import { characterManager, homebrewManager, isNullish } from "../../../shared";
 import {Button,Input,ExpansionPanel,Modal, Checkbox} from "coles-solid-library";
 import { Trade } from "../../../models/trade.model";
 import { createStore } from "solid-js/store";
 import { downloadObjectAsJson } from "../../../shared/customHooks/utility/tools/downloadObjectAsJson";
-import { Background, Class5E, Feat, Item, Race } from "../../../models/generated";
+import { Feat } from "../../../models/generated";
 
 const Exporting:Component = () => {
 

@@ -1,6 +1,6 @@
 import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
-import { Item, ItemType } from "../../../../../models/generated";
+import { Accessor, Component, createEffect, createMemo, createSignal, Show } from "solid-js";
+import { ItemType } from "../../../../../models/generated";
 import { srdItem } from "../../../../../models/data/generated";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { Clone, Paginator } from "../../../../../shared";
@@ -115,7 +115,7 @@ export const ItemsView:Component<viewProps> = (props) => {
       );
 
       // Also update paginatedItems to trigger UI update
-      setSearchResult((old) => sorted);
+      setSearchResult(() => sorted);
 
       return sorted;
     });

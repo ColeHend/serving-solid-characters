@@ -1,6 +1,5 @@
-import { Component, createSignal, createMemo, createEffect, onMount, onCleanup } from "solid-js";
+import { Component, createSignal, createEffect, onMount, onCleanup } from "solid-js";
 import { useSearchParams } from "@solidjs/router";
-import { ArrayValidation, ValidatorResult } from "coles-solid-library/dist/components/Form/formHelp/models";
 import { addSnackbar, Button, Container, Form, FormGroup, Validators } from "coles-solid-library";
 import { DeployedCode, HomeRepairService, IdentityPlatform, Save, Star } from "coles-solid-library/icons";
 import { Proficiencies } from "./proficiencies";
@@ -14,7 +13,6 @@ import { Header } from "./header";
 import styles from './classes.module.scss';
 import { CastingStat, Stat } from "../../../../../shared/models/stats";
 import { LevelEntity, Subclass } from "../../../../../models/old/class.model";
-import { getUserSettings } from "../../../../../shared/customHooks/userSettings";
 import { CasterType, Choice, FeatureTypes } from "../../../../../models/old/core.model";
 import { SpellsKnown } from "../../../../../shared/models/casting";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
@@ -67,7 +65,6 @@ export interface ClassForm {
 export const Classes: Component = () => {
   // SRD classes (depends on userSettings().dndSystem: 2014 | 2024 | both)
   const srdClasses = useDnDClasses();
-  const [userSettings] = getUserSettings();
   const [searchParams] = useSearchParams();
 
   const defaultClassLevels: LevelEntity[] = Array.from({ length: 20 }, (_, i) => ({
@@ -136,43 +133,47 @@ export const Classes: Component = () => {
     hasCantrips: [false, []]
   });
   const [resetNonce, setResetNonce] = createSignal(0);
+  // Typed setter: keeps key/value checked against ClassForm while tolerating the
+  // intentionally-empty (`undefined`) reset values that the form holds before input.
+  const setField = <K extends keyof ClassForm>(key: K, value: ClassForm[K] | undefined) =>
+    ClassFormGroup.set(key, value as ClassForm[K]);
   const resetForm = () => {
     // Clear values succinctly (no reset API on FormGroup yet)
     // Reapply primitives
-    ClassFormGroup.set('name','' as any);
-    ClassFormGroup.set('description','' as any);
-    ClassFormGroup.set('hitDie', undefined as any);
-  ClassFormGroup.set('primaryStat', [] as any);
-    ClassFormGroup.set('savingThrows', [] as any);
-    ClassFormGroup.set('armorProficiencies', [] as any);
-    ClassFormGroup.set('weaponProficiencies', [] as any);
-    ClassFormGroup.set('toolProficiencies', [] as any);
-    ClassFormGroup.set('armorStart', [] as any);
-    ClassFormGroup.set('weaponStart', [] as any);
-    ClassFormGroup.set('itemStart', [] as any);
-    ClassFormGroup.set('armorProfChoices', [] as any);
-    ClassFormGroup.set('weaponProfChoices', [] as any);
-    ClassFormGroup.set('toolProfChoices', [] as any);
-    ClassFormGroup.set('skills', [] as any);
-    ClassFormGroup.set('skillChoiceNum', undefined as any);
-    ClassFormGroup.set('skillChoices', [] as any);
-    ClassFormGroup.set('startingEquipment', [] as any);
-    ClassFormGroup.set('spellCasting', false as any);
-    ClassFormGroup.set('castingStat', undefined as any);
-    ClassFormGroup.set('casterType', CasterType.Full as any);
-    ClassFormGroup.set('classSpecificValues', [] as any);
-    ClassFormGroup.set('subclasses', [] as any);
-    ClassFormGroup.set('metadataSubclassLevels', [] as any);
-    ClassFormGroup.set('metadataSubclassName', '' as any);
-    ClassFormGroup.set('metadataSubclassPos', 'before' as any);
-    ClassFormGroup.set('classLevels', defaultClassLevels as any);
-    ClassFormGroup.set('spellcastName', '' as any);
-    ClassFormGroup.set('spellsKnownCalc', SpellsKnown.Number as any);
-    ClassFormGroup.set('spellcastAbility', CastingStat.WIS as any);
-    ClassFormGroup.set('spellsKnownRoundup', false as any);
-    ClassFormGroup.set('spellsInfo', '' as any);
-    ClassFormGroup.set('spellsLevel', 1 as any);
-    ClassFormGroup.set('hasCantrips', false as any);
+    setField('name', '');
+    setField('description', '');
+    setField('hitDie', undefined);
+    setField('primaryStat', []);
+    setField('savingThrows', []);
+    setField('armorProficiencies', []);
+    setField('weaponProficiencies', []);
+    setField('toolProficiencies', []);
+    setField('armorStart', []);
+    setField('weaponStart', []);
+    setField('itemStart', []);
+    setField('armorProfChoices', []);
+    setField('weaponProfChoices', []);
+    setField('toolProfChoices', []);
+    setField('skills', []);
+    setField('skillChoiceNum', undefined);
+    setField('skillChoices', []);
+    setField('startingEquipment', []);
+    setField('spellCasting', false);
+    setField('castingStat', undefined);
+    setField('casterType', CasterType.Full);
+    setField('classSpecificValues', []);
+    setField('subclasses', []);
+    setField('metadataSubclassLevels', []);
+    setField('metadataSubclassName', '');
+    setField('metadataSubclassPos', 'before');
+    setField('classLevels', defaultClassLevels);
+    setField('spellcastName', '');
+    setField('spellsKnownCalc', SpellsKnown.Number);
+    setField('spellcastAbility', CastingStat.WIS);
+    setField('spellsKnownRoundup', false);
+    setField('spellsInfo', '');
+    setField('spellsLevel', 1);
+    setField('hasCantrips', false);
     setClassLevels(defaultClassLevels);
     setProfStore({});
     setResetNonce(n => n + 1);
@@ -197,10 +198,10 @@ export const Classes: Component = () => {
     console.log('Prefilling form with class', cls);
     
     // Basic fields
-    ClassFormGroup.set('name', (cls.name || '') as any);
+    setField('name', cls.name || '');
     // No description field in Class5E currently; leave blank
     const dieNum = typeof cls.hitDie === 'string' ? parseInt(cls.hitDie.replace(/^[dD]/, '') || '0') : (cls as any).hitDie || 0;
-    ClassFormGroup.set('hitDie', dieNum as any);
+    setField('hitDie', dieNum);
     // Map string stats (e.g. 'INT') to Stat enum values expected by form controls
     const statMap: Record<string, Stat> = { 'STR': Stat.STR, 'DEX': Stat.DEX, 'CON': Stat.CON, 'INT': Stat.INT, 'WIS': Stat.WIS, 'CHA': Stat.CHA };
     // Primary ability can be a comma separated list in source -> map each to Stat enum
@@ -210,11 +211,11 @@ export const Classes: Component = () => {
       const mapped: Stat[] = parts.map((p: string) => statMap[p]).filter((v: Stat | undefined): v is Stat => v !== undefined);
       console.log('Mapped primary stats', parts, '->', mapped);
       
-      if (mapped.length) ClassFormGroup.set('primaryStat', mapped as any);
+      if (mapped.length) setField('primaryStat', mapped);
     }
     const saves = cls.savingThrows || (cls as any).savingThrows || [];
     const savingThrowEnums = saves.map(st => statMap[st.toUpperCase()] ?? st).filter(v => v !== undefined);
-    ClassFormGroup.set('savingThrows', savingThrowEnums);
+    setField('savingThrows', savingThrowEnums);
 
     // Proficiencies
     const profs = cls.proficiencies || { armor: [], weapons: [], tools: [], skills: [] };
@@ -224,17 +225,18 @@ export const Classes: Component = () => {
       weapons: profs.weapons || [],
       tools: profs.tools || []
     });
-    ClassFormGroup.set('armorProficiencies', (profs.armor || []) as any);
-    ClassFormGroup.set('weaponProficiencies', (profs.weapons || []) as any);
-    ClassFormGroup.set('toolProficiencies', (profs.tools || []) as any);
+    setField('armorProficiencies', profs.armor || []);
+    setField('weaponProficiencies', profs.weapons || []);
+    setField('toolProficiencies', profs.tools || []);
+    // skills source is string[] but the form field is Stat[]; cast remains intentional
     ClassFormGroup.set('skills', (profs.skills || []) as any);
 
     // Starting equipment (attempt to pull names)
   const startingEquipNames = (cls.startingEquipment || []).map((e: any) => e?.item?.name || e?.name || '').filter(Boolean);
   // The UI displays weaponStart / armorStart / itemStart; without item classification, default all to itemStart
-  ClassFormGroup.set('itemStart', startingEquipNames as any);
+  setField('itemStart', startingEquipNames);
   // Keep legacy field in case other code reads it
-  ClassFormGroup.set('startingEquipment', startingEquipNames as any);
+  setField('startingEquipment', startingEquipNames);
 
     // Start choices (optional structured starting equipment / proficiency choices)
     // Class5E.startChoices?: { weapon?: string; armor?: string; tool?: string; skill?: string[]; equipment?: string; }
@@ -242,31 +244,31 @@ export const Classes: Component = () => {
     const sc: any = (cls as any).startChoices || (cls as any).start_choices; // tolerate snake_case just in case
     if (sc) {
       if (sc.weapon) {
-        const current = (ClassFormGroup.get('weaponStart') as any[]) || [];
+        const current = ClassFormGroup.get('weaponStart') || [];
         if (!current.includes(sc.weapon)) current.push(sc.weapon);
-        ClassFormGroup.set('weaponStart', current as any);
+        setField('weaponStart', current);
       }
       if (sc.armor) {
-        const current = (ClassFormGroup.get('armorStart') as any[]) || [];
+        const current = ClassFormGroup.get('armorStart') || [];
         if (!current.includes(sc.armor)) current.push(sc.armor);
-        ClassFormGroup.set('armorStart', current as any);
+        setField('armorStart', current);
       }
       if (sc.tool) {
-        const current = (ClassFormGroup.get('itemStart') as any[]) || [];
+        const current = ClassFormGroup.get('itemStart') || [];
         if (!current.includes(sc.tool)) current.push(sc.tool);
-        ClassFormGroup.set('itemStart', current as any);
+        setField('itemStart', current);
       }
       // If sc.equipment refers to a choice key, we'll handle it in the unified choices prefill below.
       if (Array.isArray(sc.skill) && sc.skill.length) {
         // Treat as a skill choice list: user can choose "skillChoiceNum" from these options.
         // If existing skill choices are empty, populate directly; else merge uniquely.
-        const existingChoices = (ClassFormGroup.get('skillChoices') as any[]) || [];
+        const existingChoices = ClassFormGroup.get('skillChoices') || [];
         const merged = Array.from(new Set([...existingChoices, ...sc.skill]));
-        ClassFormGroup.set('skillChoices', merged as any);
+        setField('skillChoices', merged);
         // If no explicit number yet, default to 1 or the length if smaller than current value.
-        const currentNum = ClassFormGroup.get('skillChoiceNum') as any;
+        const currentNum = ClassFormGroup.get('skillChoiceNum');
         if (currentNum === undefined || currentNum === null) {
-          ClassFormGroup.set('skillChoiceNum', Math.min(merged.length, 1) as any);
+          setField('skillChoiceNum', Math.min(merged.length, 1));
         }
       }
     }
@@ -281,7 +283,7 @@ export const Classes: Component = () => {
             const exists = arr.some((c: any) => c.choose === choose && options.every(o => c.choices.includes(o)));
             if (!exists) {
               arr.push({ type: FeatureTypes.Item, choose, choices: [...options] });
-              ClassFormGroup.set(key, arr as any);
+              setField(key, arr);
             }
         };
         // Directly map all choices regardless of starting equipment reference (so editing an existing class shows everything)
@@ -290,13 +292,13 @@ export const Classes: Component = () => {
           const options: string[] = cval.options || cval.Options || [];
           if (ckey === 'skill_proficiencies') {
             // Merge skill options
-            const existing = (ClassFormGroup.get('skillChoices') as any[]) || [];
+            const existing = ClassFormGroup.get('skillChoices') || [];
             const merged = Array.from(new Set([...existing, ...options]));
-            ClassFormGroup.set('skillChoices', merged as any);
+            setField('skillChoices', merged);
             // Only set if not previously set by startChoices
-            const currentNum = ClassFormGroup.get('skillChoiceNum') as any;
+            const currentNum = ClassFormGroup.get('skillChoiceNum');
             if (!currentNum && choose > 0) {
-              ClassFormGroup.set('skillChoiceNum', choose as any);
+              setField('skillChoiceNum', choose);
             }
           } else if (ckey.startsWith('weapon_prof_')) {
             ensurePush('weaponProfChoices', choose, options);
@@ -318,11 +320,11 @@ export const Classes: Component = () => {
             const choose = cval.amount ?? cval.Amount ?? 0;
             const options: string[] = cval.options || cval.Options || [];
             if (k === 'skill_proficiencies') {
-              const existing = (ClassFormGroup.get('skillChoices') as any[]) || [];
+              const existing = ClassFormGroup.get('skillChoices') || [];
               const merged = Array.from(new Set([...existing, ...options]));
-              ClassFormGroup.set('skillChoices', merged as any);
-              const currentNum = ClassFormGroup.get('skillChoiceNum') as any;
-              if (!currentNum && choose > 0) ClassFormGroup.set('skillChoiceNum', choose as any);
+              setField('skillChoices', merged);
+              const currentNum = ClassFormGroup.get('skillChoiceNum');
+              if (!currentNum && choose > 0) setField('skillChoiceNum', choose);
             } else if (k.startsWith('weapon_prof_')) {
               ensurePush('weaponProfChoices', choose, options);
             } else if (k.startsWith('armor_prof_')) {
@@ -370,19 +372,19 @@ export const Classes: Component = () => {
       } as LevelEntity;
     });
     setClassLevels(levelEntities);
-    ClassFormGroup.set('classLevels', levelEntities as any);
+    setField('classLevels', levelEntities);
 
     // Spellcasting (optional)
     if (cls.spellcasting) {
-      ClassFormGroup.set('spellCasting', true as any);
-      ClassFormGroup.set('castingStat', (cls.spellcasting as any).spellcasting_ability as any);
-      ClassFormGroup.set('spellcastAbility', (cls.spellcasting as any).spellcasting_ability as any);
-      ClassFormGroup.set('casterType', (cls.spellcasting as any).caster_type || CasterType.Full as any);
+      setField('spellCasting', true);
+      setField('castingStat', (cls.spellcasting as any).spellcasting_ability);
+      setField('spellcastAbility', (cls.spellcasting as any).spellcasting_ability);
+      setField('casterType', (cls.spellcasting as any).caster_type || CasterType.Full);
     } else {
-      ClassFormGroup.set('spellCasting', false as any);
-      ClassFormGroup.set('castingStat', undefined as any);
-      ClassFormGroup.set('spellcastAbility', undefined as any);
-      ClassFormGroup.set('casterType', CasterType.None);
+      setField('spellCasting', false);
+      setField('castingStat', undefined);
+      setField('spellcastAbility', undefined);
+      setField('casterType', CasterType.None);
     }
 
     setResetNonce(n => n + 1);
@@ -445,13 +447,13 @@ export const Classes: Component = () => {
   });
   createEffect(() => {
     // Update snapshot whenever underlying fields change
-  const primArr = (ClassFormGroup.get('primaryStat') as any[]) || [];
+  const primArr = ClassFormGroup.get('primaryStat') || [];
   const prim = primArr.join(',');
-    const saves = (ClassFormGroup.get('savingThrows') as any[] ?? []).join(',');
-    const armor = (ClassFormGroup.get('armorProficiencies') as any[] ?? []).join('|');
-    const weapon = (ClassFormGroup.get('weaponProficiencies') as any[] ?? []).join('|');
-    const tool = (ClassFormGroup.get('toolProficiencies') as any[] ?? []).join('|');
-    const itemStart = (ClassFormGroup.get('itemStart') as any[] ?? []).join('|');
+    const saves = (ClassFormGroup.get('savingThrows') ?? []).join(',');
+    const armor = (ClassFormGroup.get('armorProficiencies') ?? []).join('|');
+    const weapon = (ClassFormGroup.get('weaponProficiencies') ?? []).join('|');
+    const tool = (ClassFormGroup.get('toolProficiencies') ?? []).join('|');
+    const itemStart = (ClassFormGroup.get('itemStart') ?? []).join('|');
     setDebugSnapshot({ primaryStat: prim, savingThrows: saves, armor, weapon, tool, itemStart });
   });
 

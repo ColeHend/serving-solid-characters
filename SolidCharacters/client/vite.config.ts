@@ -108,6 +108,8 @@ export default defineConfig({
     },
     { // do not fail on serve (i.e. local development)
       ...eslint({
+        emitWarning: false, // silence the warning long-tail in the dev terminal (still shown by IDE + build)
+        emitError: true,    // still surface real errors
         failOnWarning: false,
         failOnError: false,
         lintOnStart: true,
@@ -163,7 +165,22 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        // Split heavy vendors into stable, separately-cacheable chunks. pdf-lib and
+        // tesseract.js are only reached via lazy routes / dynamic import, so their chunks
+        // load on demand; the rest are app-wide and stay cached across deploys.
+        manualChunks: {
+          'pdf-lib': ['pdf-lib'],
+          'ocr': ['tesseract.js'],
+          'db': ['dexie'],
+          'markdown': ['marked', 'dompurify'],
+          'ui': ['coles-solid-library'],
+          'solid': ['solid-js', '@solidjs/router', 'rxjs'],
+        }
+      }
+    }
   }
 });
 

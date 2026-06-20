@@ -1,5 +1,4 @@
 import { Stats } from "../shared";
-import { MadFeature } from "../shared/customHooks/mads/madModels";
 import { FeatureDetail } from "./generated";
 
 export class Character {

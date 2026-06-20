@@ -1,4 +1,4 @@
-import { Component, createSignal, For, Setter, createMemo, createEffect } from "solid-js";
+import { Component, createSignal, For, Setter, createMemo } from "solid-js";
 import styles from "./classes.module.scss";
 import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
 import { ItemType } from "../../../../../models/data/items";
@@ -174,15 +174,6 @@ export const Proficiencies: Component<ProficienciesProps> = (props) => {
     </div>
   );
 };
-const getArmorTypes = ()=>{
-  return ["Light", "Medium", "Heavy", "Shields"];
-};
-const getWeaponTypes = ()=>{
-  return ["Simple", "Martial"];
-};
-const getStatProficiencies = ()=>{
-  return ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
-}
 const getSkills = ()=>{
   return ["Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"];
 }

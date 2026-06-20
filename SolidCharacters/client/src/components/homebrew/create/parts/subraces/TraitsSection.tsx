@@ -1,7 +1,6 @@
 import { Component, For, Show } from "solid-js";
 import { FormField, Input, Button, Chip, TextArea } from "coles-solid-library";
 import { Star } from "coles-solid-library/icons";
-import styles from "./subraces.module.scss";
 import { SubraceEditorApi } from "./useSubraceEditor";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
@@ -16,8 +15,6 @@ export const TraitsSection: Component<Props> = (p) => {
     updateTraitText,
     editingTrait,
     setEditingTrait,
-    collapsed,
-    toggle,
   } = p.api;
   return <FlatCard icon={Star} headerName="Traits" transparent>
       <div class="inlineRow inlineDense" style={{ "margin-top": ".25rem" }}>

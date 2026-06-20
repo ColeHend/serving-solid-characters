@@ -17,7 +17,7 @@ const AddFeature = (character: Character, feature: MadFeature) => {
             name: newFeatureName,
             description: newFeatureDescription,
             metadata: {
-                mads: feature as MadFeat,
+                mads: [feature as MadFeat],
             }
         });
     }
@@ -46,9 +46,8 @@ function useFeatures (character: Character) {
     }
 
     character.features.forEach(feature => {
-        if (feature.metadata?.mads) {
-            const madFeature = feature.metadata.mads as MadFeature;
-            
+        const mads = (feature.metadata?.mads ?? []) as MadFeature[];
+        for (const madFeature of mads) {
             switch (madFeature.command) {
                 case 'AddFeatures':
                     AddFeature(character, madFeature);

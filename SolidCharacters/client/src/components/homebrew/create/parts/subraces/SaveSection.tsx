@@ -1,7 +1,6 @@
 import { Component, Show } from "solid-js";
 import { Button } from "coles-solid-library";
 import { Save } from "coles-solid-library/icons";
-import styles from "./subraces.module.scss";
 import { SubraceEditorApi } from "./useSubraceEditor";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 

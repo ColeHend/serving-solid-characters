@@ -1,5 +1,5 @@
 import { Component, For, onCleanup, onMount, Show } from 'solid-js';
-import { Body, Select, Option, FormField, Container } from 'coles-solid-library';
+import { Body, Select, Option, FormField } from 'coles-solid-library';
 import styles from './subraces.module.scss';
 import { useSubraceEditor } from './useSubraceEditor';
 import { IdentitySection } from './IdentitySection';

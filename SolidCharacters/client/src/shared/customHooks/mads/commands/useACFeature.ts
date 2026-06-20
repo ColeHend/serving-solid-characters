@@ -30,12 +30,14 @@ function useACFeature (character: Character): Character | undefined {
     }
 
     character.features.forEach(feature => {
-        const mads = feature?.metadata?.mads as MadFeature;
+        const mads = (feature?.metadata?.mads ?? []) as MadFeature[];
 
-        if (mads && mads.command === "AddArmorClass" && mads.value['bonus']) {
-            character = addACFeature(character, mads);
-        } else if (mads && mads.command === "RemoveArmorClass" && mads.value['bonus']) {
-            character = removeACFeature(character, mads);
+        for (const mad of mads) {
+            if (mad.command === "AddArmorClass" && mad.value['bonus']) {
+                character = addACFeature(character, mad);
+            } else if (mad.command === "RemoveArmorClass" && mad.value['bonus']) {
+                character = removeACFeature(character, mad);
+            }
         }
 
     });

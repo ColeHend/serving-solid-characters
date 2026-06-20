@@ -7,7 +7,7 @@ import { SpellsKnown } from './SpellsKnown';
 
 // Minimal mock for global homebrewManager used inside component (if not already provided by test env)
 // We only stub the methods we call in onSave path; tests here focus on rendering + adapters.
-// @ts-ignore
+// @ts-expect-error global has no index signature for homebrewManager test stub
 global.homebrewManager = global.homebrewManager || {
   subclasses: () => [],
   addSubclass: () => {},

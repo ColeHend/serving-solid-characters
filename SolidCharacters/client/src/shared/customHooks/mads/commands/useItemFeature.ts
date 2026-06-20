@@ -26,13 +26,13 @@ function useItemFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const mads = feature.metadata?.mads as MadFeature;
+        const mads = feature.metadata?.mads ?? [];
 
-        if (mads) {
-            if (mads.command === 'AddItems') {
-                character = AddItemFeature(character, mads);
-            } else if (mads.command === 'RemoveItems') {
-                character = RemoveItemFeature(character, mads);
+        for (const mad of mads) {
+            if (mad.command === 'AddItems') {
+                character = AddItemFeature(character, mad as MadFeature);
+            } else if (mad.command === 'RemoveItems') {
+                character = RemoveItemFeature(character, mad as MadFeature);
             }
         }
     });

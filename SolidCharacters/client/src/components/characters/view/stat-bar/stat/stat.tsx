@@ -1,7 +1,6 @@
-import { Component, For, createMemo, createSignal } from "solid-js";
+import { Component, For, createMemo } from "solid-js";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./stat.module.scss";
-import { effect } from "solid-js/web";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
 import { CharacterSkillProficiency } from "../../../../../models/character.model";
 

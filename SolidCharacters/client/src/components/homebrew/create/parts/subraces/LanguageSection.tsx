@@ -1,7 +1,6 @@
 import { Component, For } from "solid-js";
 import { FormField, Input, Chip, TextArea } from "coles-solid-library";
 import { Chat } from "coles-solid-library/icons";
-import styles from "./subraces.module.scss";
 import { SubraceEditorApi } from "./useSubraceEditor";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
@@ -16,8 +15,6 @@ export const LanguageSection: Component<Props> = (p) => {
     setLanguageChoice,
     removeLanguageOption,
     setLangDesc,
-    collapsed,
-    toggle,
   } = p.api;
   return (
     <FlatCard icon={Chat} headerName="languages" transparent>

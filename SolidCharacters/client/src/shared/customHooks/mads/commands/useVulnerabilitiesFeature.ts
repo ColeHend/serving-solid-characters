@@ -38,16 +38,16 @@ function useVulnerabilitiesFeature(character: Character) {
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads as MadFeature;
+        const mads = (feature.metadata?.mads ?? []) as MadFeature[];
 
-        if (MadFeature) {
-            switch (MadFeature.command) {
+        for (const mad of mads) {
+            switch (mad.command) {
                 case "AddVulnerabilities":
-                    character = addVulnerabilityFeature(character, MadFeature);
+                    character = addVulnerabilityFeature(character, mad);
                     break;
 
                 case "RemoveVulnerabilities":
-                    character = removeVulnerabilityFeature(character, MadFeature);
+                    character = removeVulnerabilityFeature(character, mad);
                     break;
             }
         }

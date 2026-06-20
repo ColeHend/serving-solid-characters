@@ -1,36 +1,37 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
-import { Show, ErrorBoundary } from "solid-js";
+import { Show, ErrorBoundary, lazy } from "solid-js";
 import "./index.scss";
 import App from "./App";
 import 'solid-devtools';
-// const Characters = lazy(() => import("./components/characters/characters"));
-// const CharacterCreate = lazy(() => import("./components/characters/create/create"));
-// const CharacterView = lazy(() => import("./components/characters/view/view"));
 import ReloadPrompt from "./ReloadPrompt";
 import { registerServiceWorker, needRefresh, offlineReady, swVersion, swBuildTime, applyUpdateAndReload } from './pwa/register';
-import Homebrew from "./components/homebrew/homebrew";
-import { Classes } from "./components/homebrew/create/parts/classes/classes";
-import Items from "./components/homebrew/create/parts/items/items";
-import Feats from "./components/homebrew/create/parts/feats/feats";
-import Spells from "./components/homebrew/create/parts/spells/spells";
-import Races from "./components/homebrew/create/parts/races/races";
-import masterSpells from "./components/infoTab/Spells/Spells";
-import featsList from "./components/infoTab/Feats/feats";
-import races from "./components/infoTab/Races/races";
-import Viewbackgrounds from "./components/infoTab/Backgrounds/backgrounds";
-import viewClasses from "./components/infoTab/viewClasses/viewClasses";
-import Subclasses from "./components/homebrew/create/parts/subclasses/subclasses";
 import RootApp from "./components/rootApp";
-import ItemsViewTab from "./components/infoTab/items/item";
-import Subraces from "./components/homebrew/create/parts/subraces/subraces";
-import { aboutPage } from "./components/aboutPage/about";
-import Characters from "./components/characters/characters";
-import CharacterCreate from "./components/characters/create/create";
-import CharacterView from "./components/characters/view/view";
-import { CreateCharacterPDF } from "./components/characters/characterCreatePDF/characterCreatePDF";
-import { HomebrewBackgrounds } from "./components/homebrew/Parts/background/Background";
+
+// Route components are lazy-loaded so each splits into its own chunk, keeping the initial
+// bundle small. Heavy, route-local deps (e.g. pdf-lib via the PDF route) ride along with
+// their own chunk instead of bloating the entry. The Router supplies the Suspense boundary.
+const Homebrew = lazy(() => import("./components/homebrew/homebrew"));
+const Classes = lazy(() => import("./components/homebrew/create/parts/classes/classes").then(m => ({ default: m.Classes })));
+const Items = lazy(() => import("./components/homebrew/create/parts/items/items"));
+const Feats = lazy(() => import("./components/homebrew/create/parts/feats/feats"));
+const Spells = lazy(() => import("./components/homebrew/create/parts/spells/spells"));
+const Races = lazy(() => import("./components/homebrew/create/parts/races/races"));
+const masterSpells = lazy(() => import("./components/infoTab/Spells/Spells"));
+const featsList = lazy(() => import("./components/infoTab/Feats/feats"));
+const races = lazy(() => import("./components/infoTab/Races/races"));
+const Viewbackgrounds = lazy(() => import("./components/infoTab/Backgrounds/backgrounds"));
+const viewClasses = lazy(() => import("./components/infoTab/viewClasses/viewClasses"));
+const Subclasses = lazy(() => import("./components/homebrew/create/parts/subclasses/subclasses"));
+const ItemsViewTab = lazy(() => import("./components/infoTab/items/item"));
+const Subraces = lazy(() => import("./components/homebrew/create/parts/subraces/subraces"));
+const aboutPage = lazy(() => import("./components/aboutPage/about").then(m => ({ default: m.aboutPage })));
+const Characters = lazy(() => import("./components/characters/characters"));
+const CharacterCreate = lazy(() => import("./components/characters/create/create"));
+const CharacterView = lazy(() => import("./components/characters/view/view"));
+const CreateCharacterPDF = lazy(() => import("./components/characters/characterCreatePDF/characterCreatePDF").then(m => ({ default: m.CreateCharacterPDF })));
+const HomebrewBackgrounds = lazy(() => import("./components/homebrew/Parts/background/Background").then(m => ({ default: m.HomebrewBackgrounds })));
 
 console.log("Application initializing...");
 

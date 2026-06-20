@@ -1,7 +1,6 @@
 import { Component, For } from "solid-js";
 import { FormField, Select, Option, Chip, Input } from "coles-solid-library";
 import { ElectricBolt } from "coles-solid-library/icons";
-import styles from "./subraces.module.scss";
 import { SubraceEditorApi } from "./useSubraceEditor";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
@@ -15,8 +14,6 @@ export const AbilitySection: Component<Props> = (p) => {
     removeAbility,
     setAbilityValue,
     ABILITIES,
-    collapsed,
-    toggle,
   } = p.api;
   return (
     <FlatCard icon={ElectricBolt} headerName="Ability Bonus" transparent>

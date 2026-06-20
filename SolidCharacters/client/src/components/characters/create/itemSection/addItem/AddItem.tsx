@@ -1,6 +1,6 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, JSX, Setter } from "solid-js";
+import { Accessor, Component, createMemo, createSignal, Setter } from "solid-js";
 import { Item, ItemType } from "../../../../../models/generated";
-import { Button, Cell, Column, Header, Row, Table } from "coles-solid-library";
+import { Button, Cell, Column, Header, Table } from "coles-solid-library";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { Paginator } from "../../../../../shared";
 import styles from "./AddItem.module.scss";

@@ -6,7 +6,7 @@ const SIZES = ['Tiny','Small','Medium','Large','Huge','Gargantuan'];
 
 interface Props { errors: string[]; }
 
-const IdentitySection: Component<Props> = (props) => {
+const IdentitySection: Component<Props> = () => {
   const store = racesStore;
   const race = () => store.activeRace();
   const isNew = () => store.state.selection.activeName === '__new__';

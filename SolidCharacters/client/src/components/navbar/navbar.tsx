@@ -1,7 +1,6 @@
 import { Accessor, Component, Show, createSignal, Setter, splitProps } from "solid-js";
 import navStyles from './navbar.module.scss';
 import { A } from "@solidjs/router";
-import getUserSettings from "../../shared/customHooks/userSettings";
 import { Button, Container, Icon } from "coles-solid-library";
 import DataTransferModal from "../DataTransfering/dataTransferModal";
 import { FileExport, Menu } from "coles-solid-library/icons";
@@ -21,8 +20,6 @@ export interface Tab {
 }
 
 const Navbar: Component<Props> = (props) => {
-  const [userSettings] = getUserSettings();
-  const [showDamageCalc,setShowDamageCalc] = createSignal(false);
   const [showDataTransfer, setShowDataTransfer] = createSignal(false);
   const [local, other] = splitProps(props, ["list"]);
 

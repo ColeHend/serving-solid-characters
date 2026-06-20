@@ -38,15 +38,15 @@ function useImmunitiesFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const madFeature = feature.metadata?.mads as MadFeature;
+        const mads = (feature.metadata?.mads ?? []) as MadFeature[];
 
-        if (madFeature) {
-            switch (madFeature.command) {
+        for (const mad of mads) {
+            switch (mad.command) {
                 case "AddImmunities":
-                    addImmunities(character, madFeature);
+                    addImmunities(character, mad);
                     break;
                 case "RemoveImmunities":
-                    removeImmunities(character, madFeature);
+                    removeImmunities(character, mad);
                     break;
                 default:
                     break;

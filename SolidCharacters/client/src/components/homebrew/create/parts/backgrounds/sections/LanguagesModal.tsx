@@ -30,23 +30,3 @@ const LanguagesModal: Component<Props> = (p) => {
   </>;
 };
 export default LanguagesModal;
-
-const getLanguages = () => {
-  return [
-    'Abyssal',
-    'Aquan',
-    'Auran',
-    'Celestial',
-    'Draconic',
-    'Dwarvish',
-    'Elvish',
-    'Giant',
-    'Gnomish',
-    'Goblin',
-    'Halfling',
-    'Infernal',
-    'Orc',
-    'Sylvan',
-    'Undercommon'
-  ]
-}

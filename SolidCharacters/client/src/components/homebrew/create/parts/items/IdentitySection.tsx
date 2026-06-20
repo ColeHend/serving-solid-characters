@@ -6,7 +6,7 @@ import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; }
 
-export const IdentitySection: Component<Props> = (p) => {
+export const IdentitySection: Component<Props> = () => {
   const store = itemsStore;
   return (
     <FlatCard

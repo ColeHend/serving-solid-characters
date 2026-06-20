@@ -39,8 +39,7 @@ export interface ChoiceDetail {
   amount: number;
 }
 
-export interface Choices extends Record<string, ChoiceDetail> {
-}
+export type Choices = Record<string, ChoiceDetail>;
 
 export interface Class5E {
   id: string;

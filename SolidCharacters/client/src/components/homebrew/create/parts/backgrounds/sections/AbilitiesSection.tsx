@@ -5,7 +5,6 @@ import {
   Modal,
   Select,
   Option,
-  FormField,
 } from "coles-solid-library";
 import { ElectricBolt } from "coles-solid-library/icons";
 import styles from "../backgrounds.module.scss";

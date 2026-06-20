@@ -6,7 +6,6 @@ import HomebrewManager, { homebrewManager } from "../../../../../shared/customHo
 import { createStore } from "solid-js/store";
 import { Background, FeatureDetail } from "../../../../../models/generated";
 // import type { FeatureDetail } from "../../../../../models/data/features";
-import { useDnDBackgrounds } from "../../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/feats";
 import { backgroundsStore } from "../../../../../shared/stores/backgroundsStore";
 import { candidateEquipmentItems } from './constants';
@@ -23,7 +22,6 @@ import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 import { useSearchParams } from "@solidjs/router";
 
 const Backgrounds: Component = () => {
-  const allBackgrounds = useDnDBackgrounds();
   const allFeats = useDnDFeats();
   const [searchParams,setSearchParams] = useSearchParams();
 
@@ -31,7 +29,6 @@ const Backgrounds: Component = () => {
   const bStore = backgroundsStore; // alias
   const selectedFeat = createMemo(() => bStore.state.form.feat);
 
-  const canAddAbility = createMemo(() => bStore.state.form.abilityChoices.length < 3);
   const remainingAbilityPicks = createMemo(() => 3 - bStore.state.form.abilityChoices.length);
 
   function handleAddAbility(a: string) {
@@ -92,7 +89,7 @@ const Backgrounds: Component = () => {
   }
 
   createMemo(() => { // run when selection changes
-    bStore.state.selection.activeName; // dependency
+    void bStore.state.selection.activeName; // tracked dependency (read for reactivity)
     syncActiveToEditors();
   });
 
@@ -219,7 +216,7 @@ const Backgrounds: Component = () => {
                 onAddAbility={(val) => handleAddAbility(val)}
                 onRemoveAbility={(i) => bStore.removeAbilityChoice(i)}
                 onEdit={() => {}}
-                onReset={() => { bStore.state.form.abilityChoices.slice().forEach((_,i)=>bStore.removeAbilityChoice(0)); }}
+                onReset={() => { bStore.state.form.abilityChoices.slice().forEach(()=>bStore.removeAbilityChoice(0)); }}
               />
               <EquipmentSection
                 collapsed={collapsed.equipment}

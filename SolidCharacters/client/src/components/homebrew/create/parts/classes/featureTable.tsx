@@ -1,10 +1,10 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, splitProps, Switch } from "solid-js";
 import { LevelEntity } from "../../../../../models/old/class.model";
-import { Table, Column, Row, Header, Cell, TabBar, FormGroup, FormField, Input, Icon, Button, Select, Option, Checkbox } from "coles-solid-library";
+import { TabBar, FormGroup, FormField, Input, Icon, Button, Select, Option, Checkbox } from "coles-solid-library";
 import { AddBox, Delete } from "coles-solid-library/icons";
 import styles from "./classes.module.scss";
 import { ClassForm } from "./classes";
-import { CasterType, FeatureTypes } from "../../../../../models/old/core.model";
+import { CasterType } from "../../../../../models/old/core.model";
 import { ClassTable } from "./classTable";
 
 enum FeatureTabs {
@@ -18,8 +18,8 @@ interface FeatureTableProps {
 }
 export const FeatureTable: Component<FeatureTableProps> = (props) => {
   const [activeTab, setActiveTab] = createSignal<FeatureTabs>(0);
-  const [tabs, setTabs] = createSignal<string[]>(['Class Specific', 'Caster Features']);
-  const [{tableData, setTableData}, rest] = splitProps(props, ['tableData', 'setTableData']);
+  const [tabs] = createSignal<string[]>(['Class Specific', 'Caster Features']);
+  const [{tableData, setTableData}] = splitProps(props, ['tableData', 'setTableData']);
   
   // const [tableData, setTableData] = createSignal<LevelEntity[]>(defaultTableData);
   createEffect(() => {

@@ -18,7 +18,7 @@ import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/Ite
 import { Clone, Paginator } from "../../../../../shared";
 import { useSearchParams } from "@solidjs/router";
 import { Item } from "../../../../../models/generated";
-import { srdItem, ItemProperties } from "../../../../../models/data/generated";
+import { srdItem } from "../../../../../models/data/generated";
 import { costToCopper } from "../../item";
 import styles from "./weaponsView.module.scss";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
@@ -132,7 +132,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
           );
     
           // Also update paginatedItems to trigger UI update
-          setSearchResults((old) => sorted);
+          setSearchResults(() => sorted);
     
           return sorted;
         });

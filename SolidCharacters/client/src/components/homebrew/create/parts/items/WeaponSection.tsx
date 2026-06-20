@@ -5,7 +5,7 @@ import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; selectionVersion: number; }
 
-export const WeaponSection: Component<Props> = (p) => {
+export const WeaponSection: Component<Props> = () => {
   const store = itemsStore;
 
   function addWeaponDamage() { store.mutate(d => { if (!d.damage) d.damage = []; d.damage = [...d.damage, { dice: '1d6', type: 'slashing', bonus: 0 }]; }); }

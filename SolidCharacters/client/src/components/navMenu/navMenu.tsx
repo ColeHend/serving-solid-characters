@@ -1,5 +1,5 @@
 import { useNavigate } from "@solidjs/router";
-import { Accessor, Component, createEffect, createSignal, For, Setter, Show, splitProps } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, For, Setter, Show } from "solid-js";
 import { Style } from "../../shared/customHooks/utility/style/styleHook";
 import { UserSettings } from "../../models/userSettings";
 import { ExtendedTab } from "../../models/extendedTab";
@@ -102,7 +102,7 @@ const NavMenu: Component<Props> = (props) => {
         <For each={MenuItems()}>{(menuItem)=>(
           <>
             <Show when={menuItem.Name !== "Homebrew"}>
-              <MenuDropdown header={()=><><span class={`${styles.linkFix}`}  onClick={(e)=>Navigate(menuItem.Link)}>{menuItem.Name}</span></>} >
+              <MenuDropdown header={()=><><span class={`${styles.linkFix}`}  onClick={()=>Navigate(menuItem.Link)}>{menuItem.Name}</span></>} >
                 <For each={menuItem?.children ?? []}>{(child)=>(
                   <MenuItem onClick={()=>{
                     Navigate(child.Link);
@@ -116,7 +116,7 @@ const NavMenu: Component<Props> = (props) => {
               </MenuDropdown>
             </Show>
             <Show when={menuItem.Name === "Homebrew"}>
-              <MenuDropdown header={()=><><span class={`${styles.linkFix}`}  onClick={(e)=>Navigate(menuItem.Link)}>{menuItem.Name}</span></>} >
+              <MenuDropdown header={()=><><span class={`${styles.linkFix}`}  onClick={()=>Navigate(menuItem.Link)}>{menuItem.Name}</span></>} >
                 <For each={menuItem?.children ?? []}>{(child)=>(
                   <MenuItem class={`${styles.menuItem}`}>
                     <span>{child.Name}</span>

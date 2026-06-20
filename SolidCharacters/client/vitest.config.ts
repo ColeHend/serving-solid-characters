@@ -54,6 +54,7 @@ export default defineConfig({
     //     conditions: ["development", "browser"],
     // },
     test: {
+        globals: true,
         "setupFiles": [
             "fake-indexeddb/auto",
             "./vitest.setup.ts"

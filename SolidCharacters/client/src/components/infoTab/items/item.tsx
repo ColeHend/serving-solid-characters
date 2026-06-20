@@ -2,14 +2,13 @@ import {
   Component, 
   createEffect, 
   createMemo, 
-  createSignal, 
-  lazy,
+  createSignal,
   onCleanup,
   onMount
 } from "solid-js";
 import { useSearchParams } from "@solidjs/router";
 import { Body, Carousel, CarouselElement } from "coles-solid-library";
-import { Item, ItemType } from "../../../models/generated";
+import { ItemType } from "../../../models/generated";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { ItemsView } from "./parts/items/itemsView";
 import { WeaponsView } from "./parts/weapon/weaponView";

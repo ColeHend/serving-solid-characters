@@ -1,13 +1,11 @@
-import { Chip, FormGroup } from "coles-solid-library"
+import { Chip } from "coles-solid-library"
 import { BookRibbon } from "coles-solid-library/icons"
 import { Component, createMemo, createSignal, Show, For, Accessor, Setter } from "solid-js"
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard"
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../../models/generated"
-import { Character, CharacterForm } from "../../../../models/character.model";
 import styles from "./spellsSection.module.scss";
 import SpellModal from "../../../../shared/components/modals/spellModal/spellModal.component";
-import { SetStoreFunction } from "solid-js/store";
 interface SectionProps {
     spells: [Accessor<string[]>, Setter<string[]>];
 }
@@ -49,7 +47,7 @@ export const SpellsSection:Component<SectionProps> = (props) => {
     });
 
     const getSpell = (name: string): Spell|null  => {
-        const spell = srdSpells().find((spell, i)=>spell.name === name);
+        const spell = srdSpells().find((spell)=>spell.name === name);
 
         if (spell) return spell;
 

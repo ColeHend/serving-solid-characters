@@ -68,12 +68,14 @@ function useAllProficiencyFeature (character: Character ): Character | undefined
     }
     
     character.features.forEach(feature => {
-        const mads = feature?.metadata?.mads as MadFeature;
+        const mads = (feature?.metadata?.mads ?? []) as MadFeature[];
 
-        if (mads && mads.command === "AddAllProficiencies") {
-            character = addAllProficiencyFeature(character, mads);
-        } else if (mads && mads.command === "RemoveAllProficiencies") {
-            character = removeAllProficiencyFeature(character, mads);
+        for (const mad of mads) {
+            if (mad.command === "AddAllProficiencies") {
+                character = addAllProficiencyFeature(character, mad);
+            } else if (mad.command === "RemoveAllProficiencies") {
+                character = removeAllProficiencyFeature(character, mad);
+            }
         }
     });
     

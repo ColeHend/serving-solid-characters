@@ -1,8 +1,8 @@
-import { Accessor, Component, createMemo, Setter } from "solid-js";
+import { Accessor, Component, createMemo } from "solid-js";
 import { Spell } from "../../../../models/generated";
-import { Table, Column, Header, Cell, Row, Button, Icon, Checkbox, addSnackbar } from "coles-solid-library";
+import { Table, Column, Header, Cell, Row, Button, Icon } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
-import { Character, CharacterSpell } from "../../../../models/character.model";
+import { Character } from "../../../../models/character.model";
 import styles from "./SpellTable.module.scss";
 import { characterManager } from "../../../../shared";
 
@@ -44,12 +44,6 @@ export const SpellTable:Component<tableProps> = (props) => {
     
         }
     }
-
-    const getCharSpell = (spell: Spell) => {
-        return props.currentCharacter().spells.find(s => s.name === spell.name);
-    }
-
-
 
     return <>
         <div class={`${styles.header}`}>

@@ -1,7 +1,14 @@
 import { Accessor, Component, For, Setter, Show } from "solid-js";
-import { Armor } from "../../../../../../../shared";
 import { FormField, Input, Select,Option, TextArea } from "coles-solid-library";
 import { SetStoreFunction } from "solid-js/store";
+
+// Local armor-draft shape for this editor (replaces the removed shared `Armor` export).
+interface Armor {
+  armorClass: { base: number; dexBonus: boolean; maxBonus: number };
+  strMin: number;
+  stealthDisadvantage: boolean;
+  weight: number;
+}
 
 interface props {
     currentArmor: Armor,

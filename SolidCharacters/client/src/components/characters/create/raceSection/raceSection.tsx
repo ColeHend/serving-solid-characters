@@ -1,10 +1,9 @@
-import { Accessor, Component, createMemo, For, onMount, Setter, Show } from "solid-js";
+import { Accessor, Component, createMemo, For, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { AbilityScores, Race, Subrace } from "../../../../models/generated";
 import styles from "./raceSection.module.scss";
-import { FormField, Select, Option, ExpansionPanel, FormGroup } from "coles-solid-library";
+import { FormField, Select, Option, FormGroup } from "coles-solid-library";
 import { Person } from "coles-solid-library/icons";
-import { useDnDSubraces } from "../../../../shared/customHooks/dndInfo/info/all/subraces";
 import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
@@ -21,7 +20,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
 
     const srdRaces = createMemo(()=>props.races());
 
-    const charRace = createMemo(()=>srdRaces().find((race,i)=>race.name === raceName()) ?? {} as Race);
+    const charRace = createMemo(()=>srdRaces().find((race)=>race.name === raceName()) ?? {} as Race);
     const subraces = createMemo(()=>props.subraces());
     
     const charSubrace = createMemo(()=>form().get().lineage);

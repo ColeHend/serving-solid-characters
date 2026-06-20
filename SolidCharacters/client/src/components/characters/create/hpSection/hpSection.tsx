@@ -21,7 +21,7 @@ export const HitPointSection:Component<sectionProps> = (props) => {
     const mod = createMemo(()=>props.mod());
 
     const maxHP = createMemo(()=>props.form.get().maxHP);
-    const [classLevels,setClassLevels] = props.classLevels;
+    const [classLevels] = props.classLevels;
 
 
 
