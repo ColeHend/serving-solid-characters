@@ -1,9 +1,7 @@
 import { Character, CharacterSkillProficiency } from '../../../models/character.model';
 import { Stats } from '../../customHooks/dndInfo/useCharacters';
-import { getAbilityModifier } from '../../customHooks/utility/tools/dndMath';
+import { getAbilityModifier, signed } from '../../customHooks/utility/tools/dndMath';
 import { SKILLS } from '../characterFields';
-
-const signed = (n: number): string => (n >= 0 ? `+${n}` : `${n}`);
 
 /**
  * Derive the 18 skill modifiers + proficiency-dot glyphs. Returns the

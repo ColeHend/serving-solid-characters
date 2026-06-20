@@ -12,6 +12,9 @@ export function getAbilityModifier(score: number): number {
     return Math.floor((score - 10) / 2);
 }
 
+/** Format a modifier with an explicit sign, e.g. `+3`, `-1`, `+0`. */
+export const signed = (n: number): string => (n >= 0 ? `+${n}` : `${n}`);
+
 /**
  * D&D 5e DPR (Damage Per Round) Calculator
  *

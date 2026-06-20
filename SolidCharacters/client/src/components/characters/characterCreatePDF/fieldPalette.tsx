@@ -2,7 +2,8 @@ import { Component, For, Show, createMemo } from 'solid-js';
 import { Backpack, Badge, FitnessCenter, Paid, Psychology, Shield, Star, Swords, WandStars } from 'coles-solid-library/icons';
 import { FlatCard } from '../../../shared/components/flatCard/flatCard';
 import { SHEET_FIELD_DEFS, SheetFieldDef, SheetFieldGroup } from '../../../shared/sheetMapping';
-import { FieldCard, StaticFieldCard } from './fieldCard';
+import { FieldCard } from './fieldCard';
+import { StaticFieldCard } from './staticFieldCard';
 import styles from './characterCreatePDF.module.scss';
 
 /** Pre-imported (tree-shakeable) Material Symbol per category, shown in each group's collapsible header. */

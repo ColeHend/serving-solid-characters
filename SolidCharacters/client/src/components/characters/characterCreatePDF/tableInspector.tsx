@@ -13,7 +13,7 @@ import {
   mappingStore,
   toNum,
 } from '../../../shared/sheetMapping';
-import { COL_LABELS, MARKER_FULL_LABELS, TableSelection } from './tableGuidesOverlay';
+import { COL_LABELS, MARKER_FULL_LABELS, TableSelection } from './tableGuides.shared';
 import styles from './characterCreatePDF.module.scss';
 
 interface TableInspectorProps {

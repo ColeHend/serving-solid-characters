@@ -5,7 +5,16 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { FeatureDetail } from '../../../models/generated';
 import { PlacedField, SheetTemplate } from '../sheetMapping.types';
 import { generateSheetPdf, layoutFeatureList } from './generateSheetPdf';
-import { SpellRow, defaultAttackCantripConfig, defaultSpellTableConfig } from './spellTable';
+import { SpellRow, defaultAttackCantripConfig, defaultSpellTableConfig, spellTableRows } from './spellTable';
+import { DEFAULT_SHEET_TEMPLATE } from '../defaultSheetTemplate';
+import { characterToFeatureLists, characterToSheetValues } from './characterToSheetValues';
+import { FULL_STATS, WIZARD_PROFS, wizard } from './testFixtures';
+
+// The default-template smoke test exercises spellTableRows + characterToSheetValues,
+// which read the SRD class/spell hooks. Stub them so the test is deterministic and
+// owner-free (its structural assertions don't depend on reference data).
+vi.mock('../../customHooks/dndInfo/info/all/classes', () => ({ useDnDClasses: () => () => [] }));
+vi.mock('../../customHooks/dndInfo/info/all/spells', () => ({ useDnDSpells: () => () => [] }));
 
 // Serve the real template bytes to `generateSheetPdf`'s internal fetch().
 beforeAll(() => {
@@ -291,5 +300,22 @@ describe('generateSheetPdf — spell table overflow', () => {
     const t: SheetTemplate = { ...template([]), attackCantripTable };
     const bytes = await generateSheetPdf({ spellAttack: '+5' }, t, [spellRow(0, { level: 0, name: 'Fire Bolt', damageType: 'fire' })]);
     expect(startsWithPdf(bytes)).toBe(true);
+  });
+});
+
+describe('generateSheetPdf — default template smoke (end-to-end)', () => {
+  // Closest feasible end-to-end regression: run the SHIPPED default template against
+  // the wizard fixture's real mapper output. Guards against a default placement or
+  // value that breaks the field loop or introduces a non-WinAnsi glyph.
+  it('renders the full default template for the wizard fixture: 2 pages, no warnings', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const char = wizard();
+    const values = characterToSheetValues(char, FULL_STATS, undefined, WIZARD_PROFS);
+    const bytes = await generateSheetPdf(values, DEFAULT_SHEET_TEMPLATE, spellTableRows(char), characterToFeatureLists(char));
+
+    expect(startsWithPdf(bytes)).toBe(true);
+    expect((await PDFDocument.load(bytes)).getPageCount()).toBe(2);
+    expect(warn).not.toHaveBeenCalled(); // default fixture is fully WinAnsi-safe
+    warn.mockRestore();
   });
 });

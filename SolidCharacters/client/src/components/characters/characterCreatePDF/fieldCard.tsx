@@ -2,12 +2,9 @@ import { Component, Show } from 'solid-js';
 import { Container, Icon } from 'coles-solid-library';
 import { DragIndicator } from 'coles-solid-library/icons';
 import { createDraggable } from '../../../shared/dnd';
-import { SheetFieldDef, STATIC_FIELD_LABEL } from '../../../shared/sheetMapping';
+import { SheetFieldDef } from '../../../shared/sheetMapping';
+import { paletteCardTap } from './paletteCardTap';
 import styles from './characterCreatePDF.module.scss';
-
-// Pointer travel (px) below which a press counts as a tap, not a drag. Matches the
-// pointer sensor's 4px activation distance so a tap never also starts a drag.
-const TAP_THRESHOLD = 4;
 
 interface FieldCardProps {
   def: SheetFieldDef;
@@ -34,8 +31,7 @@ export const FieldCard: Component<FieldCardProps> = (props) => {
     type: 'field',
     data: { kind: 'palette', fieldKey: props.def.key },
   }));
-  // Mutable object so the prefer-const autofix can't break the reassignments.
-  const down = { x: 0, y: 0, id: -1 };
+  const tap = paletteCardTap((x, y) => props.onGrab(x, y), () => props.onAdd(props.def.key));
   const sample = () => props.value?.() ?? '';
 
   return (
@@ -44,18 +40,8 @@ export const FieldCard: Component<FieldCardProps> = (props) => {
       ref={drag.ref}
       class={styles.fieldCard}
       classList={{ [styles.placed]: props.placed, [styles.dragging]: drag.isActive() }}
-      onPointerDown={(e: PointerEvent) => {
-        props.onGrab(e.clientX, e.clientY);
-        down.x = e.clientX;
-        down.y = e.clientY;
-        down.id = e.pointerId;
-      }}
-      onPointerUp={(e: PointerEvent) => {
-        if (e.pointerId !== down.id) return;
-        const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-        down.id = -1;
-        if (moved < TAP_THRESHOLD) props.onAdd(props.def.key); // tap, not a drag
-      }}
+      onPointerDown={tap.onPointerDown}
+      onPointerUp={tap.onPointerUp}
     >
       <span ref={drag.handleRef} class={styles.fieldCardHandle} aria-label="Drag to place">
         <Icon icon={DragIndicator} />
@@ -69,55 +55,6 @@ export const FieldCard: Component<FieldCardProps> = (props) => {
           {sample()}
         </span>
       </Show>
-    </Container>
-  );
-};
-
-interface StaticFieldCardProps {
-  onGrab: (x: number, y: number) => void;
-  /** Tap (no drag) → add a fresh static-text field at the page center. */
-  onAdd: () => void;
-}
-
-/**
- * The Add palette's "Static Text" entry. Unlike a {@link FieldCard} it binds to no
- * character field — each drag/tap mints a brand-new `static:<id>` placement (drag
- * data `{ kind: 'staticPalette' }`), so several independent labels can coexist.
- */
-export const StaticFieldCard: Component<StaticFieldCardProps> = (props) => {
-  const drag = createDraggable(() => ({
-    id: 'palette:static',
-    type: 'field',
-    data: { kind: 'staticPalette' },
-  }));
-  const down = { x: 0, y: 0, id: -1 };
-
-  return (
-    <Container
-      theme="surface"
-      ref={drag.ref}
-      class={styles.fieldCard}
-      classList={{ [styles.dragging]: drag.isActive() }}
-      onPointerDown={(e: PointerEvent) => {
-        props.onGrab(e.clientX, e.clientY);
-        down.x = e.clientX;
-        down.y = e.clientY;
-        down.id = e.pointerId;
-      }}
-      onPointerUp={(e: PointerEvent) => {
-        if (e.pointerId !== down.id) return;
-        const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-        down.id = -1;
-        if (moved < TAP_THRESHOLD) props.onAdd(); // tap, not a drag
-      }}
-    >
-      <span ref={drag.handleRef} class={styles.fieldCardHandle} aria-label="Drag to place">
-        <Icon icon={DragIndicator} />
-      </span>
-      <div class={styles.fieldCardText}>
-        <div class={styles.fieldCardLabel}>{STATIC_FIELD_LABEL}</div>
-        <div class={styles.fieldCardDesc}>Custom title/label text you type in.</div>
-      </div>
     </Container>
   );
 };

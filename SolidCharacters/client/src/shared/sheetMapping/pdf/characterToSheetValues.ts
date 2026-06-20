@@ -1,12 +1,10 @@
 import { Character, DamageAffinity } from '../../../models/character.model';
 import { FeatureDetail } from '../../../models/generated';
 import { Stats } from '../../customHooks/dndInfo/useCharacters';
-import { getAbilityModifier, getProficiencyBonus } from '../../customHooks/utility/tools/dndMath';
+import { getAbilityModifier, getProficiencyBonus, signed } from '../../customHooks/utility/tools/dndMath';
 import { ABILITIES } from '../characterFields';
 import { skillValues } from './characterToSheetValues.skills';
 import { spellValues } from './characterToSheetValues.spells';
-
-const signed = (n: number): string => (n >= 0 ? `+${n}` : `${n}`);
 
 /**
  * Pure character → sheet-value mapper. Produces a string for EVERY key in

@@ -40,7 +40,7 @@ import { FieldSidebar } from './fieldSidebar';
 import { FieldDragPreview } from './fieldDragPreview';
 import { SheetCanvas } from './sheetCanvas';
 import { SheetPreview } from './sheetPreview';
-import { TableDragData, TableSelection } from './tableGuidesOverlay';
+import { TableDragData, TableSelection } from './tableGuides.shared';
 import styles from './characterCreatePDF.module.scss';
 
 const TEMPLATE_ID = 'default';

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { Character } from '../../../models/character.model';
-import { Stats } from '../../customHooks/dndInfo/useCharacters';
 import { SHEET_FIELD_DEFS } from '../characterFields';
+import { FULL_STATS, WIZARD_PROFS, wizard } from './testFixtures';
 
 // Mock the classes hook the spell-slot derivation depends on (Full-caster Wizard
 // with a level-5 slot table). CasterType.Full === 3.
@@ -21,38 +21,6 @@ vi.mock('../../customHooks/dndInfo/info/all/classes', () => ({
 
 import { characterToFeatureLists, characterToSheetValues } from './characterToSheetValues';
 
-const FULL_STATS: Stats = { str: 8, dex: 15, con: 10, int: 18, wis: 12, cha: 13 };
-
-function wizard(): Character {
-  const char = new Character();
-  char.name = 'Gandalf';
-  char.className = 'Wizard';
-  char.levels = Array.from({ length: 5 }, () => ({ class: 'Wizard', level: 1, hitDie: 6, features: [] }));
-  char.race = { species: 'Human', subrace: 'Variant', size: 'Medium', age: '50', speed: '30ft', features: [] };
-  char.background = 'Sage';
-  char.alignment = 'NG';
-  char.proficiencies = {
-    skills: {
-      Arcana: { stat: 'int', value: 0, proficient: true, expertise: false },
-      'sleight of hand': { stat: 'dex', value: 0, proficient: true, expertise: true }, // lowercase → tests canonicalization
-      Perception: { stat: 'wis', value: 0, proficient: true, expertise: false },
-    },
-    other: { "Thieves' Tools": true, Lute: false },
-  };
-  char.savingThrows = [
-    { stat: 'int', proficient: true },
-    { stat: 'wis', proficient: true },
-  ];
-  char.languages = ['Common', 'Elvish'];
-  char.health = { max: 30, current: 22, temp: 5 };
-  char.items.currency.sliverPieces = 7;
-  char.spells = [
-    { name: 'Fireball', prepared: true },
-    { name: 'Mage Hand', prepared: false },
-  ];
-  return char;
-}
-
 describe('characterToSheetValues — key parity', () => {
   it('emits a value for every SHEET_FIELD_DEFS key', () => {
     const out = characterToSheetValues(wizard(), FULL_STATS);
@@ -61,6 +29,135 @@ describe('characterToSheetValues — key parity', () => {
 
   it('returns an empty object for no character', () => {
     expect(characterToSheetValues(undefined, FULL_STATS)).toEqual({});
+  });
+});
+
+describe('characterToSheetValues — full output snapshot', () => {
+  // Pins the entire ~100-key record for the wizard fixture so any incidental drift
+  // (e.g. the Phase-2 `signed` consolidation) shows up as a reviewable diff.
+  it('maps the wizard fixture to a stable sheet-value record', () => {
+    expect(characterToSheetValues(wizard(), FULL_STATS, undefined, WIZARD_PROFS)).toMatchInlineSnapshot(`
+      {
+        "acrobatics": "+2",
+        "acrobaticsProf": "",
+        "age": "50",
+        "alignment": "NG",
+        "animalHandling": "+1",
+        "animalHandlingProf": "",
+        "arcana": "+7",
+        "arcanaProf": "•",
+        "armorClass": "",
+        "armorHeavy": "X",
+        "armorLight": "X",
+        "armorMedium": "X",
+        "armorShields": "X",
+        "athletics": "-1",
+        "athleticsProf": "",
+        "attuned": "",
+        "background": "Sage",
+        "cha": "13",
+        "chaMod": "+1",
+        "chaSave": "+1",
+        "chaSaveProf": "",
+        "classAndLevel": "Wizard 5",
+        "classFeatures": "",
+        "className": "Wizard",
+        "con": "10",
+        "conMod": "+0",
+        "conSave": "+0",
+        "conSaveProf": "",
+        "currencyCP": "0",
+        "currencyEP": "0",
+        "currencyGP": "0",
+        "currencyPP": "0",
+        "currencySP": "7",
+        "deception": "+1",
+        "deceptionProf": "",
+        "dex": "15",
+        "dexMod": "+2",
+        "dexSave": "+2",
+        "dexSaveProf": "",
+        "equipped": "",
+        "feats": "",
+        "features": "",
+        "history": "+4",
+        "historyProf": "",
+        "hitDice": "5d6",
+        "hpCurrent": "22",
+        "hpMax": "30",
+        "hpTemp": "5",
+        "immunities": "",
+        "initiative": "+2",
+        "insight": "+1",
+        "insightProf": "",
+        "inspiration": "",
+        "int": "18",
+        "intMod": "+4",
+        "intSave": "+7",
+        "intSaveProf": "•",
+        "intimidation": "+1",
+        "intimidationProf": "",
+        "inventory": "",
+        "investigation": "+4",
+        "investigationProf": "",
+        "languages": "Common, Elvish",
+        "level": "5",
+        "medicine": "+1",
+        "medicineProf": "",
+        "name": "Gandalf",
+        "nature": "+4",
+        "natureProf": "",
+        "otherProficiencies": "Thieves' Tools",
+        "passivePerception": "14",
+        "perception": "+4",
+        "perceptionProf": "•",
+        "performance": "+1",
+        "performanceProf": "",
+        "persuasion": "+1",
+        "persuasionProf": "",
+        "proficiencyBonus": "+3",
+        "religion": "+4",
+        "religionProf": "",
+        "resistances": "",
+        "size": "Medium",
+        "sleightOfHand": "+8",
+        "sleightOfHandProf": "••",
+        "species": "Human",
+        "speciesTraits": "",
+        "speed": "30ft",
+        "spellAttack": "+7",
+        "spellSaveDC": "15",
+        "spellSlotsLevel1": "4",
+        "spellSlotsLevel2": "3",
+        "spellSlotsLevel3": "2",
+        "spellSlotsLevel4": "",
+        "spellSlotsLevel5": "",
+        "spellSlotsLevel6": "",
+        "spellSlotsLevel7": "",
+        "spellSlotsLevel8": "",
+        "spellSlotsLevel9": "",
+        "spellsKnown": "Fireball, Mage Hand",
+        "spellsPrepared": "Fireball",
+        "stealth": "+2",
+        "stealthProf": "",
+        "str": "8",
+        "strMod": "-1",
+        "strSave": "-1",
+        "strSaveProf": "",
+        "subclass": "",
+        "subrace": "Variant",
+        "survival": "+1",
+        "survivalProf": "",
+        "toolProficiencies": "Thieves' Tools",
+        "vulnerabilities": "",
+        "weaponProficiencies": "Simple, Martial",
+        "wis": "12",
+        "wisMod": "+1",
+        "wisSave": "+4",
+        "wisSaveProf": "•",
+        "xp": "",
+      }
+    `);
   });
 });
 

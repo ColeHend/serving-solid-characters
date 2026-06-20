@@ -4,7 +4,7 @@ import { PlacedField, SheetTemplate } from '../../../shared/sheetMapping';
 import { FieldPalette } from './fieldPalette';
 import { FieldInspector } from './fieldInspector';
 import { TableInspector } from './tableInspector';
-import { TableSelection } from './tableGuidesOverlay';
+import { TableSelection } from './tableGuides.shared';
 import styles from './characterCreatePDF.module.scss';
 
 interface FieldSidebarProps {

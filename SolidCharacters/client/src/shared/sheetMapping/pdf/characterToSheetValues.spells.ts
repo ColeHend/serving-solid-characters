@@ -1,10 +1,8 @@
 import { Character } from '../../../models/character.model';
 import { Stats } from '../../customHooks/dndInfo/useCharacters';
-import { getAbilityModifier } from '../../customHooks/utility/tools/dndMath';
+import { getAbilityModifier, signed } from '../../customHooks/utility/tools/dndMath';
 import { useDnDClasses } from '../../customHooks/dndInfo/info/all/classes';
 import { AbilityKey } from '../characterFields';
-
-const signed = (n: number): string => (n >= 0 ? `+${n}` : `${n}`);
 
 /** Spellcasting ability per class (single-class casters). */
 const SPELL_ABILITY: Record<string, AbilityKey> = {

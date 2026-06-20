@@ -170,7 +170,7 @@ const PAGE_1_FIELDS: PlacedField[] = [
   f('inspiration', 0, 58, 575, { fontSize: 11, align: center }),
 
   // ── Stat row + proficiency bonus (caption-on-top: value centred below) ──
-  f('proficiencyBonus', 0, 58, 150, { fontSize: 14, align: center }),
+  f('proficiencyBonus', 0, 58, 160, { fontSize: 14, align: center }),
   f('initiative', 0, 256, 148, { fontSize: 13, align: center }),
   f('speed', 0, 355, 148, { fontSize: 13, align: center }),
   f('size', 0, 454, 148, { fontSize: 11, align: center }),
