@@ -20,8 +20,6 @@ const Characters: Component = () => {
   const navigate = useNavigate();
    
   const [characters, setCharacters] = createSignal(characterManager.characters());
-  // const [showMenu,setShowMenu] = createSignal<boolean>(false);
-  // const [anchorEle,setAnchorEle] = createSignal<HTMLElement | undefined>();
 
   onMount(()=>{
     setCharacters(characterManager.characters());

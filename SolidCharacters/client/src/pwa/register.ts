@@ -4,7 +4,7 @@ export const [needRefresh, setNeedRefresh] = createSignal(false);
 export const [offlineReady, setOfflineReady] = createSignal(false);
 export const [swVersion, setSwVersion] = createSignal<string | undefined>();
 export const [swBuildTime, setSwBuildTime] = createSignal<string | undefined>();
-export const [logs, setLogs] = createSignal<string[]>([]);
+const [, setLogs] = createSignal<string[]>([]);
 
 let updateFn: (reloadPage?: boolean) => Promise<void> = () => Promise.resolve();
 

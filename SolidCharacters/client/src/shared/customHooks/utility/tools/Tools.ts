@@ -1,17 +1,4 @@
 import { Spell } from "../../../../models/generated";
-import { FeatureTypes } from "../../../../models/data";
-
-/**
- * Retrieves the feature type, falling back to a default if the provided type is nullish.
- *
- * @param type - The feature type to check. Can be undefined or nullish.
- * @param normal - The default feature type to return if `type` is nullish. Defaults to `FeatureTypes.Feat`.
- * @returns The provided `type` if it is not nullish, otherwise returns `normal` or `FeatureTypes.Feat`.
- */
-export function GetFeatureType(type?:FeatureTypes, normal?: FeatureTypes ): FeatureTypes {
-  if (isNullish(type)) return normal ?? FeatureTypes.Feat;
-  return type!;
-}
 
 /**
  * Checks if a given value is null or undefined.

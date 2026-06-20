@@ -157,8 +157,6 @@ const CharacterCreate: Component = () => {
   const selectedClass = createMemo(()=>group.get().className);
   const selectedSubclass =createMemo(()=>group.get().subclass);
   const charBackground = createMemo(()=>group.get().background);
-  // const charAlignment = createMemo(()=>group.get().alignment);
-  // const maxHP = createMemo(()=>group.get().maxHP);
 
   // memos
 

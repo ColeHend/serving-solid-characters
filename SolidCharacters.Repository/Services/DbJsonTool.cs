@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using SolidCharacters.Domain.JsonModels;
 using Newtonsoft.Json;
 using SolidCharacters.Domain;
 using SolidCharacters.Domain.DTO.Updated;

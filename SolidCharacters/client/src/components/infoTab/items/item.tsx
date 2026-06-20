@@ -16,9 +16,6 @@ import { ArmorView } from "./parts/armor/armorView";
 import styles from "./item.module.scss";
 import { srdItem } from "../../../models/data/generated";
 
-// const ItemsView = lazy(() => import("./parts/items/itemsView").then(mod => ({ default: mod.ItemsView })));
-// const WeaponsView = lazy(() => import("./parts/weapon/weaponView").then(mod => ({ default: mod.WeaponsView })));
-
 // Normalize cost string: keep only the first number + coin type (CP|SP|GP), ignore trailing text
 const normalizeCost = (cost: string): string => {
   const match = cost.match(/^(\d+)\s*(CP|SP|GP)/i);
@@ -72,14 +69,6 @@ const ItemsViewTab:Component = () => {
   });
 
   const [itemIndex,setItemIndex] = createSignal<number>(startingIndex() ?? 0);
-
-  // function cantFind(number:number) {
-  //   if (startingIndex() === -1) {
-  //     return 0 
-  //   }
-
-  //   return number
-  // }
 
   createEffect(()=>{
     setSearchParam({itemType: elementMemo()[itemIndex()].name})

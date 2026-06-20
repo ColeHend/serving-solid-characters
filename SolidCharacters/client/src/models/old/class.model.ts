@@ -1,26 +1,8 @@
 import { SpellsKnown } from "../../components/homebrew/create/parts/subclasses/SpellsKnown";
 import { CastingStat } from "../../shared/models/stats";
-import type { Choice, StartingEquipment, Feature, Info, Description } from "./core.model";
+import type { Feature, Info, Description } from "./core.model";
 import { Spell } from "../data/spell";
 
-export interface DnDClass {
-    id: number;
-    name: string;
-    hitDie: number;
-    proficiencies: string[];
-    proficiencyChoices: Choice<string>[];
-    savingThrows: string[];
-    startingEquipment: StartingEquipment;
-    classLevels: LevelEntity[];
-    subclasses: Subclass[];
-    spellcasting?: ClassCasting
-    classMetadata: ClassMetadata;
-}
-export interface ClassMetadata {
-	subclassLevels: number[];
-	subclassType: string;
-	subclassTypePosition: 'before' | 'after' | string;
-}
 export interface LevelEntity {
     info: Info<string>;
     level: number;
@@ -66,7 +48,4 @@ export interface SubclassCasting extends Spellcasting {
         spellcasting: Spellslots;
         level: number;
     }[];
-}
-export interface ClassCasting extends Spellcasting {
-    level: number;
 }

@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using SolidCharacters.Domain.DTO;
 using Microsoft.AspNetCore.Mvc;
 using SolidCharacters.Domain.ClassesEntity;
 using SolidCharacters.Repository;

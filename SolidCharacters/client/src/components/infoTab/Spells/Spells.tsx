@@ -9,7 +9,6 @@ import {
 } from "solid-js";
 import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
-// import SearchBar from "./searchBar/searchBar";
 import { useSearchParams } from "@solidjs/router";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { Clone } from "../../../shared";
@@ -137,11 +136,6 @@ const masterSpells: Component = () => {
   return (
     <Body class={`${styles.body}`}>
       <h1>Spells</h1>
-      {/* <SearchBar
-        searchResults={searchResults}
-        setSearchResults={setSearchResults}
-        spellsSrd={tableData}
-      ></SearchBar> */}
       <div class={`${styles.searchBar}`}>
         <SearchBar 
           setResults={setSearchResults}

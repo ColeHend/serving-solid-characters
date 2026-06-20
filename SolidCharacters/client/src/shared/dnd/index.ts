@@ -6,12 +6,6 @@ export type { DragDropProviderProps, DndContextValue } from "./context";
 export { createDraggable } from "./primitives/createDraggable";
 export { createDroppable } from "./primitives/createDroppable";
 
-// Components
-export { Draggable } from "./components/Draggable";
-export type { DraggableProps } from "./components/Draggable";
-export { Droppable } from "./components/Droppable";
-export type { DroppableProps } from "./components/Droppable";
-
 // Overlay
 export { DragOverlay } from "./DragOverlay";
 export type { DragOverlayProps } from "./DragOverlay";
@@ -28,13 +22,6 @@ export { pointerWithin } from "./collision/pointerWithin";
 export { directionalNext } from "./collision/directional";
 export type { CollisionDetector, CollisionContext, CollisionEntry } from "./collision/types";
 export type { Direction } from "./collision/directional";
-
-// Modifiers
-export {
-  restrictToVerticalAxis,
-  restrictToHorizontalAxis,
-  snapToGrid,
-} from "./modifiers";
 
 // Announcer
 export { defaultAnnouncements } from "./announcer";
