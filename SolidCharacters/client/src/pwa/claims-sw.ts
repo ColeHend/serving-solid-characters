@@ -1,7 +1,7 @@
 import {cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute} from 'workbox-precaching';
 import {clientsClaim} from 'workbox-core';
 import {NavigationRoute, registerRoute, setDefaultHandler} from 'workbox-routing';
-import {NetworkFirst, StaleWhileRevalidate, CacheFirst} from 'workbox-strategies';
+import {NetworkFirst, StaleWhileRevalidate, CacheFirst, NetworkOnly} from 'workbox-strategies';
 import {ExpirationPlugin} from 'workbox-expiration';
 import {CacheableResponsePlugin} from 'workbox-cacheable-response';
 
@@ -41,9 +41,11 @@ precacheAndRoute(manifestEntries?.length ? manifestEntries : [
 cleanupOutdatedCaches();
 clientsClaim();
 
-// SPA navigation fallback (exclude API & file requests)
+// SPA navigation fallback (exclude API calls and real static files). Denylist by KNOWN file
+// extension rather than "any dotted last segment", so a future deep-linked route that happens
+// to contain a dot (e.g. /character/v1.2) still resolves to the SPA shell offline instead of 404ing.
 registerRoute(new NavigationRoute(createHandlerBoundToURL('/index.html'), {
-  denylist: [/^\/api\//, /\.[^/?]+$/],
+  denylist: [/^\/api\//, /\.(?:js|css|json|webmanifest|png|jpe?g|svg|webp|gif|ico|woff2?|ttf|otf|map|pdf|txt|xml)(?:\?|$)/],
 }));
 
 // Default handler (network first for anything not matched by a route below).
@@ -69,6 +71,18 @@ registerRoute(
       new ExpirationPlugin({maxEntries: 100, maxAgeSeconds: 30 * 24 * 60 * 60}),
     ],
   }),
+  'GET'
+);
+
+// Never persist non-SRD, same-origin API traffic to Cache Storage. These responses can be
+// authenticated/user-scoped (the app injects `Authorization: Bearer` — httpClientObs.ts) and
+// Cache Storage keys on URL only, so caching them risks serving one user's data to another on a
+// shared device, or stale data after logout. The SRD route above is registered first, so it
+// still handles the public reference endpoints; everything else under /api/ goes network-only.
+// (Cross-origin APIs are intentionally not matched here.)
+registerRoute(
+  ({url, sameOrigin}) => sameOrigin && url.pathname.startsWith('/api/'),
+  new NetworkOnly(),
   'GET'
 );
 

@@ -2,7 +2,7 @@ import { Race } from "../../../../../models/generated";
 import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
-import { makeSrdLoader } from "./loadSrdTable";
+import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 const [races2014, setRaces2014] = createSignal<Race[]>([]);
 const [races2024, setRaces2024] = createSignal<Race[]>([]);
@@ -11,7 +11,7 @@ const load2014 = makeSrdLoader<Race>({ table: SrdDB.races, endpoint: '/api/2014/
 const load2024 = makeSrdLoader<Race>({ table: SrdDB2024.races, endpoint: '/api/2024/Races', label: '2024 races', setSignal: setRaces2024 });
 
 /** Ensure a version's races are loaded into IndexedDB + memory. Awaitable for offline preload. */
-export function loadSrdRaces(version: '2014' | '2024'): Promise<Race[]> {
+export function loadSrdRaces(version: '2014' | '2024'): Promise<SrdLoadResult<Race>> {
   return version === '2024' ? load2024() : load2014();
 }
 

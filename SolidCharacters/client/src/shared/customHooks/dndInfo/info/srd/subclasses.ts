@@ -2,7 +2,7 @@ import { Subclass } from "../../../../../models/generated";
 import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
-import { makeSrdLoader } from "./loadSrdTable";
+import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 const [subclasses2014, setSubclasses2014] = createSignal<Subclass[]>([]);
 const [subclasses2024, setSubclasses2024] = createSignal<Subclass[]>([]);
@@ -11,7 +11,7 @@ const load2014 = makeSrdLoader<Subclass>({ table: SrdDB.subclasses, endpoint: '/
 const load2024 = makeSrdLoader<Subclass>({ table: SrdDB2024.subclasses, endpoint: '/api/2024/Subclasses', label: '2024 subclasses', setSignal: setSubclasses2024 });
 
 /** Ensure a version's subclasses are loaded into IndexedDB + memory. Awaitable for offline preload. */
-export function loadSrdSubclasses(version: '2014' | '2024'): Promise<Subclass[]> {
+export function loadSrdSubclasses(version: '2014' | '2024'): Promise<SrdLoadResult<Subclass>> {
   return version === '2024' ? load2024() : load2014();
 }
 

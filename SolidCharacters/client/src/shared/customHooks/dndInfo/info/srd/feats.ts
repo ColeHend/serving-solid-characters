@@ -2,7 +2,7 @@ import { Feat } from "../../../../../models/generated";
 import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
-import { makeSrdLoader } from "./loadSrdTable";
+import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 const [feats2014, setFeats2014] = createSignal<Feat[]>([]);
 const [feats2024, setFeats2024] = createSignal<Feat[]>([]);
@@ -16,7 +16,7 @@ const load2014 = makeSrdLoader<Feat>({ table: SrdDB.feats, endpoint: '/api/2014/
 const load2024 = makeSrdLoader<Feat>({ table: SrdDB2024.feats, endpoint: '/api/2024/Feats', label: '2024 feats', setSignal: setFeats2024, mapForStore: ensureFeatName });
 
 /** Ensure a version's feats are loaded into IndexedDB + memory. Awaitable for offline preload. */
-export function loadSrdFeats(version: '2014' | '2024'): Promise<Feat[]> {
+export function loadSrdFeats(version: '2014' | '2024'): Promise<SrdLoadResult<Feat>> {
   return version === '2024' ? load2024() : load2014();
 }
 

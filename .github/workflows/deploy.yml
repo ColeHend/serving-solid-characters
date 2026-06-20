@@ -53,10 +53,11 @@ jobs:
         working-directory: ./SolidCharacters/client
         run: npm ci
 
-      # Build SolidJS project
-      - name: Build SolidJS project
+      # Build SolidJS project AND validate the PWA precache (builds, then asserts the service
+      # worker precaches the app shell + key assets and stays under the size budget).
+      - name: Build & validate SolidJS PWA
         working-directory: ./SolidCharacters/client
-        run: npm run build
+        run: npm run pwa:smoke
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2

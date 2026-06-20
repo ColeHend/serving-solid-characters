@@ -2,7 +2,7 @@ import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
 import { srdItem } from "../../../../../models/data/generated";
-import { makeSrdLoader } from "./loadSrdTable";
+import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 const [items2014, setItems2014] = createSignal<srdItem[]>([]);
 const [items2024, setItems2024] = createSignal<srdItem[]>([]);
@@ -11,7 +11,7 @@ const load2014 = makeSrdLoader<srdItem>({ table: SrdDB.items, endpoint: '/api/20
 const load2024 = makeSrdLoader<srdItem>({ table: SrdDB2024.items, endpoint: '/api/2024/Items', label: '2024 items', setSignal: setItems2024 });
 
 /** Ensure a version's items are loaded into IndexedDB + memory. Awaitable for offline preload. */
-export function loadSrdItems(version: '2014' | '2024'): Promise<srdItem[]> {
+export function loadSrdItems(version: '2014' | '2024'): Promise<SrdLoadResult<srdItem>> {
   return version === '2024' ? load2024() : load2014();
 }
 

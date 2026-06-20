@@ -2,7 +2,7 @@ import { Class5E } from "../../../../../models/generated";
 import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
-import { makeSrdLoader } from "./loadSrdTable";
+import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 const [classes2014, setClasses2014] = createSignal<Class5E[]>([]);
 const [classes2024, setClasses2024] = createSignal<Class5E[]>([]);
@@ -11,7 +11,7 @@ const load2014 = makeSrdLoader<Class5E>({ table: SrdDB.classes, endpoint: '/api/
 const load2024 = makeSrdLoader<Class5E>({ table: SrdDB2024.classes, endpoint: '/api/2024/Classes', label: '2024 classes', setSignal: setClasses2024 });
 
 /** Ensure a version's classes are loaded into IndexedDB + memory. Awaitable for offline preload. */
-export function loadSrdClasses(version: '2014' | '2024'): Promise<Class5E[]> {
+export function loadSrdClasses(version: '2014' | '2024'): Promise<SrdLoadResult<Class5E>> {
   return version === '2024' ? load2024() : load2014();
 }
 

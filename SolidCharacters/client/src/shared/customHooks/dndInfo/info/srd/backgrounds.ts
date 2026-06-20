@@ -2,7 +2,7 @@ import { Background } from "../../../../../models/generated";
 import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
-import { makeSrdLoader } from "./loadSrdTable";
+import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 const [backgrounds2014, setBackgrounds2014] = createSignal<Background[]>([]);
 const [backgrounds2024, setBackgrounds2024] = createSignal<Background[]>([]);
@@ -11,7 +11,7 @@ const load2014 = makeSrdLoader<Background>({ table: SrdDB.backgrounds, endpoint:
 const load2024 = makeSrdLoader<Background>({ table: SrdDB2024.backgrounds, endpoint: '/api/2024/Backgrounds', label: '2024 backgrounds', setSignal: setBackgrounds2024 });
 
 /** Ensure a version's backgrounds are loaded into IndexedDB + memory. Awaitable for offline preload. */
-export function loadSrdBackgrounds(version: '2014' | '2024'): Promise<Background[]> {
+export function loadSrdBackgrounds(version: '2014' | '2024'): Promise<SrdLoadResult<Background>> {
   return version === '2024' ? load2024() : load2014();
 }
 

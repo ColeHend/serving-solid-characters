@@ -6,7 +6,6 @@ import eslint from 'vite-plugin-eslint'
 import colesSolidLibrary from 'coles-solid-library/vite'
 import fs from 'node:fs'
 import path from 'node:path'
-import esbuild from 'esbuild'
 // eslint-disable-next-line
 const manifest: Partial<ManifestOptions> = require('./manifest.json');
 // const pwaOptions: Partial<VitePWAOptions>;
@@ -70,9 +69,13 @@ export default defineConfig({
       // register.ts). Critical for the installed/offline case — it guarantees the corrected
       // SW (with the complete precache) takes control instead of stranding behind an old SW.
       // A vite:preloadError safety net (preloadRecovery.ts) auto-heals any chunk mismatch.
+      // registerType 'autoUpdate' surfaces a new SW via onNeedRefresh (register.ts). We do NOT
+      // auto-reload — the user applies the update via the ReloadPrompt toast (prompt-to-reload),
+      // so an in-progress character edit is never discarded. A vite:preloadError safety net
+      // (preloadRecovery.ts) still auto-heals a chunk mismatch on a stale SW.
       registerType: 'autoUpdate',
       devOptions: {
-    enabled: false, // we'll manage dev SW manually
+    enabled: false, // SW disabled in dev; registered only in prod (see register.ts)
     type: 'module',
     navigateFallback: '/index.html'
       },
@@ -83,8 +86,12 @@ export default defineConfig({
   injectRegister: null,
       outDir: 'dist',
       strategies: 'injectManifest',
-      // Change the filename to match what registerSW.js is looking for
-      filename: 'claims-sw.js',
+      // injectManifest resolves the SW source from srcDir + filename (it ignores
+      // injectManifest.swSrc). Point it straight at the TypeScript source; the plugin compiles
+      // it and emits dist/claims-sw.js (the .ts → .js name swap is automatic). This makes the
+      // build self-contained — no pre-built public/claims-sw.js is required.
+      srcDir: 'src/pwa',
+      filename: 'claims-sw.ts',
       // NOTE: with the injectManifest strategy, precache globbing is configured HERE,
       // not under `workbox` (that block only applies to the generateSW strategy and was
       // being silently ignored). Patterns target the built `dist/` output, so we glob the
@@ -95,12 +102,13 @@ export default defineConfig({
         globPatterns: [
           '**/*.{js,css,html,woff,woff2,otf,png,jpg,jpeg,svg,webp,pdf,json,ico,webmanifest}'
         ],
-        // Precache everything for full offline, including the large arcane_dictionary_* About
-        // images (~2.5MB each). Only source maps are excluded. The size cap is set above the
-        // largest asset so nothing is silently dropped — this makes the install heavier (~31MB).
+        // Precache everything for full offline. The route-background art is shipped as WebP
+        // (~0.2MB each vs ~2.5MB PNG), so the whole install is only a few MB. Only source maps
+        // are excluded. The cap is set just above the largest real asset (the pdf-lib chunk,
+        // ~0.4MB) with headroom for vendor-chunk growth, so a multi-MB asset trips the build
+        // (Workbox warns + skips) instead of silently inflating the install.
         globIgnores: ['**/*.map'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        swSrc: 'src/pwa/claims-sw.ts'
+        maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
       },
       manifest: manifest,
     }),
@@ -148,19 +156,6 @@ export default defineConfig({
       apply: 'serve',
       enforce: 'post'
     },
-    {
-      name: 'dev-sw-builder',
-      apply: 'serve',
-      async buildStart() {
-        await buildDevSw();
-      },
-      async handleHotUpdate(ctx) {
-        if (ctx.file.endsWith('src/pwa/claims-sw.ts')) {
-          await buildDevSw();
-          ctx.server.ws.send({type:'custom', event:'sw:rebuilt'});
-        }
-      }
-    }
   ],
   server: {
     https: devHttps(),
@@ -202,27 +197,3 @@ export default defineConfig({
   }
 });
 
-async function buildDevSw() {
-  const src = path.resolve(__dirname, 'src/pwa/claims-sw.ts');
-  const out = path.resolve(__dirname, 'public/claims-sw.js');
-  try {
-    if (!fs.existsSync(src)) return;
-    const result = await esbuild.build({
-      entryPoints: [src],
-      bundle: true,
-      format: 'esm',
-      platform: 'browser',
-      sourcemap: true,
-      outfile: out,
-      define: {
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-        '__APP_VERSION__': JSON.stringify(APP_VERSION),
-        '__BUILD_TIME__': JSON.stringify(BUILD_TIME),
-        '__SW_DEBUG__': JSON.stringify(true)
-      }
-    });
-    console.log('[dev-sw-builder] built claims-sw.js');
-  } catch (e) {
-    console.warn('[dev-sw-builder] failed', e);
-  }
-}

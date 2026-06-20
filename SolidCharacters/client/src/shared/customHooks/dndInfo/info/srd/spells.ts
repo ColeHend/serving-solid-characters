@@ -2,7 +2,7 @@ import { Spell } from "../../../../../models/generated";
 import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
-import { makeSrdLoader } from "./loadSrdTable";
+import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 // Separate caches per version to allow switching without reload
 const [spells2014, setSpells2014] = createSignal<Spell[]>([]);
@@ -12,7 +12,7 @@ const load2014 = makeSrdLoader<Spell>({ table: SrdDB.spells, endpoint: '/api/201
 const load2024 = makeSrdLoader<Spell>({ table: SrdDB2024.spells, endpoint: '/api/2024/Spells', label: '2024 spells', setSignal: setSpells2024 });
 
 /** Ensure a version's spells are loaded into IndexedDB + memory. Awaitable for offline preload. */
-export function loadSrdSpells(version: '2014' | '2024'): Promise<Spell[]> {
+export function loadSrdSpells(version: '2014' | '2024'): Promise<SrdLoadResult<Spell>> {
   return version === '2024' ? load2024() : load2014();
 }
 

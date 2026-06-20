@@ -8,6 +8,6 @@ export default defineConfig({
     "public/icons/pwa-512x512.png",
     "public/icons/apple-touch-icon-180x180.png",
     "public/icons/maskable-icon-512x512.png",
-    "public/arcane_dictionary_sq.png"
+    "pwa-src/arcane_dictionary_sq.png"
   ]
 })

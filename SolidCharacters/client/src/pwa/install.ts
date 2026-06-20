@@ -1,5 +1,19 @@
 import { createSignal } from "solid-js";
-import { runOfflinePreload } from "./offline/preloadSrd";
+import { runOfflinePreload, isOfflineDataReady, type SrdVersion } from "./offline/preloadSrd";
+
+/**
+ * Schedule a background offline top-up without competing with first paint: skip entirely if a
+ * full preload already ran for this app version, otherwise run when the browser is idle. The
+ * manual "Download offline data" button bypasses this and always runs.
+ */
+function scheduleBackgroundPreload(versions: SrdVersion[]) {
+  if (isOfflineDataReady(versions)) return;
+  const run = () => void runOfflinePreload(versions);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ric = (window as any).requestIdleCallback as undefined | ((cb: () => void, opts?: { timeout: number }) => void);
+  if (ric) ric(run, { timeout: 3000 });
+  else setTimeout(run, 1200);
+}
 
 // The `beforeinstallprompt` event isn't in the standard DOM lib types.
 interface BeforeInstallPromptEvent extends Event {
@@ -31,9 +45,10 @@ export function initInstallFlow() {
   setIsInstalled(detectStandalone());
 
   // Already installed (e.g. launched from the home screen, or installed via browser UI):
-  // top up the offline data in the background so nothing is missing.
+  // top up the offline data in the background (idle, and only if not already done this version)
+  // so nothing is missing without re-sweeping every launch or stealing time from first paint.
   if (detectStandalone() && navigator.onLine) {
-    void runOfflinePreload(['2014', '2024']);
+    scheduleBackgroundPreload(['2014', '2024']);
   }
 
   window.addEventListener('beforeinstallprompt', (e: Event) => {

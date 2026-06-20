@@ -1,7 +1,7 @@
 import { Component, Show, createEffect, createMemo } from "solid-js";
 import { Button, addSnackbar } from "coles-solid-library";
 import { canInstall, isInstalled, promptInstall } from "./install";
-import { preloadActive, preloadComplete, preloadProgress, runOfflinePreload } from "./offline/preloadSrd";
+import { preloadActive, preloadComplete, preloadProgress, preloadResult, runOfflinePreload } from "./offline/preloadSrd";
 
 /**
  * Renders the "Install this Site" button and offline-data download progress. The install
@@ -14,15 +14,26 @@ const InstallControl: Component = () => {
     return total ? Math.round((done / total) * 100) : 0;
   });
 
-  // Notify once when a download run finishes.
+  // Announce the outcome of each download run exactly once. Success only when everything
+  // downloaded; otherwise a warning — so an offline run never falsely claims "available offline".
   let notified = false;
   createEffect(() => {
-    if (preloadComplete() && !notified) {
-      notified = true;
+    if (preloadActive()) { notified = false; return; }
+    const res = preloadResult();
+    if (!res || notified) return;
+    notified = true;
+    if (res.failed === 0) {
       addSnackbar({ message: 'All data downloaded — available offline.', severity: 'success' });
+    } else {
+      addSnackbar({
+        message: `Downloaded ${res.succeeded}/${res.total} datasets — some need a connection. Try again when online.`,
+        severity: 'warning',
+      });
     }
-    if (preloadActive()) notified = false;
   });
+
+  // After a failed/partial run the data isn't fully cached, so offer a retry instead of hiding it.
+  const lastRunFailed = () => (preloadResult()?.failed ?? 0) > 0;
 
   const onInstall = async () => {
     const outcome = await promptInstall();
@@ -31,9 +42,9 @@ const InstallControl: Component = () => {
   };
 
   return (
-    <div style={{ display: 'flex', 'align-items': 'center', gap: '0.5rem' }}>
+    <div style={{ display: 'flex', 'align-items': 'center', gap: 'var(--spacing-2)' }}>
       <Show when={preloadActive()}>
-        <span style={{ 'font-size': '0.85rem', opacity: 0.85 }}>
+        <span role="status" aria-live="polite" style={{ 'font-size': 'var(--font-size-small)', opacity: 0.85 }}>
           Downloading offline data… {preloadProgress().done}/{preloadProgress().total} ({pct()}%)
         </span>
       </Show>
@@ -43,7 +54,9 @@ const InstallControl: Component = () => {
       </Show>
 
       <Show when={!preloadActive() && !preloadComplete() && (isInstalled() || !canInstall())}>
-        <Button transparent onClick={() => runOfflinePreload(['2014', '2024'])}>Download offline data</Button>
+        <Button transparent title="Download all SRD data (spells, classes, races…) for offline use" onClick={() => runOfflinePreload(['2014', '2024'])}>
+          {lastRunFailed() ? 'Retry offline download' : 'Download offline data'}
+        </Button>
       </Show>
     </div>
   );
