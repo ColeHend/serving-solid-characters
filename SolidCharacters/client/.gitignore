@@ -11,3 +11,7 @@ dev-dist
 # vite-plugin-pwa's injectManifest.
 public/claims-sw.js
 public/claims-sw.js.map
+
+# Self-hosted OCR (tesseract.js) assets — vendored into public/tessdata/ by scripts/copy-tessdata.mjs
+# (prebuild). Large binaries regenerated from node_modules + CDN, so never committed.
+public/tessdata/

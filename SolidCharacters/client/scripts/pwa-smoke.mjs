@@ -10,7 +10,7 @@
  * Exits non-zero on any failure.
  */
 import { execSync } from 'node:child_process';
-import { readFileSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, existsSync, statSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -20,6 +20,23 @@ const fail = (msg, code) => { console.error(`[pwa-smoke] FAIL: ${msg}`); process
 // Tunables — keep in sync with vite.config.ts injectManifest.maximumFileSizeToCacheInBytes.
 const MIN_PRECACHE_ENTRIES = 20;
 const MAX_PRECACHE_BYTES = 10 * 1024 * 1024; // ~4MB expected; trips if the heavy images creep back in.
+// Workbox silently DROPS any globbed asset larger than this from the precache (it only warns). So a
+// shell asset that grows past the cap would vanish from offline with no error. This guard re-asserts
+// it: a precachable-extension file over the cap that isn't in the manifest fails the build.
+const MAX_FILE_BYTES = 2 * 1024 * 1024;
+const PRECACHE_EXT = /\.(?:js|css|html|woff2?|otf|png|jpe?g|svg|webp|pdf|json|ico|webmanifest)$/i;
+// Intentionally excluded from precache (vite.config.ts globIgnores) — runtime-cached instead.
+const PRECACHE_IGNORE = [/(^|\/)tessdata\//, /\.map$/];
+
+function walk(dir) {
+  const out = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walk(full));
+    else out.push(full);
+  }
+  return out;
+}
 
 try {
   // Anchor to the client root (parent of scripts/), regardless of where this is invoked from.
@@ -71,6 +88,22 @@ try {
   log(`Precache footprint ${mb}MB (budget ${(MAX_PRECACHE_BYTES / 1048576).toFixed(0)}MB)`);
 
   if (!existsSync(path.join(dist, 'index.html'))) fail('index.html missing in dist', 4);
+
+  // Guard: no precachable-extension asset over the size cap should be missing from the precache
+  // (Workbox drops these silently). Excludes the intentionally runtime-cached tessdata/ + maps.
+  const precacheSet = new Set(unique);
+  const skipped = [];
+  for (const f of walk(dist)) {
+    const rel = path.relative(dist, f).split(path.sep).join('/');
+    if (!PRECACHE_EXT.test(rel) || PRECACHE_IGNORE.some((re) => re.test(rel))) continue;
+    if (statSync(f).size > MAX_FILE_BYTES && !precacheSet.has(rel)) {
+      skipped.push(`${rel} (${(statSync(f).size / 1048576).toFixed(2)}MB)`);
+    }
+  }
+  if (skipped.length) {
+    fail(`over-cap asset(s) silently dropped from precache (raise the cap or runtime-cache them): ${skipped.join(', ')}`, 11);
+  }
+  log('No over-cap assets silently dropped from precache');
 
   log('PWA smoke test PASS');
   process.exit(0);

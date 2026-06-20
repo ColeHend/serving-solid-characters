@@ -10,26 +10,29 @@ import path from 'node:path'
 const manifest: Partial<ManifestOptions> = require('./manifest.json');
 // const pwaOptions: Partial<VitePWAOptions>;
 
-function devHttps() {
-  // Prefer local client ssl folder (client/ssl/*)
-  const keyPath = path.resolve(__dirname, 'ssl/dev-key.pem');
-  const certPath = path.resolve(__dirname, 'ssl/dev-cert.pem');
-  if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-    return {
-      key: fs.readFileSync(keyPath),
-      cert: fs.readFileSync(certPath)
-    };
-  }
-  // Fallback to repo root ssl (../../ssl) so one generation can serve both .NET and Vite
-  const rootKeyPath = path.resolve(__dirname, '../../ssl/dev-key.pem');
-  const rootCertPath = path.resolve(__dirname, '../../ssl/dev-cert.pem');
-  if (fs.existsSync(rootKeyPath) && fs.existsSync(rootCertPath)) {
-    return {
-      key: fs.readFileSync(rootKeyPath),
-      cert: fs.readFileSync(rootCertPath)
-    };
+function readCertPair(dir: string) {
+  if (!fs.existsSync(dir)) return undefined;
+  const files = fs.readdirSync(dir);
+  const candidates: Array<[string, string]> = [['dev-key.pem', 'dev-cert.pem']];
+  // mkcert's default output is localhost+N-key.pem / localhost+N.pem — match it so a plain
+  // `mkcert localhost ...` run is picked up without renaming (otherwise Vite silently serves HTTP,
+  // and Chrome refuses service workers on a non-secure origin).
+  const mkKey = files.find(f => f.startsWith('localhost') && f.endsWith('-key.pem'));
+  const mkCert = files.find(f => f.startsWith('localhost') && f.endsWith('.pem') && !f.endsWith('-key.pem'));
+  if (mkKey && mkCert) candidates.push([mkKey, mkCert]);
+  for (const [keyName, certName] of candidates) {
+    const keyPath = path.join(dir, keyName);
+    const certPath = path.join(dir, certName);
+    if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+      return { key: fs.readFileSync(keyPath), cert: fs.readFileSync(certPath) };
+    }
   }
   return undefined;
+}
+
+function devHttps() {
+  // Prefer the client ssl/ folder, then the repo-root ssl/ (one mkcert run serves both .NET and Vite).
+  return readCertPair(path.resolve(__dirname, 'ssl')) ?? readCertPair(path.resolve(__dirname, '../../ssl'));
 }
 
 // Resolve backend URL (default to https://localhost:5000 when cert present, else http)
@@ -54,7 +57,9 @@ export default defineConfig({
     // accurate build metadata regardless of import.meta.env propagation.
     '__APP_VERSION__': JSON.stringify(APP_VERSION),
     '__BUILD_TIME__': JSON.stringify(BUILD_TIME),
-    '__SW_DEBUG__': JSON.stringify(false)
+    // Off by default; build with SW_DEBUG=1 to print the SW's [sw] install/activate/precache logs
+    // for diagnosing offline issues (e.g. a stalled precache install).
+    '__SW_DEBUG__': JSON.stringify(process.env.SW_DEBUG === '1')
   },
   plugins: [
     devtools({
@@ -103,11 +108,13 @@ export default defineConfig({
           '**/*.{js,css,html,woff,woff2,otf,png,jpg,jpeg,svg,webp,pdf,json,ico,webmanifest}'
         ],
         // Precache everything for full offline. The route-background art is shipped as WebP
-        // (~0.2MB each vs ~2.5MB PNG), so the whole install is only a few MB. Only source maps
-        // are excluded. The cap is set just above the largest real asset (the pdf-lib chunk,
-        // ~0.4MB) with headroom for vendor-chunk growth, so a multi-MB asset trips the build
-        // (Workbox warns + skips) instead of silently inflating the install.
-        globIgnores: ['**/*.map'],
+        // (~0.2MB each vs ~2.5MB PNG), so the whole install is only a few MB. Source maps are
+        // excluded, as are the self-hosted OCR assets under tessdata/ (multi-MB, immutable, and
+        // runtime-cached via the 'ocr-assets' route — precaching them would bloat every update).
+        // The cap is set just above the largest real asset (the pdf-lib chunk, ~0.4MB) with
+        // headroom for vendor-chunk growth, so a multi-MB asset trips the build (Workbox warns +
+        // skips) instead of silently inflating the install.
+        globIgnores: ['**/*.map', 'tessdata/**'],
         maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
       },
       manifest: manifest,

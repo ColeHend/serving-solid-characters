@@ -4,6 +4,7 @@ import {NavigationRoute, registerRoute, setDefaultHandler} from 'workbox-routing
 import {NetworkFirst, StaleWhileRevalidate, CacheFirst, NetworkOnly} from 'workbox-strategies';
 import {ExpirationPlugin} from 'workbox-expiration';
 import {CacheableResponsePlugin} from 'workbox-cacheable-response';
+import {OCR_CACHE_NAME} from './offline/ocrAssets';
 
 declare let self: ServiceWorkerGlobalScope & { __WB_MANIFEST: any };
 
@@ -108,6 +109,22 @@ registerRoute(
     plugins: [
       new CacheableResponsePlugin({statuses: [200]}),
       new ExpirationPlugin({maxEntries: 30, maxAgeSeconds: 30 * 24 * 60 * 60}),
+    ],
+  }),
+  'GET'
+);
+
+// Self-hosted OCR (tesseract.js) assets — worker, wasm core, language data under /tessdata/. Large
+// and immutable; CacheFirst so image-to-text works offline once warmed (preloadSrd.warmOcrAssets).
+// Deliberately kept OUT of the precache (the assets exceed the precache size cap and would force a
+// multi-MB re-download on every app-version bump); runtime-cached + persisted instead.
+registerRoute(
+  ({url}) => url.pathname.startsWith('/tessdata/'),
+  new CacheFirst({
+    cacheName: OCR_CACHE_NAME,
+    plugins: [
+      new CacheableResponsePlugin({statuses: [200]}),
+      new ExpirationPlugin({maxEntries: 12, maxAgeSeconds: 365 * 24 * 60 * 60}),
     ],
   }),
   'GET'

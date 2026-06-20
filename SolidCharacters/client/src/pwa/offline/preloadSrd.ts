@@ -10,13 +10,17 @@ import { loadSrdItems } from "../../shared/customHooks/dndInfo/info/srd/items";
 import { loadSrdSubclasses } from "../../shared/customHooks/dndInfo/info/srd/subclasses";
 import { loadSrdMagicItems } from "../../shared/customHooks/dndInfo/info/srd/magicItems";
 import { loadSrdMasteries } from "../../shared/customHooks/dndInfo/info/srd/masteries";
+import { swReady, verifyOfflineReady, writeNonEmptySnapshot, type OfflineReadyReport } from "./verifyOfflineReady";
+import { OCR_ASSET_URLS } from "./ocrAssets";
 
 export type SrdVersion = '2014' | '2024';
 
 export interface PreloadProgress { done: number; total: number; label: string }
 
-/** Aggregate outcome of a preload run, so the UI can report honest success vs partial failure. */
-export interface PreloadResult { succeeded: number; failed: number; total: number; failedLabels: string[] }
+/** Aggregate outcome of a preload run, so the UI can report honest success vs partial failure.
+ * `nonEmptyLabels` records which datasets returned rows, so verification can tell a legitimately-empty
+ * dataset (e.g. 2024 subraces) apart from an evicted/missing one. */
+export interface PreloadResult { succeeded: number; failed: number; total: number; failedLabels: string[]; nonEmptyLabels: string[] }
 
 interface PreloadTask { label: string; run: () => Promise<SrdLoadResult<unknown>> }
 
@@ -58,6 +62,7 @@ export async function preloadAllSrd(
   let done = 0;
   let failed = 0;
   const failedLabels: string[] = [];
+  const nonEmptyLabels: string[] = [];
   let idx = 0;
 
   async function worker() {
@@ -66,6 +71,7 @@ export async function preloadAllSrd(
       try {
         const res = await cur.run();
         if (!res.ok) { failed++; failedLabels.push(cur.label); }
+        else if (res.rows.length > 0) { nonEmptyLabels.push(cur.label); }
       } catch (e) {
         // loadSrdTable catches its own errors, but guard against an unexpected throw.
         console.error('[preload] failed', cur.label, e);
@@ -78,7 +84,7 @@ export async function preloadAllSrd(
   }
 
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, total) }, worker));
-  return { succeeded: total - failed, failed, total, failedLabels };
+  return { succeeded: total - failed, failed, total, failedLabels, nonEmptyLabels };
 }
 
 // --- Reactive state for the UI ------------------------------------------------------
@@ -91,6 +97,30 @@ export const [preloadProgress, setPreloadProgress] = createSignal<PreloadProgres
 export const [preloadComplete, setPreloadComplete] = createSignal(false);
 // Outcome of the most recent run (undefined until one finishes); drives the success/warning toast.
 export const [preloadResult, setPreloadResult] = createSignal<PreloadResult | undefined>();
+// Verified offline-readiness report from the most recent run (data in IndexedDB + shell precached +
+// SW controlling). Drives the honest success/warning toast and the OfflineStatus panel.
+export const [offlineReport, setOfflineReport] = createSignal<OfflineReadyReport | undefined>();
+
+/**
+ * Warm the self-hosted OCR assets (tesseract worker, wasm core, language data) so the image-to-text
+ * feature works offline. A plain fetch routes through the service worker's `ocr-assets` CacheFirst
+ * route, populating Cache Storage. Kept separate from the gated data sweep: offline OCR is a
+ * secondary feature (it falls back to the CDN when online), so a failure here must not block the
+ * "available offline" claim. Resolves true only if every asset fetched successfully.
+ */
+export async function warmOcrAssets(): Promise<boolean> {
+  if (typeof fetch === 'undefined') return false;
+  try {
+    const results = await Promise.all(
+      OCR_ASSET_URLS.map(async (u) => {
+        try { return (await fetch(u)).ok; } catch { return false; }
+      }),
+    );
+    return results.every(Boolean);
+  } catch {
+    return false;
+  }
+}
 
 // Persisted marker so the standalone auto top-up doesn't re-sweep every launch. Keyed by app
 // version, so a new deploy (which may ship updated SRD data) re-warms once, then is skipped.
@@ -107,6 +137,11 @@ export function isOfflineDataReady(versions: SrdVersion[] = ['2014', '2024']): b
 function markOfflineDataReady(versions: SrdVersion[]) {
   try { localStorage.setItem(PRELOAD_DONE_KEY, doneMarker(versions)); } catch { /* ignore */ }
 }
+/** Clear the "done" marker so the background auto top-up will re-run — used by the self-heal path
+ * when verification finds the browser has evicted previously-cached offline data. */
+export function clearOfflineDoneMarker() {
+  try { localStorage.removeItem(PRELOAD_DONE_KEY); } catch { /* ignore */ }
+}
 
 let running: Promise<PreloadResult> | undefined;
 
@@ -118,13 +153,49 @@ export function runOfflinePreload(versions: SrdVersion[] = ['2014', '2024']): Pr
   if (running) return running;
   setPreloadActive(true);
   setPreloadComplete(false);
-  running = preloadAllSrd(versions, p => setPreloadProgress(p))
-    .then(result => {
-      setPreloadResult(result);
-      setPreloadComplete(result.failed === 0);
-      if (result.failed === 0) markOfflineDataReady(versions);
-      return result;
-    })
-    .finally(() => { setPreloadActive(false); running = undefined; });
+  running = (async () => {
+    // Give the service worker priority to finish precaching the shell and take control BEFORE we add
+    // the ~17 SRD + OCR fetches. Firing them during the SW install window starved the precache
+    // install in Chrome (it never activated → blank offline). Prod-only: there's no SW in dev, where
+    // serviceWorker.ready would otherwise stall the whole timeout. Proceed on timeout (never deadlock).
+    if (import.meta.env.PROD) await swReady(15000);
+
+    const result = await preloadAllSrd(versions, p => setPreloadProgress(p));
+    setPreloadResult(result);
+
+    let report: OfflineReadyReport | undefined;
+    if (result.failed === 0) {
+      writeNonEmptySnapshot(result.nonEmptyLabels);
+      report = await verifyOfflineReady(versions);
+    }
+    setOfflineReport(report);
+    const verified = !!report?.ready;
+    // Claim "available offline" only when verification confirms it — not merely that the fetches
+    // returned ok. This is what makes the offline indicator trustworthy.
+    setPreloadComplete(verified);
+    if (verified) markOfflineDataReady(versions);
+
+    // Warm OCR assets LAST and in the background (largest payload, lowest priority, non-gating) so
+    // they never race the precache install or the data sweep. Refresh the report when done so the
+    // OCR row in the status panel updates.
+    if (result.failed === 0) {
+      void warmOcrAssets().then(() => { void refreshOfflineReadiness(versions); });
+    }
+    return result;
+  })().finally(() => { setPreloadActive(false); running = undefined; });
   return running;
+}
+
+/**
+ * Recompute offline readiness from the ACTUAL cache state and push it to the UI signals — so the
+ * subheader chip + download button reflect reality on startup and after an offline refresh, not just
+ * after a live download. No-op while a preload is running (that path owns the signals).
+ */
+export async function refreshOfflineReadiness(versions: SrdVersion[] = ['2014', '2024']): Promise<OfflineReadyReport | undefined> {
+  if (preloadActive()) return offlineReport();
+  if (import.meta.env.PROD) await swReady();
+  const report = await verifyOfflineReady(versions);
+  setOfflineReport(report);
+  setPreloadComplete(report.ready);
+  return report;
 }

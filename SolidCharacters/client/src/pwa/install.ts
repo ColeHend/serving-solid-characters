@@ -1,18 +1,26 @@
 import { createSignal } from "solid-js";
-import { runOfflinePreload, isOfflineDataReady, type SrdVersion } from "./offline/preloadSrd";
+import { runOfflinePreload, clearOfflineDoneMarker, refreshOfflineReadiness, type SrdVersion } from "./offline/preloadSrd";
+import { requestPersistentStorage, checkPersisted } from "./offline/persistentStorage";
 
 /**
- * Schedule a background offline top-up without competing with first paint: skip entirely if a
- * full preload already ran for this app version, otherwise run when the browser is idle. The
- * manual "Download offline data" button bypasses this and always runs.
+ * On startup (idle, so it doesn't compete with first paint): recompute offline readiness from the
+ * REAL cache state and push it to the subheader for every visitor, and SELF-HEAL the installed app —
+ * if data was evicted or a previous download never completed, re-download. Verifying the actual cache
+ * (rather than trusting the "done" marker) is what catches Chrome evicting an un-persisted origin.
+ * The manual "Download offline data" button bypasses this and always runs.
  */
-function scheduleBackgroundPreload(versions: SrdVersion[]) {
-  if (isOfflineDataReady(versions)) return;
-  const run = () => void runOfflinePreload(versions);
+function scheduleStartupReadinessCheck(versions: SrdVersion[]) {
+  const run = async () => {
+    const report = await refreshOfflineReadiness(versions);
+    if (detectStandalone() && navigator.onLine && !report?.ready) {
+      clearOfflineDoneMarker(); // evicted/incomplete — clear stale marker and re-download
+      void runOfflinePreload(versions);
+    }
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ric = (window as any).requestIdleCallback as undefined | ((cb: () => void, opts?: { timeout: number }) => void);
-  if (ric) ric(run, { timeout: 3000 });
-  else setTimeout(run, 1200);
+  if (ric) ric(() => void run(), { timeout: 3000 });
+  else setTimeout(() => void run(), 1200);
 }
 
 // The `beforeinstallprompt` event isn't in the standard DOM lib types.
@@ -44,11 +52,17 @@ export function initInstallFlow() {
 
   setIsInstalled(detectStandalone());
 
-  // Already installed (e.g. launched from the home screen, or installed via browser UI):
-  // top up the offline data in the background (idle, and only if not already done this version)
-  // so nothing is missing without re-sweeping every launch or stealing time from first paint.
+  // Reflect the current persisted state in the status panel without prompting.
+  void checkPersisted();
+
+  // Reflect real offline readiness in the subheader for every visitor (idle), and self-heal the
+  // installed app if its cached data was evicted.
+  scheduleStartupReadinessCheck(['2014', '2024']);
+
+  // Installed (launched from the home screen / installed via browser UI): make storage durable so
+  // Chrome doesn't evict the un-persisted origin's IndexedDB + Cache Storage.
   if (detectStandalone() && navigator.onLine) {
-    scheduleBackgroundPreload(['2014', '2024']);
+    void requestPersistentStorage();
   }
 
   window.addEventListener('beforeinstallprompt', (e: Event) => {
@@ -61,7 +75,9 @@ export function initInstallFlow() {
     setIsInstalled(true);
     setCanInstall(false);
     setDeferredPrompt(null);
-    // Pull the full site data now that the user has installed the PWA.
+    // Make storage durable first (best chance of a grant right after install), then pull the full
+    // site data now that the user has installed the PWA.
+    void requestPersistentStorage();
     void runOfflinePreload(['2014', '2024']);
   });
 }
@@ -79,8 +95,9 @@ export async function promptInstall(): Promise<'accepted' | 'dismissed' | 'unava
   setDeferredPrompt(null);
   setCanInstall(false);
   if (outcome === 'accepted') {
-    // appinstalled will usually also fire, but trigger here too so the download starts
+    // appinstalled will usually also fire, but trigger here too so persistence + download start
     // promptly even on browsers that delay/skip that event.
+    void requestPersistentStorage();
     void runOfflinePreload(['2014', '2024']);
   }
   return outcome;
