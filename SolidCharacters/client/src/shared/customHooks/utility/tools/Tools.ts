@@ -1,17 +1,4 @@
 import { Spell } from "../../../../models/generated";
-import { FeatureTypes } from "../../../../models/data";
-
-/**
- * Retrieves the feature type, falling back to a default if the provided type is nullish.
- *
- * @param type - The feature type to check. Can be undefined or nullish.
- * @param normal - The default feature type to return if `type` is nullish. Defaults to `FeatureTypes.Feat`.
- * @returns The provided `type` if it is not nullish, otherwise returns `normal` or `FeatureTypes.Feat`.
- */
-export function GetFeatureType(type?:FeatureTypes, normal?: FeatureTypes ): FeatureTypes {
-  if (isNullish(type)) return normal ?? FeatureTypes.Feat;
-  return type!;
-}
 
 /**
  * Checks if a given value is null or undefined.
@@ -360,8 +347,8 @@ export const getAddNumberAccent = (num: number)=>{
  * @returns A deep copy of the object.
  * @template T - The type of the object.
  */
-export function Clone<T>(object: T) {
-  return JSON.parse(JSON.stringify(object)) as T;
+export function Clone<T>(object: T, options?: StructuredSerializeOptions) {
+  return structuredClone(object, options) as T;
 }
 
 /**

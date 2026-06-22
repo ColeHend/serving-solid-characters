@@ -1,6 +1,7 @@
 import { Accessor, Component, createEffect, createSignal, JSX, onCleanup, Setter, Show, splitProps } from "solid-js";
 import styles from "./flatCard.module.scss";
 import { Button, Container, Icon } from "coles-solid-library";
+import { Add, Remove } from "coles-solid-library/icons";
 
 interface FlatCardProps extends JSX.HTMLAttributes<HTMLDivElement> {
     icon?: string;
@@ -117,7 +118,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
         <div class={`${styles.cardHeader}`}>
             <div class={`${styles.iconTitle}`}>
                 <Show when={!isNoIcon()}>
-                    <Icon name={local.icon ?? "disabled_by_default"} />
+                    <Icon icon={local.icon} />
                 </Show>
                 {local.headerName}
             </div>
@@ -129,7 +130,7 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
                         if (e.key === "Enter") toggle(e);
                     }}>
                         <Button onClick={toggle} class={`${isTransparent() ? styles.transparentBtn : ''}`}>
-                            {!showCard() ? <Icon name="add"/> : <Icon name="remove" />}
+                            {!showCard() ? <Icon icon={Add}/> : <Icon icon={Remove} />}
                         </Button>
                     </div>
                 </Show>

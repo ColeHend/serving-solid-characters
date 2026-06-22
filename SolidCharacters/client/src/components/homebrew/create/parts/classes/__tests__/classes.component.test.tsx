@@ -1,6 +1,5 @@
-import { render, fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { render, waitFor } from '@solidjs/testing-library';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { homebrewManager } from '../../../../../../shared/customHooks/homebrewManager';
 import { Stat } from '../../../../../../shared/models/stats';
 
 // Mocks (must come before importing target component)

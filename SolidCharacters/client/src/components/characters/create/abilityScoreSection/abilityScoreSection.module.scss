@@ -98,3 +98,69 @@
 }
 
 // display: "flex", "flex-direction": "row", width: "20%",gap: "2%"
+
+// ── Drag-to-assign: array-method score pool ──
+.poolRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1%;
+    min-height: 2.25rem;
+    padding: 4px 6px;
+    border-radius: 8px;
+}
+
+.poolOver {
+    outline: 2px dashed var(--primary-color);
+    outline-offset: 2px;
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+}
+
+.poolChip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: var(--primary-color);
+    color: var(--on-primary-color);
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    white-space: nowrap;
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.poolChipDragging {
+    opacity: 0.4;
+}
+
+.poolEmpty {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+// Floating preview that follows the pointer (portal-rendered by DragOverlay).
+.dragOverlayChip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: var(--primary-color);
+    color: var(--on-primary-color);
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: var(--shadow-elevation-2);
+    cursor: grabbing;
+}

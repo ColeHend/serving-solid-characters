@@ -1,5 +1,6 @@
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
+import { MoreVert } from "coles-solid-library/icons";
 import { Component, createSignal } from "solid-js";
 import { homebrewManager } from "../../../../shared";
 // import { DnDClass } from "../../../../models";
@@ -23,7 +24,7 @@ export const ClassMenu: Component<menuProps> = (props) => {
 
   return <>
     <Button ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>
-      <Icon name="more_vert" size={"medium"}/>
+      <Icon icon={MoreVert} size={"medium"}/>
     </Button>
 
     <Menu anchorElement={anchorEl} show={[showMenu, setShowMenu]}>

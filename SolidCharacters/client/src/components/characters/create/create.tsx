@@ -11,22 +11,26 @@ import {
 import styles from "./create.module.scss";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-import { 
-  addSnackbar, 
-  Body, 
-  Button, 
-  Form, 
-  FormField, 
-  FormGroup, 
-  Input, 
-  Select, 
+import {
+  addSnackbar,
+  Body,
+  Button,
+  Form,
+  FormField,
+  FormGroup,
+  Icon,
+  Input,
+  Select,
   Validators,
   Option,
   ChipType
 } from "coles-solid-library";
-import { CharacterForm } from "../../../models/character.model";
+import { IdentityPlatform, PictureAsPdf, Save } from "coles-solid-library/icons";
+import { Character, CharacterForm } from "../../../models/character.model";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
 import { toCharacter5e } from "./characterMapper";
+import { createCharacterSheet } from "../../../shared/sheetMapping/pdf/createCharacterSheet";
+import useExportProficiencies from "../../../shared/customHooks/dndInfo/useExportProficiencies";
 import { SpellsSection } from "./spellsSection/spellsSection";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
 import { useSearchParams } from "@solidjs/router";
@@ -153,8 +157,6 @@ const CharacterCreate: Component = () => {
   const selectedClass = createMemo(()=>group.get().className);
   const selectedSubclass =createMemo(()=>group.get().subclass);
   const charBackground = createMemo(()=>group.get().background);
-  // const charAlignment = createMemo(()=>group.get().alignment);
-  // const maxHP = createMemo(()=>group.get().maxHP);
 
   // memos
 
@@ -228,7 +230,46 @@ const CharacterCreate: Component = () => {
     setCharClasses([]);
   }
 
-  const handleSubmit = (data: CharacterForm) => {
+  /** Effective ability scores (base + modifiers) — the `Stats` shape the sheet mapper expects. */
+  const buildStats = () => ({
+    str: getAbilityScore("str") + getAbilityMod("str"),
+    dex: getAbilityScore("dex") + getAbilityMod("dex"),
+    con: getAbilityScore("con") + getAbilityMod("con"),
+    int: getAbilityScore("int") + getAbilityMod("int"),
+    wis: getAbilityScore("wis") + getAbilityMod("wis"),
+    cha: getAbilityScore("cha") + getAbilityMod("cha"),
+  });
+
+  /** The stats-build + `toCharacter5e` recipe, shared by Save and the sheet button. */
+  const buildCharacter = (fullData: CharacterForm): Character =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toCharacter5e(fullData, charClasses, [classLevels, setClassLevels], selectedRace as any, buildStats(), knownSpells, inventory, equipped, attuned);
+
+  // Armor/weapon/tool proficiencies for the live (unsaved) character. The built
+  // character is stashed in a signal so the resolver memo can read it in owner
+  // context; reading `sheetProfs()` after the set recomputes with the new value.
+  const [sheetChar, setSheetChar] = createSignal<Character | undefined>(undefined);
+  const sheetProfs = useExportProficiencies(sheetChar);
+
+  /** Generate a sheet from the live (unsaved) form without persisting the character. */
+  const handleCreateSheet = () => {
+    try {
+      const data = group.get();
+      const fullData: CharacterForm = { ...data, name: characterName(), className: charClasses().join(",") };
+      const character = buildCharacter(fullData);
+      // R9: toCharacter5e drops AC/Speed (they live on the form, not the Character).
+      // Overlay the live values so the generated sheet reflects what the user entered.
+      character.ArmorClass = data.ArmorClass;
+      character.Speed = data.Speed;
+      setSheetChar(character);
+      void createCharacterSheet(character, buildStats(), sheetProfs());
+    } catch (err) {
+      console.error("handleCreateSheet failed", err);
+      addSnackbar({ message: "Add a class and level before creating a sheet", severity: "warning" });
+    }
+  };
+
+  const handleSubmit = (data: any) => {
     const fullData: CharacterForm = {
       ...data,
       name: characterName(),
@@ -238,16 +279,16 @@ const CharacterCreate: Component = () => {
     const is_Sure = window.confirm(`Are you Sure?   Dev-test: ${JSON.stringify(fullData)}`);
 
     if (!is_Sure) return;
-    
+
     addSnackbar({
       message: "Saving Character",
       severity: "info"
     })
 
     const valid = group.validate();
-    
+
     if (!valid) {
-      
+
       const Langerr = group.getErrors("languages")
 
       addSnackbar({
@@ -256,21 +297,11 @@ const CharacterCreate: Component = () => {
       })
 
       console.error("error",Langerr);
-      
+
       return;
     }
 
-    const stats = {
-      str: getAbilityScore("str") + getAbilityMod("str"),
-      dex: getAbilityScore("dex") + getAbilityMod("dex"),
-      con: getAbilityScore("con") + getAbilityMod("con"),
-      int: getAbilityScore("int") + getAbilityMod("int"),
-      wis: getAbilityScore("wis") + getAbilityMod("wis"),
-      cha: getAbilityScore("cha") + getAbilityMod("cha"),
-    }
-    
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const adapted = toCharacter5e(fullData ,charClasses ,[classLevels,setClassLevels] ,selectedRace as any ,stats,knownSpells, inventory ,equipped ,attuned)  
+    const adapted = buildCharacter(fullData);
 
     const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
     
@@ -433,12 +464,8 @@ const CharacterCreate: Component = () => {
   return (
     <Body class={`${stylin().accent} ${styles.body}`}>
       <h2>Character Creator</h2>
-      <Form data={group} onSubmit={(data)=>{
-        if (!Array.isArray(data)) {
-          handleSubmit(data as any);
-        }
-      }}>
-        <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} extraHeaderJsx={
+      <Form data={group} onSubmit={(data) =>  (data)}>
+        <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} extraHeaderJsx={
           <Show when={exist()}>
               <Button onClick={()=>{}}>Fill Info</Button>
               <Button onClick={handleDelete}>Delete</Button>
@@ -533,13 +560,11 @@ const CharacterCreate: Component = () => {
           />
         </Show>
 
-        <Ass 
+        <Ass
           stats={[charStats, setCharStats]}
           modifers={[statMods, setStatMods]}
           genMethod={[genMethod, setGenMethod]}
           pbPoints={[pbPoints,setPBPoints]}
-          selectedStat={[selectedStat, setSelectedStat]}
-          selectedStats={[selectedStats, setSelectedStats]}
           modChips={[modChips, setModChips]}
           modStat={[modStat, setModStat]}
           isFocus={[isFocus, setIsFocus]}
@@ -571,9 +596,12 @@ const CharacterCreate: Component = () => {
           />
         </Show>
        
-        <FlatCard icon="save" headerName="Save" alwaysOpen transparent> 
+        <FlatCard icon={Save} headerName="Save" alwaysOpen transparent>
           <Button type="submit" aria-label="submit btn" disabled={isDisabled()}>
             {exist() ? "update" : "save"}
+          </Button>
+          <Button type="button" aria-label="create character sheet" onClick={handleCreateSheet} disabled={isDisabled()}>
+            <Icon icon={PictureAsPdf} /> Create Character Sheet
           </Button>
         </FlatCard>
       </Form>

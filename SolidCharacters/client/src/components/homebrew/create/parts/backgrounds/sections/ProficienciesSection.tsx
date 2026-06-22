@@ -1,5 +1,5 @@
 import { Component, For, Show } from 'solid-js';
-import { Button, Chip } from 'coles-solid-library';
+import { Chip } from 'coles-solid-library';
 import styles from '../backgrounds.module.scss';
 import { FlatCard } from '../../../../../../shared/components/flatCard/flatCard';
 

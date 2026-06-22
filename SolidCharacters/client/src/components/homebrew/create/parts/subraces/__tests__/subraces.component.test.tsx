@@ -1,9 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, vi, beforeEach } from 'vitest';
 import { render, fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import Subraces from '../subraces';
 
 // Mock shared export homebrewManager & constants
-let savedFlag = false; // retained for potential future assertions
 vi.mock('../../../../../shared', () => {
   const races = [ { name: 'Elf', subRaces: [] } ];
   return {
@@ -11,7 +10,7 @@ vi.mock('../../../../../shared', () => {
     ABILITY_SHORT: ['STR','DEX','CON','INT','WIS','CHA'],
     homebrewManager: {
       races: () => races,
-      updateRace: (r: any) => { const idx = races.findIndex(x=>x.name===r.name); if (idx>-1) races[idx]=r; savedFlag = r.subRaces?.length > 0; },
+      updateRace: (r: any) => { const idx = races.findIndex(x=>x.name===r.name); if (idx>-1) races[idx]=r; },
     }
   };
 });

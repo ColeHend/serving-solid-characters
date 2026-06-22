@@ -1,3 +1,4 @@
+import { createSignal, Accessor, Setter } from "solid-js";
 import { Character } from "../../../models/character.model";
 import { Clone } from "../utility/tools/Tools";
 
@@ -6,9 +7,9 @@ function createExampleCharacter(character: Character) {
   return Clone(character);
 }
 
-export const Gandalf = createExampleCharacter({
-  name: "asdfas",
-  level: 0,
+const Gandalf = createExampleCharacter({
+  name: "Gandalf the Grey",
+  level: 2,
   levels: [
     {
       class: "Wizard",
@@ -44,10 +45,12 @@ export const Gandalf = createExampleCharacter({
     },
   ],
   spells: [
-    {
-      name: "Fireball",
-      prepared: true
-    }
+    { name: "Fire Bolt", prepared: true },
+    { name: "Mage Hand", prepared: true },
+    { name: "Magic Missile", prepared: true },
+    { name: "Shield", prepared: true },
+    { name: "Mage Armor", prepared: false },
+    { name: "Detect Magic", prepared: false },
   ],
   race: {
     species: "elf",
@@ -220,9 +223,9 @@ export const Gandalf = createExampleCharacter({
   },
   languages: ["Common", "elvish", "draconic"],
   health: {
-    max: 1,
-    current: 1,
-    temp: 10,
+    max: 14,
+    current: 11,
+    temp: 5,
   },
   stats: {
     str: 8,
@@ -250,3 +253,20 @@ export const Gandalf = createExampleCharacter({
     }
   },
 });
+
+/**
+ * A fully-populated sample character used as a fallback in the PDF sheet editor
+ * (`/characters/pdfCreate`) when the user has no saved characters yet, so every
+ * placed field renders visible sample text for testing placements.
+ */
+export const EXAMPLE_CHARACTER: Character = Gandalf;
+
+const [characters, setCharacters] =
+  createSignal<Character[]>([EXAMPLE_CHARACTER]);
+
+export default function useCharacters(): [
+  Accessor<Character[]>,
+  Setter<Character[]>
+] {
+  return [characters, setCharacters];
+}

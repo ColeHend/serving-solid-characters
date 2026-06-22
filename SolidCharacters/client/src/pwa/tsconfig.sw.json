@@ -1,0 +1,13 @@
+{
+  // The service worker runs in a WebWorker scope, not the DOM. It is bundled by esbuild
+  // (vite.config.ts buildDevSw + the PWA injectManifest), not by the app's `tsc` program,
+  // so it is excluded from the root tsconfig and type-checked here in isolation with the
+  // WebWorker lib. This avoids the lib.dom vs lib.webworker global conflicts (TS6200 etc.).
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext", "WebWorker"],
+    "types": [],
+    "noEmit": true
+  },
+  "include": ["claims-sw.ts"]
+}

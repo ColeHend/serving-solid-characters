@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
-using SolidCharacters.Domain.JsonModels;
 namespace SolidCharacters.Domain.DTO.Updated
 {
 

@@ -4,6 +4,7 @@ import { useNavigate } from "@solidjs/router";
 import { Portal } from "solid-js/web";
 import { ExtendedTab } from "../../models/extendedTab";
 import { Button, Container, Icon, Modal } from "coles-solid-library";
+import { Settings } from "coles-solid-library/icons";
 import styles from "./SideMenu.module.scss";
 import useClickOutside from "solid-click-outside";
 import { FlatCard } from "../../shared/components/flatCard/flatCard";
@@ -68,7 +69,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
           children: [
             { Name: "View", Link: "/characters/view", isOpen: false },
             { Name: "Create", Link: "/characters/create", isOpen: false },
-            // { Name: "PDF Create", Link: "/characters/pdfCreate", isOpen: false}
+            { Name: "Sheet Mapper", Link: "/characters/pdfCreate", isOpen: false }
           ]
         }, 
         {
@@ -155,7 +156,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
                         }}>Naviagtion</h3>
 
                         <Button onClick={()=>setShowSettings(old=>!old)}>
-                            <Icon name="settings" size={'large'} />
+                            <Icon icon={Settings} size={'large'} />
                         </Button>
                     </li>
 
@@ -200,7 +201,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
                </ul>
             </Container>
         </Portal>
-        <Modal title="Settings" show={[showSettings, setShowSettings]}>
+        <Modal title="Settings" show={[showSettings, setShowSettings]} width="640px" height="70vh">
             <SettingsPopup 
                 defaultUserSettings={userSettings} 
                 setDefaultUserSettings={setUserSettings} />

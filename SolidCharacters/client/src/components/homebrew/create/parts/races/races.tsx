@@ -1,5 +1,6 @@
 import { Component, For, Show, createEffect, createMemo, onCleanup, onMount } from 'solid-js';
 import { addSnackbar, Select, Option, FormField, Container } from 'coles-solid-library';
+import { Chat, ElectricBolt, IdentityPlatform, Save, Star } from 'coles-solid-library/icons';
 import { useSearchParams } from '@solidjs/router';
 import { racesStore } from './racesStore';
 import { homebrewManager } from '../../../../../shared';
@@ -79,19 +80,19 @@ const Races: Component = () => {
 
       <Show when={store.activeRace()}>
         <div class={styles.sectionList}>
-          <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
+          <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} transparent>
             <IdentitySection errors={validationErrors()} />
           </FlatCard>
-          <FlatCard icon="electric_bolt" headerName="Ability Bonuses" transparent>
+          <FlatCard icon={ElectricBolt} headerName="Ability Bonuses" transparent>
             <AbilityBonusesSection />
           </FlatCard>
-          <FlatCard icon="chat" headerName="Languages" transparent>
+          <FlatCard icon={Chat} headerName="Languages" transparent>
             <LanguagesSection />
           </FlatCard>
-          <FlatCard icon="star" headerName="Traits" transparent>
+          <FlatCard icon={Star} headerName="Traits" transparent>
             <TraitsSection />
           </FlatCard>
-          <FlatCard icon="save" headerName="Save" alwaysOpen transparent>
+          <FlatCard icon={Save} headerName="Save" alwaysOpen transparent>
             <SaveBar onNotify={showSnackbar} />
           </FlatCard>
         </div>

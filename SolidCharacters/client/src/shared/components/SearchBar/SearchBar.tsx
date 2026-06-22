@@ -2,6 +2,7 @@ import { Accessor, Component, createEffect, createSignal, JSX, Setter, splitProp
 import style from "./SearchBar.module.scss";
 import { Clone } from "../../customHooks";
 import { Button, Icon, Input, addSnackbar } from "coles-solid-library";
+import { Search } from "coles-solid-library/icons";
 interface Props<T> {
     dataSource: Accessor<T[]>;
     setResults: Setter<T[]>;
@@ -67,7 +68,7 @@ const SearchBar = <T,>(props: Props<T>) => {
         {...props}
         class={`${style.input} ${(props.class ?? "")}`}
       />
-      <Button onClick={searchClick} title={local.tooltip ?? "Search!"}><Icon name="search" size={"medium"} /></Button>
+      <Button onClick={searchClick} title={local.tooltip ?? "Search!"}><Icon icon={Search} size={"medium"} /></Button>
     </div>
   )
 }

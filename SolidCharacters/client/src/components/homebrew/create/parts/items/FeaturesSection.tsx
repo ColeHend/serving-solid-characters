@@ -7,7 +7,7 @@ import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; }
 
-export const FeaturesSection: Component<Props> = (p) => {
+export const FeaturesSection: Component<Props> = () => {
   const store = itemsStore;
   const [showFeatureModal, setShowFeatureModal] = createSignal(false);
   const [featureName, setFeatureName] = createSignal('');

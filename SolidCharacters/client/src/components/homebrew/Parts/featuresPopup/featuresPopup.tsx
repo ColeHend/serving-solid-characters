@@ -35,6 +35,7 @@ interface popupProps {
 export const FeaturesPopup: Component<popupProps> = (props) => {
     const [show, setShow] = props.Show;
     const [feature, setFeature] = createSignal<FeatureDetail|null>(null);
+    // const [features] = props.features;
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
     const [prerequisites, setPrerequisites] = createSignal<Record<string, MadPrerequisite>>({});
     const [activeTab, setActiveTab] = createSignal(0);

@@ -1,5 +1,5 @@
 import { MadFeature } from "../../shared/customHooks/mads/madModels";
-import { Prerequisite, PrerequisiteType } from "./core";
+import { Prerequisite } from "./core";
 
 export interface Feat {
   details: FeatureDetail;

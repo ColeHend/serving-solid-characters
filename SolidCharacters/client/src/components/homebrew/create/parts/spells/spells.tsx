@@ -1,6 +1,7 @@
 import { Component, For, createSignal, createMemo, Show, createEffect, onMount, Accessor, onCleanup } from "solid-js";
 import styles from './spells.module.scss';
 import { Input, Button, Select, Option, Chip, Body, TextArea, FormField, Checkbox } from "coles-solid-library";
+import { Candle, DeployedCode, IdentityPlatform, Save } from "coles-solid-library/icons";
 import { getAddNumberAccent, UniqueSet } from "../../../../../shared/";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { createStore } from "solid-js/store";
@@ -128,7 +129,7 @@ const Spells: Component = () => {
   return <Body class={`${styles.body}`}>
     <h1>Spells</h1>
     <div class={`${styles.wrapper}`}>
-      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
+      <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} transparent>
         <p>
           <FormField class={`${styles.smallField}`} name="Spell Name">
             <Input transparent value={currentSpell['name']} onInput={(e) => setCurrentSpell({ name: e.currentTarget.value })} />
@@ -150,7 +151,7 @@ const Spells: Component = () => {
           </FormField>
         </p>
       </FlatCard>
-      <FlatCard icon="candle" headerName="Components" transparent>
+      <FlatCard icon={Candle} headerName="Components" transparent>
         <span class={`${styles.break}`} />
         <p>
           <Checkbox label="has Verbal?"
@@ -202,7 +203,7 @@ const Spells: Component = () => {
           </p>
         </div>
       </FlatCard>
-      <FlatCard icon="deployed_code" headerName="properties" transparent>
+      <FlatCard icon={DeployedCode} headerName="properties" transparent>
         <div class={`${styles.flexBoxRow}`}>
           <span class={`${styles.break}`} />
           <div class={`${styles.field}`}>
@@ -329,7 +330,7 @@ const Spells: Component = () => {
         </div>
         
       </FlatCard>
-      <FlatCard icon="save" headerName="Saving" alwaysOpen transparent>
+      <FlatCard icon={Save} headerName="Saving" alwaysOpen transparent>
         <span class={`${styles.break}`} />
         <p>
           <Show when={!doesExist()}>

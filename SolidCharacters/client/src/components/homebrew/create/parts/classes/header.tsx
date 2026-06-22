@@ -6,7 +6,7 @@ interface HeaderProps { resetNonce?: number }
 export const Header: Component<HeaderProps> = (props) => {
   const [desc, setDesc] = createSignal<string>("");
   // When reset nonce changes, clear local description state
-  createEffect(() => { props.resetNonce; setDesc(""); });
+  createEffect(() => { void props.resetNonce; setDesc(""); });
   return (
     <div class={`${styles.header}`}>
       <div class={`${styles.fieldSizeLg}`}>

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Microsoft.OpenApi.Any;
 using SolidCharacters.Helpers;
 using SolidCharacters.Repository;
 using SolidCharacters.Repository.Services;

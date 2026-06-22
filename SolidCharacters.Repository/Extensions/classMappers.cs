@@ -1,7 +1,6 @@
 
 using System.Linq;
 using System.Collections.Generic;
-using SolidCharacters.Domain.JsonModels;
 using SolidCharacters.Domain.ClassesEntity;
 using SolidCharacters.Domain.Core;
 using Newtonsoft.Json;

@@ -2,7 +2,7 @@ import { RouteSectionProps, useNavigate } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
 import { getUserSettings, useInjectServices } from "../shared";
-import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For } from "solid-js";
+import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For, Show } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
@@ -11,6 +11,15 @@ import { UserSettings } from "../models/userSettings";
 import { useDnDSpells } from "../shared/customHooks/dndInfo/info/all/spells";
 import styles from './rootApp.module.scss';
 import { SideMenu } from "./sideMenu/SideMenu";
+import InstallControl from "../pwa/InstallControl";
+import { recoverFromChunkError } from "../pwa/preloadRecovery";
+import ErrorFallback from "../shared/components/errorFallback";
+import { useOnline } from "../shared/customHooks/utility/useOnline";
+
+// A lazy route whose JS/CSS chunk fails to load (typically a stale-SW transition) throws
+// one of these. Detect it so the ErrorBoundary can self-heal instead of dead-ending.
+const isChunkLoadError = (err: unknown) =>
+  /preload|dynamically imported|Importing a module|Failed to fetch/i.test(String((err as any)?.message ?? err));
 
 const defaultValue: HookContext = {
   isMobile: createSignal(mobileCheck())[0], 
@@ -104,6 +113,9 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   
   const navigate = useNavigate();
 
+  // Reactive connectivity for the offline indicator (see subheader below).
+  const online = useOnline();
+
   // --------quickLinks Memo---------
   const quickLinks = createMemo<{
     name: string;
@@ -117,13 +129,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   return (
     <ErrorBoundary fallback={(err) => {
       console.error("Error in RootApp render:", err);
-      return (
-        <div style="padding: 20px; color: red; background: white; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999;">
-          <h2>Something went wrong in the application shell</h2>
-          <pre>{err.toString()}</pre>
-          <button onClick={() => window.location.reload()}>Reload Application</button>
-        </div>
-      );
+      return <ErrorFallback error={err} title="Something went wrong in the application shell" />;
     }}>
       <Provider value={{
         isMobile: defaultIsMobile,
@@ -140,7 +146,17 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
             style={"margin-bottom: 15px;"} 
             list={[defaultShowList, setDefaultShowList]} />
           <Container theme="subheader"   class={`${styles.subheader}`}>
-            <span></span> {/* empty span to push buttons over */}
+            <InstallControl /> {/* install + offline-data download; also pushes quick links right */}
+            <Show when={!online()}>
+              <Container
+                theme="error"
+                role="status"
+                aria-live="polite"
+                style={{ padding: 'var(--spacing-1) var(--spacing-2)', 'border-radius': '999px', 'font-size': 'var(--font-size-small)', 'white-space': 'nowrap' }}
+              >
+                Offline — showing cached data
+              </Container>
+            </Show>
             <For each={quickLinks()}>
               {(quickLink)=><>
                 <Button transparent onClick={()=>navigate(quickLink.link)}>
@@ -156,12 +172,15 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           <div class={`body ${styles.rootBody}`}>
             <ErrorBoundary fallback={(err) => {
               console.error("Error in route content:", err);
-              return (
-                <div style="padding: 20px; color: red;">
-                  <h3>Error rendering this route</h3>
-                  <pre>{err.toString()}</pre>
-                </div>
-              );
+              if (isChunkLoadError(err)) {
+                recoverFromChunkError(); // activate the up-to-date SW + reload
+                return (
+                  <div style="padding: 20px;">
+                    <h3>Updating to the latest version…</h3>
+                  </div>
+                );
+              }
+              return <ErrorFallback error={err} title="Error rendering this page" />;
             }}>
               {props.children}
             </ErrorBoundary>

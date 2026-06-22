@@ -1,99 +1,146 @@
 .body {
     display: flex;
-    flex-direction:  row;
-    justify-content: space-around;
+    flex-direction: column;
+    gap: var(--spacing-3);
     width: 100%;
     height: 100%;
-    background-color: transparent;
 }
-.leftList {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    height: 100%;
-    justify-self: left;
 
-}
-.rightList {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    height: 100%;
-    justify-self: right;
-}
-.innerRow {
+.panels {
     display: flex;
     flex-direction: row;
-    height: 35vh;
-}
-.switchBtns {
-    display: flex;
-    flex-direction: column;
-    width: min-content;
-}
-.divider {
-    height: 54vh;
-    width: 1%;
-    background-color: white;
-    z-index: 1;
-    border-radius: 10px;
-}
-.ExportBtn {
-    height: min-content;
-    width: min-content;
-    padding: 6px;
-    margin-left: 60%;
-    margin-top: 10%;
-    z-index: 1;
-}
-.list {
-    display: block;
-    width: 80%;
-    height: 100%;
-    overflow-y: scroll;
-}
-.optionHeader {
-    box-sizing: border-box;
-    text-align: center;
-    padding: 0;
-    margin: 0px auto;
-    float: left;
+    gap: var(--spacing-3);
+    width: 100%;
 
-    label {
-        float: right;
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
     }
 }
-.innerList {
+
+.panel {
     display: flex;
     flex-direction: column;
+    flex: 1 1 0;
+    min-width: 0;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface-color) 55%, transparent);
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+    outline: 2px dashed transparent;
+    outline-offset: -2px;
+    transition: outline-color 120ms ease, background 120ms ease;
+}
+
+// Highlight a panel while a draggable hovers over it.
+.panelOver {
+    outline-color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+}
+
+.panelHeader {
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-size-h3);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    height: 42vh;
+    overflow: hidden auto;
+    padding-right: var(--spacing-1);
+}
+
+.categoryItems {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+// A single draggable item: [handle] [label].
+.itemCard {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--container-color) 75%, transparent);
+    user-select: none;
+    transition: opacity 120ms ease, background 120ms ease;
+
+    &:hover {
+        background: color-mix(in srgb, var(--container-color) 95%, transparent);
+    }
+}
+
+// Drag handle — the only part of the row that initiates a drag.
+.itemHandle {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    cursor: grab;
+    touch-action: none;
+    opacity: 0.7;
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.itemLabel {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dragging {
+    opacity: 0.4;
+}
+
+.emptyHint {
+    display: flex;
+    flex: 1 1 auto;
     align-items: center;
     justify-content: center;
-    float: left;
-    input {
-        margin: 0;
-        padding: 0;
-        float: left;
-    }
-    li {
-        width: 100%;
-    }
-
+    text-align: center;
+    padding: var(--spacing-3);
+    font-style: italic;
+    opacity: 0.6;
 }
+
+// Floating preview that follows the pointer (portal-rendered by DragOverlay).
+.dragOverlayChip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: var(--primary-color);
+    color: var(--on-primary-color);
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: var(--shadow-elevation-2);
+    cursor: grabbing;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.exportBtn {
+    z-index: 1;
+}
+
 .confirmContent {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 8%;
-
-    input {
-        width: 75;
-
-    }
-
-    button {
-        width: 25%;
-        padding: 2%;
-        background: none;
-        border: 1px solid white;
-    }
-} 
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin: var(--spacing-3);
+}

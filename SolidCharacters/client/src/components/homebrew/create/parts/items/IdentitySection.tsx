@@ -1,15 +1,16 @@
 import { Component } from 'solid-js';
 import { FormField, Input, Select, Option, TextArea } from 'coles-solid-library';
+import { IdentityPlatform } from 'coles-solid-library/icons';
 import { itemsStore } from './itemsStore';
 import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; }
 
-export const IdentitySection: Component<Props> = (p) => {
+export const IdentitySection: Component<Props> = () => {
   const store = itemsStore;
   return (
     <FlatCard
-      icon="identity_platform"
+      icon={IdentityPlatform}
       headerName='Identity'
       startOpen={true}
       transparent

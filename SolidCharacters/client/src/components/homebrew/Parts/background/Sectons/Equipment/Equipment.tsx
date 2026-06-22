@@ -1,4 +1,5 @@
 import { Chip, Button } from "coles-solid-library";
+import { HomeRepairService } from "coles-solid-library/icons";
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 import { srdItem } from "../../../../../../models/data/generated";
@@ -21,8 +22,8 @@ export const Equipment: Component<SectionProps> = (props) => {
         <span>Equipment Groups ({startItemKeys().length})</span>
         </div>} 
         extraHeaderJsx={<Button onClick={()=>props.setShowItems(old => !old)}>Edit</Button>} 
-        icon="home_repair_service" 
-        transparent getRidOfTopBorder>
+        icon={HomeRepairService}
+        transparent>
             <Show when={startItemKeys().length > 0} fallback={<Chip value="None" />}>
                 <For each={startItemKeys()}>
                     {(key) => <Chip key={key} value={startingEquipment()[key]} />}

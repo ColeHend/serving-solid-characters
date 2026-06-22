@@ -1,0 +1,170 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import mappingDB from '../customHooks/utility/localDB/mappingDB';
+import { mappingStore } from './mappingStore';
+import { DEFAULT_SHEET_TEMPLATE } from './defaultSheetTemplate';
+import { defaultAttackCantripConfig, defaultSpellTableConfig } from './pdf/spellTable';
+import { MAPPING_SCHEMA_VERSION, SheetTemplate } from './sheetMapping.types';
+
+describe('mappingStore persistence (fake-indexeddb)', () => {
+  beforeEach(async () => {
+    await mappingDB.mappings.clear();
+  });
+
+  it('reseeds the default when no record exists', async () => {
+    const t = await mappingStore.loadTemplate('default');
+    expect(t.version).toBe(MAPPING_SCHEMA_VERSION);
+    expect(t.fields.length).toBe(DEFAULT_SHEET_TEMPLATE.fields.length);
+
+    const record = await mappingDB.mappings.get('default');
+    expect(record).toBeTruthy();
+    expect(record!.fields.length).toBe(DEFAULT_SHEET_TEMPLATE.fields.length);
+  });
+
+  it('reseeds on a schema version mismatch', async () => {
+    await mappingDB.mappings.put({ templateId: 'default', name: 'stale', version: 999, fields: [], updatedAt: 0 });
+    const t = await mappingStore.loadTemplate('default');
+    expect(t.version).toBe(MAPPING_SCHEMA_VERSION);
+    expect(t.fields.length).toBe(DEFAULT_SHEET_TEMPLATE.fields.length);
+  });
+
+  // v6 redefined featureList (x,y) to the box top-left and recalibrated the three
+  // boxes. A cached v5 record must reseed onto those corrected defaults.
+  it('reseeds a stale v5 record onto the v6 box-top-left feature defaults', async () => {
+    await mappingDB.mappings.put({ templateId: 'default', name: 'v5', version: 5, fields: [], updatedAt: 0 });
+    const t = await mappingStore.loadTemplate('default');
+    expect(t.version).toBe(MAPPING_SCHEMA_VERSION);
+    const seeded = t.fields.find((f) => f.fieldKey === 'classFeatures');
+    const def = DEFAULT_SHEET_TEMPLATE.fields.find((f) => f.fieldKey === 'classFeatures');
+    expect(seeded).toMatchObject({
+      renderMode: 'featureList',
+      x: def!.x,
+      y: def!.y,
+      boxHeight: def!.boxHeight,
+      columns: def!.columns,
+    });
+  });
+
+  it('round-trips a saved template through the DB', async () => {
+    const custom: SheetTemplate = {
+      templateId: 'default',
+      name: 'Custom',
+      version: MAPPING_SCHEMA_VERSION,
+      fields: [{ fieldKey: 'name', pageIndex: 0, x: 12, y: 34, fontSize: 9, font: 'Courier', align: 'right' }],
+      updatedAt: 0,
+    };
+    await mappingStore.saveTemplate(custom);
+    const loaded = await mappingStore.loadTemplate('default');
+    expect(loaded.fields).toHaveLength(1);
+    expect(loaded.fields[0]).toMatchObject({ fieldKey: 'name', x: 12, y: 34, font: 'Courier', align: 'right' });
+  });
+
+  it('upsertField replaces the placement for a key in memory', () => {
+    mappingStore.upsertField('default', { fieldKey: 'name', pageIndex: 0, x: 1, y: 1, fontSize: 10, font: 'Helvetica', align: 'left' });
+    mappingStore.upsertField('default', { fieldKey: 'name', pageIndex: 1, x: 5, y: 5, fontSize: 10, font: 'Helvetica', align: 'left' });
+    const matches = mappingStore.template().fields.filter((f) => f.fieldKey === 'name');
+    expect(matches).toHaveLength(1);
+    expect(matches[0]).toMatchObject({ pageIndex: 1, x: 5 });
+  });
+
+  // Regression: an identical upsert must NOT emit a new template reference. The coles
+  // `Select` calls its `onChange` from a reactive effect tracking `value`; the inspector's
+  // onChange writes back here, so a non-idempotent no-op write would churn the reference
+  // every tick and spin into an infinite update loop the moment a field is selected.
+  it('upsertField is a no-op (same reference) when the placement is unchanged', () => {
+    const placement = { fieldKey: 'name', pageIndex: 0, x: 1, y: 1, fontSize: 10, font: 'Helvetica' as const, align: 'left' as const };
+    mappingStore.upsertField('default', { ...placement });
+    const before = mappingStore.template();
+    mappingStore.upsertField('default', { ...placement }); // identical values, new object
+    expect(mappingStore.template()).toBe(before); // unchanged → no signal notification
+    mappingStore.upsertField('default', { ...placement, x: 2 }); // real change
+    expect(mappingStore.template()).not.toBe(before);
+  });
+
+  // Proves the new v5 render props (renderMode/columns/boxHeight/staticText/…) were
+  // added to PLACEMENT_KEYS — else `samePlacement` would miss these edits and the
+  // inspector's reactive onChange would never re-render (or worse, loop).
+  it('upsertField change-detects the new featureList/static props', () => {
+    const base = {
+      fieldKey: 'classFeatures',
+      pageIndex: 0,
+      x: 1,
+      y: 1,
+      fontSize: 8,
+      font: 'Helvetica' as const,
+      align: 'left' as const,
+      renderMode: 'featureList' as const,
+      columns: 2,
+      boxHeight: 120,
+    };
+    mappingStore.upsertField('default', { ...base });
+    const before = mappingStore.template();
+    mappingStore.upsertField('default', { ...base }); // identical → no-op
+    expect(mappingStore.template()).toBe(before);
+    mappingStore.upsertField('default', { ...base, columns: 3 }); // real change
+    expect(mappingStore.template()).not.toBe(before);
+
+    const stat = {
+      fieldKey: 'static:test',
+      pageIndex: 0,
+      x: 1,
+      y: 1,
+      fontSize: 8,
+      font: 'Helvetica' as const,
+      align: 'left' as const,
+      renderMode: 'static' as const,
+      staticText: 'A',
+    };
+    mappingStore.upsertField('default', { ...stat });
+    const beforeStatic = mappingStore.template();
+    mappingStore.upsertField('default', { ...stat }); // identical → no-op
+    expect(mappingStore.template()).toBe(beforeStatic);
+    mappingStore.upsertField('default', { ...stat, staticText: 'B' }); // real change
+    expect(mappingStore.template()).not.toBe(beforeStatic);
+  });
+
+  it('reseeds with the default spell/attack table configs', async () => {
+    const t = await mappingStore.loadTemplate('default');
+    expect(t.spellTable).toEqual(defaultSpellTableConfig());
+    expect(t.attackCantripTable).toEqual(defaultAttackCantripConfig());
+  });
+
+  it('round-trips a mutated spellTable config through the DB', async () => {
+    const spellTable = defaultSpellTableConfig();
+    spellTable.cols.name.x = 77;
+    const custom: SheetTemplate = {
+      templateId: 'default',
+      name: 'Custom',
+      version: MAPPING_SCHEMA_VERSION,
+      fields: [],
+      spellTable,
+      attackCantripTable: defaultAttackCantripConfig(),
+      updatedAt: 0,
+    };
+    await mappingStore.saveTemplate(custom);
+    const loaded = await mappingStore.loadTemplate('default');
+    expect(loaded.spellTable?.cols.name.x).toBe(77);
+  });
+
+  it('updateSpellTable merges a column patch in memory', () => {
+    mappingStore.updateSpellTable('default', { cols: { name: { x: 123 } } });
+    expect(mappingStore.template().spellTable?.cols.name.x).toBe(123);
+  });
+
+  // Same idempotency contract as upsertField — an unchanged config must NOT churn
+  // the template reference (else the inspector's reactive onChange loops).
+  it('updateSpellTable is a no-op (same reference) when unchanged', () => {
+    mappingStore.updateSpellTable('default', { cols: { castingTime: { x: 160 } } });
+    const before = mappingStore.template();
+    mappingStore.updateSpellTable('default', { cols: { castingTime: { x: 160 } } }); // identical
+    expect(mappingStore.template()).toBe(before);
+    mappingStore.updateSpellTable('default', { cols: { castingTime: { x: 161 } } }); // real change
+    expect(mappingStore.template()).not.toBe(before);
+  });
+
+  it('resetToDefault restores a mutated spellTable', async () => {
+    mappingStore.updateSpellTable('default', { cols: { name: { x: 999 } } });
+    expect(mappingStore.template().spellTable?.cols.name.x).toBe(999);
+    await mappingStore.resetToDefault('default');
+    expect(mappingStore.template().spellTable?.cols.name.x).toBe(defaultSpellTableConfig().cols.name.x);
+  });
+});

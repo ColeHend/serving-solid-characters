@@ -1,5 +1,6 @@
 import { Component, For, Show, createSignal } from "solid-js";
 import { Button, Chip, Modal, Input, FormField } from "coles-solid-library";
+import { HomeRepairService } from "coles-solid-library/icons";
 import styles from "../backgrounds.module.scss";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 
@@ -42,7 +43,7 @@ const EquipmentSection: Component<Props> = (p) => {
     const val = it.trim();
     if (!val) return;
     if (usingExternal()) {
-      p.addPendingItem && p.addPendingItem(val);
+      if (p.addPendingItem) p.addPendingItem(val);
     } else {
       setInternalPending((list) =>
         list.includes(val) ? list : [...list, val]
@@ -51,14 +52,14 @@ const EquipmentSection: Component<Props> = (p) => {
   };
   const removePending = (it: string) => {
     if (usingExternal()) {
-      p.removePendingItem && p.removePendingItem(it);
+      if (p.removePendingItem) p.removePendingItem(it);
     } else {
       setInternalPending((list) => list.filter((v) => v !== it));
     }
   };
   const clearPending = () => {
     if (usingExternal()) {
-      p.clearPending && p.clearPending();
+      if (p.clearPending) p.clearPending();
     } else {
       setInternalPending([]);
     }
@@ -81,7 +82,7 @@ const EquipmentSection: Component<Props> = (p) => {
   };
   return (
     <FlatCard
-      icon="home_repair_service"
+      icon={HomeRepairService}
       headerName="Equipment"
       extraHeaderJsx={
         <div>

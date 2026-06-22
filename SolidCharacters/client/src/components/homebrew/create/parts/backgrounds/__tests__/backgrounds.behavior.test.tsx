@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, fireEvent, screen, cleanup, waitFor } from '@solidjs/testing-library';
-import { Component } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 // ---- Mocks ----
@@ -129,9 +128,7 @@ vi.mock('../sections/FeaturesSection', () => ({
 }));
 
 // Defer importing component & mocked store until after mocks defined
-// eslint-disable-next-line import/first
 import Backgrounds, { SNACKBAR_TIMEOUT_MS } from '../backgrounds';
-// eslint-disable-next-line import/first
 import { backgroundsStore as storeInstance } from '../../../../../../shared/stores/backgroundsStore';
 // Note: setHomebrewBackgrounds is only provided by the test mock; declare type here to appease TS.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -221,7 +218,6 @@ describe('Backgrounds component behavior', () => {
     fireEvent.click(saveBtn);
     await waitFor(()=> expect(screen.getByText('Background saved')).toBeTruthy());
     // assert repository call shape
-  // @ts-ignore runtime dynamic import of mocked module
   const { homebrewManager } = await import('../../../../../../shared/customHooks/homebrewManager');
     expect(homebrewManager.addBackground).toHaveBeenCalledTimes(1);
     const arg = (homebrewManager.addBackground as any).mock.calls[0][0];
@@ -334,7 +330,6 @@ describe('Backgrounds component behavior', () => {
     expect(screen.getByText('Modified')).toBeTruthy();
     fireEvent.click(saveBtn);
     await waitFor(()=> expect(screen.getByText('Background saved')).toBeTruthy());
-  // @ts-ignore
   const { homebrewManager } = await import('../../../../../../shared/customHooks/homebrewManager');
     expect(homebrewManager.addBackground).toHaveBeenCalled();
   });
@@ -352,7 +347,6 @@ describe('Backgrounds component behavior', () => {
     fireEvent.click(changeBtn);
     await waitFor(()=> expect(updateBtn.disabled).toBe(false));
     fireEvent.click(updateBtn);
-  // @ts-ignore runtime dynamic import of mocked module
   const { homebrewManager } = await import('../../../../../../shared/customHooks/homebrewManager');
     expect(homebrewManager.updateBackground).toHaveBeenCalledTimes(1);
     await waitFor(()=> expect(screen.getByText('Background updated')).toBeTruthy());

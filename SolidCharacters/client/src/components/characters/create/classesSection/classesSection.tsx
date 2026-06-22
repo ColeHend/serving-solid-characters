@@ -1,4 +1,5 @@
 import { Button, Select, Option, Cell, Column, Header, Icon, Row, Table, FormGroup, FormField, Chipbar, ChipType } from "coles-solid-library";
+import { Add, Remove, Shield, Star } from "coles-solid-library/icons";
 import { Accessor, Component, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { Class5E, Spell } from "../../../../models/generated";
@@ -250,7 +251,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
 
   return (
     <FlatCard
-      icon="shield"
+      icon={Shield}
       headerName={<div class={`${styles.sectionHeader}`}>
         <div>
           <span>Class(es):</span>
@@ -412,7 +413,7 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                           {(feature) => (
                             <FlatCard
                               headerName={`${feature.name}`}
-                              icon="star"
+                              icon={Star}
                               class={`${styles.cardAlt}`}
                               transparent
                             >
@@ -484,14 +485,14 @@ export const ClassesSection: Component<sectionProps> = (props) => {
                             <Button class={`${styles.LearnBtn}`} onClick={()=>{
                               setKnownSpells(old=>[...old,spell.name])
                             }}>
-                              <Icon name="add"/> Learn
+                              <Icon icon={Add}/> Learn
                             </Button>
                           </Show>
                           <Show when={isLearned(spell.name)}>
                             <Button class={`${styles.LearnBtn}`} onClick={()=>{
                               setKnownSpells(old=>old.filter(s=>s !== spell.name));
                             }}>
-                              <Icon name="remove" /> Delete
+                              <Icon icon={Remove} /> Delete
                             </Button>
                           </Show>
                         </span>}

@@ -5,7 +5,7 @@ import { FlatCard } from '../../../../../shared/components/flatCard/flatCard';
 
 interface Props { collapsed?: boolean; toggle(): void; selectionVersion: number; }
 
-export const ArmorSection: Component<Props> = (p) => {
+export const ArmorSection: Component<Props> = () => {
   const store = itemsStore;
   return (
     <FlatCard

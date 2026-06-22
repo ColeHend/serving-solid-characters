@@ -107,8 +107,8 @@ function createRacesStore() {
         order.push(r.name);
       }
       setState({ entities, order, status: 'ready' });
-    } catch (e: any) {
-      setState({ status: 'error', error: e?.message || 'Load failed' });
+    } catch (e: unknown) {
+      setState({ status: 'error', error: (e instanceof Error ? e.message : undefined) || 'Load failed' });
     }
   }
 
@@ -165,7 +165,8 @@ function createRacesStore() {
     if (state.entities[trimmed]) return; // avoid collision
     const entity = state.entities[current];
     if (!entity) return;
-    const { [current]: _, ...rest } = state.entities;
+    const rest = { ...state.entities };
+    delete rest[current];
     const newEntity = { ...entity, name: trimmed } as Race;
     const newEntities = { ...rest, [trimmed]: newEntity };
     const newOrder = state.order.map(o => (o === current ? trimmed : o));

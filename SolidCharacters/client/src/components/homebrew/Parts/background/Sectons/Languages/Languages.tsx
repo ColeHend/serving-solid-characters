@@ -1,6 +1,7 @@
 import { Accessor, Component, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 import { Chip, FormField, FormGroup, Select, Option, Input, Button, addSnackbar } from "coles-solid-library";
+import { Chat } from "coles-solid-library/icons";
 import { BackgroundForm } from "../../../../../../models/data/formModels";
 import styles from "../../Background.module.scss";
 
@@ -40,7 +41,7 @@ export const Languages: Component<SectionProps> = (props) => {
         <span>
             Languages<Show when={languages().length > 0}>: {languages().join(", ")}</Show>
         </span>
-    </div>} icon="chat" transparent getRidOfTopBorder>
+    </div>} icon={Chat} transparent>
         <div class={`${styles.LangSelectBox}`}>
             <FormField name="Select Language" form="langSelect">
                 <Select value={langSelect()} onChange={(e) => setLangSelect(e)}>

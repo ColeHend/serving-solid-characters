@@ -4,6 +4,7 @@ import { Race } from "../../../../models/generated";
 import { homebrewManager } from "../../../../shared";
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
+import { MoreVert } from "coles-solid-library/icons";
 
 interface menuProps {
   race: Race
@@ -29,7 +30,7 @@ export const RaceMenu:Component<menuProps> = (props) => {
 
   return <>
     <Button ref={setAnchorEl} onclick={()=>setShowMenu((old)=>!old)}>
-      <Icon name="more_vert" />
+      <Icon icon={MoreVert} />
     </Button>
 
     <Menu anchorElement={anchorEl} show={[showMenu, setShowMenu]}>

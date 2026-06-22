@@ -7,7 +7,7 @@ import {
   Chip,
   TextArea,
 } from "coles-solid-library";
-import styles from "./subraces.module.scss";
+import { IdentityPlatform } from "coles-solid-library/icons";
 import { SubraceEditorApi } from "./useSubraceEditor";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
@@ -21,10 +21,8 @@ export const IdentitySection: Component<Props> = (p) => {
     addSize,
     removeSize,
     SIZE_TOKENS,
-    collapsed,
-    toggle,
   } = p.api;
-  return <FlatCard icon="identity_platform" headerName="Idenity" startOpen={true} transparent>
+  return <FlatCard icon={IdentityPlatform} headerName="Idenity" startOpen={true} transparent>
       <div style={{
         display: "flex",
         "flex-direction": "row",

@@ -1,5 +1,3 @@
-import { Item } from "../../shared";
-
 export enum AbilityScores {
 	STR = 0,
 	DEX,
@@ -37,13 +35,6 @@ export enum TypeRestrictions {
 	RangeReduced,
 }
 
-export enum FeatureUses {
-	Stat,
-	Proficiency,
-	"Half Proficiency Rounded Up",
-	NumPerRest
-}
-
 export enum CasterType {
   None,
   Third,
@@ -66,16 +57,6 @@ export enum FeatureTypes {
 	Armor,
 	Subrace
 };
-
-export enum MovementTypes {
-	Walk = 0,
-	Swim,
-	Fly,
-	Climb,
-	Burrow
-}
-
-export enum WeaponTypes {}
 
 export interface Feature<T, K> {
     info:  Info<K>;
@@ -109,15 +90,6 @@ export interface Choice<T>
     choose:  number;
     type:    FeatureTypes;
     choices: T[];
-}
-
-export interface StartingEquipment {
-    class: string;
-    quantity: number;
-    choice1: Choice<Item>[];
-    choice2: Choice<Item>[];
-    choice3: Choice<Item>[];
-    choice4: Choice<Item>[];
 }
 
 export interface Description {

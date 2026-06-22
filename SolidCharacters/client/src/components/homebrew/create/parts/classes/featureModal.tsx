@@ -2,8 +2,7 @@ import { Button, FormGroup, Input, Modal, Select, Option, TextArea, FormField } 
 import { Accessor, Component, createEffect, createSignal, Setter, For } from "solid-js";
 import { ClassForm } from "./classes";
 import { CharacterChange, CharacterChangeTypes, Choice, Feature, FeatureTypes } from "../../../../../models/old/core.model";
-// import { LevelEntity } from "../../../../../models/old/class.model";
-import { Class5E } from "../../../../../shared";
+import { LevelEntity } from "../../../../../models/old/class.model";
 import { Clone } from "../../../../../shared";
 
 interface FeatureModalProps {

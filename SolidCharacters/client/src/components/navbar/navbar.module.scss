@@ -57,7 +57,7 @@
                 width: min-content;
                 justify-content: center;
                 max-width: 125px;
-                border-radius: 15px;
+                // border-radius: 15px;
                 text-align: center;
                 padding: 10px 0 !important;
                 a {
@@ -81,7 +81,7 @@
         }
         button {
             float: right;
-            border-radius: 15px;
+            // border-radius: 15px;
             border: none;
             margin-right: 20px;
             // padding: 15px 10px;
@@ -90,10 +90,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
             svg {
-                width: 30pt;
+                width: 24pt;
+                height: 24pt;
                 &:hover {
-                    width: 33pt;
-                    height: 33pt;
+                    width: 26pt;
+                    height: 26pt;
                 }
             }
             @media screen and (max-width: $mobile){

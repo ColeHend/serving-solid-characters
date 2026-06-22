@@ -1,41 +1,58 @@
-.settingContainer {
-    display: flex;
-    flex-direction: row;
-    min-height: 87%;
-}
+@use 'coles-solid-library/themes/variables' as vars;
 
-.settingTabs {
+.folder {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid;
-    min-height: 100%;
-    ul {
-        list-style: none;
-        width: 100%;
-        padding: 0px;
-        li {
-            padding: 10px;
-            border-bottom: 1px solid;
-            border-radius: 10px;
-            &:hover {
-                cursor: pointer;
-                padding-bottom: 15px;
-                font-weight: bolder;
-            }
-        }
-    }
+    // Bound the height (not just a min) so .folderPage/.page take over scrolling
+    // instead of the whole folder growing and the modal body scrolling the tabs away.
+    height: 100%;
+    min-height: 0;
+    // breathing room so the tab tops aren't shaved by the modal's inner top edge
+    padding-top: var(--spacing-2, 16px);
 }
 
-.settingBody {
+.folderPage {
+    position: relative;
+    z-index: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--container-color, #fff);   // == active tab fill → seamless merge
+    border: 1px solid color-mix(in srgb, vars.$color-on-surface 14%, transparent);
+    border-radius: 0 var(--border-radius-md, 8px) var(--border-radius-lg, 16px) var(--border-radius-lg, 16px);
+    box-shadow: var(--shadow-elevation-2, 0 3px 6px rgba(0, 0, 0, .30));
+    padding: var(--spacing-3, 24px);
+    overflow: hidden;                  // contain the flip animation
+}
+
+.page {
     flex-grow: 1;
     overflow-y: auto;
+    transform-origin: top center;
+    backface-visibility: hidden;
+    animation: flip-in var(--transition-duration, .5s) var(--transition-easing, ease);
+}
+
+.actions {
+    flex-shrink: 0;
     display: flex;
-    flex-direction: column;
-    :nth-child(1) {
-        flex-grow: 1;
+    justify-content: flex-end;
+    padding-top: var(--spacing-2, 16px);
+    margin-top: var(--spacing-1, 8px);
+    border-top: 1px solid color-mix(in srgb, vars.$color-on-surface 10%, transparent);
+}
+
+@keyframes flip-in {
+    from {
+        opacity: 0;
+        transform: perspective(1200px) rotateX(-8deg) translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: perspective(1200px) rotateX(0) translateY(0);
     }
 }
 
-.active {
-    font-weight: bold;
+@media (prefers-reduced-motion: reduce) {
+    .page { animation: none; }
 }

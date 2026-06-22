@@ -1,4 +1,5 @@
 import { FormField, Input, TextArea, FormGroup, Button} from "coles-solid-library"
+import { IdentityPlatform } from "coles-solid-library/icons"
 import { Accessor, Component, createMemo, Show } from "solid-js"
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard"
 import { BackgroundForm } from "../../../../../../models/data/formModels"
@@ -62,7 +63,7 @@ export const Identity: Component<SectionProps> = (props) => {
         return background.id;
     }
 
-    return <FlatCard headerName="Identity" icon="identity_platform" transparent startOpen>
+    return <FlatCard headerName="Identity" icon={IdentityPlatform} transparent startOpen>
 
         <div class={`${styles.NameBox}`}>
             <FormField name="Background Name" formName="name" required>

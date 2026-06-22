@@ -1,4 +1,5 @@
 import { Button } from "coles-solid-library";
+import { Save } from "coles-solid-library/icons";
 import { Accessor, Component, createMemo } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 
@@ -10,7 +11,7 @@ interface SectonProps {
 export const Saving: Component<SectonProps> = (props) => {
     const is_exist = createMemo(() => props.is_exist());
 
-    return <FlatCard headerName="saving" icon="save" alwaysOpen transparent getRidOfTopBorder>
+    return <FlatCard headerName="saving" icon={Save} alwaysOpen transparent>
         <Button onClick={props.onSubmit}>{is_exist() ? "Edit" : "Create"}</Button>
     </FlatCard>
 }

@@ -1,4 +1,5 @@
 import { FormGroup, Chip, FormField, Select, Option } from "coles-solid-library";
+import { ElectricBolt } from "coles-solid-library/icons";
 import { Accessor, Component, createMemo, For, Show } from "solid-js";
 import { BackgroundForm } from "../../../../../../models/data/formModels";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
@@ -20,7 +21,7 @@ export const AbilityScore: Component<SectionProps> = (props) => {
         formGroup.set("abilityOptions",abilityScores().filter(stat => stat !== value));
     }
 
-    return <FlatCard headerName={`Ability Choices (${abilityScores().length}/3)`} icon="electric_bolt" transparent getRidOfTopBorder>
+    return <FlatCard headerName={`Ability Choices (${abilityScores().length}/3)`} icon={ElectricBolt} transparent>
         <FormField name="Add Ability" formName="abilityOptions">
             <Select disabled={abilityScores().length >= 3} multiple onChange={() => {
                 if (abilityScores().length >= 3) {

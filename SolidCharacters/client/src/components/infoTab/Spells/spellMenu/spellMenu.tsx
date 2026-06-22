@@ -1,4 +1,5 @@
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
+import { MoreVert } from "coles-solid-library/icons";
 import { Accessor, Component, createSignal, Setter, Show } from "solid-js";
 import { homebrewManager } from "../../../../shared";
 import { Spell } from "../../../../models/generated";
@@ -34,7 +35,7 @@ export const SpellMenu: Component<SpellMenuProps> = (props) => {
 
   return <>
     <Button class={`${styles.spellMenu}`} ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>
-      <Icon size={"medium"} name="more_vert" />
+      <Icon size={"medium"} icon={MoreVert} />
     </Button>    
 
     <Menu anchorElement={anchorEl} show={[showMenu, setShowMenu]}>

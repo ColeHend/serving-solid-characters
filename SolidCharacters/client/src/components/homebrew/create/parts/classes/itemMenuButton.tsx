@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
+import { Component, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { Button, Checkbox, FormGroup, Input, Menu, MenuItem, Modal, Radio, RadioGroup } from "coles-solid-library";
 import styles from "./classes.module.scss";
 import { Item } from "../../../../../models/data/items";

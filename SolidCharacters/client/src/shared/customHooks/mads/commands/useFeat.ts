@@ -65,7 +65,7 @@ function useFeat (character:Character) {
                 case "AddFeats":
                     updatedCharacter = AddFeat(character, Feature);
                     break;
- 
+
                 case "RemoveFeats":
                     updatedCharacter = RemoveFeat(character, Feature);
                     break;

@@ -6,16 +6,13 @@ import {
   createSignal,
   onCleanup,
   onMount,
-  useContext,
 } from "solid-js";
 import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
-// import SearchBar from "./searchBar/searchBar";
 import { useSearchParams } from "@solidjs/router";
-import { SharedHookContext } from "../../rootApp";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
-import { characterManager, Clone, homebrewManager } from "../../../shared";
-import { Body, Table, Chip, Icon, Column, Cell, Header,Menu, Row } from "coles-solid-library";
+import { Clone } from "../../../shared";
+import { Body, Table, Column, Cell, Header, Row } from "coles-solid-library";
 import { SpellMenu } from "./spellMenu/spellMenu";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../models/generated";
@@ -23,7 +20,6 @@ import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 
 
 const masterSpells: Component = () => {
-  const sharedHooks = useContext(SharedHookContext);
   const dndSrdSpells = useDnDSpells();
 
   // search param stuff
@@ -114,22 +110,6 @@ const masterSpells: Component = () => {
     });
   };
 
-  const setCurrentObj = (spell: Spell) => {
-
-    setCurrentSpell(spell);
-    setShowSpell(true);
-
-  }
-
-  const checkForHomebrew = (spell:Spell):boolean => {
-    try {
-      return homebrewManager.spells().some(customSpell => customSpell.name.toLowerCase() === spell.name.toLowerCase());
-    } catch {
-      return false;
-    }
-  };
-
-
   createEffect(() => {
     const cur = currentSpell();
     if (showSpell() && cur?.name) {
@@ -156,11 +136,6 @@ const masterSpells: Component = () => {
   return (
     <Body class={`${styles.body}`}>
       <h1>Spells</h1>
-      {/* <SearchBar
-        searchResults={searchResults}
-        setSearchResults={setSearchResults}
-        spellsSrd={tableData}
-      ></SearchBar> */}
       <div class={`${styles.searchBar}`}>
         <SearchBar 
           setResults={setSearchResults}

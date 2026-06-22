@@ -59,7 +59,7 @@ function useSavingThrowFeature (character: Character) {
                 case "AddSavingThrows":
                     character = addSavingThrowFeature(character, feature);
                     break;
-                
+
                 case "RemoveSavingThrows":
                     character = removeSavingThrowFeature(character, feature);
                     break;

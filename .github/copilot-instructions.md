@@ -94,3 +94,68 @@ When unsure whether to add a helper locally vs. to the library:
 - Keep local if it is highly feature/domain specific to this app.
 
 Reminder for future automation: Code generation or refactors that touch shared UI logic should first scan `coles-solid-library` exports to reuse rather than recreate.
+
+### 12. Agent Guidlines
+- Agents (e.g., AI code assistants) should follow these guidelines when interacting with the repository:
+- Do not modify the repository structure or configuration files without explicit instructions.
+- When creating new components logic should be in a separate file in the components directory, and it should be clean, self-contained, and use coles-solid-library where appropriate, or pre-existing shared utilities if they fit the use case.
+- Component sizes should try to be kept small to maintain readability and ease of maintenance.
+- Avoid duplicating logic or features that already exists in `coles-solid-library`; prefer using the library's utilities and components.
+- Keep SolidJS idiomatic: prefer signals and stores over React-style state management, and leverage the reactivity model effectively.
+- Make sure to follow good clear professional coding practices, including consistent naming, proper typing, and thorough testing.
+- Write unit tests for all new functionality, and ensure existing tests pass after changes.
+- Avoid using the any keyword or as unknown as type; Prefer explicit typing or generic constraints to maintain type safety.
+
+### 13. FormGroup First Pattern (coles-solid-library)
+- For feature forms, default to `FormGroup` + `Form` + `FormField formName` from `coles-solid-library` instead of ad-hoc local input state.
+- Define a typed form interface and initialize a single `FormGroup<T>` near the feature entry component.
+- Wrap the feature editor surface in `<Form data={formGroup} onSubmit={...}>` so nested `FormField` controls bind automatically.
+- Use `Validators` for required/basic constraints and keep domain-specific rules in feature validation modules when needed.
+- When form state must mirror store-backed entities, sync explicitly in effects (`formGroup.set(...)`) on selection/entity change.
+- Prefer `formName` bindings for scalar fields (text/number/select/checkbox); keep complex array/chip editors store-driven unless a full `FormArray` migration is in scope.
+- Avoid mixing multiple competing sources of truth for the same field: either let `FormGroup` drive the control value or keep the control fully manual.
+
+### 14. Library-First Decision Matrix (Always Check)
+- Agents must treat `coles-solid-library` as the default UI toolkit for all app-facing UI in `SolidCharacters/client/src`.
+- Before introducing any new UI primitive, check whether a matching library export already exists (see `node_modules/coles-solid-library/USAGE.html`).
+- Prefer these mappings:
+  - Layout/surface wrappers: `Body`, `Container`
+  - Buttons/actions: `Button`, `Icon`
+  - Text inputs: `Input`, `TextArea`
+  - Selection controls: `Select`, `Option`, `Checkbox`, `RadioGroup`, `Radio`
+  - Form scaffolding/validation: `Form`, `FormField`, `FormGroup`, `FormArray`, `Validators`, `FieldError`
+  - Menus/popovers: `Menu`, `MenuItem`, `MenuDropdown`
+  - Tabbed views: `TabBar`
+  - Expand/collapse sections: `ExpansionPanel`
+  - Dialogs: `Modal`
+  - Toast/alerts: `addSnackbar` + `SnackbarController`
+  - Data tables: `Table`, `Column`, `Header`, `Cell`, `Row`
+  - Tokens/tags/chips: `Chip`, `Chipbar`
+- Avoid native controls (`<button>`, `<input>`, `<select>`, `<textarea>`, ad-hoc modal/menu/table wrappers) unless the library cannot support a required behavior.
+- If native/fallback UI is required, document the reason in code review notes and keep usage minimal/surgical.
+- Never import private internals from `coles-solid-library/dist/...` in feature code; import from public package exports only.
+
+### 15. Adoption Roadmap (Library Expansion Plan)
+- Goal: maximize consistent usage of `coles-solid-library` across existing feature areas while minimizing UX churn.
+- Phase 1 (high impact / low risk):
+  - Migrate remaining homebrew create forms (backgrounds, items, feats, spells, subraces, races leftovers) to `FormGroup` + `FormField formName` for scalar fields.
+  - Replace custom validation message rendering with `FieldError` registrations where practical.
+  - Standardize save/update bars on library `Button` + `addSnackbar` patterns.
+- Phase 2 (consistency pass):
+  - Convert standalone collapsible sections to `ExpansionPanel` where behavior matches.
+  - Consolidate modal dialogs on `Modal` + shared open/close signal-pair pattern.
+  - Normalize menu action patterns to `Menu/MenuItem/MenuDropdown` with consistent anchor/close behavior.
+- Phase 3 (table + interaction quality):
+  - Standardize list/detail displays on `TableV2` primitives (`Table`, `Column`, `Header`, `Cell`, `Row`) with stable row keys.
+  - Normalize chip/tag UX on `Chip`/`Chipbar` instead of bespoke pill implementations.
+  - Adopt `TabBar` consistently for multi-panel views currently using ad-hoc tab buttons.
+- Phase 4 (hardening):
+  - Add tests around form binding (`formName`), validation (`Validators`), and modal/menu interaction parity.
+  - Remove duplicate local helper components that are now covered by library components.
+
+### 16. PR Review Checklist for Library Usage
+- Does this change reuse existing `coles-solid-library` components before adding custom UI primitives?
+- Are forms using `FormGroup` + `Form` + `FormField formName` for scalar controls?
+- Are validation errors surfaced via `FieldError`/form validation patterns where feasible?
+- Are modals/menus/tables using library patterns consistently with adjacent code?
+- Are imports limited to public `coles-solid-library` exports (no `dist/*` internals)?

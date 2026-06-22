@@ -1,5 +1,6 @@
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
+import { MoreVert } from "coles-solid-library/icons";
 import { Component, createSignal } from "solid-js";
 import styles from "./featMenu.module.scss";
 // import { Feat } from "../../../../models";
@@ -28,7 +29,7 @@ export const FeatMenu:Component<menuProps> = (props) => {
 
   return <>
     <Button ref={setAnchorEl} class={`${styles.menuBtn}`} onClick={()=>setShowMenu((old)=>!old)}>
-      <Icon name="more_vert" />
+      <Icon icon={MoreVert} />
     </Button>
 
     <Menu 

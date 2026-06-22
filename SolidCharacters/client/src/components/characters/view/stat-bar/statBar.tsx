@@ -12,8 +12,6 @@ type Props = {
 const StatBar: Component<Props> = (props) => {
   const getProficiencyBonus = (level: number) => Math.ceil(level / 4) + 1;
 
-  props.currentCharacter()?.proficiencies.skills
-
   return (
     <div class={`${styles.statBlocks}`}>
       <StatBlock

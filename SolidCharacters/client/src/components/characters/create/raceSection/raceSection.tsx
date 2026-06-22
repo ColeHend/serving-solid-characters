@@ -1,9 +1,9 @@
-import { Accessor, Component, createMemo, For, onMount, Setter, Show } from "solid-js";
+import { Accessor, Component, createMemo, For, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { AbilityScores, Race, Subrace } from "../../../../models/generated";
 import styles from "./raceSection.module.scss";
-import { FormField, Select, Option, ExpansionPanel, FormGroup } from "coles-solid-library";
-import { useDnDSubraces } from "../../../../shared/customHooks/dndInfo/info/all/subraces";
+import { FormField, Select, Option, FormGroup } from "coles-solid-library";
+import { Person } from "coles-solid-library/icons";
 import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
@@ -20,7 +20,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
 
     const srdRaces = createMemo(()=>props.races());
 
-    const charRace = createMemo(()=>srdRaces().find((race,i)=>race.name === raceName()) ?? {} as Race);
+    const charRace = createMemo(()=>srdRaces().find((race)=>race.name === raceName()) ?? {} as Race);
     const subraces = createMemo(()=>props.subraces());
     
     const charSubrace = createMemo(()=>form().get().lineage);
@@ -31,7 +31,7 @@ export const RaceSection:Component<sectionProps> = (props) => {
     const currentSubrace = createMemo(()=>subraces().find(sr=> sr.name === charSubrace()));
     const subraceDescKeys = createMemo(()=>Object.keys(currentSubrace()?.descriptions ?? {}))
 
-    return <FlatCard headerName={`Species: ${[charRace().name]}`} icon="person" transparent>
+    return <FlatCard headerName={`Species: ${[charRace().name]}`} icon={Person} transparent>
         <div class={`${styles.raceSection}`}>
             <p>
                 <For each={descKeys()}>

@@ -2,7 +2,7 @@ import { Accessor, Component, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 import { FeatureDetail } from "../../../../../../models/generated";
 import { Button, Chip } from "coles-solid-library";
-import { DebugConsole } from "../../../../../../shared/customHooks/DebugConsole";
+import { Star } from "coles-solid-library/icons";
 
 interface SectonProps {
     features: [Accessor<FeatureDetail[]> ,Setter<FeatureDetail[]>];
@@ -45,7 +45,6 @@ export const OptionalFeatures:Component<SectonProps> = (props) => {
         const all = features();
 
         if (!current) {
-            DebugConsole.error("Couldn't find the feature in 'Features' in the backgrounds homebrew tab @ line '29'");
             return;
         }
 
@@ -58,11 +57,7 @@ export const OptionalFeatures:Component<SectonProps> = (props) => {
         return false;
     }
     
-    return <FlatCard headerName="Optional Features" extraHeaderJsx={<Button onClick={()=>{
-        props.showPopup(old => !old);
-        handleFeatureEdit();
-    
-    }}>Add Feature</Button>} icon="star" transparent getRidOfTopBorder>
+    return <FlatCard headerName="Optional Features" extraHeaderJsx={<Button onClick={()=>props.showPopup(old => !old)}>Edit</Button>} icon={Star} transparent>
         <Show when={features().length > 0} fallback={<Chip value="None" />}>
             <div>
                 <For each={features()}>

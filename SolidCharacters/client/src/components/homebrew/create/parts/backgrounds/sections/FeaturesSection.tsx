@@ -1,5 +1,6 @@
 import { Component, For, Show, createSignal } from "solid-js";
 import { Button, Chip, Modal, Input, FormField } from "coles-solid-library";
+import { Star } from "coles-solid-library/icons";
 import styles from "../backgrounds.module.scss";
 import { FeatureDetail } from "../../../../../../models/generated";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
@@ -48,7 +49,7 @@ const FeaturesSection: Component<Props> = (p) => {
   // );
 
   return (
-    <FlatCard icon="star" headerName="Features" extraHeaderJsx={<div>
+    <FlatCard icon={Star} headerName="Features" extraHeaderJsx={<div>
       <div><span>{p.features.length}</span> <span>total</span></div>
       <Button onClick={() => setShow(true)}>Edit</Button>
     </div>} transparent>

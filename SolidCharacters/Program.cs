@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Swashbuckle.AspNetCore.Filters;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.HttpOverrides; // forwarded headers
@@ -208,23 +208,20 @@ var publicPath = Path.Combine(clientRoot, "client", "public");
 if (Directory.Exists(publicPath))
 {
     Console.WriteLine($"Serving static public assets from: {publicPath}");
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        FileProvider = new PhysicalFileProvider(publicPath),
-        OnPrepareResponse = ctx =>
+    // IMPORTANT: exclude the service worker from the public handler. A leftover dev-built
+    // public/claims-sw.js has no precache manifest, so letting it shadow the real
+    // dist/claims-sw.js makes the installed app cache nothing and fail offline.
+    app.UseWhen(
+        ctx => !ctx.Request.Path.Equals("/claims-sw.js", StringComparison.OrdinalIgnoreCase)
+            && !ctx.Request.Path.Equals("/claims-sw.js.map", StringComparison.OrdinalIgnoreCase),
+        branch => branch.UseStaticFiles(new StaticFileOptions
         {
-            var headers = ctx.Context.Response.Headers;
-            if (ctx.File.Name == "claims-sw.js")
+            FileProvider = new PhysicalFileProvider(publicPath),
+            OnPrepareResponse = ctx =>
             {
-                // Always fetch fresh SW in dev to detect updates
-                headers["Cache-Control"] = "no-store";
+                ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=3600"; // 1 hour
             }
-            else
-            {
-                headers["Cache-Control"] = "public,max-age=3600"; // 1 hour for other public assets
-            }
-        }
-    });
+        }));
 }
 
 string path = Path.Combine(clientRoot, "client", "dist");
@@ -235,7 +232,13 @@ app.UseStaticFiles(new StaticFileOptions
     OnPrepareResponse = ctx =>
     {
         var headers = ctx.Context.Response.Headers;
-        headers["Cache-Control"] = "public,max-age=604800"; // 7 days
+        var name = ctx.File.Name;
+        if (name.Equals("claims-sw.js", StringComparison.OrdinalIgnoreCase))
+            headers["Cache-Control"] = "no-store"; // never cache the SW script
+        else if (name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+            headers["Cache-Control"] = "no-cache"; // always revalidate the app shell
+        else
+            headers["Cache-Control"] = "public,max-age=604800,immutable"; // hashed assets
     }
 });
 //    - then: SPA static files
@@ -252,25 +255,30 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-if (app.Environment.IsDevelopment())
+// 8. Guard the SPA fallback:
+//    - A missing /assets/* (hashed chunk) must 404, not fall back to index.html. Returning
+//      HTML where JS/CSS is expected is what produces "Unable to preload CSS" on the client.
+//    - The SPA shell (index.html fallback) must always revalidate so new deploys are picked up.
+app.Use(async (context, next) =>
 {
-    Console.WriteLine("[spa] Using Vite dev server proxy (https://localhost:3000)");
-    app.UseWhen(
-        ctx => !ctx.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase),
-        spaApp =>
+    var reqPath = context.Request.Path;
+    if (reqPath.StartsWithSegments("/assets"))
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return;
+    }
+    if (!reqPath.StartsWithSegments("/api"))
+    {
+        context.Response.OnStarting(() =>
         {
-            spaApp.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "client";
-                spa.UseProxyToSpaDevelopmentServer("https://localhost:3000");
-            });
+            context.Response.Headers["Cache-Control"] = "no-cache";
+            return Task.CompletedTask;
         });
-}
-else
-{
-    // Production SPA fallback: serve pre-built index.html from client/dist
-    app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
-}
+    }
+    await next();
+});
+
+app.UseSpa(spa => { spa.Options.SourcePath = "client"; });
 
 
 // 9. Fallback to index.html for client‑side routing (after controllers). For production built assets.

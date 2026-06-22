@@ -1,6 +1,7 @@
 import { Component, Show, onMount, createEffect, onCleanup } from "solid-js";
 import { useSearchParams } from "@solidjs/router";
 import { Button, Body, FormField, Input, TextArea } from "coles-solid-library";
+import { DeployedCode, Equalizer, IdentityPlatform, Save } from "coles-solid-library/icons";
 import { useFeatsForm } from "./useHomeFeats";
 import { PrerequisiteSelector } from "./PrerequisiteSelector";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
@@ -34,7 +35,7 @@ const Feats: Component = () => {
     <Body class={`${styles.body}`}>
       <h1>Feats</h1>
       <div class="featHomebrew">
-        <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
+        <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} transparent>
           <div class={`${styles.name}`}>
             <h2>Add Name</h2>
             <FormField name="Add Name">
@@ -52,10 +53,10 @@ const Feats: Component = () => {
             </Show>
           </div>
         </FlatCard>
-        <FlatCard icon="deployed_code" headerName="Prerequisites" startOpen transparent>
+        <FlatCard icon={DeployedCode} headerName="Prerequisites" startOpen transparent>
           <PrerequisiteSelector store={store} />
         </FlatCard>
-        <FlatCard icon="equalizer" headerName="Description" startOpen transparent>
+        <FlatCard icon={Equalizer} headerName="Description" startOpen transparent>
           <div class={`${styles.Description}`}>
             <h2>Description</h2>
             <FormField name="Description">
@@ -69,7 +70,7 @@ const Feats: Component = () => {
             </FormField>
           </div>
         </FlatCard>
-        <FlatCard icon="save" headerName="Saving" alwaysOpen transparent>
+        <FlatCard icon={Save} headerName="Saving" alwaysOpen transparent>
           <Show when={!store.featExists()}>
             <Button
               disabled={!store.isValid()}

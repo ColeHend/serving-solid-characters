@@ -1,10 +1,10 @@
 import { Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
 import { LevelEntity } from "../../../../../models/old/class.model";
 import { CasterType } from "../../../../../models/old/core.model";
-import { Button, FormGroup, Icon, Input, Modal } from "coles-solid-library";
+import { Button, FormGroup, Icon, Input } from "coles-solid-library";
+import { AddBox, Delete } from "coles-solid-library/icons";
 import { ClassForm } from "./classes";
 import styles from "./classes.module.scss";
-import { SpellsKnown } from "../../../../../shared/models/casting";
 import { getSpellSlots } from "../../../../../shared";
 import { FeatureModal } from "./featureModal";
 
@@ -21,9 +21,6 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
     const groupKeys = Object.keys(props.data[0].classSpecific);
     return [...new Set([...groupKeys])];
   });
-  const getFeatureNames = (level: LevelEntity) => {
-    return level.features.map(f=> f.name).join(', ');
-  }
   const getColumnName = (l: string) => {
     const level = parseInt(l);
     if (!isNaN(level)) {
@@ -136,7 +133,7 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
                   setSelectedFeature('');
                   setShowAddFeature(true);
                 }} class={styles.addFeatureBtn}>
-                  <Icon name="add_box" size={'small'} />
+                  <Icon icon={AddBox} size={'small'} />
                 </Button>
               </span>
             </span>
@@ -165,7 +162,7 @@ export const ClassTable: Component<ClassTableProps> = (props) => {
                           newLevel.features = newLevel.features.filter(f => f.name !== feature.name);
                           props.setData((prev)=>([...prev.map(l => l.level === row.level ? newLevel : l)]));
                         }}>
-                          <Icon name="delete" size={'small'} />
+                          <Icon icon={Delete} size={'small'} />
                         </span>
                         <span class={styles.singleFeature} onClick={()=>{
                           setSelectedFeature(feature.name);
