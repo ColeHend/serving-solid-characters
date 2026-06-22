@@ -1,7 +1,7 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, Show } from "solid-js";
 import style from "./amorView.module.scss";
-import { Item, ItemType } from "../../../../../models/generated";
-import { srdItem, ItemProperties } from "../../../../../models/data/generated";
+import { Item } from "../../../../../models/generated";
+import { srdItem } from "../../../../../models/data/generated";
 import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import { useSearchParams } from "@solidjs/router";
 import { costToCopper } from "../../item";
@@ -116,7 +116,7 @@ export const ArmorView:Component<viewProps> = (props) => {
       );
 
       // Also update paginatedItems to trigger UI update
-      setSearchResult((old) => sorted);
+      setSearchResult(() => sorted);
 
       return sorted;
     });

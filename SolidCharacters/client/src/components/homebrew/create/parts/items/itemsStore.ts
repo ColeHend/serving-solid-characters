@@ -336,8 +336,8 @@ async function loadSrdOnce(): Promise<void> {
   homebrewManager.items().forEach(i => { if (i?.name) hb[i.name] = i as DataItem; });
     setState('homebrew', hb);
     setState('status', 'idle');
-  } catch (e: any) {
-    setState({ status: 'error', error: e?.message || 'Failed to load SRD items' });
+  } catch (e: unknown) {
+    setState({ status: 'error', error: (e instanceof Error ? e.message : undefined) || 'Failed to load SRD items' });
   }
 }
 

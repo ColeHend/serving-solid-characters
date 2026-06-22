@@ -1,10 +1,11 @@
-import { Accessor, Component, createMemo, createSignal, For, onMount, Show } from "solid-js";
+import { Accessor, Component, createMemo, For, onMount, Show } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { Background, FeatureDetail } from "../../../../models/generated";
+import { Background } from "../../../../models/generated";
 import { Markdown } from "../../../../shared";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import styles from "./backgroundSection.module.scss";
-import { FormGroup, Select, Option, FormField } from "coles-solid-library";
+import { FormGroup, Select, Option } from "coles-solid-library";
+import { Home } from "coles-solid-library/icons";
 import { CharacterForm } from "../../../../models/character.model";
 
 interface sectionProps {
@@ -21,13 +22,11 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
 
     const selBackgroundName = createMemo(()=>form().get().background);
 
-    const selBackground = createMemo(()=>srdBackgrounds().find((background, i)=>background.name === selBackgroundName()) ?? {} as Background);
+    const selBackground = createMemo(()=>srdBackgrounds().find((background)=>background.name === selBackgroundName()) ?? {} as Background);
 
-    const langs = createMemo(()=>selBackground()?.languages?.options || []);
     const features = createMemo(()=>selBackground()?.features || []);
     const abilityOptions = createMemo(()=>selBackground()?.abilityOptions || []);
     const suggestedFeat = createMemo(()=>selBackground()?.feat || "");
-    const itemOptionKeys = createMemo(()=>selBackground()?.startEquipment.flatMap(item => item.optionKeys || []));
     const weaponsProfs = createMemo(()=>selBackground()?.proficiencies.weapons);
     const armorProfs = createMemo(()=>selBackground()?.proficiencies.armor);
     const toolsProfs = createMemo(()=>selBackground()?.proficiencies.tools);
@@ -51,7 +50,7 @@ export const BackgroundSection:Component<sectionProps> = (props) => {
         }
     })
 
-    return <FlatCard icon="home" headerName={`Background: ${selBackground()?.name ?? ""}`} transparent>
+    return <FlatCard icon={Home} headerName={`Background: ${selBackground()?.name ?? ""}`} transparent>
         <div>
             <div style={{"margin-bottom": "2%"}}>
                 <Markdown 

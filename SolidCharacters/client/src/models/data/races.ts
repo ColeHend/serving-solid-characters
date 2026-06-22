@@ -1,4 +1,4 @@
-import { AbilityScores, ChoiceDetail, StatBonus } from "./core";
+import { ChoiceDetail, StatBonus } from "./core";
 import { Feat } from "./features";
 
 export interface Race {

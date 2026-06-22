@@ -1,11 +1,10 @@
-import { Button, FormField, Icon, Input, Modal, Container, FormArray, FormGroup } from "coles-solid-library";
+import { Button, FormField, Icon, Input, Modal, FormArray, FormGroup } from "coles-solid-library";
+import { Hexagon, IdentityPlatform, Key } from "coles-solid-library/icons";
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter } from "solid-js";
-import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
-import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
+import { FeatureDetail } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
 import { TextArea } from "coles-solid-library"
 import { isNullish } from "../../../../shared";
-import { MadFeature as GeneratedModel } from "../../../../models/generated";
 import styles from "./featuresPopus.module.scss";
 
 interface popupProps {
@@ -16,7 +15,7 @@ interface popupProps {
 export const FeaturesPopup: Component<popupProps> = (props) => {
     
     const [show, setShow] = props.Show;
-    const [features, setFeatures] = props.features;
+    const [features] = props.features;
     const [popupRef,setPopupRef] = createSignal<HTMLElement|null>(null);
 
     const [currentIndex, setCurrentIndex] = createSignal(0);
@@ -53,14 +52,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         const desc = getFeatureValue(currentIndex(), "description");
         return isNullish(desc) ? "" : desc as string;
     })
-    const [charChanges, setCharChanges] = createSignal<MadFeature[]>();
-
-    const clearInputs = () => {
-        setCharChanges([]); 
-        currentFeatures.reset();
-    }
-
-    createEffect(()=>{ 
+    createEffect(()=>{
         if (popupRef()) {
             const parentEL = popupRef()!.parentElement;
             if (parentEL) {
@@ -80,8 +72,8 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
 
                 <div>
                     <For each={currentFeatures.get()}>
-                        {(feature, i) => <div class={`${styles.selectBox}`} onClick={(e) => setCurrentIndex(i())}>
-                            <Icon name="hexagon" size={"small"}/> 
+                        {(feature, i) => <div class={`${styles.selectBox}`} onClick={() => setCurrentIndex(i())}>
+                            <Icon icon={Hexagon} size={"small"}/>
 
                             <span>
                                 {feature.name}
@@ -106,7 +98,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                     </div>
                 </div>
                 <div class={`${styles.scrollBox}`}>
-                    <FlatCard headerName="Identity" icon="identity_platform">
+                    <FlatCard headerName="Identity" icon={IdentityPlatform}>
                         <FormField name="Feature Name" formName="featureName">
                             <Input 
                                 value={getFeatureValue(currentIndex(), "name") ?? ""} 
@@ -124,7 +116,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                         </FormField>
                     </FlatCard>
 
-                    <FlatCard headerName="Character Changes" icon="key">
+                    <FlatCard headerName="Character Changes" icon={Key}>
                         Placeholder Text
                     </FlatCard>
                 </div>

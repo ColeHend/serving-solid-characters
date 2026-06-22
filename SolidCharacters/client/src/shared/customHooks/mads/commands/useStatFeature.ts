@@ -59,16 +59,18 @@ function useStatFeature(character: Character) {
     }
 
     character.features.forEach(feature => {
-        const MadFeature = feature.metadata?.mads as MadFeature;
+        const mads = (feature.metadata?.mads ?? []) as MadFeature[];
 
-        switch (MadFeature?.command) {
-            case "AddStats":
-                character = addStatFeature(character, MadFeature);
-                break;
+        for (const mad of mads) {
+            switch (mad.command) {
+                case "AddStats":
+                    character = addStatFeature(character, mad);
+                    break;
 
-            case "RemoveStats":
-                character = removeStatFeature(character, MadFeature);
-                break;
+                case "RemoveStats":
+                    character = removeStatFeature(character, mad);
+                    break;
+            }
         }
     })
 

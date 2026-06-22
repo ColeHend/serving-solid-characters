@@ -1,8 +1,8 @@
-import { Cell, Column, FormGroup, Header, Icon, Modal, Row, Table } from "coles-solid-library";
+import { Cell, Column, Header, Icon, Modal, Row, Table } from "coles-solid-library";
+import { Check, Close } from "coles-solid-library/icons";
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 import { Class5E } from "../../../../../models/generated";
 import styles from "./AddClass.module.scss";
-import { CharacterForm } from "../../../../../models/character.model";
 import { getUserSettings, mobileCheck } from "../../../../../shared";
 
 interface modalProps {
@@ -15,7 +15,7 @@ interface modalProps {
 }
 
 export const AddClass: Component<modalProps> = (props) => {
-    const [show,setshow] = props.show;
+    const [,setshow] = props.show;
 
     const isMobile = mobileCheck();
 
@@ -116,7 +116,7 @@ export const AddClass: Component<modalProps> = (props) => {
                             </span>}
                     </Cell>
                     <Cell<Class5E> rowNumber={2}>
-                        {(class5e)=><span>Requirements:</span>}
+                        {()=><span>Requirements:</span>}
                     </Cell>
                 </Column>
                 
@@ -143,8 +143,8 @@ export const AddClass: Component<modalProps> = (props) => {
                                                 "border-bottom": meetsRequirement() ? "2px solid green" : "2px solid red",
                                             }}>
                                                 <span>{trimmedStat} of 13</span>
-                                                <Show when={meetsRequirement()} fallback={<Icon name="close" size="small" color="red"/>}>
-                                                    <Icon name="check" size="small" color="green"/>
+                                                <Show when={meetsRequirement()} fallback={<Icon icon={Close} size="small" color="red"/>}>
+                                                    <Icon icon={Check} size="small" color="green"/>
                                                 </Show>
                                             </span>
                                         );

@@ -1,0 +1,542 @@
+@use 'coles-solid-library/themes/themes.scss';
+
+$mobile: 768px;
+
+// Page surface — matches the Characters / Create pages (semi-transparent themed
+// card over the `character-create-bg` body background).
+.page {
+  width: 92%;
+  margin: 16px auto;
+  border-radius: 15px;
+  padding: var(--spacing-2);
+  background-color: color-mix(in srgb, var(--surface-color) 60%, transparent) !important;
+
+  @media screen and (max-width: $mobile) {
+    width: 98%;
+    margin: 8px auto;
+    padding: var(--spacing-1);
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2);
+
+  @media screen and (max-width: $mobile) {
+    gap: var(--spacing-1);
+    padding: var(--spacing-1);
+    justify-content: center;
+  }
+}
+
+.hint {
+  opacity: 0.8;
+  font-size: var(--font-size-small);
+}
+
+// Side-by-side drag canvas + docked sidebar. No transform/overflow:hidden ancestor
+// here so the DnD DragOverlay portal (document.body) is never clipped.
+.editorRow {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: flex-start;
+  min-height: 60vh;
+
+  @media screen and (max-width: $mobile) {
+    flex-direction: column;
+    min-height: auto;
+  }
+}
+
+// ── Sidebar (Add / Edit tabs) ──
+.sidebar {
+  flex: 0 0 320px;
+  max-width: 360px;
+  max-height: 80vh;
+  overflow: auto;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--surface-color) 70%, transparent);
+}
+
+.sidebarInner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebarBody {
+  padding: var(--spacing-1);
+  overflow: auto;
+}
+
+// Inactive tab pane stays mounted but hidden (no dispose/rebuild on tab switch).
+.hiddenTab {
+  display: none;
+}
+
+// ── Field palette (Add tab) ──
+.palette {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+// Vertical stack of field cards inside a category's collapsible (FlatCard) body.
+.paletteGroupBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+// A single draggable field: [handle] [label + description] [sample value].
+.fieldCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+
+  &.placed {
+    opacity: 0.45;
+  }
+
+  &.dragging {
+    opacity: 0.6;
+  }
+}
+
+// Drag handle — the only part of the card that initiates a drag.
+.fieldCardHandle {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  cursor: grab;
+  touch-action: none;
+  opacity: 0.7;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// Label + description column; min-width:0 lets long text wrap instead of overflowing.
+.fieldCardText {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fieldCardLabel {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.fieldCardDesc {
+  font-size: var(--font-size-small);
+  opacity: 0.7;
+  line-height: 1.2;
+}
+
+// Sample-value pill — the same text the drag preview renders on the sheet.
+.fieldCardValue {
+  flex: 0 0 auto;
+  max-width: 35%;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: var(--font-size-small);
+  background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Field inspector (Edit tab) ──
+.inspector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-1);
+}
+
+.inspectorEmpty {
+  padding: var(--spacing-2);
+  opacity: 0.7;
+}
+
+.inspectorTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.colorRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.colorControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  min-width: 0;
+}
+
+.colorSwatch {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--surface-color);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+}
+
+.nudgeRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.nudgePad {
+  display: grid;
+  grid-template-columns: repeat(3, 36px);
+  grid-template-rows: repeat(2, 36px);
+  gap: 2px;
+  width: max-content;
+}
+
+.nudgeUp {
+  grid-column: 2;
+  grid-row: 1;
+}
+.nudgeLeft {
+  grid-column: 1;
+  grid-row: 2;
+}
+.nudgeDown {
+  grid-column: 2;
+  grid-row: 2;
+}
+.nudgeRight {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.configGrid {
+  display: grid;
+  // minmax(0, 1fr) (not 1fr) lets the tracks shrink below their content so the
+  // number inputs / selects never force a horizontal scrollbar in the sidebar.
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--spacing-2);
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    min-width: 0;
+  }
+
+  // The coles Select renders a fixed 200px control with 6px side margins; constrain
+  // it (scoped to this grid only) so two side-by-side selects can't overflow.
+  :global(.solid_select) {
+    width: 100%;
+    margin: 0;
+  }
+
+  :global(.solid_select__control_no_form) {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+// Horizontal-only nudge pair (table column / marker x, table vertical position).
+.nudgePadRow {
+  display: flex;
+  gap: 2px;
+  width: max-content;
+}
+
+// Section divider inside the table inspector.
+.inspectorSubhead {
+  margin-top: var(--spacing-1);
+  font-weight: 600;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+// ── Canvas / page backdrop ──
+.canvasScroll {
+  flex: 1 1 auto;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.canvas {
+  position: relative;
+}
+
+.pageImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+
+  &.over {
+    outline: 2px dashed var(--primary-color);
+    outline-offset: -2px;
+  }
+}
+
+// ── Placed field chip (renders the field's value in its color, baseline-anchored) ──
+.placedChip {
+  position: absolute;
+  transform: translateY(-100%);
+  display: inline-flex;
+  align-items: flex-end;
+  cursor: grab;
+  line-height: 1.15;
+  white-space: nowrap;
+  touch-action: none;
+  background: color-mix(in srgb, var(--surface-color) 30%, transparent);
+  outline: 1px dashed color-mix(in srgb, var(--primary-color) 55%, transparent);
+  outline-offset: 1px;
+
+  &.selected {
+    outline: 2px solid var(--primary-color);
+    z-index: 2;
+  }
+
+  &.dragging {
+    opacity: 0.4;
+  }
+
+  &.placeholder .placedChipText {
+    opacity: 0.55;
+    font-style: italic;
+  }
+}
+
+.placedChipText {
+  pointer-events: none;
+}
+
+.placedChipRemove {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--error-color, #cf6679);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.placedChip:hover .placedChipRemove,
+.placedChip.selected .placedChipRemove {
+  opacity: 1;
+}
+
+// ── Feature-box outlines (classFeatures/speciesTraits/feats) ──
+// Non-interactive guides mirroring the region `drawFeatureList` fills: the box
+// rectangle plus one divider per inter-column gap. `pointer-events: none` so they
+// never intercept dragging/selecting the chip painted on top.
+.featureBox {
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--primary-color) 6%, transparent);
+  outline: 1px dashed color-mix(in srgb, var(--primary-color) 45%, transparent);
+  outline-offset: -1px;
+}
+
+.featureBoxDivider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--primary-color) 35%, transparent);
+}
+
+// ── Spell/attack table column guides (page-2 / page-1 table geometry editor) ──
+// Rendered BEFORE the placed chips in the DOM so chips paint on top; a selected
+// guide lifts to z-index 1 (still below a selected chip's 2).
+.tableColGuide {
+  position: absolute;
+  box-sizing: border-box;
+  cursor: grab;
+  touch-action: none;
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+  outline: 1px dashed color-mix(in srgb, var(--primary-color) 50%, transparent);
+  outline-offset: -1px;
+
+  &.selected {
+    background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+    outline: 2px solid var(--primary-color);
+    z-index: 1;
+  }
+
+  &.dragging {
+    opacity: 0.4;
+  }
+}
+
+.tableGuideLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-100%);
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+  background: var(--primary-color);
+  color: var(--on-primary-color);
+  pointer-events: none;
+}
+
+.tableColResizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  touch-action: none;
+  background: color-mix(in srgb, var(--primary-color) 30%, transparent);
+
+  &:hover,
+  &.dragging {
+    background: color-mix(in srgb, var(--primary-color) 60%, transparent);
+  }
+}
+
+.tableMarkerGuide {
+  position: absolute;
+  width: 2px;
+  transform: translateX(-50%);
+  cursor: grab;
+  touch-action: none;
+  background: color-mix(in srgb, var(--secondary-color, var(--primary-color)) 70%, transparent);
+
+  &.selected {
+    width: 3px;
+    background: var(--primary-color);
+    z-index: 1;
+  }
+
+  &.dragging {
+    opacity: 0.4;
+  }
+}
+
+.tableMarkerLabel {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  padding: 0 3px;
+  font-size: 9px;
+  line-height: 1.4;
+  white-space: nowrap;
+  background: var(--primary-color);
+  color: var(--on-primary-color);
+  pointer-events: none;
+}
+
+.tableMoveHandle {
+  position: absolute;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  touch-action: none;
+  font-size: 8px;
+  line-height: 1;
+  color: var(--on-primary-color);
+  background: color-mix(in srgb, var(--primary-color) 55%, transparent);
+  border-radius: 3px;
+
+  &.selected {
+    background: var(--primary-color);
+    z-index: 1;
+  }
+
+  &.dragging {
+    opacity: 0.4;
+  }
+}
+
+.tableMoveLabel {
+  pointer-events: none;
+}
+
+// ── Live preview (inside the preview modal) ──
+.previewPane {
+  width: 100%;
+  height: 100%;
+  min-height: 75vh;
+}
+
+.previewFrame {
+  border: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.previewPlaceholder {
+  padding: var(--spacing-3);
+  opacity: 0.7;
+}
+
+// ── Drag overlay chip (the moving label preview — table-guide drags) ──
+.dragChip {
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--primary-color);
+  color: var(--on-primary-color);
+  font-size: var(--font-size-small);
+  white-space: nowrap;
+}
+
+// ── Drag overlay: sheet-accurate field preview (palette & placed field drags) ──
+// Drawn the way the field lands on the sheet — the value in its color at on-sheet
+// (zoom-scaled) size, baseline-anchored, with a thin underline guide to register
+// against the printed blank. Absolutely positioned inside the overlay's fixed div.
+.dragFieldPreview {
+  position: absolute;
+  transform: translateY(-100%);
+  display: inline-block;
+  line-height: 1.15;
+  white-space: nowrap;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 60%, transparent);
+
+  &.placeholder {
+    opacity: 0.7;
+    font-style: italic;
+  }
+}

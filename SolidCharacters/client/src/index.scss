@@ -1,4 +1,5 @@
 @use 'coles-solid-library/themes/themes.scss';
+@use 'coles-solid-library/themes/variables' as colesVars;
 
 // /* Basic CSS reset to ensure elements are visible regardless of font loading */
 // * {
@@ -26,7 +27,12 @@
   --menu-pos: absolute;
   --menu-top: 0;
   --menu-left: 0;
-  
+
+  // Repair coles-solid-library themes.scss bug: lines 103-104 use `{$var}` instead of
+  // `#{$var}`, so these two custom properties ship as invalid CSS. Re-derive the correct
+  // values from the library's own variables partial so they stay in sync with the package.
+  --font-weight-light: #{colesVars.$font-weight-light};
+  --font-weight-regular: #{colesVars.$font-weight-regular};
 }
 //------------------------------------------------------------------
 // Styles
@@ -62,17 +68,17 @@ body {
 
 // List of body classes with their respective background images
 $background-images: (
-  'home-bg': './assets/arcane_dictionary_wide.png',
-  'feats-bg': './assets/arcane_dictionary_feats.png',
-  'spells-bg': './assets/arcane_dictionary_spells.png',
-  'classes-bg': './assets/arcane_dictionary_classes.png',
-  'subclasses-bg': './assets/arcane_dictionary_subclasses.png',
-  'items-bg': './assets/arcane_dictionary_items.png',
-  'race-bg': './assets/arcane_dictionary_races.png',
-  'character-create-bg': './assets/arcane_dictionary_characters.png',
-  'character-view-bg': './assets/arcane_dictionary_CharacterView.png',
-  'backgrounds-bg': './assets/arcane_dictionary_backgronds.png',
-  'aboutUS-bg': './assets/arcane_dictionary_aaboutUS.png'
+  'home-bg': './assets/arcane_dictionary_wide.webp',
+  'feats-bg': './assets/arcane_dictionary_feats.webp',
+  'spells-bg': './assets/arcane_dictionary_spells.webp',
+  'classes-bg': './assets/arcane_dictionary_classes.webp',
+  'subclasses-bg': './assets/arcane_dictionary_subclasses.webp',
+  'items-bg': './assets/arcane_dictionary_items.webp',
+  'race-bg': './assets/arcane_dictionary_races.webp',
+  'character-create-bg': './assets/arcane_dictionary_characters.webp',
+  'character-view-bg': './assets/arcane_dictionary_CharacterView.webp',
+  'backgrounds-bg': './assets/arcane_dictionary_backgronds.webp',
+  'aboutUS-bg': './assets/arcane_dictionary_aaboutUS.webp'
 );
 
 @each $class, $image in $background-images {
@@ -346,17 +352,7 @@ code {
   font-display: swap;
 }
 
-// Solbera_Imitation : Drop caps ↓ 
-
-@font-face {
-  font-family: "Solbera_Imitation";
-  src: url("./assets/solbera-dnd-fonts-master/Solbera_Imitation/Solbera_Imitation.otf") format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-// Dungeon_Drop_Case : Drop caps ↓ 
+// Dungeon_Drop_Case : Drop caps ↓
 
 @font-face {
   font-family: "Dungeon_Drop_Case";

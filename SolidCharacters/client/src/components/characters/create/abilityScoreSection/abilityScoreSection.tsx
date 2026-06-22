@@ -1,6 +1,8 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, For, Match, Setter, Show, Switch } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { FormField, Select, Option, Chipbar, ChipType, Checkbox, Chip } from "coles-solid-library";
+import { FormField, Select, Option, ChipType, Checkbox, Chip } from "coles-solid-library";
+import { Star } from "coles-solid-library/icons";
+import { DragDropProvider, DragOverlay, createDraggable, createDroppable, pointerWithin, type DragEndEvent, type DefaultDataMap } from "../../../../shared/dnd";
 import styles from "./abilityScoreSection.module.scss";
 import { StatBox } from "./statBox/statbox";
 
@@ -9,8 +11,6 @@ interface assProps {
     modifers: [Accessor<Record<string, number>>, Setter<Record<string, number>>];
     genMethod: [Accessor<GenMethod>, Setter<GenMethod>];
     pbPoints: [Accessor<number>, Setter<number>];
-    selectedStat: [Accessor<number>, Setter<number>];
-    selectedStats: [Accessor<number[]>, Setter<number[]>];
     modChips: [Accessor<ChipType[]>, Setter<ChipType[]>];
     modStat: [Accessor<string>, Setter<string>];
     isFocus: [Accessor<boolean>, Setter<boolean>];
@@ -20,14 +20,17 @@ interface assProps {
 type GenMethod = "Standard Array"|"Custom Standard Array"|"Manual/Rolled"|"Point Buy"|"Extended Point Buy";
 type stat = "str"|"dex"|"con"|"int"|"wis"|"cha";
 
+// Drag payloads: a pool number, or an already-assigned box value. Drop targets:
+// a stat box, or the pool (drag back to clear).
+type ScoreDrag = { kind: "pool"; value: number } | { kind: "box"; statKey: string; value: number };
+type ScoreDrop = { kind: "pool" } | { kind: "box"; statKey: string };
+
 export const Ass:Component<assProps> = (props) => {
     const [charStats, setCharStats] = props.stats;
     const [statMods, setStatMods] = props.modifers;
 
     const [genMethod, setGenMethod] = props.genMethod;
     const [pbPoints,setPBPoints] = props.pbPoints;
-    const [selectedStat, setSelectedStat] = props.selectedStat;
-    const [selectedStats, setSelectedStats] = props.selectedStats;
     const [modChips, setModChips] = props.modChips;
     const [modStat, setModStat] = props.modStat;
     const [isFocus, setIsFocus] = props.isFocus;
@@ -70,10 +73,6 @@ export const Ass:Component<assProps> = (props) => {
         setCharStats((old)=>({...old,[name]: score}))
     }
 
-    const clearStats = ():void => {
-        setCharStats({});
-    }
-
     const getStatMod = (name: string):number => {
         return statMods()[name]
     }
@@ -81,22 +80,6 @@ export const Ass:Component<assProps> = (props) => {
     const setStatMod = (name: string, score: number):void => {
         setStatMods(old => ({...old,[name]: score}))
     }
-
-    const clearStatMods = ():void => {
-        setStatMods({});
-    }
-
-    const handleClick = (statName: stat, currentStat: number ) => {
-         if (selectedStat() !== 0) {
-            if (currentStat !== 0) {
-                return;
-            }
-            setAbilityScore(statName,selectedStat());
-            setSelectedStats(old => ([...old,selectedStat()]))
-            setSelectedStat(0);
-        }
-    }
-
 
     const strength = createMemo(()=>getAbilityScore("str"));
     const dexterity = createMemo(()=>getAbilityScore("dex"));
@@ -114,18 +97,21 @@ export const Ass:Component<assProps> = (props) => {
     
     const currentPbPoints = createMemo(()=>pbPoints());
 
-    const standardSelection = createMemo(()=>startardArray.filter(stat => !selectedStats().includes(stat)))
-    const customSelection = createMemo(()=>customStandardArray.filter(stat => !selectedStats().includes(stat)))
-    const currentStatArray = createMemo(()=>{
-        switch (genMethod()) {
-            case "Standard Array":
-                return standardSelection();
-            case "Custom Standard Array":
-                return customSelection();
-            default:
-                return [];
-        } 
-    })
+    const isArrayMethod = createMemo(()=> (genMethod() === "Standard Array" || genMethod() === "Custom Standard Array") && !is_exist());
+    const activeArray = ()=> genMethod() === "Custom Standard Array" ? customStandardArray : startardArray;
+    // The available pool is derived from charStats (values are unique within each
+    // array, empty boxes hold 0), so swap/clear are automatic: a value reappears
+    // here the moment no box holds it.
+    const pool = createMemo(()=> activeArray().filter(v => !Object.values(charStats()).includes(v)));
+
+    const boxConfig: { key: stat; name: string; score: Accessor<number>; mod: Accessor<number> }[] = [
+        { key: "str", name: "Stength", score: strength, mod: strengthMod },
+        { key: "dex", name: "Dexterity", score: dexterity, mod: dexterityMod },
+        { key: "con", name: "Constitution", score: constitution, mod: constitutionMod },
+        { key: "int", name: "Intelligence", score: intelligence, mod: intelligenceMod },
+        { key: "wis", name: "Wisdom", score: wisdom, mod: wisdomMod },
+        { key: "cha", name: "Charisma", score: charisma, mod: charismaMod },
+    ];
 
     const displayStat = (stat: string) => {
 
@@ -169,7 +155,47 @@ export const Ass:Component<assProps> = (props) => {
         modChips().forEach((chip)=>setStatMod(chip.key,+chip.value))
     })
 
-    return <FlatCard icon="star" headerName={<div class={`${styles.headerTextWrapper}`}>
+    const onDragEnd = (e: DragEndEvent<DefaultDataMap>) => {
+        const over = e.over?.data as ScoreDrop | undefined;
+        if (!over) return; // dropped on empty space (pointerWithin) → no-op
+        const data = e.active.data as ScoreDrag;
+        // charStats is the single source of truth; the pool derives from it, so a
+        // displaced value returns to the pool on its own (no extra bookkeeping).
+        if (over.kind === "box") {
+            if (data.kind === "pool") {
+                setCharStats(o => ({ ...o, [over.statKey]: data.value }));        // assign / swap-out
+            } else if (data.statKey !== over.statKey) {
+                setCharStats(o => ({ ...o, [data.statKey]: o[over.statKey], [over.statKey]: o[data.statKey] })); // swap / move
+            }
+        } else if (over.kind === "pool" && data.kind === "box") {
+            setCharStats(o => ({ ...o, [data.statKey]: 0 }));                      // clear
+        }
+    };
+
+    // A draggable pool number. Rendered inside the provider, so createDraggable
+    // resolves the drag context.
+    const PoolChip: Component<{ value: number }> = (p) => {
+        const drag = createDraggable(()=>({
+            id: `pool:${p.value}`,
+            type: "score",
+            data: { kind: "pool", value: p.value },
+            disabled: !isArrayMethod(),
+        }));
+        return <span ref={drag.ref} class={styles.poolChip} classList={{ [styles.poolChipDragging]: drag.isActive() }}>{p.value}</span>;
+    };
+
+    // The pool row is itself a drop target (drag an assigned value back here to
+    // clear it). Must be a child of the provider, hence its own component.
+    const PoolZone: Component = () => {
+        const drop = createDroppable(()=>({ id: "pool", type: "pool", data: { kind: "pool" }, disabled: !isArrayMethod() }));
+        return <div ref={drop.ref} class={styles.poolRow} classList={{ [styles.poolOver]: drop.isOver() }}>
+            <For each={pool()} fallback={<span class={styles.poolEmpty}>All scores assigned</span>}>
+                {(v) => <PoolChip value={v} />}
+            </For>
+        </div>;
+    };
+
+    return <FlatCard icon={Star} headerName={<div class={`${styles.headerTextWrapper}`}>
         <span>Stats: </span>
         <span class={`${styles.headerText}`}>str<div>({strength() + strengthMod()})</div></span>
         <span class={`${styles.headerText}`}>dex<div>({dexterity() + dexterityMod()})</div></span>
@@ -178,21 +204,27 @@ export const Ass:Component<assProps> = (props) => {
         <span class={`${styles.headerText}`}>wis<div>({wisdom() + wisdomMod()})</div></span>
         <span class={`${styles.headerText}`}>cha<div>({charisma() + charismaMod()})</div></span>
     </div>} transparent>
+        <DragDropProvider
+            collisionDetection={pointerWithin}
+            onDragEnd={onDragEnd}
+            announcements={{
+                onDragStart: (e) => { const d = e.active.data as ScoreDrag | undefined; return d ? `Picked up score ${d.value}.` : "Picked up score."; },
+                onDragOver: (e) => { const o = e.over?.data as ScoreDrop | undefined; if (!o) return "Not over a target."; return o.kind === "box" ? `Over the ${o.statKey} box.` : "Over the score pool."; },
+                onDragEnd: (e) => { const d = e.active.data as ScoreDrag | undefined; const o = e.over?.data as ScoreDrop | undefined; if (!d || !o) return "Dropped."; if (o.kind === "box") return `Assigned ${d.value} to the ${o.statKey} box.`; return `Returned ${d.value} to the pool.`; },
+                onDragCancel: () => "Cancelled drag.",
+            }}
+        >
         <div>
             <Show when={!is_exist()}>
                 <div>
                     <FormField name="Generation Method" formName="Gen Method">
                         <Select value={genMethod()} onChange={(value)=>{
                                 setGenMethod(value)
-                                if (genMethod() === "Point Buy" || genMethod() === "Extended Point Buy") {
-                                    setCharStats({
-                                        "str": 8,
-                                        "dex": 8,
-                                        "con": 8,
-                                        "int": 8,
-                                        "wis": 8,
-                                        "cha": 8
-                                    });
+                                if (value === "Point Buy" || value === "Extended Point Buy") {
+                                    setCharStats({ "str": 8, "dex": 8, "con": 8, "int": 8, "wis": 8, "cha": 8 });
+                                } else if (value === "Standard Array" || value === "Custom Standard Array") {
+                                    // Fresh pool/boxes on switch — old values may not exist in the new array.
+                                    setCharStats({ "str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0 });
                                 }
                             }}>
                             <For each={GenMethods()}>
@@ -280,34 +312,20 @@ export const Ass:Component<assProps> = (props) => {
                 <Switch>
                     <Match when={genMethod() === "Standard Array"}>
                         <div>
-                            Select a score from the array, then click the ability (stat box) you want to assign it to.
+                            Drag a score onto an ability, or drag it back here to clear it.
                         </div>
                         <div class={`${styles.pushDown}`}>
                             <strong>Standard Array: </strong>
-                            <For each={standardSelection()}>
-                                {(stat,i)=> <>
-                                    <span onClick={()=>setSelectedStat(stat)} class={selectedStat() === stat ? styles.border : "" }>
-                                        {stat}
-                                    </span>
-                                    <Show when={i() !== startardArray.length - 1}>, </Show>
-                                </> }
-                            </For>
+                            <PoolZone />
                         </div>
                     </Match>
                     <Match when={genMethod() === "Custom Standard Array"}>
                         <div>
-                            Select a score from the array, then click the ability (stat box) you want to assign it to.
+                            Drag a score onto an ability, or drag it back here to clear it.
                         </div>
                         <div class={`${styles.pushDown}`}>
                             <strong>Custom Standard Array: </strong>
-                            <For each={customSelection()}>
-                                {(stat, i)=><>
-                                    <span onClick={()=>setSelectedStat(stat)} class={selectedStat() === stat ? styles.border : "" }>
-                                        {stat}
-                                    </span>
-                                    <Show when={i() !== startardArray.length - 1}>, </Show>
-                                </>}
-                            </For>
+                            <PoolZone />
                         </div>
                     </Match>
                     <Match when={genMethod() === "Manual/Rolled"}>
@@ -323,73 +341,19 @@ export const Ass:Component<assProps> = (props) => {
             </div>
 
             <div class={`${styles.statsView}`}>
-                <StatBox 
-                statName="Stength"
-                score={strength}
-                modifier={strengthMod}
-                setCurrStats={setSelectedStats}
-                setCharStat={setCharStats}
-                genMethod={genMethod}
-                totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("str",strength())}
-                exist={is_exist}/>
-
-                <StatBox 
-                statName="Dexterity"
-                score={dexterity}
-                modifier={dexterityMod}
-                setCurrStats={setSelectedStats}
-                setCharStat={setCharStats}
-                genMethod={genMethod}
-                totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("dex",dexterity())}
-                exist={is_exist}/>
-
-                <StatBox 
-                statName="Constitution"
-                score={constitution}
-                modifier={constitutionMod}
-                setCurrStats={setSelectedStats}
-                setCharStat={setCharStats}
-                genMethod={genMethod}
-                totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("con",constitution())}
-                exist={is_exist}/>
-
-                <StatBox 
-                statName="Intelligence"
-                score={intelligence}
-                modifier={intelligenceMod}
-                setCurrStats={setSelectedStats}
-                setCharStat={setCharStats}
-                genMethod={genMethod}
-                totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("int",intelligence())}
-                exist={is_exist}/>
-
-                <StatBox 
-                statName="Wisdom"
-                score={wisdom}
-                modifier={wisdomMod}
-                setCurrStats={setSelectedStats}
-                setCharStat={setCharStats}
-                genMethod={genMethod}
-                totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("wis",wisdom())}
-                exist={is_exist}/>
-
-                <StatBox 
-                statName="Charisma"
-                score={charisma}
-                modifier={charismaMod}
-                setCurrStats={setSelectedStats}
-                setCharStat={setCharStats}
-                genMethod={genMethod}
-                totalPoints={[pbPoints,setPBPoints]}
-                onClick={()=>handleClick("cha",charisma())}
-                exist={is_exist}/>
-
+                <For each={boxConfig}>
+                    {(c) => <StatBox
+                        statName={c.name}
+                        score={c.score}
+                        modifier={c.mod}
+                        setCharStat={setCharStats}
+                        genMethod={genMethod}
+                        totalPoints={[pbPoints,setPBPoints]}
+                        exist={is_exist}/>}
+                </For>
             </div>
         </div>
+        <DragOverlay>{(active) => { const d = active?.data as ScoreDrag | undefined; return d ? <span class={styles.dragOverlayChip}>{d.value}</span> : null; }}</DragOverlay>
+        </DragDropProvider>
     </FlatCard>
 }

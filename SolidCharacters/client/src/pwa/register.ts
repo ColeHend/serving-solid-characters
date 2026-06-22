@@ -4,78 +4,79 @@ export const [needRefresh, setNeedRefresh] = createSignal(false);
 export const [offlineReady, setOfflineReady] = createSignal(false);
 export const [swVersion, setSwVersion] = createSignal<string | undefined>();
 export const [swBuildTime, setSwBuildTime] = createSignal<string | undefined>();
-export const [waiting, setWaiting] = createSignal<ServiceWorker | null>(null);
-export const [logs, setLogs] = createSignal<string[]>([]);
+const [, setLogs] = createSignal<string[]>([]);
 
-let updateFn: () => Promise<void> = () => Promise.resolve();
+let updateFn: (reloadPage?: boolean) => Promise<void> = () => Promise.resolve();
 
 function log(msg: string) {
   setLogs(l => [...l.slice(-199), msg]);
   console.log(msg);
 }
 
+// One-time reload when a new SW takes control of an already-controlled page, so the page is
+// served by a single consistent version (and its complete precache) instead of a stale/active
+// mix. The very first controllerchange (initial clientsClaim on a brand-new install) is NOT an
+// update and is skipped below — otherwise a first-time visitor gets reloaded for no reason.
+let reloadingForUpdate = false;
+function reloadOnce() {
+  if (reloadingForUpdate) return;
+  reloadingForUpdate = true;
+  window.location.reload();
+}
+
+/**
+ * Registers the service worker via vite-plugin-pwa's single virtual module. Prompt-to-reload
+ * flow: when a new SW is waiting (onNeedRefresh) we surface the ReloadPrompt toast and leave the
+ * SW waiting; the user applies it via applyUpdateAndReload (skipWaiting → controllerchange →
+ * one-time reload). This keeps the corrected SW (with the complete precache) available without
+ * reloading the page out from under an in-progress edit. The vite:preloadError safety net
+ * (preloadRecovery.ts) still auto-heals a chunk mismatch if the user stays on a stale SW.
+ */
 export function registerServiceWorker() {
+  // Dev has no precache manifest; a stale prod SW would starve page loads.
+  if (!import.meta.env.PROD) {
+    log('[sw-reg] skipped (dev)');
+    return;
+  }
   if (!('serviceWorker' in navigator)) {
     log('[sw-reg] serviceWorker not supported');
     return;
   }
+
+  // Was the page already controlled by a SW when we registered? A controllerchange while this
+  // is false is the initial clientsClaim of a first install (not an update), so don't reload then.
+  let hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) { hadController = true; return; }
+    reloadOnce();
+  });
+
   import('virtual:pwa-register/solid').then(({ useRegisterSW }) => {
     const { updateServiceWorker } = useRegisterSW({
-      immediate: false,
-      onRegisteredSW(_url, reg) {
-        log(`[sw-reg] registered ${_url}`);
-        if (reg?.waiting) {
-          setNeedRefresh(true);
-          setWaiting(reg.waiting);
-        }
-        reg?.addEventListener('updatefound', () => {
-          const ins = reg.installing;
-          if (ins) ins.addEventListener('statechange', () => {
-            if (ins.state === 'installed' && reg.waiting) {
-              log('[sw-reg] new version waiting');
-              setNeedRefresh(true);
-              setWaiting(reg.waiting);
-            }
-          });
-        });
+      immediate: true,
+      onRegisteredSW(url) {
+        log(`[sw-reg] registered ${url}`);
       },
       onRegisterError(e) {
         log('[sw-reg] register error ' + e);
-        fallbackManual();
       },
       onNeedRefresh() {
-        log('[sw-reg] need refresh');
+        // Prompt-to-reload: keep the new SW waiting and surface the ReloadPrompt toast. The
+        // user clicks "Reload" (-> applyUpdateAndReload -> updateServiceWorker(true)) when ready,
+        // so an in-progress character edit is never discarded by a surprise reload.
+        log('[sw-reg] update available -> prompting');
         setNeedRefresh(true);
       },
       onOfflineReady() {
         log('[sw-reg] offline ready');
         setOfflineReady(true);
-      }
+      },
     });
     updateFn = updateServiceWorker;
     attachMessaging();
-    setTimeout(() => {
-      if (!navigator.serviceWorker.controller) {
-        log('[sw-reg] no controller after delay -> manual fallback');
-        fallbackManual();
-      }
-    }, 2500);
   }).catch(err => {
-    log('[sw-reg] dynamic import failed ' + err);
-    fallbackManual();
+    log('[sw-reg] registration failed ' + err);
   });
-}
-
-async function fallbackManual() {
-  try {
-    const swUrl = '/claims-sw.js';
-    const reg = await navigator.serviceWorker.register(swUrl, { type: 'module' });
-    log('[sw-reg][fallback] success');
-    attachMessaging();
-    reg.update();
-  } catch (e) {
-    log('[sw-reg][fallback] failed ' + e);
-  }
 }
 
 function attachMessaging() {
@@ -86,33 +87,21 @@ function attachMessaging() {
     if (d.type === 'SW_ACTIVATED') {
       if (d.version) setSwVersion(d.version);
       if (d.buildTime) setSwBuildTime(d.buildTime);
-      if (!offlineReady()) setOfflineReady(true);
+      setOfflineReady(true);
       log(`[sw-msg] activated v=${d.version}`);
     } else if (d.type === 'PONG' && d.version) {
       setSwVersion(d.version);
-      log('[sw-msg] pong ' + d.version);
     }
   });
   navigator.serviceWorker.ready.then(reg => {
     reg.active?.postMessage({ type: 'PING' });
-    setTimeout(() => {
-      if (!offlineReady()) {
-        log('[sw-reg] forcing offline ready after timeout');
-        setOfflineReady(true);
-      }
-    }, 2000);
   });
 }
 
+/**
+ * Apply a waiting update and reload. updateServiceWorker(true) messages the waiting SW to
+ * skipWaiting and reloads the page on controllerchange — the standard prompt flow.
+ */
 export async function applyUpdateAndReload() {
-  if (waiting()) {
-    waiting()!.postMessage({ type: 'SKIP_WAITING' });
-  }
-  await updateFn();
-  window.location.reload();
-}
-
-export function dismissOfflineToast() {
-  setOfflineReady(false);
-  setNeedRefresh(false);
+  await updateFn(true);
 }

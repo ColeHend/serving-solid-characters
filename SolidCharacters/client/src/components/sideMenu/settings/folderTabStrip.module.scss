@@ -1,0 +1,86 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
+.tabStrip {
+    display: flex;
+    align-items: flex-end;              // tabs grow upward; bottoms align on the page edge
+    gap: 0;                             // neighbour overlap is done via the negative margin on .tab
+    padding: 0 var(--spacing-2, 16px);
+    margin-bottom: -1px;                // pull strip down 1px so the active tab overlaps the page border
+    position: relative;                 // NB: no z-index here — a stacking context would lift inactive
+    flex-wrap: nowrap;                  //     tabs above the page and break the "tucked behind" recess.
+
+    // overflow MUST stay visible: the active-tab ::after bridge (bottom:-1px) and the inactive
+    // translateY recess protrude below the strip's box and get clipped by any overflow!=visible.
+    overflow: visible;
+}
+
+.tab {
+    appearance: none;
+    font: inherit;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    padding: var(--spacing-1, 8px) var(--spacing-3, 24px);
+    border: 1px solid color-mix(in srgb, vars.$color-on-surface 14%, transparent);
+    border-bottom: none;               // open bottom so it can merge into the page
+    border-radius: var(--border-radius-md, 8px) var(--border-radius-md, 8px) 0 0;
+    color: var(--on-surface-color, #000);
+    transition:
+        transform var(--transition-duration, .5s) var(--transition-easing, ease),
+        background-color var(--transition-duration, .5s) var(--transition-easing, ease),
+        box-shadow var(--transition-duration, .5s) var(--transition-easing, ease),
+        opacity var(--transition-duration, .5s) var(--transition-easing, ease);
+
+    // slight overlap between neighbours for the "stacked folder" feel
+    & + & { margin-left: calc(-1 * var(--spacing-1, 8px)); }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary-color, #4caf50);
+        outline-offset: 2px;
+    }
+
+    @media screen and (max-width: 768px) {
+        padding: var(--spacing-1, 8px) var(--spacing-2, 16px);
+    }
+}
+
+.inactive {
+    background-color: var(--surface-color, #eee);
+    transform: translateY(4px);        // recessed: sits lower than the active tab
+    z-index: 0;                        // below the page (z-index:1) so it reads as tucked behind
+    // inset top shadow + the page painting over its bottom edge sell the "behind" look;
+    // no element opacity, so the label keeps full contrast.
+    box-shadow: inset 0 2px 4px color-mix(in srgb, vars.$color-on-surface 12%, transparent);
+
+    &:hover {
+        transform: translateY(2px);    // lifts toward the front on hover
+    }
+}
+
+.active {
+    background-color: var(--container-color, #fff);   // SAME fill as the page → seamless merge
+    transform: translateY(0);
+    z-index: 3;                        // above the page top border
+    font-weight: bold;
+    box-shadow: var(--shadow-elevation-1, 0 1px 3px rgba(0, 0, 0, .15));
+    border-top: 2px solid var(--primary-color, #4caf50);   // theme accent ties the tab to the brand
+
+    // The bridge: paint over the page's top border directly beneath this tab so no seam shows
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 2px;
+        background-color: var(--container-color, #fff);
+    }
+}
+
+.tabLabel {
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tab { transition: none; }
+}

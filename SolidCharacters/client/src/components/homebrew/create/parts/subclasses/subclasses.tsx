@@ -1,18 +1,20 @@
 import { Component, createMemo, createSignal, onMount, batch, Show, createEffect, For, onCleanup } from "solid-js";
 import { homebrewManager, getAddNumberAccent, getNumberArray, getSpellcastingDictionary } from "../../../../../shared";
 import { Subclass as OldSubclass } from "../../../../../models/old/class.model";
-import { A, useSearchParams } from "@solidjs/router";
+import { useSearchParams } from "@solidjs/router";
 // Removed old Feature generic import; now using new data FeatureDetail shape directly
 import { Body, FormGroup, Validators, Select } from "coles-solid-library";
+import { Equalizer, IdentityPlatform, Save, Star } from "coles-solid-library/icons";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../../../models";
-import { buildDataSpellcasting, parseDataSpellcasting } from './subclassAdapter';
+import { buildDataSpellcasting, parseDataSpellcasting, type UISpellcastingState } from './subclassAdapter';
 import { SpellsKnown } from './SpellsKnown';
 import { ClassSelection } from './ClassSelection';
 import { CoreFields } from './CoreFields';
 import { FeaturesSection } from './FeaturesSection';
 import { SpellcastingSection } from './SpellcastingSection';
 import { FeatureDetail } from "../../../../../models/data";
+import { srdSubclass } from "../../../../../models/data/generated";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 import styles from './subclasses.module.scss';
@@ -20,7 +22,7 @@ import styles from './subclasses.module.scss';
 export interface FeatureDetailLevel extends FeatureDetail {
   info: {
     level: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 }
 
@@ -71,9 +73,8 @@ const Subclasses: Component = () => {
   });
 
   // Convenience accessors
-  const subclassClass = () => (SubclassFormGroup.get('parent_class') as any) || '';
-  const subclassName = () => (SubclassFormGroup.get('name') as any) || '';
-  const subclassDescArr = () => ((SubclassFormGroup.get('description') as any) || '').split('\n').filter(Boolean);
+  const subclassClass = () => SubclassFormGroup.get('parent_class') || '';
+  const subclassName = () => SubclassFormGroup.get('name') || '';
 
   // Feature editing (ephemeral UI state not yet in form)
   const [toAddFeatureLevel, setToAddFeatureLevel] = createSignal(0);
@@ -84,9 +85,6 @@ const Subclasses: Component = () => {
   const [toAddKnownLevel, setToAddKnownLevel] = createSignal(1);
   const [toAddKnownAmount, setToAddKnownAmount] = createSignal(0);
 
-  // Selected spell derived
-  const selectedSpell = createMemo(() => allSpells().find(s => s.name === (SubclassFormGroup.get('selectedSpellName') as any)));
-
   // Derived: subclass levels for feature options
   const getSubclassLevels = createMemo(() => {
     return Array.from({length:20}, (_,i)=>`${i+1}`);
@@ -95,14 +93,14 @@ const Subclasses: Component = () => {
   // Derived spellcasting levels
   const baseCastingLevels = createMemo(() => {
   if (!SubclassFormGroup.get('hasCasting')) return [] as {level:number, spellcasting: Record<string,number>}[];
-  return Array.from({length:20}, (_,i)=>({ level: i+1, spellcasting: getSpellcastingDictionary(i+1, (SubclassFormGroup.get('casterType') as any)||'', !!SubclassFormGroup.get('hasCantrips')) }));
+  return Array.from({length:20}, (_,i)=>({ level: i+1, spellcasting: getSpellcastingDictionary(i+1, SubclassFormGroup.get('casterType')||'', !!SubclassFormGroup.get('hasCantrips')) }));
   });
 
   // Apply custom spells known if "Other"
   const mergedCastingLevels = createMemo(() => {
   if (!SubclassFormGroup.get('hasCasting')) return [];
-  const useCustom = (SubclassFormGroup.get('spellsKnownCalc') as any) === SpellsKnown.Other;
-  const map = (SubclassFormGroup.get('spellsKnownPerLevel') as any[]) || [];
+  const useCustom = SubclassFormGroup.get('spellsKnownCalc') === SpellsKnown.Other;
+  const map = SubclassFormGroup.get('spellsKnownPerLevel') || [];
     if (!useCustom) return baseCastingLevels();
     return baseCastingLevels().map(l => {
       const custom = map.find(x => x.level === l.level);
@@ -111,26 +109,15 @@ const Subclasses: Component = () => {
   });
 
   const spellcasting = createMemo(() => !SubclassFormGroup.get('hasCasting') ? undefined : ({
-    info: (SubclassFormGroup.get('spellcastingInfo') as any[]) || [],
+    info: SubclassFormGroup.get('spellcastingInfo') || [],
     castingLevels: mergedCastingLevels(),
     name: subclassName(),
-    spellcastingAbility: (SubclassFormGroup.get('castingModifier') as any)||'',
-    casterType: (SubclassFormGroup.get('casterType') as any)||'',
-    spellsKnownCalc: (SubclassFormGroup.get('spellsKnownCalc') as any),
+    spellcastingAbility: SubclassFormGroup.get('castingModifier')||'',
+    casterType: SubclassFormGroup.get('casterType')||'',
+    spellsKnownCalc: SubclassFormGroup.get('spellsKnownCalc'),
     spellsKnownRoundup: !!SubclassFormGroup.get('halfCasterRoundUp'),
     ritualCasting: !!SubclassFormGroup.get('hasRitualCasting')
   }) as OldSubclass['spellcasting'] | undefined);
-
-  // Assembled subclass (pure)
-  const currentSubclass = createMemo<OldSubclass>(() => ({
-    id: 0,
-    name: subclassName(),
-    desc: subclassDescArr(),
-    features: (SubclassFormGroup.get('features') as any[]) || [],
-    class: subclassClass(),
-    spells: (SubclassFormGroup.get('subclassSpells') as any[]) || [],
-    spellcasting: spellcasting()
-  } as OldSubclass));
 
   // Adapter to new data model Subclass (models/data) for persistence
   const toDataSubclass = () => {
@@ -142,11 +129,11 @@ const Subclasses: Component = () => {
       return acc;
     }, {});
     const uiSpellcasting = spellcasting();
-    const dataSpellcasting = buildDataSpellcasting(uiSpellcasting as any, (SubclassFormGroup.get('spellsKnownPerLevel') as any[]) || []);
+    const dataSpellcasting = buildDataSpellcasting(uiSpellcasting as unknown as UISpellcastingState, SubclassFormGroup.get('spellsKnownPerLevel') || []);
     return {
       name: subclassName(),
       parent_class: subclassClass(),
-      description: (SubclassFormGroup.get('description') as any) || '',
+      description: SubclassFormGroup.get('description') || '',
       features,
       spellcasting: dataSpellcasting,
       choices: undefined,
@@ -160,13 +147,15 @@ const Subclasses: Component = () => {
   // Editing state ----------------------------------------------------------
   const [activeKey, setActiveKey] = createSignal<string>("__new__"); // storage_key or __new__
   // Maintain a reactive local copy so UI updates when items are added/updated (test env lacks reactive manager)
-  const [homebrewList, setHomebrewList] = createSignal<any[]>([...homebrewManager.subclasses()]);
+  // Local mirror of the persisted subclasses. These bridge the generated DTO shape
+  // (homebrewManager.subclasses() -> srdSubclass) and the data-model shape used by the
+  // adapters, so the element type stays loose on purpose.
+  const [homebrewList, setHomebrewList] = createSignal<srdSubclass[]>([...homebrewManager.subclasses()]);
   const refreshHomebrewList = () => setHomebrewList([...homebrewManager.subclasses()]);
-  const storageKeyFor = (s: any) => (s?.storage_key) ? s.storage_key : `${(s?.parentClass||'').toLowerCase()}__${(s?.name||'').toLowerCase()}`;
-  const existsInHomebrew = createMemo(()=> !!homebrewList().some(s => (s as any).storage_key === `${(SubclassFormGroup.get('parent_class')||'').toLowerCase()}__${(SubclassFormGroup.get('name')||'').toLowerCase()}`));
+  const storageKeyFor = (s: srdSubclass) => (s?.storage_key) ? s.storage_key : `${(s?.parentClass||'').toLowerCase()}__${(s?.name||'').toLowerCase()}`;
 
   // Track original snapshot for change detection when editing
-  const [originalSnapshot, setOriginalSnapshot] = createSignal<any | null>(null);
+  const [originalSnapshot, setOriginalSnapshot] = createSignal<ReturnType<typeof toDataSubclass> | null>(null);
   // Force recomputation of draft when any relevant field changes (ensures reactivity across nested structures)
   const [formVersion, setFormVersion] = createSignal(0);
   createEffect(() => {
@@ -192,14 +181,6 @@ const Subclasses: Component = () => {
   const [isModifiedFlag, setIsModifiedFlag] = createSignal(false);
   const [userDirty, setUserDirty] = createSignal(false);
   const [loadingEdit, setLoadingEdit] = createSignal(false);
-  const nameDescChanged = createMemo(() => {
-    const orig = originalSnapshot();
-    if (!orig) return false;
-    const nameChanged = (subclassName() || '').toLowerCase() !== (orig.name || '').toLowerCase();
-    const descCurrent = (SubclassFormGroup.get('description') as any) || '';
-    const descOrig = (orig.description || '');
-    return nameChanged || descCurrent !== descOrig;
-  });
   createEffect(() => {
     // depend on draft recomputation & snapshot
     const draft = currentDataDraft();
@@ -220,29 +201,30 @@ const Subclasses: Component = () => {
     if (!found) return;
     setLoadingEdit(true);
     batch(()=> {
-      SubclassFormGroup.set('parent_class', found.parentClass as any);
-      SubclassFormGroup.set('name', found.name as any);
-      SubclassFormGroup.set('description', (found.description||'') as any);
+      SubclassFormGroup.set('parent_class', found.parentClass);
+      SubclassFormGroup.set('name', found.name);
+      SubclassFormGroup.set('description', found.description||'');
       // features record -> flat list
       const feats: FeatureDetailLevel[] = [];
-      if ((found as any).features) {
-        Object.entries((found as any).features).forEach(([lvl, arr]: any) => {
-          (arr as any[]).forEach(f => feats.push({ name: f.name, description: f.description, info: { level: +lvl } }));
+      if (found.features) {
+        Object.entries(found.features).forEach(([lvl, arr]) => {
+          arr.forEach(f => feats.push({ name: f.name, description: f.description, info: { level: +lvl } }));
         });
       }
-      SubclassFormGroup.set('features', feats as any);
-      if ((found as any).spellcasting) {
-        const parsed = parseDataSpellcasting((found as any).spellcasting);
-        SubclassFormGroup.set('hasCasting', !!parsed as any);
-        SubclassFormGroup.set('casterType', (parsed?.casterTypeString||'') as any);
-        SubclassFormGroup.set('spellsKnownCalc', (parsed?.spellsKnownCalc ?? SpellsKnown.None) as any);
-        if (parsed?.customKnown?.length) SubclassFormGroup.set('spellsKnownPerLevel', parsed.customKnown as any);
-        if (parsed?.castingModifier) SubclassFormGroup.set('castingModifier', parsed.castingModifier as any);
-        if (parsed?.roundUp !== undefined) SubclassFormGroup.set('halfCasterRoundUp', parsed.roundUp as any);
-        if (parsed?.hasCantrips !== undefined) SubclassFormGroup.set('hasCantrips', parsed.hasCantrips as any);
+      SubclassFormGroup.set('features', feats);
+      if (found.spellcasting) {
+        // generated DTO Spellcasting -> data-model Spellcasting bridge
+        const parsed = parseDataSpellcasting(found.spellcasting as any);
+        SubclassFormGroup.set('hasCasting', !!parsed);
+        SubclassFormGroup.set('casterType', parsed?.casterTypeString||'');
+        SubclassFormGroup.set('spellsKnownCalc', parsed?.spellsKnownCalc ?? SpellsKnown.None);
+        if (parsed?.customKnown?.length) SubclassFormGroup.set('spellsKnownPerLevel', parsed.customKnown);
+        if (parsed?.castingModifier) SubclassFormGroup.set('castingModifier', parsed.castingModifier);
+        if (parsed?.roundUp !== undefined) SubclassFormGroup.set('halfCasterRoundUp', parsed.roundUp);
+        if (parsed?.hasCantrips !== undefined) SubclassFormGroup.set('hasCantrips', parsed.hasCantrips);
       }
-      if ((found as any).spells) SubclassFormGroup.set('subclassSpells', ((found as any).spells||[]) as any);
-      if ((found as any).spellcasting?.info) SubclassFormGroup.set('spellcastingInfo', ((found as any).spellcasting.info)||[] as any);
+      if ((found as { spells?: Spell[] }).spells) SubclassFormGroup.set('subclassSpells', (found as { spells?: Spell[] }).spells || []);
+      if ((found.spellcasting as { info?: {name:string,desc:string[]}[] })?.info) SubclassFormGroup.set('spellcastingInfo', (found.spellcasting as { info?: {name:string,desc:string[]}[] }).info || []);
     });
     setOriginalSnapshot(toDataSubclass());
   setUserDirty(false);
@@ -266,21 +248,21 @@ const Subclasses: Component = () => {
 
   const clearValues = () => {
     batch(() => {
-  SubclassFormGroup.set('parent_class', '' as any);
-  SubclassFormGroup.set('name', '' as any);
-  SubclassFormGroup.set('description', '' as any);
-  SubclassFormGroup.set('features', [] as any);
-  SubclassFormGroup.set('subclassSpells', [] as any);
-  SubclassFormGroup.set('hasCasting', false as any);
-  SubclassFormGroup.set('casterType', '' as any);
-  SubclassFormGroup.set('castingModifier', '' as any);
-  SubclassFormGroup.set('spellsKnownCalc', SpellsKnown.None as any);
-  SubclassFormGroup.set('halfCasterRoundUp', false as any);
-  SubclassFormGroup.set('hasCantrips', false as any);
-  SubclassFormGroup.set('hasRitualCasting', false as any);
-  SubclassFormGroup.set('spellsKnownPerLevel', [] as any);
-  SubclassFormGroup.set('spellcastingInfo', [] as any);
-  SubclassFormGroup.set('selectedSpellName', '' as any);
+  SubclassFormGroup.set('parent_class', '');
+  SubclassFormGroup.set('name', '');
+  SubclassFormGroup.set('description', '');
+  SubclassFormGroup.set('features', []);
+  SubclassFormGroup.set('subclassSpells', []);
+  SubclassFormGroup.set('hasCasting', false);
+  SubclassFormGroup.set('casterType', '');
+  SubclassFormGroup.set('castingModifier', '');
+  SubclassFormGroup.set('spellsKnownCalc', SpellsKnown.None);
+  SubclassFormGroup.set('halfCasterRoundUp', false);
+  SubclassFormGroup.set('hasCantrips', false);
+  SubclassFormGroup.set('hasRitualCasting', false);
+  SubclassFormGroup.set('spellsKnownPerLevel', []);
+  SubclassFormGroup.set('spellcastingInfo', []);
+  SubclassFormGroup.set('selectedSpellName', '');
       setToAddFeatureLevel(0);
       setToAddKnownLevel(1);
       setToAddKnownAmount(0);
@@ -294,23 +276,24 @@ const Subclasses: Component = () => {
       const stored = homebrewManager.subclasses().find(s => s.parentClass?.toLowerCase() === searchParam.name!.toLowerCase() && s.name.toLowerCase() === searchParam.subclass!.toLowerCase());
       if (stored) {
         batch(() => {
-          SubclassFormGroup.set('parent_class', stored.parentClass as any);
-          SubclassFormGroup.set('name', stored.name as any);
-          SubclassFormGroup.set('description', (stored.description || '') as any);
+          SubclassFormGroup.set('parent_class', stored.parentClass);
+          SubclassFormGroup.set('name', stored.name);
+          SubclassFormGroup.set('description', stored.description || '');
           // features record -> flat feature array not reconstructed (left minimal)
           if (stored.features) {
             const feats: FeatureDetailLevel[] = [];
             Object.entries(stored.features).forEach(([lvl, arr]) => {
-              (arr as any[]).forEach(f => feats.push({ name: f.name, description: f.description, info: { level: +lvl } }));
+              arr.forEach(f => feats.push({ name: f.name, description: f.description, info: { level: +lvl } }));
             });
-            SubclassFormGroup.set('features', feats as any);
+            SubclassFormGroup.set('features', feats);
           }
           if (stored.spellcasting) {
+            // generated DTO Spellcasting -> data-model Spellcasting bridge
             const parsed = parseDataSpellcasting(stored.spellcasting as any);
-            SubclassFormGroup.set('hasCasting', true as any);
-            SubclassFormGroup.set('casterType', (parsed?.casterTypeString || '') as any);
-            SubclassFormGroup.set('spellsKnownCalc', (parsed?.spellsKnownCalc ?? SpellsKnown.None) as any);
-            if (parsed?.customKnown?.length) SubclassFormGroup.set('spellsKnownPerLevel', parsed.customKnown as any);
+            SubclassFormGroup.set('hasCasting', true);
+            SubclassFormGroup.set('casterType', parsed?.casterTypeString || '');
+            SubclassFormGroup.set('spellsKnownCalc', parsed?.spellsKnownCalc ?? SpellsKnown.None);
+            if (parsed?.customKnown?.length) SubclassFormGroup.set('spellsKnownPerLevel', parsed.customKnown);
           }
         });
         return;
@@ -365,7 +348,7 @@ const Subclasses: Component = () => {
             class={`${styles.subclassSelector}`}
           >
             <option value="__new__">+ New Subclass</option>
-            <For each={homebrewList()}>{(s: any) => <option value={storageKeyFor(s)}>{s.parentClass} / {s.name}</option>}</For>
+            <For each={homebrewList()}>{(s) => <option value={storageKeyFor(s)}>{s.parentClass} / {s.name}</option>}</For>
           </Select>
         </label>
         <Show when={activeKey() !== '__new__'}>
@@ -374,12 +357,12 @@ const Subclasses: Component = () => {
           </div>
         </Show>
       </div>
-      <FlatCard icon="identity_platform" headerName="Identity" startOpen={true} transparent>
+      <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} transparent>
         <ClassSelection form={SubclassFormGroup as any} allClassNames={allClassNames} getSubclassLevels={getSubclassLevels} setToAddFeatureLevel={setToAddFeatureLevel} updateParamsIfReady={updateParamsIfReady} />
         <CoreFields form={SubclassFormGroup as any} updateParamsIfReady={updateParamsIfReady} onNameInput={markDirty} onDescriptionInput={markDirty} />
       </FlatCard>
       <Show when={SubclassFormGroup.get('parent_class') && SubclassFormGroup.get('name')}>
-        <FlatCard icon="star" headerName="Features" transparent>
+        <FlatCard icon={Star} headerName="Features" transparent>
           <FeaturesSection 
             form={SubclassFormGroup as any} 
             getSubclassLevels={getSubclassLevels} 
@@ -389,7 +372,7 @@ const Subclasses: Component = () => {
             setEditIndex={setEditIndex}
             getEditIndex={editIndex} />
         </FlatCard>
-        <FlatCard icon="equalizer" headerName="Spellcasting" transparent>
+        <FlatCard icon={Equalizer} headerName="Spellcasting" transparent>
           <SpellcastingSection
             form={SubclassFormGroup as any}
             toAddKnownLevel={toAddKnownLevel}
@@ -397,26 +380,27 @@ const Subclasses: Component = () => {
             toAddKnownAmount={toAddKnownAmount}
             setToAddKnownAmount={setToAddKnownAmount}
             mergedCastingLevels={mergedCastingLevels as any}
-            allSpells={allSpells}
+            allSpells={allSpells as any}
             getAddNumberAccent={getAddNumberAccent}
             getNumberArray={getNumberArray}
             onSave={persistSubclass}
             canSave={createMemo(()=> canAddSubclass() && (activeKey()==='__new__' ? true : (isModifiedFlag() || userDirty())))}
             setSubclassSpells={(fn)=>{
-              const next = fn(((SubclassFormGroup.get('subclassSpells') as Spell[])||[]));
+              // generated DTO Spell[] <-> data-model Spell[] bridge
+              const next = fn((SubclassFormGroup.get('subclassSpells') as any) || []);
               SubclassFormGroup.set('subclassSpells', next as any);
             }}
             setSpellcastingInfo={(fn)=>{
-              const next = fn(((SubclassFormGroup.get('spellcastingInfo') as any[])||[]));
-              SubclassFormGroup.set('spellcastingInfo', next as any);
+              const next = fn((SubclassFormGroup.get('spellcastingInfo')||[]));
+              SubclassFormGroup.set('spellcastingInfo', next);
             }}
             setSpellsKnownPerLevel={(fn)=>{
-              const next = fn(((SubclassFormGroup.get('spellsKnownPerLevel') as any[])||[]));
-              SubclassFormGroup.set('spellsKnownPerLevel', next as any);
+              const next = fn((SubclassFormGroup.get('spellsKnownPerLevel')||[]));
+              SubclassFormGroup.set('spellsKnownPerLevel', next);
             }}
           />
         </FlatCard>
-        <FlatCard icon="save" headerName="save" alwaysOpen transparent>
+        <FlatCard icon={Save} headerName="save" alwaysOpen transparent>
           <div style={{ display: 'flex', 'gap': '0.75rem', 'margin-top': '0.75rem', 'flex-wrap':'wrap' }}>
             <button
               disabled={!canAddSubclass() || (activeKey() !== '__new__' && !(isModifiedFlag() || userDirty()))}

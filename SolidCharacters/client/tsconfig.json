@@ -3,13 +3,19 @@
     "strict": true,
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": ["vite/client"],
+    "types": ["vite/client", "vitest/globals"],
     "noEmit": true,
     "isolatedModules": true,
-  }
+    // The workbox-* package typings pull `lib.webworker` into the program (alongside
+    // lib.dom), whose globals conflict (TS6200/2374/2403/2717 inside the bundled .d.ts).
+    // skipLibCheck skips type-checking of declaration files, which clears those library
+    // conflicts; app code is still fully checked against the libraries.
+    "skipLibCheck": true,
+  },
+  "exclude": ["src/pwa/claims-sw.ts"]
 }

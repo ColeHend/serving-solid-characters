@@ -15,12 +15,12 @@ const App: Component = () => {
   });
   
   // Initialize state with safe defaults
-  const [userSettings, setUserSettings] = createSignal({ theme: 'dark' });
+  const [, setUserSettings] = createSignal({ theme: 'dark' });
   const [isLoading, setIsLoading] = createSignal(true);
 
   try {
     // Safely get user settings
-    const [settings, setSettings] = getUserSettings();
+    const [settings] = getUserSettings();
     createEffect(() => {
       try {
         setUserSettings((old)=>({

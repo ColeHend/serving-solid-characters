@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using SolidCharacters.Domain.DTO;
 using Microsoft.AspNetCore.Mvc;
 using SolidCharacters.Domain.ClassesEntity;
 using SolidCharacters.Repository;
@@ -10,7 +9,6 @@ using SolidCharacters.Domain.RacesEntity;
 using SolidCharacters.Domain.Entities;
 using SolidCharacters.Domain.FeatsEntity;
 using SolidCharacters.Domain.BackgroundsEntity;
-using Microsoft.OpenApi.Any;
 
 [ApiController]
 [Route("api/[controller]")]

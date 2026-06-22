@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { render, fireEvent, cleanup } from "@solidjs/testing-library";
+import { render, cleanup } from "@solidjs/testing-library";
 import { Route, Router } from "@solidjs/router";
 import Feats from "./feats";
 import homebrewManager from "../../../../../shared/customHooks/homebrewManager";

@@ -28,7 +28,7 @@ interface modalProps {
 export const AddSpellPopup:Component<modalProps> = (props) => {
     const characters = createMemo(()=>characterManager.characters());
 
-    const [showPopup, setShowPopup] = props.show;
+    const [, setShowPopup] = props.show;
 
     const handleClick = (character: Character) => {
         AddSpell(props.spell,character.name);

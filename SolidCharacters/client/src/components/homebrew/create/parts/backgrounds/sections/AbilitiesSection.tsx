@@ -5,8 +5,8 @@ import {
   Modal,
   Select,
   Option,
-  FormField,
 } from "coles-solid-library";
+import { ElectricBolt } from "coles-solid-library/icons";
 import styles from "../backgrounds.module.scss";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 
@@ -26,7 +26,7 @@ const AbilitiesSection: Component<Props> = (p) => {
   const [show, setShow] = createSignal(false);
   return (
     <FlatCard
-      icon="electric_bolt"
+      icon={ElectricBolt}
       headerName="Ability Choices"
       startOpen={true}
       extraHeaderJsx={

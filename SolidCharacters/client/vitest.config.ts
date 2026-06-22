@@ -43,14 +43,18 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      'coles-solid-library': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/index.tsx'),
+      // Icons are pure SVG strings (no reactivity) — resolve the tree-shakeable subpath to the
+      // real generated barrel rather than the mock. Must precede the base alias (most-specific first).
+      'coles-solid-library/icons': path.resolve(__dirname, 'node_modules/coles-solid-library/dist/generated/outlined.js'),
       'coles-solid-library/dist/components/Form/formHelp/models': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/dist/components/Form/formHelp/models.ts'),
+      'coles-solid-library': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/index.tsx'),
     }
   },
     // resolve: {
     //     conditions: ["development", "browser"],
     // },
     test: {
+        globals: true,
         "setupFiles": [
             "fake-indexeddb/auto",
             "./vitest.setup.ts"

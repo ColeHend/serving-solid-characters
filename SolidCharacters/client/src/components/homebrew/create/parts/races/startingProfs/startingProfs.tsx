@@ -9,7 +9,6 @@ import {
   TabBar,
   Modal
 } from "coles-solid-library";
-// import { ItemType } from "../../../../../../shared/customHooks/utility/tools/itemType";
 import { SetStoreFunction } from "solid-js/store";
 import { Feature } from "../../../../../../models/old/core.model";
 import { useDnDItems } from "../../../../../../shared/customHooks/dndInfo/info/all/items";

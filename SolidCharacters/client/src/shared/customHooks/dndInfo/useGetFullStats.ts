@@ -1,10 +1,5 @@
 import { Accessor, createMemo } from "solid-js";
 import { Stats } from "./useCharacters";
-// import useGetBackgrounds from "./oldSrdinfo/data/useGetBackgrounds";
-// import useGetClasses from "./oldSrdinfo/data/useGetClasses";
-// import useGetFeats from "./oldSrdinfo/data/useGetFeats";
-// import useGetItems from "./oldSrdinfo/data/useGetItems";
-// import useGetRaces from "./oldSrdinfo/data/useGetRaces";
 import { Character } from "../../../models/character.model";
 import { useDnDSpells } from "./info/all/spells";
 import { useDnDRaces } from "./info/all/races";

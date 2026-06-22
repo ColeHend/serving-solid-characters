@@ -1,5 +1,6 @@
 import { Component, For, Show } from "solid-js";
 import { Button, Chip } from "coles-solid-library";
+import { Chat } from "coles-solid-library/icons";
 import styles from "../backgrounds.module.scss";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 
@@ -15,7 +16,7 @@ interface Props {
 const LanguagesSection: Component<Props> = (p) => {
   return (
     <FlatCard
-      icon="chat"
+      icon={Chat}
       headerName="Languages"
       extraHeaderJsx={
         <div class={styles.inlineMeta}>

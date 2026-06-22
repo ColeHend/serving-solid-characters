@@ -6,17 +6,17 @@ import { effect } from "solid-js/web";
 import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
-import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, ExpansionPanel } from "coles-solid-library";
+import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row } from "coles-solid-library";
 import { Character } from "../../../models/character.model";
 import { Spell } from "../../../models/generated";
 import { srdItem } from "../../../models/data/generated";
-// import { useGetItems } from "../../../shared";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { characterManager, Clone } from "../../../shared";
 import { SpellTable } from "./SpellTable/SpellTable";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
+import { CreateSheetButton } from "../createSheetButton";
 
 const CharacterView: Component = () => {
   const [userSettings] = getUserSettings();
@@ -136,6 +136,7 @@ const CharacterView: Component = () => {
                 <Option value={character}>{character.name}</Option>
               )}</For>
             </Select>
+            <CreateSheetButton character={currentCharacter()} />
 
             <div class={`${styles.innerBoxInfoRow}`}>
               <div class={`${styles.infoBox}`}>

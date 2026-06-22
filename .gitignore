@@ -14,7 +14,9 @@ SolidCharacters/client/node_modules
 SolidCharacters/client/dist
 SolidCharacters/client/dev-dist
 node_modules
+dockerUpload.txt
 # SSL dev certs
 ssl/
 *.pem
 dev-cert.pfx
+To_Adapt_And_Delete

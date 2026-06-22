@@ -1,7 +1,8 @@
-import { Accessor, Component, createMemo, For, Setter, Show, Switch, Match, createSignal, createEffect } from "solid-js";
+import { Accessor, Component, createMemo, For, Setter, Show, Switch, Match, createSignal } from "solid-js";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
-import { Background, ChoiceDetail, Class5E, Item, Race } from "../../../../models/generated";
-import { Button, Checkbox, Chip, FormField, FormGroup, Input, RadioGroup } from "coles-solid-library";
+import { Background, Item } from "../../../../models/generated";
+import { Button, Checkbox, Chip, FormField, FormGroup, Input } from "coles-solid-library";
+import { Backpack } from "coles-solid-library/icons";
 import styles from "./itemSection.module.scss";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import { CharacterForm } from "../../../../models/character.model";
@@ -21,8 +22,6 @@ interface sectionProps {
 export const ItemSection:Component<sectionProps> = (props) => {
     const classes = useDnDClasses();
     const [inventory,setInventory] = props.inventory;
-    const [equipped, setEquipped] = props.equipped;
-    const [attuned, setAttuned] = props.attuned;
     const [isItems, setIsItems] = createSignal<boolean>(true);
     const [isBackgrndItems, setIsBackgrndItems] = createSignal<boolean>(true);
     
@@ -185,7 +184,7 @@ export const ItemSection:Component<sectionProps> = (props) => {
         setInventory(old => old.filter(x => x !== item));
     }
 
-    return <FlatCard icon="backpack" headerName="Equipment" transparent>
+    return <FlatCard icon={Backpack} headerName="Equipment" transparent>
         <Show when={!exist()}>
             <FlatCard headerName={<strong>Starting Equipment</strong>} transparent>
                 <div>
@@ -235,7 +234,7 @@ export const ItemSection:Component<sectionProps> = (props) => {
                     
                         <div>
                             <For each={classStartItems()}>
-                                {(choice, i) => <li>
+                                {(choice) => <li>
                                     <Checkbox onChange={(checked)=>{
                                         handleCheckbox(checked, choice)
                                         setClsChoice(checked ? choice : null);

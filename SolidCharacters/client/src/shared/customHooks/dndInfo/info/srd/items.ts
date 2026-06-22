@@ -1,68 +1,28 @@
-import { Item } from "../../../../../models/generated";
-import HttpClient$ from "../../../utility/tools/httpClientObs";
-import { concatMap, of, take, tap } from "rxjs";
+import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
-import { createMemo, createSignal } from "solid-js";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
 import { srdItem } from "../../../../../models/data/generated";
+import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 const [items2014, setItems2014] = createSignal<srdItem[]>([]);
 const [items2024, setItems2024] = createSignal<srdItem[]>([]);
-let loading2014 = false;
-let loading2024 = false;
 
-export function useGetSrdItems(version: '2014' | '2024' | "both" | string) {
+const load2014 = makeSrdLoader<srdItem>({ table: SrdDB.items, endpoint: '/api/2014/Items', label: '2014 items', setSignal: setItems2014 });
+const load2024 = makeSrdLoader<srdItem>({ table: SrdDB2024.items, endpoint: '/api/2024/Items', label: '2024 items', setSignal: setItems2024 });
 
-  if ((version === '2014' || version === 'both') && items2014().length === 0 && !loading2014) {
-    loading2014 = true;
-    const srdDb2014$ = HttpClient$.toObservable(SrdDB.items.toArray());
-    srdDb2014$.pipe(
-      take(1),
-      concatMap((cached) => {
-        if (cached.length > 0) return of(cached);
-        return fetchItems("2014");
-      }),
-      tap(list => {
-        if (list?.length) {
-          SrdDB.items.bulkPut(list).catch(err => console.error('Error saving 2014 items:', err));
-        }
-      })
-    ).subscribe({
-      next: (list) => setItems2014(list),
-      error: (e) => { console.error('2014 items load error:', e) },
-      complete: () => { loading2014 = false; }
-    });
-  }
-
-  if ((version === '2024' || version === 'both') && items2024().length === 0 && !loading2024) {
-    loading2024 = true;
-    const srdDb2024$ = HttpClient$.toObservable(SrdDB2024.items.toArray());
-    srdDb2024$.pipe(
-      take(1),
-      concatMap((cached) => {
-        if (cached.length > 0) return of(cached);
-        return fetchItems("2024");
-      }),
-      tap(list => {
-        if (list?.length) {
-          SrdDB2024.items.bulkPut(list).catch(err => console.error('Error saving 2024 items:', err));
-        }
-      })
-    ).subscribe({
-      next: (list) => setItems2024(list),
-      error: (e) => { console.error('2024 items load error:', e) },
-      complete: () => { loading2024 = false; }
-    });
-  }
-
-  return createMemo<srdItem[]>(() => {
-    if (version === "2014") return items2014();
-    if (version === "2024") return items2024();
-    if (version === "both") return [...items2014(),...items2024()]
-    return items2014().length ? items2014() : items2024();
-  });
+/** Ensure a version's items are loaded into IndexedDB + memory. Awaitable for offline preload. */
+export function loadSrdItems(version: '2014' | '2024'): Promise<SrdLoadResult<srdItem>> {
+  return version === '2024' ? load2024() : load2014();
 }
 
-function fetchItems(version: '2014' | '2024') {
-  return HttpClient$.get<srdItem[]>(`/api/${version}/Items`).pipe(take(1));
+export function useGetSrdItems(version: '2014' | '2024' | 'both' | string): Accessor<srdItem[]> {
+  if ((version === '2014' || version === 'both') && items2014().length === 0) load2014();
+  if ((version === '2024' || version === 'both') && items2024().length === 0) load2024();
+
+  return createMemo<srdItem[]>(() => {
+    if (version === '2014') return items2014();
+    if (version === '2024') return items2024();
+    if (version === 'both') return [...items2014(), ...items2024()];
+    return items2014().length ? items2014() : items2024();
+  });
 }
