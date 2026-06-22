@@ -1,5 +1,5 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
-import { Gandalf } from "../../../../../../shared/customHooks/dndInfo/useExampleChars";
+import { EXAMPLE_CHARACTER } from "../../../../../../shared/customHooks/dndInfo/useExampleChars";
 import { Character, CharacterRace } from "../../../../../../models/character.model";
 import { addSnackbar, Button, Form, FormArray, FormField, FormGroup, Input, Option, Select, Container } from "coles-solid-library";
 import style from "./featurePrerequisites.module.scss";
@@ -58,14 +58,14 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
     // prop character for keys
 
-    const characterKeys = createMemo(() => Object.keys(Gandalf));
+    const characterKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER));
     
-    const charRaceKeys = createMemo(() => Object.keys(Gandalf.race));
-    const charProficienciesKeys = createMemo(() => Object.keys(Gandalf.proficiencies.skills));
-    const charHealthKeys = createMemo(() => Object.keys(Gandalf.health));
-    const charStatKeys = createMemo(() => Object.keys(Gandalf.stats));
-    const charItemKeys = createMemo(() => Object.keys(Gandalf.items));
-    const charCurrencyKeys = createMemo(() => Object.keys(Gandalf.items.currency));
+    const charRaceKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.race));
+    const charProficienciesKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.proficiencies.skills));
+    const charHealthKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.health));
+    const charStatKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.stats));
+    const charItemKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.items));
+    const charCurrencyKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.items.currency));
 
     const prerequisites = createMemo(() => formGroup.get());
 
@@ -161,103 +161,103 @@ export const FeaturePrerequisites: Component<props> = (props) => {
     const getCharacterKeyType = (formKey: string) => {
         switch (formKey) {
             case "Name":
-                return typeof Gandalf.name;
+                return typeof EXAMPLE_CHARACTER.name;
 
             case "Level":
-                return typeof Gandalf.level;
+                return typeof EXAMPLE_CHARACTER.level;
             
             case "Spells":
-                return typeof Gandalf.spells[0].name;
+                return typeof EXAMPLE_CHARACTER.spells[0].name;
 
             case "Race":
-                return typeof Gandalf.race.species;
+                return typeof EXAMPLE_CHARACTER.race.species;
 
             case "AC":
-                return typeof Gandalf.ArmorClass;
+                return typeof EXAMPLE_CHARACTER.ArmorClass;
             
             case "Speed":
-                return typeof Gandalf.Speed;
+                return typeof EXAMPLE_CHARACTER.Speed;
             
             case "Class":
-                return typeof Gandalf.className;
+                return typeof EXAMPLE_CHARACTER.className;
             
             case "Subclass":
-                return typeof Gandalf.subclass;
+                return typeof EXAMPLE_CHARACTER.subclass;
             
             case "Background":
-                return typeof Gandalf.background;
+                return typeof EXAMPLE_CHARACTER.background;
 
             case "Features":
-                return typeof Gandalf.features[0].id;
+                return typeof EXAMPLE_CHARACTER.features[0].id;
 
             case "Proficiencies":
                 return "string";
             
             case "Saving throws":
-                return typeof Gandalf.savingThrows[0].stat;
+                return typeof EXAMPLE_CHARACTER.savingThrows[0].stat;
 
             case "Resistances":
-                return typeof Gandalf.resistances[0].type;
+                return typeof EXAMPLE_CHARACTER.resistances[0].type;
 
             case "Vulnerabilities":
-                return typeof Gandalf.vulnerabilities[0].type;
+                return typeof EXAMPLE_CHARACTER.vulnerabilities[0].type;
 
             case "Immunities":
-                return typeof Gandalf.immunities[0].type;
+                return typeof EXAMPLE_CHARACTER.immunities[0].type;
 
             case "Languages":
-                return typeof Gandalf.languages[0];
+                return typeof EXAMPLE_CHARACTER.languages[0];
 
             case "Max HP":
-                return typeof Gandalf.health.max;
+                return typeof EXAMPLE_CHARACTER.health.max;
 
             case "Current HP":
-                return typeof Gandalf.health.current;
+                return typeof EXAMPLE_CHARACTER.health.current;
 
             case "Temporary HP":
-                return typeof Gandalf.health.temp;
+                return typeof EXAMPLE_CHARACTER.health.temp;
 
             case "Strength":
-                return typeof Gandalf.stats.str;
+                return typeof EXAMPLE_CHARACTER.stats.str;
 
             case "Dexterity":
-                return typeof Gandalf.stats.dex;
+                return typeof EXAMPLE_CHARACTER.stats.dex;
 
             case "Constitution":
-                return typeof Gandalf.stats.con;
+                return typeof EXAMPLE_CHARACTER.stats.con;
 
             case "Intelligence":
-                return typeof Gandalf.stats.int;
+                return typeof EXAMPLE_CHARACTER.stats.int;
 
             case "Wisdom":
-                return typeof Gandalf.stats.wis;
+                return typeof EXAMPLE_CHARACTER.stats.wis;
 
             case "Charisma":
-                return typeof Gandalf.stats.cha;
+                return typeof EXAMPLE_CHARACTER.stats.cha;
 
             case "Item → Inventory":
-                return typeof Gandalf.items.inventory[0];
+                return typeof EXAMPLE_CHARACTER.items.inventory[0];
 
             case "Item → Equipped":
-                return typeof Gandalf.items.equipped[0];
+                return typeof EXAMPLE_CHARACTER.items.equipped[0];
 
             case "Item → Attuned":
-                return typeof Gandalf.items.attuned[0];
+                return typeof EXAMPLE_CHARACTER.items.attuned[0];
 
             case "Item → Currency → Platinum Pieces":
-                return typeof Gandalf.items.currency.platinumPieces;
+                return typeof EXAMPLE_CHARACTER.items.currency.platinumPieces;
 
             case "Item → Currency → Gold Pieces":
-                return typeof Gandalf.items.currency.goldPieces;
+                return typeof EXAMPLE_CHARACTER.items.currency.goldPieces;
 
             case "Item → Currency → Electrum Pieces":
-                return typeof Gandalf.items.currency.electrumPieces;
+                return typeof EXAMPLE_CHARACTER.items.currency.electrumPieces;
 
             case "Item → Currency → Sliver Pieces":
-                return typeof Gandalf.items.currency.sliverPieces;
+                return typeof EXAMPLE_CHARACTER.items.currency.sliverPieces;
         
             case "Item → Currency → Copper Pieces":
-                return typeof Gandalf.items.currency.copperPieces;
+                return typeof EXAMPLE_CHARACTER.items.currency.copperPieces;
                 
             default:
                 return "undefined";
