@@ -14,6 +14,7 @@ const ChatMessageList: Component = () => {
     createEffect(() => {
         aiAssistant.messages();
         aiAssistant.streamingText();
+        aiAssistant.streamingThinking();
         aiAssistant.pendingPreviews();
         queueMicrotask(toBottom);
     });

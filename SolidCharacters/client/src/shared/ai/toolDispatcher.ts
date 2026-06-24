@@ -16,8 +16,17 @@ export interface HomebrewPreview {
     title: string;
     /** The fully-built model object that will be saved on confirm. */
     entity: Spell | srdItem | MagicItem | Feat | Background | Race | srdSubclass | Class5E;
+    /** Hard blockers (mirror the manual editors): if non-empty, Save is disabled. */
     valid: boolean;
     errors: string[];
+    /** Recommended-but-empty fields, as human-readable notes. These DO NOT block Save (warn-only). */
+    warnings?: string[];
+    /** Raw input keys the model left empty/absent — fed to the "Complete with AI" repair turn. */
+    missingFields?: string[];
+    /** How many AI repair attempts have run on this preview (hard-capped at 1). */
+    repairAttempts?: number;
+    /** True when the model's tool call was cut off (stop_reason max_tokens) or its JSON failed to parse. */
+    truncated?: boolean;
 }
 
 const TOOL_TO_KIND: Record<string, HomebrewKind> = {
@@ -55,7 +64,7 @@ function featuresByLevel(v: unknown): Record<number, FeatureDetail[]> {
     for (const raw of list(v)) {
         const f = raw as Record<string, unknown>;
         const level = num(f.level, 1);
-        (out[level] ??= []).push({ name: str(f.name), description: str(f.description) });
+        (out[level] ??= []).push({ id: createNewId(), name: str(f.name), description: str(f.description) });
     }
     return out;
 }
@@ -65,8 +74,7 @@ function featuresByLevel(v: unknown): Record<number, FeatureDetail[]> {
 function toSpell(i: Record<string, unknown>): Spell {
     const isVerbal = boolean(i.isVerbal), isSomatic = boolean(i.isSomatic), isMaterial = boolean(i.isMaterial);
     const components = [isVerbal && "V", isSomatic && "S", isMaterial && "M"].filter(Boolean).join(", ");
-    console.log('toCreateSpell: ', i);
-    
+
     return {
         id: createNewId(),
         name: str(i.name),
@@ -124,13 +132,20 @@ function toFeat(i: Record<string, unknown>): Feat {
     if (prereq) prerequisites.push({ type: PrerequisiteType.String, value: prereq });
     return {
         id: createNewId(),
-        details: { name: str(i.name), description: str(i.description) },
+        details: { id: createNewId(), name: str(i.name), description: str(i.description) },
         prerequisites,
     };
 }
 
 function toBackground(i: Record<string, unknown>): Background {
-    const proficiencies: Proficiencies = { armor: [], weapons: [], tools: strList(i.tools), skills: strList(i.skills) };
+    const proficiencies: Proficiencies = {
+        armor: strList(i.armor), weapons: strList(i.weapons),
+        tools: strList(i.tools), skills: strList(i.skills),
+    };
+    const features: FeatureDetail[] = list(i.features).map(raw => {
+        const f = raw as Record<string, unknown>;
+        return { id: createNewId(), name: str(f.name), description: str(f.description) };
+    });
     return {
         id: createNewId(),
         name: str(i.name),
@@ -138,6 +153,7 @@ function toBackground(i: Record<string, unknown>): Background {
         proficiencies,
         startEquipment: [],
         feat: str(i.feat) || undefined,
+        features: features.length ? features : undefined,
     };
 }
 
@@ -148,8 +164,12 @@ function toRace(i: Record<string, unknown>): Race {
     });
     const traits: Feat[] = list(i.traits).map(raw => {
         const t = raw as Record<string, unknown>;
-        return { id: createNewId(), details: { name: str(t.name), description: str(t.description) }, prerequisites: [] };
+        return { id: createNewId(), details: { id: createNewId(), name: str(t.name), description: str(t.description) }, prerequisites: [] };
     });
+    const descriptions: Record<string, string> = {};
+    const age = str(i.age), alignment = str(i.alignment);
+    if (age) descriptions.age = age;
+    if (alignment) descriptions.alignment = alignment;
     return {
         id: createNewId(),
         name: str(i.name),
@@ -158,6 +178,7 @@ function toRace(i: Record<string, unknown>): Race {
         languages: strList(i.languages),
         abilityBonuses,
         traits,
+        descriptions: Object.keys(descriptions).length ? descriptions : undefined,
     };
 }
 
@@ -173,22 +194,101 @@ function toSubclass(i: Record<string, unknown>): srdSubclass {
 }
 
 function toClass(i: Record<string, unknown>): Class5E {
-    const proficiencies: Proficiencies = { armor: [], weapons: [], tools: [], skills: strList(i.skills) };
+    const proficiencies: Proficiencies = {
+        armor: strList(i.armor), weapons: strList(i.weapons),
+        tools: strList(i.tools), skills: strList(i.skills),
+    };
+    const equipmentItems = strList(i.startingEquipment);
     return {
         id: createNewId(),
         name: str(i.name),
         hitDie: str(i.hitDie, "d8"),
         primaryAbility: str(i.primaryAbility),
         savingThrows: strList(i.savingThrows),
-        startingEquipment: [],
+        startingEquipment: equipmentItems.length ? [{ items: equipmentItems }] : [],
         proficiencies,
         startChoices: {},
         features: featuresByLevel(i.features),
     };
 }
 
+// ----- completeness: surface the fields the model left empty so the user can see them and the
+//       "Complete with AI" repair turn can name them. Computed from the RAW tool input BEFORE coercion,
+//       because the coercers above erase the difference between "model omitted" and "model sent empty". -----
+interface FieldSpec { key: string; label: string; }
+
+/** Per-kind fields that SHOULD be filled for the entity to feel complete. Keys are raw tool-input keys. */
+const RECOMMENDED: Record<HomebrewKind, FieldSpec[]> = {
+    spell: [
+        { key: "description", label: "description" },
+        { key: "school", label: "school" },
+        { key: "castingTime", label: "casting time" },
+        { key: "range", label: "range" },
+        { key: "duration", label: "duration" },
+        { key: "classes", label: "classes that can cast it" },
+    ],
+    item: [
+        { key: "desc", label: "description" },
+        { key: "cost", label: "cost" },
+    ],
+    magic_item: [
+        { key: "desc", label: "description" },
+        { key: "category", label: "category" },
+    ],
+    feat: [
+        { key: "description", label: "description" },
+    ],
+    background: [
+        { key: "desc", label: "description" },
+        { key: "skills", label: "skill proficiencies" },
+        { key: "features", label: "a background feature" },
+    ],
+    race: [
+        { key: "traits", label: "racial traits" },
+        { key: "languages", label: "languages" },
+    ],
+    subclass: [
+        { key: "description", label: "description" },
+        { key: "features", label: "features" },
+    ],
+    class: [
+        { key: "features", label: "class features" },
+        { key: "skills", label: "skill proficiencies" },
+    ],
+};
+
+/** True if a raw tool-input value is "empty": absent, blank string, or empty array. */
+function isEmptyInput(v: unknown): boolean {
+    if (v == null) return true;
+    if (typeof v === "string") return v.trim() === "";
+    if (Array.isArray(v)) return v.length === 0;
+    return false;
+}
+
+/** Recommended-but-empty fields → warnings + raw keys. Ruleset-aware; never blocks Save. */
+function assessCompleteness(kind: HomebrewKind, input: Record<string, unknown>, dndSystem: string): { warnings: string[]; missingFields: string[] } {
+    const specs = [...(RECOMMENDED[kind] ?? [])];
+    // Ruleset-aware: 2014 species carry ability bonuses; 2024 moves them to the background + adds the feat.
+    if (kind === "race" && dndSystem !== "2024") specs.push({ key: "abilityBonuses", label: "ability score bonuses" });
+    if (kind === "background" && dndSystem === "2024") specs.push({ key: "feat", label: "a granted feat" });
+
+    const missingFields: string[] = [];
+    const warnings: string[] = [];
+    for (const s of specs) {
+        if (isEmptyInput(input[s.key])) { missingFields.push(s.key); warnings.push(`No ${s.label}.`); }
+    }
+    // Caster hint: spellcasting is intentionally not AI-generated, so flag a caster-flavored class/subclass.
+    if (kind === "class" || kind === "subclass") {
+        const text = `${str(input.description)} ${JSON.stringify(input.features ?? "")}`.toLowerCase();
+        if (/spell|cast|magic/.test(text)) {
+            warnings.push("Looks like a spellcaster — finish the spellcasting (caster type + slots) in the editor.");
+        }
+    }
+    return { warnings, missingFields };
+}
+
 /** Build a non-persisted preview from a tool call. Never writes to the DB. */
-export function buildPreview(toolCall: AiToolCall): HomebrewPreview {
+export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): HomebrewPreview {
     const kind = TOOL_TO_KIND[toolCall.name];
     const input = (toolCall.input ?? {}) as Record<string, unknown>;
     const previewId = createNewId();
@@ -211,11 +311,20 @@ export function buildPreview(toolCall: AiToolCall): HomebrewPreview {
         case "class": entity = toClass(input); title = (entity as Class5E).name; break;
     }
 
+    // Hard blockers — mirror exactly what the manual editors refuse to save (name + structural integrity).
     const errors: string[] = [];
     if (!title?.trim()) errors.push("Missing name.");
     if (kind === "subclass" && !(entity as srdSubclass).parentClass.trim()) errors.push("Missing parent class.");
+    if (kind === "race") {
+        const r = entity as Race;
+        if (!r.size.trim()) errors.push("Missing size.");
+        if (!(r.speed > 0)) errors.push("Speed must be greater than 0.");
+    }
 
-    return { ...base, kind, title: title || "(unnamed)", entity, valid: errors.length === 0, errors };
+    // Recommended-but-empty fields are warn-only — the user can still save a deliberate stub.
+    const { warnings, missingFields } = assessCompleteness(kind, input, dndSystem);
+
+    return { ...base, kind, title: title || "(unnamed)", entity, valid: errors.length === 0, errors, warnings, missingFields };
 }
 
 const isPromise = (v: unknown): v is Promise<unknown> => !!v && typeof (v as { then?: unknown }).then === "function";

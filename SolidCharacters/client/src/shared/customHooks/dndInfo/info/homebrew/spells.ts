@@ -7,7 +7,7 @@ import homebrewManager from "../../../homebrewManager";
 
 const [spells, setSpells] = createSignal<Spell[]>([]);
 const allHomebrew = createMemo(() => {
-  const allSpells = [...homebrewManager.spells(), ...spells()];
+  const allSpells = [...spells(), ...homebrewManager.spells()];
   return [...new Map(allSpells.map((spell) => [spell.id, spell])).values()]
 });
 

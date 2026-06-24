@@ -107,6 +107,33 @@
     font-style: italic;
 }
 
+.thinkingBlock {
+    margin-bottom: var(--spacing-1, 6px);
+    border-left: 2px solid var(--primary-color, rgba(255, 255, 255, 0.25));
+    padding-left: var(--spacing-1, 8px);
+}
+.thinkingToggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: inherit;
+    opacity: 0.7;
+    font-size: var(--font-size-small, 0.8rem);
+    font-style: italic;
+    cursor: pointer;
+    padding: 0;
+}
+.thinkingContent {
+    opacity: 0.65;
+    font-size: var(--font-size-small, 0.85rem);
+    font-style: italic;
+    margin-top: 4px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
 .streamActions {
     margin-top: var(--spacing-1, 6px);
 }
@@ -132,8 +159,28 @@
     overflow-y: auto;
     font-size: var(--font-size-small, 0.9rem);
 }
+.previewPlaceholder {
+    opacity: 0.6;
+    font-style: italic;
+    font-size: var(--font-size-small, 0.9rem);
+}
 .previewError {
     color: var(--error-color, #c33);
+    font-size: var(--font-size-small, 0.8rem);
+}
+.completenessHeader {
+    color: #e0a52e;
+    font-size: var(--font-size-small, 0.8rem);
+}
+.completenessList {
+    margin: 0;
+    padding-left: var(--spacing-2, 16px);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.warnChip {
+    color: #e0a52e;
     font-size: var(--font-size-small, 0.8rem);
 }
 .previewActions {

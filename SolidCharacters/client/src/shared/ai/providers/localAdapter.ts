@@ -32,6 +32,11 @@ export class LocalAdapter implements AiProvider {
                 function: { name: t.name, description: t.description, parameters: t.inputSchema },
             }));
             body.tool_choice = "auto";
+            // Reasoning/"thinking" models (e.g. gemma3/gemma4 on Ollama) otherwise spend the whole token
+            // budget thinking out loud and hit max_tokens before ever emitting the tool call. Turn thinking
+            // off for tool turns so the model produces the create_* call directly. Ollama honors `think`;
+            // other OpenAI-compatible local servers ignore the extra field.
+            body.think = false;
         }
 
         const headers: Record<string, string> = { "Content-Type": "application/json" };
@@ -63,6 +68,13 @@ export class LocalAdapter implements AiProvider {
             if (!choice) continue;
 
             const delta = choice.delta ?? {};
+            // Reasoning ("thinking") models surface their chain-of-thought separately from the answer.
+            // Ollama uses `reasoning`; some OpenAI-compatible servers use `reasoning_content`. Stream
+            // either as a thinking_delta so the UI can show it in a collapsible block.
+            const reasoning = delta.reasoning ?? delta.reasoning_content;
+            if (typeof reasoning === "string" && reasoning.length) {
+                yield { type: "thinking_delta", text: reasoning };
+            }
             if (typeof delta.content === "string" && delta.content.length) {
                 yield { type: "text_delta", text: delta.content };
             }

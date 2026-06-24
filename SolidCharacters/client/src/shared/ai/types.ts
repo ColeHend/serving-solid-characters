@@ -43,6 +43,7 @@ export type AiStopReason = "end_turn" | "tool_use" | "max_tokens" | "refusal" | 
  */
 export type ChatStreamEvent =
     | { type: "text_delta"; text: string }
+    | { type: "thinking_delta"; text: string }
     | { type: "tool_call_start"; index: number; id: string; name: string }
     | { type: "tool_call_delta"; index: number; argsDelta: string }
     | { type: "tool_call_done"; index: number }
@@ -54,6 +55,8 @@ export interface StreamChatOpts {
     model: string;
     system?: string;
     maxTokens?: number;
+    /** Context window for local models (Ollama native only). */
+    numCtx?: number;
 }
 
 export interface AiProvider {

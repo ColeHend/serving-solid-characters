@@ -2,9 +2,12 @@ import { Component, createSignal, Show } from "solid-js";
 import { Select, Option, Input, Checkbox, Button, addSnackbar } from "coles-solid-library";
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
-import { AiProviderKind, AiSettings } from "../../../models/userSettings";
+import { AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, LocalApiKind } from "../../../models/userSettings";
 
-const DEFAULT_AI: AiSettings = { provider: "local", model: "", localBaseUrl: "", enabled: false };
+const DEFAULT_AI: AiSettings = {
+    provider: "local", model: "", localBaseUrl: "", enabled: false,
+    maxTokens: DEFAULT_AI_MAX_TOKENS, localApi: "ollama", numCtx: DEFAULT_AI_NUM_CTX,
+};
 
 const MODEL_PLACEHOLDER: Record<AiProviderKind, string> = {
     local: "e.g. llama3.1",
@@ -124,6 +127,35 @@ const AiSettingsTab: Component = () => {
                         onInput={(e) => updateAi({ localBaseUrl: e.currentTarget.value })}
                     />
                 </div>
+
+                <div>
+                    <label>Local API</label>
+                    <Select<string> value={ai().localApi ?? "ollama"} onSelect={(e) => updateAi({ localApi: e as LocalApiKind })}>
+                        <Option value="ollama">Ollama (native — context + thinking control)</Option>
+                        <Option value="openai">OpenAI-compatible (LM Studio, llama.cpp)</Option>
+                    </Select>
+                </div>
+
+                <Show when={(ai().localApi ?? "ollama") === "ollama"}>
+                    <div>
+                        <label for="ai-num-ctx">Context window (num_ctx)</label>
+                        <Input
+                            id="ai-num-ctx"
+                            type="number"
+                            value={String(ai().numCtx ?? DEFAULT_AI_NUM_CTX)}
+                            placeholder={String(DEFAULT_AI_NUM_CTX)}
+                            onInput={(e) => {
+                                const n = parseInt(e.currentTarget.value, 10);
+                                updateAi({ numCtx: Number.isFinite(n) && n > 0 ? n : undefined });
+                            }}
+                        />
+                        <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                            How much the model sees at once (prompt + tool definitions + response), default
+                            {" "}{DEFAULT_AI_NUM_CTX}. Ollama's own default (~4096) is often too small for homebrew
+                            generation and causes "cut off" responses — raise it (your model supports far more).
+                        </div>
+                    </div>
+                </Show>
             </Show>
 
             <Show when={isCloud()}>
@@ -136,6 +168,25 @@ const AiSettingsTab: Component = () => {
                     </div>
                 </div>
             </Show>
+
+            <div>
+                <label for="ai-max-tokens">Max response tokens</label>
+                <Input
+                    id="ai-max-tokens"
+                    type="number"
+                    value={String(ai().maxTokens ?? DEFAULT_AI_MAX_TOKENS)}
+                    placeholder={String(DEFAULT_AI_MAX_TOKENS)}
+                    onInput={(e) => {
+                        const n = parseInt(e.currentTarget.value, 10);
+                        updateAi({ maxTokens: Number.isFinite(n) && n > 0 ? n : undefined });
+                    }}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    Caps the model's response length (default {DEFAULT_AI_MAX_TOKENS}). Higher allows longer
+                    homebrew but is slower. For local models this must fit inside the server's context window
+                    (Ollama <code>num_ctx</code>); some cloud models cap lower (e.g. gpt-4o-mini at 16384).
+                </div>
+            </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
                 <Checkbox label="Enable Spark assistant" checked={ai().enabled} onChange={(checked) => updateAi({ enabled: checked })} />
