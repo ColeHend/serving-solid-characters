@@ -1,7 +1,8 @@
 import { RouteSectionProps, useNavigate } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
-import { getUserSettings, useInjectServices } from "../shared";
+import { getUserSettings, useInjectServices, isAiConfigured, refreshAiProviderStatus } from "../shared";
+import SparkSidebar from "./aiSpark/SparkSidebar";
 import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For, Show } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
@@ -93,6 +94,8 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
 
   onMount(() => {
     window.addEventListener('mousemove', mouseCapture)
+    // Learn which cloud AI providers have a server-side key so the Spark gate is correct on load.
+    refreshAiProviderStatus();
   })
 
   onCleanup(() => {
@@ -214,6 +217,9 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
           defaultShowList={[defaultShowList, setDefaultShowList]}
           defaultUserSettings={[defaultUserSettings, setDefaultUserSettings]}
         />
+        <Show when={isAiConfigured()}>
+          <SparkSidebar />
+        </Show>
         <SnackbarController />
       </Provider>      
     </ErrorBoundary>

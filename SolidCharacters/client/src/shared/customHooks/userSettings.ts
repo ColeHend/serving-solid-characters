@@ -1,5 +1,5 @@
 import { Accessor, createSignal, Setter } from "solid-js";
-import { UserSettings } from "../../models/userSettings";
+import { AiProviderKind, UserSettings } from "../../models/userSettings";
 import httpClient$ from "./utility/tools/httpClientObs";
 import userSettingDB from "./utility/localDB/userSettingDB";
 import { catchError, of, take, tap } from "rxjs";
@@ -9,7 +9,8 @@ const DEFAULT_SETTINGS: UserSettings = {
   userId: 0,
   username: "",
   email: "",
-  dndSystem: ''
+  dndSystem: '',
+  ai: { provider: 'local', model: '', localBaseUrl: '', enabled: false }
 }
 // Initialize with default settings
 const [currentSettings, setCurrentSettings] = createSignal<UserSettings>({...DEFAULT_SETTINGS});
@@ -79,4 +80,50 @@ function getAllUsers() {
       return of([]);
     })
   );
+}
+
+// ----------------- AI ("Spark") provider availability + gating -----------------
+// Which cloud providers have a usable key configured on the .NET backend. Local is always
+// "available" (it's a direct browser call with no server key). Populated from
+// GET /api/ai/providers — see refreshAiProviderStatus().
+type AiProviderStatus = Record<AiProviderKind, boolean>;
+const [aiProviderStatus, setAiProviderStatus] = createSignal<AiProviderStatus>({
+  local: true, anthropic: false, openai: false,
+});
+let aiStatusInFlight = false;
+
+export function getAiProviderStatus(): Accessor<AiProviderStatus> {
+  return aiProviderStatus;
+}
+
+/** Fetch which cloud providers have a key configured server-side. Silent on failure. */
+export function refreshAiProviderStatus(): void {
+  if (aiStatusInFlight || typeof fetch === "undefined") return;
+  aiStatusInFlight = true;
+  fetch("/api/ai/providers", { headers: { Accept: "application/json" } })
+    .then(r => (r.ok ? r.json() : null))
+    .then((data: Partial<AiProviderStatus> | null) => {
+      if (data) {
+        setAiProviderStatus({
+          local: true,
+          anthropic: !!data.anthropic,
+          openai: !!data.openai,
+        });
+      }
+    })
+    .catch(() => { /* offline / no backend — leave defaults */ })
+    .finally(() => { aiStatusInFlight = false; });
+}
+
+/**
+ * Reactive gate for the Spark icon + sidebar. True only when the feature is enabled, a model
+ * is chosen, and the selected provider is usable (local needs a base URL; cloud needs a
+ * server-side key, reported by getAiProviderStatus()). Reads module signals so it's reactive
+ * in JSX.
+ */
+export function isAiConfigured(): boolean {
+  const s = currentSettings().ai;
+  if (!s || !s.enabled || !s.model?.trim()) return false;
+  if (s.provider === "local") return !!s.localBaseUrl?.trim();
+  return aiProviderStatus()[s.provider] === true;
 }

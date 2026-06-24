@@ -14,6 +14,7 @@ using Microsoft.OpenApi;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.HttpOverrides; // forwarded headers
+using Microsoft.AspNetCore.DataProtection; // AI credential encryption key ring
 using Microsoft.AspNetCore.ResponseCompression; // compression
 using System.IO.Compression; // compression levels
 using System.Net; // proxy IPs
@@ -35,6 +36,17 @@ builder.Services.AddTransient<ITokenRepository, TokenRepository>();
 builder.Services.AddTransient<ISrdInfoRepository, SrdInfoRepository>();
 builder.Services.AddTransient<HttpClient>();
 builder.Services.AddTransient<Open5eRepository>();
+
+// AI ("Spark") proxy: keys held server-side, streamed relay to Anthropic/OpenAI.
+builder.Services.AddHttpClient("anthropic", c => c.Timeout = Timeout.InfiniteTimeSpan);
+builder.Services.AddHttpClient("openai", c => c.Timeout = Timeout.InfiniteTimeSpan);
+builder.Services.AddSingleton<SolidCharacters.Services.Ai.IAiCredentialStore, SolidCharacters.Services.Ai.AiCredentialStore>();
+builder.Services.AddSingleton<SolidCharacters.Services.Ai.IAiChatService, SolidCharacters.Services.Ai.AiChatService>();
+// Data Protection backs AiCredentialStore (encrypts stored cloud keys). Not auto-registered here,
+// so register it explicitly and persist the key ring under git-ignored App_Data so keys survive restarts.
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "dp-keys")))
+    .SetApplicationName("SolidCharacters");
 builder.Services.AddTransient<Closed5eRepository>();
 builder.Services.AddSingleton<IRunOnStartup, TypeGenStartupService>();
 builder.Services.AddScoped<IRunOnStartup, SpellSyncStartupService>();

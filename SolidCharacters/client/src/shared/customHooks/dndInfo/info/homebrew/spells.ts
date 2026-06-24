@@ -2,9 +2,14 @@ import { Spell } from "../../../../../models/generated";
 import HttpClient$ from "../../../utility/tools/httpClientObs";
 import { concatMap, of, take, tap } from "rxjs";
 import HombrewDB from "../../../utility/localDB/new/homebrewDB";
-import { createSignal } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
+import homebrewManager from "../../../homebrewManager";
 
 const [spells, setSpells] = createSignal<Spell[]>([]);
+const allHomebrew = createMemo(() => {
+  const allSpells = [...homebrewManager.spells(), ...spells()];
+  return [...new Map(allSpells.map((spell) => [spell.id, spell])).values()]
+});
 
 export function useGetHombrewSpells() {
   const LocalClasses = HttpClient$.toObservable(HombrewDB.spells.toArray());
@@ -22,5 +27,5 @@ export function useGetHombrewSpells() {
       tap((classes) => !!classes && classes.length > 0 ? setSpells(classes) : null),
     ).subscribe();
   }
-  return spells;
+  return allHomebrew;
 }

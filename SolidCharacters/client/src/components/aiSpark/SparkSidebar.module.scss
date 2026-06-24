@@ -1,0 +1,157 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1200;
+    height: 100vh;
+    width: min(440px, 100vw);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-elevation-3, 0 8px 24px rgba(0, 0, 0, 0.35));
+    transform: translateX(0);
+    transition: transform 300ms ease;
+}
+
+.opening {
+    animation: slideIn 300ms ease;
+}
+.closing {
+    animation: slideOut 300ms ease forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+@keyframes slideOut {
+    from { transform: translateX(0); }
+    to { transform: translateX(100%); }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-2, 12px) var(--spacing-2, 12px);
+    border-bottom: 1px solid var(--surface-color, rgba(255, 255, 255, 0.1));
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    font-size: var(--font-size-h3, 1.2rem);
+    font-weight: 600;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+}
+
+.modeToggle {
+    display: flex;
+    gap: var(--spacing-1, 6px);
+    padding: var(--spacing-1, 6px) var(--spacing-2, 12px);
+}
+
+.messageList {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: var(--spacing-2, 12px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2, 12px);
+}
+
+.empty {
+    margin: auto;
+    text-align: center;
+    opacity: 0.7;
+    font-size: var(--font-size-small, 0.85rem);
+    max-width: 80%;
+}
+
+.bubbleRow {
+    display: flex;
+}
+.bubbleRowUser {
+    justify-content: flex-end;
+}
+.bubbleRowAssistant {
+    justify-content: flex-start;
+}
+
+.bubble {
+    max-width: 85%;
+    padding: var(--spacing-1, 8px) var(--spacing-2, 12px);
+    border-radius: 12px;
+    line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+.bubbleUser {
+    background: var(--primary-color, #4a5);
+    color: var(--on-primary-color, #fff);
+    border-bottom-right-radius: 2px;
+}
+.bubbleAssistant {
+    background: var(--surface-color, rgba(255, 255, 255, 0.08));
+    color: var(--on-surface-color, inherit);
+    border-bottom-left-radius: 2px;
+}
+
+.thinking {
+    opacity: 0.6;
+    font-style: italic;
+}
+
+.streamActions {
+    margin-top: var(--spacing-1, 6px);
+}
+
+.previewCard {
+    padding: var(--spacing-2, 12px);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 8px);
+}
+.previewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.previewSubtitle {
+    font-size: var(--font-size-small, 0.8rem);
+    opacity: 0.7;
+}
+.previewBody {
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: var(--font-size-small, 0.9rem);
+}
+.previewError {
+    color: var(--error-color, #c33);
+    font-size: var(--font-size-small, 0.8rem);
+}
+.previewActions {
+    display: flex;
+    gap: var(--spacing-1, 6px);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.inputBar {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-1, 6px);
+    padding: var(--spacing-2, 12px);
+    border-top: 1px solid var(--surface-color, rgba(255, 255, 255, 0.1));
+
+    textarea {
+        flex: 1 1 auto;
+        max-height: 160px;
+    }
+}

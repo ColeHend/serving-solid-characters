@@ -67,6 +67,16 @@ const SpellModal: Component<props> = (props) => {
           />
         </span>
 
+        <Show when={!!props.spell()?.higherLevel}>
+          <h2>Higher Levels</h2>
+          
+          <span>
+            <Markdown
+              text={props.spell().higherLevel ?? ""}
+            />
+          </span>
+        </Show>
+
       </div>
     </Modal>
 
