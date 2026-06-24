@@ -27,6 +27,9 @@ export class OllamaAdapter implements AiProvider {
             messages: toOllamaMessages(messages, opts.system),
             options,
         };
+        // Native API honors a top-level `think`; false suppresses message.thinking entirely. Resolved
+        // per-mode by the caller (chat on by default, homebrew off by default).
+        if (opts.think !== undefined) body.think = opts.think;
         if (tools?.length) {
             body.tools = tools.map(t => ({
                 type: "function",

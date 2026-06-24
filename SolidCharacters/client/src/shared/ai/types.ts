@@ -57,6 +57,12 @@ export interface StreamChatOpts {
     maxTokens?: number;
     /** Context window for local models (Ollama native only). */
     numCtx?: number;
+    /**
+     * Whether to ask the model for reasoning/"thinking" output. Maps to the local servers' `think`
+     * field (Ollama native + OpenAI-compatible reasoning models). The caller resolves this per-mode
+     * before calling, so adapters just forward it. Undefined leaves the server default untouched.
+     */
+    think?: boolean;
 }
 
 export interface AiProvider {

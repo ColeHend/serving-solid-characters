@@ -1,10 +1,10 @@
 import { Component, Show, createEffect, createSignal } from "solid-js";
 import { Portal } from "solid-js/web";
 import { Button, Container, Icon } from "coles-solid-library";
-import { Close, Delete } from "coles-solid-library/icons";
+import { Add, Close } from "coles-solid-library/icons";
 import SparkIcon from "../../shared/components/aiSpark/sparkIcon";
 import { aiAssistant } from "../../shared/customHooks/aiAssistant";
-import ModeToggle from "./ModeToggle";
+import ConversationMenu from "./ConversationMenu";
 import ChatMessageList from "./ChatMessageList";
 import ChatInput from "./ChatInput";
 import styles from "./SparkSidebar.module.scss";
@@ -45,15 +45,15 @@ const SparkSidebar: Component = () => {
                             <span>Spark</span>
                         </div>
                         <div class={styles.headerActions}>
-                            <Button transparent title="Clear conversation" onClick={() => aiAssistant.clear()}>
-                                <Icon icon={Delete} size="small" />
+                            <ConversationMenu />
+                            <Button transparent title="New chat" onClick={() => aiAssistant.newConversation()}>
+                                <Icon icon={Add} size="small" />
                             </Button>
                             <Button transparent title="Close" onClick={() => aiAssistant.close()}>
                                 <Icon icon={Close} size="large" />
                             </Button>
                         </div>
                     </div>
-                    <ModeToggle />
                     <ChatMessageList />
                     <ChatInput />
                 </Container>

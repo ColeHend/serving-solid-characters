@@ -1,10 +1,11 @@
 import { Component, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { Button, Container, Icon } from "coles-solid-library";
-import { Close } from "coles-solid-library/icons";
+import { Bolt, Close } from "coles-solid-library/icons";
 import { Markdown } from "../../shared/components/MarkDown/MarkDown";
 import { aiAssistant } from "../../shared/customHooks/aiAssistant";
 import { editorRouteFor } from "../../shared/ai/toolDispatcher";
+import { setEditHandoff } from "../../shared/ai/editHandoff";
 import { HomebrewPreview, previewBody, previewSubtitle } from "./aiSpark.shared";
 import HomebrewCompleteness from "./HomebrewCompleteness";
 import styles from "./SparkSidebar.module.scss";
@@ -16,7 +17,21 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
     const canComplete = () =>
         ((props.preview.warnings?.length ?? 0) > 0 || props.preview.truncated) &&
         (props.preview.repairAttempts ?? 0) < 1;
+    // While a "Complete with AI" repair is in flight, collapse the card to a compact progress state.
     return (
+        <Show when={!props.preview.repairing} fallback={
+            <Container theme="surface" class={`${styles.previewCard} ${styles.previewRepairing}`}>
+                <strong>{props.preview.title}</strong>
+                <div class={styles.repairingLabel}>
+                    <Icon icon={Bolt} size="small" /> Improving with AI…
+                </div>
+                <div class={styles.previewActions}>
+                    <Button transparent title="Cancel" onClick={() => aiAssistant.cancelRepair(props.preview.previewId)}>
+                        <Icon icon={Close} size="small" /> Cancel
+                    </Button>
+                </div>
+            </Container>
+        }>
         <Container theme="surface" class={styles.previewCard}>
             <div class={styles.previewHeader}>
                 <div>
@@ -58,7 +73,11 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                 <Button
                     transparent
                     title="Open in the homebrew editor to finish by hand"
-                    onClick={() => { navigate(editorRouteFor(props.preview)); aiAssistant.close(); }}
+                    onClick={() => {
+                        setEditHandoff(props.preview);
+                        navigate(editorRouteFor(props.preview));
+                        aiAssistant.close();
+                    }}
                 >
                     Edit manually
                 </Button>
@@ -67,6 +86,7 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                 </Button>
             </div>
         </Container>
+        </Show>
     );
 };
 

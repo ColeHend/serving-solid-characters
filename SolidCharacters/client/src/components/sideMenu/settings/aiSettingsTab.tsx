@@ -2,11 +2,15 @@ import { Component, createSignal, Show } from "solid-js";
 import { Select, Option, Input, Checkbox, Button, addSnackbar } from "coles-solid-library";
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
-import { AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, LocalApiKind } from "../../../models/userSettings";
+import {
+    AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind,
+} from "../../../models/userSettings";
 
 const DEFAULT_AI: AiSettings = {
     provider: "local", model: "", localBaseUrl: "", enabled: false,
     maxTokens: DEFAULT_AI_MAX_TOKENS, localApi: "ollama", numCtx: DEFAULT_AI_NUM_CTX,
+    thinking: DEFAULT_AI_THINKING, thinkingHomebrew: DEFAULT_AI_THINKING_HOMEBREW,
 };
 
 const MODEL_PLACEHOLDER: Record<AiProviderKind, string> = {
@@ -185,6 +189,31 @@ const AiSettingsTab: Component = () => {
                     Caps the model's response length (default {DEFAULT_AI_MAX_TOKENS}). Higher allows longer
                     homebrew but is slower. For local models this must fit inside the server's context window
                     (Ollama <code>num_ctx</code>); some cloud models cap lower (e.g. gpt-4o-mini at 16384).
+                </div>
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <Checkbox
+                    label="Enable model thinking (chat)"
+                    checked={ai().thinking ?? DEFAULT_AI_THINKING}
+                    onChange={(checked) => updateAi({ thinking: checked })}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    Lets the model reason before answering. Improves quality and encourages local models to
+                    use more of their context window, but uses more tokens.
+                </div>
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <Checkbox
+                    label="Enable thinking during Homebrew generation"
+                    checked={ai().thinkingHomebrew ?? DEFAULT_AI_THINKING_HOMEBREW}
+                    onChange={(checked) => updateAi({ thinkingHomebrew: checked })}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    Off by default: while generating homebrew, a reasoning model can spend its whole token
+                    budget thinking and get "cut off" before producing the entity. If you turn this on and see
+                    truncated results, use "Complete with AI" or raise max tokens / context window.
                 </div>
             </div>
 

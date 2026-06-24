@@ -2,6 +2,7 @@ import { Component, createSignal } from "solid-js";
 import { Button, Icon, TextArea } from "coles-solid-library";
 import { Send } from "coles-solid-library/icons";
 import { aiAssistant } from "../../shared/customHooks/aiAssistant";
+import ModeMenu from "./ModeMenu";
 import styles from "./SparkSidebar.module.scss";
 
 const ChatInput: Component = () => {
@@ -22,22 +23,27 @@ const ChatInput: Component = () => {
     };
 
     return (
-        <div class={styles.inputBar}>
-            <TextArea
-                text={text}
-                setText={setText}
-                placeholder={aiAssistant.mode() === "homebrew" ? "Describe the homebrew to generate…" : "Ask Spark…"}
-                rows={1}
-                onKeyDown={onKeyDown}
-            />
-            <Button
-                theme="primary"
-                title="Send"
-                disabled={aiAssistant.status() === "streaming" || !text().trim()}
-                onClick={submit}
-            >
-                <Icon icon={Send} size="small" />
-            </Button>
+        <div class={styles.inputContainer}>
+            <div class={styles.inputToolbar}>
+                <ModeMenu />
+            </div>
+            <div class={styles.inputBar}>
+                <TextArea
+                    text={text}
+                    setText={setText}
+                    placeholder={aiAssistant.mode() === "homebrew" ? "Describe the homebrew to generate…" : "Ask Spark…"}
+                    rows={1}
+                    onKeyDown={onKeyDown}
+                />
+                <Button
+                    theme="primary"
+                    title="Send"
+                    disabled={aiAssistant.status() === "streaming" || !text().trim()}
+                    onClick={submit}
+                >
+                    <Icon icon={Send} size="small" />
+                </Button>
+            </div>
         </div>
     );
 };

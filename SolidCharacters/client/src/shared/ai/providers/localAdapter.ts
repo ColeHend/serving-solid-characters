@@ -26,17 +26,17 @@ export class LocalAdapter implements AiProvider {
             max_tokens: opts.maxTokens ?? 4096,
             messages: toOpenAiMessages(messages, opts.system),
         };
+        // Reasoning/"thinking" toggle, resolved per-mode by the caller. On homebrew tool turns this is
+        // off by default because reasoning models (e.g. gemma3/gemma4 on Ollama) otherwise spend the
+        // whole token budget thinking out loud and hit max_tokens before emitting the create_* call.
+        // Ollama honors `think`; other OpenAI-compatible local servers ignore the extra field.
+        if (opts.think !== undefined) body.think = opts.think;
         if (tools?.length) {
             body.tools = tools.map(t => ({
                 type: "function",
                 function: { name: t.name, description: t.description, parameters: t.inputSchema },
             }));
             body.tool_choice = "auto";
-            // Reasoning/"thinking" models (e.g. gemma3/gemma4 on Ollama) otherwise spend the whole token
-            // budget thinking out loud and hit max_tokens before ever emitting the tool call. Turn thinking
-            // off for tool turns so the model produces the create_* call directly. Ollama honors `think`;
-            // other OpenAI-compatible local servers ignore the extra field.
-            body.think = false;
         }
 
         const headers: Record<string, string> = { "Content-Type": "application/json" };

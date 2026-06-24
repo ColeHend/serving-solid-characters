@@ -27,6 +27,11 @@ export interface HomebrewPreview {
     repairAttempts?: number;
     /** True when the model's tool call was cut off (stop_reason max_tokens) or its JSON failed to parse. */
     truncated?: boolean;
+    /**
+     * True while a "Complete with AI" repair turn is in flight for this card: it renders collapsed
+     * ("Improving with AI…") and is removed once the regenerated replacement preview arrives.
+     */
+    repairing?: boolean;
 }
 
 const TOOL_TO_KIND: Record<string, HomebrewKind> = {

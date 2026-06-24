@@ -50,10 +50,99 @@
     gap: var(--spacing-1, 6px);
 }
 
-.modeToggle {
+.convMenu {
+    position: relative;
+    flex-shrink: 0;
     display: flex;
+    align-items: center;
+}
+.convPopover {
+    position: absolute;
+    top: calc(100% + 4px);   // open downward, below the History trigger
+    right: 0;
+    z-index: 20;             // above sidebar content, within the sidebar's stacking context
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: var(--spacing-1, 6px);
+    border-radius: 10px;
+    background: var(--container-color, #222);
+    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    box-shadow: var(--shadow-elevation-2, 0 4px 14px rgba(0, 0, 0, 0.35));
+}
+.convOption {
+    display: flex;
+    align-items: center;
     gap: var(--spacing-1, 6px);
-    padding: var(--spacing-1, 6px) var(--spacing-2, 12px);
+    width: 100%;
+    padding: var(--spacing-1, 8px) var(--spacing-2, 12px);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: inherit;
+    font: inherit;
+    font-size: var(--font-size-small, 0.9rem);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+        background: var(--surface-color, rgba(255, 255, 255, 0.08));
+    }
+}
+.convTitle {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.convTime {
+    flex-shrink: 0;
+    opacity: 0.6;
+    font-size: var(--font-size-small, 0.8rem);
+}
+
+.modeMenu {
+    position: relative;
+    flex-shrink: 0;
+}
+.modeTrigger {
+    gap: var(--spacing-1, 6px);
+    white-space: nowrap;
+}
+.modePopover {
+    position: absolute;
+    bottom: calc(100% + 4px);   // open upward, above the trigger
+    right: 0;                    // right-aligned, above the Send button
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+    padding: var(--spacing-1, 6px);
+    border-radius: 10px;
+    background: var(--container-color, #222);
+    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    box-shadow: var(--shadow-elevation-2, 0 4px 14px rgba(0, 0, 0, 0.35));
+}
+.modeOption {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    width: 100%;
+    padding: var(--spacing-1, 8px) var(--spacing-2, 12px);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: inherit;
+    font: inherit;
+    font-size: var(--font-size-small, 0.9rem);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+        background: var(--surface-color, rgba(255, 255, 255, 0.08));
+    }
 }
 
 .messageList {
@@ -189,13 +278,35 @@
     flex-wrap: wrap;
     align-items: center;
 }
+.previewRepairing {
+    opacity: 0.85;
+}
+.repairingLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    font-style: italic;
+    opacity: 0.8;
+    font-size: var(--font-size-small, 0.85rem);
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--surface-color, rgba(255, 255, 255, 0.1));
+}
+
+.inputToolbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--spacing-1, 6px) var(--spacing-2, 12px) 0;
+}
 
 .inputBar {
     display: flex;
     align-items: flex-end;
     gap: var(--spacing-1, 6px);
     padding: var(--spacing-2, 12px);
-    border-top: 1px solid var(--surface-color, rgba(255, 255, 255, 0.1));
 
     textarea {
         flex: 1 1 auto;
