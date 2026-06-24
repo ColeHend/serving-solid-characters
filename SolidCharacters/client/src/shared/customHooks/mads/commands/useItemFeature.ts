@@ -1,9 +1,23 @@
 import { Character } from "../../../../models/character.model";
-import { MadFeature } from "../madModels";
+import { MadFeature, MadType } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const AddItemFeature = (character: Character, feature: MadFeature): Character => {
-    const itemName = feature.value?.['name'] ?? '';
+    const itemName = feature.value?.['ID'] ?? '';
+
+    const preReqs = feature.prerequisites ?? [];
+
+    if (preReqs.length > 0) {
+        const cond = preReqs.some(preReq => {
+            // if (preReq.group === 0) {
+            //     preReq.
+            // }
+        });
+        if (!cond) {
+
+            return character;
+        }    
+    }
 
     if (itemName) character.items.inventory.push(itemName);
 
@@ -25,19 +39,23 @@ function useItemFeature (character: Character) {
         return;
     }
 
-    character.features.forEach(feature => {
-        const mads = feature.metadata?.mads ?? [];
+    const updated = character.features.reduce((updatedCharacter,feature) => {
+        const madFeatures = feature.metadata?.mads as MadFeature[];
 
-        for (const mad of mads) {
-            if (mad.command === 'AddItems') {
-                character = AddItemFeature(character, mad as MadFeature);
-            } else if (mad.command === 'RemoveItems') {
-                character = RemoveItemFeature(character, mad as MadFeature);
+        return madFeatures.reduce((updatedChar,mads) => {
+            if (mads.type === MadType.Character) {
+                if (mads.command === 'AddItems' ) {
+                    updatedChar = AddItemFeature(character, mads);
+                } else if (mads.command === 'RemoveItems') {
+                    updatedChar = RemoveItemFeature(character, mads);
+                }
             }
-        }
-    });
+            
+            return updatedChar
+        }, updatedCharacter)
+    },character);
 
-    return character;
+    return updated;
 }
 
 export default useItemFeature;

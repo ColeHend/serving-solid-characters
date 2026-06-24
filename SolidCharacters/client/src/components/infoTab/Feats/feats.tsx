@@ -22,6 +22,7 @@ import { Feat } from "../../../models/generated";
 import FeatView from "../../../shared/components/modals/featModal/featView";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import styles from "./feats.module.scss";
+import { useDndFeature } from "../../../shared/customHooks/dndInfo/useDndFeatures";
 
 const featsList: Component = () => {
   const [currentFeat, setCurrentFeat] = createSignal<Feat | undefined>(undefined);
@@ -100,8 +101,13 @@ const featsList: Component = () => {
     document.body.classList.remove('feats-bg');
   })
 
+  const {allFeatures} = useDndFeature();
+
   createEffect(()=>{
   const list = allFeats();
+  const feats = allFeatures();
+
+  console.table(feats);
   setTableData(list.filter(f => f?.details?.name));
   })
 

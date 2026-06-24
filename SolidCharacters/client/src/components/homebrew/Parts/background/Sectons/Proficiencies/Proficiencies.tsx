@@ -2,6 +2,7 @@ import { Button, Chip } from "coles-solid-library";
 import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 import styles from "../../Background.module.scss";
+import { Shield } from "coles-solid-library/icons";
 
 interface SectionProps {
     weaponProfs: Accessor<string[]>;
@@ -17,7 +18,7 @@ export const Proficiencies: Component<SectionProps> = (props) => {
     const skillProfs = createMemo(() => props.skillProfs());
     const toolProfs = createMemo(() => props.toolProfs());
 
-    return <FlatCard headerName="Proficiencies" extraHeaderJsx={<Button onClick={()=>props.setShowPopup(old => !old)}>Edit</Button>} icon='shield' transparent>
+    return <FlatCard headerName="Proficiencies" extraHeaderJsx={<Button onClick={()=>props.setShowPopup(old => !old)}>Edit</Button>} icon={Shield} transparent getRidOfTopBorder>
         <div class={`${styles.ProficiencyBar}`}>
             <span>Weapons: </span>
             <Show when={weaponProfs().length > 0} fallback={<Chip value="None" />}>

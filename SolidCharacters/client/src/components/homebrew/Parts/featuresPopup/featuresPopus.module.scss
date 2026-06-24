@@ -36,6 +36,7 @@
     width: 85%;
     justify-content: center;
     padding: 12px;
+    box-sizing: border-box;
 
     button {
         width: 85%;
@@ -74,5 +75,133 @@
 
 .scrollBox {
     overflow-y: scroll;
-    height: 70%;
+    height: 75% !important;
+    margin-bottom: 5%;
+    overflow-x: hidden;
+}
+
+.changePopup {
+    padding-right: 5px;
+    :nth-child(n) {
+        &:not(:last-child) {
+            margin-bottom: 0.5px;
+        }
+    }
+}
+
+.leftAlignText {
+    text-align: left;
+}
+
+.cardAlt {
+
+    div { 
+
+        svg {
+            fill: vars.$color-secondary !important;
+        }
+    }
+
+    &::before {
+
+        background: linear-gradient(vars.$color-secondary, transparent) !important;
+    }
+}
+
+.changeHeader {
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    text-align: left;
+    width: 50%;
+}
+
+.changeHeaderTitle {
+    text-align: left;
+    width: 100%;
+}
+
+.changeSubheader {
+    display: flex;
+    flex-direction: row;
+}
+
+.commandTitle {
+    border: 1.5px solid vars.$color-primary !important;
+    background: color-mix(in srgb, vars.$color-primary 50%, transparent) !important;
+    padding: 6px !important;
+    border-radius: 12px !important;
+    width: 40% !important;
+    text-align: center;
+    word-wrap: unset;
+}
+
+.changeTypeTitle {
+    text-align: center;
+    width: 7vw;
+    border: 1.5px solid vars.$color-primary !important;
+    background: color-mix(in srgb, vars.$color-primary 50%, transparent) !important;
+}
+
+.commandDesc {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.commandSelectionBox {
+    display: flex;
+    flex-direction: row;
+}
+
+.typeTitle {
+    width: 100%;
+    text-align: left;
+}
+
+.typeDesc {
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.label {
+    display: block;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10.5px;
+    font-weight: 700;
+    // color: rgb(90, 120, 96);
+}
+
+.coreDetails {
+    padding: 2%;
+}
+
+.addChangeBtn {
+    width: 100%;
+    border: 1.5px dashed vars.$color-primary !important;
+    background: color-mix(in srgb, vars.$color-primary 50%, transparent) !important;
+    border-radius: 10px !important;
+    padding: 14px !important;
+    cursor: pointer !important;
+    margin-top: 4px !important;
+    font-weight: bold !important;
+}
+
+.saveBtn {
+    width: 7vw;
+}
+
+.instructions {
+    border: 1.5px solid vars.$color-primary !important;
+    background: color-mix(in srgb, vars.$color-primary 50%, transparent) !important;
+    border-radius: 10px !important;
+    padding: 6px !important;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+    margin: 12px !important;
 }

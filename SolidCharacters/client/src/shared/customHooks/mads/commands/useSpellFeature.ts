@@ -1,6 +1,7 @@
 import { Character } from "../../../../models/character.model";
-import { MadFeature } from "../madModels";
+import { MadFeature, MadType } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
+import { checkPrerequisites } from "../checkPreReqs";
 
 // add spell feature
 
@@ -12,7 +13,11 @@ import { DebugConsole } from "../../DebugConsole";
  */
 const AddSpellFeature = (character: Character, feature: MadFeature): Character => {
     const spellName = feature.value?.['ID'] ?? '';
-    if (spellName) {
+    const preReqs = feature.prerequisites ?? [];
+    const preReqsMet = checkPrerequisites(character, preReqs);
+
+    if (spellName && preReqsMet) {
+
         character.spells = [...character.spells, {
             name: spellName,
             prepared: false,
@@ -52,20 +57,25 @@ function useSpellFeature(character: Character, spellID: string): Character | und
 
     // search for applicable mad features for the character and spell
 
-    character.features.forEach(feature => {
-        const mads = (feature?.metadata?.mads ?? []) as MadFeature[];
+    const updated = character.features.reduce((updatedCharacter,feature) => {
+        const madsFeatures = feature?.metadata?.mads as MadFeature[];
+        
+        return madsFeatures.reduce((updatedChar,mads) => {
+            if (mads.type === MadType.Character) {
+                if (mads.command === "AddSpells" && mads.value['ID'] === spellID) {
+                    updatedChar = AddSpellFeature(character, mads);
+                } else if (mads.command === "RemoveSpells" && mads.value['ID'] === spellID) {
+                    updatedChar = RemoveSpellFeature(character, mads);
+                }
+            } 
 
-        for (const mad of mads) {
-            if (mad.command === "AddSpells" && mad.value['ID'] === spellID) {
-                character = AddSpellFeature(character, mad);
-            } else if (mad.command === "RemoveSpells" && mad.value['ID'] === spellID) {
-                character = RemoveSpellFeature(character, mad);
-            }
-        }
+            return updatedChar
+        }, updatedCharacter)
 
-    });
 
-    return character;
+    }, character);
+
+    return updated;
 }
 
 

@@ -7,25 +7,29 @@
       "3": [
         {
           "name": "Frenzy",
-          "description": "While raging, you can choose to go into a Frenzy. For the duration of your Rage, you can make a single melee weapon attack as a Bonus Action on each of your turns after this one. When your Rage ends, you suffer one level of Exhaustion."
+          "description": "While raging, you can choose to go into a Frenzy. For the duration of your Rage, you can make a single melee weapon attack as a Bonus Action on each of your turns after this one. When your Rage ends, you suffer one level of Exhaustion.",
+          "id": "11793138-5bff-4055-847f-0485be75a820"
         }
       ],
       "6": [
         {
           "name": "Mindless Rage",
-          "description": "You cannot be Charmed or Frightened while raging. If you are Charmed or Frightened when you enter your Rage, those effects are suspended for the duration of the Rage."
+          "description": "You cannot be Charmed or Frightened while raging. If you are Charmed or Frightened when you enter your Rage, those effects are suspended for the duration of the Rage.",
+          "id": "4c011647-5215-4730-bbbb-0ffb639581ed"
         }
       ],
       "10": [
         {
           "name": "Retaliation",
-          "description": "When you take damage from a creature within 5 feet of you, you can use your Reaction to make a melee weapon attack against that creature."
+          "description": "When you take damage from a creature within 5 feet of you, you can use your Reaction to make a melee weapon attack against that creature.",
+          "id": "46900b21-d4ef-4cf3-a690-6efc95183c64"
         }
       ],
       "14": [
         {
           "name": "Intimidating Presence",
-          "description": "As a Bonus Action, you can attempt to frighten someone with your menacing presence. Choose one creature within 30 feet that can see or hear you. It must make a Wisdom saving throw (DC 8 + Str mod + Prof) or be Frightened of you for 1 minute. The target can repeat the save at end of each of its turns, ending the effect on a success. Once you successfully use this feature on a creature, you can’t use it again until you finish a Long Rest (or expend a Rage use to do it again)."
+          "description": "As a Bonus Action, you can attempt to frighten someone with your menacing presence. Choose one creature within 30 feet that can see or hear you. It must make a Wisdom saving throw (DC 8 + Str mod + Prof) or be Frightened of you for 1 minute. The target can repeat the save at end of each of its turns, ending the effect on a success. Once you successfully use this feature on a creature, you can’t use it again until you finish a Long Rest (or expend a Rage use to do it again).",
+          "id": "c58d0d76-42a3-446c-9b10-802aa25037c1"
         }
       ]
     },
@@ -39,23 +43,27 @@
       "3": [
         {
           "name": "Bonus Proficiencies",
-          "description": "You gain proficiency in three additional skills of your choice."
+          "description": "You gain proficiency in three additional skills of your choice.",
+          "id": "252a9127-428b-4442-8fb9-e539a5f9ac9a"
         },
         {
           "name": "Cutting Words",
-          "description": "When a creature you can see within 60 feet makes a damage roll or succeeds on an attack roll or ability check, you can use your Reaction to expend a use of Bardic Inspiration, rolling your Bardic Inspiration die and subtracting the number rolled from the creature’s roll, potentially turning a success into a failure or reducing the damage."
+          "description": "When a creature you can see within 60 feet makes a damage roll or succeeds on an attack roll or ability check, you can use your Reaction to expend a use of Bardic Inspiration, rolling your Bardic Inspiration die and subtracting the number rolled from the creature’s roll, potentially turning a success into a failure or reducing the damage.",
+          "id": "a146f2c8-f43a-4728-a061-0d966b370219"
         }
       ],
       "6": [
         {
           "name": "Magical Discoveries",
-          "description": "You learn two spells of your choice from the Cleric, Druid, or Wizard spell lists. They count as Bard spells for you and are always prepared, and do not count against the number of spells you can prepare. Whenever you gain a Bard level, you can replace one of these spells with another spell of the same level from those classes’ lists."
+          "description": "You learn two spells of your choice from the Cleric, Druid, or Wizard spell lists. They count as Bard spells for you and are always prepared, and do not count against the number of spells you can prepare. Whenever you gain a Bard level, you can replace one of these spells with another spell of the same level from those classes’ lists.",
+          "id": "cb5ac104-25d0-4d19-8d64-8fef0e6ad37a"
         }
       ],
       "14": [
         {
           "name": "Peerless Skill",
-          "description": "When you make an ability check and fail, you can expend one use of Bardic Inspiration, roll a Bardic Inspiration die, and add it to your check, possibly turning failure into success. If it still fails, the Bardic Inspiration is not expended."
+          "description": "When you make an ability check and fail, you can expend one use of Bardic Inspiration, roll a Bardic Inspiration die, and add it to your check, possibly turning failure into success. If it still fails, the Bardic Inspiration is not expended.",
+          "id": "6d01efaa-5e77-42e4-bf8d-7c1c1b219a5c"
         }
       ]
     },
@@ -69,33 +77,39 @@
       "3": [
         {
           "name": "Disciple of Life",
-          "description": "Your healing spells are more effective. When you cast a spell of 1st level or higher that restores hit points to a creature, that creature regains additional hit points equal to 2 + the spell’s level."
+          "description": "Your healing spells are more effective. When you cast a spell of 1st level or higher that restores hit points to a creature, that creature regains additional hit points equal to 2 + the spell’s level.",
+          "id": "f4842095-03f8-43eb-9d1b-71b3bfd84a44"
         },
         {
           "name": "Life Domain Spells",
-          "description": "You always have certain spells prepared: Bless, Cure Wounds, and Lesser Restoration at 3rd; Spiritual Weapon and Aid at 5th; Beacon of Hope and Revivify at 7th; Death Ward and Aura of Life at 9th. These do not count against your prepared spells."
+          "description": "You always have certain spells prepared: Bless, Cure Wounds, and Lesser Restoration at 3rd; Spiritual Weapon and Aid at 5th; Beacon of Hope and Revivify at 7th; Death Ward and Aura of Life at 9th. These do not count against your prepared spells.",
+          "id": "51587f0b-2be8-41e7-a3ae-f1c88cc45e90"
         },
         {
           "name": "Channel Divinity: Preserve Life",
-          "description": "As a Magic action, you present your holy symbol and evoke healing energy. Choose any creatures within 30 feet (up to 5) and divide a number of hit points equal to 5 × your Cleric level among them, restoring hit points. You cannot restore a creature above half its hit point maximum with this feature. (Uses your Channel Divinity.)"
+          "description": "As a Magic action, you present your holy symbol and evoke healing energy. Choose any creatures within 30 feet (up to 5) and divide a number of hit points equal to 5 × your Cleric level among them, restoring hit points. You cannot restore a creature above half its hit point maximum with this feature. (Uses your Channel Divinity.)",
+          "id": "73cf2a26-9054-4b3e-ba16-45810f5eaed5"
         }
       ],
       "6": [
         {
           "name": "Blessed Healer",
-          "description": "When you cast a spell of 1st level or higher that restores hit points to a creature other than you, you also regain hit points equal to 2 + the spell’s level."
+          "description": "When you cast a spell of 1st level or higher that restores hit points to a creature other than you, you also regain hit points equal to 2 + the spell’s level.",
+          "id": "a3ab6b7c-8c06-4fb5-82ee-2842aa65d77b"
         }
       ],
       "10": [
         {
           "name": "Divine Strike",
-          "description": "Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage. When you reach 17th level, this extra damage increases to 2d8."
+          "description": "Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage. When you reach 17th level, this extra damage increases to 2d8.",
+          "id": "2317b08f-cb2e-43d9-ab6b-1bc46688ca80"
         }
       ],
       "14": [
         {
           "name": "Supreme Healing",
-          "description": "When you roll dice to determine the hit points a spell restores, treat any 1s on those dice as the highest possible number (maximized healing)."
+          "description": "When you roll dice to determine the hit points a spell restores, treat any 1s on those dice as the highest possible number (maximized healing).",
+          "id": "bcb9cf93-fab0-46dd-8fe8-ea70c9f8e2a6"
         }
       ]
     },
@@ -109,29 +123,34 @@
       "3": [
         {
           "name": "Circle of the Land Spells",
-          "description": "When you finish a Long Rest, choose a land type (Arid, Polar, Temperate, Tropical). You gain bonus spells prepared based on that land: e.g., Arid (Blur, Burning Hands at 3rd; Fireball at 5th; etc.), Polar (Fog Cloud, Hold Person at 3rd; Sleet Storm at 5th; etc.), Temperate (Misty Step, Sleep at 3rd; Lightning Bolt at 5th; etc.), Tropical (Acid Splash, Ray of Sickness at 3rd; Stinking Cloud at 5th; etc.). These spells are always prepared and don’t count against your prepared spells."
+          "description": "When you finish a Long Rest, choose a land type (Arid, Polar, Temperate, Tropical). You gain bonus spells prepared based on that land: e.g., Arid (Blur, Burning Hands at 3rd; Fireball at 5th; etc.), Polar (Fog Cloud, Hold Person at 3rd; Sleet Storm at 5th; etc.), Temperate (Misty Step, Sleep at 3rd; Lightning Bolt at 5th; etc.), Tropical (Acid Splash, Ray of Sickness at 3rd; Stinking Cloud at 5th; etc.). These spells are always prepared and don’t count against your prepared spells.",
+          "id": "777e6c7d-3543-4db0-912c-1a63d9c64870"
         },
         {
           "name": "Land’s Aid",
-          "description": "You can expend a use of Wild Shape to channel nature’s power and create a 10-foot radius of flora around a point within 60 feet for instantaneous effect: each chosen creature in the area must succeed on a CON save or take 2d6 necrotic damage, and one creature of your choice in the area regains 2d6 hit points. (Damage/healing increase by 1d6 at levels 10 and 14.)"
+          "description": "You can expend a use of Wild Shape to channel nature’s power and create a 10-foot radius of flora around a point within 60 feet for instantaneous effect: each chosen creature in the area must succeed on a CON save or take 2d6 necrotic damage, and one creature of your choice in the area regains 2d6 hit points. (Damage/healing increase by 1d6 at levels 10 and 14.)",
+          "id": "f52cb861-f112-45c0-a05e-9c191b0ee22b"
         }
       ],
       "6": [
         {
           "name": "Land’s Stride",
-          "description": "Moving through nonmagical difficult terrain costs you no extra movement. You also have advantage on saving throws against magically created plants that impede movement (such as Entangle)."
+          "description": "Moving through nonmagical difficult terrain costs you no extra movement. You also have advantage on saving throws against magically created plants that impede movement (such as Entangle).",
+          "id": "d04755bb-ada4-4502-b8f7-cb22d0bf2f7b"
         }
       ],
       "10": [
         {
           "name": "Nature’s Ward",
-          "description": "You are immune to the poisoned condition and poison damage. Additionally, choose your current land type (from Circle Spells); you gain resistance to one damage type associated with that land (Arid: Fire, Polar: Cold, Temperate: Lightning, Tropical: Poison)."
+          "description": "You are immune to the poisoned condition and poison damage. Additionally, choose your current land type (from Circle Spells); you gain resistance to one damage type associated with that land (Arid: Fire, Polar: Cold, Temperate: Lightning, Tropical: Poison).",
+          "id": "f93b920c-1741-4416-83f5-50853202c812"
         }
       ],
       "14": [
         {
           "name": "Nature’s Sanctuary",
-          "description": "As a Magic action, you can expend a use of Wild Shape to create a 15-foot cube of spectral vegetation at a point within 120 feet. It lasts 1 minute. You and allies in the area have half-cover and also gain your Nature’s Ward resistance while in the area. As a Bonus Action, you can move this cube up to 60 feet. (This essentially summons protective nature spirits.)"
+          "description": "As a Magic action, you can expend a use of Wild Shape to create a 15-foot cube of spectral vegetation at a point within 120 feet. It lasts 1 minute. You and allies in the area have half-cover and also gain your Nature’s Ward resistance while in the area. As a Bonus Action, you can move this cube up to 60 feet. (This essentially summons protective nature spirits.)",
+          "id": "0ea6bdbc-d7bc-4c11-b435-785593304e14"
         }
       ]
     },
@@ -145,35 +164,41 @@
       "3": [
         {
           "name": "Improved Critical",
-          "description": "Your weapon attacks score a critical hit on a roll of 19 or 20 on the d20."
+          "description": "Your weapon attacks score a critical hit on a roll of 19 or 20 on the d20.",
+          "id": "68d1ffba-253a-4448-b748-38c6095721d2"
         },
         {
           "name": "Remarkable Athlete",
-          "description": "You add half your proficiency bonus (rounded up) to any Strength, Dexterity, or Constitution check you make that doesn’t already include your proficiency. In addition, your running long jump distance increases by a number of feet equal to your Strength modifier."
+          "description": "You add half your proficiency bonus (rounded up) to any Strength, Dexterity, or Constitution check you make that doesn’t already include your proficiency. In addition, your running long jump distance increases by a number of feet equal to your Strength modifier.",
+          "id": "e749a79a-8af8-455f-b2a9-45b78c5821a0"
         }
       ],
       "7": [
         {
           "name": "Additional Fighting Style",
-          "description": "You can choose a second Fighting Style feat."
+          "description": "You can choose a second Fighting Style feat.",
+          "id": "3fd00fc6-2484-4770-96d9-80b44f0f39a0"
         }
       ],
       "10": [
         {
           "name": "Heroic Warrior",
-          "description": "If you have no Heroic Inspiration at the start of combat, you gain Heroic Inspiration (a free d20 re-roll) automatically. This encourages bold action and exemplifies your champion spirit."
+          "description": "If you have no Heroic Inspiration at the start of combat, you gain Heroic Inspiration (a free d20 re-roll) automatically. This encourages bold action and exemplifies your champion spirit.",
+          "id": "6e4f82d7-0ed9-4bda-8c5d-09f186d9faee"
         }
       ],
       "15": [
         {
           "name": "Superior Critical",
-          "description": "Your weapon attacks score a critical hit on a roll of 18–20 on the d20."
+          "description": "Your weapon attacks score a critical hit on a roll of 18–20 on the d20.",
+          "id": "f1735e6b-2c04-4dd3-ae00-0d33b86ccac5"
         }
       ],
       "18": [
         {
           "name": "Survivor",
-          "description": "At the start of each of your turns, if you have no more than half your hit points left, you regain 5 + Constitution modifier hit points. You don’t gain this benefit if you have 0 hit points."
+          "description": "At the start of each of your turns, if you have no more than half your hit points left, you regain 5 + Constitution modifier hit points. You don’t gain this benefit if you have 0 hit points.",
+          "id": "9e8b98ea-98d0-499c-b140-5b21509c668b"
         }
       ]
     },
@@ -187,25 +212,29 @@
       "3": [
         {
           "name": "Open Hand Technique",
-          "description": "Whenever you hit a creature with one of the attacks granted by Flurry of Blows, you can impose one of the following effects: (1) It can’t take reactions until the end of your next turn; (2) It must succeed on a STR save or be pushed up to 15 ft away; (3) It must succeed on a DEX save or be knocked prone."
+          "description": "Whenever you hit a creature with one of the attacks granted by Flurry of Blows, you can impose one of the following effects: (1) It can’t take reactions until the end of your next turn; (2) It must succeed on a STR save or be pushed up to 15 ft away; (3) It must succeed on a DEX save or be knocked prone.",
+          "id": "f7fc44ad-6bfb-44d0-90d0-7f82ca9f3674"
         }
       ],
       "6": [
         {
           "name": "Wholeness of Body",
-          "description": "As a Bonus Action, you can regain hit points equal to three times your Monk level. You can use this feature once per Long Rest."
+          "description": "As a Bonus Action, you can regain hit points equal to three times your Monk level. You can use this feature once per Long Rest.",
+          "id": "852c351e-2910-417c-a72b-c7f99fd30421"
         }
       ],
       "11": [
         {
           "name": "Fleet Step",
-          "description": "When you use a Bonus Action other than Step of the Wind, you can immediately also take the Step of the Wind effect (Disengage or Dash) after that bonus action without spending additional Focus."
+          "description": "When you use a Bonus Action other than Step of the Wind, you can immediately also take the Step of the Wind effect (Disengage or Dash) after that bonus action without spending additional Focus.",
+          "id": "2e5d93ce-f2a9-4bfe-b5f1-9c5510e4c214"
         }
       ],
       "17": [
         {
           "name": "Quivering Palm",
-          "description": "When you hit a creature with an unarmed strike, you can spend 4 Focus Points to start imperceptible vibrations in its body. At any time within the next number of days equal to your Monk level, you can use an Action to end the vibrations, forcing the creature to make a CON save. On a failed save, it is reduced to 0 HP. On a success, it takes 10d10 necrotic damage. You can have only one creature under this effect at a time."
+          "description": "When you hit a creature with an unarmed strike, you can spend 4 Focus Points to start imperceptible vibrations in its body. At any time within the next number of days equal to your Monk level, you can use an Action to end the vibrations, forcing the creature to make a CON save. On a failed save, it is reduced to 0 HP. On a success, it takes 10d10 necrotic damage. You can have only one creature under this effect at a time.",
+          "id": "991d80d6-2441-4187-83e2-1e1ed8a760d7"
         }
       ]
     },
@@ -219,35 +248,41 @@
       "3": [
         {
           "name": "Oath Spells",
-          "description": "You always have certain spells prepared: Protection from Evil and Good, Shield of Faith (3rd); Zone of Truth, Aid (5th); Beacon of Hope, Dispel Magic (9th); Freedom of Movement, Guardian of Faith (13th); Commune, Flame Strike (17th)."
+          "description": "You always have certain spells prepared: Protection from Evil and Good, Shield of Faith (3rd); Zone of Truth, Aid (5th); Beacon of Hope, Dispel Magic (9th); Freedom of Movement, Guardian of Faith (13th); Commune, Flame Strike (17th).",
+          "id": "ecff9d2c-9cad-4ca1-96e7-dfe791f86b5b"
         },
         {
           "name": "Channel Divinity: Sacred Weapon",
-          "description": "As an Action, imbue one weapon with positive energy for 1 minute. It adds your Charisma modifier to attack rolls (minimum +1) and emits bright light 20 ft. If the weapon isn’t already magical, it becomes magical for the duration. You can’t be disarmed of it unless incapacitated."
+          "description": "As an Action, imbue one weapon with positive energy for 1 minute. It adds your Charisma modifier to attack rolls (minimum +1) and emits bright light 20 ft. If the weapon isn’t already magical, it becomes magical for the duration. You can’t be disarmed of it unless incapacitated.",
+          "id": "b2affbc4-c4fe-4a04-b5d4-228eecbdea0e"
         }
       ],
       "6": [
         {
           "name": "Aura of Devotion",
-          "description": "You and allies within 10 ft cannot be Charmed while you are conscious. (Aura increases to 30 ft at Paladin 18.)"
+          "description": "You and allies within 10 ft cannot be Charmed while you are conscious. (Aura increases to 30 ft at Paladin 18.)",
+          "id": "a281458a-8c4f-4c4e-91c1-e7b4710693f7"
         }
       ],
       "10": [
         {
           "name": "Purity of Spirit",
-          "description": "You are always under the effects of Protection from Evil and Good spell."
+          "description": "You are always under the effects of Protection from Evil and Good spell.",
+          "id": "6783e3ca-edd9-4207-8035-ff83c31acb0e"
         }
       ],
       "14": [
         {
           "name": "Holy Nimbus",
-          "description": "As a Bonus Action, you can emanate sunlight (30 ft radius) for 1 minute. Fiends and Undead in the light take 10 radiant damage at the start of their turns. In addition, for the duration, you have advantage on saving throws against spells cast by Fiends or Undead."
+          "description": "As a Bonus Action, you can emanate sunlight (30 ft radius) for 1 minute. Fiends and Undead in the light take 10 radiant damage at the start of their turns. In addition, for the duration, you have advantage on saving throws against spells cast by Fiends or Undead.",
+          "id": "b2ea30b1-8231-4856-a44d-456af76f11d7"
         }
       ],
       "18": [
         {
           "name": "Unbreakable Devotion",
-          "description": "If you drop to 0 HP and don’t die outright, you can choose to drop to 1 HP instead. You can use this once per Long Rest (similar to Relentless Endurance)."
+          "description": "If you drop to 0 HP and don’t die outright, you can choose to drop to 1 HP instead. You can use this once per Long Rest (similar to Relentless Endurance).",
+          "id": "cb023335-a276-4175-9a60-723a4c0b9713"
         }
       ]
     },
@@ -261,29 +296,34 @@
       "3": [
         {
           "name": "Hunter’s Lore",
-          "description": "Whenever you have Hunter’s Mark active on a creature, you learn whether that creature has any immunities, resistances, or vulnerabilities, and what they are."
+          "description": "Whenever you have Hunter’s Mark active on a creature, you learn whether that creature has any immunities, resistances, or vulnerabilities, and what they are.",
+          "id": "a4f80be1-d1a9-4079-9f64-cfd34376fa9a"
         },
         {
           "name": "Hunter’s Prey",
-          "description": "Choose one of the following benefits: Colossus Slayer (once per turn, your weapon attack deals +1d8 damage to a creature below its HP maximum); Giant Killer (when a Large or larger creature adjacent to you attacks you, you can use your Reaction to attack it); Horde Breaker (once on your turn, when you hit a creature with a weapon attack, you can make another attack against a different creature within 5 ft of the original target). You can switch this choice whenever you finish a Short or Long Rest."
+          "description": "Choose one of the following benefits: Colossus Slayer (once per turn, your weapon attack deals +1d8 damage to a creature below its HP maximum); Giant Killer (when a Large or larger creature adjacent to you attacks you, you can use your Reaction to attack it); Horde Breaker (once on your turn, when you hit a creature with a weapon attack, you can make another attack against a different creature within 5 ft of the original target). You can switch this choice whenever you finish a Short or Long Rest.",
+          "id": "f98e88a1-eca5-405b-a780-6a89ff0ae1e0"
         }
       ],
       "7": [
         {
           "name": "Defensive Tactics",
-          "description": "Choose one of the following benefits: Escape the Horde (Opportunity attacks against you have disadvantage); Multiattack Defense (when a creature hits you, it has disadvantage on subsequent attacks against you for the rest of the turn); Steel Will (you have advantage on saves vs being Frightened). You can switch this choice on a Short or Long Rest."
+          "description": "Choose one of the following benefits: Escape the Horde (Opportunity attacks against you have disadvantage); Multiattack Defense (when a creature hits you, it has disadvantage on subsequent attacks against you for the rest of the turn); Steel Will (you have advantage on saves vs being Frightened). You can switch this choice on a Short or Long Rest.",
+          "id": "7c92b8af-d383-40af-b235-060b8d972381"
         }
       ],
       "11": [
         {
           "name": "Superior Hunter’s Prey",
-          "description": "Once per turn, when you hit the creature you’ve marked with Hunter’s Mark, you can apply the Hunter’s Mark damage to a different target within 30 feet of the original target (effectively splashing the damage to a second creature)."
+          "description": "Once per turn, when you hit the creature you’ve marked with Hunter’s Mark, you can apply the Hunter’s Mark damage to a different target within 30 feet of the original target (effectively splashing the damage to a second creature).",
+          "id": "85949e9c-fd7c-4eca-913b-a842007b07aa"
         }
       ],
       "15": [
         {
           "name": "Superior Hunter’s Defense",
-          "description": "When you fail a saving throw or take damage, you can use your Reaction to halve the damage against you and potentially reflect some effect. (In 2014: Evasion-like effect or Stand Against Tide; in 2024 likely Resist damage by Reaction)."
+          "description": "When you fail a saving throw or take damage, you can use your Reaction to halve the damage against you and potentially reflect some effect. (In 2014: Evasion-like effect or Stand Against Tide; in 2024 likely Resist damage by Reaction).",
+          "id": "3d79e840-d59d-4169-8178-0f94a6ae5842"
         }
       ]
     },
@@ -297,29 +337,34 @@
       "3": [
         {
           "name": "Fast Hands",
-          "description": "You can use the Use an Object action (pick locks, disarm traps, etc.) as a Bonus Action on your turn (in addition to the usual Cunning Action options)."
+          "description": "You can use the Use an Object action (pick locks, disarm traps, etc.) as a Bonus Action on your turn (in addition to the usual Cunning Action options).",
+          "id": "d1afddf8-b614-4826-8a9d-2e164102fd9e"
         },
         {
           "name": "Second-Story Work",
-          "description": "You gain a climb speed equal to your walking speed, and when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier."
+          "description": "You gain a climb speed equal to your walking speed, and when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier.",
+          "id": "ac369357-3798-408b-93fa-194714e60f86"
         }
       ],
       "9": [
         {
           "name": "Supreme Sneak",
-          "description": "You have advantage on Stealth checks if you move no more than half your speed on the same turn."
+          "description": "You have advantage on Stealth checks if you move no more than half your speed on the same turn.",
+          "id": "eac805c8-4a34-4673-bc9b-436c0d731112"
         }
       ],
       "13": [
         {
           "name": "Use Magic Device",
-          "description": "You can ignore class, race, and level requirements when using magic items. You can attune to up to four magic items at once. When you use a magic item that has charges, it has a chance (on a d6 roll of 6) not to expend charges. You can use spell scrolls of any class (if spell level is higher than you could normally cast, you must make an Int (Arcana) check to use it)."
+          "description": "You can ignore class, race, and level requirements when using magic items. You can attune to up to four magic items at once. When you use a magic item that has charges, it has a chance (on a d6 roll of 6) not to expend charges. You can use spell scrolls of any class (if spell level is higher than you could normally cast, you must make an Int (Arcana) check to use it).",
+          "id": "ad0ceffc-502b-456d-bb25-a9b1511966cd"
         }
       ],
       "17": [
         {
           "name": "Thief’s Reflexes",
-          "description": "You are extraordinarily quick. You can take two turns during the first round of any combat: one at your normal initiative, and an additional turn at initiative count minus 10."
+          "description": "You are extraordinarily quick. You can take two turns during the first round of any combat: one at your normal initiative, and an additional turn at initiative count minus 10.",
+          "id": "b5e453dd-77e4-4553-aba5-79aad6ea7ca4"
         }
       ]
     },
@@ -333,25 +378,29 @@
       "1": [
         {
           "name": "Dragon Ancestor",
-          "description": "Choose one type of dragon as your ancestor (e.g., Red/Fire, Blue/Lightning, etc.). This determines the damage type of many of your features (breath weapon for Dragonborn Sorcerers; but here likely affects Elemental Affinity at level 6). You can also speak, read, write Draconic."
+          "description": "Choose one type of dragon as your ancestor (e.g., Red/Fire, Blue/Lightning, etc.). This determines the damage type of many of your features (breath weapon for Dragonborn Sorcerers; but here likely affects Elemental Affinity at level 6). You can also speak, read, write Draconic.",
+          "id": "cf5eec73-bfed-48d3-b0ac-913b28bcb941"
         }
       ],
       "6": [
         {
           "name": "Elemental Affinity",
-          "description": "When you cast a spell that deals damage of the type associated with your Draconic ancestry (Acid, Cold, Fire, Lightning, or Poison), you add your Charisma modifier to one damage roll of that spell. Additionally, you gain resistance to that damage type."
+          "description": "When you cast a spell that deals damage of the type associated with your Draconic ancestry (Acid, Cold, Fire, Lightning, or Poison), you add your Charisma modifier to one damage roll of that spell. Additionally, you gain resistance to that damage type.",
+          "id": "abd3f976-2aba-4880-a667-43c79153ba21"
         }
       ],
       "14": [
         {
           "name": "Dragon Wings",
-          "description": "You sprout a pair of draconic wings from your back, gaining a flying speed equal to your current speed. You can manifest or dismiss these wings as a Bonus Action. You can’t manifest them while wearing armor unless the armor is made to accommodate them."
+          "description": "You sprout a pair of draconic wings from your back, gaining a flying speed equal to your current speed. You can manifest or dismiss these wings as a Bonus Action. You can’t manifest them while wearing armor unless the armor is made to accommodate them.",
+          "id": "34de744d-c291-42d6-8b95-135aa9b40cb1"
         }
       ],
       "18": [
         {
           "name": "Dragon Companion",
-          "description": "You can cast the Summon Draconic Spirit spell without material components. You can also cast it once without a spell slot, regaining this ability after a Long Rest. Additionally, when you cast it, you can choose to have it not require concentration, but if you do, its duration is reduced to 1 minute."
+          "description": "You can cast the Summon Draconic Spirit spell without material components. You can also cast it once without a spell slot, regaining this ability after a Long Rest. Additionally, when you cast it, you can choose to have it not require concentration, but if you do, its duration is reduced to 1 minute.",
+          "id": "608c0f5c-10dc-491e-a173-25c71795545c"
         }
       ]
     },
@@ -365,35 +414,41 @@
       "1": [
         {
           "name": "Expanded Spell List",
-          "description": "The Fiend lets you choose from an expanded list of spells when you learn Warlock spells. The following spells are added to the warlock spell list for you: Burning Hands, Command (1st); Blindness/Deafness, Scorching Ray (2nd); Fireball, Stinking Cloud (3rd); Fire Shield, Wall of Fire (4th); Flame Strike, Hallow (5th)."
+          "description": "The Fiend lets you choose from an expanded list of spells when you learn Warlock spells. The following spells are added to the warlock spell list for you: Burning Hands, Command (1st); Blindness/Deafness, Scorching Ray (2nd); Fireball, Stinking Cloud (3rd); Fire Shield, Wall of Fire (4th); Flame Strike, Hallow (5th).",
+          "id": "c7243311-c369-4e1e-a33d-892e8977947e"
         },
         {
           "name": "Dark One’s Blessing",
-          "description": "When you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your Warlock level (minimum 1)."
+          "description": "When you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your Warlock level (minimum 1).",
+          "id": "196dbf08-8ca8-42b0-ac58-010bc5af3b0e"
         }
       ],
       "3": [
         {
           "name": "Fiend Spells",
-          "description": "You always have certain spells prepared due to your fiendish patron: Burning Hands, Command, Scorching Ray, Suggestion at 3rd; Fireball, Stinking Cloud at 5th; Fire Shield, Wall of Fire at 7th; Geas, Insect Plague at 9th. They don’t count against spells known."
+          "description": "You always have certain spells prepared due to your fiendish patron: Burning Hands, Command, Scorching Ray, Suggestion at 3rd; Fireball, Stinking Cloud at 5th; Fire Shield, Wall of Fire at 7th; Geas, Insect Plague at 9th. They don’t count against spells known.",
+          "id": "57bf9ae9-6d3a-47f9-97d8-fd6786fae3f7"
         }
       ],
       "6": [
         {
           "name": "Dark One’s Own Luck",
-          "description": "When you make an ability check or a saving throw, you can add a d10 to your roll after seeing the result but before effects occur. Once you do so, you must finish a Long Rest before you can use this feature again (or spend a Pact Magic slot to use it again, per 2024 rules)."
+          "description": "When you make an ability check or a saving throw, you can add a d10 to your roll after seeing the result but before effects occur. Once you do so, you must finish a Long Rest before you can use this feature again (or spend a Pact Magic slot to use it again, per 2024 rules).",
+          "id": "1d7fae73-0586-447e-a181-d4074b91e82d"
         }
       ],
       "10": [
         {
           "name": "Fiendish Resilience",
-          "description": "When you finish a short or long rest, choose one damage type other than force. You gain resistance to that type until you rest again."
+          "description": "When you finish a short or long rest, choose one damage type other than force. You gain resistance to that type until you rest again.",
+          "id": "24516061-e7e7-4230-8aee-2b1f94d79b90"
         }
       ],
       "14": [
         {
           "name": "Hurl Through Hell",
-          "description": "Once per turn when you hit a creature, you can force it to make a Charisma save against your spell-save DC. On a failure, it vanishes into the Lower Planes, taking 8d10 psychic damage (unless it’s a fiend) and is incapacitated until the end of your next turn, then returns to its former space (or the nearest empty one). You regain this ability after a long rest, or sooner by expending a Pact Magic slot."
+          "description": "Once per turn when you hit a creature, you can force it to make a Charisma save against your spell-save DC. On a failure, it vanishes into the Lower Planes, taking 8d10 psychic damage (unless it’s a fiend) and is incapacitated until the end of your next turn, then returns to its former space (or the nearest empty one). You regain this ability after a long rest, or sooner by expending a Pact Magic slot.",
+          "id": "88abe0ee-a224-43c7-a6d6-a26592e1abc6"
         }
       ]
     },
@@ -407,29 +462,34 @@
       "3": [
         {
           "name": "Evocation Savant",
-          "description": "Choose two Wizard spells from the Evocation school, each of which must be no higher than level 2, and add them to your spellbook for free. In addition, whenever you gain access to a new level of spell slots in this class, you can add one Wizard spell from the Evocation school to your spellbook for free. The chosen spell must be of a level for which you have spell slots."
+          "description": "Choose two Wizard spells from the Evocation school, each of which must be no higher than level 2, and add them to your spellbook for free. In addition, whenever you gain access to a new level of spell slots in this class, you can add one Wizard spell from the Evocation school to your spellbook for free. The chosen spell must be of a level for which you have spell slots.",
+          "id": "4801033b-06bf-48ff-a4b2-77f425f524f2"
         },
         {
           "name": "Potent Cantrip",
-          "description": "Your damaging cantrips affect even creatures that avoid the brunt of the effect. When you cast a cantrip at a creature and you miss with the attack roll or the target succeeds on a saving throw against the cantrip, the target takes half the cantrip’s damage (if any) but suffers no additional effect from the cantrip."
+          "description": "Your damaging cantrips affect even creatures that avoid the brunt of the effect. When you cast a cantrip at a creature and you miss with the attack roll or the target succeeds on a saving throw against the cantrip, the target takes half the cantrip’s damage (if any) but suffers no additional effect from the cantrip.",
+          "id": "3a327143-aa08-42d1-9488-e7f0319ceada"
         }
       ],
       "6": [
         {
           "name": "Sculpt Spells",
-          "description": "You can create pockets of relative safety within theeffects of your evocations. When you cast an Evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 plus the spell’s level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save."
+          "description": "You can create pockets of relative safety within theeffects of your evocations. When you cast an Evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 plus the spell’s level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save.",
+          "id": "69c67e52-4205-4449-86af-2c317dfa8afc"
         }
       ],
       "10": [
         {
           "name": "Empowered Evocation",
-          "description": "Whenever you cast a Wizard spell from the Evocation school, you can add your Intelligence modifier to one damage roll of that spell."
+          "description": "Whenever you cast a Wizard spell from the Evocation school, you can add your Intelligence modifier to one damage roll of that spell.",
+          "id": "44cc1fd2-6bfb-4555-925c-f7ecc4ab7ced"
         }
       ],
       "14": [
         {
           "name": "Overchannel",
-          "description": "You can increase the power of your spells. When you cast a Wizard spell with a spell slot of levels 1–5 that deals damage, you can deal maximum damage with that spell on the turn you cast it. The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a Long Rest, you take 2d12 Necrotic damage for each level of the spell slot immediately after you cast it. This damage ignores Resistance and Immunity. Each time you use this feature again before finishing a Long Rest, the Necrotic damage per spell level increases by 1d12."
+          "description": "You can increase the power of your spells. When you cast a Wizard spell with a spell slot of levels 1–5 that deals damage, you can deal maximum damage with that spell on the turn you cast it. The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a Long Rest, you take 2d12 Necrotic damage for each level of the spell slot immediately after you cast it. This damage ignores Resistance and Immunity. Each time you use this feature again before finishing a Long Rest, the Necrotic damage per spell level increases by 1d12.",
+          "id": "ebdc9c60-e494-49f8-81d1-7b82f5096b6e"
         }
       ]
     },

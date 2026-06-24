@@ -1,23 +1,50 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
+import { Stats } from "../../dndInfo/useCharacters";
 
 const addACFeature = (character: Character, feature: MadFeature): Character => {
     const acBonus = feature.value?.['bonus'] ?? '';
+    const stats = feature.value?.['stats'].split(',') ?? [];
+
+    let totalBonus = 0;
 
     if (acBonus) {
-        character.ArmorClass += +acBonus;
-    }
+        totalBonus += +acBonus;
 
+        const statValues = stats.flatMap(stat => character.stats[stat as keyof Stats])
+        
+        statValues.forEach(value => {
+            const bonus = Math.floor((value - 10)/2);
+
+            totalBonus += bonus;
+        })
+    }
+    
+    character.ArmorClass += totalBonus;
+    
     return character;
 }
 
 const removeACFeature = (character: Character, feature: MadFeature): Character => {
     const acBonus = feature.value?.['bonus'] ?? '';
-    
+    const stats = feature.value?.['stats'].split(',') ?? [];
+
+    let totalBonus = 0;
+
     if (acBonus) {
-        character.ArmorClass -= +acBonus;
+        totalBonus += +acBonus;
+
+        const statValues = stats.flatMap(stat => character.stats[stat as keyof Stats])
+        
+        statValues.forEach(value => {
+            const bonus = Math.floor((value - 10)/2);
+
+            totalBonus += bonus;
+        })
     }
+
+    character.ArmorClass -= totalBonus;
 
     return character;
 }
@@ -30,15 +57,16 @@ function useACFeature (character: Character): Character | undefined {
     }
 
     character.features.forEach(feature => {
-        const mads = (feature?.metadata?.mads ?? []) as MadFeature[];
+        const madsArr = feature?.metadata?.mads as MadFeature[];
 
-        for (const mad of mads) {
-            if (mad.command === "AddArmorClass" && mad.value['bonus']) {
-                character = addACFeature(character, mad);
-            } else if (mad.command === "RemoveArmorClass" && mad.value['bonus']) {
-                character = removeACFeature(character, mad);
+        madsArr.forEach((mads) => {
+            if (mads && mads.command === "AddArmorClass" && mads.value['bonus']) {
+                character = addACFeature(character, mads);
+            } else if (mads && mads.command === "RemoveArmorClass" && mads.value['bonus']) {
+                character = removeACFeature(character, mads);
             }
-        }
+        })
+
 
     });
     

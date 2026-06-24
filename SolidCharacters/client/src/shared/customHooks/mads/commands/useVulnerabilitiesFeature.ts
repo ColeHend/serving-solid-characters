@@ -3,7 +3,7 @@ import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addVulnerabilityFeature = (character: Character, feature: MadFeature) => {
-    const type = feature.value?.["vulnerability"];
+    const type = feature.value?.["damageType"];
 
     if (!type) {
         DebugConsole.error("No vulnerability type provided for AddVulnerability command");
@@ -18,7 +18,7 @@ const addVulnerabilityFeature = (character: Character, feature: MadFeature) => {
 }
 
 const removeVulnerabilityFeature = (character: Character, feature: MadFeature) => {
-    const type = feature.value?.["vulnerability"];
+    const type = feature.value?.["damageType"];
 
     if (!type) {
         DebugConsole.error("No vulnerability type provided for RemoveVulnerability command");
@@ -37,23 +37,27 @@ function useVulnerabilitiesFeature(character: Character) {
         return;
     }
 
-    character.features.forEach(feature => {
-        const mads = (feature.metadata?.mads ?? []) as MadFeature[];
+    const updated = character.features.reduce((updatedChar,feature) => {
+        const MadFeature = feature.metadata?.mads as MadFeature[];
 
-        for (const mad of mads) {
-            switch (mad.command) {
+        return MadFeature.reduce((updatedCharacter, feature) => {
+            switch (feature.command) {
                 case "AddVulnerabilities":
-                    character = addVulnerabilityFeature(character, mad);
+                    updatedCharacter = addVulnerabilityFeature(updatedCharacter, feature);
                     break;
 
                 case "RemoveVulnerabilities":
-                    character = removeVulnerabilityFeature(character, mad);
+                    updatedCharacter = removeVulnerabilityFeature(updatedCharacter, feature);
+                    break;
+                default:
                     break;
             }
-        }
-    })
 
-    return character;
+            return updatedCharacter
+        }, updatedChar);
+    }, character)
+
+    return updated;
 }
 
 export default useVulnerabilitiesFeature;

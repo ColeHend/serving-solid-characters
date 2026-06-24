@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import themeStyle from './themes/themeStyle.module.scss';
 import { createMemo } from 'solid-js';
 

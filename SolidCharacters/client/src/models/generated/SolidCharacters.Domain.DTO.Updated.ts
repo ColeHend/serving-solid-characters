@@ -72,6 +72,7 @@ export interface Feat {
 }
 
 export interface FeatureDetail {
+  id: string;
   name: string;
   description: string;
   choiceKey?: string;

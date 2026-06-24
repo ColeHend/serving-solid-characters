@@ -1,6 +1,7 @@
 // Class
 
-import { Background } from "../generated";
+// import { MadFeature } from "../../shared/customHooks/mads/madModels";
+import { Background, MadFeature, MadPrerequisite } from "../generated";
 
 
 // Subclass
@@ -33,3 +34,16 @@ export interface BackgroundForm extends HalfBackground {
 
 
 // Items
+
+
+// features
+
+export interface MadForm extends MadFeature {
+    name: string;
+    commandType: string;
+    commandCategory: string;
+}
+
+export interface MadPrereqForm extends MadPrerequisite {
+    formName: string;
+}
