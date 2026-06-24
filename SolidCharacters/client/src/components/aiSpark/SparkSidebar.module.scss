@@ -1,0 +1,315 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1200;
+    height: 100vh;
+    width: min(440px, 100vw);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-elevation-3, 0 8px 24px rgba(0, 0, 0, 0.35));
+    transform: translateX(0);
+    transition: transform 300ms ease;
+}
+
+.opening {
+    animation: slideIn 300ms ease;
+}
+.closing {
+    animation: slideOut 300ms ease forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+@keyframes slideOut {
+    from { transform: translateX(0); }
+    to { transform: translateX(100%); }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-2, 12px) var(--spacing-2, 12px);
+    border-bottom: 1px solid var(--surface-color, rgba(255, 255, 255, 0.1));
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    font-size: var(--font-size-h3, 1.2rem);
+    font-weight: 600;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+}
+
+.convMenu {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+.convPopover {
+    position: absolute;
+    top: calc(100% + 4px);   // open downward, below the History trigger
+    right: 0;
+    z-index: 20;             // above sidebar content, within the sidebar's stacking context
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: var(--spacing-1, 6px);
+    border-radius: 10px;
+    background: var(--container-color, #222);
+    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    box-shadow: var(--shadow-elevation-2, 0 4px 14px rgba(0, 0, 0, 0.35));
+}
+.convOption {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    width: 100%;
+    padding: var(--spacing-1, 8px) var(--spacing-2, 12px);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: inherit;
+    font: inherit;
+    font-size: var(--font-size-small, 0.9rem);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+        background: var(--surface-color, rgba(255, 255, 255, 0.08));
+    }
+}
+.convTitle {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.convTime {
+    flex-shrink: 0;
+    opacity: 0.6;
+    font-size: var(--font-size-small, 0.8rem);
+}
+
+.modeMenu {
+    position: relative;
+    flex-shrink: 0;
+}
+.modeTrigger {
+    gap: var(--spacing-1, 6px);
+    white-space: nowrap;
+}
+.modePopover {
+    position: absolute;
+    bottom: calc(100% + 4px);   // open upward, above the trigger
+    right: 0;                    // right-aligned, above the Send button
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+    padding: var(--spacing-1, 6px);
+    border-radius: 10px;
+    background: var(--container-color, #222);
+    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    box-shadow: var(--shadow-elevation-2, 0 4px 14px rgba(0, 0, 0, 0.35));
+}
+.modeOption {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    width: 100%;
+    padding: var(--spacing-1, 8px) var(--spacing-2, 12px);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: inherit;
+    font: inherit;
+    font-size: var(--font-size-small, 0.9rem);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+        background: var(--surface-color, rgba(255, 255, 255, 0.08));
+    }
+}
+
+.messageList {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: var(--spacing-2, 12px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2, 12px);
+}
+
+.empty {
+    margin: auto;
+    text-align: center;
+    opacity: 0.7;
+    font-size: var(--font-size-small, 0.85rem);
+    max-width: 80%;
+}
+
+.bubbleRow {
+    display: flex;
+}
+.bubbleRowUser {
+    justify-content: flex-end;
+}
+.bubbleRowAssistant {
+    justify-content: flex-start;
+}
+
+.bubble {
+    max-width: 85%;
+    padding: var(--spacing-1, 8px) var(--spacing-2, 12px);
+    border-radius: 12px;
+    line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+.bubbleUser {
+    background: var(--primary-color, #4a5);
+    color: var(--on-primary-color, #fff);
+    border-bottom-right-radius: 2px;
+}
+.bubbleAssistant {
+    background: var(--surface-color, rgba(255, 255, 255, 0.08));
+    color: var(--on-surface-color, inherit);
+    border-bottom-left-radius: 2px;
+}
+
+.thinking {
+    opacity: 0.6;
+    font-style: italic;
+}
+
+.thinkingBlock {
+    margin-bottom: var(--spacing-1, 6px);
+    border-left: 2px solid var(--primary-color, rgba(255, 255, 255, 0.25));
+    padding-left: var(--spacing-1, 8px);
+}
+.thinkingToggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: inherit;
+    opacity: 0.7;
+    font-size: var(--font-size-small, 0.8rem);
+    font-style: italic;
+    cursor: pointer;
+    padding: 0;
+}
+.thinkingContent {
+    opacity: 0.65;
+    font-size: var(--font-size-small, 0.85rem);
+    font-style: italic;
+    margin-top: 4px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.streamActions {
+    margin-top: var(--spacing-1, 6px);
+}
+
+.previewCard {
+    padding: var(--spacing-2, 12px);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 8px);
+}
+.previewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.previewSubtitle {
+    font-size: var(--font-size-small, 0.8rem);
+    opacity: 0.7;
+}
+.previewBody {
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: var(--font-size-small, 0.9rem);
+}
+.previewPlaceholder {
+    opacity: 0.6;
+    font-style: italic;
+    font-size: var(--font-size-small, 0.9rem);
+}
+.previewError {
+    color: var(--error-color, #c33);
+    font-size: var(--font-size-small, 0.8rem);
+}
+.completenessHeader {
+    color: #e0a52e;
+    font-size: var(--font-size-small, 0.8rem);
+}
+.completenessList {
+    margin: 0;
+    padding-left: var(--spacing-2, 16px);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.warnChip {
+    color: #e0a52e;
+    font-size: var(--font-size-small, 0.8rem);
+}
+.previewActions {
+    display: flex;
+    gap: var(--spacing-1, 6px);
+    flex-wrap: wrap;
+    align-items: center;
+}
+.previewRepairing {
+    opacity: 0.85;
+}
+.repairingLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    font-style: italic;
+    opacity: 0.8;
+    font-size: var(--font-size-small, 0.85rem);
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--surface-color, rgba(255, 255, 255, 0.1));
+}
+
+.inputToolbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--spacing-1, 6px) var(--spacing-2, 12px) 0;
+}
+
+.inputBar {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-1, 6px);
+    padding: var(--spacing-2, 12px);
+
+    textarea {
+        flex: 1 1 auto;
+        max-height: 160px;
+    }
+}

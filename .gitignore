@@ -7,6 +7,7 @@ SolidCharacters.Domain/obj/
 SolidCharacters.Repository/bin/
 SolidCharacters.Repository/obj/
 SolidCharacters/appsettings.json
+SolidCharacters/App_Data/
 SolidCharacters/wwwroot/
 SolidCharacters/bin/
 SolidCharacters/obj/

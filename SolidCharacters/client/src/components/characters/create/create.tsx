@@ -269,7 +269,7 @@ const CharacterCreate: Component = () => {
     }
   };
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: CharacterForm) => {
     const fullData: CharacterForm = {
       ...data,
       name: characterName(),

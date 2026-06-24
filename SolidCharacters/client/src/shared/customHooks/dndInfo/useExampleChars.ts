@@ -101,10 +101,8 @@ const Gandalf = createExampleCharacter({
     }
   ],
   savingThrows: [
-    {
-      stat: "str",
-      proficient: true
-    }
+    { stat: "int", proficient: true },
+    { stat: "wis", proficient: true },
   ],
   background: "Noble",
   alignment: "neutral",

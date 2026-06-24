@@ -140,7 +140,7 @@ const masterSpells: Component = () => {
         <SearchBar 
           setResults={setSearchResults}
           dataSource={tableData}
-          searchFunction={(spell,search)=>spell.name.toLowerCase() === search.toLowerCase()}
+          searchFunction={(spell,search)=> spell.name.toLowerCase().trim().includes(search.toLowerCase().trim())}
         />
       </div>
       <div class={`${styles.spellsBody}`}>

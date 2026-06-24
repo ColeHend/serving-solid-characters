@@ -1,7 +1,7 @@
 // New implementation using 5E data model types while keeping legacy-compatible accessors.
 import { Observable, take, tap, of, concatMap, catchError, finalize, endWith } from "rxjs";
 import { Accessor, Setter, createSignal } from "solid-js";
-import { Class5E, Item, Feat, Spell, Background, Race, Subclass } from "../../models/generated";
+import { Class5E, Item, Feat, Spell, Background, Race, Subclass, MagicItem } from "../../models/generated";
 import { srdItem, srdSubclass } from "../../models/data/generated";
 import HombrewDB from "./utility/localDB/new/homebrewDB";
 import httpClient$ from "./utility/tools/httpClientObs";
@@ -32,6 +32,7 @@ class HomebrewManager {
   // Internal signals (new types)
   private _classes: Accessor<Class5E[]>; private _setClasses: Setter<Class5E[]>;
   private _items: Accessor<srdItem[]>; private _setItems: Setter<srdItem[]>;
+  private _magicItems: Accessor<MagicItem[]>; private _setMagicItems: Setter<MagicItem[]>;
   private _feats: Accessor<Feat[]>; private _setFeats: Setter<Feat[]>;
   private _spells: Accessor<Spell[]>; private _setSpells: Setter<Spell[]>;
   private _backgrounds: Accessor<Background[]>; private _setBackgrounds: Setter<Background[]>;
@@ -41,6 +42,7 @@ class HomebrewManager {
   // Public accessors (legacy-compatible)
   public classes: Accessor<any[]>;
   public items: Accessor<any[]>;
+  public magicItems: Accessor<MagicItem[]>;
   public feats: Accessor<any[]>;
   public spells: Accessor<Spell[]>;
   public backgrounds: Accessor<any[]>;
@@ -49,6 +51,7 @@ class HomebrewManager {
 
   private homebrewClasses$: Observable<Class5E[]> = httpClient$.toObservable(HombrewDB.classes.toArray());
   private homebrewItems$: Observable<srdItem[]> = httpClient$.toObservable(HombrewDB.items.toArray());
+  private homebrewMagicItems$: Observable<MagicItem[]> = httpClient$.toObservable(HombrewDB.magicItems.toArray());
   private homebrewFeats$: Observable<Feat[]> = httpClient$.toObservable(HombrewDB.feats.toArray());
   private homebrewSpells$: Observable<Spell[]> = httpClient$.toObservable(HombrewDB.spells.toArray());
   private homebrewBackgrounds$: Observable<Background[]> = httpClient$.toObservable(HombrewDB.backgrounds.toArray());
@@ -70,6 +73,7 @@ class HomebrewManager {
   constructor(classes: Class5E[] = [], items: srdItem[] = [], feats: Feat[] = [], spells: Spell[] = [], backgrounds: Background[] = [], races: Race[] = [], subclasses: srdSubclass[] = []) {
     [this._classes, this._setClasses] = createSignal(classes);
     [this._items, this._setItems] = createSignal(items);
+    [this._magicItems, this._setMagicItems] = createSignal<MagicItem[]>([]);
     [this._feats, this._setFeats] = createSignal(feats);
     [this._spells, this._setSpells] = createSignal(spells);
     [this._backgrounds, this._setBackgrounds] = createSignal(backgrounds);
@@ -79,6 +83,7 @@ class HomebrewManager {
     // Public mapped accessors
     this.classes = () => this._classes().map(mapClass);
     this.items = () => this._items().map(mapItem);
+    this.magicItems = this._magicItems;
     this.feats = () => this._feats().map(mapFeat);
     this.spells = this._spells; // spells already similar
     this.backgrounds = () => this._backgrounds().map(mapBackground);
@@ -88,6 +93,7 @@ class HomebrewManager {
     // Load persisted
     this.homebrewClasses$.pipe(take(1), tap(c => this._setClasses(old => [...old, ...c]))).subscribe();
     this.homebrewItems$.pipe(take(1), tap(i => this._setItems(old => [...old, ...i]))).subscribe();
+    this.homebrewMagicItems$.pipe(take(1), tap(mi => this._setMagicItems(old => [...old, ...mi]))).subscribe();
     this.homebrewFeats$.pipe(take(1), tap(f => this._setFeats(old => [...old, ...f]))).subscribe();
     this.homebrewSpells$.pipe(take(1), tap(s => this._setSpells(old => [...old, ...s]))).subscribe();
     this.homebrewBackgrounds$.pipe(take(1), tap(b => this._setBackgrounds(old => [...old, ...b]))).subscribe();
@@ -101,6 +107,7 @@ class HomebrewManager {
       await Promise.all([
         HombrewDB.classes.clear(),
         HombrewDB.items.clear(),
+        HombrewDB.magicItems.clear(),
         HombrewDB.feats.clear(),
         HombrewDB.spells.clear(),
         HombrewDB.backgrounds.clear(),
@@ -112,7 +119,7 @@ class HomebrewManager {
     } catch (e) {
       // ignore
     }
-  this._setClasses([]); this._setItems([]); this._setFeats([]); this._setSpells([]); this._setBackgrounds([]); this._setRaces([]); this._setSubclasses([]);
+  this._setClasses([]); this._setItems([]); this._setMagicItems([]); this._setFeats([]); this._setSpells([]); this._setBackgrounds([]); this._setRaces([]); this._setSubclasses([]);
   }
 
   // Classes (Class5E)
@@ -152,6 +159,14 @@ class HomebrewManager {
   }
   public updateItem = (item: srdItem): Promise<void> | void => { if (!this._items().some(i => i.name === item.name)) return; return new Promise(res => this.updateItemInDB(Clone(item)).subscribe({ complete: () => res(), error: () => res() })); }
   private updateItemInDB = (item: srdItem) => { let error = false; return httpClient$.toObservable(HombrewDB.items.put(item)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating item", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setItems(list => list.map(i => i.name === item.name ? item : i)); addSnackbar({ message: "Item updated", severity: "success" }); } })) }
+
+  // Magic Items
+  public addMagicItem = (magicItem: MagicItem): Promise<void> | null => { if (this._magicItems().some(m => m.name === magicItem.name)) return null; return new Promise(res => this.addMagicItemToDB(Clone(magicItem)).subscribe({ complete: () => res(), error: () => res() })); }
+  private addMagicItemToDB = (magicItem: MagicItem) => {
+    let error = false; return httpClient$.toObservable(HombrewDB.magicItems.add(magicItem)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error adding magic item", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setMagicItems(o => [...o, magicItem]); addSnackbar({ message: "Magic item added", severity: "success" }); } }))
+  }
+  public updateMagicItem = (magicItem: MagicItem): Promise<void> | void => { if (!this._magicItems().some(m => m.name === magicItem.name)) return; return new Promise(res => this.updateMagicItemInDB(Clone(magicItem)).subscribe({ complete: () => res(), error: () => res() })); }
+  private updateMagicItemInDB = (magicItem: MagicItem) => { let error = false; return httpClient$.toObservable(HombrewDB.magicItems.put(magicItem)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating magic item", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setMagicItems(list => list.map(m => m.name === magicItem.name ? magicItem : m)); addSnackbar({ message: "Magic item updated", severity: "success" }); } })) }
 
   // Feats
   public addFeat = (feat: Feat): Promise<void> | null => {

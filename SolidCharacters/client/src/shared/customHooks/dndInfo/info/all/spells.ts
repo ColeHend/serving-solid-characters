@@ -10,6 +10,12 @@ export function useDnDSpells() {
   return createMemo(() => {
     const version = userSettings().dndSystem || '2014';
     const srd = useGetSrdSpells(version); // returns accessor dependent on version
-    return [...srd(), ...homebrew()];
+    const theSRD = srd();
+    const theHomebrew = homebrew()
+    console.log('TheSpellSRD:', theSRD);
+
+    console.log('TheSpellHomebrew:', theHomebrew);
+    
+    return [...theSRD, ...theHomebrew];
   });
 }

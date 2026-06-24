@@ -7,6 +7,7 @@ import { Select, Option, addSnackbar, Button, addTheme } from "coles-solid-libra
 import { homebrewManager } from "../../../shared";
 import FolderTabStrip from "./folderTabStrip";
 import { SettingsTab, SETTINGS_TABS } from "./folderTabs.shared";
+import AiSettingsTab from "./aiSettingsTab";
 interface Props {
     defaultUserSettings: Accessor<UserSettings>,
     setDefaultUserSettings: Setter<UserSettings>,
@@ -67,6 +68,9 @@ const SettingsPopup: Component<Props> = (props) => {
                   <div>
                     <h3>Account</h3>
                   </div>
+                </Match>
+                <Match when={tab === "AI"}>
+                  <AiSettingsTab />
                 </Match>
               </Switch>
             </div>

@@ -4,6 +4,9 @@ import { A } from "@solidjs/router";
 import { Button, Container, Icon } from "coles-solid-library";
 import DataTransferModal from "../DataTransfering/dataTransferModal";
 import { FileExport, Menu } from "coles-solid-library/icons";
+import SparkIcon from "../../shared/components/aiSpark/sparkIcon";
+import { aiAssistant } from "../../shared/customHooks/aiAssistant";
+import { isAiConfigured } from "../../shared/customHooks/userSettings";
 
 type Props = {
     style?: CSSModuleClasses[string],
@@ -48,7 +51,11 @@ const Navbar: Component<Props> = (props) => {
             <Icon icon={FileExport} size="large"></Icon>
           </Button>
 
-        
+          <Show when={isAiConfigured()}>
+            <Button transparent title="Spark AI" onClick={() => aiAssistant.toggle()}>
+              <SparkIcon size={24} />
+            </Button>
+          </Show>
 
           <Button transparent ref={props.setAnchor} onClick={()=>(local.list[1](true))} >
             <Icon icon={Menu} size="large" />

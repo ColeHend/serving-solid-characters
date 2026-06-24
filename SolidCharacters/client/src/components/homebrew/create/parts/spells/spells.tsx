@@ -10,6 +10,7 @@ import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
 import { useSearchParams } from "@solidjs/router";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
+import { takeEditHandoff } from "../../../../../shared/ai/editHandoff";
 
 const Spells: Component = () => {  
   
@@ -103,8 +104,17 @@ const Spells: Component = () => {
   };
 
   onMount(()=>{
-    if (searchParam.name) fillSpellInfo(true);
-    
+    // A spell handed off from the Spark assistant's "Edit manually" isn't saved yet, so it can't be
+    // looked up by name — load the entity directly. Falls back to the ?name= edit path otherwise.
+    const draft = takeEditHandoff<Spell>("spell");
+    if (draft) {
+      setCurrentSpell(draft);
+      setSpellDesc(draft.description ?? "");
+      setSpellHigherLevel(draft.higherLevel ?? "");
+    } else if (searchParam.name) {
+      fillSpellInfo(true);
+    }
+
     document.body.classList.add('spells-bg');
   })
 
