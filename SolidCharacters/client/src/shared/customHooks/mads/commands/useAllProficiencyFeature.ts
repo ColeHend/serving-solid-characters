@@ -2,6 +2,46 @@ import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
+const getProficencyBonus = (level: number) => {
+    return Math.ceil(level/ 4) + 1;
+}
+
+const updateCharacter = (skillstring: string, proficiencyBounsChoice: string, opperator: "+"|"-", character: Character) => {
+    const skillsToChange = skillstring.split(",").map(s => s.trim());
+    
+    let bonus: number;
+
+    switch (proficiencyBounsChoice) {
+        case "Third PB":
+            bonus = getProficencyBonus(character.level)/3;
+            break;
+
+        case "Half PB":
+            bonus = getProficencyBonus(character.level)/2;
+            break;
+
+        case "Full PB":
+            bonus = getProficencyBonus(character.level);
+            break;
+    }
+
+    switch (opperator) {
+        case "+":
+            return skillsToChange.reduce((updatedCharacter, skill) => {
+                updatedCharacter.proficiencies.skills[skill].value += bonus;
+
+                return updatedCharacter;
+            }, character)
+        
+        case "-":
+            return skillsToChange.reduce((updatedCharacter, skill) => {
+                updatedCharacter.proficiencies.skills[skill].value -= bonus;
+
+                return updatedCharacter;
+            }, character)
+    }
+} 
+
 /**
  * requires an amount value in the feature.value object, which determines how the character's proficiencies will be increased by the proficiency level 
  * (half, full or what ever you decide proficiency). The function calculates the proficiency bonus based on the character's level and divides it by the provided amount to determine 
@@ -12,52 +52,17 @@ import { DebugConsole } from "../../DebugConsole";
  * @returns the updated character.
  */
 const addAllProficiencyFeature = (character: Character, feature: MadFeature) => {
-    const AmntToDevide = +feature.value?.['amount'];
-
-    if (isNaN(AmntToDevide) || AmntToDevide <= 0) {
-        DebugConsole.error("Invalid amount provided for AddProficiencies command");
-        return character;
-    }
-
-    const CharacterLevel = character.level;
-    const allSkills = Object.keys(character.proficiencies.skills);
-    const proficiencyBonus = getProficiencyBonus(CharacterLevel);
-    const proficiencyIncrease = Math.ceil(proficiencyBonus / AmntToDevide); 
-
-    allSkills.forEach(skill => {
-
-        character.proficiencies.skills[skill].value += proficiencyIncrease;
-    });
- 
-    return character;
+    const skillstring = feature.value?.['allProficiencies'];
+    const proficiencyBounsChoice = feature.value?.["proficiencyBonusChoice"];
+   
+    return updateCharacter(skillstring, proficiencyBounsChoice, "+", character);
 }
 
 const removeAllProficiencyFeature = (character: Character, feature: MadFeature) => {
-    const AmntToDevide = +feature.value?.['amount'];
-    
-    if (isNaN(AmntToDevide) || AmntToDevide <= 0) {
-        DebugConsole.error("Invalid amount provided for RemoveProficiencies command");
-        return character;
-    }
+    const skillstring = feature.value?.['allProficiencies'];
+    const proficiencyBounsChoice = feature.value?.["proficiencyBonusChoice"];
 
-    const CharacterLevel = character.level;
-    const allSkills = Object.keys(character.proficiencies.skills);
-    const proficiencyBonus = getProficiencyBonus(CharacterLevel);
-    const proficiencyDecrease = Math.ceil(proficiencyBonus / AmntToDevide);
-
-    allSkills.forEach(skill => {
-        character.proficiencies.skills[skill].value -= proficiencyDecrease;
-        
-        if (character.proficiencies.skills[skill].value < 0) {
-            character.proficiencies.skills[skill].value = 0; // Ensure proficiency doesn't go below 0
-        }
-    });
- 
-    return character;
-}
-
-function getProficiencyBonus(level: number): number {
-    return Math.ceil(level / 4) + 1;
+    return updateCharacter(skillstring, proficiencyBounsChoice, "-", character);
 }
 
 function useAllProficiencyFeature (character: Character ): Character | undefined {
@@ -67,19 +72,24 @@ function useAllProficiencyFeature (character: Character ): Character | undefined
         return;
     }
     
-    character.features.forEach(feature => {
-        const mads = (feature?.metadata?.mads ?? []) as MadFeature[];
+    const updated = character.features.reduce((updatedChar,feature) => {
+        const mads = feature?.metadata?.mads as MadFeature[];
 
-        for (const mad of mads) {
-            if (mad.command === "AddAllProficiencies") {
-                character = addAllProficiencyFeature(character, mad);
-            } else if (mad.command === "RemoveAllProficiencies") {
-                character = removeAllProficiencyFeature(character, mad);
+        return mads.reduce((updatedCharacter, mads) => {
+            switch (mads.command) {
+                case "AddAllProficiencies":
+                    updatedCharacter = addAllProficiencyFeature(updatedCharacter, mads);
+                    break;
+                case "RemoveAllProficiencies":
+                    updatedCharacter = removeAllProficiencyFeature(updatedCharacter, mads);
+                    break;
             }
-        }
-    });
+
+            return updatedCharacter;
+        }, updatedChar);
+    }, character);
     
-    return character;
+    return updated;
 }
 
 export default useAllProficiencyFeature;

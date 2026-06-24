@@ -1,5 +1,3 @@
-import { Character } from "../../../models/character.model";
-
 /**
  * Utility type to construct add/remove command strings for a given category.
  * For example, `AddSpells` or `RemoveSpells` when `T` is `'Spells'`.
@@ -8,8 +6,10 @@ type AddRemove<T extends string> = `Add${T}` | `Remove${T}`;
 
 /**
  * Comparison operators used in prerequisites when evaluating character values.
+ * 
+ * @example greater than, less than, less than or equal to, greater than or equal to, equal to, not equal to.
  */
-type OperationType = "<" | ">" | ">=" | "<=";
+type OperationType = "<" | ">" | ">=" | "<=" | "===" | "!==" | "includes" | "excludes";
 
 /**
  * All possible commands that can be applied via a MAD feature. Each command
@@ -45,15 +45,15 @@ export enum MadType {
     /** changes on the character sheet */ 
     Character = 0,
     /** more detailed information about the feat/feature like numberOFUses, recharge info, etc */ 
-    Info = 1 
+    Info = 1,
 }
 
 export interface Madprerequisite {
     /**
      * The key on the character to check the prerequisite against. For example, if the prerequisite is "Strength Score >= 15", the value would be "Strength Score".
      */
-    value: keyof Character;
-
+    value: string;
+    
     /**
      * The operation to compare the character's value to the keyValue. For example, if the prerequisite is "Strength Score >= 15", the operation would be ">=".
      */
@@ -65,10 +65,7 @@ export interface Madprerequisite {
     keyValue: string;
 
     /**
-     * the group number for "or" prerequisites, prerequisites with the same group number are "or" prerequisites, prerequisites with group 0 are "and" prerequisites;
-     * 
-     *  @example 
-     * 
+     * the group number for "or" prerequisites, prerequisites with the same group number are "or" prerequisites, prerequisites with opposite are "and" prerequisites;
      */
     group: number;
 }

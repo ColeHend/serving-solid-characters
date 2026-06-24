@@ -3,55 +3,45 @@ import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addProficienciesFeature = (character: Character, feature: MadFeature) => {
-    const newProficiencies = feature.value['proficiencies']?.split(',').map(p => p.trim()) || [];
+    const newProficiency = feature.value['proficiency'];
 
-    if (newProficiencies.length === 0) {
-        DebugConsole.error("No proficiencies provided for AddProficiencies command");
+    if (newProficiency === "") {
+        DebugConsole.error("No proficiency provided for AddProficiencies command");
         
         return character;
     }
 
-    newProficiencies.forEach(proficiency => {
+    const old = character.proficiencies.skills[`${newProficiency}`];
 
-        if (proficiency ) {
-            const old = character.proficiencies.skills[`${proficiency}`];
-       
-            character.proficiencies.skills[`${proficiency}`] = {
-                stat: old.stat,
-                value: old.value,
-                proficient: true,
-                expertise: old.expertise,
-            }
-        }
+    character.proficiencies.skills[`${newProficiency}`] = {
+        stat: old.stat,
+        value: old.value,
+        proficient: true,
+        expertise: old.expertise,
+    }
 
-    });
 
     return character;
 }
 
 const RemoveProficienciesFeature = (character: Character, feature: MadFeature) => {
-    const newProficiencies = feature.value['proficiencies']?.split(',').map(p => p.trim()) || [];
+    const newProficiency = feature.value['proficiency'];
 
-    if (newProficiencies.length === 0) {
-        DebugConsole.error("No proficiencies provided for RemoveProficiencies command");
+    if (newProficiency === "") {
+        DebugConsole.error("No proficiency provided for AddProficiencies command");
         
         return character;
     }
 
-    newProficiencies.forEach(proficiency => {
+    const old = character.proficiencies.skills[`${newProficiency}`];
 
-        if (proficiency ) {
-            const old = character.proficiencies.skills[`${proficiency}`];
-       
-            character.proficiencies.skills[`${proficiency}`] = {
-                stat: old.stat,
-                value: old.value,
-                proficient: false,
-                expertise: old.expertise,
-            }
-        }
+    character.proficiencies.skills[`${newProficiency}`] = {
+        stat: old.stat,
+        value: old.value,
+        proficient: false,
+        expertise: old.expertise,
+    }
 
-    });
 
     return character;
 }
@@ -63,19 +53,24 @@ function useProficienciesFeature (character: Character) {
         return;
     }
 
-    character.features.forEach(feature => {
-        const mads = feature.metadata?.mads ?? [];
+    const updated = character.features.reduce((updatedCharacter,feature) => {
+        const mads = feature.metadata?.mads as MadFeature[];
+        
+        return mads.reduce((updatedChar,mads) => {
+            if (mads) {
+                if (mads.command === 'AddProficiencies') {
+                    updatedChar = addProficienciesFeature(character, mads);
+                } else if (mads.command === 'RemoveProficiencies') {
+                    updatedChar = RemoveProficienciesFeature(character, mads);
+                }
+            }   
 
-        for (const mad of mads as MadFeature[]) {
-            if (mad.command === 'AddProficiencies') {
-                character = addProficienciesFeature(character, mad);
-            } else if (mad.command === 'RemoveProficiencies') {
-                character = RemoveProficienciesFeature(character, mad);
-            }
-        }
-    });
+            return updatedChar
+        }, updatedCharacter)
 
-    return character;
+    }, character);
+
+    return updated;
 };
 
 export default useProficienciesFeature;

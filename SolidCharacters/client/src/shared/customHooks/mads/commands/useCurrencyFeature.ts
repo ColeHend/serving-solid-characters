@@ -36,20 +36,22 @@ function useCurrencyFeature (character: Character) {
         return;
     }
 
-    character.features.forEach(feature => {
-        const mads = (feature.metadata?.mads ?? []) as MadFeature[];
+    const updated = character.features.reduce((updatedChar,feature) => {
+        const madsArr = feature.metadata?.mads as MadFeature[];
 
-        for (const mad of mads) {
-            if (mad.command === 'AddCurrency') {
-                character = AddCurrencyFeature(character, mad);
-            } else if (mad.command === 'RemoveCurrency') {
-                character = RemoveCurrencyFeature(character, mad);
+        return madsArr.reduce((updated,mads) => {
+            if (mads && mads.command === 'AddCurrency') {
+                updated = AddCurrencyFeature(character, mads);
+            } else if (mads && mads.command === 'RemoveCurrency') {
+                updated = RemoveCurrencyFeature(character, mads);
             }
-        }
 
-    });
+            return updated
+        }, updatedChar)
 
-    return character;
+    },character);
+
+    return updated;
 }
 
 export default useCurrencyFeature;

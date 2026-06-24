@@ -80,6 +80,9 @@ public sealed class SrdIdNormalizationStartupService : IRunOnStartup
 
             changed |= EnsureGuidId(record);
 
+            // Process features in the record
+            changed |= ProcessFeatures(record, changed);
+
             if (!includeNestedClassSubclasses)
             {
                 continue;
@@ -95,8 +98,11 @@ public sealed class SrdIdNormalizationStartupService : IRunOnStartup
                 if (subclassToken is JObject subclassRecord)
                 {
                     changed |= EnsureGuidId(subclassRecord);
+                    // Process features in the subclass
+                    changed |= ProcessFeatures(subclassRecord, changed);
                 }
             }
+
         }
 
         if (!changed)
@@ -131,6 +137,39 @@ public sealed class SrdIdNormalizationStartupService : IRunOnStartup
 
         record["id"] = Guid.NewGuid().ToString();
         return true;
+    }
+
+    private static bool ProcessFeatures(JObject record, bool changed)
+    {
+        if (record["features"] is JObject featuresObj)
+        {
+            // For classes/subclasses: features is an object with level keys, each value an array
+            foreach (var property in featuresObj.Properties())
+            {
+                if (property.Value is JArray featureArray)
+                {
+                    foreach (var featureToken in featureArray)
+                    {
+                        if (featureToken is JObject feature)
+                        {
+                            changed |= EnsureGuidId(feature);
+                        }
+                    }
+                }
+            }
+        }
+        else if (record["features"] is JArray featuresArray)
+        {
+            // For backgrounds: features is an array
+            foreach (var featureToken in featuresArray)
+            {
+                if (featureToken is JObject feature)
+                {
+                    changed |= EnsureGuidId(feature);
+                }
+            }
+        }
+        return changed;
     }
 
     private string? ResolveJsonFilePath(int version, string fileKey)

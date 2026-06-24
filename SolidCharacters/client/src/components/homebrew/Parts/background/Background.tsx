@@ -59,6 +59,11 @@ export const HomebrewBackgrounds: Component = () => {
     // features
     const [features, setFeatures] = createSignal<FeatureDetail[]>([]);
 
+    const [currentFeature,setCurrentFeature] = createSignal<FeatureDetail>({
+        id: "",
+        name: "",
+        description: ""
+    });
 
     // state
     const [searchParam, setSearchParam] = useSearchParams();
@@ -70,6 +75,8 @@ export const HomebrewBackgrounds: Component = () => {
     const [showProfsPopup, setShowProfsPopup] = createSignal(false);
 
     const [showFeaturePopup, setShowFeaturePopup] = createSignal(false);
+
+    const [isEdit, setIsEdit] = createSignal(false);
 
     // data 
     const homebrew = homebrewManager;
@@ -284,6 +291,16 @@ export const HomebrewBackgrounds: Component = () => {
 
     }
 
+    const isFeatureEdit = (id: string) => {
+        const item = features().find(x => x.id ===id);
+
+        if (item) {
+            return true
+        } else {
+            return false
+        }
+    };
+
     // effects 
 
     onMount(() => {
@@ -309,7 +326,13 @@ export const HomebrewBackgrounds: Component = () => {
     return <Body class={`${styles.body}`}>
         <h2>Backgrounds</h2>
 
-        <Form data={formGroup} onSubmit={handleSubmit}>  
+        <Form data={formGroup} onSubmit={(data)=> {
+            if (Array.isArray(data)) {
+                data.forEach((item) => handleSubmit(item));
+            } else {
+                handleSubmit(data);
+            }
+        }}>  
             <Identity 
                 formGroup={formGroup} 
                 existingBackgrounds={homebrewBackgrounds}
@@ -355,6 +378,8 @@ export const HomebrewBackgrounds: Component = () => {
             <OptionalFeatures 
                 features={[features, setFeatures]}
                 showPopup={setShowFeaturePopup}
+                currentFeature={[currentFeature, setCurrentFeature]}
+                setIsEdit={setIsEdit}
             />
 
             <Saving 
@@ -381,7 +406,11 @@ export const HomebrewBackgrounds: Component = () => {
 
         <FeaturesPopup 
             Show={[showFeaturePopup, setShowFeaturePopup]}
-            features={[features, setFeatures]}
+            feature={[currentFeature, setCurrentFeature]}
+            isEdit={()=>isFeatureEdit(currentFeature().id ?? "")}
+            onClose={(data) => {
+                setFeatures(old=>[...old, data]);
+            }}
         />
     </Body>
 }

@@ -3,6 +3,7 @@ import { Accessor, Component, createMemo, For, Show } from "solid-js";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 import { Feat } from "../../../../../../models/generated";
 import { Markdown } from "../../../../../../shared";
+import { Stars2 } from "coles-solid-library/icons";
 
 interface SectionProps {
     featID: Accessor<string>;
@@ -19,7 +20,7 @@ export const OriginFeat:Component<SectionProps> = (props) => {
         <span>
             Origin Feat<Show when={featID() !== ""}>: {props.getSelectedFeat(featID())?.details.name}</Show>
         </span>
-    </div>} icon='stars_2' transparent>
+    </div>} icon={Stars2} transparent getRidOfTopBorder>
         <FormField name="Select Feat" formName="feat">
             <Select>
                 <For each={originFeats()}>

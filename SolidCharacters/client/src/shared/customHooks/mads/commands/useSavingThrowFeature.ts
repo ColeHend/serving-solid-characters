@@ -7,7 +7,7 @@ const addSavingThrowFeature = (character: Character, feature: MadFeature): Chara
     const stat = feature.value?.["stat"] as keyof Stats ?? "";
 
     if (!stat) {
-        DebugConsole.error("Missing stat value for AddSavingThrows command");
+        DebugConsole.error("Missing stat for AddSavingThrows command");
         return character;
     }
 
@@ -30,7 +30,7 @@ const removeSavingThrowFeature = (character: Character, feature: MadFeature): Ch
     const stat = feature.value?.["stat"] as keyof Stats ?? "";
 
     if (!stat) {
-        DebugConsole.error("Missing stat value for RemoveSavingThrows command");
+        DebugConsole.error("Missing stat for RemoveSavingThrows command");
         return character;
     }
 
@@ -52,19 +52,22 @@ function useSavingThrowFeature (character: Character) {
     }
 
     character.features.forEach(feature => {
-        const mads = (feature.metadata?.mads ?? []) as MadFeature[];
+        const MadFeature = feature.metadata?.mads as MadFeature[];
 
-        for (const mad of mads) {
-            switch (mad.command) {
+        MadFeature.reduce((updatedCharacter, feature) => {
+            switch (feature.command) {
                 case "AddSavingThrows":
-                    character = addSavingThrowFeature(character, mad);
+                    character = addSavingThrowFeature(character, feature);
                     break;
 
                 case "RemoveSavingThrows":
-                    character = removeSavingThrowFeature(character, mad);
+                    character = removeSavingThrowFeature(character, feature);
                     break;
             }
-        }
+
+
+            return updatedCharacter;
+        }, character);
     })
 
     return character;

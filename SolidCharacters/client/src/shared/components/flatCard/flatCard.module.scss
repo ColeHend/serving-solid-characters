@@ -7,9 +7,9 @@
     gap: 0.5rem;
     padding: 1rem;
 
-    // Bottom border between sections
-    border-bottom: 1px solid;
-
+    
+    
+    
     // Colored bar on the left
     position: relative;
     &::before {
@@ -21,6 +21,16 @@
         width: 4px;
         background: linear-gradient(var(--primary-color, blue), transparent); // Or any color
     }
+}
+
+.bottomBorder {
+    // Bottom border between sections
+    border-bottom: 1px solid !important; 
+}
+
+.topBorder {
+    // Top border for the card
+    border-top: 1px solid color-mix(in srgb,vars.$color-on-surface 90%, transparent);
 }
 
 .cardHeader {
@@ -35,7 +45,7 @@
         gap: 1%;
 
         svg {
-            fill: var(--primary-color) !important;
+            fill: vars.$color-primary !important;
         }
     }
 
@@ -64,7 +74,7 @@
 
 .titleBorder {
     margin-top: 0.5rem;
-    border-bottom: 1px solid;
+    border-bottom: 1px solid color-mix(in srgb,vars.$color-on-surface 60%, transparent) !important;
     margin-left: 0;
 }
 

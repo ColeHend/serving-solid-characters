@@ -269,7 +269,7 @@ const CharacterCreate: Component = () => {
     }
   };
 
-  const handleSubmit = (data: CharacterForm) => {
+  const handleSubmit = (data: any) => {
     const fullData: CharacterForm = {
       ...data,
       name: characterName(),
@@ -464,7 +464,7 @@ const CharacterCreate: Component = () => {
   return (
     <Body class={`${stylin().accent} ${styles.body}`}>
       <h2>Character Creator</h2>
-      <Form data={group} onSubmit={handleSubmit}>
+      <Form data={group} onSubmit={(data) =>  (data)}>
         <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} extraHeaderJsx={
           <Show when={exist()}>
               <Button onClick={()=>{}}>Fill Info</Button>

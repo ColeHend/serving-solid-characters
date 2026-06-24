@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, JSX, onCleanup, Show, splitProps } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, JSX, onCleanup, Setter, Show, splitProps } from "solid-js";
 import styles from "./flatCard.module.scss";
 import { Button, Container, Icon } from "coles-solid-library";
 import { Add, Remove } from "coles-solid-library/icons";
@@ -11,6 +11,9 @@ interface FlatCardProps extends JSX.HTMLAttributes<HTMLDivElement> {
     startOpen?: boolean;
     extraHeaderJsx?: JSX.Element;
     transparent?: boolean;
+    show?: [Accessor<boolean>, Setter<boolean>]
+    getRidOfBottomBorder?: boolean;
+    getRidOfTopBorder?: boolean;
 }
 
 export const FlatCard:Component<FlatCardProps> = (props) => {
@@ -21,7 +24,9 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
         "alwaysOpen",
         "startOpen",
         "extraHeaderJsx",
-        "transparent"
+        "transparent",
+        "getRidOfBottomBorder",
+        "getRidOfTopBorder"
     ])
 
     
@@ -29,8 +34,10 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
     const isStartOpen = () => ("startOpen" in props && local.startOpen !== false);
     const isNoIcon = () => (local.icon === undefined);
     const isTransparent = ():boolean => ("transparent" in props && local.transparent !== false);
-    
-    const [showCard,setShowCard] = createSignal<boolean>(isStartOpen());
+    const getRidOfBtmBorder = () => ("getRidOfBottomBorder" in props && local.getRidOfBottomBorder !== false);
+    const getRidOfTopBorder = () => ("getRidOfTopBorder" in props && local.getRidOfTopBorder !== false);
+
+    const [showCard,setShowCard] = props.show ? props.show : createSignal<boolean>(isStartOpen());
     const [contentRef, setContentRef] = createSignal<HTMLDialogElement |undefined>();
 
     // helper to animate open/close using measured height
@@ -107,15 +114,13 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
         }
     })
 
-    return <Container {...others} theme="surface" class={`${styles.flatCard} ${others.class} ${isTransparent() ? styles.transparent : ''}`}>
+    return <Container {...others} theme="surface" class={`${styles.flatCard} ${others.class ? others.class : ""} ${isTransparent() ? styles.transparent : ''} ${!getRidOfTopBorder() ? styles.topBorder : ""} ${!getRidOfBtmBorder() ? styles.bottomBorder : ""}`}>
         <div class={`${styles.cardHeader}`}>
             <div class={`${styles.iconTitle}`}>
                 <Show when={!isNoIcon()}>
                     <Icon icon={local.icon} />
                 </Show>
-                <div>
-                    {local.headerName}
-                </div>
+                {local.headerName}
             </div>
             <div>
                 {local.extraHeaderJsx}
