@@ -1,5 +1,17 @@
+import { HOMEBREW_KIND_LABELS, HomebrewKind } from "./homebrewKind";
+
 export type AiMode = "chat" | "homebrew";
 export type AiTier = "small" | "large";
+
+/** Advisory sentence listing the kinds the model is allowed to create, when permissions restrict the set. */
+function permissionNote(allowed: HomebrewKind[] | undefined): string {
+  if (!allowed) return "";                       // unrestricted — say nothing
+  const labels = allowed.map(k => HOMEBREW_KIND_LABELS[k]);
+  if (labels.length === 0) {
+    return "\n\nNote: homebrew creation tools are currently disabled. Do not call any create_* tool; instead tell the user that content creation is turned off in settings.";
+  }
+  return `\n\nNote: you may ONLY create the following content types right now: ${labels.join(", ")}. The other create_* tools are disabled in settings — if the user asks for one of those, explain it is turned off rather than calling a different tool.`;
+}
 
 function rulesetLabel(dndSystem: string): string {
   switch (dndSystem) {
@@ -73,12 +85,13 @@ export function buildSystemPrompt(
   dndSystem: string,
   mode: AiMode,
   tier: AiTier = "large",
+  allowedKinds?: HomebrewKind[],
 ): string {
   const ruleset = rulesetLabel(dndSystem);
   const base = `You are Spark, a Dungeons & Dragons assistant embedded in a character-management app. Assume ${ruleset} unless the user says otherwise. Keep replies concise and use Markdown.`;
 
   if (mode === "homebrew") {
-    return homebrewPrompt(base, dndSystem, tier);
+    return `${homebrewPrompt(base, dndSystem, tier)}${permissionNote(allowedKinds)}`;
   }
 
   return `${base} Answer questions about rules, lore, and play. If the user wants to create homebrew content, suggest they switch to "Homebrew" mode using the toggle above the message box.`;

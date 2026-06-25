@@ -290,6 +290,59 @@
     font-size: var(--font-size-small, 0.85rem);
 }
 
+// ----- readiness review states -----
+.reviewingLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    font-style: italic;
+    opacity: 0.8;
+    font-size: var(--font-size-small, 0.85rem);
+}
+.reviewedChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #3fae6b;
+    font-size: var(--font-size-small, 0.8rem);
+}
+.directionNote {
+    color: var(--error-color, #c33);
+    font-size: var(--font-size-small, 0.85rem);
+}
+.verdictList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 8px);
+}
+.verdictGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.verdictLabel {
+    font-size: var(--font-size-small, 0.8rem);
+    font-weight: 600;
+    opacity: 0.8;
+}
+.issueError {
+    color: var(--error-color, #c33);
+    font-size: var(--font-size-small, 0.8rem);
+}
+.issueWarning {
+    color: #e0a52e;
+    font-size: var(--font-size-small, 0.8rem);
+}
+.issueInfo {
+    opacity: 0.7;
+    font-size: var(--font-size-small, 0.8rem);
+}
+.issueFix {
+    opacity: 0.65;
+    font-style: italic;
+    font-size: var(--font-size-small, 0.78rem);
+}
+
 .inputContainer {
     display: flex;
     flex-direction: column;
@@ -299,6 +352,7 @@
 .inputToolbar {
     display: flex;
     justify-content: flex-end;
+    gap: var(--spacing-1, 6px);
     padding: var(--spacing-1, 6px) var(--spacing-2, 12px) 0;
 }
 

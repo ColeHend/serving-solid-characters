@@ -2,6 +2,7 @@ import { Accessor, createSignal, Setter } from "solid-js";
 import {
   AiProviderKind, UserSettings,
   DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
+  DEFAULT_MEDIUM_RETRIES, DEFAULT_REVIEW_SETTINGS, DEFAULT_TOOL_PERMISSIONS, DEFAULT_USAGE_LEVEL,
 } from "../../models/userSettings";
 import httpClient$ from "./utility/tools/httpClientObs";
 import userSettingDB from "./utility/localDB/userSettingDB";
@@ -17,6 +18,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     provider: 'local', model: '', localBaseUrl: '', enabled: false,
     localApi: 'ollama', maxTokens: DEFAULT_AI_MAX_TOKENS, numCtx: DEFAULT_AI_NUM_CTX,
     thinking: DEFAULT_AI_THINKING, thinkingHomebrew: DEFAULT_AI_THINKING_HOMEBREW,
+    usageLevel: DEFAULT_USAGE_LEVEL, mediumRetries: DEFAULT_MEDIUM_RETRIES,
+    toolPermissions: DEFAULT_TOOL_PERMISSIONS, review: DEFAULT_REVIEW_SETTINGS,
   },
 }
 // Initialize with default settings

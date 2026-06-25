@@ -2,11 +2,16 @@ import { Accessor, createSignal, Setter } from "solid-js";
 import getUserSettings from "./userSettings";
 import {
     AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
+    DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES, DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
 import { AiMessage, AiToolCall, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providerFactory";
-import { HOMEBREW_TOOLS } from "../ai/toolSchemas";
+import { HOMEBREW_TOOLS, allowedKinds, filterTools } from "../ai/toolSchemas";
+import { HOMEBREW_KINDS } from "../ai/homebrewKind";
 import { buildPreview, HomebrewPreview, saveHomebrew } from "../ai/toolDispatcher";
+import { assembleVerdicts } from "../ai/readiness/pipeline";
+import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
+import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
 import { AiMode, buildSystemPrompt } from "../ai/systemPrompt";
 import { generateConversationTitle } from "../ai/generateTitle";
 import { createNewId } from "./utility/tools/idGen";
@@ -28,11 +33,18 @@ export interface ChatMessage {
 
 export type { HomebrewPreview };
 
-/** The tool_result text that asks the model to regenerate a thin entity with its empty fields filled. */
-function repairInstruction(p: HomebrewPreview): string {
+/**
+ * The tool_result text that asks the model to regenerate an entity. Used by the manual "Complete with
+ * AI" button (no `reason` → "was incomplete") and by the Medium/High auto-retry paths, which pass an
+ * explicit `reason` (the schema error, or "cut off / could not be parsed") so the model knows what to fix.
+ */
+function repairInstruction(p: HomebrewPreview, reason?: string): string {
     const fields = p.missingFields?.length ? p.missingFields.join(", ") : "every empty field";
     const tool = `create_${p.kind}`;
-    return `The ${p.kind.replace("_", " ")} "${p.title}" you generated was incomplete. Call ${tool} again with the SAME content you already produced, but this time fill in these fields: ${fields}. In particular, write a full multi-sentence description with concrete mechanics. Do not drop any field you already filled.`;
+    const lead = reason
+        ? `The ${p.kind.replace("_", " ")} "${p.title}" you generated could not be accepted: ${reason}.`
+        : `The ${p.kind.replace("_", " ")} "${p.title}" you generated was incomplete.`;
+    return `${lead} Call ${tool} again with the SAME content you already produced, but this time fill in these fields: ${fields}. In particular, write a full multi-sentence description with concrete mechanics. Do not drop any field you already filled.`;
 }
 
 /**
@@ -64,7 +76,10 @@ class AiAssistant {
     private outstanding = new Set<string>();   // tool_call ids from the current turn awaiting confirm/reject
     private resolved: AiToolResult[] = [];      // tool_results collected so far this turn
     private controller: AbortController | null = null;
+    private reviewController: AbortController | null = null;   // aborts in-flight readiness reviews (High mode)
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
+    private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
+    private schemaRetryStreak = 0;                       // High-mode schema-gate regenerations for the current request chain
     // ---- persisted-conversation state ----
     private currentConversationId: string | null = null;   // null until the active chat is first saved
     private createdAt: number | null = null;               // creation timestamp of the active chat
@@ -94,6 +109,8 @@ class AiAssistant {
         this.outstanding.clear();
         this.resolved = [];
         this.repairCounts.clear();
+        this.mediumRetryStreak = 0;
+        this.schemaRetryStreak = 0;
         this.setMessages([]);
         this.setPendingPreviews([]);
         this.setStreamingText("");
@@ -105,6 +122,8 @@ class AiAssistant {
         this.turnEpoch++;   // invalidate the turn we're aborting so a late finishTurn/persist is dropped
         this.controller?.abort();
         this.controller = null;
+        this.reviewController?.abort();   // stop any in-flight readiness reviews tied to this turn
+        this.reviewController = null;
         // Preserve any partial text/thinking as a bubble so it isn't lost.
         const partial = this.streamingText().trim();
         const thinking = this.streamingThinking().trim();
@@ -120,6 +139,8 @@ class AiAssistant {
         // If the previous turn left tool calls unanswered (previews never confirmed/rejected), close
         // them out so the history stays valid (Anthropic requires every tool_use to get a tool_result).
         this.flushOutstanding();
+        this.mediumRetryStreak = 0;   // a new request starts a fresh auto-retry budget
+        this.schemaRetryStreak = 0;
         this.pushUserBubble(trimmed);
         this.history.push({ role: "user", text: trimmed });
         void this.persistCurrent();   // capture the chat (and its title) from turn 1
@@ -164,6 +185,38 @@ class AiAssistant {
         this.removePreview(previewId);
     };
 
+    /**
+     * Regenerate an entity the readiness pipeline couldn't get past schema validation ("needs direction").
+     * User-initiated, so it grants a fresh schema-retry budget; reuses the repair channel + collapse UI.
+     */
+    regeneratePreview = (previewId: string) => {
+        if (this.status() === "streaming") return;
+        const preview = this.pendingPreviews().find(p => p.previewId === previewId);
+        if (!preview) return;
+        this.schemaRetryStreak = 0;
+        this.setPendingPreviews(prev => prev.map(p => p.previewId === previewId ? { ...p, repairing: true } : p));
+        const reason = preview.errors.length ? preview.errors.join(" ") : "the data could not be parsed or was cut off";
+        this.resolveToolCall(preview.toolCallId, repairInstruction(preview, reason), true);
+    };
+
+    /**
+     * Ask the model to fix the issues a readiness review found, feeding back each finding (and any
+     * suggested fix). Reuses the repair channel + collapse UI; the regenerated entity is re-reviewed.
+     */
+    applyReviewFixes = (previewId: string) => {
+        if (this.status() === "streaming") return;
+        const preview = this.pendingPreviews().find(p => p.previewId === previewId);
+        if (!preview) return;
+        const notes = (preview.verdicts ?? [])
+            .flatMap(v => v.issues)
+            .map(i => i.suggestedFix ? `${i.message} (${i.suggestedFix})` : i.message);
+        if (!notes.length) return;
+        this.setPendingPreviews(prev => prev.map(p => p.previewId === previewId ? { ...p, repairing: true } : p));
+        const tool = `create_${preview.kind}`;
+        const instruction = `A reviewer flagged problems with the ${preview.kind.replace("_", " ")} "${preview.title}". Call ${tool} again with the SAME content, fixing each of these:\n- ${notes.join("\n- ")}\nKeep everything that was already correct, and use concrete rules text.`;
+        this.resolveToolCall(preview.toolCallId, instruction, true);
+    };
+
     // ----------------- persisted conversations -----------------
 
     /** Start a fresh chat: wipe the in-memory session AND detach from the saved record so the next
@@ -196,6 +249,8 @@ class AiAssistant {
         this.outstanding.clear();
         this.resolved = [];
         this.repairCounts.clear();
+        this.mediumRetryStreak = 0;
+        this.schemaRetryStreak = 0;
         this.history = structuredClone(rec.history);
         this.setMessages(rec.messages);
         this.setPendingPreviews([]);       // previews are transient — never restored
@@ -356,8 +411,14 @@ class AiAssistant {
 
         const provider = buildProvider(ai);
         const homebrew = this.mode() === "homebrew";
-        const tools = homebrew ? HOMEBREW_TOOLS : undefined;
-        const system = buildSystemPrompt(userSettings().dndSystem, this.mode());
+        // Tool permissions (Phase 0): allow/deny which create_* tools the model may use.
+        const allowed = homebrew ? allowedKinds(ai.toolPermissions) : undefined;
+        // Hard gate: only offer the permitted tools. Never send an EMPTY tools array — if every kind is
+        // denied, omit tools entirely (chat-like) and let the system-prompt note explain creation is off.
+        const tools = homebrew && allowed && allowed.length ? filterTools(HOMEBREW_TOOLS, ai.toolPermissions) : undefined;
+        // Soft gate: include the advisory note only when the permitted set is actually narrower than "all".
+        const noteKinds = homebrew && allowed && allowed.length < HOMEBREW_KINDS.length ? allowed : undefined;
+        const system = buildSystemPrompt(userSettings().dndSystem, this.mode(), "large", noteKinds);
         // Thinking is split per-mode: chat defaults on (better answers, more context use); homebrew
         // defaults off (a reasoning model can burn its budget before emitting the create_* tool call).
         const think = homebrew
@@ -471,6 +532,7 @@ class AiAssistant {
             this.outstanding = new Set(toolCalls.map(t => t.id));
             this.resolved = [];
             const [userSettings] = getUserSettings();
+            const ai = userSettings().ai;
             const dndSystem = userSettings().dndSystem;
             const previews = toolCalls.map((tc, idx) => {
                 const p = buildPreview(tc, dndSystem);
@@ -487,12 +549,78 @@ class AiAssistant {
                 }
                 return p;
             });
+
+            const level = ai?.usageLevel ?? DEFAULT_USAGE_LEVEL;
+            const failed = (p: HomebrewPreview, idx: number) => !p.valid || parseFailed[idx] || !!p.truncated;
+
+            // ---- Medium: silently regenerate entities that failed schema/parse (up to the per-request
+            //      budget) before surfacing them. Valid entities in the same turn are shown right away. ----
+            const mediumBudget = ai?.mediumRetries ?? DEFAULT_MEDIUM_RETRIES;
+            if (level === "medium" && mediumBudget > 0 && this.mediumRetryStreak < mediumBudget
+                && previews.some((p, idx) => failed(p, idx))) {
+                this.mediumRetryStreak++;
+                const retry = previews.filter((p, idx) => failed(p, idx));
+                const show = previews.filter((p, idx) => !failed(p, idx));
+                // Show the good ones (dropping any collapsed "Improving…" cards); their tool calls stay outstanding.
+                this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...show]);
+                void this.persistCurrent();
+                this.maybeGenerateTitle();
+                // If anything remains for the user, the turn is idle now. If everything is being retried,
+                // resolving the last call below starts a fresh turn, which sets its own streaming status.
+                if (show.length) this.setStatus("idle");
+                for (const p of retry) {
+                    const reason = !p.valid ? p.errors.join(" ") : "the response was cut off or its data could not be parsed";
+                    this.resolveToolCall(p.toolCallId, repairInstruction(p, reason), true);
+                }
+                return;
+            }
+            this.mediumRetryStreak = 0;   // surfacing results — reset the budget for the next request
+
+            // ---- High: gate on schema before handoff. Regenerate schema-failed entities (up to the
+            //      retry cap, then ask the user); surface valid ones in a "reviewing" state and run the
+            //      readiness pipeline over them. The pipeline patches each card as passes complete. ----
+            if (level === "high") {
+                const maxSchemaRetries = ai?.review?.maxSchemaRetries ?? DEFAULT_HIGH_MAX_SCHEMA_RETRIES;
+                const schemaFailed = previews.filter((p, idx) => failed(p, idx));
+                const schemaOk = previews.filter((p, idx) => !failed(p, idx));
+
+                if (schemaFailed.length && this.schemaRetryStreak < maxSchemaRetries) {
+                    this.schemaRetryStreak++;
+                    const reviewing = schemaOk.map(p => ({ ...p, reviewState: "reviewing" as ReviewState }));
+                    this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...reviewing]);
+                    void this.persistCurrent();
+                    this.maybeGenerateTitle();
+                    // If valid cards remain for the user, the turn is idle now; otherwise resolving the last
+                    // failed call below starts a fresh turn (which manages its own streaming status).
+                    if (reviewing.length) this.setStatus("idle");
+                    void this.runReadiness(reviewing.map(p => p.previewId), epoch);
+                    for (const p of schemaFailed) {
+                        const reason = p.errors.length ? p.errors.join(" ") : "the response was cut off or its data could not be parsed";
+                        this.resolveToolCall(p.toolCallId, repairInstruction(p, reason), true);
+                    }
+                    return;
+                }
+
+                // Retry budget spent (or nothing failed): the still-broken ones need the user's direction;
+                // the valid ones go through the readiness pipeline.
+                this.schemaRetryStreak = 0;
+                const needDirection = schemaFailed.map(p => ({ ...p, reviewState: "needs_user_direction" as ReviewState }));
+                const reviewing = schemaOk.map(p => ({ ...p, reviewState: "reviewing" as ReviewState }));
+                this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...needDirection, ...reviewing]);
+                void this.persistCurrent();
+                this.maybeGenerateTitle();
+                this.setStatus("idle");
+                void this.runReadiness(reviewing.map(p => p.previewId), epoch);
+                return;
+            }
+
             // Drop any collapsed "Improving…" cards — their replacement has now arrived.
             this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...previews]);
         } else {
             // No replacement was produced (plain text / cut off) — revert any collapsed cards so they
             // stay actionable instead of being stranded in the "Improving…" state.
             unflagRepairing();
+            this.mediumRetryStreak = 0;
             if (truncated) {
                 this.pushAssistantBubble("⚠️ The response was cut off (the model hit its length limit). Try again, or raise the model's max output tokens.");
             }
@@ -500,6 +628,46 @@ class AiAssistant {
         void this.persistCurrent();
         this.maybeGenerateTitle();   // once per chat, after the first reply — never blocks the turn
         this.setStatus("idle");
+    }
+
+    /**
+     * High-mode readiness pipeline (post-turn). Reviews the given (schema-valid) previews SEQUENTIALLY —
+     * never in parallel, so a single local model isn't hammered — patching each card from "reviewing" to
+     * "passed"/"issues" as its passes complete. Aborts cleanly on session swap (epoch) or cancel
+     * (reviewController). Fails open: a thrown pass leaves the card savable rather than stranded.
+     */
+    private async runReadiness(previewIds: string[], epoch: number) {
+        if (!previewIds.length) return;
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        if (!ai) return;
+        const dndSystem = userSettings().dndSystem;
+        const blockingSeverity = ai.review?.blockingSeverity ?? "error";
+        await ensureReviewAgentsLoaded();   // custom review agents are part of the pipeline
+
+        if (epoch !== this.turnEpoch) return;   // a session swap may have happened while loading
+
+        this.reviewController = new AbortController();
+        const signal = this.reviewController.signal;
+        try {
+            for (const id of previewIds) {
+                if (epoch !== this.turnEpoch || signal.aborted) return;
+                const preview = this.pendingPreviews().find(p => p.previewId === id);
+                if (!preview || preview.reviewState !== "reviewing") continue;   // confirmed/rejected/swapped
+
+                let verdicts: ReviewVerdict[];
+                try { verdicts = await assembleVerdicts(preview, { ai, dndSystem, signal }); }
+                catch (e) { console.error("Readiness pipeline failed", e); verdicts = []; }
+
+                if (epoch !== this.turnEpoch || signal.aborted) return;
+                const blocked = isBlocked(verdicts, blockingSeverity);
+                const state: ReviewState = verdicts.some(v => !v.pass) ? "issues" : "passed";
+                this.setPendingPreviews(prev => prev.map(p =>
+                    p.previewId === id ? { ...p, reviewState: state, verdicts, reviewBlocked: blocked } : p));
+            }
+        } finally {
+            if (this.reviewController?.signal === signal) this.reviewController = null;
+        }
     }
 
     private fail(message: string) {

@@ -6,8 +6,10 @@ import { srdItem, srdSubclass } from "../../models/data/generated";
 import { createNewId } from "../customHooks/utility/tools/idGen";
 import { homebrewManager } from "../customHooks/homebrewManager";
 import { AiToolCall } from "./types";
+import type { HomebrewKind } from "./homebrewKind";
+import type { ReviewState, ReviewVerdict } from "./readiness/types";
 
-export type HomebrewKind = "spell" | "item" | "magic_item" | "feat" | "background" | "race" | "subclass" | "class";
+export type { HomebrewKind };
 
 export interface HomebrewPreview {
     previewId: string;       // local UI id
@@ -32,6 +34,12 @@ export interface HomebrewPreview {
      * ("Improving with AI…") and is removed once the regenerated replacement preview arrives.
      */
     repairing?: boolean;
+    /** High-mode readiness state. Undefined for Low/Medium (no pipeline runs). */
+    reviewState?: ReviewState;
+    /** Verdicts from the readiness pipeline (one per pass that ran), surfaced on the card. */
+    verdicts?: ReviewVerdict[];
+    /** True when a blocking-severity review issue was found → Save is disabled. */
+    reviewBlocked?: boolean;
 }
 
 const TOOL_TO_KIND: Record<string, HomebrewKind> = {
@@ -335,7 +343,7 @@ export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): Homebrew
 const isPromise = (v: unknown): v is Promise<unknown> => !!v && typeof (v as { then?: unknown }).then === "function";
 
 /** True if an entity with this name (per the kind's identity rule) already exists in the homebrew store. */
-function alreadyExists(p: HomebrewPreview): boolean {
+export function alreadyExists(p: HomebrewPreview): boolean {
     const name = p.title;
     switch (p.kind) {
         case "spell": return homebrewManager.spells().some(s => s.name === name);

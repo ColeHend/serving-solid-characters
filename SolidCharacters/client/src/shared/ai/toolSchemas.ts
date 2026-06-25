@@ -1,4 +1,6 @@
 import { AiToolDef } from "./types";
+import { HOMEBREW_KINDS, HomebrewKind, KIND_TO_TOOL } from "./homebrewKind";
+import { DEFAULT_TOOL_PERMISSIONS, ToolPermissions } from "../../models/userSettings";
 
 /**
  * JSON-schema tool definitions for homebrew generation. These cover the authoring-relevant fields a
@@ -219,3 +221,31 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
         },
     },
 ];
+
+/**
+ * Resolve which homebrew kinds the model is permitted to create under the given permissions.
+ * "all" → every kind; "allow" → only the listed kinds; "deny" → every kind except the listed ones.
+ * Defensive against missing/garbage lists (treats them as empty).
+ */
+export function allowedKinds(perms: ToolPermissions | undefined): HomebrewKind[] {
+    const p = perms ?? DEFAULT_TOOL_PERMISSIONS;
+    switch (p.mode) {
+        case "allow": {
+            const allow = new Set(p.allowed ?? []);
+            return HOMEBREW_KINDS.filter(k => allow.has(k));
+        }
+        case "deny": {
+            const deny = new Set(p.denied ?? []);
+            return HOMEBREW_KINDS.filter(k => !deny.has(k));
+        }
+        case "all":
+        default:
+            return [...HOMEBREW_KINDS];
+    }
+}
+
+/** The create_* tool definitions the model may use under the given permissions (preserves order). */
+export function filterTools(tools: AiToolDef[], perms: ToolPermissions | undefined): AiToolDef[] {
+    const allowed = new Set(allowedKinds(perms).map(k => KIND_TO_TOOL[k]));
+    return tools.filter(t => allowed.has(t.name));
+}

@@ -1,8 +1,9 @@
-import { Component, createSignal } from "solid-js";
+import { Component, Show, createSignal } from "solid-js";
 import { Button, Icon, TextArea } from "coles-solid-library";
 import { Send } from "coles-solid-library/icons";
 import { aiAssistant } from "../../shared/customHooks/aiAssistant";
 import ModeMenu from "./ModeMenu";
+import UsageLevelMenu from "./UsageLevelMenu";
 import styles from "./SparkSidebar.module.scss";
 
 const ChatInput: Component = () => {
@@ -25,6 +26,9 @@ const ChatInput: Component = () => {
     return (
         <div class={styles.inputContainer}>
             <div class={styles.inputToolbar}>
+                <Show when={aiAssistant.mode() === "homebrew"}>
+                    <UsageLevelMenu />
+                </Show>
                 <ModeMenu />
             </div>
             <div class={styles.inputBar}>
