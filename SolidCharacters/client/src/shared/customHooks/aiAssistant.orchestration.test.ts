@@ -62,6 +62,9 @@ function toolCall(args: string, name = "create_spell") {
 }
 
 const validSpell = JSON.stringify({ name: "Ember Bolt", description: "Make a ranged spell attack; 1d10 fire damage.", level: 0, school: "Evocation", castingTime: "1 action", range: "60 feet", duration: "Instantaneous", concentration: false, ritual: false, isVerbal: true, isSomatic: true, isMaterial: false });
+const noDescSpell = JSON.stringify({ name: "Ember Bolt", level: 0, school: "Evocation", castingTime: "1 action", range: "60 feet", duration: "Instantaneous", concentration: false, ritual: false, isVerbal: true, isSomatic: true, isMaterial: false });
+const badSubclass = JSON.stringify({ name: "Path of Cinders", parentClass: "Wizardd", description: "Cinder-wreathed casters who burn their foes." });
+const goodSubclass = JSON.stringify({ name: "Path of Cinders", parentClass: "Wizard", description: "Cinder-wreathed casters who burn their foes." });
 
 beforeEach(() => {
     h.calls = 0; h.turns = [];
@@ -95,6 +98,20 @@ describe("Medium auto-retry", () => {
         expect(h.calls).toBe(1);
         expect(aiAssistant.pendingPreviews()[0].valid).toBe(true);
     });
+
+    it("regenerates a spell that came back with no description, then surfaces the fixed one", async () => {
+        h.settings.ai.usageLevel = "medium";
+        h.settings.ai.mediumRetries = 1;
+        h.turns = [toolCall(noDescSpell), toolCall(validSpell)];   // missing description → hard failure → retry
+
+        aiAssistant.send("make a fire cantrip");
+
+        await vi.waitFor(() => expect(aiAssistant.pendingPreviews()).toHaveLength(1));
+        expect(h.calls).toBe(2);
+        const p = aiAssistant.pendingPreviews()[0];
+        expect(p.valid).toBe(true);
+        expect((p.entity as { description?: string }).description?.length).toBeGreaterThan(0);
+    });
 });
 
 describe("High readiness pipeline", () => {
@@ -112,6 +129,22 @@ describe("High readiness pipeline", () => {
             expect(p[0].reviewState).toBe("passed");
         });
         expect(h.calls).toBe(1);   // deterministic-only review made no extra model call
+    });
+
+    it("auto-fixes a blocking review finding, then marks it passed", async () => {
+        h.settings.ai.usageLevel = "high";
+        h.settings.ai.review = { enabledPasses: ["schema_validate", "broken_reference", "schema_validate_final"], reviewerMode: "primary", maxSchemaRetries: 1 };
+        // Turn 1's subclass names an unknown parent class (broken reference → error → blocks); turn 2 fixes it.
+        h.turns = [toolCall(badSubclass, "create_subclass"), toolCall(goodSubclass, "create_subclass")];
+
+        aiAssistant.send("make a wizard subclass");
+
+        await vi.waitFor(() => {
+            const p = aiAssistant.pendingPreviews();
+            expect(p).toHaveLength(1);
+            expect(p[0].reviewState).toBe("passed");
+        });
+        expect(h.calls).toBe(2);   // generated once, auto-fixed once
     });
 
     it("asks for user direction after the schema-retry cap is exhausted", async () => {

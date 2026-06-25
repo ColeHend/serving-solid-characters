@@ -13,6 +13,7 @@ import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
 import { AiMode, buildSystemPrompt } from "../ai/systemPrompt";
+import { splitModelReasoning } from "../ai/cleanReasoning";
 import { generateConversationTitle } from "../ai/generateTitle";
 import { createNewId } from "./utility/tools/idGen";
 import chatHistoryDB, { SavedConversation } from "./utility/localDB/chatHistoryDB";
@@ -124,9 +125,10 @@ class AiAssistant {
         this.controller = null;
         this.reviewController?.abort();   // stop any in-flight readiness reviews tied to this turn
         this.reviewController = null;
-        // Preserve any partial text/thinking as a bubble so it isn't lost.
-        const partial = this.streamingText().trim();
-        const thinking = this.streamingThinking().trim();
+        // Preserve any partial text/thinking as a bubble so it isn't lost (splitting out leaked reasoning).
+        const split = splitModelReasoning(this.streamingText());
+        const partial = split.text;
+        const thinking = [this.streamingThinking().trim(), split.reasoning].filter(Boolean).join("\n\n").trim();
         if (partial || thinking) this.pushAssistantBubble(partial, thinking);
         this.setStreamingText("");
         this.setStreamingThinking("");
@@ -177,7 +179,9 @@ class AiAssistant {
         this.repairCounts.set(title, attempts + 1);
         // Keep the card (collapsed) so the user sees progress; it's removed once the replacement arrives.
         this.setPendingPreviews(prev => prev.map(p => p.previewId === previewId ? { ...p, repairing: true } : p));
-        this.resolveToolCall(preview.toolCallId, repairInstruction(preview), true);
+        // For a hard-failed preview (e.g. missing description) feed the errors back so the model knows what to fix.
+        const reason = preview.valid ? undefined : preview.errors.join(" ");
+        this.resolveToolCall(preview.toolCallId, repairInstruction(preview, reason), true);
     };
 
     /** Dismiss a card that's mid-repair. UI-only: its tool call was already resolved by completePreview. */
@@ -486,8 +490,11 @@ class AiAssistant {
         // The session was swapped (new/loaded conversation) while this turn was in flight — drop it so a
         // late message_done can't push bubbles or persist onto the now-active chat.
         if (epoch !== this.turnEpoch) return;
-        const text = this.streamingText().trim();
-        const thinking = this.streamingThinking().trim();
+        // Some local models leak their reasoning into the content stream (with channel markers) rather
+        // than the structured thinking field — split it out so the bubble shows only the answer.
+        const split = splitModelReasoning(this.streamingText());
+        const text = split.text;
+        const thinking = [this.streamingThinking().trim(), split.reasoning].filter(Boolean).join("\n\n").trim();
         this.setStreamingText("");
         this.setStreamingThinking("");
 
@@ -551,16 +558,20 @@ class AiAssistant {
             });
 
             const level = ai?.usageLevel ?? DEFAULT_USAGE_LEVEL;
-            const failed = (p: HomebrewPreview, idx: number) => !p.valid || parseFailed[idx] || !!p.truncated;
+            // parseFailed is folded into p.truncated above, so this needs only the preview. A missing
+            // description is a hard validation error (see buildPreview), so it counts as failed here too.
+            const failed = (p: HomebrewPreview) => !p.valid || !!p.truncated;
+            const fixReason = (p: HomebrewPreview) =>
+                !p.valid ? p.errors.join(" ") : "the response was cut off or its data could not be parsed";
 
-            // ---- Medium: silently regenerate entities that failed schema/parse (up to the per-request
+            // ---- Medium: silently regenerate entities that failed validation (up to the per-request
             //      budget) before surfacing them. Valid entities in the same turn are shown right away. ----
             const mediumBudget = ai?.mediumRetries ?? DEFAULT_MEDIUM_RETRIES;
             if (level === "medium" && mediumBudget > 0 && this.mediumRetryStreak < mediumBudget
-                && previews.some((p, idx) => failed(p, idx))) {
+                && previews.some(failed)) {
                 this.mediumRetryStreak++;
-                const retry = previews.filter((p, idx) => failed(p, idx));
-                const show = previews.filter((p, idx) => !failed(p, idx));
+                const retry = previews.filter(failed);
+                const show = previews.filter(p => !failed(p));
                 // Show the good ones (dropping any collapsed "Improving…" cards); their tool calls stay outstanding.
                 this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...show]);
                 void this.persistCurrent();
@@ -568,10 +579,7 @@ class AiAssistant {
                 // If anything remains for the user, the turn is idle now. If everything is being retried,
                 // resolving the last call below starts a fresh turn, which sets its own streaming status.
                 if (show.length) this.setStatus("idle");
-                for (const p of retry) {
-                    const reason = !p.valid ? p.errors.join(" ") : "the response was cut off or its data could not be parsed";
-                    this.resolveToolCall(p.toolCallId, repairInstruction(p, reason), true);
-                }
+                for (const p of retry) this.resolveToolCall(p.toolCallId, repairInstruction(p, fixReason(p)), true);
                 return;
             }
             this.mediumRetryStreak = 0;   // surfacing results — reset the budget for the next request
@@ -581,8 +589,8 @@ class AiAssistant {
             //      readiness pipeline over them. The pipeline patches each card as passes complete. ----
             if (level === "high") {
                 const maxSchemaRetries = ai?.review?.maxSchemaRetries ?? DEFAULT_HIGH_MAX_SCHEMA_RETRIES;
-                const schemaFailed = previews.filter((p, idx) => failed(p, idx));
-                const schemaOk = previews.filter((p, idx) => !failed(p, idx));
+                const schemaFailed = previews.filter(failed);
+                const schemaOk = previews.filter(p => !failed(p));
 
                 if (schemaFailed.length && this.schemaRetryStreak < maxSchemaRetries) {
                     this.schemaRetryStreak++;
@@ -602,8 +610,8 @@ class AiAssistant {
                 }
 
                 // Retry budget spent (or nothing failed): the still-broken ones need the user's direction;
-                // the valid ones go through the readiness pipeline.
-                this.schemaRetryStreak = 0;
+                // the valid ones go through the readiness pipeline. The fix budget (schemaRetryStreak) is
+                // NOT reset here — it's shared with the review auto-fix loop and resets on the next request.
                 const needDirection = schemaFailed.map(p => ({ ...p, reviewState: "needs_user_direction" as ReviewState }));
                 const reviewing = schemaOk.map(p => ({ ...p, reviewState: "reviewing" as ReviewState }));
                 this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...needDirection, ...reviewing]);
@@ -661,6 +669,26 @@ class AiAssistant {
 
                 if (epoch !== this.turnEpoch || signal.aborted) return;
                 const blocked = isBlocked(verdicts, blockingSeverity);
+                const maxFixes = ai.review?.maxSchemaRetries ?? DEFAULT_HIGH_MAX_SCHEMA_RETRIES;
+                // Resolving this preview regenerates it only when it's the sole outstanding tool call (the
+                // common single-entity turn); otherwise a repair would stall behind the other cards, so we
+                // fall through and surface the findings for the user to act on with "Improve with AI".
+                const canRegenerateNow = this.outstanding.size === 1 && this.outstanding.has(preview.toolCallId);
+
+                // ---- Auto-fix loop: on a BLOCKING review finding, feed the issues back and regenerate
+                //      (shared High fix budget). Only after the budget do we surface for the user. ----
+                if (blocked && canRegenerateNow && this.schemaRetryStreak < maxFixes) {
+                    this.schemaRetryStreak++;
+                    const notes = verdicts.flatMap(v => v.issues).map(i => i.suggestedFix ? `${i.message} (${i.suggestedFix})` : i.message);
+                    this.setPendingPreviews(prev => prev.map(p => p.previewId === id ? { ...p, repairing: true } : p));
+                    const tool = `create_${preview.kind}`;
+                    const instruction = notes.length
+                        ? `A reviewer found problems with the ${preview.kind.replace("_", " ")} "${preview.title}". Call ${tool} again with the SAME content, fixing each of these:\n- ${notes.join("\n- ")}\nKeep everything that was already correct, and use concrete rules text.`
+                        : repairInstruction(preview);
+                    this.resolveToolCall(preview.toolCallId, instruction, true);   // → regenerates → re-reviews via a fresh turn
+                    return;   // the regeneration turn re-runs the pipeline; stop this pass
+                }
+
                 const state: ReviewState = verdicts.some(v => !v.pass) ? "issues" : "passed";
                 this.setPendingPreviews(prev => prev.map(p =>
                     p.previewId === id ? { ...p, reviewState: state, verdicts, reviewBlocked: blocked } : p));

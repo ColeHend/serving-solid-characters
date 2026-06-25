@@ -231,9 +231,10 @@ function toClass(i: Record<string, unknown>): Class5E {
 interface FieldSpec { key: string; label: string; }
 
 /** Per-kind fields that SHOULD be filled for the entity to feel complete. Keys are raw tool-input keys. */
+// NOTE: the primary description/desc is intentionally NOT listed here — a missing description is a HARD
+// failure (see buildPreview), not a soft recommendation, so it surfaces as an error rather than a warning.
 const RECOMMENDED: Record<HomebrewKind, FieldSpec[]> = {
     spell: [
-        { key: "description", label: "description" },
         { key: "school", label: "school" },
         { key: "castingTime", label: "casting time" },
         { key: "range", label: "range" },
@@ -241,18 +242,13 @@ const RECOMMENDED: Record<HomebrewKind, FieldSpec[]> = {
         { key: "classes", label: "classes that can cast it" },
     ],
     item: [
-        { key: "desc", label: "description" },
         { key: "cost", label: "cost" },
     ],
     magic_item: [
-        { key: "desc", label: "description" },
         { key: "category", label: "category" },
     ],
-    feat: [
-        { key: "description", label: "description" },
-    ],
+    feat: [],
     background: [
-        { key: "desc", label: "description" },
         { key: "skills", label: "skill proficiencies" },
         { key: "features", label: "a background feature" },
     ],
@@ -300,6 +296,19 @@ function assessCompleteness(kind: HomebrewKind, input: Record<string, unknown>, 
     return { warnings, missingFields };
 }
 
+/** The primary description text for a kind, or null for kinds with no single description field. */
+function primaryDescription(kind: HomebrewKind, entity: HomebrewPreview["entity"]): string | null {
+    switch (kind) {
+        case "spell": return (entity as Spell).description ?? "";
+        case "item": return (entity as srdItem).desc ?? "";
+        case "magic_item": return (entity as MagicItem).desc ?? "";
+        case "feat": return (entity as Feat).details.description ?? "";
+        case "background": return (entity as Background).desc ?? "";
+        case "subclass": return (entity as srdSubclass).description ?? "";
+        case "race": case "class": return null;   // no single description field (race=traits, class=features)
+    }
+}
+
 /** Build a non-persisted preview from a tool call. Never writes to the DB. */
 export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): HomebrewPreview {
     const kind = TOOL_TO_KIND[toolCall.name];
@@ -325,6 +334,7 @@ export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): Homebrew
     }
 
     // Hard blockers — mirror exactly what the manual editors refuse to save (name + structural integrity).
+    // Add AI Errors Here. searchKeywords: AIerrors, AIFieldErrors, AI Field Errors. 
     const errors: string[] = [];
     if (!title?.trim()) errors.push("Missing name.");
     if (kind === "subclass" && !(entity as srdSubclass).parentClass.trim()) errors.push("Missing parent class.");
@@ -333,6 +343,10 @@ export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): Homebrew
         if (!r.size.trim()) errors.push("Missing size.");
         if (!(r.speed > 0)) errors.push("Speed must be greater than 0.");
     }
+    // A missing primary description is a hard failure for kinds built around one (race/class are exempt:
+    // they have no single description field). This blocks Save and drives the Medium/High auto-retry.
+    const description = primaryDescription(kind, entity);
+    if (description !== null && !description.trim()) errors.push("Missing description.");
 
     // Recommended-but-empty fields are warn-only — the user can still save a deliberate stub.
     const { warnings, missingFields } = assessCompleteness(kind, input, dndSystem);

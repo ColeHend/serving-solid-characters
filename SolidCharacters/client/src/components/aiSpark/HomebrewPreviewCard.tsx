@@ -17,9 +17,10 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
     const p = () => props.preview;
     const reviewState = () => p().reviewState;
     const hasIssues = () => (p().verdicts ?? []).some(v => v.issues.length > 0);
-    // The AI can fill gaps once per entity (hard cap), and only when there's actually something missing.
+    // The AI can fill gaps once per entity (hard cap), when something's missing OR a hard failure
+    // (e.g. an empty description) is fixable by regenerating.
     const canComplete = () =>
-        ((p().warnings?.length ?? 0) > 0 || p().truncated) &&
+        ((p().warnings?.length ?? 0) > 0 || p().truncated || !p().valid) &&
         (p().repairAttempts ?? 0) < 1 && !hasIssues();
     // Save is gated by schema validity AND any blocking-severity review finding (or an in-flight review).
     const saveDisabled = () => !p().valid || !!p().reviewBlocked || reviewState() === "reviewing";
