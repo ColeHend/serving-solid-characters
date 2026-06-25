@@ -1,19 +1,25 @@
 import { Accessor, createSignal, Setter } from "solid-js";
 import getUserSettings from "./userSettings";
 import {
-    AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
-    DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES, DEFAULT_USAGE_LEVEL, UsageControlLevel,
+    AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_LOOKUP_TOOLS, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES,
+    DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
-import { AiMessage, AiToolCall, AiToolResult } from "../ai/types";
+import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providerFactory";
 import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterTools } from "../ai/toolSchemas";
 import { HOMEBREW_KINDS } from "../ai/homebrewKind";
 import { toolCategory } from "../ai/toolCategory";
 import { runComputeTool } from "../ai/computeTools";
+import { LOOKUP_TOOLS, runLookupTool } from "../ai/lookupTools";
+import { EDIT_TOOLS } from "../ai/editTools";
+import { CONTROL_TOOLS, parseSwitchMode } from "../ai/controlTools";
+import { DELEGATE_RESEARCH_TOOL, researchAgentSpec, runSubAgent } from "../ai/subAgent";
 import {
     buildInteraction, interactionResultText, InteractionResponse, PendingInteraction,
 } from "../ai/interactions";
-import { buildPreview, HomebrewPreview, saveHomebrew } from "../ai/toolDispatcher";
+import { buildEditPreview, buildPreview, HomebrewPreview, saveHomebrew } from "../ai/toolDispatcher";
+import { logDecision } from "./decisionLogManager";
 import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
@@ -86,6 +92,7 @@ class AiAssistant {
     private resolved: AiToolResult[] = [];      // tool_results collected so far this turn
     private controller: AbortController | null = null;
     private reviewController: AbortController | null = null;   // aborts in-flight readiness reviews (High mode)
+    private delegateController: AbortController | null = null; // aborts an in-flight research sub-agent
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
     private schemaRetryStreak = 0;                       // High-mode schema-gate regenerations for the current request chain
@@ -135,6 +142,8 @@ class AiAssistant {
         this.controller = null;
         this.reviewController?.abort();   // stop any in-flight readiness reviews tied to this turn
         this.reviewController = null;
+        this.delegateController?.abort(); // stop any in-flight research sub-agent
+        this.delegateController = null;
         // Preserve any partial text/thinking as a bubble so it isn't lost (splitting out leaked reasoning).
         const split = splitModelReasoning(this.streamingText());
         const partial = split.text;
@@ -164,8 +173,37 @@ class AiAssistant {
         if (!preview) return;
         this.removePreview(previewId);
         const result = await saveHomebrew(preview);
+        // Auto-log every committed change (the model's chat reply is the "why"; we capture a short note).
+        if (result.ok) {
+            void logDecision({
+                entityKind: preview.kind,
+                entityName: preview.title,
+                changeType: preview.mode === "edit" ? "edit" : "create",
+                summary: this.deriveDecisionSummary(preview),
+                patch: preview.appliedOps,
+                conversationId: this.currentConversationId ?? undefined,
+                previewId,
+            });
+        }
         this.resolveToolCall(preview.toolCallId, result.message, !result.ok);
     };
+
+    /** A short app-derived summary for the decision log, prefixed with the model's last one-line note. */
+    private deriveDecisionSummary(preview: HomebrewPreview): string {
+        const kind = preview.kind.replace("_", " ");
+        const base = preview.mode === "edit"
+            ? `Edited ${kind} "${preview.title}"` + (preview.appliedOps?.length ? `: ${preview.appliedOps.map(o => o.path).join(", ")}` : "")
+            : `Created ${kind} "${preview.title}"`;
+        const note = this.lastAssistantNote();
+        return note ? `${base} — ${note}` : base;
+    }
+
+    /** The model's most recent chat line (trimmed/short), used as the decision-log "why". */
+    private lastAssistantNote(): string {
+        const msg = [...this.messages()].reverse().find(m => m.role === "assistant" && m.text.trim() && !m.text.startsWith("⚠️"));
+        const t = msg?.text.trim().replace(/\s+/g, " ") ?? "";
+        return t.length > 140 ? `${t.slice(0, 140)}…` : t;
+    }
 
     rejectPreview = (previewId: string) => {
         const preview = this.pendingPreviews().find(p => p.previewId === previewId);
@@ -443,24 +481,39 @@ class AiAssistant {
 
         const provider = buildProvider(ai);
         const homebrew = this.mode() === "homebrew";
-        // Tool permissions (Phase 0): allow/deny which create_* tools the model may use.
+        const canCreate = homebrew && allowedKinds(ai.toolPermissions).length > 0;
+        // Tool permissions: allow/deny which create_* tools the model may use.
         const allowed = homebrew ? allowedKinds(ai.toolPermissions) : undefined;
-        // Homebrew create_* tools: only in homebrew mode, gated by permissions (a fully-denied set yields []).
-        const homebrewTools = homebrew && allowed && allowed.length ? filterTools(HOMEBREW_TOOLS, ai.toolPermissions) : [];
+        // Homebrew create_* + edit tools: only in homebrew mode, gated by permissions (fully-denied → []).
+        const homebrewTools = canCreate ? filterTools(HOMEBREW_TOOLS, ai.toolPermissions) : [];
+        const editTools = canCreate ? EDIT_TOOLS : [];
+        // Read-only lookup + research-delegate, offered in BOTH modes (tiny, low-risk; help the model match
+        // real numbers and reference the user's content before inventing).
+        const lookupEnabled = ai.lookupTools ?? DEFAULT_AI_LOOKUP_TOOLS;
+        const lookupTools = lookupEnabled ? [...LOOKUP_TOOLS, DELEGATE_RESEARCH_TOOL] : [];
+        // switch_mode lets the model change its own mode to reach a tool the current mode lacks.
+        const switchEnabled = ai.autoSwitch ?? DEFAULT_AI_AUTO_SWITCH;
+        const controlTools = switchEnabled ? [...CONTROL_TOOLS] : [];
         // Utility tools (math/ask/plan) are offered in BOTH modes, gated by their own enable flags.
         const utilityTools = enabledUtilityTools(ai);
         // Never send an EMPTY tools array — omit entirely when nothing is offered (keeps chat-like turns clean).
-        const combined = [...homebrewTools, ...utilityTools];
-        const tools = combined.length ? combined : undefined;
+        const combined = [...homebrewTools, ...editTools, ...lookupTools, ...controlTools, ...utilityTools];
+        const tools: AiToolDef[] | undefined = combined.length ? combined : undefined;
         // Soft gate: include the advisory note only when the permitted set is actually narrower than "all".
         const noteKinds = homebrew && allowed && allowed.length < HOMEBREW_KINDS.length ? allowed : undefined;
-        // Advertise only the utility tools actually sent, so the prompt doesn't mention disabled ones.
+        // Advertise only the tools actually sent, so the prompt doesn't mention disabled ones.
         const utilityFlags = {
             math: utilityTools.some(t => t.name.startsWith("calc_")),
             ask: utilityTools.some(t => t.name === "ask_user"),
             plan: utilityTools.some(t => t.name === "propose_plan"),
+            lookup: lookupTools.length > 0,
+            edit: editTools.length > 0,
+            switchMode: controlTools.length > 0,
+            canCreate,
         };
-        const system = buildSystemPrompt(userSettings().dndSystem, this.mode(), "large", noteKinds, utilityFlags);
+        // Right-size the prompt for the routed model: local (gemma) gets the worked-example "small" tier.
+        const tier = ai.provider === "local" ? "small" : "large";
+        const system = buildSystemPrompt(userSettings().dndSystem, this.mode(), tier, noteKinds, utilityFlags);
         // Thinking is split per-mode: chat defaults on (better answers, more context use); homebrew
         // defaults off (a reasoning model can burn its budget before emitting the create_* tool call).
         const think = homebrew
@@ -582,16 +635,23 @@ class AiAssistant {
             const ai = userSettings().ai;
             const dndSystem = userSettings().dndSystem;
 
-            // Partition by execution path. Compute auto-resolves (no UI); interactive renders a card and
-            // waits for the user; homebrew goes through the existing preview + usage-level routing. Homebrew
-            // keeps its original index so parseFailed[idx] (built over the full toolCalls list) stays aligned.
+            // Partition by execution path. Compute/lookup auto-resolve (no UI; lookup is async); interactive
+            // renders a card and waits for the user; control flips mode and auto-resolves; edit renders a diff
+            // card; homebrew goes through the existing preview + usage-level routing. Homebrew keeps its
+            // original index so parseFailed[idx] (built over the full toolCalls list) stays aligned.
             const computeCalls: AiToolCall[] = [];
             const interactiveCalls: AiToolCall[] = [];
+            const lookupCalls: AiToolCall[] = [];
+            const controlCalls: AiToolCall[] = [];
+            const editCalls: AiToolCall[] = [];
             const homebrewCalls: { tc: AiToolCall; idx: number }[] = [];
             toolCalls.forEach((tc, idx) => {
                 switch (toolCategory(tc.name)) {
                     case "compute": computeCalls.push(tc); break;
                     case "interactive": interactiveCalls.push(tc); break;
+                    case "lookup": lookupCalls.push(tc); break;
+                    case "control": controlCalls.push(tc); break;
+                    case "edit": editCalls.push(tc); break;
                     default: homebrewCalls.push({ tc, idx }); break;
                 }
             });
@@ -601,9 +661,36 @@ class AiAssistant {
                 this.setPendingInteractions(prev => [...prev, ...interactiveCalls.map(buildInteraction)]);
             }
 
-            // ---- Compute: run deterministically and resolve immediately. In a mixed turn the interactive/
-            //      homebrew ids keep `outstanding` non-empty so this only buffers results; in a pure-compute
-            //      turn the final resolve empties `outstanding` and kicks off the continuation turn itself. ----
+            // ---- Control (switch_mode): flip mode and auto-resolve so the continuation turn re-derives its
+            //      tool set. Short-circuit a no-op switch to the already-active mode (avoids a ping-pong loop). ----
+            for (const tc of controlCalls) {
+                const { mode, reason } = parseSwitchMode(tc);
+                if (mode === this.mode()) {
+                    this.resolveToolCall(tc.id, `Already in ${mode} mode.`, false);
+                } else {
+                    this.setMode(mode);
+                    this.pushAssistantBubble(`⟳ Switched to ${mode === "homebrew" ? "Homebrew" : "Chat"} mode${reason ? ` — ${reason}` : ""}.`);
+                    this.resolveToolCall(tc.id, `Mode is now "${mode}". The matching tools are available — continue.`, false);
+                }
+            }
+
+            // ---- Edit (edit_homebrew): build a diff preview and surface it; it stays outstanding until the
+            //      user accepts/rejects (no Low/Medium/High routing — it patches an existing entity). ----
+            if (editCalls.length) {
+                const editPreviews = editCalls.map(tc => buildEditPreview(tc, dndSystem));
+                this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...editPreviews]);
+            }
+
+            // ---- Lookup (+ research delegate): async auto-resolve. In a mixed turn other ids keep
+            //      `outstanding` non-empty so these buffer; in a pure-lookup turn the last resolve starts the
+            //      continuation turn (which sets its own streaming status). ----
+            for (const tc of lookupCalls) {
+                void this.resolveAsyncTool(tc, ai, epoch);
+            }
+
+            // ---- Compute: run deterministically and resolve immediately. In a mixed turn the other category
+            //      ids keep `outstanding` non-empty so this only buffers results; in a pure-compute turn the
+            //      final resolve empties `outstanding` and kicks off the continuation turn itself. ----
             for (const tc of computeCalls) {
                 const r = runComputeTool(tc);
                 this.resolveToolCall(tc.id, r.content, r.isError);
@@ -710,7 +797,13 @@ class AiAssistant {
             unflagRepairing();
             this.mediumRetryStreak = 0;
             if (truncated) {
-                this.pushAssistantBubble("⚠️ The response was cut off (the model hit its length limit). Try again, or raise the model's max output tokens.");
+                // For local models the real ceiling is usually the context window (output comes out of
+                // num_ctx), not the output cap — point there rather than at "max output tokens".
+                const [settings] = getUserSettings();
+                const hint = settings().ai?.provider === "local"
+                    ? "Try again, or raise the model's context window (num_ctx) in AI settings."
+                    : "Try again, or raise the model's max output tokens.";
+                this.pushAssistantBubble(`⚠️ The response was cut off (the model hit its length limit). ${hint}`);
             }
         }
         void this.persistCurrent();
@@ -775,6 +868,38 @@ class AiAssistant {
             }
         } finally {
             if (this.reviewController?.signal === signal) this.reviewController = null;
+        }
+    }
+
+    /** Resolve an async auto-resolve tool (lookup_* / delegate_research). Drops a late result if the session swapped. */
+    private async resolveAsyncTool(tc: AiToolCall, ai: AiSettings | undefined, epoch: number) {
+        let r: { content: string; isError: boolean };
+        try {
+            r = tc.name === "delegate_research" ? await this.runDelegate(tc, ai, epoch) : await runLookupTool(tc);
+        } catch (e) {
+            r = { content: `Lookup failed: ${String(e)}`, isError: true };
+        }
+        if (epoch !== this.turnEpoch) return;   // session swapped while awaiting — drop the late result
+        this.resolveToolCall(tc.id, r.content, r.isError);
+    }
+
+    /**
+     * Run the research sub-agent in a fresh, isolated context (the heavy lookup loop never touches the main
+     * history) and return a compact summary. Aborts cleanly on cancel/session-swap. Reuses runLookupTool as
+     * the sub-agent's tool executor.
+     */
+    private async runDelegate(tc: AiToolCall, ai: AiSettings | undefined, epoch: number): Promise<{ content: string; isError: boolean }> {
+        if (!ai) return { content: "AI is not configured.", isError: true };
+        const task = String((tc.input ?? {}).task ?? "").trim();
+        if (!task) return { content: "delegate_research needs a \"task\".", isError: true };
+        this.delegateController = new AbortController();
+        const signal = this.delegateController.signal;
+        try {
+            const result = await runSubAgent(researchAgentSpec(), task, ai, signal, runLookupTool);
+            if (epoch !== this.turnEpoch || signal.aborted) return { content: "(research cancelled)", isError: true };
+            return { content: result.ok && result.text.trim() ? result.text.trim() : "No research result.", isError: !result.ok };
+        } finally {
+            if (this.delegateController?.signal === signal) this.delegateController = null;
         }
     }
 

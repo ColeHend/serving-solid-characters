@@ -63,8 +63,9 @@ function toolCall(args: string, name = "create_spell") {
 
 const validSpell = JSON.stringify({ name: "Ember Bolt", description: "Make a ranged spell attack; 1d10 fire damage.", level: 0, school: "Evocation", castingTime: "1 action", range: "60 feet", duration: "Instantaneous", concentration: false, ritual: false, isVerbal: true, isSomatic: true, isMaterial: false });
 const noDescSpell = JSON.stringify({ name: "Ember Bolt", level: 0, school: "Evocation", castingTime: "1 action", range: "60 feet", duration: "Instantaneous", concentration: false, ritual: false, isVerbal: true, isSomatic: true, isMaterial: false });
-const badSubclass = JSON.stringify({ name: "Path of Cinders", parentClass: "Wizardd", description: "Cinder-wreathed casters who burn their foes." });
-const goodSubclass = JSON.stringify({ name: "Path of Cinders", parentClass: "Wizard", description: "Cinder-wreathed casters who burn their foes." });
+const subclassFeatures = [{ level: 3, name: "Cinder Step", description: "When you cast a fire spell you can teleport 10 feet." }];
+const badSubclass = JSON.stringify({ name: "Path of Cinders", parentClass: "Wizardd", description: "Cinder-wreathed casters who burn their foes.", features: subclassFeatures });
+const goodSubclass = JSON.stringify({ name: "Path of Cinders", parentClass: "Wizard", description: "Cinder-wreathed casters who burn their foes.", features: subclassFeatures });
 
 beforeEach(() => {
     h.calls = 0; h.turns = [];

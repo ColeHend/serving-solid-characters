@@ -1,4 +1,5 @@
 import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
+import { RESERVED_PROMPT_TOKENS } from "../../../models/userSettings";
 import { createNewId } from "../../customHooks/utility/tools/idGen";
 
 /**
@@ -19,8 +20,14 @@ export class OllamaAdapter implements AiProvider {
         opts: StreamChatOpts,
     ): AsyncGenerator<ChatStreamEvent, void, unknown> {
         const url = `${this.baseUrl.replace(/\/$/, "")}/api/chat`;
-        const options: Record<string, unknown> = { num_predict: opts.maxTokens ?? 4096 };
-        if (opts.numCtx && opts.numCtx > 0) options.num_ctx = opts.numCtx;
+        // For Ollama, output tokens come OUT of num_ctx, so an output cap larger than the window is
+        // impossible. Clamp num_predict to (num_ctx − reserved prompt) so a misconfigured maxTokens
+        // can't promise more generation room than the window actually has.
+        const numCtx = opts.numCtx && opts.numCtx > 0 ? opts.numCtx : undefined;
+        let numPredict = opts.maxTokens ?? 4096;
+        if (numCtx) numPredict = Math.min(numPredict, Math.max(512, numCtx - RESERVED_PROMPT_TOKENS));
+        const options: Record<string, unknown> = { num_predict: numPredict };
+        if (numCtx) options.num_ctx = numCtx;
         const body: Record<string, unknown> = {
             model: opts.model,
             stream: true,

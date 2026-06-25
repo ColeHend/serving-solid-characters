@@ -1,15 +1,36 @@
 import {
-    AbilityScores, Background, Class5E, Feat, FeatureDetail, ItemType, MagicItem,
+    AbilityScores, Background, CasterType, Class5E, Feat, FeatureDetail, ItemType, MagicItem,
     Prerequisite, PrerequisiteType, Proficiencies, Race, Spell, StatBonus, Subclass,
 } from "../../models/generated";
 import { srdItem, srdSubclass } from "../../models/data/generated";
 import { createNewId } from "../customHooks/utility/tools/idGen";
 import { homebrewManager } from "../customHooks/homebrewManager";
 import { AiToolCall } from "./types";
-import type { HomebrewKind } from "./homebrewKind";
+import { HOMEBREW_KINDS, type HomebrewKind } from "./homebrewKind";
 import type { ReviewState, ReviewVerdict } from "./readiness/types";
+import { canonicalClassName } from "./classRefs";
+import { buildSpellcasting, parseCasterType } from "./spellSlots";
+import { entityText, findPlaceholder } from "./readiness/deterministicPasses";
+import { applyPatch, PatchOp, RejectedOp } from "./patch";
 
 export type { HomebrewKind };
+
+/** Standard 5e rarities (case-insensitive). Used to warn on a nonstandard magic-item rarity. */
+const STANDARD_RARITIES = new Set(["common", "uncommon", "rare", "very rare", "legendary", "artifact"]);
+/** Hit dice the character HP math accepts; anything else stores hit-die 0 → wrong/empty sheet field. */
+const VALID_HIT_DICE = new Set(["d6", "d8", "d10", "d12"]);
+/** Full ability name → abbreviation, so a model that writes "Strength" still maps to a known ability. */
+const FULL_ABILITY_TO_CODE: Record<string, string> = {
+    strength: "STR", dexterity: "DEX", constitution: "CON", intelligence: "INT", wisdom: "WIS", charisma: "CHA",
+};
+/** Normalize an ability token ("str"/"Strength"/"STR") to its STR/DEX/… code, or null if unrecognized. */
+function toAbilityCode(raw: unknown): string | null {
+    const t = (typeof raw === "string" ? raw : "").trim();
+    if (!t) return null;
+    const up = t.toUpperCase();
+    if (up in ABILITY_MAP) return up;
+    return FULL_ABILITY_TO_CODE[t.toLowerCase()] ?? null;
+}
 
 export interface HomebrewPreview {
     previewId: string;       // local UI id
@@ -40,6 +61,15 @@ export interface HomebrewPreview {
     verdicts?: ReviewVerdict[];
     /** True when a blocking-severity review issue was found → Save is disabled. */
     reviewBlocked?: boolean;
+    // ----- edit (diff-patch) mode -----
+    /** "create" (default) saves as a new entity; "edit" applies a diff patch to an existing one (updateX). */
+    mode?: "create" | "edit";
+    /** The pre-edit entity snapshot, for the diff card's before→after rendering. Only set for edits. */
+    baseEntity?: HomebrewPreview["entity"];
+    /** The patch ops that were applied to produce `entity` (edit mode), for the diff + decision log. */
+    appliedOps?: PatchOp[];
+    /** Patch ops that couldn't be applied (bad path, etc.), surfaced on the diff card as warnings. */
+    rejectedOps?: RejectedOp[];
 }
 
 const TOOL_TO_KIND: Record<string, HomebrewKind> = {
@@ -105,7 +135,9 @@ function toSpell(i: Record<string, unknown>): Spell {
         isMaterial, isSomatic, isVerbal,
         materialsNeeded: str(i.materialsNeeded) || undefined,
         higherLevel: str(i.higherLevel) || undefined,
-        classes: strList(i.classes),
+        // Canonicalize to the class's real stored name so the exact-case consumer (spell picker filters
+        // `spell.classes.includes(class.name)`) can actually offer the spell — "wizard" → "Wizard".
+        classes: strList(i.classes).map(canonicalClassName),
         subClasses: [],
     };
 }
@@ -165,16 +197,24 @@ function toBackground(i: Record<string, unknown>): Background {
         desc: str(i.desc),
         proficiencies,
         startEquipment: [],
+        // 2024 backgrounds are the sole source of ability score increases; the character build reads
+        // abilityOptions to offer the +2/+1. Without it an AI 2024 background grants no ASI.
+        abilityOptions: strList(i.abilityOptions).length ? strList(i.abilityOptions) : undefined,
         feat: str(i.feat) || undefined,
         features: features.length ? features : undefined,
     };
 }
 
 function toRace(i: Record<string, unknown>): Race {
-    const abilityBonuses: StatBonus[] = list(i.abilityBonuses).map(raw => {
+    // Normalize the ability before lookup and DROP unrecognized ones rather than silently defaulting to
+    // STR (which would grant a wrong-stat bonus invisibly). Unmapped abilities are surfaced as a warning
+    // in assessCompleteness (which re-reads the raw input).
+    const abilityBonuses: StatBonus[] = [];
+    for (const raw of list(i.abilityBonuses)) {
         const b = raw as Record<string, unknown>;
-        return { stat: ABILITY_MAP[str(b.ability)] ?? AbilityScores.STR, value: num(b.value, 1) };
-    });
+        const code = toAbilityCode(b.ability);
+        if (code) abilityBonuses.push({ stat: ABILITY_MAP[code], value: num(b.value, 1) });
+    }
     const traits: Feat[] = list(i.traits).map(raw => {
         const t = raw as Record<string, unknown>;
         return { id: createNewId(), details: { id: createNewId(), name: str(t.name), description: str(t.description) }, prerequisites: [] };
@@ -196,12 +236,16 @@ function toRace(i: Record<string, unknown>): Race {
 }
 
 function toSubclass(i: Record<string, unknown>): srdSubclass {
+    const casterType = parseCasterType(i.casterType);
     const sub: Subclass = {
         id: createNewId(),
         name: str(i.name),
-        parentClass: str(i.parentClass),
+        // Canonicalize so the consumer's exact `subclass.parentClass === class.name` filter matches.
+        parentClass: canonicalClassName(str(i.parentClass)),
         description: str(i.description),
         features: featuresByLevel(i.features),
+        // Stamp a working slot table from casterType so a caster subclass isn't saved with zero slots.
+        spellcasting: buildSpellcasting(casterType),
     };
     return sub;
 }
@@ -212,6 +256,7 @@ function toClass(i: Record<string, unknown>): Class5E {
         tools: strList(i.tools), skills: strList(i.skills),
     };
     const equipmentItems = strList(i.startingEquipment);
+    const casterType = parseCasterType(i.casterType);
     return {
         id: createNewId(),
         name: str(i.name),
@@ -222,6 +267,8 @@ function toClass(i: Record<string, unknown>): Class5E {
         proficiencies,
         startChoices: {},
         features: featuresByLevel(i.features),
+        // Stamp a working slot table from casterType so a caster class isn't saved with zero slots.
+        spellcasting: buildSpellcasting(casterType),
     };
 }
 
@@ -263,6 +310,8 @@ const RECOMMENDED: Record<HomebrewKind, FieldSpec[]> = {
     class: [
         { key: "features", label: "class features" },
         { key: "skills", label: "skill proficiencies" },
+        { key: "primaryAbility", label: "primary ability" },
+        { key: "savingThrows", label: "saving throw proficiencies" },
     ],
 };
 
@@ -274,26 +323,115 @@ function isEmptyInput(v: unknown): boolean {
     return false;
 }
 
+/** True if at least one trait has BOTH a non-empty name and description (a usable racial feature). */
+function hasUsableTrait(input: Record<string, unknown>): boolean {
+    return list(input.traits).some(raw => {
+        const t = raw as Record<string, unknown>;
+        return str(t.name).trim().length > 0 && str(t.description).trim().length > 0;
+    });
+}
+
 /** Recommended-but-empty fields → warnings + raw keys. Ruleset-aware; never blocks Save. */
 function assessCompleteness(kind: HomebrewKind, input: Record<string, unknown>, dndSystem: string): { warnings: string[]; missingFields: string[] } {
     const specs = [...(RECOMMENDED[kind] ?? [])];
-    // Ruleset-aware: 2014 species carry ability bonuses; 2024 moves them to the background + adds the feat.
+    // Ruleset-aware: 2014 species carry ability bonuses; 2024 moves them to the background + adds the feat + ASIs.
     if (kind === "race" && dndSystem !== "2024") specs.push({ key: "abilityBonuses", label: "ability score bonuses" });
-    if (kind === "background" && dndSystem === "2024") specs.push({ key: "feat", label: "a granted feat" });
+    if (kind === "background" && dndSystem === "2024") {
+        specs.push({ key: "feat", label: "a granted feat" });
+        specs.push({ key: "abilityOptions", label: "ability score options" });
+    }
 
     const missingFields: string[] = [];
     const warnings: string[] = [];
     for (const s of specs) {
-        if (isEmptyInput(input[s.key])) { missingFields.push(s.key); warnings.push(`No ${s.label}.`); }
+        // A race's "traits" array counts as present only when a trait actually has name+description, so
+        // a [{name:"",description:""}] stub still surfaces as missing and drives the repair turn.
+        const satisfied = kind === "race" && s.key === "traits" ? hasUsableTrait(input) : !isEmptyInput(input[s.key]);
+        if (!satisfied) { missingFields.push(s.key); warnings.push(`No ${s.label}.`); }
     }
-    // Caster hint: spellcasting is intentionally not AI-generated, so flag a caster-flavored class/subclass.
+
+    // ---- Race: per-trait blanks, unmapped abilities, and 2024 double-dipped ASIs ----
+    if (kind === "race") {
+        list(input.traits).forEach((raw, idx) => {
+            const t = raw as Record<string, unknown>;
+            const hasName = str(t.name).trim().length > 0, hasDesc = str(t.description).trim().length > 0;
+            if ((hasName || hasDesc) && !(hasName && hasDesc)) warnings.push(`Trait ${idx + 1} is missing its name or description.`);
+        });
+        const unmapped = list(input.abilityBonuses)
+            .map(raw => str((raw as Record<string, unknown>).ability))
+            .filter(a => a.trim() && !toAbilityCode(a));
+        if (unmapped.length) warnings.push(`Unknown ability score${unmapped.length > 1 ? "s" : ""} on this species: ${unmapped.join(", ")} — fix in the editor (it was dropped, not applied).`);
+        if (dndSystem !== "2014" && list(input.abilityBonuses).length) {
+            warnings.push("In 2024, ability score increases come from the background, not the species — these will stack on top of the background ASIs. Remove them unless this is a 2014 species.");
+        }
+    }
+
+    // ---- Item / magic item: nonstandard rarity / unrecognized type (cosmetic; warn only) ----
+    if (kind === "magic_item") {
+        const rarity = str(input.rarity).trim();
+        if (rarity && !STANDARD_RARITIES.has(rarity.toLowerCase())) warnings.push(`Rarity "${rarity}" isn't a standard 5e rarity; the UI may categorize it as unset.`);
+    }
+    if (kind === "item") {
+        const type = str(input.type).trim();
+        if (type && !(type in ITEM_TYPE_MAP)) warnings.push(`Item type "${type}" isn't recognized; it will display as a generic Item.`);
+    }
+
+    // ---- Caster class/subclass with no casterType: surface it as a named missing field so the repair
+    //      turn asks for one (stamping a slot table needs casterType). Heuristic OR an explicit non-caster. ----
     if (kind === "class" || kind === "subclass") {
+        const casterType = parseCasterType(input.casterType);
         const text = `${str(input.description)} ${JSON.stringify(input.features ?? "")}`.toLowerCase();
-        if (/spell|cast|magic/.test(text)) {
-            warnings.push("Looks like a spellcaster — finish the spellcasting (caster type + slots) in the editor.");
+        const looksCaster = /spell|cast|magic/.test(text);
+        if (looksCaster && casterType === CasterType.None) {
+            missingFields.push("casterType");
+            warnings.push("Looks like a spellcaster but no caster type is set — set casterType (third/half/full/pact) so spell slots are generated.");
         }
     }
     return { warnings, missingFields };
+}
+
+/** True if a leveled feature map (Record<level, Feat[]>) has no features at all. */
+function hasNoFeatures(features: Record<number, FeatureDetail[]> | undefined): boolean {
+    return !features || Object.values(features).every(arr => !arr?.length);
+}
+
+/**
+ * Hard blockers (mirror the manual editors' refuse-to-save rules) on the COERCED entity. Shared by
+ * create (buildPreview) and edit (buildEditPreview) so both gate identically. Returns the error list;
+ * an empty list means valid. Placeholder text and structurally-dead content (a caster with no slots,
+ * a class with no features / a bad hit die) are blocked here regardless of usageLevel.
+ */
+export function validateEntity(kind: HomebrewKind, entity: HomebrewPreview["entity"], title: string): string[] {
+    const errors: string[] = [];
+    if (!title?.trim()) errors.push("Missing name.");
+    if (kind === "subclass" && !(entity as srdSubclass).parentClass.trim()) errors.push("Missing parent class.");
+    if (kind === "race") {
+        const r = entity as Race;
+        if (!r.size.trim()) errors.push("Missing size.");
+        if (!(r.speed > 0)) errors.push("Speed must be greater than 0.");
+    }
+    if (kind === "class") {
+        const c = entity as Class5E;
+        // hitDie must be one the HP math accepts, else the character stores hit-die 0 (empty sheet field).
+        if (c.hitDie?.trim() && !VALID_HIT_DICE.has(c.hitDie.trim())) errors.push("Hit die must be one of d6, d8, d10, d12.");
+        // primaryAbility feeds the multiclass-requirement math; blank/garbage breaks it silently.
+        if (!c.primaryAbility?.trim()) errors.push("Missing primary ability.");
+        else if (!c.primaryAbility.split(/[\s,]+/).filter(Boolean).every(toAbilityCode)) errors.push("Primary ability must be an ability score (e.g. STR, DEX, CON, INT, WIS, CHA).");
+    }
+    // A class/subclass that grants no features does nothing on level-up — block it.
+    if (kind === "class" && hasNoFeatures((entity as Class5E).features)) errors.push("Add at least one class feature.");
+    if (kind === "subclass" && hasNoFeatures((entity as srdSubclass).features)) errors.push("Add at least one subclass feature.");
+
+    // A missing primary description is a hard failure for kinds built around one (race/class are exempt).
+    const description = primaryDescription(kind, entity);
+    if (description !== null && !description.trim()) errors.push("Missing description.");
+
+    // Placeholder/leftover text ("TODO", "[insert ...]") must never ship — block on it for every usage
+    // level (the High linter pass also flags it, but Low/Medium run no pipeline).
+    const placeholder = findPlaceholder(entityText({ title, entity } as HomebrewPreview));
+    if (placeholder) errors.push(`Contains ${placeholder} — replace it with real content before saving.`);
+
+    return errors;
 }
 
 /** The primary description text for a kind, or null for kinds with no single description field. */
@@ -309,6 +447,12 @@ function primaryDescription(kind: HomebrewKind, entity: HomebrewPreview["entity"
     }
 }
 
+/** Display name for an entity (feat uses details.name, everything else uses name). */
+function entityTitle(kind: HomebrewKind, entity: HomebrewPreview["entity"]): string {
+    if (kind === "feat") return (entity as Feat).details?.name ?? "";
+    return (entity as { name?: string }).name ?? "";
+}
+
 /** Build a non-persisted preview from a tool call. Never writes to the DB. */
 export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): HomebrewPreview {
     const kind = TOOL_TO_KIND[toolCall.name];
@@ -321,37 +465,84 @@ export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): Homebrew
     }
 
     let entity: HomebrewPreview["entity"];
-    let title: string;
     switch (kind) {
-        case "spell": entity = toSpell(input); title = (entity as Spell).name; break;
-        case "item": entity = toItem(input); title = (entity as srdItem).name; break;
-        case "magic_item": entity = toMagicItem(input); title = (entity as MagicItem).name; break;
-        case "feat": entity = toFeat(input); title = (entity as Feat).details.name; break;
-        case "background": entity = toBackground(input); title = (entity as Background).name; break;
-        case "race": entity = toRace(input); title = (entity as Race).name; break;
-        case "subclass": entity = toSubclass(input); title = (entity as srdSubclass).name; break;
-        case "class": entity = toClass(input); title = (entity as Class5E).name; break;
+        case "spell": entity = toSpell(input); break;
+        case "item": entity = toItem(input); break;
+        case "magic_item": entity = toMagicItem(input); break;
+        case "feat": entity = toFeat(input); break;
+        case "background": entity = toBackground(input); break;
+        case "race": entity = toRace(input); break;
+        case "subclass": entity = toSubclass(input); break;
+        case "class": entity = toClass(input); break;
     }
+    const title = entityTitle(kind, entity);
 
     // Hard blockers — mirror exactly what the manual editors refuse to save (name + structural integrity).
-    // Add AI Errors Here. searchKeywords: AIerrors, AIFieldErrors, AI Field Errors. 
-    const errors: string[] = [];
-    if (!title?.trim()) errors.push("Missing name.");
-    if (kind === "subclass" && !(entity as srdSubclass).parentClass.trim()) errors.push("Missing parent class.");
-    if (kind === "race") {
-        const r = entity as Race;
-        if (!r.size.trim()) errors.push("Missing size.");
-        if (!(r.speed > 0)) errors.push("Speed must be greater than 0.");
-    }
-    // A missing primary description is a hard failure for kinds built around one (race/class are exempt:
-    // they have no single description field). This blocks Save and drives the Medium/High auto-retry.
-    const description = primaryDescription(kind, entity);
-    if (description !== null && !description.trim()) errors.push("Missing description.");
+    // Add AI Errors Here. searchKeywords: AIerrors, AIFieldErrors, AI Field Errors.
+    const errors = validateEntity(kind, entity, title);
 
     // Recommended-but-empty fields are warn-only — the user can still save a deliberate stub.
     const { warnings, missingFields } = assessCompleteness(kind, input, dndSystem);
 
-    return { ...base, kind, title: title || "(unnamed)", entity, valid: errors.length === 0, errors, warnings, missingFields };
+    return { ...base, kind, title: title || "(unnamed)", entity, valid: errors.length === 0, errors, warnings, missingFields, mode: "create" };
+}
+
+/** Coerce the untrusted `changes` array of an edit_homebrew call into typed PatchOps. */
+function coerceOps(v: unknown): PatchOp[] {
+    return list(v)
+        .map(raw => {
+            const o = (raw ?? {}) as Record<string, unknown>;
+            const op = str(o.op).toLowerCase();
+            return { path: str(o.path), op: (op === "add" || op === "remove" ? op : "set") as PatchOp["op"], value: o.value };
+        })
+        .filter(o => o.path.length > 0);
+}
+
+/** Find a live homebrew entity by kind + name (subclass also needs its parent class). */
+export function findHomebrewEntity(kind: HomebrewKind, name: string, parentClass?: string): HomebrewPreview["entity"] | undefined {
+    const n = name.trim().toLowerCase();
+    const byName = <T extends { name?: string }>(arr: T[]): T | undefined => arr.find(e => (e.name ?? "").trim().toLowerCase() === n);
+    switch (kind) {
+        case "spell": return byName(homebrewManager.spells());
+        case "item": return byName(homebrewManager.items());
+        case "magic_item": return byName(homebrewManager.magicItems());
+        case "feat": return homebrewManager.feats().find(f => ((f.details?.name ?? f.name ?? "").trim().toLowerCase()) === n);
+        case "background": return byName(homebrewManager.backgrounds());
+        case "race": return byName(homebrewManager.races());
+        case "subclass":
+            return (parentClass ? homebrewManager.findSubclass(canonicalClassName(parentClass), name) : undefined)
+                ?? homebrewManager.subclasses().find(s => (s.name ?? "").trim().toLowerCase() === n);
+        case "class": return byName(homebrewManager.classes());
+    }
+}
+
+/**
+ * Build an EDIT preview: locate an existing homebrew entity, apply the model's diff patch to a clone,
+ * re-validate, and return a preview in "edit" mode (carrying the pre-edit snapshot + applied/rejected
+ * ops for the diff card). Never writes to the DB.
+ */
+export function buildEditPreview(toolCall: AiToolCall, _dndSystem = "both"): HomebrewPreview {
+    const input = (toolCall.input ?? {}) as Record<string, unknown>;
+    const kind = str(input.kind) as HomebrewKind;
+    const name = str(input.name);
+    const previewId = createNewId();
+    const base = { previewId, toolCallId: toolCall.id, mode: "edit" as const };
+
+    if (!HOMEBREW_KINDS.includes(kind)) {
+        return { ...base, kind: "item", title: name || "(edit)", entity: toItem({}), valid: false, errors: [`Unknown kind "${str(input.kind)}" to edit.`] };
+    }
+    const target = findHomebrewEntity(kind, name, str(input.parentClass));
+    if (!target) {
+        return { ...base, kind, title: name || "(edit)", entity: toItem({}), valid: false, errors: [`No homebrew ${kind.replace("_", " ")} named "${name}" to edit. Look it up with lookup_homebrew first.`] };
+    }
+    const { next, applied, rejected } = applyPatch(target, coerceOps(input.changes));
+    const title = entityTitle(kind, next);
+    const errors = validateEntity(kind, next, title);
+    return {
+        ...base, kind, title: title || name, entity: next,
+        baseEntity: target, appliedOps: applied, rejectedOps: rejected,
+        valid: errors.length === 0, errors,
+    };
 }
 
 const isPromise = (v: unknown): v is Promise<unknown> => !!v && typeof (v as { then?: unknown }).then === "function";
@@ -377,6 +568,24 @@ export function alreadyExists(p: HomebrewPreview): boolean {
  */
 export async function saveHomebrew(p: HomebrewPreview): Promise<{ ok: boolean; message: string }> {
     if (!p.valid) return { ok: false, message: `Cannot save: ${p.errors.join(" ")}` };
+
+    // ---- Edit: update the existing entity in place (it's expected to exist; skip the dedupe). ----
+    if (p.mode === "edit") {
+        let result: unknown;
+        switch (p.kind) {
+            case "spell": result = homebrewManager.updateSpell(p.entity as Spell); break;
+            case "item": result = homebrewManager.updateItem(p.entity as srdItem); break;
+            case "magic_item": result = homebrewManager.updateMagicItem(p.entity as MagicItem); break;
+            case "feat": result = homebrewManager.updateFeat(p.entity as Feat); break;
+            case "background": result = homebrewManager.updateBackground(p.entity as Background); break;
+            case "race": result = homebrewManager.updateRace(p.entity as Race); break;
+            case "subclass": result = homebrewManager.updateSubclass(p.entity as srdSubclass); break;
+            case "class": result = homebrewManager.updateClass(p.entity as Class5E); break;
+        }
+        if (isPromise(result)) await result;
+        return { ok: true, message: `Updated ${p.kind.replace("_", " ")} "${p.title}".` };
+    }
+
     if (alreadyExists(p)) return { ok: false, message: `A ${p.kind.replace("_", " ")} named "${p.title}" already exists.` };
 
     let result: unknown;

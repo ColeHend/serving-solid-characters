@@ -20,6 +20,15 @@ export function loadSrdFeats(version: '2014' | '2024'): Promise<SrdLoadResult<Fe
   return version === '2024' ? load2024() : load2014();
 }
 
+/**
+ * Plain, non-reactive snapshot of the SRD feats currently loaded in memory (both editions). Safe to
+ * call outside a reactive root (unlike useGetSrdFeats, which creates a memo) — used by the readiness
+ * background-feat reference check. Returns [] until a load has populated the signals.
+ */
+export function srdFeatsSnapshot(): Feat[] {
+  return [...feats2014(), ...feats2024()];
+}
+
 export function useGetSrdFeats(version: '2014' | '2024' | 'both' | string): Accessor<Feat[]> {
   if ((version === '2014' || version === 'both') && feats2014().length === 0) load2014();
   if ((version === '2024' || version === 'both') && feats2024().length === 0) load2024();

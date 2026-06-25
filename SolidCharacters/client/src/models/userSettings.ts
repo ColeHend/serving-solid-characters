@@ -41,7 +41,7 @@ export type ReviewPassId =
  * opt-in (each individually toggleable) so default High stays ~one extra LLM call on local models.
  */
 export const DEFAULT_HIGH_PASSES: ReviewPassId[] = [
-    "schema_validate", "broken_reference", "balance", "schema_validate_final",
+    "schema_validate", "broken_reference", "linter", "balance", "schema_validate_final",
 ];
 
 /** The schema gate always runs in High mode (before handoff + a final re-check); not user-toggleable. */
@@ -101,9 +101,19 @@ export const DEFAULT_AI_MAX_TOKENS = 16384;
 
 /**
  * Default context window for local models. Ollama's own default is ~4096, which is too small to hold
- * the homebrew system prompt + tool schemas AND leave room to generate — so we raise it here.
+ * the homebrew system prompt + tool schemas AND leave room to generate. The homebrew tool surface +
+ * system prompt is measured at ~5-6k tokens, so 8192 left almost no room for the conversation history
+ * or the generated tool call (truncated/empty previews). Raised so a create-class/race/subclass turn —
+ * and the upcoming lookup/edit tools — have real generation headroom. gemma-12B handles this comfortably.
  */
-export const DEFAULT_AI_NUM_CTX = 8192;
+export const DEFAULT_AI_NUM_CTX = 16384;
+
+/**
+ * Tokens to hold back from the context window for the system prompt + tool schemas + history when
+ * computing the local model's effective output cap (num_predict). For Ollama, output tokens come OUT of
+ * num_ctx, so an output cap larger than (num_ctx − this reserve) is impossible; the adapter clamps to it.
+ */
+export const RESERVED_PROMPT_TOKENS = 4096;
 
 /**
  * Default for model "thinking"/reasoning in plain chat. On by default: reasoning improves answer
@@ -126,6 +136,10 @@ export const DEFAULT_AI_THINKING_HOMEBREW = false;
 export const DEFAULT_AI_MATH_TOOLS = true;   // calc_* deterministic D&D math
 export const DEFAULT_AI_ASK_TOOLS = true;    // ask_user (questions / pick a direction)
 export const DEFAULT_AI_PLAN_TOOLS = true;   // propose_plan (design goal / plan)
+/** lookup_srd / lookup_homebrew (read-only reference search) + the research delegate. Default ON. */
+export const DEFAULT_AI_LOOKUP_TOOLS = true;
+/** Let the model switch its own mode (switch_mode) when it needs a tool the current mode lacks. Default ON. */
+export const DEFAULT_AI_AUTO_SWITCH = true;
 
 /**
  * AI ("Spark") configuration. Only non-secret selection lives here / in IndexedDB —
@@ -161,6 +175,10 @@ export interface AiSettings {
     askTools?: boolean;
     /** Allow the model to propose a structured plan for approval. Defaults to DEFAULT_AI_PLAN_TOOLS. */
     planTools?: boolean;
+    /** Expose read-only lookup tools (SRD + homebrew) and the research delegate. Defaults to DEFAULT_AI_LOOKUP_TOOLS. */
+    lookupTools?: boolean;
+    /** Let the model switch its own mode when it needs a tool the current mode lacks. Defaults to DEFAULT_AI_AUTO_SWITCH. */
+    autoSwitch?: boolean;
 }
 
 export interface UserSettings {

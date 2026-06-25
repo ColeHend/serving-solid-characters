@@ -25,6 +25,7 @@ const RARITIES = ["Common", "Uncommon", "Rare", "Very Rare", "Legendary", "Artif
 const ITEM_TYPES = ["Weapon", "Armor", "Tool", "Item"];
 const ABILITIES = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
 const HIT_DICE = ["d6", "d8", "d10", "d12"];
+const CASTER_TYPES = ["none", "third", "half", "full", "pact"];
 
 /** A class/subclass feature, tagged with the level it is gained at. */
 const featureSchema = {
@@ -140,7 +141,8 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 tools: { type: "array", items: { type: "string" }, description: "Tool proficiencies granted, if any." },
                 armor: { type: "array", items: { type: "string" }, description: "Armor proficiencies granted, if any (rare for backgrounds)." },
                 weapons: { type: "array", items: { type: "string" }, description: "Weapon proficiencies granted, if any (rare for backgrounds)." },
-                feat: { type: "string", description: "Granted feat name (2024 backgrounds), if any." },
+                feat: { type: "string", description: "Granted feat name (2024 backgrounds), if any. Must name a real feat — the character build resolves it by name." },
+                abilityOptions: { type: "array", items: { type: "string", enum: ABILITIES }, description: "Ability scores this background can boost (2024 rules — the +2/+1 or +1×3 ASI). Usually three, e.g. [\"INT\",\"WIS\",\"CHA\"]. Leave empty for 2014 backgrounds." },
                 features: { type: "array", items: namedFeatureSchema, description: "Background feature(s) — at least one, e.g. \"Shelter of the Faithful\"." },
             },
             required: ["name", "desc"],
@@ -200,6 +202,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 parentClass: { type: "string", description: 'The base class this subclass belongs to, e.g. "Wizard", "Fighter".' },
                 description: { type: "string", description: "Overview of the subclass's theme and playstyle (Markdown allowed). Write 2-3 sentences minimum; never leave empty." },
                 features: { type: "array", items: featureSchema, description: "Features gained, each tagged with its level. Provide a feature at the subclass's normal levels (typically 3, 6, 10, 14)." },
+                casterType: { type: "string", enum: CASTER_TYPES, description: "Set ONLY if this subclass grants spellcasting its base class lacks (e.g. Eldritch Knight = \"third\"). \"third\"/\"half\"/\"full\"/\"pact\" fill the spell-slot table; omit or \"none\" otherwise." },
             },
             required: ["name", "parentClass", "description"],
         },
@@ -221,6 +224,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 tools: { type: "array", items: { type: "string" }, description: "Tool proficiencies, if any." },
                 features: { type: "array", items: featureSchema, description: "Class features, each tagged with its level. Provide at least a level-1 and level-2 feature." },
                 startingEquipment: { type: "array", items: { type: "string" }, description: "Starting equipment items, e.g. [\"A simple weapon\",\"Leather armor\"]." },
+                casterType: { type: "string", enum: CASTER_TYPES, description: "Spellcasting progression: \"none\" (martial), \"third\" (e.g. Eldritch Knight), \"half\" (e.g. Paladin), \"full\" (e.g. Wizard), or \"pact\" (Warlock). Set this for any spellcaster — the app fills the spell-slot table from it. Omit or \"none\" for a non-caster." },
             },
             required: ["name", "hitDie", "primaryAbility", "savingThrows"],
         },

@@ -7,6 +7,7 @@ import { aiAssistant } from "../../shared/customHooks/aiAssistant";
 import ConversationMenu from "./ConversationMenu";
 import ChatMessageList from "./ChatMessageList";
 import ChatInput from "./ChatInput";
+import DecisionLog from "./DecisionLog";
 import styles from "./SparkSidebar.module.scss";
 
 /**
@@ -46,6 +47,7 @@ const SparkSidebar: Component = () => {
                         </div>
                         <div class={styles.headerActions}>
                             <ConversationMenu />
+                            <DecisionLog />
                             <Button transparent title="New chat" onClick={() => aiAssistant.newConversation()}>
                                 <Icon icon={Add} size="small" />
                             </Button>

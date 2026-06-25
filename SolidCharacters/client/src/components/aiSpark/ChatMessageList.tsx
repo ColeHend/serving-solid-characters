@@ -3,6 +3,7 @@ import { aiAssistant } from "../../shared/customHooks/aiAssistant";
 import ChatBubble from "./ChatBubble";
 import StreamingBubble from "./StreamingBubble";
 import HomebrewPreviewCard from "./HomebrewPreviewCard";
+import HomebrewDiffCard from "./HomebrewDiffCard";
 import InteractionCard from "./InteractionCard";
 import styles from "./SparkSidebar.module.scss";
 
@@ -30,7 +31,11 @@ const ChatMessageList: Component = () => {
             </Show>
             <For each={aiAssistant.messages()}>{(m) => <ChatBubble message={m} />}</For>
             <Show when={aiAssistant.status() === "streaming"}><StreamingBubble /></Show>
-            <For each={aiAssistant.pendingPreviews()}>{(p) => <HomebrewPreviewCard preview={p} />}</For>
+            <For each={aiAssistant.pendingPreviews()}>{(p) => (
+                <Show when={p.mode === "edit"} fallback={<HomebrewPreviewCard preview={p} />}>
+                    <HomebrewDiffCard preview={p} />
+                </Show>
+            )}</For>
             <For each={aiAssistant.pendingInteractions()}>{(i) => <InteractionCard interaction={i} />}</For>
         </div>
     );

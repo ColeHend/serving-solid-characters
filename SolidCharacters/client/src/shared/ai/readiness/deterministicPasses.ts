@@ -1,29 +1,17 @@
-import { Class5E, Spell, Subclass } from "../../../models/generated";
+import { Background, Spell } from "../../../models/generated";
 import { srdSubclass } from "../../../models/data/generated";
-import { homebrewManager } from "../../customHooks/homebrewManager";
 import { HomebrewPreview } from "../toolDispatcher";
+import { OFFICIAL_CLASSES, knownClassNames, norm } from "../classRefs";
+import { featResolves, srdFeatsReady } from "../featRefs";
 import { ReviewIssue, ReviewVerdict } from "./types";
+
+export { OFFICIAL_CLASSES };
 
 /**
  * Deterministic (zero-cost, zero-latency) readiness passes. These run in code, not the model — they
  * catch the failure classes small local models judge worst (missing fields, dangling references, wrong
  * terminology). Each returns a ReviewVerdict; blocking is decided centrally from issue severity.
  */
-
-/** The standard 5e classes a subclass/spell can legitimately reference (official, both editions + Artificer). */
-export const OFFICIAL_CLASSES = [
-    "Artificer", "Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk",
-    "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard",
-];
-
-const norm = (s: string) => s.trim().toLowerCase();
-
-/** All class names a reference may resolve to: official + the user's homebrew classes. */
-function knownClassNames(): Set<string> {
-    const names = new Set(OFFICIAL_CLASSES.map(norm));
-    for (const c of homebrewManager.classes()) if (c?.name) names.add(norm(c.name));
-    return names;
-}
 
 /**
  * schema_validate / schema_validate_final — reuse buildPreview's verdict already computed on the
@@ -70,12 +58,22 @@ export function brokenReferenceVerdict(preview: HomebrewPreview): ReviewVerdict 
         }
     }
 
-    if (preview.kind === "class") {
-        // A class that grants a subclass-style feature referencing itself is fine; nothing to resolve here,
-        // but guard against an empty primaryAbility being treated as a (broken) reference downstream.
-        const c = preview.entity as Class5E;
-        void c; // no cross-entity reference to validate for a base class today
+    // A 2024 background's granted `feat` is resolved by name in the character build; a name that matches
+    // no real feat yields a feature with an empty description (mechanically inert). Warn (don't block),
+    // and only when the SRD feats are loaded so we don't false-warn on a real feat we haven't cached yet.
+    if (preview.kind === "background") {
+        const feat = (preview.entity as Background).feat?.trim();
+        if (feat && srdFeatsReady() && !featResolves(feat)) {
+            issues.push({
+                severity: "warning",
+                field: "feat",
+                message: `Granted feat "${feat}" doesn't match any known feat; the character would get an empty feature. Check the spelling, pick an existing feat, or create that feat first.`,
+            });
+        }
     }
+
+    // A base class has no cross-entity reference to resolve here (primaryAbility completeness is handled
+    // in toolDispatcher's class checks, not as a broken reference).
 
     return { passId: "broken_reference", label: "Broken references", pass: issues.length === 0, issues };
 }
@@ -103,8 +101,14 @@ const PLACEHOLDERS: { pattern: RegExp; label: string }[] = [
     { pattern: /\b(?:placeholder|tbd)\b/i, label: "placeholder/TBD" },
 ];
 
+/** The first placeholder label found in some free text, or null. Shared by the linter + buildPreview. */
+export function findPlaceholder(text: string): string | null {
+    for (const p of PLACEHOLDERS) if (p.pattern.test(text)) return p.label;
+    return null;
+}
+
 /** All free-text on an entity the linter should scan (name + description + feature text). */
-function entityText(preview: HomebrewPreview): string {
+export function entityText(preview: HomebrewPreview): string {
     const e = preview.entity as unknown as Record<string, unknown>;
     const parts: string[] = [preview.title];
     const push = (v: unknown) => { if (typeof v === "string") parts.push(v); };
@@ -137,7 +141,9 @@ export function linterVerdict(preview: HomebrewPreview): ReviewVerdict {
     }
     for (const p of PLACEHOLDERS) {
         if (p.pattern.test(text)) {
-            issues.push({ severity: "warning", message: `Contains ${p.label} — replace it with real content before saving.` });
+            // Placeholder text ("TODO", "[insert...]") is a hard defect, not just wording — block on it
+            // (buildPreview also blocks placeholders independently of usageLevel, so Low/Medium are covered).
+            issues.push({ severity: "error", message: `Contains ${p.label} — replace it with real content before saving.` });
         }
     }
     return { passId: "linter", label: "Terminology", pass: issues.length === 0, issues };

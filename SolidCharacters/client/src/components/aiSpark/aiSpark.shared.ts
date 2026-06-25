@@ -3,6 +3,7 @@ import type { ChatMessage } from "../../shared/customHooks/aiAssistant";
 import type { HomebrewPreview } from "../../shared/ai/toolDispatcher";
 import { Background, Class5E, Feat, MagicItem, Race, Spell, Subclass } from "../../models/generated";
 import { srdItem } from "../../models/data/generated";
+import { getAtPath, parsePath } from "../../shared/ai/patch";
 
 export type { ChatMessage, HomebrewPreview };
 
@@ -35,6 +36,47 @@ export function relativeTime(ts: number): string {
     const day = Math.floor(hr / 24);
     if (day < 7) return `${day}d`;
     return new Date(ts).toLocaleDateString();
+}
+
+/** One changed field, before→after, for the edit diff card. */
+export interface FieldDiff { label: string; before: string; after: string; }
+
+const cap = (s: string, n = 140): string => (s.length > n ? `${s.slice(0, n)}…` : s);
+
+/** Render any field value as short display text. */
+function valueToText(v: unknown): string {
+    if (v == null || v === "") return "—";
+    if (typeof v === "string") return v.replace(/\s+/g, " ").trim();
+    if (Array.isArray(v)) return v.length ? `${v.length} item${v.length === 1 ? "" : "s"}` : "—";
+    if (typeof v === "object") return `${Object.keys(v).length} field${Object.keys(v).length === 1 ? "" : "s"}`;
+    return String(v);
+}
+
+/** Turn a raw patch path into a friendly label (last meaningful segment, title-cased). */
+function friendlyLabel(path: string): string {
+    const segs = parsePath(path).filter(s => typeof s === "string") as string[];
+    const last = segs[segs.length - 1] ?? path;
+    return last.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^\w/, c => c.toUpperCase());
+}
+
+/**
+ * The field-level before→after diff for an edit preview, computed from the applied patch ops against the
+ * pre-edit snapshot. One row per distinct changed path.
+ */
+export function computeFieldDiff(p: HomebrewPreview): FieldDiff[] {
+    const seen = new Set<string>();
+    const diffs: FieldDiff[] = [];
+    for (const op of p.appliedOps ?? []) {
+        if (seen.has(op.path)) continue;
+        seen.add(op.path);
+        const segs = parsePath(op.path);
+        diffs.push({
+            label: friendlyLabel(op.path),
+            before: cap(valueToText(getAtPath(p.baseEntity, segs))),
+            after: cap(valueToText(getAtPath(p.entity, segs))),
+        });
+    }
+    return diffs;
 }
 
 /** The main descriptive text of a generated entity (Markdown), shown on the preview card. */
