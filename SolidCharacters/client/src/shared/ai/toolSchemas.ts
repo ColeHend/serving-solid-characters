@@ -1,6 +1,11 @@
 import { AiToolDef } from "./types";
 import { HOMEBREW_KINDS, HomebrewKind, KIND_TO_TOOL } from "./homebrewKind";
-import { DEFAULT_TOOL_PERMISSIONS, ToolPermissions } from "../../models/userSettings";
+import {
+    AiSettings, DEFAULT_AI_ASK_TOOLS, DEFAULT_AI_MATH_TOOLS, DEFAULT_AI_PLAN_TOOLS,
+    DEFAULT_TOOL_PERMISSIONS, ToolPermissions,
+} from "../../models/userSettings";
+import { COMPUTE_TOOLS } from "./computeTools";
+import { ASK_USER_TOOL, PROPOSE_PLAN_TOOL } from "./interactions";
 
 /**
  * JSON-schema tool definitions for homebrew generation. These cover the authoring-relevant fields a
@@ -248,4 +253,17 @@ export function allowedKinds(perms: ToolPermissions | undefined): HomebrewKind[]
 export function filterTools(tools: AiToolDef[], perms: ToolPermissions | undefined): AiToolDef[] {
     const allowed = new Set(allowedKinds(perms).map(k => KIND_TO_TOOL[k]));
     return tools.filter(t => allowed.has(t.name));
+}
+
+/**
+ * The utility tools (compute + interactive) enabled by the user's settings. These are offered in BOTH
+ * chat and homebrew modes, independent of toolPermissions/usageLevel (which gate only create_* tools).
+ * Each group defaults ON.
+ */
+export function enabledUtilityTools(ai: AiSettings | undefined): AiToolDef[] {
+    const out: AiToolDef[] = [];
+    if (ai?.mathTools ?? DEFAULT_AI_MATH_TOOLS) out.push(...COMPUTE_TOOLS);
+    if (ai?.askTools ?? DEFAULT_AI_ASK_TOOLS) out.push(ASK_USER_TOOL);
+    if (ai?.planTools ?? DEFAULT_AI_PLAN_TOOLS) out.push(PROPOSE_PLAN_TOOL);
+    return out;
 }

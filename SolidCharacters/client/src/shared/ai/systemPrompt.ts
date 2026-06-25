@@ -72,6 +72,28 @@ By type:
 ${edition}${example}`.trim();
 }
 
+/** Which utility tools are advertised to the model this turn (mirrors AiSettings enable flags). */
+export interface UtilityToolFlags {
+  math?: boolean;
+  ask?: boolean;
+  plan?: boolean;
+}
+
+/**
+ * Concise guidance for the utility tools (math/ask/plan), appended in BOTH modes. Only describes the
+ * tools that are actually enabled, and ends with a restraint line — small local models otherwise tend
+ * to over-call meta tools. Returns "" when nothing is enabled.
+ */
+function utilityPrompt(flags: UtilityToolFlags | undefined): string {
+  if (!flags) return "";
+  const bullets: string[] = [];
+  if (flags.math) bullets.push("- Math tools (calc_ability_modifier, calc_proficiency_bonus, calc_attack_dpr, calc_save_dpr): call these for an exact D&D number instead of doing the arithmetic yourself.");
+  if (flags.ask) bullets.push("- ask_user: when you truly need the user to choose a direction or supply a missing detail, ask with this tool (it shows buttons) and wait — do not use it to ask permission to create content.");
+  if (flags.plan) bullets.push("- propose_plan: for a big multi-step build, propose a short plan with this tool first and let the user approve it before you generate.");
+  if (!bullets.length) return "";
+  return `\n\nHelper tools:\n${bullets.join("\n")}\nOnly call a helper tool when it genuinely helps; otherwise just answer.`;
+}
+
 /**
  * System prompt for the Spark assistant. In homebrew mode it nudges the model to call the matching
  * create_* tool; the user confirms every generated entity before it is saved (the harness gates the
@@ -80,19 +102,23 @@ ${edition}${example}`.trim();
  * `tier` lets the same builder serve both ends of the model range: "large" gets a lean prompt that
  * trusts the model, "small" adds a worked example and is the safer default for a local model like
  * Gemma. Pass the tier that matches the model you are routing the request to.
+ *
+ * `utility` advertises the enabled helper tools (math/ask/plan), which are available in both modes.
  */
 export function buildSystemPrompt(
   dndSystem: string,
   mode: AiMode,
   tier: AiTier = "large",
   allowedKinds?: HomebrewKind[],
+  utility?: UtilityToolFlags,
 ): string {
   const ruleset = rulesetLabel(dndSystem);
   const base = `You are Spark, a Dungeons & Dragons assistant embedded in a character-management app. Assume ${ruleset} unless the user says otherwise. Keep replies concise and use Markdown.`;
+  const helpers = utilityPrompt(utility);
 
   if (mode === "homebrew") {
-    return `${homebrewPrompt(base, dndSystem, tier)}${permissionNote(allowedKinds)}`;
+    return `${homebrewPrompt(base, dndSystem, tier)}${permissionNote(allowedKinds)}${helpers}`;
   }
 
-  return `${base} Answer questions about rules, lore, and play. If the user wants to create homebrew content, suggest they switch to "Homebrew" mode using the toggle above the message box.`;
+  return `${base} Answer questions about rules, lore, and play. If the user wants to create homebrew content, suggest they switch to "Homebrew" mode using the toggle above the message box.${helpers}`;
 }

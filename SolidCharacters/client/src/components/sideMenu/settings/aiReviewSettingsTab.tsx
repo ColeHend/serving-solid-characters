@@ -3,7 +3,8 @@ import { Checkbox, Input, Radio, RadioGroup } from "coles-solid-library";
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import {
-    AiSettings, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES, DEFAULT_REVIEW_SETTINGS,
+    AiSettings, DEFAULT_AI_ASK_TOOLS, DEFAULT_AI_MATH_TOOLS, DEFAULT_AI_PLAN_TOOLS,
+    DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES, DEFAULT_REVIEW_SETTINGS,
     DEFAULT_TOOL_PERMISSIONS, DEFAULT_USAGE_LEVEL, MANDATORY_PASSES, OPTIONAL_PASSES, ReviewPassId,
     ReviewSettings, ReviewerModelMode, ToolPermissions, UsageControlLevel,
 } from "../../../models/userSettings";
@@ -130,6 +131,31 @@ const AiReviewSettingsTab: Component = () => {
                         )}</For>
                     </div>
                 </Show>
+            </div>
+
+            {/* ---------------- Helper tools (both modes) ---------------- */}
+            <div style={section}>
+                <label>Helper tools</label>
+                <div style={hint}>
+                    Extra tools Spark can use in both Chat and Homebrew, independent of the content types above.
+                </div>
+                <div style={{ "margin-top": "var(--spacing-1)" }}>
+                    <Checkbox
+                        label="Math tools — exact D&D modifiers, proficiency, and damage-per-round"
+                        checked={ai().mathTools ?? DEFAULT_AI_MATH_TOOLS}
+                        onChange={(checked) => updateAi({ mathTools: checked })}
+                    />
+                    <Checkbox
+                        label="Ask me questions — let Spark offer choices or ask for a direction inline"
+                        checked={ai().askTools ?? DEFAULT_AI_ASK_TOOLS}
+                        onChange={(checked) => updateAi({ askTools: checked })}
+                    />
+                    <Checkbox
+                        label="Propose a plan — let Spark suggest a design goal/plan to approve before a big build"
+                        checked={ai().planTools ?? DEFAULT_AI_PLAN_TOOLS}
+                        onChange={(checked) => updateAi({ planTools: checked })}
+                    />
+                </div>
             </div>
 
             {/* ---------------- High-mode readiness pipeline ---------------- */}

@@ -163,3 +163,84 @@ describe("High readiness pipeline", () => {
         expect(h.calls).toBe(2);   // one generation + one retry
     });
 });
+
+/** A plain assistant text turn that ends the conversation. */
+function textTurn(text: string) {
+    return [
+        { type: "text_delta", text },
+        { type: "message_done", stopReason: "end_turn" },
+    ];
+}
+/** One assistant turn that emits the given tool calls (one per index) then stops for tool_use. */
+function multiCall(specs: { name: string; input: Record<string, unknown> }[]) {
+    const events: Record<string, unknown>[] = [];
+    specs.forEach((s, i) => {
+        events.push({ type: "tool_call_start", index: i, id: `tc${i}`, name: s.name });
+        events.push({ type: "tool_call_delta", index: i, argsDelta: JSON.stringify(s.input) });
+        events.push({ type: "tool_call_done", index: i });
+    });
+    events.push({ type: "message_done", stopReason: "tool_use" });
+    return events;
+}
+
+describe("compute + interactive routing", () => {
+    it("auto-executes a compute tool and continues the turn with no card", async () => {
+        aiAssistant.setMode("chat");
+        h.turns = [multiCall([{ name: "calc_ability_modifier", input: { score: 16 } }]), textTurn("The modifier is +3.")];
+
+        aiAssistant.send("modifier for 16?");
+
+        await vi.waitFor(() => expect(h.calls).toBe(2));               // compute resolved → continuation turn ran
+        await vi.waitFor(() => expect(aiAssistant.status()).toBe("idle"));
+        const msgs = aiAssistant.messages();
+        expect(msgs[msgs.length - 1].text).toContain("+3");
+        expect(aiAssistant.pendingPreviews()).toHaveLength(0);
+        expect(aiAssistant.pendingInteractions()).toHaveLength(0);
+    });
+
+    it("renders an ask_user card, waits, then continues when answered", async () => {
+        aiAssistant.setMode("chat");
+        h.turns = [
+            multiCall([{ name: "ask_user", input: { prompt: "Pick one", options: [{ label: "A" }, { label: "B" }] } }]),
+            textTurn("Going with A."),
+        ];
+
+        aiAssistant.send("help me choose");
+
+        await vi.waitFor(() => expect(aiAssistant.pendingInteractions()).toHaveLength(1));
+        expect(h.calls).toBe(1);                                       // no continuation until the user answers
+        expect(aiAssistant.status()).toBe("idle");
+
+        const card = aiAssistant.pendingInteractions()[0];
+        aiAssistant.answerInteraction(card.interactionId, { type: "option", optionId: "opt-0", label: "A" });
+
+        await vi.waitFor(() => {
+            const msgs = aiAssistant.messages();
+            expect(msgs[msgs.length - 1].text).toContain("Going with A.");   // continuation turn replied
+        });
+        expect(h.calls).toBe(2);
+        expect(aiAssistant.pendingInteractions()).toHaveLength(0);
+    });
+
+    it("buffers a compute result while an interactive card waits, then continues together", async () => {
+        aiAssistant.setMode("chat");
+        h.turns = [
+            multiCall([
+                { name: "calc_proficiency_bonus", input: { level: 5 } },
+                { name: "ask_user", input: { prompt: "Which?", options: [{ label: "X" }] } },
+            ]),
+            textTurn("Done."),
+        ];
+
+        aiAssistant.send("mixed turn");
+
+        await vi.waitFor(() => expect(aiAssistant.pendingInteractions()).toHaveLength(1));
+        expect(h.calls).toBe(1);                                       // compute resolved but the turn waits on the card
+
+        const card = aiAssistant.pendingInteractions()[0];
+        aiAssistant.answerInteraction(card.interactionId, { type: "option", optionId: "opt-0", label: "X" });
+
+        await vi.waitFor(() => expect(h.calls).toBe(2));
+        expect(aiAssistant.pendingInteractions()).toHaveLength(0);
+    });
+});

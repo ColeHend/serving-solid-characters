@@ -119,6 +119,15 @@ export const DEFAULT_AI_THINKING = true;
 export const DEFAULT_AI_THINKING_HOMEBREW = false;
 
 /**
+ * Defaults for the utility tools available in BOTH chat and homebrew modes (independent of usageLevel
+ * and toolPermissions, which only gate homebrew create_* tools). All default ON — they're low-risk and
+ * a bad compute call is self-correcting — but each can be turned off if a local model abuses it.
+ */
+export const DEFAULT_AI_MATH_TOOLS = true;   // calc_* deterministic D&D math
+export const DEFAULT_AI_ASK_TOOLS = true;    // ask_user (questions / pick a direction)
+export const DEFAULT_AI_PLAN_TOOLS = true;   // propose_plan (design goal / plan)
+
+/**
  * AI ("Spark") configuration. Only non-secret selection lives here / in IndexedDB —
  * cloud API keys are sent to the .NET backend and stored server-side, never persisted
  * in the browser. `localBaseUrl` only applies to the `local` provider (direct browser call).
@@ -146,6 +155,12 @@ export interface AiSettings {
     toolPermissions?: ToolPermissions;
     /** High-mode readiness-pipeline config. Defaults to DEFAULT_REVIEW_SETTINGS. */
     review?: ReviewSettings;
+    /** Expose deterministic D&D math tools (modifiers, DPR). Defaults to DEFAULT_AI_MATH_TOOLS. */
+    mathTools?: boolean;
+    /** Allow the model to ask the user questions / offer directions inline. Defaults to DEFAULT_AI_ASK_TOOLS. */
+    askTools?: boolean;
+    /** Allow the model to propose a structured plan for approval. Defaults to DEFAULT_AI_PLAN_TOOLS. */
+    planTools?: boolean;
 }
 
 export interface UserSettings {
