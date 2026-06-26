@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { HomebrewPreview } from "../toolDispatcher";
-import type { HomebrewKind } from "../homebrewKind";
+import type { HomebrewPreview } from "../tools/toolDispatcher";
+import type { HomebrewKind } from "../refs/homebrewKind";
 
 // homebrewManager subscribes to IndexedDB on construction; mock it so broken-reference checks read a
 // controllable class list and the real store never boots in tests.

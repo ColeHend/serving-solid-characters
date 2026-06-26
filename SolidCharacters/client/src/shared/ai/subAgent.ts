@@ -1,7 +1,7 @@
-import { buildProvider } from "./providerFactory";
+import { buildProvider } from "./providers/providerFactory";
 import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "./types";
 import { AiSettings, DEFAULT_AI_NUM_CTX } from "../../models/userSettings";
-import { LOOKUP_TOOLS } from "./lookupTools";
+import { LOOKUP_TOOLS } from "./tools/lookupTools";
 
 /**
  * Restricted-tool sub-agents that run in a FRESH, isolated context (a brand-new short `messages` array —

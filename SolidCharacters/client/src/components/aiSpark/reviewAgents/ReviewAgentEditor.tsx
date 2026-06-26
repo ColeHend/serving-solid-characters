@@ -1,7 +1,7 @@
 import { Component, For, Show, createSignal } from "solid-js";
 import { Button, Checkbox, Input, Option, Select, TextArea, addSnackbar } from "coles-solid-library";
 import { ReviewSeverity } from "../../../models/userSettings";
-import { HOMEBREW_KINDS, HOMEBREW_KIND_LABELS, HomebrewKind } from "../../../shared/ai/homebrewKind";
+import { HOMEBREW_KINDS, HOMEBREW_KIND_LABELS, HomebrewKind } from "../../../shared/ai/refs/homebrewKind";
 import { ReviewAgentDef } from "../../../shared/customHooks/utility/localDB/reviewAgentDB";
 import { deleteReviewAgent, saveReviewAgent } from "../../../shared/customHooks/reviewAgentManager";
 

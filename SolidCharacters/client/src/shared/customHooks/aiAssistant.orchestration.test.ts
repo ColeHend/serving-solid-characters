@@ -19,7 +19,7 @@ vi.mock("./userSettings", () => ({
     getUserSettings: () => [() => h.settings, () => {}],
     saveUserSettings: () => {},
 }));
-vi.mock("../ai/providerFactory", () => ({
+vi.mock("../ai/providers/providerFactory", () => ({
     buildProvider: () => ({
         kind: "local",
         async *streamChat() {
@@ -29,7 +29,7 @@ vi.mock("../ai/providerFactory", () => ({
         },
     }),
 }));
-vi.mock("../ai/generateTitle", () => ({ generateConversationTitle: async () => null }));
+vi.mock("../ai/prompt/generateTitle", () => ({ generateConversationTitle: async () => null }));
 vi.mock("./reviewAgentManager", () => ({ ensureReviewAgentsLoaded: async () => {}, reviewAgents: () => [] }));
 vi.mock("./utility/localDB/chatHistoryDB", () => ({
     default: {
@@ -243,5 +243,88 @@ describe("compute + interactive routing", () => {
 
         await vi.waitFor(() => expect(h.calls).toBe(2));
         expect(aiAssistant.pendingInteractions()).toHaveLength(0);
+    });
+});
+
+/** A provider that errors out (e.g. server unreachable) then ends the turn. */
+function errorTurn(message = "boom") {
+    return [
+        { type: "error", error: message },
+        { type: "message_done", stopReason: "error" },
+    ];
+}
+
+describe("error handling & recovery", () => {
+    it("surfaces a provider error as status=error, and retryLast re-runs the turn", async () => {
+        aiAssistant.setMode("chat");
+        h.turns = [errorTurn("server unreachable"), textTurn("Here's your answer.")];
+
+        aiAssistant.send("hello");
+
+        await vi.waitFor(() => expect(aiAssistant.status()).toBe("error"));
+        const errMsg = aiAssistant.messages().at(-1)!;
+        expect(errMsg.kind).toBe("system");
+
+        aiAssistant.retryLast();
+        await vi.waitFor(() => {
+            const last = aiAssistant.messages().at(-1)!;
+            expect(last.text).toContain("Here's your answer.");
+            expect(last.kind).not.toBe("system");   // the system error bubble was dropped before retrying
+        });
+        expect(aiAssistant.status()).toBe("idle");
+        expect(h.calls).toBe(2);
+    });
+
+    it("records a refusal as a system notice and settles idle", async () => {
+        aiAssistant.setMode("chat");
+        h.turns = [[{ type: "text_delta", text: "I can't help with that." }, { type: "message_done", stopReason: "refusal" }]];
+
+        aiAssistant.send("disallowed request");
+
+        await vi.waitFor(() => expect(aiAssistant.status()).toBe("idle"));
+        const last = aiAssistant.messages().at(-1)!;
+        expect(last.kind).toBe("system");
+        expect(last.text).toContain("⚠️");
+    });
+});
+
+describe("switch_mode control tool", () => {
+    it("flips the mode and continues the turn", async () => {
+        aiAssistant.setMode("chat");
+        h.settings.ai.autoSwitch = true;
+        h.turns = [multiCall([{ name: "switch_mode", input: { mode: "homebrew" } }]), textTurn("Switched and ready.")];
+
+        aiAssistant.send("make me a spell");
+
+        await vi.waitFor(() => expect(aiAssistant.mode()).toBe("homebrew"));
+        await vi.waitFor(() => expect(h.calls).toBe(2));   // mode flipped → continuation turn ran
+    });
+
+    it("short-circuits a no-op switch to the already-active mode", async () => {
+        aiAssistant.setMode("chat");
+        h.settings.ai.autoSwitch = true;
+        h.turns = [multiCall([{ name: "switch_mode", input: { mode: "chat" } }]), textTurn("Already here.")];
+
+        aiAssistant.send("switch to chat");
+
+        await vi.waitFor(() => expect(h.calls).toBe(2));   // resolved as a no-op, continuation ran
+        expect(aiAssistant.mode()).toBe("chat");
+    });
+});
+
+describe("confirmPreview save flow", () => {
+    it("saves a confirmed preview, removes the card, and continues the turn", async () => {
+        h.settings.ai.usageLevel = "low";
+        h.turns = [toolCall(validSpell), textTurn("Saved it.")];
+
+        aiAssistant.send("make a fire cantrip");
+
+        await vi.waitFor(() => expect(aiAssistant.pendingPreviews()).toHaveLength(1));
+        const preview = aiAssistant.pendingPreviews()[0];
+        await aiAssistant.confirmPreview(preview.previewId);
+
+        expect(aiAssistant.pendingPreviews()).toHaveLength(0);   // card removed after save
+        await vi.waitFor(() => expect(h.calls).toBe(2));         // tool_result resolved → continuation turn ran
+        await vi.waitFor(() => expect(aiAssistant.messages().at(-1)!.text).toContain("Saved it."));
     });
 });

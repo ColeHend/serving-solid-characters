@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import type { HomebrewPreview } from "../toolDispatcher";
-import type { HomebrewKind } from "../homebrewKind";
+import type { HomebrewPreview } from "../tools/toolDispatcher";
+import type { HomebrewKind } from "../refs/homebrewKind";
 
 vi.mock("../../customHooks/homebrewManager", () => ({ homebrewManager: { classes: () => [] } }));
 

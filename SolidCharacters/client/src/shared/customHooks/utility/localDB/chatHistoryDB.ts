@@ -1,6 +1,6 @@
 import Dexie from "dexie";
 import type { AiMessage } from "../../../ai/types";
-import type { AiMode } from "../../../ai/systemPrompt";
+import type { AiMode } from "../../../ai/prompt/systemPrompt";
 import type { ChatMessage } from "../../aiAssistant";
 
 /**

@@ -8,7 +8,7 @@ import {
     DEFAULT_TOOL_PERMISSIONS, DEFAULT_USAGE_LEVEL, MANDATORY_PASSES, OPTIONAL_PASSES, ReviewPassId,
     ReviewSettings, ReviewerModelMode, ToolPermissions, UsageControlLevel,
 } from "../../../models/userSettings";
-import { HOMEBREW_KINDS, HOMEBREW_KIND_LABELS, HomebrewKind } from "../../../shared/ai/homebrewKind";
+import { HOMEBREW_KINDS, HOMEBREW_KIND_LABELS, HomebrewKind } from "../../../shared/ai/refs/homebrewKind";
 import ReviewAgentList from "../../aiSpark/reviewAgents/ReviewAgentList";
 
 const DEFAULT_AI: Partial<AiSettings> = {

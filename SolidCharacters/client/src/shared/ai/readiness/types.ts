@@ -15,6 +15,7 @@ export type ReviewState =
     | "reviewing"              // passes are running; Save is disabled
     | "passed"                 // every enabled pass approved it
     | "issues"                 // findings exist (Save allowed unless a blocking-severity issue)
+    | "review_unavailable"     // a pass threw — review couldn't complete; Save allowed but NOT marked "Reviewed"
     | "needs_user_direction";  // schema kept failing past the retry cap — the user must decide
 
 /** One concrete problem found by a pass. */

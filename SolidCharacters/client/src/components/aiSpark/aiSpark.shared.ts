@@ -1,9 +1,9 @@
 // Shared leaf types/helpers for the Spark sidebar components (kept here to avoid component<->component cycles).
 import type { ChatMessage } from "../../shared/customHooks/aiAssistant";
-import type { HomebrewPreview } from "../../shared/ai/toolDispatcher";
+import type { HomebrewPreview } from "../../shared/ai/tools/toolDispatcher";
 import { Background, Class5E, Feat, MagicItem, Race, Spell, Subclass } from "../../models/generated";
 import { srdItem } from "../../models/data/generated";
-import { getAtPath, parsePath } from "../../shared/ai/patch";
+import { getAtPath, parsePath } from "../../shared/ai/tools/patch";
 
 export type { ChatMessage, HomebrewPreview };
 

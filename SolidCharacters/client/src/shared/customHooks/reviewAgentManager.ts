@@ -3,7 +3,7 @@ import reviewAgentDB, { ReviewAgentDef } from "./utility/localDB/reviewAgentDB";
 import { createNewId } from "./utility/tools/idGen";
 import { setCustomAgentResolver } from "../ai/readiness/pipeline";
 import { ReviewPassSpec } from "../ai/readiness/reviewSystemPrompt";
-import { HomebrewKind } from "../ai/homebrewKind";
+import { HomebrewKind } from "../ai/refs/homebrewKind";
 
 /**
  * Singleton store for user-created review agents (mirrors homebrewManager / aiAssistant). Backs both the

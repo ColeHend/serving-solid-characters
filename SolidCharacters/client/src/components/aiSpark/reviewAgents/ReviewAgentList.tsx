@@ -1,7 +1,7 @@
 import { Component, For, Show, createSignal, onMount } from "solid-js";
 import { Button } from "coles-solid-library";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
-import { HOMEBREW_KIND_LABELS } from "../../../shared/ai/homebrewKind";
+import { HOMEBREW_KIND_LABELS } from "../../../shared/ai/refs/homebrewKind";
 import { ReviewAgentDef } from "../../../shared/customHooks/utility/localDB/reviewAgentDB";
 import { ensureReviewAgentsLoaded, reviewAgents } from "../../../shared/customHooks/reviewAgentManager";
 import ReviewAgentEditor from "./ReviewAgentEditor";

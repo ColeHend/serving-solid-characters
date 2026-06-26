@@ -1,6 +1,6 @@
 import Dexie from "dexie";
-import type { HomebrewKind } from "../../../ai/homebrewKind";
-import type { PatchOp } from "../../../ai/patch";
+import type { HomebrewKind } from "../../../ai/refs/homebrewKind";
+import type { PatchOp } from "../../../ai/tools/patch";
 
 /**
  * A persisted record of a change Spark made to homebrew (create / edit / delete). The app writes one on

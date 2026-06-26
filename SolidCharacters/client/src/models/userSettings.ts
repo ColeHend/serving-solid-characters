@@ -1,4 +1,4 @@
-import type { HomebrewKind } from "../shared/ai/homebrewKind";
+import type { HomebrewKind } from "../shared/ai/refs/homebrewKind";
 
 export type AiProviderKind = "local" | "anthropic" | "openai";
 

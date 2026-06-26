@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { AiSettings } from "../../../models/userSettings";
-import type { HomebrewPreview } from "../toolDispatcher";
+import type { HomebrewPreview } from "../tools/toolDispatcher";
 import type { ReviewContext } from "./types";
 import type { ReviewPassSpec } from "./reviewSystemPrompt";
 
 // Scripted provider: each test sets the stream of events the mocked streamChat yields.
 const h = vi.hoisted(() => ({ events: [] as Record<string, unknown>[] }));
-vi.mock("../providerFactory", () => ({
+vi.mock("../providers/providerFactory", () => ({
     buildProvider: () => ({
         kind: "local",
         async *streamChat() { for (const e of h.events) yield e; },

@@ -1,4 +1,5 @@
 import { Accessor, createSignal, Setter } from "solid-js";
+import { addSnackbar } from "coles-solid-library";
 import getUserSettings from "./userSettings";
 import {
     AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_LOOKUP_TOOLS, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
@@ -6,26 +7,26 @@ import {
     DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
 import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
-import { buildProvider } from "../ai/providerFactory";
-import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterTools } from "../ai/toolSchemas";
-import { HOMEBREW_KINDS } from "../ai/homebrewKind";
-import { toolCategory } from "../ai/toolCategory";
-import { runComputeTool } from "../ai/computeTools";
-import { LOOKUP_TOOLS, runLookupTool } from "../ai/lookupTools";
-import { EDIT_TOOLS } from "../ai/editTools";
-import { CONTROL_TOOLS, parseSwitchMode } from "../ai/controlTools";
+import { buildProvider } from "../ai/providers/providerFactory";
+import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterTools } from "../ai/tools/toolSchemas";
+import { HOMEBREW_KINDS, KIND_TO_TOOL } from "../ai/refs/homebrewKind";
+import { toolCategory } from "../ai/tools/toolCategory";
+import { runComputeTool } from "../ai/tools/computeTools";
+import { LOOKUP_TOOLS, runLookupTool } from "../ai/tools/lookupTools";
+import { EDIT_TOOLS } from "../ai/tools/editTools";
+import { CONTROL_TOOLS, parseSwitchMode } from "../ai/tools/controlTools";
 import { DELEGATE_RESEARCH_TOOL, researchAgentSpec, runSubAgent } from "../ai/subAgent";
 import {
     buildInteraction, interactionResultText, InteractionResponse, PendingInteraction,
-} from "../ai/interactions";
-import { buildEditPreview, buildPreview, HomebrewPreview, saveHomebrew } from "../ai/toolDispatcher";
+} from "../ai/tools/interactions";
+import { buildEditPreview, buildPreview, HomebrewPreview, saveHomebrew } from "../ai/tools/toolDispatcher";
 import { logDecision } from "./decisionLogManager";
 import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
-import { AiMode, buildSystemPrompt } from "../ai/systemPrompt";
-import { splitModelReasoning } from "../ai/cleanReasoning";
-import { generateConversationTitle } from "../ai/generateTitle";
+import { AiMode, buildSystemPrompt } from "../ai/prompt/systemPrompt";
+import { splitModelReasoning } from "../ai/prompt/cleanReasoning";
+import { generateConversationTitle } from "../ai/prompt/generateTitle";
 import { createNewId } from "./utility/tools/idGen";
 import chatHistoryDB, { SavedConversation } from "./utility/localDB/chatHistoryDB";
 
@@ -39,6 +40,12 @@ export interface ChatMessage {
     id: string;
     role: ChatRole;
     text: string;
+    /**
+     * "answer" (default) is genuine model content; "system" is an app-emitted notice (error/refusal/
+     * cut-off/warning). Tracked as a field so decision-log/title logic can skip system notices WITHOUT
+     * sniffing a "⚠️" prefix (which would break if the model legitimately starts a reply with that emoji).
+     */
+    kind?: "answer" | "system";
     /** The model's reasoning for this turn (display-only; not replayed to the model). */
     thinking?: string;
 }
@@ -53,11 +60,23 @@ export type { PendingInteraction, InteractionResponse };
  */
 function repairInstruction(p: HomebrewPreview, reason?: string): string {
     const fields = p.missingFields?.length ? p.missingFields.join(", ") : "every empty field";
-    const tool = `create_${p.kind}`;
+    const tool = KIND_TO_TOOL[p.kind];
     const lead = reason
         ? `The ${p.kind.replace("_", " ")} "${p.title}" you generated could not be accepted: ${reason}.`
         : `The ${p.kind.replace("_", " ")} "${p.title}" you generated was incomplete.`;
     return `${lead} Call ${tool} again with the SAME content you already produced, but this time fill in these fields: ${fields}. In particular, write a full multi-sentence description with concrete mechanics. Do not drop any field you already filled.`;
+}
+
+/** Map a raw provider/network error to a short, actionable message instead of dumping `String(e)`. */
+function friendlyError(e: unknown): string {
+    const msg = String((e as Error)?.message ?? e);
+    if (/failed to fetch|networkerror|load failed|err_connection|fetch failed/i.test(msg))
+        return "Couldn't reach the AI server. Check that it's running and the endpoint in AI settings is correct.";
+    if (/\b401\b|\b403\b|unauthor|forbidden|api key/i.test(msg))
+        return "The AI server rejected the request — check your API key in AI settings.";
+    if (/\b404\b|not found|no such model|unknown model/i.test(msg))
+        return "The AI model or endpoint wasn't found — check the model name and endpoint in AI settings.";
+    return `Something went wrong talking to the AI. ${msg}`;
 }
 
 /**
@@ -65,7 +84,7 @@ function repairInstruction(p: HomebrewPreview, reason?: string): string {
  * without prop-drilling or context. Holds the visible chat, the provider-facing message history,
  * streaming status, and pending homebrew previews awaiting confirmation.
  */
-class AiAssistant {
+export class AiAssistant {
     // ---- reactive UI state ----
     readonly isOpen: Accessor<boolean>;
     private setIsOpen: Setter<boolean>;
@@ -95,7 +114,8 @@ class AiAssistant {
     private delegateController: AbortController | null = null; // aborts an in-flight research sub-agent
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
-    private schemaRetryStreak = 0;                       // High-mode schema-gate regenerations for the current request chain
+    private schemaRetryStreak = 0;                       // High-mode SCHEMA-gate regenerations (pre-handoff) for this request
+    private reviewFixStreak = 0;                         // High-mode READINESS auto-fix regenerations (post-review) for this request
     // ---- persisted-conversation state ----
     private currentConversationId: string | null = null;   // null until the active chat is first saved
     private createdAt: number | null = null;               // creation timestamp of the active chat
@@ -113,6 +133,23 @@ class AiAssistant {
         [this.pendingPreviews, this.setPendingPreviews] = createSignal<HomebrewPreview[]>([]);
         [this.pendingInteractions, this.setPendingInteractions] = createSignal<PendingInteraction[]>([]);
         [this.conversations, this.setConversations] = createSignal<SavedConversation[]>([]);
+
+        // Best-effort flush of the current conversation when the tab is hidden/closed — the per-turn
+        // persists are fire-and-forget, so a quick close between a reply landing and Dexie committing
+        // could otherwise lose the last turn / generated title. put() by id is idempotent.
+        if (typeof document !== "undefined") {
+            const flush = () => { if (document.visibilityState === "hidden") void this.persistCurrent(); };
+            document.addEventListener("visibilitychange", flush);
+            window.addEventListener("pagehide", () => void this.persistCurrent());
+        }
+    }
+
+    /** Serializes conversation-row writes so a full put() can't interleave with a title update(). */
+    private writeChain: Promise<unknown> = Promise.resolve();
+    private enqueueWrite(task: () => Promise<void>): Promise<void> {
+        const next = this.writeChain.then(task, task);
+        this.writeChain = next.catch(() => {});
+        return next;
     }
 
     open = () => this.setIsOpen(true);
@@ -128,6 +165,7 @@ class AiAssistant {
         this.repairCounts.clear();
         this.mediumRetryStreak = 0;
         this.schemaRetryStreak = 0;
+        this.reviewFixStreak = 0;
         this.setMessages([]);
         this.setPendingPreviews([]);
         this.setPendingInteractions([]);
@@ -162,17 +200,52 @@ class AiAssistant {
         this.flushOutstanding();
         this.mediumRetryStreak = 0;   // a new request starts a fresh auto-retry budget
         this.schemaRetryStreak = 0;
+        this.reviewFixStreak = 0;
+        this.repairCounts.clear();    // don't let a prior entity's repair cap suppress a new same-named one
         this.pushUserBubble(trimmed);
         this.history.push({ role: "user", text: trimmed });
         void this.persistCurrent();   // capture the chat (and its title) from turn 1
         void this.runTurn();
     };
 
+    /**
+     * Retry after a failed turn: an error never records an assistant turn (finishTurn isn't reached), so
+     * history still ends at the user/tool message — drop the trailing system error bubble(s) and re-run.
+     */
+    /**
+     * Stop an in-flight readiness review and let the user act on the cards as-is. Marks every still-
+     * "reviewing" card "review_unavailable" so none is stranded with Save permanently disabled (the
+     * aborted pipeline loop won't reach its terminal patch for them).
+     */
+    cancelReview = () => {
+        this.reviewController?.abort();
+        this.reviewController = null;
+        this.setPendingPreviews(prev => prev.map(p =>
+            p.reviewState === "reviewing" ? { ...p, reviewState: "review_unavailable" as ReviewState } : p));
+    };
+
+    retryLast = () => {
+        if (this.status() !== "error" || this.history.length === 0) return;
+        this.setMessages(prev => {
+            const out = [...prev];
+            while (out.length && out[out.length - 1].kind === "system") out.pop();
+            return out;
+        });
+        void this.runTurn();
+    };
+
     confirmPreview = async (previewId: string) => {
         const preview = this.pendingPreviews().find(p => p.previewId === previewId);
         if (!preview) return;
+        const epoch = this.turnEpoch;   // capture: a session swap during the async save invalidates this resolve
         this.removePreview(previewId);
         const result = await saveHomebrew(preview);
+        // The user switched/loaded another conversation while the save was in flight — drop the late
+        // tool_result + decision-log entry so they don't land on (and continue) the wrong chat.
+        if (epoch !== this.turnEpoch) return;
+        // Visible confirmation in the app (a failed save otherwise looks identical to success — the card
+        // just vanishes either way), in addition to feeding the result back to the model below.
+        addSnackbar({ message: result.message, severity: result.ok ? "success" : "error" });
         // Auto-log every committed change (the model's chat reply is the "why"; we capture a short note).
         if (result.ok) {
             void logDecision({
@@ -200,7 +273,7 @@ class AiAssistant {
 
     /** The model's most recent chat line (trimmed/short), used as the decision-log "why". */
     private lastAssistantNote(): string {
-        const msg = [...this.messages()].reverse().find(m => m.role === "assistant" && m.text.trim() && !m.text.startsWith("⚠️"));
+        const msg = [...this.messages()].reverse().find(m => m.role === "assistant" && m.kind !== "system" && m.text.trim());
         const t = msg?.text.trim().replace(/\s+/g, " ") ?? "";
         return t.length > 140 ? `${t.slice(0, 140)}…` : t;
     }
@@ -259,6 +332,7 @@ class AiAssistant {
         const preview = this.pendingPreviews().find(p => p.previewId === previewId);
         if (!preview) return;
         this.schemaRetryStreak = 0;
+        this.reviewFixStreak = 0;
         this.setPendingPreviews(prev => prev.map(p => p.previewId === previewId ? { ...p, repairing: true } : p));
         const reason = preview.errors.length ? preview.errors.join(" ") : "the data could not be parsed or was cut off";
         this.resolveToolCall(preview.toolCallId, repairInstruction(preview, reason), true);
@@ -277,7 +351,7 @@ class AiAssistant {
             .map(i => i.suggestedFix ? `${i.message} (${i.suggestedFix})` : i.message);
         if (!notes.length) return;
         this.setPendingPreviews(prev => prev.map(p => p.previewId === previewId ? { ...p, repairing: true } : p));
-        const tool = `create_${preview.kind}`;
+        const tool = KIND_TO_TOOL[preview.kind];
         const instruction = `A reviewer flagged problems with the ${preview.kind.replace("_", " ")} "${preview.title}". Call ${tool} again with the SAME content, fixing each of these:\n- ${notes.join("\n- ")}\nKeep everything that was already correct, and use concrete rules text.`;
         this.resolveToolCall(preview.toolCallId, instruction, true);
     };
@@ -316,6 +390,7 @@ class AiAssistant {
         this.repairCounts.clear();
         this.mediumRetryStreak = 0;
         this.schemaRetryStreak = 0;
+        this.reviewFixStreak = 0;
         this.history = structuredClone(rec.history);
         this.setMessages(rec.messages);
         this.setPendingPreviews([]);       // previews are transient — never restored
@@ -335,6 +410,16 @@ class AiAssistant {
         catch (e) { console.error("Failed to delete conversation", e); }
         // If we deleted the live chat, detach so the next turn doesn't recreate the deleted row.
         if (id === this.currentConversationId) this.newConversation();
+        void this.loadConversations();
+    };
+
+    /** Rename a saved conversation. Reuses the title-patch path; keeps the active chat's title in sync. */
+    renameConversation = async (id: string, title: string) => {
+        const t = title.trim();
+        if (!t) return;
+        try { await chatHistoryDB.conversations.update(id, { title: t }); }
+        catch (e) { console.error("Failed to rename conversation", e); return; }
+        if (id === this.currentConversationId) { this.titleOverride = t; this.titleGenerated = true; }
         void this.loadConversations();
     };
 
@@ -371,7 +456,7 @@ class AiAssistant {
         if (!firstUser) return;
         this.titleGenerated = true;   // set before awaiting so a rapid second turn can't double-fire
         const firstAssistant = this.messages()
-            .find(m => m.role === "assistant" && !m.text.startsWith("⚠️"))?.text?.trim();
+            .find(m => m.role === "assistant" && m.kind !== "system")?.text?.trim();
         const epoch = this.turnEpoch;
         const [userSettings] = getUserSettings();
         const ai = userSettings().ai;
@@ -384,18 +469,19 @@ class AiAssistant {
     ) {
         const title = await generateConversationTitle(ai, { user, assistant });
         if (!title) return;   // keep the derived title that was already persisted
-        try {
-            // Patch only the title — never `put` a reconstructed row (the user may have switched away,
-            // or kept chatting, and we'd clobber history/messages). update() on a deleted row is a no-op.
-            await chatHistoryDB.conversations.update(id, { title });
-        } catch (e) {
-            console.error("Failed to apply generated title", e);
-            return;
-        }
-        // If that chat is still active and nothing swapped the session, keep the in-memory title in sync
-        // so later persistCurrent() calls don't re-derive over it.
+        // Sync the in-memory title BEFORE the write so any persistCurrent() queued after this point uses
+        // the AI title (not a re-derived one). Guarded so a swapped-away session isn't affected.
         if (id === this.currentConversationId && epoch === this.turnEpoch) this.titleOverride = title;
-        void this.loadConversations();
+        await this.enqueueWrite(async () => {
+            try {
+                // Patch only the title — never `put` a reconstructed row (the user may have switched away
+                // or kept chatting; we'd clobber history/messages). update() on a deleted row is a no-op.
+                await chatHistoryDB.conversations.update(id, { title });
+                void this.loadConversations();
+            } catch (e) {
+                console.error("Failed to apply generated title", e);
+            }
+        });
     }
 
     /**
@@ -413,26 +499,60 @@ class AiAssistant {
         return h;
     }
 
-    /** Upsert the active conversation. Fire-and-forget; bails on empty chats; never throws into a turn. */
-    private async persistCurrent(): Promise<void> {
-        if (this.history.length === 0) return;
-        try {
-            const now = Date.now();
-            if (!this.currentConversationId) this.currentConversationId = createNewId();
-            if (this.createdAt == null) this.createdAt = now;
-            await chatHistoryDB.conversations.put({
-                id: this.currentConversationId,
-                title: this.currentTitle(),
-                mode: this.mode(),
-                history: this.balancedHistory(),
-                messages: this.messages(),
-                createdAt: this.createdAt,
-                updatedAt: now,
-            });
-            void this.loadConversations();
-        } catch (e) {
-            console.error("Failed to save conversation", e);
+    /**
+     * The history to actually send the model, windowed to fit its context. `history` grows every turn
+     * and is replayed in full, so a long (especially tool-heavy) session would silently overflow num_ctx
+     * — Ollama then drops the OLDEST messages, which can split a tool_use from its tool_result and corrupt
+     * generation. We keep the most recent turns whose estimated tokens fit ~half of num_ctx (leaving room
+     * for the system prompt + generation), cut at a `user` boundary so no tool_use/tool_result pair is
+     * split. Short sessions are returned unchanged.
+     */
+    private windowedHistory(numCtx: number): AiMessage[] {
+        const h = this.history;
+        if (h.length <= 4) return h;
+        const tokensOf = (m: AiMessage) => Math.ceil(JSON.stringify(m).length / 4);
+        const budget = Math.max(2048, Math.floor((numCtx || DEFAULT_AI_NUM_CTX) * 0.5));
+        let used = 0;
+        let cut = h.length;
+        for (let i = h.length - 1; i >= 0; i--) {
+            used += tokensOf(h[i]);
+            if (used > budget && cut < h.length) break;
+            cut = i;
         }
+        if (cut <= 0) return h;
+        // Snap forward to a `user` message so the window starts a fresh exchange (never an orphan
+        // tool_result, nor an assistant tool_use whose results got trimmed). If none, send full history.
+        while (cut < h.length && h[cut].role !== "user") cut++;
+        return cut >= h.length ? h : h.slice(cut);
+    }
+
+    /**
+     * Upsert the active conversation. Fire-and-forget; bails on empty chats; never throws into a turn.
+     * The row is SNAPSHOTTED synchronously, then the put() is run through the serialized write queue so
+     * it can't interleave with applyGeneratedTitle's title update() (which would clobber the AI title).
+     */
+    private persistCurrent(): Promise<void> {
+        if (this.history.length === 0) return Promise.resolve();
+        const now = Date.now();
+        if (!this.currentConversationId) this.currentConversationId = createNewId();
+        if (this.createdAt == null) this.createdAt = now;
+        const row: SavedConversation = {
+            id: this.currentConversationId,
+            title: this.currentTitle(),
+            mode: this.mode(),
+            history: this.balancedHistory(),
+            messages: this.messages(),
+            createdAt: this.createdAt,
+            updatedAt: now,
+        };
+        return this.enqueueWrite(async () => {
+            try {
+                await chatHistoryDB.conversations.put(row);
+                void this.loadConversations();
+            } catch (e) {
+                console.error("Failed to save conversation", e);
+            }
+        });
     }
 
     // ----------------- internals -----------------
@@ -442,6 +562,10 @@ class AiAssistant {
     }
     private pushAssistantBubble(text: string, thinking?: string) {
         this.setMessages(prev => [...prev, { id: createNewId(), role: "assistant", text, thinking: thinking || undefined }]);
+    }
+    /** An app-emitted notice (error/refusal/cut-off/warning), tagged kind:"system" and shown with a ⚠️. */
+    private pushSystemBubble(text: string) {
+        this.setMessages(prev => [...prev, { id: createNewId(), role: "assistant", kind: "system", text: `⚠️ ${text}` }]);
     }
     private removePreview(previewId: string) {
         this.setPendingPreviews(prev => prev.filter(p => p.previewId !== previewId));
@@ -465,6 +589,9 @@ class AiAssistant {
 
     /** Record a tool result; once every tool call from the turn is resolved, continue the turn. */
     private resolveToolCall(toolCallId: string, content: string, isError: boolean) {
+        // The id is no longer outstanding (a session swap/cancel cleared it, or it already resolved) —
+        // drop the late result so it can't push an orphan tool_result or kick off a turn on the wrong chat.
+        if (!this.outstanding.has(toolCallId)) return;
         this.resolved.push({ toolCallId, content, isError });
         this.outstanding.delete(toolCallId);
         if (this.outstanding.size === 0 && this.resolved.length) {
@@ -530,7 +657,7 @@ class AiAssistant {
         const accumulators = new Map<number, { id: string; name: string; args: string }>();
 
         try {
-            for await (const ev of provider.streamChat(this.history, tools, {
+            for await (const ev of provider.streamChat(this.windowedHistory(ai.numCtx ?? DEFAULT_AI_NUM_CTX), tools, {
                 model: ai.model,
                 system,
                 // User-configurable in AI settings. We stream, so a large ceiling is safe re: HTTP
@@ -560,7 +687,7 @@ class AiAssistant {
                     case "tool_call_done":
                         break; // parsed at message_done
                     case "error":
-                        this.pushAssistantBubble(`⚠️ ${ev.error}`);
+                        this.pushSystemBubble(ev.error);
                         break;
                     case "message_done":
                         this.finishTurn(ev.stopReason, accumulators, epoch);
@@ -571,7 +698,7 @@ class AiAssistant {
             this.finishTurn(accumulators.size ? "tool_use" : "end_turn", accumulators, epoch);
         } catch (e) {
             if (signal.aborted) { return; }   // aborted (cancel/switch) — status already handled by the swap
-            this.fail(`Something went wrong talking to the AI. ${String(e)}`);
+            this.fail(friendlyError(e));
         } finally {
             if (this.controller?.signal === signal) this.controller = null;   // don't null a newer turn's controller
         }
@@ -614,10 +741,22 @@ class AiAssistant {
         }
 
         if (stopReason === "refusal") {
-            this.pushAssistantBubble(text || "⚠️ The model declined to respond to that request.", thinking);
+            // Record the assistant turn (text only — any partial tool calls are intentionally dropped) so
+            // history stays consistent with the normal path. The bubble is a system message, not an answer.
+            this.history.push({ role: "assistant", text: text || undefined });
+            this.pushSystemBubble(text || "The model declined to respond to that request.");
             unflagRepairing();
             void this.persistCurrent();
             this.setStatus("idle");
+            return;
+        }
+
+        if (stopReason === "error") {
+            // The provider already surfaced the problem as a system bubble (the "error" event). Mark the
+            // turn errored (not idle) so the UI shows the Retry affordance; history still ends at the user/
+            // tool message, so retryLast() can re-run it. No assistant turn is recorded for a failed turn.
+            unflagRepairing();
+            this.setStatus("error");
             return;
         }
 
@@ -766,9 +905,9 @@ class AiAssistant {
                         return;
                     }
 
-                    // Retry budget spent (or nothing failed): the still-broken ones need the user's direction;
-                    // the valid ones go through the readiness pipeline. The fix budget (schemaRetryStreak) is
-                    // NOT reset here — it's shared with the review auto-fix loop and resets on the next request.
+                    // Schema budget spent (or nothing failed): the still-broken ones need the user's
+                    // direction; the valid ones go through the readiness pipeline (which has its own
+                    // reviewFixStreak budget). Both budgets reset only on the next request.
                     const needDirection = schemaFailed.map(p => ({ ...p, reviewState: "needs_user_direction" as ReviewState }));
                     const reviewing = schemaOk.map(p => ({ ...p, reviewState: "reviewing" as ReviewState }));
                     this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...needDirection, ...reviewing]);
@@ -803,7 +942,7 @@ class AiAssistant {
                 const hint = settings().ai?.provider === "local"
                     ? "Try again, or raise the model's context window (num_ctx) in AI settings."
                     : "Try again, or raise the model's max output tokens.";
-                this.pushAssistantBubble(`⚠️ The response was cut off (the model hit its length limit). ${hint}`);
+                this.pushSystemBubble(`The response was cut off (the model hit its length limit). ${hint}`);
             }
         }
         void this.persistCurrent();
@@ -837,8 +976,9 @@ class AiAssistant {
                 if (!preview || preview.reviewState !== "reviewing") continue;   // confirmed/rejected/swapped
 
                 let verdicts: ReviewVerdict[];
+                let reviewErrored = false;
                 try { verdicts = await assembleVerdicts(preview, { ai, dndSystem, signal }); }
-                catch (e) { console.error("Readiness pipeline failed", e); verdicts = []; }
+                catch (e) { console.error("Readiness pipeline failed", e); verdicts = []; reviewErrored = true; }
 
                 if (epoch !== this.turnEpoch || signal.aborted) return;
                 const blocked = isBlocked(verdicts, blockingSeverity);
@@ -848,13 +988,14 @@ class AiAssistant {
                 // fall through and surface the findings for the user to act on with "Improve with AI".
                 const canRegenerateNow = this.outstanding.size === 1 && this.outstanding.has(preview.toolCallId);
 
-                // ---- Auto-fix loop: on a BLOCKING review finding, feed the issues back and regenerate
-                //      (shared High fix budget). Only after the budget do we surface for the user. ----
-                if (blocked && canRegenerateNow && this.schemaRetryStreak < maxFixes) {
-                    this.schemaRetryStreak++;
+                // ---- Auto-fix loop: on a BLOCKING review finding, feed the issues back and regenerate.
+                //      Uses its OWN budget (reviewFixStreak) — separate from the pre-handoff schema gate so
+                //      the two regeneration loops can't cannibalize each other's attempts. ----
+                if (blocked && canRegenerateNow && this.reviewFixStreak < maxFixes) {
+                    this.reviewFixStreak++;
                     const notes = verdicts.flatMap(v => v.issues).map(i => i.suggestedFix ? `${i.message} (${i.suggestedFix})` : i.message);
                     this.setPendingPreviews(prev => prev.map(p => p.previewId === id ? { ...p, repairing: true } : p));
-                    const tool = `create_${preview.kind}`;
+                    const tool = KIND_TO_TOOL[preview.kind];
                     const instruction = notes.length
                         ? `A reviewer found problems with the ${preview.kind.replace("_", " ")} "${preview.title}". Call ${tool} again with the SAME content, fixing each of these:\n- ${notes.join("\n- ")}\nKeep everything that was already correct, and use concrete rules text.`
                         : repairInstruction(preview);
@@ -862,7 +1003,12 @@ class AiAssistant {
                     return;   // the regeneration turn re-runs the pipeline; stop this pass
                 }
 
-                const state: ReviewState = verdicts.some(v => !v.pass) ? "issues" : "passed";
+                // A thrown pass must NOT masquerade as "passed" (green "Reviewed" chip) — the entity was
+                // not actually reviewed. Surface a neutral "review unavailable" state instead (Save still
+                // allowed: p.valid already gates hard blockers, so this fails open without misrepresenting QC).
+                const state: ReviewState = reviewErrored
+                    ? "review_unavailable"
+                    : (verdicts.some(v => !v.pass) ? "issues" : "passed");
                 this.setPendingPreviews(prev => prev.map(p =>
                     p.previewId === id ? { ...p, reviewState: state, verdicts, reviewBlocked: blocked } : p));
             }
@@ -904,13 +1050,16 @@ class AiAssistant {
     }
 
     private fail(message: string) {
-        this.pushAssistantBubble(`⚠️ ${message}`);
+        this.pushSystemBubble(message);
         // A repair turn that errored out shouldn't leave a card stuck collapsed.
         this.setPendingPreviews(prev => prev.some(p => p.repairing) ? prev.map(p => ({ ...p, repairing: false })) : prev);
         this.setStatus("error");
         this.setStreamingText("");
     }
 }
+
+/** Construct an isolated assistant — for tests that want a fresh instance instead of resetting the singleton. */
+export const createAiAssistant = () => new AiAssistant();
 
 const aiAssistant = new AiAssistant();
 export { aiAssistant };

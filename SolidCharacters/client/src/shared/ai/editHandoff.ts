@@ -1,4 +1,4 @@
-import type { HomebrewKind, HomebrewPreview } from "./toolDispatcher";
+import type { HomebrewKind, HomebrewPreview } from "./tools/toolDispatcher";
 
 /**
  * One-shot in-memory handoff for the Spark assistant's "Edit manually" button. The generated entity

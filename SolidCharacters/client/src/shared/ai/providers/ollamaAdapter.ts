@@ -1,5 +1,5 @@
 import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
-import { RESERVED_PROMPT_TOKENS } from "../../../models/userSettings";
+import { DEFAULT_AI_MAX_TOKENS, RESERVED_PROMPT_TOKENS } from "../../../models/userSettings";
 import { createNewId } from "../../customHooks/utility/tools/idGen";
 
 /**
@@ -24,7 +24,7 @@ export class OllamaAdapter implements AiProvider {
         // impossible. Clamp num_predict to (num_ctx − reserved prompt) so a misconfigured maxTokens
         // can't promise more generation room than the window actually has.
         const numCtx = opts.numCtx && opts.numCtx > 0 ? opts.numCtx : undefined;
-        let numPredict = opts.maxTokens ?? 4096;
+        let numPredict = opts.maxTokens ?? DEFAULT_AI_MAX_TOKENS;
         if (numCtx) numPredict = Math.min(numPredict, Math.max(512, numCtx - RESERVED_PROMPT_TOKENS));
         const options: Record<string, unknown> = { num_predict: numPredict };
         if (numCtx) options.num_ctx = numCtx;
@@ -116,7 +116,12 @@ export class OllamaAdapter implements AiProvider {
             }
         } catch (e) {
             if (opts.signal?.aborted) return;
+            // A mid-stream network drop: surface the error AND terminate the turn explicitly (parity with
+            // the fetch-failure paths above) so the orchestrator doesn't treat it as a clean end_turn and
+            // silently commit the partial/empty turn.
             yield { type: "error", error: `Lost connection to Ollama. (${String(e)})` };
+            yield { type: "message_done", stopReason: "error" };
+            return;
         }
 
         if (!doneEmitted) yield { type: "message_done", stopReason: sawTool ? "tool_use" : "end_turn" };

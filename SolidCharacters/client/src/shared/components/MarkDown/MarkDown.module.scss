@@ -1,5 +1,18 @@
 .markStyle {
+    // Keep model-generated code blocks and wide GFM tables from blowing out their container (e.g. the
+    // narrow Spark chat bubble / preview card): scroll internally instead of forcing the column wider.
+    pre {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    code {
+        overflow-wrap: anywhere;
+    }
     table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+
         tr {
             td {
                 text-align: center;

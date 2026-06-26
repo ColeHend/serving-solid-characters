@@ -1,6 +1,6 @@
 import { DiceGroup, averageDamageFromDice } from "../../customHooks/utility/tools/dndMath";
 import { MagicItem, Spell } from "../../../models/generated";
-import { HomebrewPreview } from "../toolDispatcher";
+import { HomebrewPreview } from "../tools/toolDispatcher";
 
 /**
  * Deterministic "fact sheet" for the balance reviewer. dndMath.ts is NOT used to JUDGE balance (it can't

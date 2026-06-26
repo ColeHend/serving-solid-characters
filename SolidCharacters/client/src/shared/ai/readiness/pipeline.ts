@@ -1,5 +1,5 @@
 import { DEFAULT_REVIEW_SETTINGS, ReviewPassId } from "../../../models/userSettings";
-import { HomebrewPreview } from "../toolDispatcher";
+import { HomebrewPreview } from "../tools/toolDispatcher";
 import { brokenReferenceVerdict, linterVerdict, schemaVerdict } from "./deterministicPasses";
 import { runLlmReview } from "./llmReview";
 import { BUILTIN_LLM_PASSES, ReviewPassSpec } from "./reviewSystemPrompt";

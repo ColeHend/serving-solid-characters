@@ -1,14 +1,14 @@
 import { DEFAULT_AI_NUM_CTX } from "../../../models/userSettings";
-import { buildProvider } from "../providerFactory";
+import { buildProvider } from "../providers/providerFactory";
 import { AiMessage } from "../types";
-import { HomebrewPreview } from "../toolDispatcher";
+import { HomebrewPreview } from "../tools/toolDispatcher";
 import { balanceFacts } from "./balanceFacts";
 import { REPORT_REVIEW_TOOL } from "./reviewTool";
 import { buildReviewSystemPrompt, ReviewPassSpec } from "./reviewSystemPrompt";
 import { ReviewContext, ReviewIssue, ReviewSeverity, ReviewVerdict, severityRank } from "./types";
+import { str } from "../coerce";
 
-// Small defensive coercers — the model's tool args are untrusted (mirrors toolDispatcher's coercers).
-const str = (v: unknown): string => (typeof v === "string" ? v : v == null ? "" : String(v));
+// Severity is domain-specific; the generic coercers live in ../coerce. Model tool args are untrusted.
 const coerceSeverity = (v: unknown): ReviewSeverity | null =>
     v === "info" || v === "warning" || v === "error" ? v : null;
 

@@ -1,5 +1,5 @@
 import { ReviewPassId, ReviewSeverity } from "../../../models/userSettings";
-import { HOMEBREW_KIND_LABELS, HomebrewKind } from "../homebrewKind";
+import { HOMEBREW_KIND_LABELS, HomebrewKind } from "../refs/homebrewKind";
 
 /** A review pass the model performs: a label + the specific thing it should judge. */
 export interface ReviewPassSpec {

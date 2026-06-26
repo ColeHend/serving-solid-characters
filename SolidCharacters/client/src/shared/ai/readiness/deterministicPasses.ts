@@ -1,8 +1,8 @@
 import { Background, Spell } from "../../../models/generated";
 import { srdSubclass } from "../../../models/data/generated";
-import { HomebrewPreview } from "../toolDispatcher";
-import { OFFICIAL_CLASSES, knownClassNames, norm } from "../classRefs";
-import { featResolves, srdFeatsReady } from "../featRefs";
+import { HomebrewPreview } from "../tools/toolDispatcher";
+import { OFFICIAL_CLASSES, knownClassNames, norm } from "../refs/classRefs";
+import { featResolves, srdFeatsReady } from "../refs/featRefs";
 import { ReviewIssue, ReviewVerdict } from "./types";
 
 export { OFFICIAL_CLASSES };

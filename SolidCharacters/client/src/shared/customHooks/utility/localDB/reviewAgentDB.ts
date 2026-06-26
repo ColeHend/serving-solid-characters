@@ -1,5 +1,5 @@
 import Dexie from "dexie";
-import type { HomebrewKind } from "../../../ai/homebrewKind";
+import type { HomebrewKind } from "../../../ai/refs/homebrewKind";
 import type { ReviewSeverity } from "../../../../models/userSettings";
 
 /**
