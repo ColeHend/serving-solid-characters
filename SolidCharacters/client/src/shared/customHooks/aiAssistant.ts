@@ -3,7 +3,7 @@ import { addSnackbar } from "coles-solid-library";
 import getUserSettings from "./userSettings";
 import {
     AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_LOOKUP_TOOLS, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
-    DEFAULT_AI_PERSONA, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES,
+    DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES,
     DEFAULT_MEDIUM_RETRIES, DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
 import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
@@ -255,8 +255,12 @@ export class AiAssistant {
         // successful save the Grimoire voice gets its strongest beat here — the model has no turn at save
         // time, so this is app-emitted. The model still receives the factual result.message below.
         const [userSettings] = getUserSettings();
-        const grimoire = (userSettings().ai?.personaVoice ?? DEFAULT_AI_PERSONA) === "grimoire";
-        const snackMessage = result.ok && grimoire ? "It is done. Let it be written." : result.message;
+        const aiCfg = userSettings().ai;
+        const tier = aiCfg?.provider === "local" ? "small" : "large";
+        const persona = personaFor(aiCfg?.personaStrength ?? DEFAULT_AI_PERSONA_STRENGTH, tier);
+        // The save flourish is the strongest persona beat — show it only when the resolved persona carries
+        // a confirm flourish (the "full" voice); lighter levels keep the factual save message.
+        const snackMessage = result.ok && persona.confirmFlourish ? "It is done. Let it be written." : result.message;
         addSnackbar({ message: snackMessage, severity: result.ok ? "success" : "error" });
         // Auto-log every committed change (the model's chat reply is the "why"; we capture a short note).
         if (result.ok) {
@@ -652,8 +656,8 @@ export class AiAssistant {
         };
         // Right-size the prompt for the routed model: local (gemma) gets the worked-example "small" tier.
         const tier = ai.provider === "local" ? "small" : "large";
-        // Persona is the VOICE layer, tier-aware: full Grimoire on cloud, skeletal on small local models.
-        const persona = personaFor(ai.personaVoice ?? DEFAULT_AI_PERSONA, tier);
+        // Persona is the VOICE layer; the user picks its strength for any model ("auto" → tier-aware).
+        const persona = personaFor(ai.personaStrength ?? DEFAULT_AI_PERSONA_STRENGTH, tier);
         const system = buildSystemPrompt(userSettings().dndSystem, this.mode(), tier, noteKinds, utilityFlags, persona);
         // Thinking is split per-mode: chat defaults on (better answers, more context use); homebrew
         // defaults off (a reasoning model can burn its budget before emitting the create_* tool call).

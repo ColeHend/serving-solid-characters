@@ -3,8 +3,8 @@ import { Select, Option, Input, Checkbox, Button, addSnackbar } from "coles-soli
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
 import {
-    AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA,
-    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind,
+    AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind, PersonaStrength,
 } from "../../../models/userSettings";
 
 const DEFAULT_AI: AiSettings = {
@@ -222,14 +222,21 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox
-                    label="In-character voice"
-                    checked={(ai().personaVoice ?? DEFAULT_AI_PERSONA) === "grimoire"}
-                    onChange={(checked) => updateAi({ personaVoice: checked ? "grimoire" : "neutral" })}
-                />
+                <label>In-character voice</label>
+                <Select<string>
+                    value={ai().personaStrength ?? DEFAULT_AI_PERSONA_STRENGTH}
+                    onSelect={(e) => updateAi({ personaStrength: e as PersonaStrength })}
+                >
+                    <Option value="auto">Auto (match the model)</Option>
+                    <Option value="full">Full — the complete Grimoire voice</Option>
+                    <Option value="low">Low — warmth in greetings, plain rules</Option>
+                    <Option value="min">Minimal — just a touch of character</Option>
+                    <Option value="off">Off — neutral, no flavor</Option>
+                </Select>
                 <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
-                    Grimoire speaks as a sentient spellbook — warm flavor in greetings and confirmations, while
-                    rules and stat blocks stay plain. Turn off for a neutral, no-frills voice.
+                    How much Grimoire speaks as a sentient spellbook. Substance — rules, numbers, stat blocks —
+                    stays plain at every level. "Auto" keeps it light on small local models and full on cloud;
+                    pick a fixed level to apply it to any model.
                 </div>
             </div>
 

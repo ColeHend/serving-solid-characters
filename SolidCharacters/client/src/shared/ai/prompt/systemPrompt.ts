@@ -1,16 +1,17 @@
 import { HOMEBREW_KIND_LABELS, HomebrewKind } from "../refs/homebrewKind";
-import { PersonaVoice } from "../../../models/userSettings";
+import { PersonaStrength } from "../../../models/userSettings";
 
 export type AiMode = "chat" | "homebrew";
 export type AiTier = "small" | "large";
 
 /**
- * Persona is a thin VOICE layer that lives only in the streamed assistant prose. It is selected by
- * `(personaVoice, tier)` (see `personaFor`) and threaded into `buildSystemPrompt`. The core invariant:
- * persona text appears ONLY in the system prompt's prose and in app-authored UI copy — never in tool
- * descriptions, the review/research/title sub-agent prompts, or tool_result strings, which stay
- * procedurally neutral. The small tier gets a deliberately skeletal persona: a 12B local model crowds
- * its context window and bleeds stylistic priors into tool-call JSON, so flavor there is a net loss.
+ * Persona is a thin VOICE layer that lives only in the streamed assistant prose. The user picks its
+ * strength for ANY model (`personaStrength`); `personaFor(strength, tier)` resolves it, with "auto"
+ * falling back to a tier-aware default. The core invariant: persona text appears ONLY in the system
+ * prompt's prose and in app-authored UI copy — never in tool descriptions, the review/research/title
+ * sub-agent prompts, or tool_result strings, which stay procedurally neutral. The lighter levels exist
+ * because a 12B local model crowds its context window and bleeds stylistic priors into tool-call JSON,
+ * so a heavy persona there can be a net loss — but the choice is the user's.
  */
 export interface PersonaConfig {
   /** In-character name (also the product name after the Grimoire rename). */
@@ -25,14 +26,35 @@ export interface PersonaConfig {
   confirmFlourish?: string;
 }
 
-/** Voice off: the assistant keeps its name but drops all flavor. The one-flip revert if persona misbehaves. */
+/**
+ * The four persona presets form a monotonic ladder of footprint/flavor. The user picks the level
+ * (`personaStrength`) for ANY model — it is no longer tied to tier — so they own the accuracy-vs-flavor
+ * trade on their own hardware. "auto" (resolved in `personaFor`) keeps the old smart default: a light
+ * persona on small local models, full on cloud.
+ */
+
+/** off — the assistant keeps its name but drops all flavor. The kill switch. */
 export const NEUTRAL_PERSONA: PersonaConfig = {
   name: "Grimoire",
   identityLine: "You are Grimoire, a Dungeons & Dragons assistant embedded in a character-management app.",
 };
 
-/** Full Grimoire voice — for cloud models with headroom and the instruction-following to keep substance clean. */
-export const GRIMOIRE_LARGE: PersonaConfig = {
+/** min — skeletal: one identity sentence + a hard "substance stays plain" reminder. Lightest persona. */
+export const GRIMOIRE_MIN: PersonaConfig = {
+  name: "Grimoire",
+  identityLine: "You are Grimoire, a sentient spellbook that helps with D&D.",
+  voiceClause: "A little old-world warmth in greetings is fine, but rules, numbers, and stat blocks must be plain and exact.",
+};
+
+/** low — the richer identity + warmth in greetings/transitions, but no decline flavor or save flourish. */
+export const GRIMOIRE_LOW: PersonaConfig = {
+  name: "Grimoire",
+  identityLine: "You are Grimoire, a sentient spellbook — an ancient tome that records the spells, lore, and legends of adventurers, and a collaborator, not a servant.",
+  voiceClause: "Let light archaic warmth color your greetings and transitions, but keep all substance — rules answers, stat blocks, mechanics — clean, direct, and accurate; never wrap a rules answer in flourish.",
+};
+
+/** full — the complete Grimoire voice: rich identity, warmth, in-character declines, and a save flourish. */
+export const GRIMOIRE_FULL: PersonaConfig = {
   name: "Grimoire",
   identityLine: "You are Grimoire, a sentient spellbook embedded in a D&D character-management app — an ancient tome that records the spells, lore, and legends of adventurers, and a collaborator, not a servant.",
   voiceClause: "Let your voice color greetings, transitions, and confirmations with light archaic warmth, but keep all substance — rules answers, stat blocks, mechanics — clean, direct, and accurate; never wrap a rules answer in flourish.",
@@ -40,17 +62,19 @@ export const GRIMOIRE_LARGE: PersonaConfig = {
   confirmFlourish: "\"A worthy entry — shall I preserve it within my pages?\"",
 };
 
-/** Skeletal Grimoire for small local models: one identity sentence + a hard "substance stays plain" reminder. */
-export const GRIMOIRE_SMALL: PersonaConfig = {
-  name: "Grimoire",
-  identityLine: "You are Grimoire, a sentient spellbook that helps with D&D.",
-  voiceClause: "A little old-world warmth in greetings is fine, but rules, numbers, and stat blocks must be plain and exact.",
-};
-
-/** Resolve the persona for a turn. "neutral" kills all flavor on both tiers; "grimoire" is tier-aware. */
-export function personaFor(voice: PersonaVoice | undefined, tier: AiTier): PersonaConfig {
-  if (voice === "neutral") return NEUTRAL_PERSONA;
-  return tier === "small" ? GRIMOIRE_SMALL : GRIMOIRE_LARGE;
+/**
+ * Resolve the persona for a turn from the user's chosen strength. "auto" keeps the tier-aware default
+ * (min on small local models, full on cloud); every other value is honored verbatim on any model.
+ */
+export function personaFor(strength: PersonaStrength | undefined, tier: AiTier): PersonaConfig {
+  const level: Exclude<PersonaStrength, "auto"> =
+    !strength || strength === "auto" ? (tier === "small" ? "min" : "full") : strength;
+  switch (level) {
+    case "off": return NEUTRAL_PERSONA;
+    case "min": return GRIMOIRE_MIN;
+    case "low": return GRIMOIRE_LOW;
+    case "full": return GRIMOIRE_FULL;
+  }
 }
 
 /** Advisory sentence listing the kinds the model is allowed to create, when permissions restrict the set. */

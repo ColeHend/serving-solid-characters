@@ -142,14 +142,18 @@ export const DEFAULT_AI_LOOKUP_TOOLS = true;
 export const DEFAULT_AI_AUTO_SWITCH = true;
 
 /**
- * The assistant's voice. "grimoire" gives the in-character sentient-spellbook persona (tier-aware: full
- * on cloud models, skeletal on small local ones); "neutral" strips all flavor and keeps only the name —
- * the one-flip revert if persona ever bleeds into stat blocks or crowds a local model's context window.
+ * How much of the in-character Grimoire (sentient-spellbook) persona to apply — chosen by the user for
+ * ANY model, not tied to local-vs-cloud. A monotonic ladder:
+ * - "off":  name only, no flavor (the kill switch if persona bleeds into stat blocks).
+ * - "min":  skeletal — one identity sentence + "rules stay plain" reminder. Safest on small local models.
+ * - "low":  richer identity + warmth in greetings/transitions; no decline flavor or save flourish.
+ * - "full": the complete voice — warmth, in-character declines, and a save flourish.
+ * - "auto": resolve by model size (min on small local models, full on cloud) — the smart default.
  * The persona is confined to streamed prose + app UI copy; it never enters tool/review/research/title prompts.
  */
-export type PersonaVoice = "grimoire" | "neutral";
-/** Persona ships ON by default; flip a user's setting to "neutral" to revert to the lean voice. */
-export const DEFAULT_AI_PERSONA: PersonaVoice = "grimoire";
+export type PersonaStrength = "auto" | "off" | "min" | "low" | "full";
+/** Default: "auto" picks a light persona on small local models and the full voice on cloud. */
+export const DEFAULT_AI_PERSONA_STRENGTH: PersonaStrength = "auto";
 
 /**
  * AI ("Grimoire") configuration. Only non-secret selection lives here / in IndexedDB —
@@ -189,8 +193,8 @@ export interface AiSettings {
     lookupTools?: boolean;
     /** Let the model switch its own mode when it needs a tool the current mode lacks. Defaults to DEFAULT_AI_AUTO_SWITCH. */
     autoSwitch?: boolean;
-    /** The assistant's voice (in-character "grimoire" or lean "neutral"). Defaults to DEFAULT_AI_PERSONA. */
-    personaVoice?: PersonaVoice;
+    /** How much in-character Grimoire persona to apply (any model). Defaults to DEFAULT_AI_PERSONA_STRENGTH. */
+    personaStrength?: PersonaStrength;
 }
 
 export interface UserSettings {
