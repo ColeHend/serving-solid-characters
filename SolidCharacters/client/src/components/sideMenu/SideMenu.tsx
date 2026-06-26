@@ -30,7 +30,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
     const navigate = useNavigate();
 
     const [showMenu, setShowMenu] = props.defaultShowList;
-    // const [isMobile, setIsMobile] = props.defaultIsMobile;
+    const isMobile = props.defaultIsMobile[0];
     const [userSettings, setUserSettings] = props.defaultUserSettings;
 
     const [menuRef, setMenuRef] = createSignal<HTMLDivElement | undefined>();
@@ -201,7 +201,7 @@ export const SideMenu:Component<MenuProps> = (props) => {
                </ul>
             </Container>
         </Portal>
-        <Modal title="Settings" show={[showSettings, setShowSettings]} width="640px" height="70vh">
+        <Modal title="Settings" show={[showSettings, setShowSettings]} width="min(640px, 92vw)" height={isMobile() ? "95vh" : "70vh"}>
             <SettingsPopup 
                 defaultUserSettings={userSettings} 
                 setDefaultUserSettings={setUserSettings} />

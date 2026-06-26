@@ -1,7 +1,7 @@
-import type { HomebrewKind, HomebrewPreview } from "./toolDispatcher";
+import type { HomebrewKind, HomebrewPreview } from "./tools/toolDispatcher";
 
 /**
- * One-shot in-memory handoff for the Spark assistant's "Edit manually" button. The generated entity
+ * One-shot in-memory handoff for the Grimoire assistant's "Edit manually" button. The generated entity
  * isn't saved yet, so a `?name=` lookup on the create page can't find it — instead the card stashes
  * the entity here right before navigating, and the matching create page consumes (and clears) it on
  * mount. Nothing is persisted until the user clicks Create/Update in the editor.

@@ -84,3 +84,37 @@
 @media (prefers-reduced-motion: reduce) {
     .tab { transition: none; }
 }
+
+// Mobile: the overlapping "folder flap" metaphor can't fit 5 tabs on a narrow screen,
+// so fall back to flat tabs that wrap onto multiple rows (all tabs reachable, no clipping).
+@media screen and (max-width: 768px) {
+    .tabStrip {
+        flex-wrap: wrap;
+        column-gap: var(--spacing-1, 8px);
+        row-gap: var(--spacing-1, 8px);
+        margin-bottom: var(--spacing-1, 8px);   // wrapped tabs no longer tuck into the page edge
+    }
+
+    .tab {
+        transform: none;                         // drop the recess/lift; flat pills instead
+        border: 1px solid color-mix(in srgb, vars.$color-on-surface 14%, transparent);
+        border-radius: var(--border-radius-md, 8px);   // full pill, not just top corners
+
+        & + & { margin-left: 0; }                // no neighbour overlap when wrapped
+    }
+
+    .inactive {
+        transform: none;
+        box-shadow: none;
+        z-index: auto;
+    }
+
+    .active {
+        background-color: var(--primary-color, #4caf50);   // clear filled highlight
+        color: var(--on-primary-color, #fff);
+        border-color: var(--primary-color, #4caf50);
+        border-top-width: 1px;
+
+        &::after { display: none; }              // no page edge to bridge to once wrapped
+    }
+}

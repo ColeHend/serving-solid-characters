@@ -94,7 +94,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
 
   onMount(() => {
     window.addEventListener('mousemove', mouseCapture)
-    // Learn which cloud AI providers have a server-side key so the Spark gate is correct on load.
+    // Learn which cloud AI providers have a server-side key so the Grimoire gate is correct on load.
     refreshAiProviderStatus();
   })
 

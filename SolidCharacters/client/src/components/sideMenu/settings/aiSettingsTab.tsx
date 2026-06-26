@@ -3,14 +3,16 @@ import { Select, Option, Input, Checkbox, Button, addSnackbar } from "coles-soli
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
 import {
-    AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
-    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind,
+    AiProviderKind, AiSettings, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
+    DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
+    LocalApiKind, PersonaStrength,
 } from "../../../models/userSettings";
 
 const DEFAULT_AI: AiSettings = {
     provider: "local", model: "", localBaseUrl: "", enabled: false,
     maxTokens: DEFAULT_AI_MAX_TOKENS, localApi: "ollama", numCtx: DEFAULT_AI_NUM_CTX,
     thinking: DEFAULT_AI_THINKING, thinkingHomebrew: DEFAULT_AI_THINKING_HOMEBREW,
+    showThinking: DEFAULT_AI_SHOW_THINKING,
 };
 
 const MODEL_PLACEHOLDER: Record<AiProviderKind, string> = {
@@ -20,7 +22,7 @@ const MODEL_PLACEHOLDER: Record<AiProviderKind, string> = {
 };
 
 /**
- * Settings tab for the Spark AI assistant. Provider/model/enabled are stored in UserSettings (and
+ * Settings tab for the Grimoire AI assistant. Provider/model/enabled are stored in UserSettings (and
  * persisted by the popup's "Save Settings" button). Cloud API keys are NOT stored here — they are
  * POSTed to the .NET backend (/api/ai/credentials) and held server-side.
  */
@@ -96,7 +98,7 @@ const AiSettingsTab: Component = () => {
 
     return (
         <div>
-            <h3>AI (Spark)</h3>
+            <h3>AI (Grimoire)</h3>
             <p style={{ opacity: 0.75, "font-size": "var(--font-size-small)" }}>
                 Configure the AI assistant. Cloud keys are stored on the server, never in your browser.
                 Local models are called directly from this device.
@@ -206,6 +208,18 @@ const AiSettingsTab: Component = () => {
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
                 <Checkbox
+                    label="Show AI thoughts in chat"
+                    checked={ai().showThinking ?? DEFAULT_AI_SHOW_THINKING}
+                    onChange={(checked) => updateAi({ showThinking: checked })}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    Off by default: Grimoire shows a short status while it works instead of its raw reasoning.
+                    Turn on to reveal the collapsible "Thoughts" block on each reply.
+                </div>
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <Checkbox
                     label="Enable thinking during Homebrew generation"
                     checked={ai().thinkingHomebrew ?? DEFAULT_AI_THINKING_HOMEBREW}
                     onChange={(checked) => updateAi({ thinkingHomebrew: checked })}
@@ -218,7 +232,40 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox label="Enable Spark assistant" checked={ai().enabled} onChange={(checked) => updateAi({ enabled: checked })} />
+                <Checkbox
+                    label="Auto-add mechanical effects to generated homebrew"
+                    checked={ai().commandGeneration ?? DEFAULT_AI_COMMAND_GENERATION}
+                    onChange={(checked) => updateAi({ commandGeneration: checked })}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    On by default: after generating a race, class, subclass, background, or feat, a helper reads
+                    each feature and attaches the matching character-sheet effects (resistances, ability changes,
+                    proficiencies, speed, etc.) so the content actually works on the sheet. Adds one short model
+                    call per generated entity.
+                </div>
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <Checkbox label="Enable Grimoire assistant" checked={ai().enabled} onChange={(checked) => updateAi({ enabled: checked })} />
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <label>In-character voice</label>
+                <Select<string>
+                    value={ai().personaStrength ?? DEFAULT_AI_PERSONA_STRENGTH}
+                    onSelect={(e) => updateAi({ personaStrength: e as PersonaStrength })}
+                >
+                    <Option value="auto">Auto (match the model)</Option>
+                    <Option value="full">Full — the complete Grimoire voice</Option>
+                    <Option value="low">Low — warmth in greetings, plain rules</Option>
+                    <Option value="min">Minimal — just a touch of character</Option>
+                    <Option value="off">Off — neutral, no flavor</Option>
+                </Select>
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    How much Grimoire speaks as a sentient spellbook. Substance — rules, numbers, stat blocks —
+                    stays plain at every level. "Auto" keeps it light on small local models and full on cloud;
+                    pick a fixed level to apply it to any model.
+                </div>
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>

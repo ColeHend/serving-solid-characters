@@ -71,8 +71,9 @@ class CharacterManager {
         finalize(() => {
           if (!failed) {
             this._setCharacters((o) => [...o, newCharacter]);
+            // Grimoire brand beat for a new character (product copy, not the AI voice toggle).
             addSnackbar({
-              message: "Character succsessfuly added",
+              message: "Your legend begins.",
               severity: "success",
             });
           }

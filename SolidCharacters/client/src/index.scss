@@ -33,6 +33,17 @@
   // values from the library's own variables partial so they stay in sync with the package.
   --font-weight-light: #{colesVars.$font-weight-light};
   --font-weight-regular: #{colesVars.$font-weight-regular};
+
+  // Spark semantic accents (warnings / success). Defaults are tuned for the dark theme; the
+  // light-theme block below darkens them so they keep >= 4.5:1 contrast on the light surface.
+  --spark-warn-color: #e0a52e;
+  --spark-success-color: #3fae6b;
+}
+
+// Light theme: the default amber/green fail WCAG AA on the light surface (~2:1) — darken to pass.
+[data-theme="light"] {
+  --spark-warn-color: #8a6300;
+  --spark-success-color: #1f7d45;
 }
 //------------------------------------------------------------------
 // Styles

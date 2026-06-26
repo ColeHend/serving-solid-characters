@@ -1,5 +1,6 @@
 import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
-import { parseSse } from "../sse";
+import { DEFAULT_AI_MAX_TOKENS } from "../../../models/userSettings";
+import { parseSse } from "./sse";
 
 /**
  * Direct browser adapter for local OpenAI-compatible servers (Ollama, LM Studio, llama.cpp, ...).
@@ -23,7 +24,7 @@ export class LocalAdapter implements AiProvider {
         const body: Record<string, unknown> = {
             model: opts.model,
             stream: true,
-            max_tokens: opts.maxTokens ?? 4096,
+            max_tokens: opts.maxTokens ?? DEFAULT_AI_MAX_TOKENS,
             messages: toOpenAiMessages(messages, opts.system),
         };
         // Reasoning/"thinking" toggle, resolved per-mode by the caller. On homebrew tool turns this is

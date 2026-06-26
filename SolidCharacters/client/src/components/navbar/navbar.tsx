@@ -52,7 +52,7 @@ const Navbar: Component<Props> = (props) => {
           </Button>
 
           <Show when={isAiConfigured()}>
-            <Button transparent title="Spark AI" onClick={() => aiAssistant.toggle()}>
+            <Button transparent title="Grimoire AI" onClick={() => aiAssistant.toggle()}>
               <SparkIcon size={24} />
             </Button>
           </Show>

@@ -8,6 +8,7 @@ import { homebrewManager } from "../../../shared";
 import FolderTabStrip from "./folderTabStrip";
 import { SettingsTab, SETTINGS_TABS } from "./folderTabs.shared";
 import AiSettingsTab from "./aiSettingsTab";
+import AiReviewSettingsTab from "./aiReviewSettingsTab";
 interface Props {
     defaultUserSettings: Accessor<UserSettings>,
     setDefaultUserSettings: Setter<UserSettings>,
@@ -71,6 +72,9 @@ const SettingsPopup: Component<Props> = (props) => {
                 </Match>
                 <Match when={tab === "AI"}>
                   <AiSettingsTab />
+                </Match>
+                <Match when={tab === "AI Behavior"}>
+                  <AiReviewSettingsTab />
                 </Match>
               </Switch>
             </div>
