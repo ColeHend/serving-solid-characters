@@ -1,4 +1,4 @@
-import { Accessor, Component, createMemo, createSignal, For, Setter, Show, useContext } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show, useContext } from "solid-js";
 // import { Race } from "../../../../models";
 import { AbilityScores, PrerequisiteType, Race } from "../../../../models/generated";
 import styles from "./raceView.module.scss";
@@ -27,6 +27,7 @@ const RaceView: Component<props> = (props) => {
 
   const currentSubraceNames = createMemo(()=>currentSubraces().flatMap(x=>x.name));
 
+  const descKeys = createMemo(() => Object.keys(race().descriptions ?? {}))
 
   const getDescription = (descriptions: any ) => {
     const keys = Object.keys(descriptions);
@@ -42,14 +43,19 @@ const RaceView: Component<props> = (props) => {
     return descArr;
   }
 
+  createEffect(() => {
+    console.log("desc keys: ", descKeys());
+    
+  })
+
   return <Modal title={race().name} show={props.backClick}>
     <div class={`${styles.raceWrapper}`}>
       <h1 class={`${styles.header}`}>{race().name}</h1>
 
       <Show when={race().descriptions}>
-        <div class={`${styles.info}`}><Markdown text={getDescription(race().descriptions).join(" ")} /></div>
+        <div class={`${styles.info}`}><Markdown text={race().descriptions?.["physical"] ?? ""} /></div>
       </Show>
-        
+
       <div class={`${styles.flexBoxRow}`}>
         <div class={`${styles.flexBoxColumn}`}>
           <Show when={race().abilityBonuses.length !== 0}>
