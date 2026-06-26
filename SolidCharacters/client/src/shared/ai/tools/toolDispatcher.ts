@@ -77,6 +77,13 @@ export interface HomebrewPreview {
     appliedOps?: PatchOp[];
     /** Patch ops that couldn't be applied (bad path, etc.), surfaced on the diff card as warnings. */
     rejectedOps?: RejectedOp[];
+    /**
+     * True for a card RESTORED from a persisted conversation (set on load, never persisted). Its
+     * originating tool call was stripped from the saved history by balancedHistory(), so it's "detached":
+     * Save still works (saveHomebrew + a no-op resolveToolCall, since `outstanding` is empty after a
+     * load), but the AI-driven actions (Complete/Improve/Try again) — which need a live turn — are hidden.
+     */
+    detached?: boolean;
 }
 
 const TOOL_TO_KIND: Record<string, HomebrewKind> = {

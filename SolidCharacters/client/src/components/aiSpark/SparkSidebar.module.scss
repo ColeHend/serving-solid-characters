@@ -381,6 +381,45 @@
     border-bottom-left-radius: 2px;
 }
 
+/* ----- inline edit / rewind on user prompts ----- */
+.userBubbleWrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 85%;
+}
+.editPrompt {
+    // Revealed on hover/focus of the bubble row so the pencil doesn't clutter every message.
+    opacity: 0;
+    transition: opacity 0.12s ease;
+    flex-shrink: 0;
+}
+.userBubbleWrap:hover .editPrompt,
+.userBubbleWrap:focus-within .editPrompt {
+    opacity: 0.7;
+}
+.editPromptBox {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 6px);
+    width: 100%;
+}
+.editPromptActions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-1, 6px);
+}
+.editPromptConfirm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 6px);
+}
+.editPromptConfirmText {
+    font-size: 0.78rem;
+    color: var(--spark-warn-color, #e0a52e);
+}
+
 .thinking {
     opacity: 0.6;
     font-style: italic;

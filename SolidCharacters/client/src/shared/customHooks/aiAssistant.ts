@@ -56,6 +56,12 @@ export interface ChatMessage {
     kind?: "answer" | "system";
     /** The model's reasoning for this turn (display-only; not replayed to the model). */
     thinking?: string;
+    /**
+     * For a user bubble: the index in `history` of the matching {role:"user"} entry, captured when the
+     * turn was sent. Used by editAndRewind() to slice history/messages back to this prompt. Persisted with
+     * the conversation so rewind works after a reload; pre-feature chats lack it (Nth-user fallback covers them).
+     */
+    historyIndex?: number;
 }
 
 export type { HomebrewPreview };
@@ -178,21 +184,30 @@ export class AiAssistant {
 
     clear = () => {
         this.cancel();
+        this.resetTurnState();
         this.history = [];
+        this.setMessages([]);
+    };
+
+    /**
+     * Reset all in-flight TURN state — outstanding tool calls, repair/retry budgets, pending cards,
+     * streaming buffers, status. Does NOT touch the conversation's messages/history/mode. Call cancel()
+     * first to abort any live controllers. Shared by clear(), loadConversation(), and editAndRewind().
+     */
+    private resetTurnState() {
         this.outstanding.clear();
         this.resolved = [];
         this.repairCounts.clear();
         this.mediumRetryStreak = 0;
         this.schemaRetryStreak = 0;
         this.reviewFixStreak = 0;
-        this.setMessages([]);
         this.setPendingPreviews([]);
         this.setPendingInteractions([]);
         this.setStreamingText("");
         this.setStreamingThinking("");
         this.setStatus("idle");
         this.setActivePhase("idle");
-    };
+    }
 
     cancel = () => {
         this.turnEpoch++;   // invalidate the turn we're aborting so a late finishTurn/persist is dropped
@@ -225,7 +240,10 @@ export class AiAssistant {
         this.schemaRetryStreak = 0;
         this.reviewFixStreak = 0;
         this.repairCounts.clear();    // don't let a prior entity's repair cap suppress a new same-named one
-        this.pushUserBubble(trimmed);
+        // Stamp the bubble with the history index its {role:"user"} entry is about to occupy, so
+        // editAndRewind() can slice both arrays back to exactly this prompt. flushOutstanding() already ran.
+        const historyIndex = this.history.length;
+        this.pushUserBubble(trimmed, historyIndex);
         this.history.push({ role: "user", text: trimmed });
         void this.persistCurrent();   // capture the chat (and its title) from turn 1
         void this.runTurn();
@@ -256,6 +274,47 @@ export class AiAssistant {
         });
         void this.runTurn();
     };
+
+    /**
+     * Edit an earlier USER prompt and rewind the conversation to it: discard every message/turn after it
+     * and re-run from the edited text (ChatGPT/Claude-style). Side effects from the discarded turns are NOT
+     * undone — homebrew already saved to the collection stays saved (the UI confirm says so). Bails while a
+     * turn is streaming. Anything already saved earlier in the chat is untouched.
+     */
+    editAndRewind = (messageId: string, newText: string) => {
+        const trimmed = newText.trim();
+        if (!trimmed || this.status() === "streaming") return;
+        const msgs = this.messages();
+        const mi = msgs.findIndex(m => m.id === messageId);
+        if (mi < 0 || msgs[mi].role !== "user") return;
+        const hi = this.historyCutFor(msgs, mi);
+        if (hi == null) return;   // couldn't map the bubble to history — refuse rather than corrupt it
+        this.cancel();            // bump turnEpoch (drops any in-flight detached save) + abort controllers
+        this.resetTurnState();    // clear outstanding/streaks/pending cards/streaming from the discarded future
+        this.history = this.history.slice(0, hi);
+        this.setMessages(prev => prev.slice(0, mi));
+        if (mi === 0) this.titleGenerated = false;   // re-derive the title from the edited first prompt
+        this.send(trimmed);       // re-pushes the edited user turn (with a fresh historyIndex), persists, runs
+    };
+
+    /**
+     * The `history` index to slice at when rewinding to the user bubble at messages[mi]. Prefers the
+     * stored `historyIndex`; falls back (for pre-feature chats) to matching the Nth user bubble to the Nth
+     * {role:"user"} entry in history — sound because send() is the only producer of user bubbles, 1:1 with
+     * history user entries. Returns null if no match (don't risk a bad slice).
+     */
+    private historyCutFor(msgs: ChatMessage[], mi: number): number | null {
+        const stored = msgs[mi].historyIndex;
+        if (stored != null && this.history[stored]?.role === "user") return stored;
+        // Fallback: this bubble is the Nth user message (1-based) among messages[0..mi].
+        let n = 0;
+        for (let i = 0; i <= mi; i++) if (msgs[i].role === "user") n++;
+        let seen = 0;
+        for (let j = 0; j < this.history.length; j++) {
+            if (this.history[j].role === "user" && ++seen === n) return j;
+        }
+        return null;
+    }
 
     confirmPreview = async (previewId: string) => {
         const preview = this.pendingPreviews().find(p => p.previewId === previewId);
@@ -291,6 +350,9 @@ export class AiAssistant {
             });
         }
         this.resolveToolCall(preview.toolCallId, result.message, !result.ok);
+        // Capture the now-smaller card set. For a DETACHED card resolveToolCall no-ops (no continuation
+        // turn → no other persist), so this is what keeps the saved conversation in sync after a restore.
+        void this.persistCurrent();
     };
 
     /** A short app-derived summary for the decision log, prefixed with the model's last one-line note. */
@@ -315,6 +377,8 @@ export class AiAssistant {
         if (!preview) return;
         this.removePreview(previewId);
         this.resolveToolCall(preview.toolCallId, "The user rejected this and it was not saved.", true);
+        // Persist the smaller set so a rejected detached card doesn't reappear on the next switch back.
+        void this.persistCurrent();
     };
 
     /**
@@ -417,20 +481,17 @@ export class AiAssistant {
         catch (e) { console.error("Failed to load conversation", e); return; }
         if (!rec) return;
         this.cancel();
-        this.outstanding.clear();
-        this.resolved = [];
-        this.repairCounts.clear();
-        this.mediumRetryStreak = 0;
-        this.schemaRetryStreak = 0;
-        this.reviewFixStreak = 0;
+        this.resetTurnState();
         this.history = structuredClone(rec.history);
         this.setMessages(rec.messages);
-        this.setPendingPreviews([]);       // previews are transient — never restored
-        this.setPendingInteractions([]);   // interactions are transient too
+        // Restore the homebrew save-choice cards as DETACHED (Save/Reject only): their tool call was
+        // stripped from `history` by balancedHistory() and `outstanding` is empty, so a live-turn action
+        // would no-op — but Save still works (saveHomebrew + a harmless no-op resolveToolCall).
+        this.setPendingPreviews((rec.pendingPreviews ?? []).map(p => ({ ...p, detached: true })));
+        // Interactions (ask/plan) are NOT restored: answering one only matters to continue the turn, and
+        // after a load there's no outstanding tool call to resolve, so the answer would go nowhere.
+        this.setPendingInteractions([]);
         this.setMode(rec.mode);
-        this.setStreamingText("");
-        this.setStreamingThinking("");
-        this.setStatus("idle");
         this.currentConversationId = rec.id;
         this.createdAt = rec.createdAt;
         this.titleOverride = rec.title;   // restore the saved (possibly AI) name
@@ -532,6 +593,28 @@ export class AiAssistant {
     }
 
     /**
+     * The pending preview cards as they should be PERSISTED with the conversation (so the save-choice
+     * dialog survives a chat-history switch). On reload these become "detached" cards (Save/Reject only),
+     * because balancedHistory() strips their originating tool call and `outstanding` is empty after a load —
+     * so any in-flight/live-turn state would be meaningless. We therefore neutralize it here:
+     *  - drop `repairing`/`enriching` (their controllers are gone);
+     *  - settle a mid-pipeline `reviewState` ("reviewing"/"needs_user_direction") to "review_unavailable";
+     *  - clear `reviewBlocked` so Save isn't permanently disabled (its only unblock path, "Improve with AI",
+     *    is hidden on a detached card). Save then gates on `valid` alone — the correct invariant.
+     * `detached` is NOT set here; it's stamped on load so a same-session snapshot stays live.
+     */
+    private sanitizePreviewsForStore(previews: HomebrewPreview[]): HomebrewPreview[] {
+        return previews.map(p => {
+            const { repairing: _r, enriching: _e, detached: _d, ...rest } = p;
+            const reviewState: ReviewState | undefined =
+                p.reviewState === "reviewing" || p.reviewState === "needs_user_direction"
+                    ? "review_unavailable"
+                    : p.reviewState;
+            return { ...rest, reviewState, reviewBlocked: false };
+        });
+    }
+
+    /**
      * The history to actually send the model, windowed to fit its context. `history` grows every turn
      * and is replayed in full, so a long (especially tool-heavy) session would silently overflow num_ctx
      * — Ollama then drops the OLDEST messages, which can split a tool_use from its tool_result and corrupt
@@ -574,6 +657,7 @@ export class AiAssistant {
             mode: this.mode(),
             history: this.balancedHistory(),
             messages: this.messages(),
+            pendingPreviews: this.sanitizePreviewsForStore(this.pendingPreviews()),
             createdAt: this.createdAt,
             updatedAt: now,
         };
@@ -589,8 +673,8 @@ export class AiAssistant {
 
     // ----------------- internals -----------------
 
-    private pushUserBubble(text: string) {
-        this.setMessages(prev => [...prev, { id: createNewId(), role: "user", text }]);
+    private pushUserBubble(text: string, historyIndex?: number) {
+        this.setMessages(prev => [...prev, { id: createNewId(), role: "user", text, historyIndex }]);
     }
     private pushAssistantBubble(text: string, thinking?: string) {
         this.setMessages(prev => [...prev, { id: createNewId(), role: "assistant", text, thinking: thinking || undefined }]);
@@ -1071,6 +1155,8 @@ export class AiAssistant {
                     : (verdicts.some(v => !v.pass) ? "issues" : "passed");
                 this.setPendingPreviews(prev => prev.map(p =>
                     p.previewId === id ? { ...p, reviewState: state, verdicts, reviewBlocked: blocked } : p));
+                // Re-persist so a switch-away after review restores the reviewed card, not a stale "reviewing".
+                void this.persistCurrent();
             }
         } finally {
             if (this.reviewController?.signal === signal) this.reviewController = null;
@@ -1107,6 +1193,8 @@ export class AiAssistant {
                 if (epoch !== this.turnEpoch || signal.aborted) return false;
                 this.setPendingPreviews(prev => prev.map(p =>
                     p.previewId === id ? { ...p, enriching: false, entity: enriched ?? p.entity } : p));
+                // Re-persist so the enriched entity (mads commands attached) survives a chat-history switch.
+                void this.persistCurrent();
             }
             return true;
         } finally {

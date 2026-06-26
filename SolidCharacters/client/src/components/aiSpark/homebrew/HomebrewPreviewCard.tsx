@@ -19,9 +19,13 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
     const p = () => props.preview;
     const reviewState = () => p().reviewState;
     const hasIssues = () => (p().verdicts ?? []).some(v => v.issues.length > 0);
+    // A card RESTORED from a switched-away conversation has no live turn behind it, so the AI-driven
+    // actions (Complete/Improve/Try again) would no-op — hide them and offer only Save/Reject/Edit/Preview.
+    const isDetached = () => !!p().detached;
     // The AI can fill gaps once per entity (hard cap), when something's missing OR a hard failure
     // (e.g. an empty description) is fixable by regenerating.
     const canComplete = () =>
+        !isDetached() &&
         ((p().warnings?.length ?? 0) > 0 || p().truncated || !p().valid) &&
         (p().repairAttempts ?? 0) < 1 && !hasIssues();
     // Save is gated by schema validity AND any blocking-severity review finding (or an in-flight review).
@@ -37,8 +41,9 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
     };
 
     // While a "Complete with AI" repair is in flight, collapse the card to a compact progress state.
+    // (A detached/restored card never has live repair/review state, but guard so it always shows normally.)
     return (
-        <Show when={!p().repairing} fallback={
+        <Show when={!p().repairing || isDetached()} fallback={
             <Container theme="surface" class={`${styles.previewCard} ${styles.previewRepairing}`}>
                 <strong>{p().title}</strong>
                 <div class={`${styles.repairingLabel} ${styles.pulse}`}>
@@ -93,7 +98,7 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                         >
                             Save
                         </Button>
-                        <Show when={hasIssues()}>
+                        <Show when={hasIssues() && !isDetached()}>
                             <Button
                                 transparent
                                 title="Ask the AI to fix the issues the review found"
@@ -126,7 +131,7 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                 </Container>
             }>
                 {/* ----- reviewing: collapsed progress with a cancel ----- */}
-                <Match when={reviewState() === "reviewing"}>
+                <Match when={reviewState() === "reviewing" && !isDetached()}>
                     <Container theme="surface" class={`${styles.previewCard} ${styles.previewRepairing}`}>
                         <strong>{p().title}</strong>
                         <div class={`${styles.reviewingLabel} ${styles.pulse}`}>
@@ -141,7 +146,7 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                 </Match>
 
                 {/* ----- needs user direction: schema kept failing past the retry cap ----- */}
-                <Match when={reviewState() === "needs_user_direction"}>
+                <Match when={reviewState() === "needs_user_direction" && !isDetached()}>
                     <Container theme="surface" class={styles.previewCard}>
                         <div class={styles.previewHeader}>
                             <div>
