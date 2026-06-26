@@ -6,11 +6,13 @@ import { AiMode } from "../prompt/systemPrompt";
  * mode doesn't expose (e.g. it's in chat mode and the user asks to create homebrew). Routed as the
  * "control" category in toolCategory.ts: the orchestrator flips the mode and auto-resolves, so the
  * continuation turn re-derives its tool set and the create_* tools become available. No card, no wait.
+ *
+ * ZERO-PERSONA SURFACE: a procedural tool description — keep it neutral, no Grimoire voice.
  */
 export const SWITCH_MODE_TOOL: AiToolDef = {
     name: "switch_mode",
     description:
-        "Switch your own mode when you need a tool the current mode doesn't have. Call switch_mode(\"homebrew\") before creating or editing content if you're in chat mode; the app enables the create_*/edit tools and you continue automatically. Switch to \"chat\" only when the user is done creating and just wants to talk. Don't claim you created anything until after switching.",
+        "Switch your own mode when you need a tool the current mode doesn't have. Call switch_mode(\"homebrew\") before creating or editing if you're in chat mode; the app switches your mode and continues in a fresh turn where the create_*/edit tools are available — call the create_* tool in that next turn, not before. Switch to \"chat\" only when the user is done creating. Don't claim you created anything until after switching.",
     inputSchema: {
         type: "object",
         additionalProperties: false,

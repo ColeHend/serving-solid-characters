@@ -48,7 +48,7 @@ const InteractionCard: Component<{ interaction: PendingInteraction }> = (props) 
                         <div>
                             <strong>{it().title}</strong>
                             <div class={styles.previewSubtitle}>
-                                {it().style === "directions" ? "Choose a direction" : "Spark has a question"}
+                                {it().style === "directions" ? "Choose a direction" : "Grimoire has a question"}
                             </div>
                         </div>
                         <Icon icon={it().style === "directions" ? AltRoute : Help} size="small" />
@@ -120,10 +120,10 @@ const InteractionCard: Component<{ interaction: PendingInteraction }> = (props) 
                     <div class={styles.previewActions}>
                         <Show when={refining()} fallback={
                             <>
-                                <Button theme="primary" disabled={busy()} title="Approve and let Spark proceed" onClick={approve}>
+                                <Button theme="primary" disabled={busy()} title="Approve and let Grimoire proceed" onClick={approve}>
                                     <Icon icon={Check} size="small" /> Approve
                                 </Button>
-                                <Button transparent title="Ask Spark to adjust the plan" onClick={() => setRefining(true)}>
+                                <Button transparent title="Ask Grimoire to adjust the plan" onClick={() => setRefining(true)}>
                                     <Icon icon={Edit} size="small" /> Refine
                                 </Button>
                                 <Button transparent title="Reject this plan" onClick={reject}>

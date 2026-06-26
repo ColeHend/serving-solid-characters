@@ -13,7 +13,7 @@ import styles from "./SparkSidebar.module.scss";
 const PANEL_ID = "spark-sidebar-panel";
 
 /**
- * Slide-out chat sidebar for the Spark assistant. Mirrors SideMenu's Portal + shouldRender +
+ * Slide-out chat sidebar for the Grimoire assistant. Mirrors SideMenu's Portal + shouldRender +
  * 300ms open/close animation so it can animate out before unmounting. On desktop it sits beside the
  * app (no scrim, app stays usable). On mobile it covers the screen, so a tap-to-dismiss scrim and
  * Escape are provided. Closing never aborts the turn (the stream keeps running in the background).
@@ -61,11 +61,11 @@ const SparkSidebar: Component = () => {
     return (
         <Show when={shouldRender()}>
             <Portal>
-                <button type="button" class={styles.scrim} aria-label="Close Spark" tabindex={-1} onClick={dismiss} />
+                <button type="button" class={styles.scrim} aria-label="Close Grimoire" tabindex={-1} onClick={dismiss} />
                 <Container
                     id={PANEL_ID}
                     role="dialog"
-                    aria-label="Spark assistant"
+                    aria-label="Grimoire assistant"
                     tabindex={-1}
                     theme="container"
                     class={`${styles.sidebar} ${isOpening() ? styles.opening : ""} ${isClosing() ? styles.closing : ""}`}
@@ -73,7 +73,7 @@ const SparkSidebar: Component = () => {
                     <div class={styles.header}>
                         <div class={styles.title}>
                             <SparkIcon size={22} />
-                            <span>Spark</span>
+                            <span>Grimoire</span>
                         </div>
                         <div class={styles.headerActions}>
                             <ConversationMenu />
@@ -81,7 +81,7 @@ const SparkSidebar: Component = () => {
                             <Button transparent title="New chat" aria-label="New chat" onClick={() => aiAssistant.newConversation()}>
                                 <Icon icon={Add} size="small" />
                             </Button>
-                            <Button transparent title="Close" aria-label="Close Spark" onClick={() => aiAssistant.close()}>
+                            <Button transparent title="Close" aria-label="Close Grimoire" onClick={() => aiAssistant.close()}>
                                 <Icon icon={Close} size="large" />
                             </Button>
                         </div>

@@ -5,6 +5,8 @@ import { AiToolDef } from "../types";
  * Reusing tool-calling — which the app already relies on for homebrew generation — gives far more
  * reliable structured output from small local models than asking for free-text JSON (which would need
  * the kind of regex-scrubbing generateTitle.ts does). One tool, one call, one verdict.
+ *
+ * ZERO-PERSONA SURFACE: the structured-output contract for the reviewer — keep it neutral, no persona.
  */
 export const REPORT_REVIEW_TOOL: AiToolDef = {
     name: "report_review",

@@ -4,7 +4,7 @@ import type { AiMode } from "../../../ai/prompt/systemPrompt";
 import type { ChatMessage } from "../../aiAssistant";
 
 /**
- * A saved Spark conversation. Persists enough to RESUME the chat: the provider-facing `history`
+ * A saved Grimoire conversation. Persists enough to RESUME the chat: the provider-facing `history`
  * (what the model is sent) plus the rendered `messages` (the bubbles). Transient turn state
  * (pendingPreviews, outstanding tool calls, repair counts) is intentionally NOT stored.
  */

@@ -3,12 +3,12 @@ import { addSnackbar } from "coles-solid-library";
 import getUserSettings from "./userSettings";
 import {
     AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_LOOKUP_TOOLS, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
-    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES,
-    DEFAULT_USAGE_LEVEL, UsageControlLevel,
+    DEFAULT_AI_PERSONA, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES,
+    DEFAULT_MEDIUM_RETRIES, DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
 import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
-import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterTools } from "../ai/tools/toolSchemas";
+import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
 import { HOMEBREW_KINDS, KIND_TO_TOOL } from "../ai/refs/homebrewKind";
 import { toolCategory } from "../ai/tools/toolCategory";
 import { runComputeTool } from "../ai/tools/computeTools";
@@ -24,7 +24,7 @@ import { logDecision } from "./decisionLogManager";
 import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
-import { AiMode, buildSystemPrompt } from "../ai/prompt/systemPrompt";
+import { AiMode, buildSystemPrompt, personaFor } from "../ai/prompt/systemPrompt";
 import { splitModelReasoning } from "../ai/prompt/cleanReasoning";
 import { generateConversationTitle } from "../ai/prompt/generateTitle";
 import { createNewId } from "./utility/tools/idGen";
@@ -59,12 +59,19 @@ export type { PendingInteraction, InteractionResponse };
  * explicit `reason` (the schema error, or "cut off / could not be parsed") so the model knows what to fix.
  */
 function repairInstruction(p: HomebrewPreview, reason?: string): string {
-    const fields = p.missingFields?.length ? p.missingFields.join(", ") : "every empty field";
+    // Prefer the concrete missing fields; otherwise fall back to the kind's required fields (more
+    // actionable than a vague "every empty field" when the entity validated but the turn was truncated).
+    const missing = p.missingFields?.length ? p.missingFields : requiredFieldsForKind(p.kind);
+    const fields = missing.length ? missing.join(", ") : "every field you left empty";
     const tool = KIND_TO_TOOL[p.kind];
     const lead = reason
         ? `The ${p.kind.replace("_", " ")} "${p.title}" you generated could not be accepted: ${reason}.`
         : `The ${p.kind.replace("_", " ")} "${p.title}" you generated was incomplete.`;
-    return `${lead} Call ${tool} again with the SAME content you already produced, but this time fill in these fields: ${fields}. In particular, write a full multi-sentence description with concrete mechanics. Do not drop any field you already filled.`;
+    // Only ask for a fuller description when the description is actually among the missing fields.
+    const descNudge = missing.some(f => f.toLowerCase().includes("desc"))
+        ? " Write a full multi-sentence description with concrete mechanics."
+        : "";
+    return `${lead} Call ${tool} again with the SAME content you already produced, but this time fill in these fields: ${fields}.${descNudge} Do not drop any field you already filled. Emit only the tool call — no preamble.`;
 }
 
 /** Map a raw provider/network error to a short, actionable message instead of dumping `String(e)`. */
@@ -244,8 +251,13 @@ export class AiAssistant {
         // tool_result + decision-log entry so they don't land on (and continue) the wrong chat.
         if (epoch !== this.turnEpoch) return;
         // Visible confirmation in the app (a failed save otherwise looks identical to success — the card
-        // just vanishes either way), in addition to feeding the result back to the model below.
-        addSnackbar({ message: result.message, severity: result.ok ? "success" : "error" });
+        // just vanishes either way), in addition to feeding the result back to the model below. On a
+        // successful save the Grimoire voice gets its strongest beat here — the model has no turn at save
+        // time, so this is app-emitted. The model still receives the factual result.message below.
+        const [userSettings] = getUserSettings();
+        const grimoire = (userSettings().ai?.personaVoice ?? DEFAULT_AI_PERSONA) === "grimoire";
+        const snackMessage = result.ok && grimoire ? "It is done. Let it be written." : result.message;
+        addSnackbar({ message: snackMessage, severity: result.ok ? "success" : "error" });
         // Auto-log every committed change (the model's chat reply is the "why"; we capture a short note).
         if (result.ok) {
             void logDecision({
@@ -640,7 +652,9 @@ export class AiAssistant {
         };
         // Right-size the prompt for the routed model: local (gemma) gets the worked-example "small" tier.
         const tier = ai.provider === "local" ? "small" : "large";
-        const system = buildSystemPrompt(userSettings().dndSystem, this.mode(), tier, noteKinds, utilityFlags);
+        // Persona is the VOICE layer, tier-aware: full Grimoire on cloud, skeletal on small local models.
+        const persona = personaFor(ai.personaVoice ?? DEFAULT_AI_PERSONA, tier);
+        const system = buildSystemPrompt(userSettings().dndSystem, this.mode(), tier, noteKinds, utilityFlags, persona);
         // Thinking is split per-mode: chat defaults on (better answers, more context use); homebrew
         // defaults off (a reasoning model can burn its budget before emitting the create_* tool call).
         const think = homebrew

@@ -6,12 +6,14 @@ import { HOMEBREW_KINDS } from "../refs/homebrewKind";
  * for small-model reliability). It emits ONLY the fields that change as a list of patch ops; the
  * dispatcher (buildEditPreview) locates the entity, applies the patch to a clone, and surfaces a diff the
  * user accepts/rejects. Routed as the "edit" category in toolCategory.ts.
+ *
+ * ZERO-PERSONA SURFACE: a procedural tool description — keep it neutral, no Grimoire voice.
  */
 export const EDIT_HOMEBREW_TOOL: AiToolDef = {
     name: "edit_homebrew",
     description:
         "Edit an EXISTING piece of homebrew by changing only specific fields (a diff). Use this instead of create_* when the user wants to modify something they already have — it preserves every other field and the user reviews the diff. Look it up first with lookup_homebrew if you're unsure of the current contents. " +
-        "Each change has a dot/bracket `path`, an `op` (set/add/remove) and a `value`. " +
+        "Each change has a `path`, an `op` (set/add/remove) and a `value`. Paths use dot notation for fields (\"range\") and zero-based indices for list items (\"features.3\" is the 4th feature; \"features.3.0.description\" is its description). " +
         "Example: {\"kind\":\"spell\",\"name\":\"Fireball\",\"changes\":[{\"path\":\"range\",\"op\":\"set\",\"value\":\"200 feet\"}]}. " +
         "Nested example (a class feature): {\"path\":\"features.3.0.description\",\"op\":\"set\",\"value\":\"...\"}. Add to a list: {\"path\":\"classes\",\"op\":\"add\",\"value\":\"Bard\"}.",
     inputSchema: {

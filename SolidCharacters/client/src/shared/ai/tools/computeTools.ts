@@ -15,6 +15,8 @@ import {
  * like gemma can populate them reliably; runComputeTool maps them into dndMath's nested AttackParams /
  * AttackDamage / SaveEffectParams. The dispatcher is pure, synchronous, and never throws — on bad input
  * it returns { isError: true } with a hint so the model can retry.
+ *
+ * ZERO-PERSONA SURFACE: deterministic math tool descriptions — keep them neutral, no Grimoire voice.
  */
 
 const ADV_MODES = ["normal", "advantage", "disadvantage"] as const;

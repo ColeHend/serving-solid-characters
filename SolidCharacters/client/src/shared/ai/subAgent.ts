@@ -102,7 +102,12 @@ export async function runSubAgent(
     }
 }
 
-/** The lookup-only research sub-agent: searches SRD + homebrew and reports a compact summary. */
+/**
+ * The lookup-only research sub-agent: searches SRD + homebrew and reports a compact summary.
+ *
+ * ZERO-PERSONA SURFACE: this agent reports facts; keep it in plain "report only what you found" mode.
+ * No Grimoire voice, no page metaphors — a hallucination-prone small model must not dress up gaps.
+ */
 export function researchAgentSpec(): SubAgentSpec {
     return {
         id: "research",
@@ -110,7 +115,8 @@ export function researchAgentSpec(): SubAgentSpec {
         system:
             "You are a D&D 5e research helper. Use lookup_srd and lookup_homebrew to find exact official numbers " +
             "and the user's existing content. When you have what you need, answer in at most 6 concise lines with " +
-            "the concrete facts you found (names, numbers, sources). Never invent anything you could not look up.",
+            "the concrete facts you found (names, numbers, sources). If a lookup returns no match, say so explicitly " +
+            "(\"No official match for X\") — never fill the gap with an invented number. Never invent anything you could not look up.",
         tools: [...LOOKUP_TOOLS],
     };
 }

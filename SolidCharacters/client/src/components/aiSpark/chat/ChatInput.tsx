@@ -35,7 +35,7 @@ const ChatInput: Component = () => {
                 <TextArea
                     text={text}
                     setText={setText}
-                    placeholder={aiAssistant.mode() === "homebrew" ? "Describe the homebrew to generate…" : "Ask Spark…"}
+                    placeholder={aiAssistant.mode() === "homebrew" ? "Describe the homebrew to generate…" : "Ask Grimoire…"}
                     rows={1}
                     onKeyDown={onKeyDown}
                 />

@@ -8,9 +8,9 @@ import { kindLabelLower } from "../../../shared/ai/refs/homebrewKind";
 import styles from "../SparkSidebar.module.scss";
 
 /**
- * A read-only log of the create/edit changes Spark has committed to homebrew, opened from the header.
+ * A read-only log of the create/edit changes Grimoire has committed to homebrew, opened from the header.
  * Rendered as a hand-rolled in-sidebar popover (NOT the coles Modal): the Modal portals to <body> at
- * z-index 1001, which renders BEHIND the z-index:1200 Spark sidebar (fully hidden on mobile). A popover
+ * z-index 1001, which renders BEHIND the z-index:1200 Grimoire sidebar (fully hidden on mobile). A popover
  * inside the sidebar shares its stacking context and stays visible. Uses a distinct icon (Assignment)
  * so it isn't confused with the Conversations History trigger beside it.
  */

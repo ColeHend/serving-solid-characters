@@ -61,7 +61,7 @@ const UsageLevelMenu: Component = () => {
                 class={styles.modeTrigger}
                 aria-haspopup="menu"
                 aria-expanded={open()}
-                title={`Quality level: ${current().label} — ${current().blurb}. Click to change how much Spark checks generated content.`}
+                title={`Quality level: ${current().label} — ${current().blurb}. Click to change how much Grimoire checks generated content.`}
                 onClick={() => setOpen(o => !o)}
             >
                 <Icon icon={Shield} size="small" />

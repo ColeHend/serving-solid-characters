@@ -6,7 +6,7 @@ export type AiProviderKind = "local" | "anthropic" | "openai";
 export type LocalApiKind = "ollama" | "openai";
 
 /**
- * How much automated quality-control Spark applies to generated homebrew before handing it over.
+ * How much automated quality-control Grimoire applies to generated homebrew before handing it over.
  * - "low":    current behavior — generate → preview → the user confirms.
  * - "medium": on a schema/parse failure, auto-retry the generation at least once before surfacing it.
  * - "high":   run each entity through a readiness pipeline (deterministic + LLM review passes) and,
@@ -142,7 +142,17 @@ export const DEFAULT_AI_LOOKUP_TOOLS = true;
 export const DEFAULT_AI_AUTO_SWITCH = true;
 
 /**
- * AI ("Spark") configuration. Only non-secret selection lives here / in IndexedDB —
+ * The assistant's voice. "grimoire" gives the in-character sentient-spellbook persona (tier-aware: full
+ * on cloud models, skeletal on small local ones); "neutral" strips all flavor and keeps only the name —
+ * the one-flip revert if persona ever bleeds into stat blocks or crowds a local model's context window.
+ * The persona is confined to streamed prose + app UI copy; it never enters tool/review/research/title prompts.
+ */
+export type PersonaVoice = "grimoire" | "neutral";
+/** Persona ships ON by default; flip a user's setting to "neutral" to revert to the lean voice. */
+export const DEFAULT_AI_PERSONA: PersonaVoice = "grimoire";
+
+/**
+ * AI ("Grimoire") configuration. Only non-secret selection lives here / in IndexedDB —
  * cloud API keys are sent to the .NET backend and stored server-side, never persisted
  * in the browser. `localBaseUrl` only applies to the `local` provider (direct browser call).
  */
@@ -179,6 +189,8 @@ export interface AiSettings {
     lookupTools?: boolean;
     /** Let the model switch its own mode when it needs a tool the current mode lacks. Defaults to DEFAULT_AI_AUTO_SWITCH. */
     autoSwitch?: boolean;
+    /** The assistant's voice (in-character "grimoire" or lean "neutral"). Defaults to DEFAULT_AI_PERSONA. */
+    personaVoice?: PersonaVoice;
 }
 
 export interface UserSettings {

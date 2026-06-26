@@ -3,7 +3,7 @@ import type { HomebrewKind } from "../../../ai/refs/homebrewKind";
 import type { PatchOp } from "../../../ai/tools/patch";
 
 /**
- * A persisted record of a change Spark made to homebrew (create / edit / delete). The app writes one on
+ * A persisted record of a change Grimoire made to homebrew (create / edit / delete). The app writes one on
  * every committed change; the model may add a one-line summary. Stored in its OWN Dexie database
  * (mirroring reviewAgentDB / chatHistoryDB), NOT in AiSettings.
  */

@@ -18,6 +18,8 @@ import { loadSrdSubclasses } from "../../customHooks/dndInfo/info/srd/subclasses
  * duplicating the user's existing homebrew. Routed as the "lookup" category in toolCategory.ts.
  *
  * Schemas are deliberately flat (kind enum + query string) so a small local model uses them reliably.
+ *
+ * ZERO-PERSONA SURFACE: procedural tool descriptions — keep them neutral, no Grimoire voice.
  */
 
 const MAX_DETAILED = 3;       // show full summaries for up to this many matches

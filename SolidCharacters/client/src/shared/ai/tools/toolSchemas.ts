@@ -13,10 +13,16 @@ import { ASK_USER_TOOL, PROPOSE_PLAN_TOOL } from "./interactions";
  * with sane defaults and flags empty recommended fields back to the user.
  *
  * IMPORTANT: every property a mapper in toolDispatcher.ts reads (`i.X`) MUST be declared here, or the
- * model can never be asked to fill it. Per-property `description`s are deliberately prescriptive ("never
- * leave empty", "2-4 sentences") and each tool carries a compact worked example — small local models
- * (e.g. gemma via Ollama) lean heavily on these to produce complete, rich content. Keep examples short:
- * Ollama silently truncates the prompt to its context window, so don't bloat the schemas.
+ * model can never be asked to fill it. Per-property `description`s carry structural hints ("2-4
+ * sentences", which enum) and each tool carries a compact worked example — small local models (e.g.
+ * gemma via Ollama) lean heavily on these. The completeness rule ("never leave a supported field empty")
+ * and "concrete numbers, never placeholders" live ONCE in the system prompt's quality bar
+ * (systemPrompt.ts), not repeated per-field — keep it that way to protect the local model's token budget.
+ * Keep examples short and thematically varied (only the spell example is fire); Ollama silently truncates
+ * the prompt to its context window, so don't bloat the schemas.
+ *
+ * ZERO-PERSONA SURFACE: these descriptions are parsed for mechanics and must stay procedurally neutral —
+ * never add the Grimoire voice here, or the model may bleed flavor into tool-call JSON values.
  */
 
 const SCHOOLS = ["Abjuration", "Conjuration", "Divination", "Enchantment", "Evocation", "Illusion", "Necromancy", "Transmutation"];
@@ -34,7 +40,7 @@ const featureSchema = {
     properties: {
         level: { type: "integer", minimum: 1, maximum: 20, description: "Level the feature is gained at (1-20)." },
         name: { type: "string", description: "Feature name, e.g. \"Rage\", \"Sneak Attack\"." },
-        description: { type: "string", description: "What the feature does — full rules text with concrete numbers (Markdown allowed). 1-3 sentences minimum; never leave empty." },
+        description: { type: "string", description: "What the feature does — full rules text with concrete numbers (Markdown allowed). 1-3 sentences minimum." },
     },
     required: ["level", "name", "description"],
 };
@@ -45,7 +51,7 @@ const namedFeatureSchema = {
     additionalProperties: false,
     properties: {
         name: { type: "string", description: "Feature name." },
-        description: { type: "string", description: "What the feature grants — full rules text (Markdown allowed). Never leave empty." },
+        description: { type: "string", description: "What the feature grants — full rules text (Markdown allowed)." },
     },
     required: ["name", "description"],
 };
@@ -53,18 +59,18 @@ const namedFeatureSchema = {
 export const HOMEBREW_TOOLS: AiToolDef[] = [
     {
         name: "create_spell",
-        description: "Create a homebrew D&D 5e spell. Fill EVERY field — especially a full multi-sentence description. Example: {\"name\":\"Ember Dart\",\"description\":\"You hurl a mote of fire at a creature within range. Make a ranged spell attack. On a hit the target takes 1d6 fire damage and ignites, taking 1d4 fire damage at the start of its next turn unless it uses an action to douse the flames.\",\"level\":0,\"school\":\"Evocation\",\"castingTime\":\"1 action\",\"range\":\"60 feet\",\"duration\":\"Instantaneous\",\"concentration\":false,\"ritual\":false,\"isVerbal\":true,\"isSomatic\":true,\"isMaterial\":false,\"damageType\":\"fire\",\"classes\":[\"Sorcerer\",\"Wizard\"]}",
+        description: "Create a homebrew D&D 5e spell. Fill all required fields plus any optional field that genuinely applies (leave inapplicable optionals empty, e.g. no damageType on a non-damaging spell); always write a full multi-sentence description. Example: {\"name\":\"Ember Dart\",\"description\":\"You hurl a mote of fire at a creature within range. Make a ranged spell attack. On a hit the target takes 1d6 fire damage and ignites, taking 1d4 fire damage at the start of its next turn unless it uses an action to douse the flames.\",\"level\":0,\"school\":\"Evocation\",\"castingTime\":\"1 action\",\"range\":\"60 feet\",\"duration\":\"Instantaneous\",\"concentration\":false,\"ritual\":false,\"isVerbal\":true,\"isSomatic\":true,\"isMaterial\":false,\"damageType\":\"fire\",\"classes\":[\"Sorcerer\",\"Wizard\"]}",
         inputSchema: {
             type: "object",
             additionalProperties: false,
             properties: {
                 name: { type: "string", description: "Spell name." },
-                description: { type: "string", description: "Full spell effect text including saves, attack rolls, damage dice and conditions (Markdown allowed). Write 2-4 sentences minimum; never leave empty." },
+                description: { type: "string", description: "Full spell effect text including saves, attack rolls, damage dice and conditions (Markdown allowed). Write 2-4 sentences minimum." },
                 level: { type: "integer", minimum: 0, maximum: 9, description: "Spell level, 0 for a cantrip." },
                 school: { type: "string", enum: SCHOOLS, description: "School of magic." },
-                castingTime: { type: "string", description: 'e.g. "1 action", "1 bonus action", "1 minute". Never leave empty.' },
-                range: { type: "string", description: 'e.g. "60 feet", "Self", "Touch". Never leave empty.' },
-                duration: { type: "string", description: 'e.g. "Instantaneous", "1 minute", "Concentration, up to 10 minutes". Never leave empty.' },
+                castingTime: { type: "string", description: 'e.g. "1 action", "1 bonus action", "1 minute".' },
+                range: { type: "string", description: 'e.g. "60 feet", "Self", "Touch".' },
+                duration: { type: "string", description: 'e.g. "Instantaneous", "1 minute", "Concentration, up to 10 minutes".' },
                 concentration: { type: "boolean", description: "True if the spell requires concentration." },
                 ritual: { type: "boolean", description: "True if the spell can be cast as a ritual." },
                 isVerbal: { type: "boolean", description: "True if it has a Verbal (V) component." },
@@ -86,7 +92,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
             additionalProperties: false,
             properties: {
                 name: { type: "string", description: "Item name." },
-                desc: { type: "string", description: "Item description with concrete mechanics (damage, AC, properties) and flavor (Markdown allowed). Never leave empty." },
+                desc: { type: "string", description: "Item description with concrete mechanics (damage, AC, properties) and flavor (Markdown allowed)." },
                 type: { type: "string", enum: ITEM_TYPES, description: "Item category." },
                 weight: { type: "number", description: "Weight in pounds (0 if weightless)." },
                 cost: { type: "string", description: 'Purchase cost, e.g. "15 gp", "2 sp".' },
@@ -96,19 +102,19 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
     },
     {
         name: "create_magic_item",
-        description: "Create a homebrew magic item. Spell out the mechanical effect in the description. Example: {\"name\":\"Cloak of the Ember Fox\",\"desc\":\"A russet cloak that smells faintly of woodsmoke. While wearing it you have resistance to cold damage and can cast Misty Step once per long rest without expending a spell slot.\",\"rarity\":\"Uncommon\",\"category\":\"Wondrous Item\",\"attunement\":\"Requires attunement\",\"effect\":\"Resistance to cold; Misty Step 1/long rest\"}",
+        description: "Create a homebrew magic item. Spell out the mechanical effect in the description. Example: {\"name\":\"Mantle of the Drifting Frost\",\"desc\":\"A pale grey mantle that trails a faint chill. While wearing it you have resistance to cold damage and can cast Misty Step once per long rest without expending a spell slot.\",\"rarity\":\"Uncommon\",\"category\":\"Wondrous Item\",\"attunement\":\"Requires attunement\",\"effect\":\"Resistance to cold; Misty Step 1/long rest\"}",
         inputSchema: {
             type: "object",
             additionalProperties: false,
             properties: {
                 name: { type: "string", description: "Magic item name." },
-                desc: { type: "string", description: "Full description and magical effects with concrete numbers (Markdown allowed). Write 2-4 sentences minimum; never leave empty." },
+                desc: { type: "string", description: "Full description and magical effects with concrete numbers (Markdown allowed). Write 2-4 sentences minimum." },
                 rarity: { type: "string", enum: RARITIES, description: "Item rarity." },
                 category: { type: "string", description: 'e.g. "Wondrous Item", "Weapon", "Armor", "Potion", "Ring".' },
                 cost: { type: "string", description: "Approximate value/cost, if relevant." },
                 weight: { type: "string", description: 'Weight, e.g. "3 lb". Empty if negligible.' },
                 attunement: { type: "string", description: 'Attunement requirement, e.g. "Requires attunement by a wizard". Empty if none.' },
-                effect: { type: "string", description: "One-line summary of the mechanical effect." },
+                effect: { type: "string", description: "One-line summary of the mechanical effect for quick reference, e.g. \"Resistance to cold; Misty Step 1/long rest\". Empty if not applicable." },
                 charges: { type: "string", description: "Charges/recharge if applicable, e.g. \"3 charges, regains 1d3 at dawn\". Empty if none." },
             },
             required: ["name", "desc", "rarity", "category"],
@@ -116,13 +122,13 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
     },
     {
         name: "create_feat",
-        description: "Create a homebrew feat. The description must list the concrete benefits as bullet points or sentences. Example: {\"name\":\"Cinderborn\",\"description\":\"You have been touched by elemental fire.\\n- You gain resistance to fire damage.\\n- Once per long rest you can deal an extra 2d6 fire damage on a melee hit.\",\"prerequisite\":\"Constitution 13 or higher\"}",
+        description: "Create a homebrew feat. The description must list the concrete benefits as bullet points or sentences. Example: {\"name\":\"Thornwoven\",\"description\":\"You have been claimed by the wild wood.\\n- You gain resistance to poison damage.\\n- Once per long rest, when you hit a creature with a melee attack you can cause grasping vines to restrain it until the end of its next turn (Strength save DC 8 + your proficiency bonus + your Constitution modifier ends it).\",\"prerequisite\":\"Constitution 13 or higher\"}",
         inputSchema: {
             type: "object",
             additionalProperties: false,
             properties: {
                 name: { type: "string", description: "Feat name." },
-                description: { type: "string", description: "The feat's concrete benefits (Markdown/bullets allowed). Write at least 2 distinct benefits; never leave empty." },
+                description: { type: "string", description: "The feat's concrete benefits (Markdown/bullets allowed). Write at least 2 distinct benefits." },
                 prerequisite: { type: "string", description: "Prerequisite, if any, e.g. \"Strength 13 or higher\". Empty if none." },
             },
             required: ["name", "description"],
@@ -130,13 +136,13 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
     },
     {
         name: "create_background",
-        description: "Create a homebrew character background. Include a flavorful description, the granted skill proficiencies, and a background feature. Example: {\"name\":\"Ashfall Survivor\",\"desc\":\"You lived through the eruption that buried your home. You know how to find shelter and read the sky for danger.\",\"skills\":[\"Survival\",\"Perception\"],\"tools\":[\"Cartographer's tools\"],\"features\":[{\"name\":\"Reader of Omens\",\"description\":\"You can always find a safe place to rest in the wilderness for you and up to five companions.\"}]}",
+        description: "Create a homebrew character background. Include a flavorful description, the granted skill proficiencies, and a background feature. Example: {\"name\":\"Tidewatch Sailor\",\"desc\":\"You crewed a ship through storm and doldrum and learned to read the sky and water for danger. The rhythms of port towns are second nature to you.\",\"skills\":[\"Athletics\",\"Perception\"],\"tools\":[\"Navigator's tools\"],\"features\":[{\"name\":\"Safe Harbor\",\"description\":\"You can always find safe passage and lodging in a port town for you and up to five companions.\"}]}",
         inputSchema: {
             type: "object",
             additionalProperties: false,
             properties: {
                 name: { type: "string", description: "Background name." },
-                desc: { type: "string", description: "Flavorful description of who has this background and what they did (Markdown allowed). Write 2-3 sentences minimum; never leave empty." },
+                desc: { type: "string", description: "Flavorful description of who has this background and what they did (Markdown allowed). Write 2-3 sentences minimum." },
                 skills: { type: "array", items: { type: "string" }, description: "Skill proficiencies granted, usually two, e.g. [\"Insight\",\"Religion\"]." },
                 tools: { type: "array", items: { type: "string" }, description: "Tool proficiencies granted, if any." },
                 armor: { type: "array", items: { type: "string" }, description: "Armor proficiencies granted, if any (rare for backgrounds)." },
@@ -150,7 +156,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
     },
     {
         name: "create_race",
-        description: "Create a homebrew race/species with at least two distinct racial traits. Example: {\"name\":\"Emberkin\",\"size\":\"Medium\",\"speed\":30,\"languages\":[\"Common\",\"Ignan\"],\"abilityBonuses\":[{\"ability\":\"CON\",\"value\":2},{\"ability\":\"CHA\",\"value\":1}],\"traits\":[{\"name\":\"Ember Resistance\",\"description\":\"You have resistance to fire damage.\"},{\"name\":\"Cinder Sight\",\"description\":\"You can see normally in dim light and through smoke within 60 feet.\"}],\"age\":\"Emberkin mature by 18 and live around 120 years.\",\"alignment\":\"Often chaotic, valuing freedom and passion.\"}",
+        description: "Create a homebrew race/species with at least two distinct racial traits. Example: {\"name\":\"Cairnkin\",\"size\":\"Medium\",\"speed\":30,\"languages\":[\"Common\",\"Terran\"],\"abilityBonuses\":[{\"ability\":\"CON\",\"value\":2},{\"ability\":\"WIS\",\"value\":1}],\"traits\":[{\"name\":\"Stoneborn Resilience\",\"description\":\"You have resistance to poison damage and advantage on saving throws against being poisoned.\"},{\"name\":\"Stonecunning Sight\",\"description\":\"You can see normally in dim light within 60 feet and can sense the rough shape of stone tunnels you touch.\"}],\"age\":\"Cairnkin reach adulthood near 40 and live some 250 years.\",\"alignment\":\"Often lawful, valuing patience and permanence.\"}",
         inputSchema: {
             type: "object",
             additionalProperties: false,
@@ -180,31 +186,31 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                         additionalProperties: false,
                         properties: {
                             name: { type: "string", description: "Trait name." },
-                            description: { type: "string", description: "What the trait does (Markdown allowed). Never leave empty." },
+                            description: { type: "string", description: "What the trait does (Markdown allowed)." },
                         },
                         required: ["name", "description"],
                     },
                 },
-                age: { type: "string", description: "Flavor: how the species ages and how long it lives." },
-                alignment: { type: "string", description: "Flavor: typical alignment tendencies." },
+                age: { type: "string", description: "Flavor: how the species ages and how long it lives. Empty if not applicable." },
+                alignment: { type: "string", description: "Flavor: typical alignment tendencies. Empty if not applicable." },
             },
             required: ["name", "size", "speed"],
         },
     },
     {
         name: "create_subclass",
-        description: "Create a homebrew subclass for an existing class, with a description and features at the appropriate levels. Example: {\"name\":\"Path of the Ember\",\"parentClass\":\"Barbarian\",\"description\":\"Barbarians who channel inner fire, burning hotter the angrier they get.\",\"features\":[{\"level\":3,\"name\":\"Burning Rage\",\"description\":\"While raging, a creature that hits you with a melee attack takes 2 fire damage.\"},{\"level\":6,\"name\":\"Heat Shield\",\"description\":\"You gain resistance to fire damage.\"}]}",
+        description: "Create a homebrew subclass for an existing class, with a description and features at the appropriate levels. Example: {\"name\":\"Path of the Tempest\",\"parentClass\":\"Barbarian\",\"description\":\"Barbarians who call the storm into their fury, crackling with lightning as their rage builds.\",\"features\":[{\"level\":3,\"name\":\"Storm's Wrath\",\"description\":\"While raging, a creature that hits you with a melee attack takes 2 lightning damage.\"},{\"level\":6,\"name\":\"Thunderhide\",\"description\":\"You gain resistance to lightning and thunder damage.\"}]}",
         inputSchema: {
             type: "object",
             additionalProperties: false,
             properties: {
                 name: { type: "string", description: "Subclass name." },
                 parentClass: { type: "string", description: 'The base class this subclass belongs to, e.g. "Wizard", "Fighter".' },
-                description: { type: "string", description: "Overview of the subclass's theme and playstyle (Markdown allowed). Write 2-3 sentences minimum; never leave empty." },
+                description: { type: "string", description: "Overview of the subclass's theme and playstyle (Markdown allowed). Write 2-3 sentences minimum." },
                 features: { type: "array", items: featureSchema, description: "Features gained, each tagged with its level. Provide a feature at the subclass's normal levels (typically 3, 6, 10, 14)." },
                 casterType: { type: "string", enum: CASTER_TYPES, description: "Set ONLY if this subclass grants spellcasting its base class lacks (e.g. Eldritch Knight = \"third\"). \"third\"/\"half\"/\"full\"/\"pact\" fill the spell-slot table; omit or \"none\" otherwise." },
             },
-            required: ["name", "parentClass", "description"],
+            required: ["name", "parentClass", "description", "features"],
         },
     },
     {
@@ -226,7 +232,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 startingEquipment: { type: "array", items: { type: "string" }, description: "Starting equipment items, e.g. [\"A simple weapon\",\"Leather armor\"]." },
                 casterType: { type: "string", enum: CASTER_TYPES, description: "Spellcasting progression: \"none\" (martial), \"third\" (e.g. Eldritch Knight), \"half\" (e.g. Paladin), \"full\" (e.g. Wizard), or \"pact\" (Warlock). Set this for any spellcaster — the app fills the spell-slot table from it. Omit or \"none\" for a non-caster." },
             },
-            required: ["name", "hitDie", "primaryAbility", "savingThrows"],
+            required: ["name", "hitDie", "primaryAbility", "savingThrows", "features"],
         },
     },
 ];
@@ -251,6 +257,13 @@ export function allowedKinds(perms: ToolPermissions | undefined): HomebrewKind[]
         default:
             return [...HOMEBREW_KINDS];
     }
+}
+
+/** The required-field names the model must fill for a given kind (from that kind's create_* schema). */
+export function requiredFieldsForKind(kind: HomebrewKind): string[] {
+    const tool = HOMEBREW_TOOLS.find(t => t.name === KIND_TO_TOOL[kind]);
+    const req = (tool?.inputSchema as { required?: unknown })?.required;
+    return Array.isArray(req) ? (req as string[]) : [];
 }
 
 /** The create_* tool definitions the model may use under the given permissions (preserves order). */

@@ -1,5 +1,5 @@
 /**
- * The set of homebrew entity kinds Spark can generate (one per create_* tool).
+ * The set of homebrew entity kinds Grimoire can generate (one per create_* tool).
  *
  * Extracted to its own leaf module (no imports) so non-AI modules — notably
  * models/userSettings.ts (tool permissions, custom review agents) — can reference the

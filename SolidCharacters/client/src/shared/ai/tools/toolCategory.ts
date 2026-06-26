@@ -1,5 +1,5 @@
 /**
- * Tool categorization seam. Spark's tool calls fall into these execution paths:
+ * Tool categorization seam. Grimoire's tool calls fall into these execution paths:
  *
  * - "homebrew":    the existing create_* generation flow — buildPreview → pendingPreviews → the user
  *                  Saves/Rejects → resolveToolCall continues the turn.

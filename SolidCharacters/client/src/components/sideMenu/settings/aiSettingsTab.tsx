@@ -3,7 +3,7 @@ import { Select, Option, Input, Checkbox, Button, addSnackbar } from "coles-soli
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
 import {
-    AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
+    AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA,
     DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind,
 } from "../../../models/userSettings";
 
@@ -20,7 +20,7 @@ const MODEL_PLACEHOLDER: Record<AiProviderKind, string> = {
 };
 
 /**
- * Settings tab for the Spark AI assistant. Provider/model/enabled are stored in UserSettings (and
+ * Settings tab for the Grimoire AI assistant. Provider/model/enabled are stored in UserSettings (and
  * persisted by the popup's "Save Settings" button). Cloud API keys are NOT stored here — they are
  * POSTed to the .NET backend (/api/ai/credentials) and held server-side.
  */
@@ -96,7 +96,7 @@ const AiSettingsTab: Component = () => {
 
     return (
         <div>
-            <h3>AI (Spark)</h3>
+            <h3>AI (Grimoire)</h3>
             <p style={{ opacity: 0.75, "font-size": "var(--font-size-small)" }}>
                 Configure the AI assistant. Cloud keys are stored on the server, never in your browser.
                 Local models are called directly from this device.
@@ -218,7 +218,19 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox label="Enable Spark assistant" checked={ai().enabled} onChange={(checked) => updateAi({ enabled: checked })} />
+                <Checkbox label="Enable Grimoire assistant" checked={ai().enabled} onChange={(checked) => updateAi({ enabled: checked })} />
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <Checkbox
+                    label="In-character voice"
+                    checked={(ai().personaVoice ?? DEFAULT_AI_PERSONA) === "grimoire"}
+                    onChange={(checked) => updateAi({ personaVoice: checked ? "grimoire" : "neutral" })}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    Grimoire speaks as a sentient spellbook — warm flavor in greetings and confirmations, while
+                    rules and stat blocks stay plain. Turn off for a neutral, no-frills voice.
+                </div>
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>

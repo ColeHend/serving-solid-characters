@@ -10,6 +10,8 @@ import { str, strList } from "../coerce";
  *
  * PendingInteractions are transient like HomebrewPreviews — never persisted; on reload balancedHistory()
  * drops the trailing unanswered tool call and the chat resumes wire-valid.
+ *
+ * ZERO-PERSONA SURFACE: procedural tool descriptions — keep them neutral, no Grimoire voice.
  */
 
 export type InteractionKind = "ask" | "plan";

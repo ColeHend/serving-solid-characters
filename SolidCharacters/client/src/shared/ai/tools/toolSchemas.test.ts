@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { HOMEBREW_TOOLS, allowedKinds, filterTools } from "./toolSchemas";
+import { HOMEBREW_TOOLS, allowedKinds, filterTools, requiredFieldsForKind } from "./toolSchemas";
 import { HOMEBREW_KINDS } from "../refs/homebrewKind";
 import { ToolPermissions } from "../../../models/userSettings";
+
+const reqOf = (toolName: string) =>
+    (HOMEBREW_TOOLS.find(t => t.name === toolName)?.inputSchema as { required?: string[] }).required ?? [];
 
 const names = (tools: { name: string }[]) => tools.map(t => t.name).sort();
 
@@ -57,5 +60,38 @@ describe("filterTools", () => {
 
     it("returns no tools when everything is denied", () => {
         expect(filterTools(HOMEBREW_TOOLS, { mode: "deny", denied: [...HOMEBREW_KINDS] })).toEqual([]);
+    });
+});
+
+describe("schema correctness fixes", () => {
+    it("requires features on subclass and class (no more empty-feature entities)", () => {
+        expect(reqOf("create_subclass")).toContain("features");
+        expect(reqOf("create_class")).toContain("features");
+    });
+
+    it("requiredFieldsForKind reads the kind's create_* required list", () => {
+        expect(requiredFieldsForKind("class")).toContain("features");
+        expect(requiredFieldsForKind("spell")).toContain("description");
+    });
+
+    it("no tool description still says 'Fill EVERY field' (it contradicted the optional schema)", () => {
+        expect(HOMEBREW_TOOLS.some(t => /fill every field/i.test(t.description))).toBe(false);
+    });
+
+    it("no field description repeats 'never leave empty' (canonical in the quality bar now)", () => {
+        const fieldDescs = HOMEBREW_TOOLS.flatMap(t => {
+            const props = (t.inputSchema as { properties?: Record<string, { description?: string }> }).properties ?? {};
+            return Object.values(props).map(p => p.description ?? "");
+        });
+        expect(fieldDescs.some(d => /never leave empty/i.test(d))).toBe(false);
+    });
+});
+
+describe("example themes are diversified (only the spell example is fire)", () => {
+    it("limits fire/ember/cinder/ash flavor to create_spell", () => {
+        const fireToolNames = HOMEBREW_TOOLS
+            .filter(t => /\b(fire|ember|cinder|ashfall)\b/i.test(t.description))
+            .map(t => t.name);
+        expect(fireToolNames).toEqual(["create_spell"]);
     });
 });

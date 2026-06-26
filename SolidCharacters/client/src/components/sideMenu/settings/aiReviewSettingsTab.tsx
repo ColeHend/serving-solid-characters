@@ -22,7 +22,7 @@ const hint = { opacity: 0.6, "font-size": "var(--font-size-small)" } as const;
 const section = { "margin-top": "var(--spacing-3)" } as const;
 
 /**
- * "AI Behavior" settings: how much automated QC Spark applies (usage level), which content types it
+ * "AI Behavior" settings: how much automated QC Grimoire applies (usage level), which content types it
  * may create (tool permissions), and the High-mode readiness pipeline (passes + reviewer model).
  * Reads/writes the same global UserSettings signal as aiSettingsTab; persisted by the popup's Save button.
  */
@@ -81,7 +81,7 @@ const AiReviewSettingsTab: Component = () => {
         <div>
             <h3>AI Behavior</h3>
             <p style={hint}>
-                Control how much automated quality-control Spark applies to homebrew it generates, and
+                Control how much automated quality-control Grimoire applies to homebrew it generates, and
                 which content types it may create.
             </p>
 
@@ -116,7 +116,7 @@ const AiReviewSettingsTab: Component = () => {
             <div style={section}>
                 <label>Allowed content types</label>
                 <RadioGroup value={perms().mode} onChange={(v) => updatePerms({ mode: v as ToolPermissions["mode"] })}>
-                    <Radio value="all" label="All — Spark may create any content type" />
+                    <Radio value="all" label="All — Grimoire may create any content type" />
                     <Radio value="allow" label="Only the types I pick" />
                     <Radio value="deny" label="All except the types I pick" />
                 </RadioGroup>
@@ -137,7 +137,7 @@ const AiReviewSettingsTab: Component = () => {
             <div style={section}>
                 <label>Helper tools</label>
                 <div style={hint}>
-                    Extra tools Spark can use in both Chat and Homebrew, independent of the content types above.
+                    Extra tools Grimoire can use in both Chat and Homebrew, independent of the content types above.
                 </div>
                 <div style={{ "margin-top": "var(--spacing-1)" }}>
                     <Checkbox
@@ -146,12 +146,12 @@ const AiReviewSettingsTab: Component = () => {
                         onChange={(checked) => updateAi({ mathTools: checked })}
                     />
                     <Checkbox
-                        label="Ask me questions — let Spark offer choices or ask for a direction inline"
+                        label="Ask me questions — let Grimoire offer choices or ask for a direction inline"
                         checked={ai().askTools ?? DEFAULT_AI_ASK_TOOLS}
                         onChange={(checked) => updateAi({ askTools: checked })}
                     />
                     <Checkbox
-                        label="Propose a plan — let Spark suggest a design goal/plan to approve before a big build"
+                        label="Propose a plan — let Grimoire suggest a design goal/plan to approve before a big build"
                         checked={ai().planTools ?? DEFAULT_AI_PLAN_TOOLS}
                         onChange={(checked) => updateAi({ planTools: checked })}
                     />
@@ -213,7 +213,7 @@ const AiReviewSettingsTab: Component = () => {
                         }}
                     />
                     <div style={hint}>
-                        If generated content keeps failing schema validation this many times, Spark stops
+                        If generated content keeps failing schema validation this many times, Grimoire stops
                         retrying and asks you how to proceed instead of looping.
                     </div>
                 </div>

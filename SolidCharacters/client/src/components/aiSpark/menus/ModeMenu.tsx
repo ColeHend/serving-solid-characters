@@ -49,8 +49,8 @@ const ModeMenu: Component = () => {
                 aria-haspopup="menu"
                 aria-expanded={open()}
                 title={isHomebrew()
-                    ? "Mode: Homebrew — Spark turns your description into spells, items, feats and more. Click to switch modes."
-                    : "Mode: Chat — ask Spark anything about D&D. Click to switch to Homebrew generation."}
+                    ? "Mode: Homebrew — Grimoire turns your description into spells, items, feats and more. Click to switch modes."
+                    : "Mode: Chat — ask Grimoire anything about D&D. Click to switch to Homebrew generation."}
                 onClick={() => setOpen((o) => !o)}
             >
                 <Icon icon={isHomebrew() ? Bolt : Chat} size="small" />

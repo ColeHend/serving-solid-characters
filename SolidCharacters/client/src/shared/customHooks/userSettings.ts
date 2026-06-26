@@ -92,7 +92,7 @@ function getAllUsers() {
   );
 }
 
-// ----------------- AI ("Spark") provider availability + gating -----------------
+// ----------------- AI ("Grimoire") provider availability + gating -----------------
 // Which cloud providers have a usable key configured on the .NET backend. Local is always
 // "available" (it's a direct browser call with no server key). Populated from
 // GET /api/ai/providers — see refreshAiProviderStatus().
@@ -126,7 +126,7 @@ export function refreshAiProviderStatus(): void {
 }
 
 /**
- * Reactive gate for the Spark icon + sidebar. True only when the feature is enabled, a model
+ * Reactive gate for the Grimoire icon + sidebar. True only when the feature is enabled, a model
  * is chosen, and the selected provider is usable (local needs a base URL; cloud needs a
  * server-side key, reported by getAiProviderStatus()). Reads module signals so it's reactive
  * in JSX.

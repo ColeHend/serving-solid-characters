@@ -12,7 +12,7 @@ import styles from "../SparkSidebar.module.scss";
  * has no action button). Rows are real <button>s (keyboard-focusable) rather than role="menuitem" divs.
  *
  * Hand-rolled popover (not the coles Menu): the coles Menu portals to <body> with its own ~999 z-index,
- * which renders BEHIND the z-index:1200 Spark sidebar. A popover inside the sidebar shares its stacking
+ * which renders BEHIND the z-index:1200 Grimoire sidebar. A popover inside the sidebar shares its stacking
  * context and stays visible.
  */
 const ConversationMenu: Component = () => {

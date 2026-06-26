@@ -4,7 +4,7 @@ import { createNewId } from "./utility/tools/idGen";
 
 /**
  * Singleton store for the homebrew decision log (mirrors reviewAgentManager). The app appends an entry
- * whenever Spark commits a create/edit; the log UI reads the reactive list. Kept in its own Dexie DB so
+ * whenever Grimoire commits a create/edit; the log UI reads the reactive list. Kept in its own Dexie DB so
  * it never bloats settings or chat history.
  */
 const [entries, setEntries] = createSignal<DecisionLogEntry[]>([]);

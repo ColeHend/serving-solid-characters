@@ -42,7 +42,7 @@ const ChatMessageList: Component = () => {
             <div class={styles.messageList} ref={el => (scroller = el)} onScroll={onScroll} role="log" aria-live="polite" aria-relevant="additions text">
                 <Show when={aiAssistant.messages().length === 0 && aiAssistant.status() !== "streaming"}>
                     <div class={styles.empty}>
-                        <p>Ask Spark about D&D rules, or switch to <strong>Homebrew</strong> to generate spells, items, and more.</p>
+                        <p>Ask Grimoire about D&D rules, or switch to <strong>Homebrew</strong> to generate spells, items, and more.</p>
                         <div class={styles.starterPrompts}>
                             <button type="button" class={styles.starterChip} onClick={() => aiAssistant.send("Explain how concentration works in 5e.")}>
                                 Explain concentration

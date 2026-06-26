@@ -138,7 +138,7 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                             </div>
                         </div>
                         <div class={styles.directionNote}>
-                            Spark couldn't get this to pass validation. {p().errors.join(" ")} How would you like to proceed?
+                            Grimoire couldn't get this to pass validation. {p().errors.join(" ")} How would you like to proceed?
                         </div>
                         <div class={styles.previewBody}>
                             <Show when={previewBody(p())} fallback={<span class={styles.previewPlaceholder}>No description provided.</span>}>

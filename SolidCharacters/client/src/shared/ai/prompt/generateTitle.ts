@@ -8,6 +8,8 @@ export interface TitleContext {
     assistant?: string;
 }
 
+// ZERO-PERSONA SURFACE: pure utility on a 32-token budget with think:false. Any Grimoire flavor here
+// risks blowing the title — keep this plain and never thread the persona in.
 const TITLE_SYSTEM_PROMPT =
     "You generate a short title for a Dungeons & Dragons chat. Reply with ONLY a 3 to 6 word " +
     "title in plain text. No quotes, no trailing punctuation, no markdown, no preamble.";
