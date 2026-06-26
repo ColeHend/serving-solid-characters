@@ -57,6 +57,13 @@
         
     }
 
+    h5 {
+        font-family: 'Mr_Eaves_Small_Caps';
+        color: #7c2718;
+        text-wrap: wrap;
+        z-index: 2;
+    }
+
     span {
         font-family: 'Bookinsanity';
         font-weight: 400;
@@ -72,12 +79,76 @@
     padding: 2%;
     
     strong {
+        font-family: 'Bookinsanity';
+        font-weight: 400;
+        font-size: 17px;
+        line-height: 1.62;
+        // font-style: italic;
+
         em {
             display: block;
             margin-top: 8px;
         }
-
     }
+
+    table {
+        border: 1px solid rgba(74, 46, 18, 0.42);
+        overflow: hidden;
+        box-shadow: rgba(74, 46, 18, 0.18) 0px 1px 4px;
+        width: 70%;
+        border-collapse: collapse;
+        border-bottom: 1px solid rgba(90, 55, 20, 0.16);
+
+        thead {
+            box-sizing: border-box;
+
+            tr {
+                background: #581c11;
+                color: #f6ecd2;
+
+                th {
+                    padding: 8px 10px;
+                    font-family: "Zatanna_Misdirection";
+                    font-weight: 600;
+                    font-size: 10.5px;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
+                    text-align: center;
+                }
+            }
+        }
+
+        tbody {
+            box-sizing: border-box;
+            
+            :nth-child(odd) {
+                background: transparent;
+            }
+
+            tr {
+                background: rgba(122,82,34,0.10);
+            }
+            
+            tr:nth-of-type(n):not(:last-child) {
+                border-bottom: 1px solid rgba(90, 55, 20, 0.16);
+            }
+
+            td {
+                padding: 7px 10px;
+                text-align: center;
+                font-size: 15.5px;
+                font-family: "Scaly_Sans";
+                font-weight: 600;
+                color: rgb(58, 28, 10);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            width: 100%;
+        }
+    }
+
+
 }
 
 .dndStyledHeader {
@@ -123,5 +194,5 @@
 }
 
 .spellSchoolTitle {
-    margin-top: 20px !important;
+    margin-top: 12% !important;
 }
