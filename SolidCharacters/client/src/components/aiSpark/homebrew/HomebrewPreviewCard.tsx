@@ -8,6 +8,7 @@ import { editorRouteFor } from "../../../shared/ai/tools/toolDispatcher";
 import { setEditHandoff } from "../../../shared/ai/editHandoff";
 import { HomebrewPreview, previewBody, previewSubtitle } from "../aiSpark.shared";
 import HomebrewCompleteness from "./HomebrewCompleteness";
+import HomebrewCommands from "./HomebrewCommands";
 import ReviewVerdicts from "./ReviewVerdicts";
 import styles from "../SparkSidebar.module.scss";
 
@@ -73,6 +74,7 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                     <Show when={!p().valid}>
                         <div class={styles.previewError}>{p().errors.join(" ")}</div>
                     </Show>
+                    <HomebrewCommands preview={p()} />
                     <HomebrewCompleteness preview={p()} />
                     <ReviewVerdicts preview={p()} />
                     <div class={styles.previewActions}>

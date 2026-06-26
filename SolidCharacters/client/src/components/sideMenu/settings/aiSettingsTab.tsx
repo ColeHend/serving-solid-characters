@@ -3,8 +3,9 @@ import { Select, Option, Input, Checkbox, Button, addSnackbar } from "coles-soli
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
 import {
-    AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH,
-    DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind, PersonaStrength,
+    AiProviderKind, AiSettings, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
+    DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
+    LocalApiKind, PersonaStrength,
 } from "../../../models/userSettings";
 
 const DEFAULT_AI: AiSettings = {
@@ -227,6 +228,20 @@ const AiSettingsTab: Component = () => {
                     Off by default: while generating homebrew, a reasoning model can spend its whole token
                     budget thinking and get "cut off" before producing the entity. If you turn this on and see
                     truncated results, use "Complete with AI" or raise max tokens / context window.
+                </div>
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <Checkbox
+                    label="Auto-add mechanical effects to generated homebrew"
+                    checked={ai().commandGeneration ?? DEFAULT_AI_COMMAND_GENERATION}
+                    onChange={(checked) => updateAi({ commandGeneration: checked })}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    On by default: after generating a race, class, subclass, background, or feat, a helper reads
+                    each feature and attaches the matching character-sheet effects (resistances, ability changes,
+                    proficiencies, speed, etc.) so the content actually works on the sheet. Adds one short model
+                    call per generated entity.
                 </div>
             </div>
 

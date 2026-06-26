@@ -485,6 +485,21 @@
     flex-wrap: wrap;
     align-items: center;
 }
+// Mechanical "mads" commands attached by the command sub-agent, shown as read-only chips.
+.commandsRow {
+    display: flex;
+    gap: var(--spacing-1, 6px);
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: var(--spacing-1, 6px);
+}
+.commandsPending {
+    font-size: var(--font-size-small, 0.8rem);
+    opacity: 0.75;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
 .previewWarning {
     color: var(--spark-warn-color, #e0a52e);
     font-size: 0.8rem;

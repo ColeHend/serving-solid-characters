@@ -146,6 +146,12 @@ export const DEFAULT_AI_PLAN_TOOLS = true;   // propose_plan (design goal / plan
 export const DEFAULT_AI_LOOKUP_TOOLS = true;
 /** Let the model switch its own mode (switch_mode) when it needs a tool the current mode lacks. Default ON. */
 export const DEFAULT_AI_AUTO_SWITCH = true;
+/**
+ * After generating feature-bearing homebrew (race/class/subclass/background/feat), run a sub-agent that
+ * attaches the matching "mads" character-change commands so the content affects the sheet. Default ON;
+ * runs at every usage level (independent of the High-mode readiness pipeline). See shared/ai/commands.
+ */
+export const DEFAULT_AI_COMMAND_GENERATION = true;
 
 /**
  * How much of the in-character Grimoire (sentient-spellbook) persona to apply — chosen by the user for
@@ -201,6 +207,8 @@ export interface AiSettings {
     lookupTools?: boolean;
     /** Let the model switch its own mode when it needs a tool the current mode lacks. Defaults to DEFAULT_AI_AUTO_SWITCH. */
     autoSwitch?: boolean;
+    /** Auto-attach mechanical "mads" commands to generated feature-bearing homebrew. Defaults to DEFAULT_AI_COMMAND_GENERATION. */
+    commandGeneration?: boolean;
     /** How much in-character Grimoire persona to apply (any model). Defaults to DEFAULT_AI_PERSONA_STRENGTH. */
     personaStrength?: PersonaStrength;
 }

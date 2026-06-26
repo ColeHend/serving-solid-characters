@@ -49,7 +49,9 @@ vi.mock("./homebrewManager", () => ({
 
 import { aiAssistant } from "./aiAssistant";
 
-const baseAi: AiSettings = { provider: "local", model: "m", localBaseUrl: "x", enabled: true };
+// commandGeneration is OFF here so these usage-level/readiness tests can assert exact provider-call
+// counts without the post-generation command sub-agent firing its own model call per feature-bearing entity.
+const baseAi: AiSettings = { provider: "local", model: "m", localBaseUrl: "x", enabled: true, commandGeneration: false };
 
 /** A streamed tool call carrying the given (possibly malformed) argument string. */
 function toolCall(args: string, name = "create_spell") {

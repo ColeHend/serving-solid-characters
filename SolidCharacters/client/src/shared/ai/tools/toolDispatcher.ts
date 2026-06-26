@@ -56,6 +56,12 @@ export interface HomebrewPreview {
      * ("Improving with AI…") and is removed once the regenerated replacement preview arrives.
      */
     repairing?: boolean;
+    /**
+     * True while the command sub-agent is attaching mechanical "mads" commands to this entity's features
+     * (post-generation enrichment). Display-only: the card shows an "Adding mechanics…" note; cleared when
+     * the enriched entity is patched back in.
+     */
+    enriching?: boolean;
     /** High-mode readiness state. Undefined for Low/Medium (no pipeline runs). */
     reviewState?: ReviewState;
     /** Verdicts from the readiness pipeline (one per pass that ran), surfaced on the card. */

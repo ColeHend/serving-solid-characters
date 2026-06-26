@@ -2,9 +2,10 @@ import { Accessor, createSignal, Setter } from "solid-js";
 import { addSnackbar } from "coles-solid-library";
 import getUserSettings from "./userSettings";
 import {
-    AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_LOOKUP_TOOLS, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
-    DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES,
-    DEFAULT_MEDIUM_RETRIES, DEFAULT_USAGE_LEVEL, UsageControlLevel,
+    AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_LOOKUP_TOOLS,
+    DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_THINKING,
+    DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES,
+    DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
 import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
@@ -16,6 +17,7 @@ import { LOOKUP_TOOLS, runLookupTool } from "../ai/tools/lookupTools";
 import { EDIT_TOOLS } from "../ai/tools/editTools";
 import { CONTROL_TOOLS, parseSwitchMode } from "../ai/tools/controlTools";
 import { DELEGATE_RESEARCH_TOOL, researchAgentSpec, runSubAgent } from "../ai/subAgent";
+import { attachCommands, hasFeatures } from "../ai/commands/commandAgent";
 import {
     buildInteraction, interactionResultText, InteractionResponse, PendingInteraction,
 } from "../ai/tools/interactions";
@@ -127,6 +129,7 @@ export class AiAssistant {
     private controller: AbortController | null = null;
     private reviewController: AbortController | null = null;   // aborts in-flight readiness reviews (High mode)
     private delegateController: AbortController | null = null; // aborts an in-flight research sub-agent
+    private commandController: AbortController | null = null;  // aborts in-flight command enrichment
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
     private schemaRetryStreak = 0;                       // High-mode SCHEMA-gate regenerations (pre-handoff) for this request
@@ -199,6 +202,8 @@ export class AiAssistant {
         this.reviewController = null;
         this.delegateController?.abort(); // stop any in-flight research sub-agent
         this.delegateController = null;
+        this.commandController?.abort();  // stop any in-flight command enrichment
+        this.commandController = null;
         // Preserve any partial text/thinking as a bubble so it isn't lost (splitting out leaked reasoning).
         const split = splitModelReasoning(this.streamingText());
         const partial = split.text;
@@ -914,6 +919,7 @@ export class AiAssistant {
                     const show = previews.filter(p => !failed(p));
                     // Show the good ones (dropping any collapsed "Improving…" cards); their tool calls stay outstanding.
                     this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...show]);
+                    void this.enrichWithCommands(show.filter(p => p.valid && hasFeatures(p.kind)).map(p => p.previewId), epoch);
                     void this.persistCurrent();
                     this.maybeGenerateTitle();
                     // If anything remains for the user, the turn is idle now. If everything is being retried,
@@ -941,7 +947,7 @@ export class AiAssistant {
                         // If valid cards remain for the user, the turn is idle now; otherwise resolving the last
                         // failed call below starts a fresh turn (which manages its own streaming status).
                         if (reviewing.length) this.setStatus("idle");
-                        void this.runReadiness(reviewing.map(p => p.previewId), epoch);
+                        void this.enrichThenReview(reviewing.map(p => p.previewId), epoch);
                         for (const p of schemaFailed) {
                             const reason = p.errors.length ? p.errors.join(" ") : "the response was cut off or its data could not be parsed";
                             this.resolveToolCall(p.toolCallId, repairInstruction(p, reason), true);
@@ -958,12 +964,14 @@ export class AiAssistant {
                     void this.persistCurrent();
                     this.maybeGenerateTitle();
                     this.setStatus("idle");
-                    void this.runReadiness(reviewing.map(p => p.previewId), epoch);
+                    void this.enrichThenReview(reviewing.map(p => p.previewId), epoch);
                     return;
                 }
 
                 // Low: drop any collapsed "Improving…" cards — their replacement has now arrived.
                 this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...previews]);
+                // Enrich the surfaced feature-bearing entities with mechanical commands (no-op if disabled).
+                void this.enrichWithCommands(previews.filter(p => p.valid && hasFeatures(p.kind)).map(p => p.previewId), epoch);
             } else {
                 // No homebrew replacement arrived this turn — revert any collapsed "Improving…" cards so they
                 // stay actionable instead of being stranded (a repair turn always regenerates via create_*).
@@ -1067,6 +1075,50 @@ export class AiAssistant {
         } finally {
             if (this.reviewController?.signal === signal) this.reviewController = null;
         }
+    }
+
+    /**
+     * Post-generation command enrichment: for each feature-bearing preview, run the command sub-agent to
+     * attach mechanical "mads" commands to the entity's features and patch the enriched entity back onto
+     * the card. Runs SEQUENTIALLY (one local model at a time, like runReadiness) and at every usage level.
+     * Fails open: a thrown/empty pass leaves the entity with plain features. Returns false if it was
+     * aborted or the session swapped (so the High-mode caller skips the follow-on review).
+     */
+    private async enrichWithCommands(previewIds: string[], epoch: number): Promise<boolean> {
+        if (!previewIds.length) return true;
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        if (!ai) return true;
+        if (!(ai.commandGeneration ?? DEFAULT_AI_COMMAND_GENERATION)) return true;
+
+        this.commandController = new AbortController();
+        const signal = this.commandController.signal;
+        try {
+            for (const id of previewIds) {
+                if (epoch !== this.turnEpoch || signal.aborted) return false;
+                const preview = this.pendingPreviews().find(p => p.previewId === id);
+                if (!preview || !preview.valid || !hasFeatures(preview.kind)) continue;   // gone / broken / no features
+
+                this.setPendingPreviews(prev => prev.map(p => p.previewId === id ? { ...p, enriching: true } : p));
+                let enriched: HomebrewPreview["entity"] | null = null;
+                try { enriched = await attachCommands(preview, ai, signal); }
+                catch (e) { console.error("Command enrichment failed", e); }
+
+                if (epoch !== this.turnEpoch || signal.aborted) return false;
+                this.setPendingPreviews(prev => prev.map(p =>
+                    p.previewId === id ? { ...p, enriching: false, entity: enriched ?? p.entity } : p));
+            }
+            return true;
+        } finally {
+            if (this.commandController?.signal === signal) this.commandController = null;
+        }
+    }
+
+    /** High mode: enrich first (so the reviewer sees the final entity), then run the readiness pipeline. */
+    private async enrichThenReview(previewIds: string[], epoch: number) {
+        const ok = await this.enrichWithCommands(previewIds, epoch);
+        if (!ok) return;
+        await this.runReadiness(previewIds, epoch);
     }
 
     /** Resolve an async auto-resolve tool (lookup_* / delegate_research). Drops a late result if the session swapped. */
