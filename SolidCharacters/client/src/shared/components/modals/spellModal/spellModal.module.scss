@@ -1,8 +1,18 @@
 .view {
     box-sizing: border-box;
-    background: none;
-    background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
+    // background: none;
+    // background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
     // width: 100%;
+    background-color: #d6bf94;
+    background-image:
+        radial-gradient(circle at 17% 11%, rgba(120,82,38,.17), transparent 40%),
+        radial-gradient(circle at 87% 16%, rgba(110,74,34,.15), transparent 38%),
+        radial-gradient(circle at 78% 84%, rgba(92,60,26,.19), transparent 47%),
+        radial-gradient(circle at 11% 89%, rgba(100,68,30,.17), transparent 43%),
+        radial-gradient(circle at 48% 42%, rgba(234,216,178,.85), transparent 78%),
+        url("data:… svg feTurbulence fractalNoise, baseFrequency .78, opacity .05 …");
+    box-shadow: inset 0 0 80px rgba(74,46,18,.5),
+                inset 0 0 16px rgba(74,46,18,.32);
     height: 100%;
     text-wrap: wrap;
     text-align: left;
@@ -15,7 +25,7 @@
     h1{
         font-family: 'Mr_Eaves_Small_Caps';
         font-weight: 100;
-        color: #AA0505;
+        color: #7c2718;
         margin-left: 12px;
         font-size: 1.8em;
         text-wrap: wrap;
@@ -28,27 +38,38 @@
         font-family: 'Mr_Eaves_Small_Caps';
         font-weight: 100;
         font-weight: bold;
-        color: #AA0505;
-        margin-left: 12px;
+        color: #7c2718;
+        margin-left: 26px;
         font-size: 1.2em;
         text-wrap: wrap;
         z-index: 2;
+        margin-top: 0;
+        margin-bottom: 0;
     }
     
     h4 {
         font-family: 'Mr_Eaves_Small_Caps';
         font-weight: 100;
-        color: #AA0505;
+        color: #7c2718;
         margin-left: 12px;
         text-wrap: wrap;
         z-index: 2;
         
     }
 
+    h5 {
+        font-family: 'Mr_Eaves_Small_Caps';
+        color: #7c2718;
+        text-wrap: wrap;
+        z-index: 2;
+    }
+
     span {
         font-family: 'Bookinsanity';
-        font-weight: 100;
-        color: #000;
+        font-weight: 400;
+        font-size: 17px;
+        line-height: 1.62;
+        color: #241405;
         text-wrap: wrap;
         z-index: 1;
     }
@@ -56,4 +77,122 @@
 
 .desc {
     padding: 2%;
+    
+    strong {
+        font-family: 'Bookinsanity';
+        font-weight: 400;
+        font-size: 17px;
+        line-height: 1.62;
+        // font-style: italic;
+
+        em {
+            display: block;
+            margin-top: 8px;
+        }
+    }
+
+    table {
+        border: 1px solid rgba(74, 46, 18, 0.42);
+        overflow: hidden;
+        box-shadow: rgba(74, 46, 18, 0.18) 0px 1px 4px;
+        width: 70%;
+        border-collapse: collapse;
+        border-bottom: 1px solid rgba(90, 55, 20, 0.16);
+
+        thead {
+            box-sizing: border-box;
+
+            tr {
+                background: #581c11;
+                color: #f6ecd2;
+
+                th {
+                    padding: 8px 10px;
+                    font-family: "Zatanna_Misdirection";
+                    font-weight: 600;
+                    font-size: 10.5px;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
+                    text-align: center;
+                }
+            }
+        }
+
+        tbody {
+            box-sizing: border-box;
+            
+            :nth-child(odd) {
+                background: transparent;
+            }
+
+            tr {
+                background: rgba(122,82,34,0.10);
+            }
+            
+            tr:nth-of-type(n):not(:last-child) {
+                border-bottom: 1px solid rgba(90, 55, 20, 0.16);
+            }
+
+            td {
+                padding: 7px 10px;
+                text-align: center;
+                font-size: 15.5px;
+                font-family: "Scaly_Sans";
+                font-weight: 600;
+                color: rgb(58, 28, 10);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            width: 100%;
+        }
+    }
+
+
+}
+
+.dndStyledHeader {
+  font-family: 'Mr_Eaves_Small_Caps', serif;
+//   font-weight: 600;
+  font-size: 14px;
+//   letter-spacing: 0.24em;
+  color: rgb(231, 185, 106);
+  padding: 15px 56px 13px 30px;
+
+  h1 {
+    font-weight: 700;
+  }
+
+
+
+}
+
+.flavor {
+    font-size: 16px;
+    font-style: italic;
+    color: #5a3414 !important;
+}
+
+.spellInfo {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 9px 30px;
+  align-items: baseline;
+  margin-left: 26px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.infoBox {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+.spellSchoolTitle {
+    margin-top: 12% !important;
 }
