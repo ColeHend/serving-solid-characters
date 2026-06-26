@@ -1,4 +1,4 @@
-import { Accessor, Component, createMemo, For, Match, Setter, Show, Switch } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
 import { Feat, PrerequisiteType } from "../../../../models/generated";
 import style from "./featView.module.scss";
 import { Modal } from "coles-solid-library";
@@ -17,12 +17,31 @@ const FeatView: Component<props> = (props) => {
 
   const featDescription = createMemo(()=>currentFeat().details.description)
 
+  const [menuRef, setMenuRef] = createSignal<HTMLElement|null>(null);
+
+  createEffect(() => {
+    const ref = menuRef();
+
+    if (!ref) {
+
+      return;
+    }
+
+    const firstParent = ref.parentElement;
+
+    const second = firstParent?.parentElement;
+
+    if (second) {
+      second.style.paddingBottom = "0"
+    }
+  })
+
   return (
     <Modal 
       title={currentFeat()?.details.name} 
       show={[showMenu,setShowMenu]}>
 
-      <div class={`${style.featWrapper}`}>
+      <div ref={setMenuRef} class={`${style.featWrapper}`}>
         {/* <h1 class={`${style.nameHeader}`}>{currentFeat().details.name}</h1> */}
         <h2 class={`${style.nameHeader} ${style.flexHeader}`}>Prerequisites: 
           <span class={`${style.preRequisites}`}>
