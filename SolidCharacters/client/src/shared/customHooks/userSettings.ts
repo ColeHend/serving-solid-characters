@@ -1,7 +1,8 @@
 import { Accessor, createSignal, Setter } from "solid-js";
 import {
   AiProviderKind, UserSettings,
-  DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
+  DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
+  DEFAULT_MEDIUM_RETRIES, DEFAULT_REVIEW_SETTINGS, DEFAULT_TOOL_PERMISSIONS, DEFAULT_USAGE_LEVEL,
 } from "../../models/userSettings";
 import httpClient$ from "./utility/tools/httpClientObs";
 import userSettingDB from "./utility/localDB/userSettingDB";
@@ -17,6 +18,9 @@ const DEFAULT_SETTINGS: UserSettings = {
     provider: 'local', model: '', localBaseUrl: '', enabled: false,
     localApi: 'ollama', maxTokens: DEFAULT_AI_MAX_TOKENS, numCtx: DEFAULT_AI_NUM_CTX,
     thinking: DEFAULT_AI_THINKING, thinkingHomebrew: DEFAULT_AI_THINKING_HOMEBREW,
+    showThinking: DEFAULT_AI_SHOW_THINKING,
+    usageLevel: DEFAULT_USAGE_LEVEL, mediumRetries: DEFAULT_MEDIUM_RETRIES,
+    toolPermissions: DEFAULT_TOOL_PERMISSIONS, review: DEFAULT_REVIEW_SETTINGS,
   },
 }
 // Initialize with default settings
@@ -89,7 +93,7 @@ function getAllUsers() {
   );
 }
 
-// ----------------- AI ("Spark") provider availability + gating -----------------
+// ----------------- AI ("Grimoire") provider availability + gating -----------------
 // Which cloud providers have a usable key configured on the .NET backend. Local is always
 // "available" (it's a direct browser call with no server key). Populated from
 // GET /api/ai/providers — see refreshAiProviderStatus().
@@ -123,7 +127,7 @@ export function refreshAiProviderStatus(): void {
 }
 
 /**
- * Reactive gate for the Spark icon + sidebar. True only when the feature is enabled, a model
+ * Reactive gate for the Grimoire icon + sidebar. True only when the feature is enabled, a model
  * is chosen, and the selected provider is usable (local needs a base URL; cloud needs a
  * server-side key, reported by getAiProviderStatus()). Reads module signals so it's reactive
  * in JSX.

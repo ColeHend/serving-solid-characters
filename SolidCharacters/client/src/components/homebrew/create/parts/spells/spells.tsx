@@ -104,7 +104,7 @@ const Spells: Component = () => {
   };
 
   onMount(()=>{
-    // A spell handed off from the Spark assistant's "Edit manually" isn't saved yet, so it can't be
+    // A spell handed off from the Grimoire assistant's "Edit manually" isn't saved yet, so it can't be
     // looked up by name — load the entity directly. Falls back to the ?name= edit path otherwise.
     const draft = takeEditHandoff<Spell>("spell");
     if (draft) {

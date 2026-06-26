@@ -1,5 +1,6 @@
 import { AiMessage, AiProvider, AiProviderKind, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
-import { parseSse } from "../sse";
+import { DEFAULT_AI_MAX_TOKENS } from "../../../models/userSettings";
+import { parseSse } from "./sse";
 
 /**
  * Cloud adapter. Sends a normalized request to the .NET backend (POST /api/ai/chat), which injects
@@ -19,7 +20,7 @@ export class ProxyAdapter implements AiProvider {
             provider: this.kind,
             model: opts.model,
             system: opts.system,
-            maxTokens: opts.maxTokens ?? 4096,
+            maxTokens: opts.maxTokens ?? DEFAULT_AI_MAX_TOKENS,
             messages,
             tools,
         };

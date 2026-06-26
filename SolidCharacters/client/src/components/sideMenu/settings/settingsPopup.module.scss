@@ -56,3 +56,18 @@
 @media (prefers-reduced-motion: reduce) {
     .page { animation: none; }
 }
+
+// Mobile: tabs wrap to flat rows (see folderTabStrip) and no longer merge into the
+// page's top-left corner. Float the content card off the modal walls so the dialog
+// reads as padded instead of edge-to-edge, and give it a uniform card radius.
+@media screen and (max-width: 768px) {
+    .folder {
+        box-sizing: border-box;   // keep the added padding inside the 100% height
+        padding: var(--spacing-2, 16px);
+    }
+
+    .folderPage {
+        border-radius: var(--border-radius-lg, 16px);
+        padding: var(--spacing-2, 16px);
+    }
+}
