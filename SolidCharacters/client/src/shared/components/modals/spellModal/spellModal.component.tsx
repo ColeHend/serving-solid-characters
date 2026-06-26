@@ -49,7 +49,7 @@ const SpellModal: Component<props> = (props) => {
       <div class={`${style.view}`} ref={setMenuRef}>
         {/* <h1>{props.spell().name}</h1> */}
 
-        <DndDialogHeader onClose={()=>{}}>
+        <DndDialogHeader onClose={()=>setShowSpell(false)}>
           <div class={`${style.dndStyledHeader}`}>
             level {props.spell().level} spell · {props.spell().school}
             <h1>{props.spell().name}</h1>
