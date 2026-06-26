@@ -4,13 +4,14 @@ import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
 import {
     AiProviderKind, AiSettings, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH,
-    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind, PersonaStrength,
+    DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind, PersonaStrength,
 } from "../../../models/userSettings";
 
 const DEFAULT_AI: AiSettings = {
     provider: "local", model: "", localBaseUrl: "", enabled: false,
     maxTokens: DEFAULT_AI_MAX_TOKENS, localApi: "ollama", numCtx: DEFAULT_AI_NUM_CTX,
     thinking: DEFAULT_AI_THINKING, thinkingHomebrew: DEFAULT_AI_THINKING_HOMEBREW,
+    showThinking: DEFAULT_AI_SHOW_THINKING,
 };
 
 const MODEL_PLACEHOLDER: Record<AiProviderKind, string> = {
@@ -201,6 +202,18 @@ const AiSettingsTab: Component = () => {
                 <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
                     Lets the model reason before answering. Improves quality and encourages local models to
                     use more of their context window, but uses more tokens.
+                </div>
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <Checkbox
+                    label="Show AI thoughts in chat"
+                    checked={ai().showThinking ?? DEFAULT_AI_SHOW_THINKING}
+                    onChange={(checked) => updateAi({ showThinking: checked })}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    Off by default: Grimoire shows a short status while it works instead of its raw reasoning.
+                    Turn on to reveal the collapsible "Thoughts" block on each reply.
                 </div>
             </div>
 

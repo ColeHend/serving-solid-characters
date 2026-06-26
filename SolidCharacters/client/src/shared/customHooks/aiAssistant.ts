@@ -35,6 +35,12 @@ export type { SavedConversation };
 export type ChatRole = "user" | "assistant";
 export type ChatStatus = "idle" | "streaming" | "error";
 
+/**
+ * What Grimoire is currently doing, so the sidebar's status ticker can show phase-appropriate flavor
+ * (e.g. "Scouring the tomes" during a lookup). Display-only; "idle" means no turn is in flight.
+ */
+export type AiPhase = "thinking" | "lookup" | "research" | "compute" | "homebrew" | "editing" | "idle";
+
 /** A rendered chat bubble. Tool calls/results live in the underlying AiMessage history, not here. */
 export interface ChatMessage {
     id: string;
@@ -101,6 +107,8 @@ export class AiAssistant {
     private setMessages: Setter<ChatMessage[]>;
     readonly status: Accessor<ChatStatus>;
     private setStatus: Setter<ChatStatus>;
+    readonly activePhase: Accessor<AiPhase>;
+    private setActivePhase: Setter<AiPhase>;
     readonly streamingText: Accessor<string>;
     private setStreamingText: Setter<string>;
     readonly streamingThinking: Accessor<string>;
@@ -135,6 +143,7 @@ export class AiAssistant {
         [this.mode, this.setMode_] = createSignal<AiMode>("chat");
         [this.messages, this.setMessages] = createSignal<ChatMessage[]>([]);
         [this.status, this.setStatus] = createSignal<ChatStatus>("idle");
+        [this.activePhase, this.setActivePhase] = createSignal<AiPhase>("idle");
         [this.streamingText, this.setStreamingText] = createSignal("");
         [this.streamingThinking, this.setStreamingThinking] = createSignal("");
         [this.pendingPreviews, this.setPendingPreviews] = createSignal<HomebrewPreview[]>([]);
@@ -179,6 +188,7 @@ export class AiAssistant {
         this.setStreamingText("");
         this.setStreamingThinking("");
         this.setStatus("idle");
+        this.setActivePhase("idle");
     };
 
     cancel = () => {
@@ -193,10 +203,11 @@ export class AiAssistant {
         const split = splitModelReasoning(this.streamingText());
         const partial = split.text;
         const thinking = [this.streamingThinking().trim(), split.reasoning].filter(Boolean).join("\n\n").trim();
-        if (partial || thinking) this.pushAssistantBubble(partial, thinking);
+        if (partial.trim() || thinking) this.pushAssistantBubble(partial, thinking);
         this.setStreamingText("");
         this.setStreamingThinking("");
         if (this.status() === "streaming") this.setStatus("idle");
+        this.setActivePhase("idle");
     };
 
     send = (text: string) => {
@@ -669,6 +680,7 @@ export class AiAssistant {
         const signal = this.controller.signal;   // capture: cancel() nulls this.controller before our catch runs
         const epoch = this.turnEpoch;             // capture: a session swap mid-turn invalidates this turn
         this.setStatus("streaming");
+        this.setActivePhase("thinking");   // the ticker shows phase-appropriate flavor until the answer streams
         this.setStreamingText("");
         this.setStreamingThinking("");
 
@@ -781,7 +793,9 @@ export class AiAssistant {
         // Record the assistant turn in history (text + any tool calls) for continuation. Thinking is
         // display-only and intentionally not replayed to the model.
         this.history.push({ role: "assistant", text: text || undefined, toolCalls: toolCalls.length ? toolCalls : undefined });
-        if (text || thinking) this.pushAssistantBubble(text, thinking);
+        // Only surface a bubble when there's something to show: real answer prose, or reasoning (which
+        // only renders when the user opts into thoughts). A whitespace-only tool turn shows nothing.
+        if (text.trim() || thinking) this.pushAssistantBubble(text, thinking);
 
         if (toolCalls.length) {
             // Every tool_use needs a tool_result, regardless of category — seed `outstanding` with ALL ids
@@ -812,6 +826,18 @@ export class AiAssistant {
                     default: homebrewCalls.push({ tc, idx }); break;
                 }
             });
+
+            // Tell the status ticker what this turn is about to do (most "active" first). For pure
+            // auto-resolve lookup turns this phase stays visible during the async wait (see the
+            // streaming-status guard at the end of the turn).
+            this.setActivePhase(
+                lookupCalls.some(tc => tc.name === DELEGATE_RESEARCH_TOOL.name) ? "research"
+                    : lookupCalls.length ? "lookup"
+                    : computeCalls.length ? "compute"
+                    : homebrewCalls.length ? "homebrew"
+                    : editCalls.length ? "editing"
+                    : "thinking",
+            );
 
             // ---- Interactive: render cards now; their tool calls stay outstanding until the user answers. ----
             if (interactiveCalls.length) {
@@ -948,6 +974,14 @@ export class AiAssistant {
             // the streaming status); bail so we don't flip it back to idle. Otherwise interactive/homebrew
             // cards (or buffered compute results) are waiting on the user — settle to idle and persist below.
             if (this.outstanding.size === 0) return;
+            // Pure auto-resolve lookup/research turn — nothing for the user to act on, just async tools in
+            // flight. Keep the working bubble (and its phase-appropriate ticker) visible during the wait
+            // instead of flashing to idle; the async resolve starts the continuation turn (or settles to
+            // idle) when it lands.
+            if (lookupCalls.length && !interactiveCalls.length && !editCalls.length && !homebrewCalls.length) {
+                void this.persistCurrent();
+                return;
+            }
         } else {
             // No replacement was produced (plain text / cut off) — revert any collapsed cards so they
             // stay actionable instead of being stranded in the "Improving…" state.
@@ -1072,6 +1106,7 @@ export class AiAssistant {
         // A repair turn that errored out shouldn't leave a card stuck collapsed.
         this.setPendingPreviews(prev => prev.some(p => p.repairing) ? prev.map(p => ({ ...p, repairing: false })) : prev);
         this.setStatus("error");
+        this.setActivePhase("idle");
         this.setStreamingText("");
     }
 }

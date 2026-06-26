@@ -129,6 +129,12 @@ export const DEFAULT_AI_THINKING = true;
 export const DEFAULT_AI_THINKING_HOMEBREW = false;
 
 /**
+ * Default for SHOWING the model's raw reasoning in chat (display only; separate from `thinking`,
+ * which requests reasoning). Off by default — the rotating status ticker is shown instead.
+ */
+export const DEFAULT_AI_SHOW_THINKING = false;
+
+/**
  * Defaults for the utility tools available in BOTH chat and homebrew modes (independent of usageLevel
  * and toolPermissions, which only gate homebrew create_* tools). All default ON — they're low-risk and
  * a bad compute call is self-correcting — but each can be turned off if a local model abuses it.
@@ -175,6 +181,8 @@ export interface AiSettings {
     thinking?: boolean;
     /** Request thinking during homebrew generation (tool turns). Defaults to DEFAULT_AI_THINKING_HOMEBREW. */
     thinkingHomebrew?: boolean;
+    /** Show the model's raw reasoning text in chat. Display-only; defaults to DEFAULT_AI_SHOW_THINKING. */
+    showThinking?: boolean;
     /** How much automated QC to apply to generated homebrew. Defaults to DEFAULT_USAGE_LEVEL. */
     usageLevel?: UsageControlLevel;
     /** Medium-mode auto-retry budget per entity. Defaults to DEFAULT_MEDIUM_RETRIES. */

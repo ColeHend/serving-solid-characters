@@ -386,6 +386,20 @@
     font-style: italic;
 }
 
+.statusTicker {
+    // Reserve a stable line so the rotating message/dots don't nudge surrounding layout.
+    min-height: 1.25em;
+}
+.statusDots {
+    // Each dot keeps its slot (visibility, not display) so the line width stays steady as they cycle.
+    display: inline-block;
+    margin-left: 1px;
+    letter-spacing: 1px;
+}
+.dotHidden {
+    visibility: hidden;
+}
+
 .thinkingBlock {
     margin-bottom: var(--spacing-1, 6px);
     border-left: 2px solid var(--primary-color, rgba(255, 255, 255, 0.25));
