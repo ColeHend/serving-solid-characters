@@ -1,7 +1,7 @@
-import { Component, Match, Show, Switch } from "solid-js";
+import { Component, createSignal, Match, Show, Switch } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { Button, Container, Icon } from "coles-solid-library";
-import { Bolt, Close, Verified } from "coles-solid-library/icons";
+import { Bolt, Close, Verified, Visibility } from "coles-solid-library/icons";
 import { Markdown } from "../../../shared/components/MarkDown/MarkDown";
 import { aiAssistant } from "../../../shared/customHooks/aiAssistant";
 import { editorRouteFor } from "../../../shared/ai/tools/toolDispatcher";
@@ -9,6 +9,7 @@ import { setEditHandoff } from "../../../shared/ai/editHandoff";
 import { HomebrewPreview, previewBody, previewSubtitle } from "../aiSpark.shared";
 import HomebrewCompleteness from "./HomebrewCompleteness";
 import HomebrewCommands from "./HomebrewCommands";
+import HomebrewPreviewDialog from "./HomebrewPreviewDialog";
 import ReviewVerdicts from "./ReviewVerdicts";
 import styles from "../SparkSidebar.module.scss";
 
@@ -25,6 +26,9 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
         (p().repairAttempts ?? 0) < 1 && !hasIssues();
     // Save is gated by schema validity AND any blocking-severity review finding (or an in-flight review).
     const saveDisabled = () => !p().valid || !!p().reviewBlocked || reviewState() === "reviewing";
+
+    // "Preview" opens a detail dialog for the generated entity (every kind has one).
+    const [showPreview, setShowPreview] = createSignal(false);
 
     const editManually = () => {
         setEditHandoff(p());
@@ -78,6 +82,9 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                     <HomebrewCompleteness preview={p()} />
                     <ReviewVerdicts preview={p()} />
                     <div class={styles.previewActions}>
+                        <Button transparent title="Preview" aria-label="Preview" onClick={() => setShowPreview(true)}>
+                            <Icon icon={Visibility} size="small" />
+                        </Button>
                         <Button
                             theme="primary"
                             title={p().reviewBlocked ? "A blocking review issue must be resolved before saving" : "Save to your homebrew"}
@@ -113,6 +120,9 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                             <Icon icon={Close} size="small" /> Reject
                         </Button>
                     </div>
+                    <Show when={showPreview()}>
+                        <HomebrewPreviewDialog preview={p()} show={[showPreview, setShowPreview]} />
+                    </Show>
                 </Container>
             }>
                 {/* ----- reviewing: collapsed progress with a cancel ----- */}
@@ -148,6 +158,9 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                             </Show>
                         </div>
                         <div class={styles.previewActions}>
+                            <Button transparent title="Preview" aria-label="Preview" onClick={() => setShowPreview(true)}>
+                                <Icon icon={Visibility} size="small" />
+                            </Button>
                             <Button
                                 theme="primary"
                                 title="Have the AI try generating this again"
@@ -168,6 +181,9 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                                 <Icon icon={Close} size="small" /> Reject
                             </Button>
                         </div>
+                        <Show when={showPreview()}>
+                            <HomebrewPreviewDialog preview={p()} show={[showPreview, setShowPreview]} />
+                        </Show>
                     </Container>
                 </Match>
             </Switch>
