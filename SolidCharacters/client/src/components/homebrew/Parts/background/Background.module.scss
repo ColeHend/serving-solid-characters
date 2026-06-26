@@ -5,7 +5,6 @@ $transprantNumber: 75%;
 .body {
     background-color: vars.$color-surface;
   	background-color: color-mix(in srgb, vars.$color-surface $transprantNumber, transparent) !important;
-    margin-top: 8px !important;
 
 	button {
         background-color: color-mix(in srgb, vars.$color-surface $transprantNumber, transparent) !important;

@@ -1,0 +1,20 @@
+.fleuronDivider {
+    display:flex; 
+    align-items:center; 
+    gap:11px;
+}
+
+.line {
+    flex:1; 
+    height:2px; 
+    background:#7c2718; 
+    opacity:.45;
+}
+
+.middle {
+    width:7px; 
+    height:7px; 
+    background:#7c2718;
+    transform:rotate(45deg); 
+    opacity:.55;
+}
