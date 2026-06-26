@@ -7,7 +7,7 @@ import {
     DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES,
     DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
-import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
+import { AiImage, AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
 import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
 import { HOMEBREW_KINDS, KIND_TO_TOOL } from "../ai/refs/homebrewKind";
@@ -56,6 +56,8 @@ export interface ChatMessage {
     kind?: "answer" | "system";
     /** The model's reasoning for this turn (display-only; not replayed to the model). */
     thinking?: string;
+    /** For a user bubble: images attached to this prompt, rendered as thumbnails. Mirrors the AiMessage. */
+    images?: AiImage[];
     /**
      * For a user bubble: the index in `history` of the matching {role:"user"} entry, captured when the
      * turn was sent. Used by editAndRewind() to slice history/messages back to this prompt. Persisted with
@@ -127,6 +129,18 @@ export class AiAssistant {
     private setPendingInteractions: Setter<PendingInteraction[]>;
     readonly conversations: Accessor<SavedConversation[]>;
     private setConversations: Setter<SavedConversation[]>;
+    // ---- composer (draft) state — held in the store, not in ChatInput, so it survives the sidebar
+    // Portal unmounting/remounting (e.g. a mobile camera pick that flicker-closes the panel). ----
+    readonly draft: Accessor<string>;
+    readonly setDraft: Setter<string>;
+    readonly pendingImages: Accessor<AiImage[]>;
+    readonly setPendingImages: Setter<AiImage[]>;
+    /** True while the native file/camera picker is open; suppresses the scrim/Escape dismiss. */
+    readonly filePicking: Accessor<boolean>;
+    private setFilePicking: Setter<boolean>;
+    /** Data URL of the image shown full-screen in the lightbox, or null when closed. */
+    readonly lightboxImage: Accessor<string | null>;
+    private setLightboxImage: Setter<string | null>;
 
     // ---- non-reactive turn state ----
     private history: AiMessage[] = [];
@@ -158,6 +172,10 @@ export class AiAssistant {
         [this.pendingPreviews, this.setPendingPreviews] = createSignal<HomebrewPreview[]>([]);
         [this.pendingInteractions, this.setPendingInteractions] = createSignal<PendingInteraction[]>([]);
         [this.conversations, this.setConversations] = createSignal<SavedConversation[]>([]);
+        [this.draft, this.setDraft] = createSignal("");
+        [this.pendingImages, this.setPendingImages] = createSignal<AiImage[]>([]);
+        [this.filePicking, this.setFilePicking] = createSignal(false);
+        [this.lightboxImage, this.setLightboxImage] = createSignal<string | null>(null);
 
         // Best-effort flush of the current conversation when the tab is hidden/closed — the per-turn
         // persists are fire-and-forget, so a quick close between a reply landing and Dexie committing
@@ -181,6 +199,28 @@ export class AiAssistant {
     close = () => this.setIsOpen(false);
     toggle = () => this.setIsOpen(v => !v);
     setMode = (m: AiMode) => this.setMode_(m);
+
+    /** Clear the composer (sent or discarded). Called centrally from send(). */
+    clearDraft = () => { this.setDraft(""); this.setPendingImages([]); };
+
+    /**
+     * Mark that the native file/camera picker is opening, so a tap that lands on the scrim when the page
+     * regains focus (the iOS "phantom click") can't dismiss the sidebar. Cleared a beat after the window
+     * refocuses (returning from the picker), with a grace delay to absorb that stray click.
+     */
+    beginFilePick = () => {
+        this.setFilePicking(true);
+        if (typeof window === "undefined") return;
+        const onFocus = () => {
+            window.removeEventListener("focus", onFocus);
+            setTimeout(() => this.setFilePicking(false), 350);
+        };
+        window.addEventListener("focus", onFocus);
+    };
+    endFilePick = () => this.setFilePicking(false);
+
+    openLightbox = (src: string) => this.setLightboxImage(src);
+    closeLightbox = () => this.setLightboxImage(null);
 
     clear = () => {
         this.cancel();
@@ -230,9 +270,10 @@ export class AiAssistant {
         this.setActivePhase("idle");
     };
 
-    send = (text: string) => {
+    send = (text: string, images?: AiImage[]) => {
         const trimmed = text.trim();
-        if (!trimmed || this.status() === "streaming") return;
+        // An image-only message (no prose) is valid; only bail when there's neither text nor an image.
+        if ((!trimmed && !images?.length) || this.status() === "streaming") return;
         // If the previous turn left tool calls unanswered (previews never confirmed/rejected), close
         // them out so the history stays valid (Anthropic requires every tool_use to get a tool_result).
         this.flushOutstanding();
@@ -243,8 +284,8 @@ export class AiAssistant {
         // Stamp the bubble with the history index its {role:"user"} entry is about to occupy, so
         // editAndRewind() can slice both arrays back to exactly this prompt. flushOutstanding() already ran.
         const historyIndex = this.history.length;
-        this.pushUserBubble(trimmed, historyIndex);
-        this.history.push({ role: "user", text: trimmed });
+        this.pushUserBubble(trimmed, historyIndex, images);
+        this.history.push({ role: "user", text: trimmed, images });
         void this.persistCurrent();   // capture the chat (and its title) from turn 1
         void this.runTurn();
     };
@@ -294,7 +335,8 @@ export class AiAssistant {
         this.history = this.history.slice(0, hi);
         this.setMessages(prev => prev.slice(0, mi));
         if (mi === 0) this.titleGenerated = false;   // re-derive the title from the edited first prompt
-        this.send(trimmed);       // re-pushes the edited user turn (with a fresh historyIndex), persists, runs
+        // Carry the original prompt's attachments through the rewind so an edit doesn't silently drop them.
+        this.send(trimmed, msgs[mi].images);   // re-pushes the edited user turn (with a fresh historyIndex), persists, runs
     };
 
     /**
@@ -625,7 +667,10 @@ export class AiAssistant {
     private windowedHistory(numCtx: number): AiMessage[] {
         const h = this.history;
         if (h.length <= 4) return h;
-        const tokensOf = (m: AiMessage) => Math.ceil(JSON.stringify(m).length / 4);
+        // Exclude base64 image data from the char-count estimate (it would dwarf the text and evict real
+        // turns); count a flat per-image cost instead, closer to how vision models tile-tokenize an image.
+        const tokensOf = (m: AiMessage) =>
+            Math.ceil(JSON.stringify({ ...m, images: undefined }).length / 4) + (m.images?.length ?? 0) * 768;
         const budget = Math.max(2048, Math.floor((numCtx || DEFAULT_AI_NUM_CTX) * 0.5));
         let used = 0;
         let cut = h.length;
@@ -673,8 +718,8 @@ export class AiAssistant {
 
     // ----------------- internals -----------------
 
-    private pushUserBubble(text: string, historyIndex?: number) {
-        this.setMessages(prev => [...prev, { id: createNewId(), role: "user", text, historyIndex }]);
+    private pushUserBubble(text: string, historyIndex?: number, images?: AiImage[]) {
+        this.setMessages(prev => [...prev, { id: createNewId(), role: "user", text, historyIndex, images }]);
     }
     private pushAssistantBubble(text: string, thinking?: string) {
         this.setMessages(prev => [...prev, { id: createNewId(), role: "assistant", text, thinking: thinking || undefined }]);

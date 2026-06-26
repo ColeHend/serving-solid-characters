@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, ProxyOptions } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { ManifestOptions, VitePWA } from 'vite-plugin-pwa';
 import devtools from 'solid-devtools/vite'
@@ -44,6 +44,18 @@ function hasBackendHttpsCert() {
 function resolveBackendTarget() {
   if (process.env.BACKEND_URL) return process.env.BACKEND_URL;
   return hasBackendHttpsCert() ? 'https://localhost:5000' : 'http://localhost:5000';
+}
+
+function buildDevProxy(): Record<string, ProxyOptions> {
+  const proxy: Record<string, ProxyOptions> = {
+    '/api': {
+      target: resolveBackendTarget(),
+      changeOrigin: true,
+      secure: false, // allow self-signed mkcert cert
+      configure: () => { console.log('[vite] proxy /api ->', resolveBackendTarget()); },
+    },
+  };
+  return proxy;
 }
 
 const APP_VERSION = process.env.GIT_COMMIT || process.env.npm_package_version || 'dev';
@@ -168,20 +180,11 @@ export default defineConfig({
     https: devHttps(),
     host: true,
     port: 3000,
-    proxy: {
-      '/api': {
-        target: resolveBackendTarget(),
-        changeOrigin: true,
-        secure: false, // allow self-signed mkcert cert
-        // Log proxy target for clarity
-        configure: (_proxy, _options) => {
-          console.log('[vite] proxy /api ->', resolveBackendTarget());
-        }
-      }
-    }
+    proxy: buildDevProxy(),
   },
   preview: {
-    https: devHttps()
+    https: devHttps(),
+    proxy: buildDevProxy(),
   },
   build: {
     outDir: 'dist',

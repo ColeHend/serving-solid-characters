@@ -16,6 +16,12 @@ export interface AiToolResult {
     isError?: boolean;
 }
 
+/** A user-attached image. `data` is raw base64 (no "data:...;base64," prefix). */
+export interface AiImage {
+    data: string;
+    mediaType: string;   // e.g. "image/png", "image/jpeg"
+}
+
 /**
  * Provider-agnostic message. `toolCalls` appear on assistant turns; `toolResults` on tool turns.
  * This is the shape the client sends to /api/ai/chat and the shape the local adapter translates
@@ -24,6 +30,8 @@ export interface AiToolResult {
 export interface AiMessage {
     role: AiRole;
     text?: string;
+    /** User-attached images, sent to vision-capable local models. Present only on user turns. */
+    images?: AiImage[];
     toolCalls?: AiToolCall[];
     toolResults?: AiToolResult[];
 }

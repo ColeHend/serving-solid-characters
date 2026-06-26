@@ -7,6 +7,7 @@ import {
     DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
     LocalApiKind, PersonaStrength,
 } from "../../../models/userSettings";
+import { diagnoseLocalEndpoint, normalizeBaseUrl, probeLocalEndpoint } from "../../../shared/ai/localEndpoint";
 
 const DEFAULT_AI: AiSettings = {
     provider: "local", model: "", localBaseUrl: "", enabled: false,
@@ -78,10 +79,26 @@ const AiSettingsTab: Component = () => {
             let ok = false;
             let message = "";
             if (ai().provider === "local") {
-                const base = ai().localBaseUrl.replace(/\/$/, "");
-                const res = await fetch(`${base}/v1/models`);
-                ok = res.ok;
-                message = ok ? "Reached the local model server." : `Server returned ${res.status}.`;
+                const verdict = await probeLocalEndpoint(ai().localBaseUrl, { localApi: ai().localApi ?? "ollama" });
+                switch (verdict.kind) {
+                    case "reachable":
+                        ok = true;
+                        message = "Reached the local model server.";
+                        break;
+                    case "blocked-cors":
+                        message = "Server is up but the browser blocked the request — set OLLAMA_ORIGINS on the server to allow this site's origin.";
+                        break;
+                    case "mixed-content":
+                        message = "Your HTTPS site can't call an HTTP endpoint (mixed content). See the note under the Base URL field.";
+                        break;
+                    case "down":
+                        message = `No response from ${normalizeBaseUrl(ai().localBaseUrl)} — is the server running and reachable from this device?`;
+                        break;
+                    case "invalid-url":
+                    case "empty":
+                        message = "Enter a valid Base URL, e.g. http://192.168.1.50:11434";
+                        break;
+                }
             } else {
                 const res = await fetch(`/api/ai/test?provider=${ai().provider}`);
                 const data = await res.json().catch(() => ({ ok: res.ok, message: res.statusText }));
@@ -133,6 +150,23 @@ const AiSettingsTab: Component = () => {
                         onInput={(e) => updateAi({ localBaseUrl: e.currentTarget.value })}
                     />
                 </div>
+
+                <Show when={diagnoseLocalEndpoint(ai().localBaseUrl).kind === "mixed-content"}>
+                    <div style={{
+                        "margin-top": "var(--spacing-1)", padding: "var(--spacing-2)",
+                        "border-radius": "var(--spacing-1)", background: "var(--surface-color)",
+                        "font-size": "var(--font-size-small)",
+                    }}>
+                        ⚠️ This site is HTTPS but the endpoint is HTTP on a LAN address — browsers block that
+                        (mixed content). A <code>localhost</code> address would be fine; a routable IP like
+                        192.168.x.x is not. To connect, choose <b>one</b>:
+                        <ul style={{ margin: "var(--spacing-1) 0", "padding-left": "var(--spacing-3)" }}>
+                            <li><b>Same machine:</b> if the model runs where this browser does, use <code>http://localhost:11434</code> — localhost is exempt from the block (you may still need <code>OLLAMA_ORIGINS</code> for CORS).</li>
+                            <li><b>Quick:</b> allow "Insecure content" for this site in your browser's site settings, and set <code>OLLAMA_ORIGINS</code> on the server to include this site's origin (or <code>*</code>).</li>
+                            <li><b>Robust:</b> put the model behind HTTPS (Cloudflare Tunnel or a TLS reverse proxy), use that <code>https://</code> URL, and set <code>OLLAMA_ORIGINS</code> to this origin.</li>
+                        </ul>
+                    </div>
+                </Show>
 
                 <div>
                     <label>Local API</label>

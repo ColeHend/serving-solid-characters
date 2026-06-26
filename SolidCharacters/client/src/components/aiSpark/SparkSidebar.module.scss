@@ -381,6 +381,21 @@
     border-bottom-left-radius: 2px;
 }
 
+// Attached images rendered inside a sent user bubble (above the prompt text).
+.bubbleImages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-1, 6px);
+    margin-bottom: var(--spacing-1, 6px);
+}
+.bubbleImage {
+    max-width: 160px;
+    max-height: 160px;
+    border-radius: 8px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
 /* ----- inline edit / rewind on user prompts ----- */
 .userBubbleWrap {
     display: flex;
@@ -799,4 +814,75 @@
 // chat stays usable while typing.
 @media (max-height: 560px) {
     .inputBar textarea { max-height: 88px; }
+}
+
+// Drop-target affordance: highlight the input bar while an image is dragged over it.
+.dragActive {
+    outline: 2px dashed var(--primary-color, #4a5);
+    outline-offset: -4px;
+    border-radius: 8px;
+}
+
+// Pending attachments shown above the input, before send.
+.thumbStrip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-1, 6px);
+    padding: var(--spacing-1, 6px) var(--spacing-2, 12px) 0;
+}
+.thumb {
+    position: relative;
+    width: 56px;
+    height: 56px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: var(--shadow-elevation-1, 0 1px 3px rgba(0, 0, 0, 0.3));
+    }
+}
+.thumbRemove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: var(--container-color, #222);
+    color: var(--on-surface-color, inherit);
+    box-shadow: var(--shadow-elevation-1, 0 1px 3px rgba(0, 0, 0, 0.3));
+}
+
+// Full-screen image viewer. z-1300 keeps it above the z-1200 sidebar (it's rendered inside the
+// sidebar Portal as a sibling of the panel).
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3, 24px);
+    background: rgba(0, 0, 0, 0.85);
+    cursor: zoom-out;
+}
+.lightboxImg {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: default;
+}
+.lightboxClose {
+    position: absolute;
+    top: var(--spacing-2, 12px);
+    right: var(--spacing-2, 12px);
+    color: #fff;
 }

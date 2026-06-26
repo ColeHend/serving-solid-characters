@@ -1,6 +1,7 @@
 import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
 import { DEFAULT_AI_MAX_TOKENS } from "../../../models/userSettings";
 import { parseSse } from "./sse";
+import { currentOrigin, diagnoseLocalEndpoint, mixedContentHint, normalizeBaseUrl } from "../localEndpoint";
 
 /**
  * Direct browser adapter for local OpenAI-compatible servers (Ollama, LM Studio, llama.cpp, ...).
@@ -20,7 +21,8 @@ export class LocalAdapter implements AiProvider {
         tools: AiToolDef[] | undefined,
         opts: StreamChatOpts,
     ): AsyncGenerator<ChatStreamEvent, void, unknown> {
-        const url = `${this.baseUrl.replace(/\/$/, "")}/v1/chat/completions`;
+        const base = normalizeBaseUrl(this.baseUrl);
+        const url = `${base}/v1/chat/completions`;
         const body: Record<string, unknown> = {
             model: opts.model,
             stream: true,
@@ -43,11 +45,21 @@ export class LocalAdapter implements AiProvider {
         const headers: Record<string, string> = { "Content-Type": "application/json" };
         if (this.apiKey) headers.Authorization = `Bearer ${this.apiKey}`;
 
+        // An HTTPS page can't fetch an HTTP cross-origin endpoint — the browser blocks it before the
+        // request leaves. Detect that up front and explain it, instead of attempting a doomed fetch
+        // and blaming the server (which is fine; the browser is the blocker).
+        const diagnosis = diagnoseLocalEndpoint(this.baseUrl);
+        if (diagnosis.kind === "mixed-content") {
+            yield { type: "error", error: mixedContentHint(currentOrigin()) };
+            yield { type: "message_done", stopReason: "error" };
+            return;
+        }
+
         let res: Response;
         try {
             res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body), signal: opts.signal });
         } catch (e) {
-            yield { type: "error", error: `Could not reach local model at ${this.baseUrl}. Is the server running and CORS enabled? (${String(e)})` };
+            yield { type: "error", error: `Couldn't reach the local model at ${base}. If it responds when you open that address directly, the server is up and this is usually a CORS block — set OLLAMA_ORIGINS to allow this site (and if the site is HTTPS, serve the model over HTTPS or allow insecure content). (${String(e)})` };
             yield { type: "message_done", stopReason: "error" };
             return;
         }
@@ -129,6 +141,13 @@ function toOpenAiMessages(messages: AiMessage[], system?: string): Record<string
                 }));
             }
             out.push(msg);
+        } else if (m.images?.length) {
+            // OpenAI vision format: content becomes an array of text + image_url (data-URL) parts.
+            const content: unknown[] = [];
+            if (m.text) content.push({ type: "text", text: m.text });
+            for (const img of m.images)
+                content.push({ type: "image_url", image_url: { url: `data:${img.mediaType};base64,${img.data}` } });
+            out.push({ role: "user", content });
         } else {
             out.push({ role: "user", content: m.text ?? "" });
         }

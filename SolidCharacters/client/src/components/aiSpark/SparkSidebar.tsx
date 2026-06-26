@@ -7,6 +7,7 @@ import { aiAssistant } from "../../shared/customHooks/aiAssistant";
 import ConversationMenu from "./menus/ConversationMenu";
 import ChatMessageList from "./chat/ChatMessageList";
 import ChatInput from "./chat/ChatInput";
+import ImageLightbox from "./chat/ImageLightbox";
 import DecisionLog from "./menus/DecisionLog";
 import styles from "./SparkSidebar.module.scss";
 
@@ -48,15 +49,21 @@ const SparkSidebar: Component = () => {
     onCleanup(() => { if (timer) clearTimeout(timer); });
 
     // Escape closes the sidebar from anywhere (deliberate, non-destructive: the turn keeps streaming).
+    // But not while the lightbox is open (it handles its own Escape) or a file picker is in flight.
     createEffect(() => {
         if (!aiAssistant.isOpen()) return;
-        const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") aiAssistant.close(); };
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key !== "Escape") return;
+            if (aiAssistant.lightboxImage() || aiAssistant.filePicking()) return;
+            aiAssistant.close();
+        };
         document.addEventListener("keydown", onKey);
         onCleanup(() => document.removeEventListener("keydown", onKey));
     });
 
-    // Scrim tap dismisses — but not mid-stream, so an accidental tap can't hide a reply being written.
-    const dismiss = () => { if (aiAssistant.status() !== "streaming") aiAssistant.close(); };
+    // Scrim tap dismisses — but not mid-stream (don't hide a reply being written), and not while a native
+    // file/camera picker is open (the "phantom click" on return would otherwise close the panel on mobile).
+    const dismiss = () => { if (aiAssistant.status() !== "streaming" && !aiAssistant.filePicking()) aiAssistant.close(); };
 
     return (
         <Show when={shouldRender()}>
@@ -89,6 +96,7 @@ const SparkSidebar: Component = () => {
                     <ChatMessageList />
                     <ChatInput />
                 </Container>
+                <ImageLightbox />
             </Portal>
         </Show>
     );
