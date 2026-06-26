@@ -1,28 +1,33 @@
 @use 'coles-solid-library/themes/variables' as vars;
 
 .subheader {
-  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.37) !important;
   display: flex !important; 
   gap: 1%;
   position: relative;
   z-index: 0;
   padding: 0;
+  margin-bottom: 20px;
+  box-shadow: 
+    inset 0 4px 6px rgba(0, 0, 0, 0.37),
+    0px 15px 26px -10px vars.$color-primary !important;
 
-  // box-shadow: 0 20px 15px 10px rgba(0, 0, 0, 0.288) !important;
 
-    button {
-        color: white;
-        border-right: 1px solid transparent;
-        border-image: linear-gradient(
-        to bottom,
-        transparent,
-        vars.$color-primary
-        ) 1;
-        padding-right: 8px;
-        border-radius: 0;
-    }
+  button {
+      color: white;
+      border-right: 1px solid transparent;
+      border-image: linear-gradient(
+      to bottom,
+      transparent,
+      vars.$color-primary
+      ) 1;
+      padding-right: 8px;
+      border-radius: 0;
+  }
+  
+  
 }
 
 .rootBody {
-  box-shadow: inset 0 18px 20px -18px vars.$color-primary;
+  
+  
 }
