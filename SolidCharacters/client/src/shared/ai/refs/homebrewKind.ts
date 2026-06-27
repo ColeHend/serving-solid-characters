@@ -49,5 +49,6 @@ export const TOOL_TO_KIND: Record<string, HomebrewKind> = Object.fromEntries(
  * instead of ad-hoc `kind.replace("_", " ")`, which only works because the one multi-word kind is
  * "magic_item" and silently mis-renders any future irregular label/casing.
  */
-export const kindLabel = (kind: HomebrewKind): string => HOMEBREW_KIND_LABELS[kind] ?? kind;
-export const kindLabelLower = (kind: HomebrewKind): string => kindLabel(kind).toLowerCase();
+export const kindLabel = (kind: HomebrewKind | string): string =>
+    (HOMEBREW_KIND_LABELS as Record<string, string>)[kind] ?? kind;
+export const kindLabelLower = (kind: HomebrewKind | string): string => kindLabel(kind).toLowerCase();

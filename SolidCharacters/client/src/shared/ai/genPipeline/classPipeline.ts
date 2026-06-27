@@ -10,7 +10,7 @@ import { critiqueClass, type FlaggedFeature } from "./critic";
 import { repairBudgetFor, type PipelineHost } from "./orchestrator";
 import { PipelinePhase } from "./types";
 import type { ReviewVerdict } from "../readiness/types";
-import type { ConceptBrief, PipelineRun, PipelineStatus, RunStepOptions, StepContext, WorkingClass, WorkingFeature, WorkingSubclass } from "./types";
+import type { ConceptBrief, PipelineResume, PipelineRun, PipelineStatus, RunStepOptions, StepContext, WorkingClass, WorkingFeature, WorkingSubclass } from "./types";
 
 /**
  * The Homebrew Class pipeline (plan §6, §13). M1 shipped the spine — Phase A (design brief) → Phase B
@@ -32,11 +32,15 @@ import type { ConceptBrief, PipelineRun, PipelineStatus, RunStepOptions, StepCon
  * Low/Medium the critic is skipped (a fast pass-through), so the strip still advances but no extra calls run.
  */
 
-/** The phases this pipeline walks, in order. `phaseIndex` into this list drives the "Phase X of Y" UI. */
-const PHASES = [
+/**
+ * The phases this pipeline walks, in order. `phaseIndex` into this list drives the "Phase X of Y" UI.
+ * Exported so the progress card's strip and the resume-progress seed reuse the one canonical ordering.
+ */
+export const CLASS_PIPELINE_PHASES = [
     PipelinePhase.DesignBrief, PipelinePhase.Skeleton, PipelinePhase.Chassis,
     PipelinePhase.Features, PipelinePhase.Subclasses, PipelinePhase.Balance, PipelinePhase.Assemble,
 ];
+const PHASES = CLASS_PIPELINE_PHASES;
 const TOTAL = PHASES.length;
 
 /** Phase indices into PHASES (kept named so the loops read clearly). */
@@ -48,8 +52,20 @@ const ASSEMBLE_PHASE = 6;
 /** Bound the approve/refine loop so a user who keeps refining (or a model that keeps drifting) can't spin forever. */
 const MAX_RATIFY_ROUNDS = 5;
 
-export async function runClassPipeline(seed: string, host: PipelineHost): Promise<void> {
-    const working: WorkingClass = {};
+/** True once the skeleton (Phase B) has been applied — `applySkeleton` always stamps the hit die. */
+const hasSkeleton = (w: WorkingClass): boolean => !!w.hitDie;
+/** True once the chassis (Phase C) has been applied — `applyChassis` always sets the proficiencies object. */
+const hasChassis = (w: WorkingClass): boolean => !!w.proficiencies;
+
+/**
+ * Run (or RESUME) the Class pipeline. On a fresh run `working` starts empty and every phase runs. On resume
+ * (plan §9, M6) `working`/`brief` come from the persisted checkpoint and each phase is SKIPPED when its
+ * output is already present — skeleton/chassis by a presence flag, the feature/subclass loops by filling
+ * only the levels/subclasses still missing. So a reloaded run finishes from where it stopped without
+ * re-asking a decided step (notably never re-prompting the user to ratify an already-approved skeleton).
+ */
+export async function runClassPipeline(seed: string, host: PipelineHost, resume?: PipelineResume<WorkingClass>): Promise<void> {
+    const working: WorkingClass = resume?.working ?? {};
     const opts: RunStepOptions = { repairBudget: repairBudgetFor(host.usageLevel), signal: host.signal };
 
     const emit = (index: number, status: PipelineStatus, extra?: Partial<PipelineRun>) =>
@@ -61,49 +77,57 @@ export async function runClassPipeline(seed: string, host: PipelineHost): Promis
     let brief: ConceptBrief;
 
     try {
-        // ── Phase A — design brief ─────────────────────────────────────────────
-        emit(0, "running");
-        const briefResult = await produceConceptBrief(seed, "class", host.ai, opts, host.runner);
-        if (host.signal.aborted) return void emit(0, "aborted");
-        if (!briefResult.ok || !briefResult.value) {
-            return fail(host, emit, 0, briefResult.errors[0] ?? "Couldn't draft a design brief for the class.");
-        }
-        brief = briefResult.value;
-        host.onCheckpoint?.(0, working, brief);
-
-        // ── Phase B — skeleton (ratified) ──────────────────────────────────────
-        let refinement = "";
-        let approved = false;
-        for (let round = 0; round < MAX_RATIFY_ROUNDS && !approved; round++) {
-            emit(1, "running");
-            const skeletonResult = await produceSkeleton(
-                seed, refinement, brief, classCtx(), host.ai, opts, host.runner);
-            if (host.signal.aborted) return void emit(1, "aborted");
-            if (!skeletonResult.ok || !skeletonResult.value) {
-                return fail(host, emit, 1, skeletonResult.errors[0] ?? "Couldn't draft a class skeleton.");
+        // ── Phase A — design brief (skip if resumed with one) ──────────────────
+        if (resume?.brief) {
+            brief = resume.brief;
+        } else {
+            emit(0, "running");
+            const briefResult = await produceConceptBrief(seed, "class", host.ai, opts, host.runner);
+            if (host.signal.aborted) return void emit(0, "aborted");
+            if (!briefResult.ok || !briefResult.value) {
+                return fail(host, emit, 0, briefResult.errors[0] ?? "Couldn't draft a design brief for the class.");
             }
-            const plan = skeletonResult.value;
-
-            emit(1, "awaiting_user");
-            const decision = await host.ratifySkeleton(plan);
-            if (host.signal.aborted) return void emit(1, "aborted");
-            if (decision.type === "reject") return void emit(1, "aborted");
-            if (decision.type === "refine") { refinement = decision.text; continue; }
-            applySkeleton(working, plan);
-            approved = true;
+            brief = briefResult.value;
+            host.onCheckpoint?.(0, working, brief);
         }
-        if (!approved) return fail(host, emit, 1, "The skeleton wasn't approved.");
-        host.onCheckpoint?.(1, working, brief);
 
-        // ── Phase C — chassis ──────────────────────────────────────────────────
-        emit(2, "running");
-        const chassisResult = await produceChassis(brief, classCtx(), host.ai, opts, host.runner);
-        if (host.signal.aborted) return void emit(2, "aborted");
-        if (!chassisResult.ok || !chassisResult.value) {
-            return fail(host, emit, 2, chassisResult.errors[0] ?? "Couldn't build the class chassis.");
+        // ── Phase B — skeleton (ratified; skip if already approved on a prior run) ──
+        if (!hasSkeleton(working)) {
+            let refinement = "";
+            let approved = false;
+            for (let round = 0; round < MAX_RATIFY_ROUNDS && !approved; round++) {
+                emit(1, "running");
+                const skeletonResult = await produceSkeleton(
+                    seed, refinement, brief, classCtx(), host.ai, opts, host.runner);
+                if (host.signal.aborted) return void emit(1, "aborted");
+                if (!skeletonResult.ok || !skeletonResult.value) {
+                    return fail(host, emit, 1, skeletonResult.errors[0] ?? "Couldn't draft a class skeleton.");
+                }
+                const plan = skeletonResult.value;
+
+                emit(1, "awaiting_user");
+                const decision = await host.ratifySkeleton(plan);
+                if (host.signal.aborted) return void emit(1, "aborted");
+                if (decision.type === "reject") return void emit(1, "aborted");
+                if (decision.type === "refine") { refinement = decision.text; continue; }
+                applySkeleton(working, plan);
+                approved = true;
+            }
+            if (!approved) return fail(host, emit, 1, "The skeleton wasn't approved.");
+            host.onCheckpoint?.(1, working, brief);
         }
-        applyChassis(working, chassisResult.value);
-        host.onCheckpoint?.(2, working, brief);
+
+        // ── Phase C — chassis (skip if already built on a prior run) ───────────
+        if (!hasChassis(working)) {
+            emit(2, "running");
+            const chassisResult = await produceChassis(brief, classCtx(), host.ai, opts, host.runner);
+            if (host.signal.aborted) return void emit(2, "aborted");
+            if (!chassisResult.ok || !chassisResult.value) {
+                return fail(host, emit, 2, chassisResult.errors[0] ?? "Couldn't build the class chassis.");
+            }
+            applyChassis(working, chassisResult.value);
+            host.onCheckpoint?.(2, working, brief);
+        }
 
         // ── Phase D — features (loop) ──────────────────────────────────────────
         if (await runFeatureLoop(working, brief, host, opts, classCtx, emit)) return;   // aborted mid-loop
@@ -139,15 +163,19 @@ async function runFeatureLoop(
 ): Promise<boolean> {
     emit(FEATURES_PHASE, "running");
     const levels = baseFeatureLevels(working);
+    // Resume idempotency: a level already filled on a prior run is skipped, so the loop fills only the gap.
+    const have = new Set((working.features ?? []).map(f => f.level));
     for (let i = 0; i < levels.length; i++) {
         if (host.signal.aborted) { emit(FEATURES_PHASE, "aborted"); return true; }
         const level = levels[i];
+        if (have.has(level)) continue;
         emit(FEATURES_PHASE, "running", { note: `Feature ${i + 1} of ${levels.length} — level ${level}…` });
 
         const res = await produceFeature(level, working.features ?? [], classCtx(), host.ai, opts, host.runner);
         if (host.signal.aborted) { emit(FEATURES_PHASE, "aborted"); return true; }
         if (res.ok && res.value) {
             (working.features ??= []).push(res.value);
+            have.add(level);
             host.onCheckpoint?.(FEATURES_PHASE, working, brief);
         }
         // else: skip this level (resilient) — the build continues with the features that succeeded.
@@ -172,18 +200,25 @@ async function runSubclassLoop(
         if (host.signal.aborted) { emit(SUBCLASSES_PHASE, "aborted"); return true; }
         emit(SUBCLASSES_PHASE, "running", { note: `Subclass ${i + 1} of ${count}…` });
 
-        const briefRes = await produceSubclassBrief(i, count, subclassNames(working), classCtx(), host.ai, opts, host.runner);
-        if (host.signal.aborted) { emit(SUBCLASSES_PHASE, "aborted"); return true; }
-        if (!briefRes.ok || !briefRes.value) continue;   // couldn't anchor it — skip this subclass
+        // Resume idempotency: re-adopt a subclass already anchored on a prior run; otherwise anchor it now.
+        let sub = (working.subclasses ?? [])[i];
+        if (!sub) {
+            const briefRes = await produceSubclassBrief(i, count, subclassNames(working), classCtx(), host.ai, opts, host.runner);
+            if (host.signal.aborted) { emit(SUBCLASSES_PHASE, "aborted"); return true; }
+            if (!briefRes.ok || !briefRes.value) continue;   // couldn't anchor it — skip this subclass
 
-        const sub: WorkingSubclass = { name: briefRes.value.name, brief: briefRes.value.brief, features: [] };
-        (working.subclasses ??= []).push(sub);
-        host.onCheckpoint?.(SUBCLASSES_PHASE, working, brief);
+            sub = { name: briefRes.value.name, brief: briefRes.value.brief, features: [] };
+            (working.subclasses ??= []).push(sub);
+            host.onCheckpoint?.(SUBCLASSES_PHASE, working, brief);
+        }
 
+        // Fill only the feature levels this subclass is still missing (clean on both fresh runs and resume).
+        const have = new Set(sub.features.map(f => f.level));
         const ownerLabel = `the «${sub.name}» subclass`;
         for (let j = 0; j < featureLevels.length; j++) {
             if (host.signal.aborted) { emit(SUBCLASSES_PHASE, "aborted"); return true; }
             const level = featureLevels[j];
+            if (have.has(level)) continue;
             emit(SUBCLASSES_PHASE, "running", { note: `${sub.name}: feature ${j + 1} of ${featureLevels.length} — level ${level}…` });
 
             const ctx: StepContext = { brief, summary: summarizeSubclass(working, sub) };
@@ -191,6 +226,7 @@ async function runSubclassLoop(
             if (host.signal.aborted) { emit(SUBCLASSES_PHASE, "aborted"); return true; }
             if (fRes.ok && fRes.value) {
                 sub.features.push(fRes.value);
+                have.add(level);
                 host.onCheckpoint?.(SUBCLASSES_PHASE, working, brief);
             }
             // else: skip this subclass feature (resilient).

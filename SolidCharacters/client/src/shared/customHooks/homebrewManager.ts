@@ -123,33 +123,36 @@ class HomebrewManager {
   }
 
   // Classes (Class5E)
-  public addClass = (newClass: Class5E): Promise<void> => {
-    if (this._classes().some(c => c.name === newClass.name)) return Promise.resolve();
-    return new Promise(resolve => {
-      this.addClassToDB(Clone(newClass)).subscribe({ complete: () => resolve(), error: () => resolve() });
-    });
+  // Returns true only when the class was actually persisted; false on a dedup no-op or a DB error, so the
+  // caller (saveHomebrew) can report honestly instead of showing a phantom success. Uses `.put` (upsert) so
+  // an existing `name` primary key can't throw a ConstraintError, and updates the signal before resolving.
+  public addClass = async (newClass: Class5E): Promise<boolean> => {
+    if (this._classes().some(c => c.name === newClass.name)) return false;
+    const toStore = Clone(newClass);
+    try {
+      await HombrewDB.classes.put(toStore);
+    } catch (err) {
+      console.error(err);
+      addSnackbar({ message: "Error adding class to database", severity: "error" });
+      return false;
+    }
+    this._setClasses(o => [...o, toStore]);
+    addSnackbar({ message: "Class added successfully", severity: "success" });
+    return true;
   }
-  private addClassToDB = (newClass: Class5E) => {
-    let failed = false;
-    return httpClient$.toObservable(HombrewDB.classes.add(newClass)).pipe(
-      take(1),
-      catchError(err => { console.error(err); failed = true; addSnackbar({ message: "Error adding class to database", severity: "error" }); return of(null) }),
-      finalize(() => { if (!failed) { this._setClasses(o => [...o, newClass]); addSnackbar({ message: "Class added successfully", severity: "success" }); } })
-    );
-  }
-  public updateClass(updated: Class5E): Promise<void> | void {
-    if (!this._classes().some(c => c.name === updated.name)) return Promise.resolve();
-    return new Promise(resolve => {
-      this.updateClassInDB(Clone(updated)).subscribe({ complete: () => resolve(), error: () => resolve() });
-    });
-  }
-  private updateClassInDB = (updated: Class5E) => {
-    let error = false;
-    return httpClient$.toObservable(HombrewDB.classes.put(updated)).pipe(
-      take(1),
-      catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating class in database", severity: "error" }); return of(null) }),
-      finalize(() => { if (!error) { this._setClasses(list => list.map(c => c.name === updated.name ? updated : c)); addSnackbar({ message: "Class updated successfully", severity: "success" }); } })
-    );
+  public updateClass = async (updated: Class5E): Promise<boolean> => {
+    if (!this._classes().some(c => c.name === updated.name)) return false;
+    const toStore = Clone(updated);
+    try {
+      await HombrewDB.classes.put(toStore);
+    } catch (err) {
+      console.error(err);
+      addSnackbar({ message: "Error updating class in database", severity: "error" });
+      return false;
+    }
+    this._setClasses(list => list.map(c => c.name === toStore.name ? toStore : c));
+    addSnackbar({ message: "Class updated successfully", severity: "success" });
+    return true;
   }
 
   // Items
@@ -275,41 +278,40 @@ class HomebrewManager {
   public removeRace = (name: string): Promise<void> | void => { if (!this._races().some(r => r.name === name)) return; const rest = this._races().filter(r => r.name !== name); return new Promise(res => { httpClient$.toObservable(HombrewDB.races.clear()).pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.races.bulkAdd(rest)))).subscribe({ error: err => { console.error(err); addSnackbar({ message: "Error removing race", severity: "error" }); res(); }, complete: () => { this._setRaces(rest); addSnackbar({ message: "Race removed", severity: "success" }); res(); } }); }); }
 
   // Subclasses (standalone persistence; projection into classes left to consumer if needed)
-  public addSubclass = (subclass: srdSubclass): Promise<void> | null => {
+  // Like addClass: returns true only on a real persist (false on dedup/DB error), uses `.put` (the table is
+  // keyed by `name`, so `.add` would throw on any existing name), and updates the signal before resolving.
+  public addSubclass = async (subclass: srdSubclass): Promise<boolean> => {
     const storage_key = `${subclass.parentClass.toLowerCase()}__${subclass.name.toLowerCase()}`;
-    (subclass as any).storage_key = storage_key;
-    if (this._subclasses().some(s => (s as any).storage_key === storage_key)) return null;
-    return new Promise(res => this.addSubclassToDB(Clone(subclass)).subscribe({ complete: () => res(), error: () => res() }));
+    if (this._subclasses().some(s => (s as any).storage_key === storage_key)) return false;
+    const toStore = Clone(subclass);
+    (toStore as any).storage_key = storage_key;
+    try {
+      await HombrewDB.subclasses.put(toStore as any);
+    } catch (err) {
+      console.error(err);
+      addSnackbar({ message: "Error adding subclass", severity: "error" });
+      return false;
+    }
+    this._setSubclasses(o => [...o, toStore]);
+    addSnackbar({ message: "Subclass added", severity: "success" });
+    return true;
   }
-  private addSubclassToDB = (subclass: srdSubclass) => {
-    let error = false;
-    return httpClient$
-      .toObservable(HombrewDB.subclasses.add(subclass as any))
-      .pipe(
-        take(1),
-        catchError(err => {
-          console.error(err);
-          error = true;
-          addSnackbar({ message: "Error adding subclass", severity: "error" });
-          return of(null);
-        }),
-        finalize(() => {
-          if (!error) {
-            this._setSubclasses(o => [...o, subclass]);
-            addSnackbar({ message: "Subclass added", severity: "success" });
-          }
-        })
-      );
-  }
-  public updateSubclass = (subclass: srdSubclass): Promise<void> | void => {
-  const storage_key = `${subclass.parentClass.toLowerCase()}__${subclass.name.toLowerCase()}`;
-  if (!this._subclasses().some(s => (s as any).storage_key === storage_key)) return; 
-    return new Promise(res => this.updateSubclassInDB(Clone(subclass)).subscribe({ complete: () => res(), error: () => res() }));
-  }
-  private updateSubclassInDB = (subclass: srdSubclass) => { 
+  public updateSubclass = async (subclass: srdSubclass): Promise<boolean> => {
     const storage_key = `${subclass.parentClass.toLowerCase()}__${subclass.name.toLowerCase()}`;
-    (subclass as any).storage_key = storage_key;
-  let error = false; return httpClient$.toObservable(HombrewDB.subclasses.put(subclass as any)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating subclass", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setSubclasses(list => list.map(s => ((s as any).storage_key === storage_key) ? subclass : s)); addSnackbar({ message: "Subclass updated", severity: "success" }); } })) }
+    if (!this._subclasses().some(s => (s as any).storage_key === storage_key)) return false;
+    const toStore = Clone(subclass);
+    (toStore as any).storage_key = storage_key;
+    try {
+      await HombrewDB.subclasses.put(toStore as any);
+    } catch (err) {
+      console.error(err);
+      addSnackbar({ message: "Error updating subclass", severity: "error" });
+      return false;
+    }
+    this._setSubclasses(list => list.map(s => ((s as any).storage_key === storage_key) ? toStore : s));
+    addSnackbar({ message: "Subclass updated", severity: "success" });
+    return true;
+  }
   public removeSubclass = (parentClass: string, name: string): Promise<void> | void => {
     const storage_key = `${parentClass.toLowerCase()}__${name.toLowerCase()}`;
     if (!this._subclasses().some(s => (s as any).storage_key === storage_key)) return; 

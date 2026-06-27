@@ -109,6 +109,27 @@ describe("buildSystemPrompt — correctness & token diet", () => {
     });
 });
 
+describe("buildSystemPrompt — class creation routes through the staged pipeline (M4)", () => {
+    const withPipeline = { ...allFlags, pipeline: true };
+
+    it("directs class creation to generate_class, not a one-shot create_* call", () => {
+        const p = buildSystemPrompt("2024", "homebrew", "large", allKinds, withPipeline);
+        expect(p).toContain("call generate_class");
+        expect(p).toContain("Never try to emit a whole class in a single tool call");
+    });
+
+    it("omits the class-pipeline line when class creation is not permitted", () => {
+        const noClass = allKinds.filter(k => k !== "class");
+        const p = buildSystemPrompt("2024", "homebrew", "large", noClass, withPipeline);
+        expect(p).not.toContain("call generate_class");
+    });
+
+    it("omits the class-pipeline line when the pipeline tool is not advertised", () => {
+        const p = buildSystemPrompt("2024", "homebrew", "large", allKinds, allFlags);
+        expect(p).not.toContain("call generate_class");
+    });
+});
+
 describe("zero-persona surfaces stay neutral", () => {
     it("review-pass prompt carries no Grimoire voice and forbids prose", () => {
         const sys = buildReviewSystemPrompt(BUILTIN_LLM_PASSES.balance!, "spell", "2024");

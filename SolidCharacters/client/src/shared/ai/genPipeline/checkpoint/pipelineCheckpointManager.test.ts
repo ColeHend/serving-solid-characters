@@ -12,9 +12,10 @@ describe("pipelineCheckpointManager", () => {
 
     it("creates a checkpoint with an id and timestamps", async () => {
         const cp = await pipelineCheckpointManager.create({
-            conversationId: "conv-1", pipelineType: "class", currentPhaseIndex: 0, working: working("Alpha"),
+            conversationId: "conv-1", pipelineType: "class", seed: "a storm knight", currentPhaseIndex: 0, working: working("Alpha"),
         });
         expect(cp.id).toBeTruthy();
+        expect(cp.seed).toBe("a storm knight");
         expect(cp.createdAt).toBeGreaterThan(0);
         expect(cp.updatedAt).toBe(cp.createdAt);
         expect(await pipelineCheckpointManager.getById(cp.id)).toEqual(cp);
@@ -22,7 +23,7 @@ describe("pipelineCheckpointManager", () => {
 
     it("saves a checkpoint after a step, advancing the phase and bumping updatedAt", async () => {
         const cp = await pipelineCheckpointManager.create({
-            conversationId: "conv-2", pipelineType: "class", currentPhaseIndex: 0, working: working("Beta"),
+            conversationId: "conv-2", pipelineType: "class", seed: "beta seed", currentPhaseIndex: 0, working: working("Beta"),
         });
         const advanced = await pipelineCheckpointManager.save({
             ...cp, currentPhaseIndex: 1, working: { ...working("Beta"), primaryAbility: "STR" },
@@ -35,10 +36,10 @@ describe("pipelineCheckpointManager", () => {
 
     it("get() returns the most-recently-updated checkpoint for a conversation", async () => {
         const a = await pipelineCheckpointManager.create({
-            conversationId: "conv-3", pipelineType: "class", currentPhaseIndex: 0, working: working("Old"),
+            conversationId: "conv-3", pipelineType: "class", seed: "old seed", currentPhaseIndex: 0, working: working("Old"),
         });
         const b = await pipelineCheckpointManager.create({
-            conversationId: "conv-3", pipelineType: "character", currentPhaseIndex: 0, working: { name: "New" },
+            conversationId: "conv-3", pipelineType: "character", seed: "new seed", currentPhaseIndex: 0, working: { name: "New" },
         });
         // bump b so it is unambiguously the latest
         await pipelineCheckpointManager.save({ ...b, currentPhaseIndex: 2 });
@@ -54,15 +55,15 @@ describe("pipelineCheckpointManager", () => {
 
     it("discards a checkpoint by id", async () => {
         const cp = await pipelineCheckpointManager.create({
-            conversationId: "conv-4", pipelineType: "class", currentPhaseIndex: 0, working: working("Gamma"),
+            conversationId: "conv-4", pipelineType: "class", seed: "gamma seed", currentPhaseIndex: 0, working: working("Gamma"),
         });
         await pipelineCheckpointManager.discard(cp.id);
         expect(await pipelineCheckpointManager.getById(cp.id)).toBeUndefined();
     });
 
     it("discards every checkpoint for a conversation", async () => {
-        await pipelineCheckpointManager.create({ conversationId: "conv-5", pipelineType: "class", currentPhaseIndex: 0, working: working("A") });
-        await pipelineCheckpointManager.create({ conversationId: "conv-5", pipelineType: "class", currentPhaseIndex: 1, working: working("B") });
+        await pipelineCheckpointManager.create({ conversationId: "conv-5", pipelineType: "class", seed: "a", currentPhaseIndex: 0, working: working("A") });
+        await pipelineCheckpointManager.create({ conversationId: "conv-5", pipelineType: "class", seed: "b", currentPhaseIndex: 1, working: working("B") });
         await pipelineCheckpointManager.discardForConversation("conv-5");
         expect(await pipelineCheckpointManager.get("conv-5")).toBeUndefined();
     });

@@ -6,6 +6,8 @@ import type { ConceptBrief, PipelineCheckpoint, PipelineType, WorkingEntity } fr
 export interface NewCheckpoint {
     conversationId: string;
     pipelineType: PipelineType;
+    /** The original generation seed, so resume can re-run any phase (concept/skeleton/foundation) that needs it. */
+    seed: string;
     currentPhaseIndex: number;
     working: WorkingEntity;
     conceptBrief?: ConceptBrief;
@@ -24,6 +26,7 @@ class PipelineCheckpointManager {
             id: createNewId(),
             conversationId: input.conversationId,
             pipelineType: input.pipelineType,
+            seed: input.seed,
             currentPhaseIndex: input.currentPhaseIndex,
             working: input.working,
             conceptBrief: input.conceptBrief,

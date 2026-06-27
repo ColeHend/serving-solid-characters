@@ -40,9 +40,28 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
         aiAssistant.close();
     };
 
+    // Once saved, the card becomes a compact "Saved" confirmation (View / Dismiss) instead of vanishing.
     // While a "Complete with AI" repair is in flight, collapse the card to a compact progress state.
     // (A detached/restored card never has live repair/review state, but guard so it always shows normally.)
     return (
+        <Show when={!p().saved} fallback={
+            <Container theme="surface" class={`${styles.previewCard} ${styles.previewSaved}`}>
+                <div class={styles.previewHeader}>
+                    <div>
+                        <span class={styles.savedTitle}><Icon icon={Verified} size="small" /> Saved “{p().title}”</span>
+                        <div class={styles.previewSubtitle}>{previewSubtitle(p())}</div>
+                    </div>
+                </div>
+                <div class={styles.previewActions}>
+                    <Button transparent title="Open it in the homebrew editor" onClick={editManually}>
+                        <Icon icon={Visibility} size="small" /> View
+                    </Button>
+                    <Button transparent title="Dismiss" onClick={() => aiAssistant.dismissPreview(p().previewId)}>
+                        <Icon icon={Close} size="small" /> Dismiss
+                    </Button>
+                </div>
+            </Container>
+        }>
         <Show when={!p().repairing || isDetached()} fallback={
             <Container theme="surface" class={`${styles.previewCard} ${styles.previewRepairing}`}>
                 <strong>{p().title}</strong>
@@ -125,6 +144,9 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                             <Icon icon={Close} size="small" /> Reject
                         </Button>
                     </div>
+                    <Show when={p().saveError}>
+                        <div class={styles.previewError}>{p().saveError}</div>
+                    </Show>
                     <Show when={showPreview()}>
                         <HomebrewPreviewDialog preview={p()} show={[showPreview, setShowPreview]} />
                     </Show>
@@ -192,6 +214,7 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                     </Container>
                 </Match>
             </Switch>
+        </Show>
         </Show>
     );
 };

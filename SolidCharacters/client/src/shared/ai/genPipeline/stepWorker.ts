@@ -72,9 +72,35 @@ function buildTask(spec: StepSpec<unknown>, ctx: StepContext, repairErrors: stri
 }
 
 /**
- * Run one pipeline step to a gated result. Forces `spec.tool`, coerces via `spec.parse`, and on a gate
- * failure (or no tool call) re-runs THIS step with the errors appended, up to `repairBudget` repairs
- * (default 1). Returns the gated value, or the last failing attempt for the UI to surface.
+ * Salvage a tool payload the model wrote as TEXT instead of making the forced call — a common local-model
+ * failure (it "describes" the call or emits a ```json block). Returns the first parseable JSON OBJECT (a
+ * fenced block first, else the first balanced `{ … }` span), or null. A salvaged object still goes through
+ * the step's normal `parse`/gate, so a malformed-but-parseable object just falls into the repair path.
+ */
+export function extractToolJson(text: string): Record<string, unknown> | null {
+    if (!text?.trim()) return null;
+    const candidates: string[] = [];
+    const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (fence?.[1]?.trim()) candidates.push(fence[1].trim());
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start >= 0 && end > start) candidates.push(text.slice(start, end + 1));
+    for (const c of candidates) {
+        try {
+            const parsed = JSON.parse(c);
+            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed as Record<string, unknown>;
+        } catch { /* try the next candidate */ }
+    }
+    return null;
+}
+
+/**
+ * Run one pipeline step to a gated result. Forces `spec.tool`, coerces via `spec.parse`, and re-runs on
+ * failure within TWO separate budgets: gate failures (the tool was called but its output was illegal) use
+ * `repairBudget` (usage-level, default 1); a "no tool call" / failed call (prose-only reply — a transient
+ * local-model glitch) uses `toolCallRetries` (default 2, usage-independent) so one bad reply can't kill the
+ * run at the Low level. A prose reply that contains the tool's JSON is salvaged (see `extractToolJson`) so
+ * it often succeeds without a retry. Total attempts are bounded by `1 + repairBudget + toolCallRetries`.
  */
 export async function runStep<T>(
     spec: StepSpec<T>,
@@ -83,7 +109,9 @@ export async function runStep<T>(
     opts: RunStepOptions = {},
     runner: StepModelRunner = defaultRunner,
 ): Promise<StepResult<T>> {
-    const budget = Math.max(0, opts.repairBudget ?? 1);
+    const gateBudget = Math.max(0, opts.repairBudget ?? 1);
+    const toolCallBudget = Math.max(0, opts.toolCallRetries ?? 2);
+    const maxAttempts = 1 + gateBudget + toolCallBudget;   // hard ceiling so alternating failures can't spin
     const subSpec: SubAgentSpec = {
         id: spec.id,
         name: spec.id,
@@ -95,31 +123,51 @@ export async function runStep<T>(
     };
 
     let attempts = 0;
+    let gateRepairsUsed = 0;
+    let toolCallRetriesUsed = 0;
     let lastValue: T | null = null;
     let lastErrors: string[] = [];
     let lastFits: string | undefined;
     let noToolCall = false;
 
-    for (let attempt = 0; attempt <= budget; attempt++) {
+    while (attempts < maxAttempts) {
         if (opts.signal?.aborted) return { ok: false, value: lastValue, errors: lastErrors, attempts, aborted: true };
 
         attempts++;
-        const task = buildTask(spec, ctx, attempt === 0 ? [] : lastErrors, noToolCall);
+        const task = buildTask(spec, ctx, attempts === 1 ? [] : lastErrors, noToolCall);
         const res = await runner(subSpec, task, ai, opts.signal);
 
-        if (!res.ok) { noToolCall = true; lastErrors = ["The model call failed; try again."]; continue; }
+        // Resolve the tool input: a real forced call, else salvage a JSON object the model wrote as text.
+        let raw: Record<string, unknown> | null = null;
+        if (res.ok) {
+            const call = res.toolCalls.find(c => c.name === spec.tool.name) ?? res.toolCalls[0];
+            raw = call ? ((call.input ?? {}) as Record<string, unknown>) : extractToolJson(res.text);
+        }
 
-        const call = res.toolCalls.find(c => c.name === spec.tool.name) ?? res.toolCalls[0];
-        if (!call) { noToolCall = true; lastErrors = [`You did not call ${spec.tool.name}.`]; continue; }
+        if (!raw) {
+            // No usable output (call failed, or prose with no parseable JSON) — spend the tool-call budget.
+            noToolCall = true;
+            lastErrors = [res.ok ? `You did not call ${spec.tool.name}.` : "The model call failed; try again."];
+            if (toolCallRetriesUsed >= toolCallBudget) break;
+            toolCallRetriesUsed++;
+            continue;
+        }
         noToolCall = false;
 
-        const raw = (call.input ?? {}) as Record<string, unknown>;
         lastFits = str(raw.fits_concept).trim() || undefined;
         const { value, errors } = spec.parse(raw);
         lastValue = value;
         if (!errors.length) return { ok: true, value, fitsConcept: lastFits, errors: [], attempts };
+
+        // Gate failure (legal call, illegal output) — spend the gate-repair budget.
         lastErrors = errors;
+        if (gateRepairsUsed >= gateBudget) break;
+        gateRepairsUsed++;
     }
 
-    return { ok: false, value: lastValue, fitsConcept: lastFits, errors: lastErrors, attempts, noToolCall };
+    // A persistent no-tool-call gets an actionable message; a gate failure keeps the validator's errors.
+    const finalErrors = noToolCall
+        ? [`The model replied with text instead of filling in ${spec.tool.name}. Try again, or raise the usage level.`]
+        : lastErrors;
+    return { ok: false, value: lastValue, fitsConcept: lastFits, errors: finalErrors, attempts, noToolCall };
 }

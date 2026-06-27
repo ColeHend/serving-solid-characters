@@ -1,6 +1,6 @@
 import { Component, For, Show } from "solid-js";
 import { Button, Container, Icon } from "coles-solid-library";
-import { Close } from "coles-solid-library/icons";
+import { Close, Verified } from "coles-solid-library/icons";
 import { aiAssistant } from "../../../shared/customHooks/aiAssistant";
 import { computeFieldDiff, HomebrewPreview, previewSubtitle } from "../aiSpark.shared";
 import styles from "../SparkSidebar.module.scss";
@@ -8,13 +8,29 @@ import styles from "../SparkSidebar.module.scss";
 /**
  * An AI-proposed EDIT to existing homebrew, shown as a before→after diff the user accepts or rejects.
  * Nothing is changed until Accept (which calls updateX via saveHomebrew). Reuses the pendingPreviews
- * signal — an edit is a HomebrewPreview with mode:"edit".
+ * signal — an edit is a HomebrewPreview with mode:"edit". Once applied, the card becomes an "Updated"
+ * confirmation (Dismiss) instead of vanishing, mirroring the create card.
  */
 const HomebrewDiffCard: Component<{ preview: HomebrewPreview }> = (props) => {
     const p = () => props.preview;
     const diffs = () => computeFieldDiff(p());
 
     return (
+        <Show when={!p().saved} fallback={
+            <Container theme="surface" class={`${styles.previewCard} ${styles.previewSaved}`}>
+                <div class={styles.previewHeader}>
+                    <div>
+                        <span class={styles.savedTitle}><Icon icon={Verified} size="small" /> Updated “{p().title}”</span>
+                        <div class={styles.previewSubtitle}>{previewSubtitle(p())}</div>
+                    </div>
+                </div>
+                <div class={styles.previewActions}>
+                    <Button transparent title="Dismiss" onClick={() => aiAssistant.dismissPreview(p().previewId)}>
+                        <Icon icon={Close} size="small" /> Dismiss
+                    </Button>
+                </div>
+            </Container>
+        }>
         <Container theme="surface" class={styles.previewCard}>
             <div class={styles.previewHeader}>
                 <div>
@@ -52,6 +68,10 @@ const HomebrewDiffCard: Component<{ preview: HomebrewPreview }> = (props) => {
                 </div>
             </Show>
 
+            <Show when={p().saveError}>
+                <div class={styles.previewError}>{p().saveError}</div>
+            </Show>
+
             <div class={styles.previewActions}>
                 <Button
                     theme="primary"
@@ -66,6 +86,7 @@ const HomebrewDiffCard: Component<{ preview: HomebrewPreview }> = (props) => {
                 </Button>
             </div>
         </Container>
+        </Show>
     );
 };
 

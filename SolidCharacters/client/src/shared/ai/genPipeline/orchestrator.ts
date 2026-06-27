@@ -1,9 +1,10 @@
 import { AiSettings, UsageControlLevel } from "../../../models/userSettings";
+import type { Character } from "../../../models/character.model";
 import type { HomebrewPreview } from "../tools/toolDispatcher";
 import type { StepModelRunner } from "./stepWorker";
 import type { ClassReviewer } from "./critic";
 import type { SkeletonPlan } from "./skeleton";
-import type { ConceptBrief, PipelineRun, WorkingClass } from "./types";
+import type { ConceptBrief, PipelineRun, WorkingCharacter, WorkingClass } from "./types";
 
 /**
  * The orchestrator contract (plan §2.2). A pipeline run is a STANDALONE driver — it does not touch the
@@ -47,6 +48,31 @@ export interface PipelineHost {
      */
     onComplete: (previews: HomebrewPreview[]) => void;
     /** Terminal failure: a short, user-facing reason. The host surfaces it (e.g. a system bubble). */
+    onError: (message: string) => void;
+}
+
+/**
+ * The Character pipeline's host (plan §7). Mirrors {@link PipelineHost} but for the net-new character
+ * surface: there is NO ratification gate (the character phases 1–7 have none) and NO Phase-F LLM critic
+ * (`balanceFacts` has no character branch and a character is not a homebrew preview — plan §12 risk #5), so
+ * those fields are absent. On success it hands back the assembled `Character`; the host persists it via
+ * `characterManager.createCharacter` (the pipeline stays free of DB/Solid concerns). Same injectable
+ * `runner` + spy callbacks, so the driver is unit-testable without a provider.
+ */
+export interface CharacterPipelineHost {
+    ai: AiSettings;
+    dndSystem: string;
+    signal: AbortSignal;
+    usageLevel?: UsageControlLevel;
+    runner?: StepModelRunner;
+
+    /** Push the latest reactive run state to the UI (GenPipelineCard / StatusTicker). Called on every transition. */
+    onProgress: (run: PipelineRun) => void;
+    /** Persist a checkpoint after a phase (best-effort). Optional. */
+    onCheckpoint?: (phaseIndex: number, working: WorkingCharacter, brief?: ConceptBrief) => void;
+    /** Terminal success: the assembled character. The host saves it and surfaces a confirmation. */
+    onComplete: (character: Character) => void;
+    /** Terminal failure: a short, user-facing reason. */
     onError: (message: string) => void;
 }
 

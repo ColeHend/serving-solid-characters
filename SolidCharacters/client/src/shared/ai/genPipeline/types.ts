@@ -21,6 +21,9 @@ export const ABILITY_KEYS: AbilityKey[] = ["str", "dex", "con", "int", "wis", "c
 /** Caster-type names as the model emits them; map to the `CasterType` enum via `parseCasterType`. */
 export type CasterTypeName = "none" | "third" | "half" | "full" | "pact";
 
+/** Armor weight class, which decides how Dexterity feeds Armor Class (see compute.computeAC). */
+export type ArmorCategory = "none" | "light" | "medium" | "heavy";
+
 /**
  * The design brief produced by Phase A/1. Every later step is told to "serve this concept; weave in the
  * motifs". `motifs` must be concrete nouns (validated), not sentences — they are the recurring hooks the
@@ -92,22 +95,28 @@ export interface WorkingDerivedStats {
  */
 export interface WorkingCharacter {
     name?: string;
+    // ----- mechanical foundation (Phase 2) -----
     className?: string;
     lineage?: string;
     level?: number;
     background?: string;
+    hitDie?: string;                  // the class's hit die ("d8"); drives HP compute
     abilityPriority?: AbilityKey[];
     // ----- trained-in (Phase 3) -----
     abilityScores?: Partial<Record<AbilityKey, number>>;
     skills?: string[];
     savingThrows?: AbilityKey[];
+    otherProficiencies?: string[];    // tool/weapon/armor proficiency labels (display only)
     // ----- capabilities (Phase 4) -----
     features?: WorkingFeature[];
     casterType?: CasterTypeName;
     spells?: string[];
     // ----- loadout (Phase 5) -----
     equipment?: string[];
+    armor?: { category: ArmorCategory; baseAc?: number; name?: string };
+    shield?: boolean;
     // ----- narrative (Phase 6) -----
+    alignment?: string;
     backstory?: string;
     bonds?: string;
     ideals?: string;
@@ -179,11 +188,25 @@ export interface PipelineCheckpoint {
     id: string;
     conversationId: string;
     pipelineType: PipelineType;
+    /** The original generation seed (concept + requirements), kept so resume can re-run any phase that still needs it. */
+    seed: string;
     currentPhaseIndex: number;
     working: WorkingEntity;
     conceptBrief?: ConceptBrief;
     createdAt: number;
     updatedAt: number;
+}
+
+/**
+ * State handed to an orchestrator to RE-ENTER an interrupted run (plan §9, M6 resume-on-reload). The driver
+ * adopts the persisted `working`/`brief` as its source of truth and skips any phase whose output is already
+ * present (presence-based; the loops fill only what's missing), so a resumed run never re-asks a decided
+ * step nor duplicates a generated feature. `fromPhaseIndex` is used only to seed the initial progress strip.
+ */
+export interface PipelineResume<W extends WorkingEntity = WorkingEntity> {
+    working: W;
+    brief?: ConceptBrief;
+    fromPhaseIndex: number;
 }
 
 // ───────────────────────────── per-step worker contract (plan §2.1) ─────────────────────────────
@@ -238,6 +261,12 @@ export interface StepResult<T> {
 export interface RunStepOptions {
     /** Model re-tries on a gate failure. Default 1 (Low usage level). Medium/High raise this (plan §8). */
     repairBudget?: number;
+    /**
+     * Re-tries reserved for "the model didn't call the tool" (prose-only reply or a failed call), SEPARATE
+     * from `repairBudget` and independent of usage level — a prose reply is a transient local-model glitch,
+     * not a quality decision, so it shouldn't burn the gate-repair budget. Default 2.
+     */
+    toolCallRetries?: number;
     /** Per-step output-token cap. Steps are small; defaults to 1024. */
     maxTokens?: number;
     /** Context window override (local models). Falls back to the AiSettings numCtx. */

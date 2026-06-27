@@ -1,6 +1,6 @@
 import { getAbilityModifier, getProficiencyBonus, signed } from "../../customHooks/utility/tools/dndMath";
 import { buildSlotTable, buildSpellcasting, parseCasterType } from "../refs/spellSlots";
-import type { AbilityKey } from "./types";
+import type { AbilityKey, ArmorCategory, WorkingCharacter, WorkingDerivedStats } from "./types";
 import { ABILITY_KEYS } from "./types";
 
 /**
@@ -14,9 +14,7 @@ import { ABILITY_KEYS } from "./types";
 
 // ----- re-exported canonical primitives (single import surface for the pipeline) -----
 export { getAbilityModifier, getProficiencyBonus, signed, buildSlotTable, buildSpellcasting, parseCasterType };
-
-/** Armor weight class, which decides how Dexterity feeds Armor Class. */
-export type ArmorCategory = "none" | "light" | "medium" | "heavy";
+export type { ArmorCategory };
 
 export interface ArmorInput {
     category: ArmorCategory;
@@ -88,4 +86,39 @@ export function abilityMods(scores: Partial<Record<AbilityKey, number>>): Record
     const out = {} as Record<AbilityKey, number>;
     for (const k of ABILITY_KEYS) out[k] = getAbilityModifier(scores[k] ?? 10);
     return out;
+}
+
+/** The spellcasting ability for a caster of unknown class: the strongest of INT/WIS/CHA (ties → that order). */
+export function spellcastingAbility(mods: Record<AbilityKey, number>): AbilityKey {
+    return (["int", "wis", "cha"] as AbilityKey[]).reduce((best, k) => (mods[k] > mods[best] ? k : best), "int" as AbilityKey);
+}
+
+/**
+ * Phase 7 (plan §7): derive EVERY combat stat for a working character in code — the model never emits AC,
+ * HP, save DCs, or attack bonuses. Reuses the canonical primitives above so the numbers can never drift
+ * from what the character sheet would compute. Spell save DC / attack are filled only for casters (the
+ * spellcasting ability is inferred as the strongest mental stat, since the class may be homebrew).
+ */
+export function computeCharacterStats(working: WorkingCharacter): WorkingDerivedStats {
+    const level = Math.max(1, Math.floor(working.level ?? 1));
+    const mods = abilityMods(working.abilityScores ?? {});
+    const proficiencyBonus = getProficiencyBonus(level);
+
+    const proficientInPerception = (working.skills ?? []).some(s => s.trim().toLowerCase() === "perception");
+
+    const derived: WorkingDerivedStats = {
+        proficiencyBonus,
+        ac: computeAC(mods.dex, working.armor, working.shield ?? false),
+        hp: computeHP(level, parseHitDie(working.hitDie), mods.con),
+        initiative: mods.dex,
+        passivePerception: passivePerception(mods.wis, proficiencyBonus, proficientInPerception),
+    };
+
+    if (working.casterType && working.casterType !== "none") {
+        const castMod = mods[spellcastingAbility(mods)];
+        derived.spellSaveDC = spellSaveDC(proficiencyBonus, castMod);
+        derived.spellAttackBonus = spellAttackBonus(proficiencyBonus, castMod);
+    }
+
+    return derived;
 }
