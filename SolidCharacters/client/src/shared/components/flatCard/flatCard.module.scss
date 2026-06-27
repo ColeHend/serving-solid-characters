@@ -19,7 +19,7 @@
         top: 0;
         bottom: 0;
         width: 4px;
-        background: linear-gradient(var(--primary-color, blue), transparent); // Or any color
+        background: var(--accent-bar-primary); // primary -> secondary -> fade
     }
 }
 
