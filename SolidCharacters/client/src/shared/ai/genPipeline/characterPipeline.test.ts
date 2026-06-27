@@ -5,7 +5,7 @@ import type { SubAgentResult } from "../subAgent";
 import type { StepModelRunner } from "./stepWorker";
 import { runCharacterPipeline } from "./characterPipeline";
 import type { CharacterPipelineHost } from "./orchestrator";
-import type { ConceptBrief, PipelineRun, WorkingEntity } from "./types";
+import type { ConceptBrief, PipelineRun, WorkingCharacter, WorkingEntity } from "./types";
 import { PipelinePhase } from "./types";
 
 /**
@@ -206,5 +206,54 @@ describe("runCharacterPipeline (M5)", () => {
 
         expect(completed).toEqual([]);
         expect(errors).toEqual([]);
+    });
+});
+
+/**
+ * M6 resume (plan §9, §13): re-entering with a persisted working object + brief skips every phase whose
+ * slice is already present. A build stopped before the loadout re-runs only loadout → narrative → compute,
+ * keeping the already-decided foundation, scores, training, and capabilities.
+ */
+describe("runCharacterPipeline — resume (M6)", () => {
+    const RESUME_BRIEF: ConceptBrief = {
+        concept: "A guilt-ridden goliath who protects the weak", tone: "grim, heroic", power_tier: "Barbarian",
+        motifs: ["mountain stone", "broken chain"], themes: ["atonement"], naming_style: "stony surnames", constraints: [],
+    };
+
+    /** A working character stopped just before the loadout phase: everything through capabilities is decided. */
+    const partialCharacter = (): WorkingCharacter => ({
+        className: "Barbarian", lineage: "Goliath", level: 5, background: "Soldier", hitDie: "d12",
+        abilityPriority: ["str", "con", "dex", "wis", "cha", "int"],
+        abilityScores: { str: 16, con: 15, dex: 13, wis: 12, cha: 10, int: 8 },
+        skills: ["Athletics", "Intimidation"], savingThrows: ["str", "con"], otherProficiencies: ["Smith's tools"],
+        features: [{ name: "Rage", level: 1, description: "As a bonus action, rage for resistance to physical damage and +2 melee damage." }],
+        casterType: "none",
+    });
+
+    it("resumes the loadout→narrative→compute tail, keeping the decided foundation and scores", async () => {
+        const { runner, tasks } = scriptRunner();
+        const { host, completed, errors } = makeHost(runner);
+
+        // fromPhaseIndex 4 = the Loadout phase; only seeds the initial progress strip (control flow is presence-based).
+        await runCharacterPipeline("a goliath", host, { working: partialCharacter(), brief: RESUME_BRIEF, fromPhaseIndex: 4 });
+
+        expect(errors).toEqual([]);
+        // The decided phases were skipped — only the remaining steps ran.
+        expect(tasks.concept_brief).toBeUndefined();
+        expect(tasks.character_foundation).toBeUndefined();
+        expect(tasks.ability_scores).toBeUndefined();
+        expect(tasks.character_training).toBeUndefined();
+        expect(tasks.character_capabilities).toBeUndefined();
+        expect(tasks.character_loadout).toHaveLength(1);
+        expect(tasks.character_narrative).toHaveLength(1);
+
+        // The assembled character kept the persisted foundation/scores and gained the resumed gear + name.
+        const c = completed[0];
+        expect(c.className).toBe("Barbarian");
+        expect(c.level).toBe(5);
+        expect(c.stats.str).toBe(16);
+        expect(c.name).toBe("Varra Stoneheart");
+        expect(c.items.inventory).toContain("Greataxe");
+        expect(c.levels[0].features.map(f => f.name)).toContain("Rage");
     });
 });

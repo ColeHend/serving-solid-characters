@@ -3,8 +3,8 @@ import { addSnackbar } from "coles-solid-library";
 import getUserSettings from "./userSettings";
 import {
     AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_LOOKUP_TOOLS,
-    DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_THINKING,
-    DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES,
+    DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_RESUME_GENERATION,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES,
     DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
 import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
@@ -26,12 +26,12 @@ import { logDecision } from "./decisionLogManager";
 import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
-import { runClassPipeline } from "../ai/genPipeline/classPipeline";
-import { runCharacterPipeline } from "../ai/genPipeline/characterPipeline";
+import { runClassPipeline, CLASS_PIPELINE_PHASES } from "../ai/genPipeline/classPipeline";
+import { runCharacterPipeline, CHARACTER_PIPELINE_PHASES } from "../ai/genPipeline/characterPipeline";
 import { buildClassReviewer } from "../ai/genPipeline/critic";
 import type { CharacterPipelineHost, PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
 import { skeletonSummaryLines, type SkeletonPlan } from "../ai/genPipeline/skeleton";
-import type { ConceptBrief, PipelineRun, PipelineType, WorkingEntity } from "../ai/genPipeline/types";
+import type { ConceptBrief, PipelineCheckpoint, PipelineResume, PipelineRun, PipelineType, WorkingCharacter, WorkingClass, WorkingEntity } from "../ai/genPipeline/types";
 import { pipelineCheckpointManager } from "../ai/genPipeline/checkpoint/pipelineCheckpointManager";
 import characterManager from "./dndInfo/useCharacters";
 import type { Character } from "../../models/character.model";
@@ -149,6 +149,9 @@ export class AiAssistant {
     /** The in-flight staged-generation run (null when no pipeline is active). Drives the GenPipelineCard. */
     readonly pipelineRun: Accessor<PipelineRun | null>;
     private setPipelineRun: Setter<PipelineRun | null>;
+    /** An interrupted pipeline checkpoint for the loaded conversation, offered for resume (null when none). */
+    readonly resumableCheckpoint: Accessor<PipelineCheckpoint | null>;
+    private setResumableCheckpoint: Setter<PipelineCheckpoint | null>;
     readonly conversations: Accessor<SavedConversation[]>;
     private setConversations: Setter<SavedConversation[]>;
 
@@ -164,6 +167,7 @@ export class AiAssistant {
     private pipelineRatify = new Map<string, (decision: RatifyDecision) => void>();   // ratify interactionId -> resolver
     private pipelineCheckpointId: string | null = null;        // id of the current run's checkpoint row, for upsert/discard
     private currentPipelineType: PipelineType = "class";       // which pipeline the active run drives (for checkpoint rows)
+    private currentPipelineSeed = "";                          // the active/last run's generation seed (for checkpoints + restart)
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
     private schemaRetryStreak = 0;                       // High-mode SCHEMA-gate regenerations (pre-handoff) for this request
@@ -186,6 +190,7 @@ export class AiAssistant {
         [this.pendingPreviews, this.setPendingPreviews] = createSignal<HomebrewPreview[]>([]);
         [this.pendingInteractions, this.setPendingInteractions] = createSignal<PendingInteraction[]>([]);
         [this.pipelineRun, this.setPipelineRun] = createSignal<PipelineRun | null>(null);
+        [this.resumableCheckpoint, this.setResumableCheckpoint] = createSignal<PipelineCheckpoint | null>(null);
         [this.conversations, this.setConversations] = createSignal<SavedConversation[]>([]);
 
         // Best-effort flush of the current conversation when the tab is hidden/closed — the per-turn
@@ -228,6 +233,7 @@ export class AiAssistant {
         this.resolved = [];
         this.teardownPipeline();
         this.pipelineCheckpointId = null;
+        this.setResumableCheckpoint(null);   // drop any "Resume generation" offer from a prior load
         this.repairCounts.clear();
         this.mediumRetryStreak = 0;
         this.schemaRetryStreak = 0;
@@ -507,6 +513,49 @@ export class AiAssistant {
     };
 
     /**
+     * Restart the last/current pipeline from scratch (user "Restart" on a terminal card). Drops any partial
+     * checkpoint and the terminal card, then re-launches the SAME pipeline type with the SAME seed. Bails if
+     * there's no remembered seed (e.g. a brand-new session after a hard reload, where Resume is the path).
+     */
+    restartPipeline = () => {
+        const seed = this.currentPipelineSeed;
+        if (!seed) return;
+        const type = this.currentPipelineType;
+        this.teardownPipeline();
+        void this.discardPipelineCheckpoint();
+        this.setResumableCheckpoint(null);
+        const epoch = this.turnEpoch;
+        if (type === "character") this.launchCharacterPipeline(seed, epoch);
+        else this.launchClassPipeline(seed, epoch);
+    };
+
+    /**
+     * Resume an interrupted pipeline offered after reloading its conversation (plan §9, M6). Adopts the
+     * persisted checkpoint (working object + brief + its row id, so further steps upsert the same row) and
+     * re-enters the matching orchestrator, which skips every already-decided phase. No-op if no offer stands.
+     */
+    resumePipeline = () => {
+        const cp = this.resumableCheckpoint();
+        if (!cp || this.pipelineRun()) return;
+        this.setResumableCheckpoint(null);
+        const epoch = this.turnEpoch;
+        if (cp.pipelineType === "character") {
+            const resume: PipelineResume<WorkingCharacter> = { working: cp.working as WorkingCharacter, brief: cp.conceptBrief, fromPhaseIndex: cp.currentPhaseIndex };
+            this.launchCharacterPipeline(cp.seed, epoch, resume, cp.id);
+        } else {
+            const resume: PipelineResume<WorkingClass> = { working: cp.working as WorkingClass, brief: cp.conceptBrief, fromPhaseIndex: cp.currentPhaseIndex };
+            this.launchClassPipeline(cp.seed, epoch, resume, cp.id);
+        }
+    };
+
+    /** Decline a resume offer: drop the persisted checkpoint and clear the affordance. */
+    discardResumable = () => {
+        const cp = this.resumableCheckpoint();
+        this.setResumableCheckpoint(null);
+        if (cp) void pipelineCheckpointManager.discard(cp.id).catch(e => console.error("Failed to discard pipeline checkpoint", e));
+    };
+
+    /**
      * Resolve a pipeline SEED tool call WITHOUT starting a continuation turn — the orchestrator is the
      * continuation (it runs async and renders its own card). Commits the tool_result to history so the
      * assistant's tool_use stays wire-valid, but never calls runTurn.
@@ -521,23 +570,46 @@ export class AiAssistant {
         }
     }
 
-    /** Start the Class staged-generation pipeline from a `generate_class` seed call. One run at a time. */
-    private startClassPipeline(tc: AiToolCall, epoch: number) {
+    /** Build the generation seed (concept + any hard requirements) from a `generate_*` seed tool call. */
+    private seedFromToolCall(tc: AiToolCall): string {
         const input = (tc.input ?? {}) as Record<string, unknown>;
         const concept = String(input.concept ?? "").trim();
         const requirements = Array.isArray(input.requirements)
             ? input.requirements.map(r => String(r).trim()).filter(Boolean) : [];
-        const seed = requirements.length ? `${concept}\nRequirements: ${requirements.join("; ")}` : concept;
-        if (!seed) { this.pushSystemBubble("The class generator needs a concept to start from."); return; }
+        return requirements.length ? `${concept}\nRequirements: ${requirements.join("; ")}` : concept;
+    }
 
+    /** Start the Class staged-generation pipeline from a `generate_class` seed call. One run at a time. */
+    private startClassPipeline(tc: AiToolCall, epoch: number) {
+        const seed = this.seedFromToolCall(tc);
+        if (!seed) { this.pushSystemBubble("The class generator needs a concept to start from."); return; }
+        this.launchClassPipeline(seed, epoch);
+    }
+
+    /** Start the Character staged-generation pipeline from a `generate_character` seed call. One run at a time. */
+    private startCharacterPipeline(tc: AiToolCall, epoch: number) {
+        const seed = this.seedFromToolCall(tc);
+        if (!seed) { this.pushSystemBubble("The character generator needs a concept to start from."); return; }
+        this.launchCharacterPipeline(seed, epoch);
+    }
+
+    /**
+     * Launch (or RESUME/RESTART) the Class pipeline for `seed`. Supersedes any prior run, wires the reactive
+     * host callbacks, and drives the standalone orchestrator. When `resume` is given the orchestrator picks
+     * up from the persisted working object; `checkpointId` re-adopts that run's row so later steps upsert it.
+     */
+    private launchClassPipeline(seed: string, epoch: number, resume?: PipelineResume<WorkingClass>, checkpointId?: string) {
         const [userSettings] = getUserSettings();
         const ai = userSettings().ai;
         if (!ai) { this.pushSystemBubble("AI is not configured."); return; }
         const dndSystem = userSettings().dndSystem;
 
         this.teardownPipeline();   // supersede any prior run (and settle its gate) before starting a new one
-        this.pipelineCheckpointId = null;
+        this.setResumableCheckpoint(null);   // a launch supersedes any standing resume offer
+        this.pipelineCheckpointId = checkpointId ?? null;
         this.currentPipelineType = "class";
+        this.currentPipelineSeed = seed;
+        if (resume) this.seedResumeProgress(resume, "class");
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
 
@@ -554,28 +626,24 @@ export class AiAssistant {
             onComplete: previews => this.onPipelineComplete(previews, epoch),
             onError: message => { if (epoch === this.turnEpoch) this.pushSystemBubble(message); },
         };
-        void runClassPipeline(seed, host).finally(() => {
+        void runClassPipeline(seed, host, resume).finally(() => {
             if (this.pipelineController?.signal === signal) this.pipelineController = null;
         });
     }
 
-    /** Start the Character staged-generation pipeline from a `generate_character` seed call. One run at a time. */
-    private startCharacterPipeline(tc: AiToolCall, epoch: number) {
-        const input = (tc.input ?? {}) as Record<string, unknown>;
-        const concept = String(input.concept ?? "").trim();
-        const requirements = Array.isArray(input.requirements)
-            ? input.requirements.map(r => String(r).trim()).filter(Boolean) : [];
-        const seed = requirements.length ? `${concept}\nRequirements: ${requirements.join("; ")}` : concept;
-        if (!seed) { this.pushSystemBubble("The character generator needs a concept to start from."); return; }
-
+    /** Launch (or RESUME/RESTART) the Character pipeline for `seed`. See {@link launchClassPipeline}. */
+    private launchCharacterPipeline(seed: string, epoch: number, resume?: PipelineResume<WorkingCharacter>, checkpointId?: string) {
         const [userSettings] = getUserSettings();
         const ai = userSettings().ai;
         if (!ai) { this.pushSystemBubble("AI is not configured."); return; }
         const dndSystem = userSettings().dndSystem;
 
         this.teardownPipeline();   // supersede any prior run before starting a new one
-        this.pipelineCheckpointId = null;
+        this.setResumableCheckpoint(null);   // a launch supersedes any standing resume offer
+        this.pipelineCheckpointId = checkpointId ?? null;
         this.currentPipelineType = "character";
+        this.currentPipelineSeed = seed;
+        if (resume) this.seedResumeProgress(resume, "character");
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
 
@@ -587,9 +655,20 @@ export class AiAssistant {
             onComplete: character => this.onCharacterComplete(character, epoch),
             onError: message => { if (epoch === this.turnEpoch) this.pushSystemBubble(message); },
         };
-        void runCharacterPipeline(seed, host).finally(() => {
+        void runCharacterPipeline(seed, host, resume).finally(() => {
             if (this.pipelineController?.signal === signal) this.pipelineController = null;
         });
+    }
+
+    /**
+     * Paint the progress card immediately at the resumed phase so a resumed run shows where it left off
+     * before the orchestrator's first async emit lands (which then takes over). The phase list mirrors each
+     * pipeline's `PHASES`; the index is clamped so a stale checkpoint can't point past the end.
+     */
+    private seedResumeProgress(resume: PipelineResume, pipelineType: PipelineType) {
+        const phases = pipelineType === "character" ? CHARACTER_PIPELINE_PHASES : CLASS_PIPELINE_PHASES;
+        const index = Math.min(Math.max(resume.fromPhaseIndex, 0), phases.length - 1);
+        this.setPipelineRun({ pipelineType, phase: phases[index], phaseIndex: index, totalPhases: phases.length, status: "running" });
     }
 
     /**
@@ -608,6 +687,15 @@ export class AiAssistant {
         } else {
             characterManager.createCharacter(character);
             this.pushAssistantBubble(`✦ Created **${character.name}** — level ${character.level} ${character.race.species} ${character.className}. Open the Characters page to view or edit them.`);
+            // Log the creation alongside generated homebrew for observability (plan §10/§13 M6). A character
+            // isn't a homebrew preview (no confirm step), so this is the only place its creation is recorded.
+            void logDecision({
+                entityKind: "character",
+                entityName: character.name,
+                changeType: "create",
+                summary: `Generated level ${character.level} ${character.race.species} ${character.className} via the staged pipeline.`,
+                conversationId: this.currentConversationId ?? undefined,
+            });
         }
         void this.persistCurrent();
     }
@@ -655,7 +743,7 @@ export class AiAssistant {
         void (async () => {
             try {
                 if (!this.pipelineCheckpointId) {
-                    const cp = await pipelineCheckpointManager.create({ conversationId, pipelineType: this.currentPipelineType, currentPhaseIndex: phaseIndex, working, conceptBrief: brief });
+                    const cp = await pipelineCheckpointManager.create({ conversationId, pipelineType: this.currentPipelineType, seed: this.currentPipelineSeed, currentPhaseIndex: phaseIndex, working, conceptBrief: brief });
                     this.pipelineCheckpointId = cp.id;
                 } else {
                     const existing = await pipelineCheckpointManager.getById(this.pipelineCheckpointId);
@@ -735,11 +823,34 @@ export class AiAssistant {
         this.createdAt = rec.createdAt;
         this.titleOverride = rec.title;   // restore the saved (possibly AI) name
         this.titleGenerated = true;       // already named — never re-title an existing chat
+        // Offer to resume an interrupted staged generation for this chat (plan §9, M6).
+        void this.refreshResumableCheckpoint(rec.id);
     };
+
+    /**
+     * Look up an in-flight pipeline checkpoint for the (just-loaded) conversation and, if the user hasn't
+     * disabled resume, surface it as a "Resume generation" offer. Guarded against a session swap mid-query
+     * and against clobbering a live run. Remembers the seed/type so a later Restart works too.
+     */
+    private async refreshResumableCheckpoint(conversationId: string) {
+        const [userSettings] = getUserSettings();
+        if (!(userSettings().ai?.resumeGeneration ?? DEFAULT_AI_RESUME_GENERATION)) return;
+        const epoch = this.turnEpoch;
+        try {
+            const cp = await pipelineCheckpointManager.get(conversationId);
+            if (!cp || epoch !== this.turnEpoch || this.pipelineRun()) return;
+            this.currentPipelineType = cp.pipelineType;
+            this.currentPipelineSeed = cp.seed;
+            this.setResumableCheckpoint(cp);
+        } catch (e) {
+            console.error("Failed to load pipeline checkpoint", e);
+        }
+    }
 
     deleteConversation = async (id: string) => {
         try { await chatHistoryDB.conversations.delete(id); }
         catch (e) { console.error("Failed to delete conversation", e); }
+        void pipelineCheckpointManager.discardForConversation(id).catch(e => console.error("Failed to discard pipeline checkpoints", e));
         // If we deleted the live chat, detach so the next turn doesn't recreate the deleted row.
         if (id === this.currentConversationId) this.newConversation();
         void this.loadConversations();

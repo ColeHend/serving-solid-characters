@@ -77,7 +77,7 @@ describe("2-step stub pipeline (M0 acceptance)", () => {
         const working: WorkingClass = { name: "Stormwarden" };
 
         const cp = await pipelineCheckpointManager.create({
-            conversationId: "acc-1", pipelineType: "class", currentPhaseIndex: 0, working, conceptBrief: brief,
+            conversationId: "acc-1", pipelineType: "class", seed: "a storm knight", currentPhaseIndex: 0, working, conceptBrief: brief,
         });
 
         // ── step 1: hit die (clean) ──

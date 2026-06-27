@@ -188,11 +188,25 @@ export interface PipelineCheckpoint {
     id: string;
     conversationId: string;
     pipelineType: PipelineType;
+    /** The original generation seed (concept + requirements), kept so resume can re-run any phase that still needs it. */
+    seed: string;
     currentPhaseIndex: number;
     working: WorkingEntity;
     conceptBrief?: ConceptBrief;
     createdAt: number;
     updatedAt: number;
+}
+
+/**
+ * State handed to an orchestrator to RE-ENTER an interrupted run (plan §9, M6 resume-on-reload). The driver
+ * adopts the persisted `working`/`brief` as its source of truth and skips any phase whose output is already
+ * present (presence-based; the loops fill only what's missing), so a resumed run never re-asks a decided
+ * step nor duplicates a generated feature. `fromPhaseIndex` is used only to seed the initial progress strip.
+ */
+export interface PipelineResume<W extends WorkingEntity = WorkingEntity> {
+    working: W;
+    brief?: ConceptBrief;
+    fromPhaseIndex: number;
 }
 
 // ───────────────────────────── per-step worker contract (plan §2.1) ─────────────────────────────

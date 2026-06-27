@@ -4,8 +4,8 @@ import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
 import {
     AiProviderKind, AiSettings, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
-    DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
-    LocalApiKind, PersonaStrength,
+    DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_RESUME_GENERATION, DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING,
+    DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind, PersonaStrength,
 } from "../../../models/userSettings";
 
 const DEFAULT_AI: AiSettings = {
@@ -242,6 +242,19 @@ const AiSettingsTab: Component = () => {
                     each feature and attaches the matching character-sheet effects (resistances, ability changes,
                     proficiencies, speed, etc.) so the content actually works on the sheet. Adds one short model
                     call per generated entity.
+                </div>
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <Checkbox
+                    label="Resume interrupted generations on reload"
+                    checked={ai().resumeGeneration ?? DEFAULT_AI_RESUME_GENERATION}
+                    onChange={(checked) => updateAi({ resumeGeneration: checked })}
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    On by default: staged class/character generation checkpoints after every step, so reloading
+                    a chat whose build was interrupted offers to pick it up where it left off. Turn off to
+                    always start such builds fresh.
                 </div>
             </div>
 

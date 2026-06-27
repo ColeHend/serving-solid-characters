@@ -304,3 +304,60 @@ describe("runClassPipeline — Phase F critic (M3)", () => {
         expect(completed[0].kind).toBe("class");
     });
 });
+
+/**
+ * M6 resume (plan §9, §13): re-entering the pipeline with a persisted working object + brief skips every
+ * already-decided phase. The brief/skeleton/chassis steps don't re-run (and the user is NOT asked to ratify
+ * an already-approved skeleton), the feature loop fills ONLY the missing levels (pre-built features survive
+ * untouched), and the run still assembles a valid class with its subclasses.
+ */
+describe("runClassPipeline — resume (M6)", () => {
+    const RESUME_BRIEF: ConceptBrief = {
+        concept: "A knight who borrows strength from a bound storm", tone: "grim, martial", power_tier: "Fighter",
+        motifs: ["chained lightning", "iron gauntlet"], themes: ["debt"], naming_style: "weather + martial", constraints: [],
+    };
+
+    /** A working class stopped partway through the feature loop: skeleton + chassis done, levels 1/2/5 filled. */
+    const partialClass = (): WorkingClass => ({
+        name: "Stormwarden", primaryAbility: "STR", hitDie: "d10", coreMechanic: "Charge", casterType: "none",
+        subclassCount: 3, subclassLevel: 3,
+        savingThrows: ["STR", "CON"],
+        proficiencies: { armor: ["Light armor"], weapons: ["Simple weapons"], tools: [], skills: ["Athletics", "Intimidation"] },
+        startingEquipment: ["A martial weapon"],
+        features: [
+            { level: 1, name: "Storm's Charge", description: "You gain 1 Charge when you take damage; spend it on a hit for +1d6 thunder." },
+            { level: 2, name: "Prebuilt L2", description: "An already-decided level 2 feature with concrete numbers." },
+            { level: 5, name: "Prebuilt L5", description: "An already-decided level 5 feature with concrete numbers." },
+        ],
+    });
+
+    it("resumes without re-running brief/skeleton/chassis or re-ratifying, and fills only the missing features", async () => {
+        const { runner, tasks } = scriptRunner();
+        const { host, completed, errors, ratifiedPlans } =
+            makeHost(runner, { type: "reject" });   // would reject if ratify were (wrongly) called
+
+        // fromPhaseIndex 3 = the Features phase; only seeds the initial progress strip (control flow is presence-based).
+        await runClassPipeline("a storm knight", host, { working: partialClass(), brief: RESUME_BRIEF, fromPhaseIndex: 3 });
+
+        expect(errors).toEqual([]);
+        // The decided phases were skipped entirely — and the user was never re-asked to approve the skeleton.
+        expect(tasks.concept_brief).toBeUndefined();
+        expect(tasks.skeleton_plan).toBeUndefined();
+        expect(tasks.class_chassis).toBeUndefined();
+        expect(ratifiedPlans).toHaveLength(0);
+
+        const klass = completed[0].entity as Class5E;
+        // The pre-built features survived untouched (not regenerated), and the loop filled the rest of the spread.
+        expect(klass.features![2][0].name).toBe("Prebuilt L2");
+        expect(klass.features![5][0].name).toBe("Prebuilt L5");
+        const levels = Object.keys(klass.features ?? {}).map(Number);
+        for (const l of BASE_LEVELS) expect(levels).toContain(l);
+        expect(levels).toContain(1);
+        // Only the missing base levels were generated (the spread minus the two already present), plus subclasses.
+        const baseFeatureCalls = tasks.class_feature!.length - SUB_FEATURE_LEVELS.length * 3;
+        expect(baseFeatureCalls).toBe(BASE_LEVELS.length - 2);
+        // The subclasses were still built, and the class assembles valid.
+        expect(completed.filter(p => p.kind === "subclass")).toHaveLength(3);
+        expect(completed[0].valid).toBe(true);
+    });
+});
