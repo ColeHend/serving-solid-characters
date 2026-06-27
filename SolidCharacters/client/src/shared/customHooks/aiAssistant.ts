@@ -27,6 +27,7 @@ import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
 import { runClassPipeline } from "../ai/genPipeline/classPipeline";
+import { buildClassReviewer } from "../ai/genPipeline/critic";
 import type { PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
 import { skeletonSummaryLines, type SkeletonPlan } from "../ai/genPipeline/skeleton";
 import type { ConceptBrief, PipelineRun, WorkingEntity } from "../ai/genPipeline/types";
@@ -538,6 +539,8 @@ export class AiAssistant {
         const host: PipelineHost = {
             ai, dndSystem, signal,
             usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            // Phase-F critic reviewer (runs only at the High usage level; the orchestrator gates on usageLevel).
+            reviewer: buildClassReviewer(ai, dndSystem, signal),
             // Once aborted (user "Abort"), drop the run's card and ignore its trailing progress so it can't
             // flash back; a plain rejection (signal NOT aborted) still surfaces its "Stopped" terminal card.
             onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },

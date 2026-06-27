@@ -3,6 +3,8 @@ import { Button, Container, Icon } from "coles-solid-library";
 import { Bolt, Close } from "coles-solid-library/icons";
 import { aiAssistant } from "../../../shared/customHooks/aiAssistant";
 import { PipelinePhase, type PipelineStatus } from "../../../shared/ai/genPipeline/types";
+import type { HomebrewPreview } from "../aiSpark.shared";
+import ReviewVerdicts from "../homebrew/ReviewVerdicts";
 import styles from "../SparkSidebar.module.scss";
 
 /**
@@ -34,7 +36,7 @@ const PHASE_LABEL: Record<PipelinePhase, string> = {
 /** The ordered phases shown in the strip for the class pipeline (mirrors classPipeline.PHASES). */
 const CLASS_PHASES = [
     PipelinePhase.DesignBrief, PipelinePhase.Skeleton, PipelinePhase.Chassis,
-    PipelinePhase.Features, PipelinePhase.Subclasses, PipelinePhase.Assemble,
+    PipelinePhase.Features, PipelinePhase.Subclasses, PipelinePhase.Balance, PipelinePhase.Assemble,
 ];
 
 const SUBTITLE: Record<PipelineStatus, string> = {
@@ -95,6 +97,11 @@ const GenPipelineCard: Component = () => {
 
                     <Show when={isTerminalBad() && r().error}>
                         <div class={styles.previewError}>{r().error}</div>
+                    </Show>
+
+                    {/* Phase-F critic findings (High usage). ReviewVerdicts only reads verdicts/reviewBlocked. */}
+                    <Show when={(r().verdicts ?? []).some(v => v.issues.length)}>
+                        <ReviewVerdicts preview={{ verdicts: r().verdicts, reviewBlocked: false } as unknown as HomebrewPreview} />
                     </Show>
 
                     <div class={styles.previewActions}>

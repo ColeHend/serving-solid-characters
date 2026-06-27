@@ -83,8 +83,16 @@ export function validateFeature(f: WorkingFeature, existing: WorkingFeature[]): 
  * The StepSpec for one feature at `level`. `existing` (the features already in this scope) is closed in so
  * the gate can reject a duplicate; `ownerLabel` lets the same step write base-class features ("this class")
  * or subclass features ("the «X» subclass"). The skeleton + prior features live in the carry-forward summary.
+ *
+ * `critique` is set only when the Phase-F critic asked for a REWRITE of a flagged feature: it's the reviewer's
+ * complaint, appended to the task so the new version fixes that specific problem (e.g. an over-tuned feature
+ * is rewritten weaker) while still filling the same level.
  */
-export function featureStep(level: number, existing: WorkingFeature[], ownerLabel = "this class"): StepSpec<WorkingFeature> {
+export function featureStep(level: number, existing: WorkingFeature[], ownerLabel = "this class", critique?: string): StepSpec<WorkingFeature> {
+    const fix = critique?.trim()
+        ? ` A reviewer flagged the previous version of this feature: "${critique.trim()}". Write a NEW version that ` +
+          "fixes that problem (tone it down if it was too strong) while keeping its role at this level."
+        : "";
     return {
         id: `feature-l${level}`,
         tool: FEATURE_TOOL,
@@ -95,7 +103,7 @@ export function featureStep(level: number, existing: WorkingFeature[], ownerLabe
         task:
             `Write the feature gained at LEVEL ${level} for ${ownerLabel}. It must be new (not a duplicate or re-wording ` +
             `of any feature in DECIDED SO FAR), build on the core mechanic, scale appropriately for level ${level}, and ` +
-            "follow the naming style. Give concrete rules text with numbers.",
+            "follow the naming style. Give concrete rules text with numbers." + fix,
         parse: raw => {
             const value = coerceFeatureAt(level, raw);
             return { value, errors: validateFeature(value, existing) };
@@ -112,6 +120,7 @@ export function produceFeature(
     opts?: RunStepOptions,
     runner?: StepModelRunner,
     ownerLabel?: string,
+    critique?: string,
 ): Promise<StepResult<WorkingFeature>> {
-    return runStep(featureStep(level, existing, ownerLabel), ctx, ai, opts, runner);
+    return runStep(featureStep(level, existing, ownerLabel, critique), ctx, ai, opts, runner);
 }

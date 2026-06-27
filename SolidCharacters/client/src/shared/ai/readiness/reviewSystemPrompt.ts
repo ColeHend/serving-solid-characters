@@ -36,6 +36,23 @@ export const BUILTIN_LLM_PASSES: Partial<Record<ReviewPassId, ReviewPassSpec>> =
     },
 };
 
+/**
+ * The staged class pipeline's Phase-F critic pass (plan §5, §6.F). NOT a user-toggleable built-in — the
+ * critic runs it directly over the whole assembled class (the readiness `balance` pass judges raw power;
+ * this one judges the SHAPE: a sane power curve, no unintended dead levels, and features that read as one
+ * coherent class). When it flags a specific feature by name, the pipeline regenerates only that feature.
+ */
+export const CLASS_BALANCE_CONSISTENCY_SPEC: ReviewPassSpec = {
+    passId: "class_balance_consistency",
+    label: "Class consistency",
+    criteria:
+        "Judge the class as a WHOLE across levels 1-20 (the reference figures below list its feature spread and any " +
+        "dead levels). Flag a problem only when it is clear: (a) a single feature is far stronger than a same-level " +
+        "official class feature — name that feature in the `field`; (b) an unintended dead level (no feature and not " +
+        "an ASI level 4/8/12/16/19); or (c) a feature that contradicts or ignores the class's core mechanic. Do NOT " +
+        "flag ordinary variety or a deliberately quiet level. When you flag a feature, put its exact name in `field`.",
+};
+
 function rulesetLabel(dndSystem: string): string {
     switch (dndSystem) {
         case "2014": return "D&D 5e (2014 rules)";

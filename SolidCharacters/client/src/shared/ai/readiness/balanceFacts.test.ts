@@ -50,4 +50,33 @@ describe("balanceFacts", () => {
     it("notes rarity for magic items", () => {
         expect(balanceFacts(preview("magic_item", { desc: "grants 1d6 extra cold damage", rarity: "Rare" }))).toContain("Rare");
     });
+
+    it("summarizes a class's chassis, feature spread and dice across features", () => {
+        const facts = balanceFacts(preview("class", {
+            hitDie: "d10", primaryAbility: "STR",
+            features: {
+                1: [{ name: "Storm's Charge", description: "Spend 1 Charge to deal 2d6 thunder damage." }],
+                5: [{ name: "Tempest", description: "You can attack twice." }],
+            },
+        }));
+        expect(facts).toContain("hit die d10");
+        expect(facts).toContain("primary ability STR");
+        expect(facts).toContain("2d6");                  // dice scanned across the feature text
+        expect(facts).toContain("Grants 2 features");
+        expect(facts).toContain("levels 1, 5");
+    });
+
+    it("flags dead levels but excludes ASI levels", () => {
+        const sparse = balanceFacts(preview("class", {
+            hitDie: "d8", primaryAbility: "DEX",
+            features: { 1: [{ name: "A", description: "Does a thing, dealing 1d4." }] },
+        }));
+        expect(sparse).toMatch(/Levels with no new feature/);
+
+        // A class with a feature at every level except an ASI level (4) has NO dead level.
+        const features: Record<number, { name: string; description: string }[]> = {};
+        for (let l = 1; l <= 20; l++) if (l !== 4) features[l] = [{ name: `F${l}`, description: `Feature ${l} deals 1d6.` }];
+        const full = balanceFacts(preview("class", { hitDie: "d8", primaryAbility: "STR", features }));
+        expect(full).not.toMatch(/Levels with no new feature/);
+    });
 });

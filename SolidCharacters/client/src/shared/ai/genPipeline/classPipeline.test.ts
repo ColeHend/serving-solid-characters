@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { AiSettings } from "../../../models/userSettings";
 import type { Class5E, Subclass } from "../../../models/generated";
 import type { HomebrewPreview } from "../tools/toolDispatcher";
@@ -6,6 +6,8 @@ import type { SubAgentResult } from "../subAgent";
 import type { StepModelRunner } from "./stepWorker";
 import { runClassPipeline } from "./classPipeline";
 import type { PipelineHost, RatifyDecision } from "./orchestrator";
+import type { ClassReviewer } from "./critic";
+import type { ReviewIssue, ReviewVerdict } from "../readiness/types";
 import type { SkeletonPlan } from "./skeleton";
 import { baseFeatureLevels } from "./features";
 import { subclassFeatureLevels } from "./subclasses";
@@ -70,8 +72,8 @@ function scriptRunner(overrides: Partial<Record<string, Record<string, unknown>>
     return { runner, tasks, counts };
 }
 
-/** A spy host with a scripted ratify decision (or a per-call sequence). */
-function makeHost(runner: StepModelRunner, ratify: RatifyDecision | RatifyDecision[]): {
+/** A spy host with a scripted ratify decision (or a per-call sequence). `extra` overrides host fields (e.g. usageLevel/reviewer for the Phase-F critic). */
+function makeHost(runner: StepModelRunner, ratify: RatifyDecision | RatifyDecision[], extra: Partial<PipelineHost> = {}): {
     host: PipelineHost;
     runs: PipelineRun[];
     completed: HomebrewPreview[];
@@ -92,6 +94,7 @@ function makeHost(runner: StepModelRunner, ratify: RatifyDecision | RatifyDecisi
         onCheckpoint: (phaseIndex, working, brief) => checkpoints.push({ phaseIndex, working: structuredClone(working), brief }),
         onComplete: ps => completed.push(...ps),
         onError: m => errors.push(m),
+        ...extra,
     };
     return { host, runs, completed, errors, checkpoints, ratifiedPlans };
 }
@@ -229,5 +232,75 @@ describe("runClassPipeline (M1 + M2)", () => {
         expect(completed).toEqual([]);
         expect(errors).toHaveLength(1);
         expect(errors[0]).toMatch(/hit die/i);
+    });
+});
+
+const issue = (message: string, severity: ReviewIssue["severity"], field?: string): ReviewIssue => ({ severity, message, field });
+const verdict = (issues: ReviewIssue[]): ReviewVerdict => ({ passId: "p", label: "Critic", pass: issues.length === 0, issues });
+
+/**
+ * M3 acceptance (plan §13): at the High usage level the run reaches Phase F, the critic flags an intentionally
+ * over-tuned feature, and the orchestrator regenerates ONLY that feature (the rest of the class is untouched),
+ * then re-critiques clean and assembles. At Low the critic is skipped entirely.
+ */
+describe("runClassPipeline — Phase F critic (M3)", () => {
+    /** A reviewer that flags the class's level-5 feature on the FIRST class critique, then passes everything. */
+    function flaggingReviewer() {
+        const state = { classCritiques: 0, flaggedName: "" };
+        const reviewer: ClassReviewer = async (preview) => {
+            if (preview.kind !== "class") return [verdict([])];
+            state.classCritiques++;
+            if (state.classCritiques > 1) return [verdict([])];
+            const klass = preview.entity as Class5E;
+            state.flaggedName = klass.features![5][0].name;
+            return [verdict([issue(`${state.flaggedName} is far over-tuned for a level-5 feature.`, "error", state.flaggedName)])];
+        };
+        return { reviewer, state };
+    }
+
+    it("regenerates only the flagged feature, then completes", async () => {
+        const { runner, counts } = scriptRunner();
+        const { reviewer, state } = flaggingReviewer();
+        const { host, completed, errors, checkpoints, runs } =
+            makeHost(runner, { type: "approve" }, { usageLevel: "high", reviewer });
+
+        await runClassPipeline("a storm knight", host);
+
+        expect(errors).toEqual([]);
+        // The whole class (base spread + every subclass feature) is generated once, then ONE feature is regenerated.
+        const baseline = BASE_LEVELS.length + 3 * SUB_FEATURE_LEVELS.length;   // 10 + 12
+        expect(counts.class_feature).toBe(baseline + 1);
+        // The level-5 feature was rewritten (its name changed from the flagged one); nothing else regenerated.
+        const klass = completed[0].entity as Class5E;
+        expect(klass.features![5][0].name).not.toBe(state.flaggedName);
+        // Phase F ran: it checkpointed and emitted verdicts, then completed.
+        expect(checkpoints.some(c => c.phaseIndex === 5)).toBe(true);
+        expect(statusesFor(runs, PipelinePhase.Balance)).toContain("completed");
+        expect(runs.some(r => r.phase === PipelinePhase.Balance && (r.verdicts?.length ?? 0) > 0)).toBe(true);
+        // The class still assembles to a valid, savable entity.
+        expect(completed[0].kind).toBe("class");
+        expect(completed[0].valid).toBe(true);
+    });
+
+    it("feeds the critic's complaint into the regenerated feature's task", async () => {
+        const { runner, tasks } = scriptRunner();
+        const { reviewer } = flaggingReviewer();
+        const { host } = makeHost(runner, { type: "approve" }, { usageLevel: "high", reviewer });
+
+        await runClassPipeline("a storm knight", host);
+
+        expect(tasks.class_feature!.some(t => /over-tuned/.test(t))).toBe(true);
+    });
+
+    it("skips the critic at the Low usage level (no reviewer calls, no Balance checkpoint)", async () => {
+        const { runner } = scriptRunner();
+        const reviewer = vi.fn<ClassReviewer>(async () => [verdict([])]);
+        const { host, completed, checkpoints } = makeHost(runner, { type: "approve" }, { usageLevel: "low", reviewer });
+
+        await runClassPipeline("a storm knight", host);
+
+        expect(reviewer).not.toHaveBeenCalled();
+        expect(checkpoints.some(c => c.phaseIndex === 5)).toBe(false);
+        expect(completed[0].kind).toBe("class");
     });
 });

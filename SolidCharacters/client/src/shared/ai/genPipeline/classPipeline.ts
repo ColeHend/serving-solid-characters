@@ -1,3 +1,4 @@
+import { DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_REVIEW_SETTINGS } from "../../../models/userSettings";
 import { produceConceptBrief } from "./conceptBrief";
 import { summarize, summarizeSubclass } from "./carryForward";
 import { produceSkeleton, applySkeleton } from "./skeleton";
@@ -5,9 +6,11 @@ import { produceChassis, applyChassis } from "./chassis";
 import { baseFeatureLevels, produceFeature } from "./features";
 import { produceSubclassBrief, subclassFeatureLevels, subclassNames } from "./subclasses";
 import { assembleClassPreviews } from "./assemble";
+import { critiqueClass, type FlaggedFeature } from "./critic";
 import { repairBudgetFor, type PipelineHost } from "./orchestrator";
 import { PipelinePhase } from "./types";
-import type { ConceptBrief, PipelineRun, PipelineStatus, RunStepOptions, StepContext, WorkingClass, WorkingSubclass } from "./types";
+import type { ReviewVerdict } from "../readiness/types";
+import type { ConceptBrief, PipelineRun, PipelineStatus, RunStepOptions, StepContext, WorkingClass, WorkingFeature, WorkingSubclass } from "./types";
 
 /**
  * The Homebrew Class pipeline (plan §6, §13). M1 shipped the spine — Phase A (design brief) → Phase B
@@ -23,19 +26,24 @@ import type { ConceptBrief, PipelineRun, PipelineStatus, RunStepOptions, StepCon
  * is SKIPPED, not fatal — a class missing one mid-level feature is far better than aborting a 20-call build,
  * and the level-1 chassis feature guarantees the class always does something. Load-bearing steps (brief,
  * skeleton, chassis) still fail the run, because everything downstream is built on them.
+ *
+ * M3 adds Phase F (balance & consistency critic) before assembly: at the High usage level the finished class
+ * is reviewed as a whole and a blocking verdict regenerates ONLY the feature it named (plan §6.F). At
+ * Low/Medium the critic is skipped (a fast pass-through), so the strip still advances but no extra calls run.
  */
 
 /** The phases this pipeline walks, in order. `phaseIndex` into this list drives the "Phase X of Y" UI. */
 const PHASES = [
     PipelinePhase.DesignBrief, PipelinePhase.Skeleton, PipelinePhase.Chassis,
-    PipelinePhase.Features, PipelinePhase.Subclasses, PipelinePhase.Assemble,
+    PipelinePhase.Features, PipelinePhase.Subclasses, PipelinePhase.Balance, PipelinePhase.Assemble,
 ];
 const TOTAL = PHASES.length;
 
 /** Phase indices into PHASES (kept named so the loops read clearly). */
 const FEATURES_PHASE = 3;
 const SUBCLASSES_PHASE = 4;
-const ASSEMBLE_PHASE = 5;
+const BALANCE_PHASE = 5;
+const ASSEMBLE_PHASE = 6;
 
 /** Bound the approve/refine loop so a user who keeps refining (or a model that keeps drifting) can't spin forever. */
 const MAX_RATIFY_ROUNDS = 5;
@@ -102,6 +110,9 @@ export async function runClassPipeline(seed: string, host: PipelineHost): Promis
 
         // ── Phase E — subclasses (loop) ────────────────────────────────────────
         if (await runSubclassLoop(working, brief, host, opts, classCtx, emit)) return;  // aborted mid-loop
+
+        // ── Phase F — balance & consistency critic (High only) ─────────────────
+        if (await runCritic(working, brief, host, opts, emit)) return;                  // aborted mid-critic
 
         // ── Assemble + emit savable previews (class, then subclasses) ─────────
         emit(ASSEMBLE_PHASE, "running");
@@ -186,6 +197,79 @@ async function runSubclassLoop(
         }
     }
     return false;
+}
+
+/**
+ * Phase F: the BALANCE & CONSISTENCY critic. At Low/Medium (or with no reviewer) this is a fast pass-through —
+ * the plan reserves the LLM critic for High (§8). At High it wraps the finished class as a synthetic preview,
+ * runs the readiness pipeline + a whole-class shape pass over it, and REGENERATES ONLY the features a blocking
+ * verdict named, re-critiquing for a bounded number of rounds. Fail-open: an unmappable verdict is surfaced but
+ * never blocks assembly, and a regeneration that fails its gate keeps the original feature. Returns true if aborted.
+ */
+async function runCritic(
+    working: WorkingClass, brief: ConceptBrief, host: PipelineHost,
+    opts: RunStepOptions, emit: Emit,
+): Promise<boolean> {
+    emit(BALANCE_PHASE, "running");
+    // Low/Medium skip the critic entirely; the strip still advances so the UI stays honest.
+    if (host.usageLevel !== "high" || !host.reviewer) { emit(BALANCE_PHASE, "completed"); return false; }
+
+    const reviewer = host.reviewer;
+    const blockingSeverity = host.ai.review?.blockingSeverity ?? DEFAULT_REVIEW_SETTINGS.blockingSeverity;
+    // Reuse the High schema-retry cap as the auto-fix round bound (plan §8): regenerate → re-critique, bounded.
+    const maxRounds = Math.max(1, host.ai.review?.maxSchemaRetries ?? DEFAULT_HIGH_MAX_SCHEMA_RETRIES);
+
+    let verdicts: ReviewVerdict[] = [];
+    for (let round = 0; round < maxRounds; round++) {
+        if (host.signal.aborted) { emit(BALANCE_PHASE, "aborted"); return true; }
+        const result = await critiqueClass(working, reviewer, { dndSystem: host.dndSystem, blockingSeverity });
+        if (host.signal.aborted) { emit(BALANCE_PHASE, "aborted"); return true; }
+        verdicts = result.verdicts;
+        emit(BALANCE_PHASE, "running", { verdicts });
+        if (!result.flagged.length) break;   // nothing mapped to a feature → stop (verdicts already surfaced)
+        await regenerateFlagged(working, brief, result.flagged, host, opts, emit);
+        if (host.signal.aborted) { emit(BALANCE_PHASE, "aborted"); return true; }
+        host.onCheckpoint?.(BALANCE_PHASE, working, brief);
+    }
+    emit(BALANCE_PHASE, "completed", { verdicts });
+    return false;
+}
+
+/** Regenerate each flagged feature in place (base class or its owning subclass), feeding the critic's complaint in. */
+async function regenerateFlagged(
+    working: WorkingClass, brief: ConceptBrief, flagged: FlaggedFeature[],
+    host: PipelineHost, opts: RunStepOptions, emit: Emit,
+): Promise<void> {
+    for (const f of flagged) {
+        if (host.signal.aborted) return;
+        emit(BALANCE_PHASE, "running", { note: `Reworking ${f.name} (level ${f.level})…` });
+        if (f.subclass) {
+            const sub = (working.subclasses ?? []).find(s => s.name === f.subclass);
+            if (sub) await regenerateFeatureInScope(sub.features, f, brief, () => summarizeSubclass(working, sub), `the «${sub.name}» subclass`, host, opts);
+        } else {
+            const features = (working.features ??= []);
+            await regenerateFeatureInScope(features, f, brief, () => summarize(working, "class"), "this class", host, opts);
+        }
+    }
+}
+
+/**
+ * Rewrite one flagged feature in `list`: drop it first (so neither the carry-forward summary nor the
+ * duplicate gate still sees the old version), regenerate at the same level with the critic's complaint, then
+ * slot the result back at its old position. A regeneration that can't pass its gate keeps the original — the
+ * critic must never leave the class worse than it found it.
+ */
+async function regenerateFeatureInScope(
+    list: WorkingFeature[], flagged: FlaggedFeature, brief: ConceptBrief,
+    summaryFn: () => string, ownerLabel: string, host: PipelineHost, opts: RunStepOptions,
+): Promise<void> {
+    const idx = list.findIndex(x => x.name.trim().toLowerCase() === flagged.name.trim().toLowerCase());
+    if (idx < 0) return;
+    const original = list[idx];
+    list.splice(idx, 1);
+    const ctx: StepContext = { brief, summary: summaryFn() };
+    const res = await produceFeature(flagged.level, list, ctx, host.ai, opts, host.runner, ownerLabel, flagged.reason);
+    list.splice(idx, 0, res.ok && res.value ? res.value : original);
 }
 
 /** Emit a terminal error for the given phase and notify the host. Returns void for `return fail(...)` use. */

@@ -17,6 +17,7 @@ export * from "./chassis";
 export * from "./features";
 export * from "./subclasses";
 export * from "./assemble";
+export * from "./critic";
 export * from "./orchestrator";
 export * from "./classPipeline";
 export { pipelineCheckpointManager } from "./checkpoint/pipelineCheckpointManager";

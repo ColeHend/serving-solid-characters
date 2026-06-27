@@ -1,6 +1,7 @@
 import { AiSettings, UsageControlLevel } from "../../../models/userSettings";
 import type { HomebrewPreview } from "../tools/toolDispatcher";
 import type { StepModelRunner } from "./stepWorker";
+import type { ClassReviewer } from "./critic";
 import type { SkeletonPlan } from "./skeleton";
 import type { ConceptBrief, PipelineRun, WorkingClass } from "./types";
 
@@ -24,10 +25,15 @@ export interface PipelineHost {
     dndSystem: string;
     /** Aborts the whole run (session swap / user abort). Checked between phases and inside the step worker. */
     signal: AbortSignal;
-    /** Tunes per-step repair budget (plan §8). Defaults to "low" when omitted. */
+    /** Tunes per-step repair budget + whether the Phase-F critic runs (plan §8). Defaults to "low" when omitted. */
     usageLevel?: UsageControlLevel;
     /** Test seam: a scripted model runner. Production omits it and the real `runSubAgent` is used. */
     runner?: StepModelRunner;
+    /**
+     * The Phase-F critic's reviewer (plan §6.F). Runs ONLY at the "high" usage level; omit it (or run at
+     * Low/Medium) to skip the critic entirely. Production passes `buildClassReviewer`; tests inject a stub.
+     */
+    reviewer?: ClassReviewer;
 
     /** Push the latest reactive run state to the UI (GenPipelineCard / StatusTicker). Called on every transition. */
     onProgress: (run: PipelineRun) => void;
@@ -44,7 +50,7 @@ export interface PipelineHost {
     onError: (message: string) => void;
 }
 
-/** Per-step model re-tries by usage level (plan §8). Critic/auto-fix loops land in M3. */
+/** Per-step model re-tries by usage level (plan §8). The Phase-F critic + auto-fix loop run only at High. */
 export function repairBudgetFor(level: UsageControlLevel | undefined): number {
     switch (level) {
         case "medium": return 2;
