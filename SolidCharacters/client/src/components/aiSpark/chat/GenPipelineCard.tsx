@@ -12,7 +12,7 @@ import styles from "../SparkSidebar.module.scss";
  * assembled class hands off to an ordinary HomebrewPreviewCard — so this card only owns live progress.
  */
 
-/** Short label per phase (the class slice walks DesignBrief → Skeleton → Chassis → Assemble). */
+/** Short label per phase (the class pipeline walks DesignBrief → Skeleton → Chassis → Features → Subclasses → Assemble). */
 const PHASE_LABEL: Record<PipelinePhase, string> = {
     [PipelinePhase.DesignBrief]: "Brief",
     [PipelinePhase.Skeleton]: "Skeleton",
@@ -31,8 +31,11 @@ const PHASE_LABEL: Record<PipelinePhase, string> = {
     [PipelinePhase.Balance]: "Balance",
 };
 
-/** The ordered phases shown in the strip for the class slice (mirrors classPipeline.PHASES). */
-const CLASS_PHASES = [PipelinePhase.DesignBrief, PipelinePhase.Skeleton, PipelinePhase.Chassis, PipelinePhase.Assemble];
+/** The ordered phases shown in the strip for the class pipeline (mirrors classPipeline.PHASES). */
+const CLASS_PHASES = [
+    PipelinePhase.DesignBrief, PipelinePhase.Skeleton, PipelinePhase.Chassis,
+    PipelinePhase.Features, PipelinePhase.Subclasses, PipelinePhase.Assemble,
+];
 
 const SUBTITLE: Record<PipelineStatus, string> = {
     idle: "Starting…",
@@ -84,7 +87,9 @@ const GenPipelineCard: Component = () => {
                     <Show when={isLive()}>
                         <div class={`${styles.pipelineWorking} ${styles.pulse}`}>
                             <Icon icon={Bolt} size="small" />
-                            {r().status === "awaiting_user" ? "Review the skeleton below to continue." : "Building your class…"}
+                            {r().status === "awaiting_user"
+                                ? "Review the skeleton below to continue."
+                                : (r().note?.trim() || "Building your class…")}
                         </div>
                     </Show>
 

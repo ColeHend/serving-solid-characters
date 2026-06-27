@@ -166,6 +166,8 @@ export interface PipelineRun {
     currentPreview?: HomebrewPreview;
     verdicts?: ReviewVerdict[];
     error?: string;
+    /** Sub-step progress within a looping phase (Features/Subclasses), e.g. "Feature 3 of 12 — Storm's Fury (L5)". */
+    note?: string;
 }
 
 /**

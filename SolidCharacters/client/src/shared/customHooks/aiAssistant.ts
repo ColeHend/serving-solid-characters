@@ -543,7 +543,7 @@ export class AiAssistant {
             onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },
             ratifySkeleton: plan => this.requestSkeletonRatification(plan, epoch),
             onCheckpoint: (phaseIndex, working, brief) => this.savePipelineCheckpoint(phaseIndex, working, brief, epoch),
-            onComplete: preview => this.onPipelineComplete(preview, epoch),
+            onComplete: previews => this.onPipelineComplete(previews, epoch),
             onError: message => { if (epoch === this.turnEpoch) this.pushSystemBubble(message); },
         };
         void runClassPipeline(seed, host).finally(() => {
@@ -572,14 +572,17 @@ export class AiAssistant {
         });
     }
 
-    /** Terminal success: surface the assembled class as an ordinary preview card and clear the pipeline card. */
-    private onPipelineComplete(preview: HomebrewPreview, epoch: number) {
-        if (epoch !== this.turnEpoch) return;
-        this.setPendingPreviews(prev => [...prev, preview]);
-        this.setPipelineRun(null);            // hand off from the progress card to the preview card
+    /**
+     * Terminal success: surface the assembled class (and any subclasses) as ordinary preview cards and clear
+     * the pipeline card. `previews` is the class first, then one per subclass.
+     */
+    private onPipelineComplete(previews: HomebrewPreview[], epoch: number) {
+        if (epoch !== this.turnEpoch || !previews.length) return;
+        this.setPendingPreviews(prev => [...prev, ...previews]);
+        this.setPipelineRun(null);            // hand off from the progress card to the preview card(s)
         void this.discardPipelineCheckpoint();
-        // Attach mechanical commands to the class's features, like the one-shot Low path does.
-        void this.enrichWithCommands([preview.previewId], epoch);
+        // Attach mechanical commands to the class's (and subclasses') features, like the one-shot Low path does.
+        void this.enrichWithCommands(previews.map(p => p.previewId), epoch);
         void this.persistCurrent();
     }
 

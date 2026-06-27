@@ -35,8 +35,11 @@ export interface PipelineHost {
     ratifySkeleton: (plan: SkeletonPlan) => Promise<RatifyDecision>;
     /** Persist a checkpoint after a phase (best-effort; resume is built in a later milestone). Optional. */
     onCheckpoint?: (phaseIndex: number, working: WorkingClass, brief?: ConceptBrief) => void;
-    /** Terminal success: the assembled, savable preview. The host surfaces it as an ordinary preview card. */
-    onComplete: (preview: HomebrewPreview) => void;
+    /**
+     * Terminal success: the assembled, savable previews — the class first, then one per subclass. The host
+     * surfaces each as an ordinary preview card. (Always non-empty; the class preview is index 0.)
+     */
+    onComplete: (previews: HomebrewPreview[]) => void;
     /** Terminal failure: a short, user-facing reason. The host surfaces it (e.g. a system bubble). */
     onError: (message: string) => void;
 }
