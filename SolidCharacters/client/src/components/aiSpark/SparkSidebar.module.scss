@@ -443,6 +443,17 @@
     object-fit: cover;
     cursor: pointer;
 }
+.bubbleAudio {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 6px);
+    margin-bottom: var(--spacing-1, 6px);
+}
+.bubbleAudioPlayer {
+    width: 100%;
+    max-width: 260px;
+    height: 36px;
+}
 
 /* ----- inline edit / rewind on user prompts ----- */
 .userBubbleWrap {
@@ -909,6 +920,14 @@
     gap: var(--spacing-1, 6px);
     padding: var(--spacing-2, 12px);
 
+    // Stack the attach/record controls vertically beside the textarea (not strung out in a row).
+    .attachButtons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-1, 6px);
+    }
+
     textarea {
         flex: 1 1 auto;
         max-height: 160px;
@@ -963,6 +982,36 @@
     background: var(--container-color, #222);
     color: var(--on-surface-color, inherit);
     box-shadow: var(--shadow-elevation-1, 0 1px 3px rgba(0, 0, 0, 0.3));
+}
+
+// Pending audio shown above the input, before send (parallel to .thumbStrip).
+.audioStrip {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1, 6px);
+    padding: var(--spacing-1, 6px) var(--spacing-2, 12px) 0;
+}
+.audioChip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-right: var(--spacing-1, 6px);
+
+    audio {
+        width: 100%;
+        height: 34px;
+    }
+}
+
+// Mic recording indicator on the input toolbar.
+.recordTimer {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.78rem;
+    color: var(--error-color, #d9534f);
+    align-self: center;
+}
+.recordingActive {
+    color: var(--error-color, #d9534f);
 }
 
 // Full-screen image viewer. z-1300 keeps it above the z-1200 sidebar (it's rendered inside the

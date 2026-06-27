@@ -3,6 +3,7 @@ import { Button, Icon, TextArea } from "coles-solid-library";
 import { Check, Close, Edit } from "coles-solid-library/icons";
 import { aiAssistant } from "../../../shared/customHooks/aiAssistant";
 import { dataUrlOf } from "../../../shared/ai/imageAttach";
+import { dataUrlOf as audioUrlOf } from "../../../shared/ai/audioAttach";
 import { ChatMessage } from "../aiSpark.shared";
 import styles from "../SparkSidebar.module.scss";
 
@@ -52,6 +53,13 @@ const EditableUserBubble: Component<{ message: ChatMessage }> = (props) => {
                                 <div class={styles.bubbleImages}>
                                     <For each={props.message.images}>{(img) => (
                                         <img class={styles.bubbleImage} src={dataUrlOf(img)} alt="attachment" onClick={() => aiAssistant.openLightbox(dataUrlOf(img))} />
+                                    )}</For>
+                                </div>
+                            </Show>
+                            <Show when={props.message.audio?.length}>
+                                <div class={styles.bubbleAudio}>
+                                    <For each={props.message.audio}>{(clip) => (
+                                        <audio class={styles.bubbleAudioPlayer} controls src={audioUrlOf(clip)} />
                                     )}</For>
                                 </div>
                             </Show>

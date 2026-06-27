@@ -12,9 +12,6 @@ export function useDnDSpells() {
     const srd = useGetSrdSpells(version); // returns accessor dependent on version
     const theSRD = srd();
     const theHomebrew = homebrew()
-    console.log('TheSpellSRD:', theSRD);
-
-    console.log('TheSpellHomebrew:', theHomebrew);
     
     return [...theSRD, ...theHomebrew];
   });

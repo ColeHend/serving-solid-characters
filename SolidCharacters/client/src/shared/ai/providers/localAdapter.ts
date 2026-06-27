@@ -1,5 +1,6 @@
 import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
 import { DEFAULT_AI_MAX_TOKENS } from "../../../models/userSettings";
+import { audioFormatOf } from "../audioAttach";
 import { parseSse } from "./sse";
 import { currentOrigin, diagnoseLocalEndpoint, mixedContentHint, normalizeBaseUrl } from "../localEndpoint";
 
@@ -123,7 +124,7 @@ function mapFinishReason(reason: string): "end_turn" | "tool_use" | "max_tokens"
     return "end_turn";
 }
 
-function toOpenAiMessages(messages: AiMessage[], system?: string): Record<string, unknown>[] {
+export function toOpenAiMessages(messages: AiMessage[], system?: string): Record<string, unknown>[] {
     const out: Record<string, unknown>[] = [];
     if (system?.trim()) out.push({ role: "system", content: system });
     for (const m of messages) {
@@ -141,12 +142,15 @@ function toOpenAiMessages(messages: AiMessage[], system?: string): Record<string
                 }));
             }
             out.push(msg);
-        } else if (m.images?.length) {
-            // OpenAI vision format: content becomes an array of text + image_url (data-URL) parts.
+        } else if (m.images?.length || m.audio?.length) {
+            // OpenAI multimodal format: content becomes an array of typed parts. Media goes before the
+            // text (Gemma's guidance); audio uses the input_audio part, images use image_url (data-URL).
             const content: unknown[] = [];
-            if (m.text) content.push({ type: "text", text: m.text });
-            for (const img of m.images)
+            for (const a of m.audio ?? [])
+                content.push({ type: "input_audio", input_audio: { data: a.data, format: audioFormatOf(a.mediaType) } });
+            for (const img of m.images ?? [])
                 content.push({ type: "image_url", image_url: { url: `data:${img.mediaType};base64,${img.data}` } });
+            if (m.text) content.push({ type: "text", text: m.text });
             out.push({ role: "user", content });
         } else {
             out.push({ role: "user", content: m.text ?? "" });

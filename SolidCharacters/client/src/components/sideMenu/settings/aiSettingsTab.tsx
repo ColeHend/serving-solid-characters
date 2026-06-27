@@ -3,9 +3,9 @@ import { Select, Option, Input, Checkbox, Button, addSnackbar } from "coles-soli
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
 import {
-    AiProviderKind, AiSettings, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX,
-    DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_RESUME_GENERATION, DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING,
-    DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind, PersonaStrength,
+    AiProviderKind, AiSettings, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_MAX_AUDIO_SECONDS, DEFAULT_AI_MAX_TOKENS,
+    DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_RESUME_GENERATION, DEFAULT_AI_SHOW_THINKING,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind, PersonaStrength,
 } from "../../../models/userSettings";
 import { diagnoseLocalEndpoint, normalizeBaseUrl, probeLocalEndpoint } from "../../../shared/ai/localEndpoint";
 
@@ -196,6 +196,24 @@ const AiSettingsTab: Component = () => {
                         </div>
                     </div>
                 </Show>
+
+                <div>
+                    <label for="ai-max-audio">Max mic recording length (seconds)</label>
+                    <Input
+                        id="ai-max-audio"
+                        type="number"
+                        value={String(ai().maxAudioSeconds ?? DEFAULT_AI_MAX_AUDIO_SECONDS)}
+                        placeholder={String(DEFAULT_AI_MAX_AUDIO_SECONDS)}
+                        onInput={(e) => {
+                            const n = parseInt(e.currentTarget.value, 10);
+                            updateAi({ maxAudioSeconds: Number.isFinite(n) && n > 0 ? n : undefined });
+                        }}
+                    />
+                    <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                        How long a microphone clip can be, default {DEFAULT_AI_MAX_AUDIO_SECONDS}s. Gemma's hard
+                        audio limit is 30s; longer clips are truncated by the model.
+                    </div>
+                </div>
             </Show>
 
             <Show when={isCloud()}>

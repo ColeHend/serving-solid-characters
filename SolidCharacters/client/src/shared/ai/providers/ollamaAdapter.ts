@@ -141,7 +141,7 @@ export class OllamaAdapter implements AiProvider {
 }
 
 /** Map the provider-agnostic history to Ollama's native message format (tool results keyed by name). */
-function toOllamaMessages(messages: AiMessage[], system?: string): Record<string, unknown>[] {
+export function toOllamaMessages(messages: AiMessage[], system?: string): Record<string, unknown>[] {
     const out: Record<string, unknown>[] = [];
     if (system?.trim()) out.push({ role: "system", content: system });
 
@@ -167,8 +167,14 @@ function toOllamaMessages(messages: AiMessage[], system?: string): Record<string
             out.push(msg);
         } else {
             // Native API takes per-message `images` as an array of raw base64 strings (no data-URL prefix).
+            // Audio rides in the SAME array — the server auto-detects audio vs. image from the bytes
+            // (confirmed with gemma4). Media goes before text, per Gemma's guidance.
+            const media = [
+                ...(m.images?.map(i => i.data) ?? []),
+                ...(m.audio?.map(a => a.data) ?? []),
+            ];
             const msg: Record<string, unknown> = { role: "user", content: m.text ?? "" };
-            if (m.images?.length) msg.images = m.images.map(i => i.data);
+            if (media.length) msg.images = media;
             out.push(msg);
         }
     }
