@@ -165,6 +165,12 @@ function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKi
     ? "\n\nTo create a base CLASS, call generate_class with the user's concept and any hard requirements they stated — NOT a single create_* call. It runs a guided staged build (a design brief, then a skeleton the user approves, then the chassis and features) that produces a far more coherent, balanced class than one call could. Never try to emit a whole class in a single tool call."
     : "";
 
+  // Character routing — a player character is built through generate_character (a guided staged build), not
+  // a create_* call. A character is not homebrew, so this is shown whenever the pipeline seeds are offered.
+  const characterPipelineLine = flags?.pipeline
+    ? "\n\nTo create a player CHARACTER (a specific adventurer — not a homebrew class or race), call generate_character with the user's concept and any hard requirements they stated (class, race, level, background). It runs a guided staged build that picks the mechanics, rolls stats, equips the character, writes its story, and saves it. Never use a create_* tool for a character."
+    : "";
+
   // Look-up-before-invent sequencing — only when lookup tools are advertised. Ordered procedure so a weak
   // model knows WHEN to look up, how to use the result, and what to do on a miss.
   const lookupLine = flags?.lookup
@@ -189,7 +195,7 @@ function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKi
 
   return `${base}
 
-${opener}${lookupLine}${editLine}${classPipelineLine}
+${opener}${lookupLine}${editLine}${classPipelineLine}${characterPipelineLine}
 
 ${qualityBar}${byTypeBlock}
 

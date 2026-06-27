@@ -27,11 +27,14 @@ import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
 import { runClassPipeline } from "../ai/genPipeline/classPipeline";
+import { runCharacterPipeline } from "../ai/genPipeline/characterPipeline";
 import { buildClassReviewer } from "../ai/genPipeline/critic";
-import type { PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
+import type { CharacterPipelineHost, PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
 import { skeletonSummaryLines, type SkeletonPlan } from "../ai/genPipeline/skeleton";
-import type { ConceptBrief, PipelineRun, WorkingEntity } from "../ai/genPipeline/types";
+import type { ConceptBrief, PipelineRun, PipelineType, WorkingEntity } from "../ai/genPipeline/types";
 import { pipelineCheckpointManager } from "../ai/genPipeline/checkpoint/pipelineCheckpointManager";
+import characterManager from "./dndInfo/useCharacters";
+import type { Character } from "../../models/character.model";
 import { AiMode, buildSystemPrompt, personaFor } from "../ai/prompt/systemPrompt";
 import { splitModelReasoning } from "../ai/prompt/cleanReasoning";
 import { generateConversationTitle } from "../ai/prompt/generateTitle";
@@ -160,6 +163,7 @@ export class AiAssistant {
     private pipelineController: AbortController | null = null; // aborts an in-flight staged-generation run
     private pipelineRatify = new Map<string, (decision: RatifyDecision) => void>();   // ratify interactionId -> resolver
     private pipelineCheckpointId: string | null = null;        // id of the current run's checkpoint row, for upsert/discard
+    private currentPipelineType: PipelineType = "class";       // which pipeline the active run drives (for checkpoint rows)
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
     private schemaRetryStreak = 0;                       // High-mode SCHEMA-gate regenerations (pre-handoff) for this request
@@ -533,6 +537,7 @@ export class AiAssistant {
 
         this.teardownPipeline();   // supersede any prior run (and settle its gate) before starting a new one
         this.pipelineCheckpointId = null;
+        this.currentPipelineType = "class";
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
 
@@ -552,6 +557,59 @@ export class AiAssistant {
         void runClassPipeline(seed, host).finally(() => {
             if (this.pipelineController?.signal === signal) this.pipelineController = null;
         });
+    }
+
+    /** Start the Character staged-generation pipeline from a `generate_character` seed call. One run at a time. */
+    private startCharacterPipeline(tc: AiToolCall, epoch: number) {
+        const input = (tc.input ?? {}) as Record<string, unknown>;
+        const concept = String(input.concept ?? "").trim();
+        const requirements = Array.isArray(input.requirements)
+            ? input.requirements.map(r => String(r).trim()).filter(Boolean) : [];
+        const seed = requirements.length ? `${concept}\nRequirements: ${requirements.join("; ")}` : concept;
+        if (!seed) { this.pushSystemBubble("The character generator needs a concept to start from."); return; }
+
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        if (!ai) { this.pushSystemBubble("AI is not configured."); return; }
+        const dndSystem = userSettings().dndSystem;
+
+        this.teardownPipeline();   // supersede any prior run before starting a new one
+        this.pipelineCheckpointId = null;
+        this.currentPipelineType = "character";
+        this.pipelineController = new AbortController();
+        const signal = this.pipelineController.signal;
+
+        const host: CharacterPipelineHost = {
+            ai, dndSystem, signal,
+            usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },
+            onCheckpoint: (phaseIndex, working, brief) => this.savePipelineCheckpoint(phaseIndex, working, brief, epoch),
+            onComplete: character => this.onCharacterComplete(character, epoch),
+            onError: message => { if (epoch === this.turnEpoch) this.pushSystemBubble(message); },
+        };
+        void runCharacterPipeline(seed, host).finally(() => {
+            if (this.pipelineController?.signal === signal) this.pipelineController = null;
+        });
+    }
+
+    /**
+     * Terminal success for the Character pipeline: save the assembled character via the CharacterManager and
+     * surface a confirmation. A character is NOT a homebrew preview, so there is no card hand-off — it goes
+     * straight to the user's Characters. A name collision is reported rather than silently dropped (the
+     * manager dedups by name).
+     */
+    private onCharacterComplete(character: Character, epoch: number) {
+        if (epoch !== this.turnEpoch) return;
+        this.setPipelineRun(null);
+        void this.discardPipelineCheckpoint();
+        const clash = characterManager.characters().some(c => c.name.trim().toLowerCase() === character.name.trim().toLowerCase());
+        if (clash) {
+            this.pushSystemBubble(`A character named “${character.name}” already exists. Rename the existing one (or this concept) and generate again to keep both.`);
+        } else {
+            characterManager.createCharacter(character);
+            this.pushAssistantBubble(`✦ Created **${character.name}** — level ${character.level} ${character.race.species} ${character.className}. Open the Characters page to view or edit them.`);
+        }
+        void this.persistCurrent();
     }
 
     /**
@@ -597,7 +655,7 @@ export class AiAssistant {
         void (async () => {
             try {
                 if (!this.pipelineCheckpointId) {
-                    const cp = await pipelineCheckpointManager.create({ conversationId, pipelineType: "class", currentPhaseIndex: phaseIndex, working, conceptBrief: brief });
+                    const cp = await pipelineCheckpointManager.create({ conversationId, pipelineType: this.currentPipelineType, currentPhaseIndex: phaseIndex, working, conceptBrief: brief });
                     this.pipelineCheckpointId = cp.id;
                 } else {
                     const existing = await pipelineCheckpointManager.getById(this.pipelineCheckpointId);
@@ -1140,7 +1198,8 @@ export class AiAssistant {
             if (pipelineCalls.length) {
                 for (const tc of pipelineCalls) {
                     this.resolvePipelineTrigger(tc.id, "Generation started — follow the generation panel.");
-                    this.startClassPipeline(tc, epoch);
+                    if (tc.name === "generate_character") this.startCharacterPipeline(tc, epoch);
+                    else this.startClassPipeline(tc, epoch);
                 }
                 this.setStatus("idle");        // the pipeline card owns progress from here, not the chat ticker
                 this.setActivePhase("idle");

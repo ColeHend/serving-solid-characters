@@ -46,6 +46,7 @@ function summarizeCharacter(ch: WorkingCharacter): string {
     if (ch.casterType && ch.casterType !== "none") parts.push(`${ch.casterType} caster`);
     if (ch.features?.length) parts.push(`features: ${featureList(ch.features)}`);
     if (ch.spells?.length) parts.push(`spells: ${ch.spells.join(", ")}`);
+    if (ch.equipment?.length) parts.push(`gear: ${ch.equipment.join(", ")}`);
     return parts.join("; ");
 }
 

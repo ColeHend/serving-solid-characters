@@ -62,6 +62,7 @@ export const CONTROL_TOOL_NAMES = [
 /** Seed tools that trigger the staged generation pipeline. Keep in sync with toolSchemas.ts (PIPELINE_TOOLS). */
 export const PIPELINE_TOOL_NAMES = [
     "generate_class",
+    "generate_character",
 ] as const;
 
 const COMPUTE = new Set<string>(COMPUTE_TOOL_NAMES);

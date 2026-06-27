@@ -81,22 +81,22 @@ describe("M4 — create_class is no longer a one-shot, model-facing tool", () =>
     });
 });
 
-describe("filterPipelineTools — staged class generation is gated by the class create permission", () => {
-    it("offers generate_class when class creation is permitted", () => {
-        expect(names(filterPipelineTools({ mode: "all" }))).toEqual(["generate_class"]);
-        expect(names(filterPipelineTools(undefined))).toEqual(["generate_class"]);
+describe("filterPipelineTools — generate_class follows the class permission; generate_character is always offered", () => {
+    it("offers both seeds when class creation is permitted", () => {
+        expect(names(filterPipelineTools({ mode: "all" }))).toEqual(["generate_character", "generate_class"]);
+        expect(names(filterPipelineTools(undefined))).toEqual(["generate_character", "generate_class"]);
     });
 
-    it("withholds generate_class when class is denied", () => {
-        expect(filterPipelineTools({ mode: "deny", denied: ["class"] })).toEqual([]);
+    it("withholds generate_class when class is denied, but still offers generate_character (a character is not homebrew)", () => {
+        expect(names(filterPipelineTools({ mode: "deny", denied: ["class"] }))).toEqual(["generate_character"]);
     });
 
-    it("withholds generate_class when the allow list omits class", () => {
-        expect(filterPipelineTools({ mode: "allow", allowed: ["spell", "feat"] })).toEqual([]);
+    it("withholds generate_class when the allow list omits class, but keeps generate_character", () => {
+        expect(names(filterPipelineTools({ mode: "allow", allowed: ["spell", "feat"] }))).toEqual(["generate_character"]);
     });
 
-    it("offers generate_class when class is explicitly allowed", () => {
-        expect(names(filterPipelineTools({ mode: "allow", allowed: ["class"] }))).toEqual(["generate_class"]);
+    it("offers both seeds when class is explicitly allowed", () => {
+        expect(names(filterPipelineTools({ mode: "allow", allowed: ["class"] }))).toEqual(["generate_character", "generate_class"]);
     });
 });
 

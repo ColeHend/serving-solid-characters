@@ -39,6 +39,12 @@ const CLASS_PHASES = [
     PipelinePhase.Features, PipelinePhase.Subclasses, PipelinePhase.Balance, PipelinePhase.Assemble,
 ];
 
+/** The ordered phases shown in the strip for the character pipeline (mirrors characterPipeline.PHASES). */
+const CHARACTER_PHASES = [
+    PipelinePhase.Concept, PipelinePhase.Foundation, PipelinePhase.TrainedIn,
+    PipelinePhase.Capabilities, PipelinePhase.Loadout, PipelinePhase.Narrative, PipelinePhase.Compute,
+];
+
 const SUBTITLE: Record<PipelineStatus, string> = {
     idle: "Starting…",
     running: "Working…",
@@ -52,6 +58,11 @@ const GenPipelineCard: Component = () => {
     const run = () => aiAssistant.pipelineRun();
     const isLive = () => { const s = run()?.status; return s === "running" || s === "awaiting_user" || s === "idle"; };
     const isTerminalBad = () => { const s = run()?.status; return s === "error" || s === "aborted"; };
+    const isCharacter = () => run()?.pipelineType === "character";
+    /** The phase strip + headings switch on which pipeline is running. */
+    const phases = () => (isCharacter() ? CHARACTER_PHASES : CLASS_PHASES);
+    const title = () => (isCharacter() ? "Generating character" : "Generating class");
+    const workingLabel = () => (isCharacter() ? "Building your character…" : "Building your class…");
 
     /** The strip state for the phase at index `i`, given the run's current phase + status. */
     const stepClass = (i: number) => {
@@ -72,7 +83,7 @@ const GenPipelineCard: Component = () => {
                 <Container theme="surface" class={styles.previewCard}>
                     <div class={styles.previewHeader}>
                         <div>
-                            <strong>Generating class</strong>
+                            <strong>{title()}</strong>
                             <div class={styles.previewSubtitle}>
                                 Phase {Math.min(r().phaseIndex + 1, r().totalPhases)} of {r().totalPhases} — {SUBTITLE[r().status]}
                             </div>
@@ -81,7 +92,7 @@ const GenPipelineCard: Component = () => {
                     </div>
 
                     <div class={styles.pipelineStrip}>
-                        <For each={CLASS_PHASES}>{(phase, i) => (
+                        <For each={phases()}>{(phase, i) => (
                             <span class={stepClass(i())}>{PHASE_LABEL[phase]}</span>
                         )}</For>
                     </div>
@@ -91,7 +102,7 @@ const GenPipelineCard: Component = () => {
                             <Icon icon={Bolt} size="small" />
                             {r().status === "awaiting_user"
                                 ? "Review the skeleton below to continue."
-                                : (r().note?.trim() || "Building your class…")}
+                                : (r().note?.trim() || workingLabel())}
                         </div>
                     </Show>
 

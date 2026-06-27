@@ -21,6 +21,9 @@ export const ABILITY_KEYS: AbilityKey[] = ["str", "dex", "con", "int", "wis", "c
 /** Caster-type names as the model emits them; map to the `CasterType` enum via `parseCasterType`. */
 export type CasterTypeName = "none" | "third" | "half" | "full" | "pact";
 
+/** Armor weight class, which decides how Dexterity feeds Armor Class (see compute.computeAC). */
+export type ArmorCategory = "none" | "light" | "medium" | "heavy";
+
 /**
  * The design brief produced by Phase A/1. Every later step is told to "serve this concept; weave in the
  * motifs". `motifs` must be concrete nouns (validated), not sentences — they are the recurring hooks the
@@ -92,22 +95,28 @@ export interface WorkingDerivedStats {
  */
 export interface WorkingCharacter {
     name?: string;
+    // ----- mechanical foundation (Phase 2) -----
     className?: string;
     lineage?: string;
     level?: number;
     background?: string;
+    hitDie?: string;                  // the class's hit die ("d8"); drives HP compute
     abilityPriority?: AbilityKey[];
     // ----- trained-in (Phase 3) -----
     abilityScores?: Partial<Record<AbilityKey, number>>;
     skills?: string[];
     savingThrows?: AbilityKey[];
+    otherProficiencies?: string[];    // tool/weapon/armor proficiency labels (display only)
     // ----- capabilities (Phase 4) -----
     features?: WorkingFeature[];
     casterType?: CasterTypeName;
     spells?: string[];
     // ----- loadout (Phase 5) -----
     equipment?: string[];
+    armor?: { category: ArmorCategory; baseAc?: number; name?: string };
+    shield?: boolean;
     // ----- narrative (Phase 6) -----
+    alignment?: string;
     backstory?: string;
     bonds?: string;
     ideals?: string;

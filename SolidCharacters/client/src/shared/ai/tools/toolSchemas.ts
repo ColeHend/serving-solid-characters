@@ -282,26 +282,55 @@ export const GENERATE_CLASS_TOOL: AiToolDef = {
     },
 };
 
-/** The seed tools that trigger the staged generation pipeline. Only `generate_class` ships in M1–M4. */
-export const PIPELINE_TOOLS: AiToolDef[] = [GENERATE_CLASS_TOOL];
+/**
+ * Seed tool for the Character staged-generation pipeline (plan §7, M5). Like `generate_class` it hands a
+ * concept + hard picks to the code-owned orchestrator, which drives the model per step (concept → mechanical
+ * foundation → trained-in → capabilities → loadout → narrative → compute). A character is NOT homebrew, so
+ * this is the only AI character-creation path and it has no `create_character` counterpart.
+ */
+export const GENERATE_CHARACTER_TOOL: AiToolDef = {
+    name: "generate_character",
+    description:
+        "Generate a complete D&D 5e player CHARACTER through a guided, staged process: it anchors a concept, picks the " +
+        "class/lineage/level/background, rolls ability scores, chooses skills and capabilities, equips it, and writes its " +
+        "story — then computes its stats. Use it for any \"make/create/build a character\" request. Pass the user's concept " +
+        "verbatim plus any hard requirements they stated. Example: {\"concept\":\"a guilt-ridden goliath barbarian who " +
+        "protects the weak\",\"requirements\":[\"level 5\",\"folk hero background\"]}.",
+    inputSchema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+            concept: { type: "string", description: "The character concept in the user's words — who they fundamentally are." },
+            requirements: { type: "array", items: { type: "string" }, description: "Hard requirements the user stated (class, race, level, background, etc.). May be empty." },
+        },
+        required: ["concept"],
+    },
+};
+
+/** The seed tools that trigger the staged generation pipeline. M5 adds `generate_character`. */
+export const PIPELINE_TOOLS: AiToolDef[] = [GENERATE_CLASS_TOOL, GENERATE_CHARACTER_TOOL];
 
 /**
- * The homebrew kind each seed tool generates. A seed tool is gated by the SAME create permission as its
- * kind (denying "class" creation must deny both `create_class` — gone — and its replacement
- * `generate_class`), so this maps the seed back to its kind for `filterPipelineTools`.
+ * The homebrew kind each seed tool generates, for `filterPipelineTools`. A seed tool is gated by the SAME
+ * create permission as its kind (denying "class" creation must deny both `create_class` — gone — and its
+ * replacement `generate_class`). `generate_character` is intentionally ABSENT: a character is not a homebrew
+ * kind, so it is not subject to the per-kind allow/deny grid (only the overall creation gate).
  */
 export const PIPELINE_TOOL_KIND: Record<string, HomebrewKind> = {
     generate_class: "class",
 };
 
 /**
- * The pipeline seed tools permitted under the given permissions. M4 routes class creation through
- * `generate_class`, so it must honor the same allow/deny grid as the old `create_class` did — a user who
- * denied "class" should not be offered the staged generator either.
+ * The pipeline seed tools permitted under the given permissions. A seed mapped to a homebrew kind honors the
+ * same allow/deny grid its old `create_*` entry did (a user who denied "class" gets no `generate_class`); a
+ * seed with no kind (`generate_character`) is always offered when the pipeline tools are built at all.
  */
 export function filterPipelineTools(perms: ToolPermissions | undefined): AiToolDef[] {
     const allowed = new Set(allowedKinds(perms));
-    return PIPELINE_TOOLS.filter(t => allowed.has(PIPELINE_TOOL_KIND[t.name]));
+    return PIPELINE_TOOLS.filter(t => {
+        const kind = PIPELINE_TOOL_KIND[t.name];
+        return kind === undefined || allowed.has(kind);
+    });
 }
 
 /**
