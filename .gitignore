@@ -21,3 +21,4 @@ ssl/
 *.pem
 dev-cert.pfx
 To_Adapt_And_Delete
+temp_plans
