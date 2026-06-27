@@ -7,6 +7,8 @@ import StreamingBubble from "./StreamingBubble";
 import HomebrewPreviewCard from "../homebrew/HomebrewPreviewCard";
 import HomebrewDiffCard from "../homebrew/HomebrewDiffCard";
 import InteractionCard from "../homebrew/InteractionCard";
+import GenPipelineCard from "./GenPipelineCard";
+import ResumeGenerationCard from "./ResumeGenerationCard";
 import styles from "../SparkSidebar.module.scss";
 
 const ChatMessageList: Component = () => {
@@ -29,6 +31,8 @@ const ChatMessageList: Component = () => {
         aiAssistant.streamingThinking();
         aiAssistant.pendingPreviews();
         aiAssistant.pendingInteractions();
+        aiAssistant.pipelineRun();
+        aiAssistant.resumableCheckpoint();
         const grew = msgs.length > lastLen;
         const last = msgs[msgs.length - 1];
         lastLen = msgs.length;
@@ -60,6 +64,8 @@ const ChatMessageList: Component = () => {
                 </Show>
                 <For each={aiAssistant.messages()}>{(m) => <ChatBubble message={m} />}</For>
                 <Show when={aiAssistant.status() === "streaming"}><StreamingBubble /></Show>
+                <GenPipelineCard />
+                <ResumeGenerationCard />
                 <For each={aiAssistant.pendingPreviews()}>{(p) => (
                     <Show when={p.mode === "edit"} fallback={<HomebrewPreviewCard preview={p} />}>
                         <HomebrewDiffCard preview={p} />

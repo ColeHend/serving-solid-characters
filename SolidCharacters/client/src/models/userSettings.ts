@@ -154,6 +154,13 @@ export const DEFAULT_AI_AUTO_SWITCH = true;
 export const DEFAULT_AI_COMMAND_GENERATION = true;
 
 /**
+ * Offer to resume an interrupted staged generation (class/character pipeline) when a conversation with an
+ * in-flight checkpoint is reloaded (plan §9, M6). Default ON: the pipeline checkpoints after every step, so
+ * a reload mid-build can pick up where it left off instead of starting over. Turn off to always start fresh.
+ */
+export const DEFAULT_AI_RESUME_GENERATION = true;
+
+/**
  * How much of the in-character Grimoire (sentient-spellbook) persona to apply — chosen by the user for
  * ANY model, not tied to local-vs-cloud. A monotonic ladder:
  * - "off":  name only, no flavor (the kill switch if persona bleeds into stat blocks).
@@ -209,6 +216,8 @@ export interface AiSettings {
     autoSwitch?: boolean;
     /** Auto-attach mechanical "mads" commands to generated feature-bearing homebrew. Defaults to DEFAULT_AI_COMMAND_GENERATION. */
     commandGeneration?: boolean;
+    /** Offer to resume an interrupted staged generation when its conversation is reloaded. Defaults to DEFAULT_AI_RESUME_GENERATION. */
+    resumeGeneration?: boolean;
     /** How much in-character Grimoire persona to apply (any model). Defaults to DEFAULT_AI_PERSONA_STRENGTH. */
     personaStrength?: PersonaStrength;
 }

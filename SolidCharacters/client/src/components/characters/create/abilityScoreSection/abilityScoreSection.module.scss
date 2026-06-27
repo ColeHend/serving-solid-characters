@@ -32,7 +32,7 @@
 
     &::before {
 
-        background: linear-gradient(var(--secondary-color, blue), transparent);
+        background: var(--accent-bar-secondary);
     }
 }
 

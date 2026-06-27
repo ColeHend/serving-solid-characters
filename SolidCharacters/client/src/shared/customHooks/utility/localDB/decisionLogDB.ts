@@ -3,13 +3,20 @@ import type { HomebrewKind } from "../../../ai/refs/homebrewKind";
 import type { PatchOp } from "../../../ai/tools/patch";
 
 /**
- * A persisted record of a change Grimoire made to homebrew (create / edit / delete). The app writes one on
- * every committed change; the model may add a one-line summary. Stored in its OWN Dexie database
- * (mirroring reviewAgentDB / chatHistoryDB), NOT in AiSettings.
+ * The kind of thing a decision-log entry is about: any homebrew kind, plus `"character"` for the staged
+ * character-generation pipeline (a generated character isn't homebrew, but it IS a committed creation worth
+ * logging alongside the rest — plan §10/§13 M6). `kindLabel` falls back to the raw value for "character".
+ */
+export type DecisionEntityKind = HomebrewKind | "character";
+
+/**
+ * A persisted record of a change Grimoire made (create / edit / delete) to homebrew or a generated
+ * character. The app writes one on every committed change; the model may add a one-line summary. Stored in
+ * its OWN Dexie database (mirroring reviewAgentDB / chatHistoryDB), NOT in AiSettings.
  */
 export interface DecisionLogEntry {
     id: string;
-    entityKind: HomebrewKind;
+    entityKind: DecisionEntityKind;
     entityName: string;
     changeType: "create" | "edit" | "delete";
     /** App-derived (kind + changed fields), optionally prefixed with the model's one-line "what/why". */
