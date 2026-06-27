@@ -779,6 +779,17 @@
     font-size: var(--font-size-small, 0.8rem);
     font-style: italic;
 }
+/* The compact "Saved"/"Updated" confirmation a card becomes after a successful save (Part 3). */
+.previewSaved {
+    border: 1px solid var(--spark-success-color, #3fae6b);
+}
+.savedTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--spark-success-color, #3fae6b);
+    font-weight: 600;
+}
 .directionNote {
     color: var(--error-color, #c33);
     font-size: var(--font-size-small, 0.85rem);

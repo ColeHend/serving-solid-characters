@@ -356,9 +356,11 @@ export class AiAssistant {
 
     confirmPreview = async (previewId: string) => {
         const preview = this.pendingPreviews().find(p => p.previewId === previewId);
-        if (!preview) return;
+        if (!preview || preview.saved) return;   // gone, or already saved — ignore a double Save
         const epoch = this.turnEpoch;   // capture: a session swap during the async save invalidates this resolve
-        this.removePreview(previewId);
+        // Leave the card in place while the save runs (clearing any prior error). It is removed ONLY on a real
+        // success — and even then it transforms into a "Saved" confirmation rather than vanishing (below).
+        this.updatePreview(previewId, { saveError: undefined });
         const result = await saveHomebrew(preview);
         // The user switched/loaded another conversation while the save was in flight — drop the late
         // tool_result + decision-log entry so they don't land on (and continue) the wrong chat.
@@ -375,8 +377,11 @@ export class AiAssistant {
         // a confirm flourish (the "full" voice); lighter levels keep the factual save message.
         const snackMessage = result.ok && persona.confirmFlourish ? "It is done. Let it be written." : result.message;
         addSnackbar({ message: snackMessage, severity: result.ok ? "success" : "error" });
-        // Auto-log every committed change (the model's chat reply is the "why"; we capture a short note).
         if (result.ok) {
+            // Transform the card into a "Saved" confirmation (the user dismisses it when ready) instead of
+            // removing it — a save is acknowledged, not silently vanished.
+            this.updatePreview(previewId, { saved: true, saveError: undefined });
+            // Auto-log every committed change (the model's chat reply is the "why"; we capture a short note).
             void logDecision({
                 entityKind: preview.kind,
                 entityName: preview.title,
@@ -386,6 +391,9 @@ export class AiAssistant {
                 conversationId: this.currentConversationId ?? undefined,
                 previewId,
             });
+        } else {
+            // The save genuinely didn't persist — keep the card and surface why, so the user can retry.
+            this.updatePreview(previewId, { saveError: result.message });
         }
         this.resolveToolCall(preview.toolCallId, result.message, !result.ok);
         // Capture the now-smaller card set. For a DETACHED card resolveToolCall no-ops (no continuation
@@ -416,6 +424,15 @@ export class AiAssistant {
         this.removePreview(previewId);
         this.resolveToolCall(preview.toolCallId, "The user rejected this and it was not saved.", true);
         // Persist the smaller set so a rejected detached card doesn't reappear on the next switch back.
+        void this.persistCurrent();
+    };
+
+    /**
+     * Dismiss a card that no longer needs a decision — a "Saved" confirmation. Unlike reject, this does NOT
+     * send a rejection tool_result (the save already resolved the tool call); it just clears the card.
+     */
+    dismissPreview = (previewId: string) => {
+        this.removePreview(previewId);
         void this.persistCurrent();
     };
 
@@ -954,8 +971,10 @@ export class AiAssistant {
      * `detached` is NOT set here; it's stamped on load so a same-session snapshot stays live.
      */
     private sanitizePreviewsForStore(previews: HomebrewPreview[]): HomebrewPreview[] {
-        return previews.map(p => {
-            const { repairing: _r, enriching: _e, detached: _d, ...rest } = p;
+        // A "Saved" confirmation card is an in-session acknowledgement only — never persist it, so saved
+        // cards don't accumulate in the chat forever and a saved-then-detached card can't "resurrect".
+        return previews.filter(p => !p.saved).map(p => {
+            const { repairing: _r, enriching: _e, detached: _d, saveError: _se, ...rest } = p;
             const reviewState: ReviewState | undefined =
                 p.reviewState === "reviewing" || p.reviewState === "needs_user_direction"
                     ? "review_unavailable"
@@ -1035,6 +1054,10 @@ export class AiAssistant {
     }
     private removePreview(previewId: string) {
         this.setPendingPreviews(prev => prev.filter(p => p.previewId !== previewId));
+    }
+    /** Patch one pending preview in place (e.g. flip it to a "Saved" confirmation, or attach a save error). */
+    private updatePreview(previewId: string, patch: Partial<HomebrewPreview>) {
+        this.setPendingPreviews(prev => prev.map(p => p.previewId === previewId ? { ...p, ...patch } : p));
     }
     private removeInteraction(interactionId: string) {
         this.setPendingInteractions(prev => prev.filter(i => i.interactionId !== interactionId));

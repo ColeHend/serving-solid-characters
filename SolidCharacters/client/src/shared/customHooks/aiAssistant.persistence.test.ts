@@ -128,10 +128,12 @@ describe("persisting & restoring save-choice cards", () => {
         const callsBefore = h.calls;
 
         await aiAssistant.confirmPreview(aiAssistant.pendingPreviews()[0].previewId);
-        expect(aiAssistant.pendingPreviews()).toHaveLength(0);
+        // The card stays in-session as a "Saved" confirmation, but is NOT persisted.
+        expect(aiAssistant.pendingPreviews()).toHaveLength(1);
+        expect(aiAssistant.pendingPreviews()[0].saved).toBe(true);
         expect(h.calls).toBe(callsBefore);   // resolveToolCall no-ops (outstanding empty) → no model call
 
-        // Switching back must NOT resurrect the saved card.
+        // The saved confirmation is not persisted, so switching back must NOT resurrect the card.
         await vi.waitFor(() => expect((db.rows.get(convId)!.pendingPreviews as unknown[])).toHaveLength(0));
         aiAssistant.newConversation();
         await aiAssistant.loadConversation(convId);

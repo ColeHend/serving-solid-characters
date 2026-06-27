@@ -113,6 +113,46 @@ describe("runStep", () => {
         expect(sr.count).toBe(0);
     });
 
+    it("salvages a JSON object the model wrote as text (```json block) instead of calling the tool", async () => {
+        const sr = scriptedRunner([{ text: "Sure!\n```json\n{ \"n\": 9 }\n```", toolCalls: [], ok: true }]);
+        const res = await runStep(STEP, {}, AI, {}, sr.runner);
+        expect(res.ok).toBe(true);
+        expect(res.value).toEqual({ n: 9 });
+        expect(res.attempts).toBe(1);   // salvaged on the first turn — no wasted retry
+    });
+
+    it("salvages a bare JSON object embedded in prose", async () => {
+        const sr = scriptedRunner([{ text: "Here it is: { \"n\": 8 } — done.", toolCalls: [], ok: true }]);
+        const res = await runStep(STEP, {}, AI, {}, sr.runner);
+        expect(res.ok).toBe(true);
+        expect(res.value).toEqual({ n: 8 });
+    });
+
+    it("retries a prose reply on its OWN budget, not the (exhausted) gate-repair budget", async () => {
+        // repairBudget 0 → no gate repairs; but prose replies still retry via the default toolCallRetries (2).
+        const sr = scriptedRunner([prose(), prose(), toolCall({ n: 4 })]);
+        const res = await runStep(STEP, {}, AI, { repairBudget: 0 }, sr.runner);
+        expect(res.ok).toBe(true);
+        expect(res.value).toEqual({ n: 4 });
+        expect(res.attempts).toBe(3);
+    });
+
+    it("ends with an actionable message when the model never calls the tool", async () => {
+        const sr = scriptedRunner([prose(), prose(), prose(), prose()]);
+        const res = await runStep(STEP, {}, AI, {}, sr.runner);
+        expect(res.ok).toBe(false);
+        expect(res.noToolCall).toBe(true);
+        expect(res.errors[0]).toContain("replied with text instead of filling in fill_n");
+    });
+
+    it("honors toolCallRetries 0 (a single prose reply fails immediately)", async () => {
+        const sr = scriptedRunner([prose(), toolCall({ n: 1 })]);
+        const res = await runStep(STEP, {}, AI, { toolCallRetries: 0 }, sr.runner);
+        expect(res.attempts).toBe(1);
+        expect(res.ok).toBe(false);
+        expect(res.noToolCall).toBe(true);
+    });
+
     it("injects the brief, carry-forward summary, and scoped homebrew into the task", async () => {
         const brief: ConceptBrief = {
             concept: "C", tone: "T", power_tier: "P",

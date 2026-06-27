@@ -261,6 +261,12 @@ export interface StepResult<T> {
 export interface RunStepOptions {
     /** Model re-tries on a gate failure. Default 1 (Low usage level). Medium/High raise this (plan §8). */
     repairBudget?: number;
+    /**
+     * Re-tries reserved for "the model didn't call the tool" (prose-only reply or a failed call), SEPARATE
+     * from `repairBudget` and independent of usage level — a prose reply is a transient local-model glitch,
+     * not a quality decision, so it shouldn't burn the gate-repair budget. Default 2.
+     */
+    toolCallRetries?: number;
     /** Per-step output-token cap. Steps are small; defaults to 1024. */
     maxTokens?: number;
     /** Context window override (local models). Falls back to the AiSettings numCtx. */

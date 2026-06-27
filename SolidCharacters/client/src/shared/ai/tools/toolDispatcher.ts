@@ -62,6 +62,14 @@ export interface HomebrewPreview {
      * the enriched entity is patched back in.
      */
     enriching?: boolean;
+    /**
+     * True once this entity has been successfully saved to the homebrew collection. The card then renders a
+     * compact "Saved" confirmation (with View / Dismiss) instead of being removed outright — so a save is
+     * visibly acknowledged rather than silently vanishing.
+     */
+    saved?: boolean;
+    /** Set when a Save attempt failed (the entity did NOT persist): shown on the card so the user can retry. */
+    saveError?: string;
     /** High-mode readiness state. Undefined for Low/Medium (no pipeline runs). */
     reviewState?: ReviewState;
     /** Verdicts from the readiness pipeline (one per pass that ran), surfaced on the card. */
@@ -569,6 +577,23 @@ export function buildEditPreview(toolCall: AiToolCall, _dndSystem = "both"): Hom
 
 const isPromise = (v: unknown): v is Promise<unknown> => !!v && typeof (v as { then?: unknown }).then === "function";
 
+/**
+ * Interpret a homebrewManager add/update return so a save reports HONESTLY (it used to always claim success).
+ * The manager methods variously return `false`/`null` for a dedup no-op or a swallowed DB error, a rejected
+ * promise on a real failure, or `void`/`true` on success. Treat `false`/`null` and any rejection as "not
+ * saved"; everything else as saved. (A dedup no-op is normally pre-empted by `alreadyExists`, so reaching it
+ * here means the write genuinely didn't land.)
+ */
+async function resolveSaveOutcome(result: unknown): Promise<{ ok: boolean; error?: string }> {
+    try {
+        const v = isPromise(result) ? await result : result;
+        if (v === false || v === null) return { ok: false };
+        return { ok: true };
+    } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : String(e) };
+    }
+}
+
 /** True if an entity with this name (per the kind's identity rule) already exists in the homebrew store. */
 export function alreadyExists(p: HomebrewPreview): boolean {
     const name = p.title;
@@ -613,7 +638,8 @@ export async function saveHomebrew(p: HomebrewPreview): Promise<{ ok: boolean; m
             case "subclass": result = homebrewManager.updateSubclass(p.entity as srdSubclass); break;
             case "class": result = homebrewManager.updateClass(p.entity as Class5E); break;
         }
-        if (isPromise(result)) await result;
+        const outcome = await resolveSaveOutcome(result);
+        if (!outcome.ok) return { ok: false, message: outcome.error ?? `Couldn't update ${p.kind.replace("_", " ")} "${p.title}" — please try again.` };
         return { ok: true, message: `Updated ${p.kind.replace("_", " ")} "${p.title}".` };
     }
 
@@ -630,7 +656,8 @@ export async function saveHomebrew(p: HomebrewPreview): Promise<{ ok: boolean; m
         case "subclass": result = homebrewManager.addSubclass(p.entity as srdSubclass); break;
         case "class": result = homebrewManager.addClass(p.entity as Class5E); break;
     }
-    if (isPromise(result)) await result;
+    const outcome = await resolveSaveOutcome(result);
+    if (!outcome.ok) return { ok: false, message: outcome.error ?? `Couldn't save ${p.kind.replace("_", " ")} "${p.title}" — please try again.` };
     return { ok: true, message: `Saved ${p.kind.replace("_", " ")} "${p.title}".` };
 }
 
