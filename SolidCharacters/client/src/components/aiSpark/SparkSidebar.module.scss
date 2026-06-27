@@ -67,22 +67,60 @@
     // Clear the notch / status bar on viewport-fit=cover devices.
     padding-top: max(var(--spacing-2, 12px), env(safe-area-inset-top));
     padding-right: max(var(--spacing-2, 12px), env(safe-area-inset-right));
-    border-bottom: 1px solid var(--surface-color, rgba(255, 255, 255, 0.1));
+    border-bottom: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.1));
 }
 
 .title {
     display: flex;
     align-items: center;
     gap: var(--spacing-1, 6px);
+    // Reserve room at the far left so the absolutely-positioned lock handle doesn't overlap the icon.
+    margin-left: var(--spacing-4, 24px);
     // NB: coles maps --font-size-h3 to 48px, so do NOT use it here — set an explicit ~1.2rem.
     font-size: 1.2rem;
     font-weight: 600;
+}
+
+// Lock handle pinned to the panel's top-left corner. Toggles whether an outside click closes the
+// panel (see SparkSidebar). A DOM child of the panel, so clicking it is never an "outside" click.
+.lockBtn {
+    position: absolute;
+    // Clear the notch on viewport-fit=cover devices, matching the header.
+    top: max(var(--spacing-1, 6px), env(safe-area-inset-top));
+    left: var(--spacing-1, 6px);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.1));
+    border-radius: 50%;
+    background: var(--container-color);
+    color: var(--on-container-color);
+    cursor: pointer;
+    opacity: 0.65;
+    transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+    svg { color: currentColor; fill: currentColor; }
+}
+.lockBtn:hover { opacity: 1; }
+// Pinned-open state: filled accent so it's obviously "locked".
+.lockBtnActive {
+    opacity: 1;
+    background: var(--primary-color);
+    color: var(--on-primary-color);
+    border-color: var(--primary-color);
 }
 
 .headerActions {
     display: flex;
     align-items: center;
     gap: var(--spacing-1, 6px);
+    svg {
+        color: var(--spark-text-color, #fff);
+        fill: var(--spark-text-color, #fff);
+    }
 }
 
 // 44px minimum touch target for the icon-only header TRIGGER buttons (coles Button has only 8px
@@ -94,6 +132,10 @@
     min-width: 44px;
     min-height: 44px;
     justify-content: center;
+    // coles <Button transparent> doesn't reliably carry the container text color, so its icons
+    // (fill: currentColor) can render white in both themes — invisible on the light container.
+    // Assert the themed color here (specificity 0,1,1 beats coles's .Button-module_container).
+    color: var(--on-container-color);
 }
 
 .convMenu {
@@ -114,8 +156,9 @@
     overflow-y: auto;
     padding: var(--spacing-1, 6px);
     border-radius: 10px;
-    background: var(--container-color, #222);
-    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    background-color: var(--container-color, #222);
+    background-image: var(--container-gradient);
+    border: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.12));
     box-shadow: var(--shadow-elevation-2, 0 4px 14px rgba(0, 0, 0, 0.35));
 }
 .convOption {
@@ -134,7 +177,7 @@
     cursor: pointer;
 
     &:hover {
-        background: var(--surface-color, rgba(255, 255, 255, 0.08));
+        background: var(--spark-raise, rgba(255, 255, 255, 0.08));
     }
 }
 .convTitle {
@@ -156,7 +199,7 @@
     gap: var(--spacing-1, 4px);
     border-radius: 6px;
 
-    &:hover { background: var(--surface-color, rgba(255, 255, 255, 0.06)); }
+    &:hover { background: var(--spark-raise, rgba(255, 255, 255, 0.06)); }
 }
 .convLoad {
     flex: 1 1 auto;
@@ -193,7 +236,7 @@
     padding: var(--spacing-1, 8px) var(--spacing-2, 12px);
     background: none;
     border: none;
-    border-top: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    border-top: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.12));
     color: var(--error-color, #c33);
     font: inherit;
     font-size: 0.8rem;
@@ -206,7 +249,7 @@
     gap: var(--spacing-1, 6px);
     margin-top: var(--spacing-1, 6px);
     padding-top: var(--spacing-1, 6px);
-    border-top: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    border-top: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.12));
     font-size: 0.8rem;
 }
 
@@ -229,8 +272,9 @@
     max-height: 60vh;
     padding: var(--spacing-2, 12px);
     border-radius: 10px;
-    background: var(--container-color, #222);
-    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    background-color: var(--container-color, #222);
+    background-image: var(--container-gradient);
+    border: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.12));
     box-shadow: var(--shadow-elevation-2, 0 4px 14px rgba(0, 0, 0, 0.35));
     outline: none;
 }
@@ -259,8 +303,9 @@
     min-width: 160px;
     padding: var(--spacing-1, 6px);
     border-radius: 10px;
-    background: var(--container-color, #222);
-    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    background-color: var(--container-color, #222);
+    background-image: var(--container-gradient);
+    border: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.12));
     box-shadow: var(--shadow-elevation-2, 0 4px 14px rgba(0, 0, 0, 0.35));
 }
 .modeOption {
@@ -279,7 +324,7 @@
     cursor: pointer;
 
     &:hover {
-        background: var(--surface-color, rgba(255, 255, 255, 0.08));
+        background: var(--spark-raise, rgba(255, 255, 255, 0.08));
     }
 }
 
@@ -307,7 +352,7 @@
     align-items: center;
     gap: 4px;
     padding: 4px var(--spacing-2, 12px);
-    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.12));
+    border: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.12));
     border-radius: 999px;
     background: var(--container-color, #222);
     color: inherit;
@@ -336,15 +381,15 @@
 }
 .starterChip {
     padding: 6px var(--spacing-2, 12px);
-    border: 1px solid var(--surface-color, rgba(255, 255, 255, 0.18));
+    border: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.18));
     border-radius: 999px;
-    background: var(--surface-color, rgba(255, 255, 255, 0.06));
+    background: var(--spark-raise, rgba(255, 255, 255, 0.06));
     color: inherit;
     font: inherit;
     font-size: 0.8rem;
     cursor: pointer;
 
-    &:hover { background: var(--container-color, rgba(255, 255, 255, 0.12)); }
+    &:hover { background: var(--spark-raise-strong, rgba(255, 255, 255, 0.12)); }
 }
 .errorActions {
     display: flex;
@@ -378,6 +423,9 @@
 .bubbleAssistant {
     background: var(--surface-color, rgba(255, 255, 255, 0.08));
     color: var(--on-surface-color, inherit);
+    // Hairline outline so the bubble reads as a defined surface when its fill is nearly
+    // identical to the container (e.g. #f5f5f5 on #fff in light mode).
+    border: 1px solid var(--spark-hairline, transparent);
     border-bottom-left-radius: 2px;
 }
 
@@ -617,7 +665,7 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    border-bottom: 1px solid var(--surface-variant-color, rgba(128, 128, 128, 0.2));
+    border-bottom: 1px solid var(--surface-color-variant, rgba(128, 128, 128, 0.2));
     padding-bottom: var(--spacing-1, 6px);
 }
 .logHead {
@@ -633,7 +681,7 @@
     letter-spacing: 0.04em;
     padding: 1px 6px;
     border-radius: 4px;
-    background: var(--surface-variant-color, rgba(128, 128, 128, 0.2));
+    background: var(--surface-color-variant, rgba(128, 128, 128, 0.2));
 
     &[data-type="create"] { color: var(--primary-color, #4a9); }
     &[data-type="edit"] { color: var(--spark-warn-color, #e0a52e); }
@@ -680,7 +728,7 @@
 .constraintChip {
     padding: 2px var(--spacing-1, 8px);
     border-radius: 999px;
-    background: var(--container-color, rgba(255, 255, 255, 0.08));
+    background: var(--spark-raise, rgba(255, 255, 255, 0.08));
     font-size: var(--font-size-small, 0.78rem);
     opacity: 0.85;
 }
@@ -768,10 +816,56 @@
     font-size: var(--font-size-small, 0.78rem);
 }
 
+// ----- staged generation pipeline card -----
+.pipelinePhaseLabel {
+    font-size: var(--font-size-small, 0.85rem);
+    font-weight: 600;
+    opacity: 0.9;
+}
+.pipelineStrip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-1, 6px);
+    margin: var(--spacing-1, 6px) 0;
+}
+.pipelineStep {
+    flex: 1 1 0;
+    min-width: 56px;
+    padding: 3px var(--spacing-1, 8px);
+    border-radius: 999px;
+    text-align: center;
+    font-size: var(--font-size-small, 0.72rem);
+    background: var(--spark-raise, rgba(255, 255, 255, 0.08));
+    opacity: 0.55;
+    white-space: nowrap;
+}
+.pipelineStepDone {
+    opacity: 1;
+    color: var(--spark-success-color, #3fae6b);
+}
+.pipelineStepActive {
+    opacity: 1;
+    font-weight: 600;
+    background: var(--primary-color, rgba(120, 140, 255, 0.25));
+    color: var(--on-primary-color, inherit);
+}
+.pipelineStepError {
+    opacity: 1;
+    color: var(--error-color, #c33);
+}
+.pipelineWorking {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    font-style: italic;
+    opacity: 0.8;
+    font-size: var(--font-size-small, 0.85rem);
+}
+
 .inputContainer {
     display: flex;
     flex-direction: column;
-    border-top: 1px solid var(--surface-color, rgba(255, 255, 255, 0.1));
+    border-top: 1px solid var(--spark-hairline, rgba(255, 255, 255, 0.1));
     // Keep the input above the home indicator on viewport-fit=cover devices.
     padding-bottom: env(safe-area-inset-bottom);
 }

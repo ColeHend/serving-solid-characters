@@ -12,20 +12,19 @@ interface SparkIconProps {
 const SparkIcon: Component<SparkIconProps> = (props) => {
     const [local, others] = splitProps(props, ["size", "color"]);
     const size = () => local.size ?? 24;
-    const color = () => local.color ?? "var(--on-surface-color)";
+    const color = () => local.color ?? "var(--on-tertiary-color)";
+
 
     return (
-        <svg
+        <svg 
             {...others}
+            xmlns="http://www.w3.org/2000/svg"
+            x="0px" y="0px" 
             width={size()}
             height={size()}
             style={{ fill: color(), color: color() }}
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden
-        >
-            <path d="M12 2l1.86 4.75L18.1 8l-3.1 2.35L15.6 15 12 12.75 8.4 15l.6-4.65L6 8l4.24-1.25L12 2z" fill={color()} />
+            viewBox="0 0 30 30">
+            <path d="M13.95 6.805l.654 3.06c.593 2.773 2.759 4.939 5.532 5.532l3.06.654c1.024.219 1.024 1.68 0 1.899l-3.06.654c-2.773.593-4.939 2.759-5.532 5.532l-.654 3.06c-.219 1.024-1.68 1.024-1.899 0l-.654-3.06c-.593-2.773-2.759-4.939-5.532-5.532l-3.06-.654c-1.024-.219-1.024-1.68 0-1.899l3.06-.654c2.773-.593 4.939-2.759 5.532-5.532l.654-3.06C12.269 5.781 13.731 5.781 13.95 6.805zM23.641 2.525l.588 2.119c.152.547.58.975 1.127 1.127l2.119.588c.65.18.65 1.102 0 1.282l-2.119.588c-.547.152-.975.58-1.127 1.127l-.588 2.119c-.18.65-1.102.65-1.282 0l-.588-2.119c-.152-.547-.58-.975-1.127-1.127l-2.119-.588c-.65-.18-.65-1.102 0-1.282l2.119-.588c.547-.152.975-.58 1.127-1.127l.588-2.119C22.539 1.875 23.461 1.875 23.641 2.525z"></path>
         </svg>
     );
 };
