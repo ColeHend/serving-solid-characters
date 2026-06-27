@@ -213,29 +213,46 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
             required: ["name", "parentClass", "description", "features"],
         },
     },
-    {
-        name: "create_class",
-        description: "Create a homebrew base class with saving throws, proficiencies, and features across levels. If it is a spellcaster, note that in a feature and the user will finish the spell-slot setup in the editor. Example: {\"name\":\"Warden\",\"hitDie\":\"d10\",\"primaryAbility\":\"WIS\",\"savingThrows\":[\"CON\",\"WIS\"],\"skills\":[\"Nature\",\"Perception\",\"Survival\"],\"armor\":[\"Light armor\",\"Medium armor\",\"Shields\"],\"weapons\":[\"Simple weapons\",\"Martial weapons\"],\"features\":[{\"level\":1,\"name\":\"Guardian's Mark\",\"description\":\"As a bonus action, mark a creature you can see. You have advantage on attacks against it until the end of your next turn.\"},{\"level\":2,\"name\":\"Wild Stride\",\"description\":\"Difficult terrain costs you no extra movement.\"}],\"startingEquipment\":[\"A martial weapon\",\"Leather armor\",\"An explorer's pack\"]}",
-        inputSchema: {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-                name: { type: "string", description: "Class name." },
-                hitDie: { type: "string", enum: HIT_DICE, description: "Hit die size." },
-                primaryAbility: { type: "string", enum: ABILITIES, description: "Primary ability score." },
-                savingThrows: { type: "array", items: { type: "string", enum: ABILITIES }, description: "Saving throw proficiencies (usually two)." },
-                skills: { type: "array", items: { type: "string" }, description: "Skill proficiency options the class can choose from." },
-                armor: { type: "array", items: { type: "string" }, description: "Armor proficiencies, e.g. [\"Light armor\",\"Shields\"]." },
-                weapons: { type: "array", items: { type: "string" }, description: "Weapon proficiencies, e.g. [\"Simple weapons\"]." },
-                tools: { type: "array", items: { type: "string" }, description: "Tool proficiencies, if any." },
-                features: { type: "array", items: featureSchema, description: "Class features, each tagged with its level. Provide at least a level-1 and level-2 feature." },
-                startingEquipment: { type: "array", items: { type: "string" }, description: "Starting equipment items, e.g. [\"A simple weapon\",\"Leather armor\"]." },
-                casterType: { type: "string", enum: CASTER_TYPES, description: "Spellcasting progression: \"none\" (martial), \"third\" (e.g. Eldritch Knight), \"half\" (e.g. Paladin), \"full\" (e.g. Wizard), or \"pact\" (Warlock). Set this for any spellcaster — the app fills the spell-slot table from it. Omit or \"none\" for a non-caster." },
-            },
-            required: ["name", "hitDie", "primaryAbility", "savingThrows", "features"],
-        },
-    },
 ];
+
+/**
+ * The one-shot `create_class` schema. M4 (StagedGenPipeline.Plan.md §6, §13) removed it from the
+ * model-facing `HOMEBREW_TOOLS`: the model can no longer author a whole class in a single call — class
+ * creation now flows through the staged `generate_class` pipeline (genPipeline/). The schema lives on
+ * because it is still used INTERNALLY: the pipeline's assemble step (genPipeline/assemble.ts) rebuilds
+ * this exact tool input and runs it through `buildPreview`/`toClass`/`validateEntity`, reusing the typed
+ * mapper and hard blockers instead of hand-mapping the generated DTO; and `requiredFieldsForKind("class")`
+ * still resolves its required list for completeness checks. It is never advertised to the model.
+ */
+export const CREATE_CLASS_TOOL: AiToolDef = {
+    name: "create_class",
+    description: "Create a homebrew base class with saving throws, proficiencies, and features across levels. If it is a spellcaster, note that in a feature and the user will finish the spell-slot setup in the editor. Example: {\"name\":\"Warden\",\"hitDie\":\"d10\",\"primaryAbility\":\"WIS\",\"savingThrows\":[\"CON\",\"WIS\"],\"skills\":[\"Nature\",\"Perception\",\"Survival\"],\"armor\":[\"Light armor\",\"Medium armor\",\"Shields\"],\"weapons\":[\"Simple weapons\",\"Martial weapons\"],\"features\":[{\"level\":1,\"name\":\"Guardian's Mark\",\"description\":\"As a bonus action, mark a creature you can see. You have advantage on attacks against it until the end of your next turn.\"},{\"level\":2,\"name\":\"Wild Stride\",\"description\":\"Difficult terrain costs you no extra movement.\"}],\"startingEquipment\":[\"A martial weapon\",\"Leather armor\",\"An explorer's pack\"]}",
+    inputSchema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+            name: { type: "string", description: "Class name." },
+            hitDie: { type: "string", enum: HIT_DICE, description: "Hit die size." },
+            primaryAbility: { type: "string", enum: ABILITIES, description: "Primary ability score." },
+            savingThrows: { type: "array", items: { type: "string", enum: ABILITIES }, description: "Saving throw proficiencies (usually two)." },
+            skills: { type: "array", items: { type: "string" }, description: "Skill proficiency options the class can choose from." },
+            armor: { type: "array", items: { type: "string" }, description: "Armor proficiencies, e.g. [\"Light armor\",\"Shields\"]." },
+            weapons: { type: "array", items: { type: "string" }, description: "Weapon proficiencies, e.g. [\"Simple weapons\"]." },
+            tools: { type: "array", items: { type: "string" }, description: "Tool proficiencies, if any." },
+            features: { type: "array", items: featureSchema, description: "Class features, each tagged with its level. Provide at least a level-1 and level-2 feature." },
+            startingEquipment: { type: "array", items: { type: "string" }, description: "Starting equipment items, e.g. [\"A simple weapon\",\"Leather armor\"]." },
+            casterType: { type: "string", enum: CASTER_TYPES, description: "Spellcasting progression: \"none\" (martial), \"third\" (e.g. Eldritch Knight), \"half\" (e.g. Paladin), \"full\" (e.g. Wizard), or \"pact\" (Warlock). Set this for any spellcaster — the app fills the spell-slot table from it. Omit or \"none\" for a non-caster." },
+        },
+        required: ["name", "hitDie", "primaryAbility", "savingThrows", "features"],
+    },
+};
+
+/**
+ * Every create_* schema, INCLUDING the internal-only `create_class`. Completeness lookups
+ * (`requiredFieldsForKind`) must still resolve required fields for the "class" kind even though it is no
+ * longer a model-facing tool, so they read this list rather than the trimmed `HOMEBREW_TOOLS`.
+ */
+const ALL_CREATE_TOOLS: AiToolDef[] = [...HOMEBREW_TOOLS, CREATE_CLASS_TOOL];
 
 /**
  * Seed tool for the staged generation pipeline (plan §4). Unlike a `create_*` tool the model does NOT
@@ -250,9 +267,9 @@ export const GENERATE_CLASS_TOOL: AiToolDef = {
     name: "generate_class",
     description:
         "Generate a complete homebrew D&D 5e class through a guided, staged process: it drafts a design brief, " +
-        "proposes a skeleton for the user to approve, then builds the class around it. Prefer this over create_class " +
-        "for any \"make/create/build a class\" request — it produces a more coherent, balanced result. Pass the user's " +
-        "concept verbatim plus any hard requirements they stated. Example: {\"concept\":\"a knight who borrows strength " +
+        "proposes a skeleton for the user to approve, then builds the class around it. This is the ONLY way to " +
+        "create a base class — use it for any \"make/create/build a class\" request. Pass the user's concept " +
+        "verbatim plus any hard requirements they stated. Example: {\"concept\":\"a knight who borrows strength " +
         "from a bound storm\",\"requirements\":[\"no spellcasting\",\"d10 hit die\"]}.",
     inputSchema: {
         type: "object",
@@ -265,8 +282,27 @@ export const GENERATE_CLASS_TOOL: AiToolDef = {
     },
 };
 
-/** The seed tools that trigger the staged generation pipeline. Only `generate_class` ships in M1. */
+/** The seed tools that trigger the staged generation pipeline. Only `generate_class` ships in M1–M4. */
 export const PIPELINE_TOOLS: AiToolDef[] = [GENERATE_CLASS_TOOL];
+
+/**
+ * The homebrew kind each seed tool generates. A seed tool is gated by the SAME create permission as its
+ * kind (denying "class" creation must deny both `create_class` — gone — and its replacement
+ * `generate_class`), so this maps the seed back to its kind for `filterPipelineTools`.
+ */
+export const PIPELINE_TOOL_KIND: Record<string, HomebrewKind> = {
+    generate_class: "class",
+};
+
+/**
+ * The pipeline seed tools permitted under the given permissions. M4 routes class creation through
+ * `generate_class`, so it must honor the same allow/deny grid as the old `create_class` did — a user who
+ * denied "class" should not be offered the staged generator either.
+ */
+export function filterPipelineTools(perms: ToolPermissions | undefined): AiToolDef[] {
+    const allowed = new Set(allowedKinds(perms));
+    return PIPELINE_TOOLS.filter(t => allowed.has(PIPELINE_TOOL_KIND[t.name]));
+}
 
 /**
  * Resolve which homebrew kinds the model is permitted to create under the given permissions.
@@ -292,7 +328,7 @@ export function allowedKinds(perms: ToolPermissions | undefined): HomebrewKind[]
 
 /** The required-field names the model must fill for a given kind (from that kind's create_* schema). */
 export function requiredFieldsForKind(kind: HomebrewKind): string[] {
-    const tool = HOMEBREW_TOOLS.find(t => t.name === KIND_TO_TOOL[kind]);
+    const tool = ALL_CREATE_TOOLS.find(t => t.name === KIND_TO_TOOL[kind]);
     const req = (tool?.inputSchema as { required?: unknown })?.required;
     return Array.isArray(req) ? (req as string[]) : [];
 }

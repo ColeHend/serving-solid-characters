@@ -9,7 +9,7 @@ import {
 } from "../../models/userSettings";
 import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
-import { HOMEBREW_TOOLS, PIPELINE_TOOLS, allowedKinds, enabledUtilityTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
+import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterPipelineTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
 import { HOMEBREW_KINDS, KIND_TO_TOOL } from "../ai/refs/homebrewKind";
 import { toolCategory } from "../ai/tools/toolCategory";
 import { runComputeTool } from "../ai/tools/computeTools";
@@ -911,9 +911,10 @@ export class AiAssistant {
         // Homebrew create_* + edit tools: only in homebrew mode, gated by permissions (fully-denied → []).
         const homebrewTools = canCreate ? filterTools(HOMEBREW_TOOLS, ai.toolPermissions) : [];
         const editTools = canCreate ? EDIT_TOOLS : [];
-        // Staged-generation seed tools (generate_*): a richer, code-driven path alongside the one-shot
-        // create_* tools, offered in homebrew mode when creation is permitted.
-        const pipelineTools = canCreate ? [...PIPELINE_TOOLS] : [];
+        // Staged-generation seed tools (generate_*): the ONLY class-creation path now that M4 removed the
+        // one-shot create_class. Offered in homebrew mode and gated by the same per-kind create permission
+        // (denying "class" denies generate_class too).
+        const pipelineTools = canCreate ? filterPipelineTools(ai.toolPermissions) : [];
         // Read-only lookup + research-delegate, offered in BOTH modes (tiny, low-risk; help the model match
         // real numbers and reference the user's content before inventing).
         const lookupEnabled = ai.lookupTools ?? DEFAULT_AI_LOOKUP_TOOLS;
@@ -936,6 +937,7 @@ export class AiAssistant {
             lookup: lookupTools.length > 0,
             edit: editTools.length > 0,
             switchMode: controlTools.length > 0,
+            pipeline: pipelineTools.length > 0,
             canCreate,
         };
         // Right-size the prompt for the routed model: local (gemma) gets the worked-example "small" tier.

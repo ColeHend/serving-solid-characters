@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { HOMEBREW_TOOLS, allowedKinds, filterTools, requiredFieldsForKind } from "./toolSchemas";
+import { CREATE_CLASS_TOOL, HOMEBREW_TOOLS, allowedKinds, filterPipelineTools, filterTools, requiredFieldsForKind } from "./toolSchemas";
 import { HOMEBREW_KINDS } from "../refs/homebrewKind";
 import { ToolPermissions } from "../../../models/userSettings";
 
+// M4 moved create_class out of the model-facing HOMEBREW_TOOLS but kept the schema for the assemble path,
+// so required-field lookups search both.
 const reqOf = (toolName: string) =>
-    (HOMEBREW_TOOLS.find(t => t.name === toolName)?.inputSchema as { required?: string[] }).required ?? [];
+    ([...HOMEBREW_TOOLS, CREATE_CLASS_TOOL].find(t => t.name === toolName)?.inputSchema as { required?: string[] }).required ?? [];
 
 const names = (tools: { name: string }[]) => tools.map(t => t.name).sort();
 
@@ -53,13 +55,48 @@ describe("filterTools", () => {
     });
 
     it("excludes denied kinds' tools", () => {
-        const result = filterTools(HOMEBREW_TOOLS, { mode: "deny", denied: ["class"] });
-        expect(result.map(t => t.name)).not.toContain("create_class");
+        const result = filterTools(HOMEBREW_TOOLS, { mode: "deny", denied: ["spell"] });
+        expect(result.map(t => t.name)).not.toContain("create_spell");
         expect(result.length).toBe(HOMEBREW_TOOLS.length - 1);
     });
 
     it("returns no tools when everything is denied", () => {
         expect(filterTools(HOMEBREW_TOOLS, { mode: "deny", denied: [...HOMEBREW_KINDS] })).toEqual([]);
+    });
+});
+
+describe("M4 — create_class is no longer a one-shot, model-facing tool", () => {
+    it("HOMEBREW_TOOLS does not offer create_class to the model", () => {
+        expect(HOMEBREW_TOOLS.map(t => t.name)).not.toContain("create_class");
+    });
+
+    it("filterTools never yields create_class, even with class fully permitted", () => {
+        expect(filterTools(HOMEBREW_TOOLS, { mode: "all" }).map(t => t.name)).not.toContain("create_class");
+        expect(filterTools(HOMEBREW_TOOLS, { mode: "allow", allowed: ["class"] })).toEqual([]);
+    });
+
+    it("keeps the create_class schema for the internal assemble path (still complete)", () => {
+        expect(CREATE_CLASS_TOOL.name).toBe("create_class");
+        expect((CREATE_CLASS_TOOL.inputSchema as { required?: string[] }).required).toContain("features");
+    });
+});
+
+describe("filterPipelineTools — staged class generation is gated by the class create permission", () => {
+    it("offers generate_class when class creation is permitted", () => {
+        expect(names(filterPipelineTools({ mode: "all" }))).toEqual(["generate_class"]);
+        expect(names(filterPipelineTools(undefined))).toEqual(["generate_class"]);
+    });
+
+    it("withholds generate_class when class is denied", () => {
+        expect(filterPipelineTools({ mode: "deny", denied: ["class"] })).toEqual([]);
+    });
+
+    it("withholds generate_class when the allow list omits class", () => {
+        expect(filterPipelineTools({ mode: "allow", allowed: ["spell", "feat"] })).toEqual([]);
+    });
+
+    it("offers generate_class when class is explicitly allowed", () => {
+        expect(names(filterPipelineTools({ mode: "allow", allowed: ["class"] }))).toEqual(["generate_class"]);
     });
 });
 

@@ -159,6 +159,12 @@ function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKi
     ? "\n\nIf the request targets homebrew that already EXISTS (named, or \"my <X>\"), change it with edit_homebrew, which emits only the fields that change as a diff the user reviews — do not call create_* to rebuild it (that discards the entry's other fields and is rejected as a duplicate). Use create_* only for brand-new content. After an edit, add one short sentence saying what you changed and why."
     : "";
 
+  // Class routing — when the staged pipeline is offered, a base CLASS is built through generate_class, not
+  // a one-shot create_* call (there is no create_class). Only shown when class creation is actually permitted.
+  const classPipelineLine = flags?.pipeline && kinds.includes("class")
+    ? "\n\nTo create a base CLASS, call generate_class with the user's concept and any hard requirements they stated — NOT a single create_* call. It runs a guided staged build (a design brief, then a skeleton the user approves, then the chassis and features) that produces a far more coherent, balanced class than one call could. Never try to emit a whole class in a single tool call."
+    : "";
+
   // Look-up-before-invent sequencing — only when lookup tools are advertised. Ordered procedure so a weak
   // model knows WHEN to look up, how to use the result, and what to do on a miss.
   const lookupLine = flags?.lookup
@@ -183,7 +189,7 @@ function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKi
 
   return `${base}
 
-${opener}${lookupLine}${editLine}
+${opener}${lookupLine}${editLine}${classPipelineLine}
 
 ${qualityBar}${byTypeBlock}
 
@@ -201,6 +207,8 @@ export interface UtilityToolFlags {
   edit?: boolean;
   /** switch_mode is advertised (the model can change its own mode). */
   switchMode?: boolean;
+  /** generate_class (the staged-pipeline seed tool) is advertised — the only class-creation path. */
+  pipeline?: boolean;
   /** True when create_* tools are actually available this turn (homebrew mode + a permitted kind). */
   canCreate?: boolean;
 }
