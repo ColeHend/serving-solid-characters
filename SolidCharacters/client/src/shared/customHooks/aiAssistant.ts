@@ -9,7 +9,7 @@ import {
 } from "../../models/userSettings";
 import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
-import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
+import { HOMEBREW_TOOLS, PIPELINE_TOOLS, allowedKinds, enabledUtilityTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
 import { HOMEBREW_KINDS, KIND_TO_TOOL } from "../ai/refs/homebrewKind";
 import { toolCategory } from "../ai/tools/toolCategory";
 import { runComputeTool } from "../ai/tools/computeTools";
@@ -26,6 +26,11 @@ import { logDecision } from "./decisionLogManager";
 import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
+import { runClassPipeline } from "../ai/genPipeline/classPipeline";
+import type { PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
+import { skeletonSummaryLines, type SkeletonPlan } from "../ai/genPipeline/skeleton";
+import type { ConceptBrief, PipelineRun, WorkingEntity } from "../ai/genPipeline/types";
+import { pipelineCheckpointManager } from "../ai/genPipeline/checkpoint/pipelineCheckpointManager";
 import { AiMode, buildSystemPrompt, personaFor } from "../ai/prompt/systemPrompt";
 import { splitModelReasoning } from "../ai/prompt/cleanReasoning";
 import { generateConversationTitle } from "../ai/prompt/generateTitle";
@@ -66,6 +71,7 @@ export interface ChatMessage {
 
 export type { HomebrewPreview };
 export type { PendingInteraction, InteractionResponse };
+export type { PipelineRun };
 
 /**
  * The tool_result text that asks the model to regenerate an entity. Used by the manual "Complete with
@@ -86,6 +92,17 @@ function repairInstruction(p: HomebrewPreview, reason?: string): string {
         ? " Write a full multi-sentence description with concrete mechanics."
         : "";
     return `${lead} Call ${tool} again with the SAME content you already produced, but this time fill in these fields: ${fields}.${descNudge} Do not drop any field you already filled. Emit only the tool call — no preamble.`;
+}
+
+/** Translate an InteractionCard (propose_plan) response into the orchestrator's ratification verdict. */
+function toRatifyDecision(response: InteractionResponse): RatifyDecision {
+    switch (response.type) {
+        case "plan_accept": return { type: "approve" };
+        case "plan_refine": return { type: "refine", text: response.text };
+        case "plan_reject":
+        case "dismiss":
+        default: return { type: "reject" };   // any non-approval is treated as "stop and rethink"
+    }
 }
 
 /** Map a raw provider/network error to a short, actionable message instead of dumping `String(e)`. */
@@ -125,6 +142,9 @@ export class AiAssistant {
     private setPendingPreviews: Setter<HomebrewPreview[]>;
     readonly pendingInteractions: Accessor<PendingInteraction[]>;
     private setPendingInteractions: Setter<PendingInteraction[]>;
+    /** The in-flight staged-generation run (null when no pipeline is active). Drives the GenPipelineCard. */
+    readonly pipelineRun: Accessor<PipelineRun | null>;
+    private setPipelineRun: Setter<PipelineRun | null>;
     readonly conversations: Accessor<SavedConversation[]>;
     private setConversations: Setter<SavedConversation[]>;
 
@@ -136,6 +156,9 @@ export class AiAssistant {
     private reviewController: AbortController | null = null;   // aborts in-flight readiness reviews (High mode)
     private delegateController: AbortController | null = null; // aborts an in-flight research sub-agent
     private commandController: AbortController | null = null;  // aborts in-flight command enrichment
+    private pipelineController: AbortController | null = null; // aborts an in-flight staged-generation run
+    private pipelineRatify = new Map<string, (decision: RatifyDecision) => void>();   // ratify interactionId -> resolver
+    private pipelineCheckpointId: string | null = null;        // id of the current run's checkpoint row, for upsert/discard
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
     private schemaRetryStreak = 0;                       // High-mode SCHEMA-gate regenerations (pre-handoff) for this request
@@ -157,6 +180,7 @@ export class AiAssistant {
         [this.streamingThinking, this.setStreamingThinking] = createSignal("");
         [this.pendingPreviews, this.setPendingPreviews] = createSignal<HomebrewPreview[]>([]);
         [this.pendingInteractions, this.setPendingInteractions] = createSignal<PendingInteraction[]>([]);
+        [this.pipelineRun, this.setPipelineRun] = createSignal<PipelineRun | null>(null);
         [this.conversations, this.setConversations] = createSignal<SavedConversation[]>([]);
 
         // Best-effort flush of the current conversation when the tab is hidden/closed — the per-turn
@@ -197,6 +221,8 @@ export class AiAssistant {
     private resetTurnState() {
         this.outstanding.clear();
         this.resolved = [];
+        this.teardownPipeline();
+        this.pipelineCheckpointId = null;
         this.repairCounts.clear();
         this.mediumRetryStreak = 0;
         this.schemaRetryStreak = 0;
@@ -219,6 +245,7 @@ export class AiAssistant {
         this.delegateController = null;
         this.commandController?.abort();  // stop any in-flight command enrichment
         this.commandController = null;
+        this.teardownPipeline();          // stop any in-flight staged-generation run + settle its ratify gate
         // Preserve any partial text/thinking as a bubble so it isn't lost (splitting out leaked reasoning).
         const split = splitModelReasoning(this.streamingText());
         const partial = split.text;
@@ -387,6 +414,15 @@ export class AiAssistant {
      * Idempotent: a card already answered (or removed) is ignored.
      */
     answerInteraction = (interactionId: string, response: InteractionResponse) => {
+        // A ratification gate from the staged-generation pipeline isn't a chat tool call — it resolves the
+        // orchestrator's awaited promise instead of going through the tool_result channel.
+        const ratify = this.pipelineRatify.get(interactionId);
+        if (ratify) {
+            this.pipelineRatify.delete(interactionId);
+            this.removeInteraction(interactionId);
+            ratify(toRatifyDecision(response));
+            return;
+        }
         const it = this.pendingInteractions().find(i => i.interactionId === interactionId);
         if (!it || it.answered) return;
         this.removeInteraction(interactionId);
@@ -451,6 +487,145 @@ export class AiAssistant {
         const instruction = `A reviewer flagged problems with the ${preview.kind.replace("_", " ")} "${preview.title}". Call ${tool} again with the SAME content, fixing each of these:\n- ${notes.join("\n- ")}\nKeep everything that was already correct, and use concrete rules text.`;
         this.resolveToolCall(preview.toolCallId, instruction, true);
     };
+
+    // ----------------- staged generation pipeline -----------------
+
+    /** Abort the in-flight staged-generation run (user "Abort"). Settles its ratify gate and clears the card. */
+    abortPipeline = () => {
+        this.teardownPipeline();
+        void this.discardPipelineCheckpoint();
+    };
+
+    /** Dismiss a finished pipeline card that ended in error/abort (the card is terminal; just clear it). */
+    dismissPipeline = () => {
+        this.setPipelineRun(null);
+    };
+
+    /**
+     * Resolve a pipeline SEED tool call WITHOUT starting a continuation turn — the orchestrator is the
+     * continuation (it runs async and renders its own card). Commits the tool_result to history so the
+     * assistant's tool_use stays wire-valid, but never calls runTurn.
+     */
+    private resolvePipelineTrigger(toolCallId: string, content: string) {
+        if (!this.outstanding.has(toolCallId)) return;
+        this.resolved.push({ toolCallId, content, isError: false });
+        this.outstanding.delete(toolCallId);
+        if (this.outstanding.size === 0 && this.resolved.length) {
+            this.history.push({ role: "tool", toolResults: this.resolved });
+            this.resolved = [];
+        }
+    }
+
+    /** Start the Class staged-generation pipeline from a `generate_class` seed call. One run at a time. */
+    private startClassPipeline(tc: AiToolCall, epoch: number) {
+        const input = (tc.input ?? {}) as Record<string, unknown>;
+        const concept = String(input.concept ?? "").trim();
+        const requirements = Array.isArray(input.requirements)
+            ? input.requirements.map(r => String(r).trim()).filter(Boolean) : [];
+        const seed = requirements.length ? `${concept}\nRequirements: ${requirements.join("; ")}` : concept;
+        if (!seed) { this.pushSystemBubble("The class generator needs a concept to start from."); return; }
+
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        if (!ai) { this.pushSystemBubble("AI is not configured."); return; }
+        const dndSystem = userSettings().dndSystem;
+
+        this.teardownPipeline();   // supersede any prior run (and settle its gate) before starting a new one
+        this.pipelineCheckpointId = null;
+        this.pipelineController = new AbortController();
+        const signal = this.pipelineController.signal;
+
+        const host: PipelineHost = {
+            ai, dndSystem, signal,
+            usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            // Once aborted (user "Abort"), drop the run's card and ignore its trailing progress so it can't
+            // flash back; a plain rejection (signal NOT aborted) still surfaces its "Stopped" terminal card.
+            onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },
+            ratifySkeleton: plan => this.requestSkeletonRatification(plan, epoch),
+            onCheckpoint: (phaseIndex, working, brief) => this.savePipelineCheckpoint(phaseIndex, working, brief, epoch),
+            onComplete: preview => this.onPipelineComplete(preview, epoch),
+            onError: message => { if (epoch === this.turnEpoch) this.pushSystemBubble(message); },
+        };
+        void runClassPipeline(seed, host).finally(() => {
+            if (this.pipelineController?.signal === signal) this.pipelineController = null;
+        });
+    }
+
+    /**
+     * Surface the skeleton as a ratification card (reusing the propose_plan InteractionCard) and return a
+     * promise the orchestrator awaits. The resolver is keyed by the card's id so answerInteraction routes
+     * the user's Approve/Refine/Reject back here instead of through the chat tool_result channel.
+     */
+    private requestSkeletonRatification(plan: SkeletonPlan, epoch: number): Promise<RatifyDecision> {
+        return new Promise<RatifyDecision>(resolve => {
+            if (epoch !== this.turnEpoch || this.pipelineController?.signal.aborted) { resolve({ type: "reject" }); return; }
+            const interactionId = createNewId();
+            this.pipelineRatify.set(interactionId, resolve);
+            this.setPendingInteractions(prev => [...prev, {
+                interactionId,
+                toolCallId: `pipeline-${interactionId}`,   // synthetic: never resolved via the tool channel
+                kind: "plan",
+                title: `Skeleton: ${plan.name || "new class"}`,
+                steps: skeletonSummaryLines(plan),
+                constraints: [],
+            }]);
+        });
+    }
+
+    /** Terminal success: surface the assembled class as an ordinary preview card and clear the pipeline card. */
+    private onPipelineComplete(preview: HomebrewPreview, epoch: number) {
+        if (epoch !== this.turnEpoch) return;
+        this.setPendingPreviews(prev => [...prev, preview]);
+        this.setPipelineRun(null);            // hand off from the progress card to the preview card
+        void this.discardPipelineCheckpoint();
+        // Attach mechanical commands to the class's features, like the one-shot Low path does.
+        void this.enrichWithCommands([preview.previewId], epoch);
+        void this.persistCurrent();
+    }
+
+    /** Upsert the run's single checkpoint row after a phase (best-effort; resume UI lands in a later milestone). */
+    private savePipelineCheckpoint(phaseIndex: number, working: WorkingEntity, brief: ConceptBrief | undefined, epoch: number) {
+        if (epoch !== this.turnEpoch) return;
+        const conversationId = this.currentConversationId;
+        if (!conversationId) return;   // nothing persisted yet to anchor a resume to
+        void (async () => {
+            try {
+                if (!this.pipelineCheckpointId) {
+                    const cp = await pipelineCheckpointManager.create({ conversationId, pipelineType: "class", currentPhaseIndex: phaseIndex, working, conceptBrief: brief });
+                    this.pipelineCheckpointId = cp.id;
+                } else {
+                    const existing = await pipelineCheckpointManager.getById(this.pipelineCheckpointId);
+                    if (existing) await pipelineCheckpointManager.save({ ...existing, currentPhaseIndex: phaseIndex, working, conceptBrief: brief });
+                }
+            } catch (e) {
+                console.error("Failed to checkpoint pipeline", e);
+            }
+        })();
+    }
+
+    /** Drop the current run's checkpoint row (completion / abort). */
+    private async discardPipelineCheckpoint() {
+        const id = this.pipelineCheckpointId;
+        this.pipelineCheckpointId = null;
+        if (!id) return;
+        try { await pipelineCheckpointManager.discard(id); }
+        catch (e) { console.error("Failed to discard pipeline checkpoint", e); }
+    }
+
+    /**
+     * Stop any in-flight pipeline and settle its state: abort the run, resolve any awaited ratify gate as a
+     * rejection (so the orchestrator's promise can't dangle), drop its card(s), and clear the run signal.
+     * Does NOT delete the persisted checkpoint (abortPipeline does that explicitly).
+     */
+    private teardownPipeline() {
+        this.pipelineController?.abort();
+        this.pipelineController = null;
+        if (this.pipelineRatify.size) {
+            for (const [id, resolve] of this.pipelineRatify) { resolve({ type: "reject" }); this.removeInteraction(id); }
+            this.pipelineRatify.clear();
+        }
+        this.setPipelineRun(null);
+    }
 
     // ----------------- persisted conversations -----------------
 
@@ -730,6 +905,9 @@ export class AiAssistant {
         // Homebrew create_* + edit tools: only in homebrew mode, gated by permissions (fully-denied → []).
         const homebrewTools = canCreate ? filterTools(HOMEBREW_TOOLS, ai.toolPermissions) : [];
         const editTools = canCreate ? EDIT_TOOLS : [];
+        // Staged-generation seed tools (generate_*): a richer, code-driven path alongside the one-shot
+        // create_* tools, offered in homebrew mode when creation is permitted.
+        const pipelineTools = canCreate ? [...PIPELINE_TOOLS] : [];
         // Read-only lookup + research-delegate, offered in BOTH modes (tiny, low-risk; help the model match
         // real numbers and reference the user's content before inventing).
         const lookupEnabled = ai.lookupTools ?? DEFAULT_AI_LOOKUP_TOOLS;
@@ -740,7 +918,7 @@ export class AiAssistant {
         // Utility tools (math/ask/plan) are offered in BOTH modes, gated by their own enable flags.
         const utilityTools = enabledUtilityTools(ai);
         // Never send an EMPTY tools array — omit entirely when nothing is offered (keeps chat-like turns clean).
-        const combined = [...homebrewTools, ...editTools, ...lookupTools, ...controlTools, ...utilityTools];
+        const combined = [...homebrewTools, ...editTools, ...pipelineTools, ...lookupTools, ...controlTools, ...utilityTools];
         const tools: AiToolDef[] | undefined = combined.length ? combined : undefined;
         // Soft gate: include the advisory note only when the permitted set is actually narrower than "all".
         const noteKinds = homebrew && allowed && allowed.length < HOMEBREW_KINDS.length ? allowed : undefined;
@@ -904,6 +1082,7 @@ export class AiAssistant {
             const lookupCalls: AiToolCall[] = [];
             const controlCalls: AiToolCall[] = [];
             const editCalls: AiToolCall[] = [];
+            const pipelineCalls: AiToolCall[] = [];
             const homebrewCalls: { tc: AiToolCall; idx: number }[] = [];
             toolCalls.forEach((tc, idx) => {
                 switch (toolCategory(tc.name)) {
@@ -912,6 +1091,7 @@ export class AiAssistant {
                     case "lookup": lookupCalls.push(tc); break;
                     case "control": controlCalls.push(tc); break;
                     case "edit": editCalls.push(tc); break;
+                    case "pipeline": pipelineCalls.push(tc); break;
                     default: homebrewCalls.push({ tc, idx }); break;
                 }
             });
@@ -944,6 +1124,20 @@ export class AiAssistant {
                     this.pushAssistantBubble(`⟳ Switched to ${mode === "homebrew" ? "Homebrew" : "Chat"} mode${reason ? ` — ${reason}` : ""}.`);
                     this.resolveToolCall(tc.id, `Mode is now "${mode}". The matching tools are available — continue.`, false);
                 }
+            }
+
+            // ---- Pipeline (generate_*): resolve the seed immediately (NO continuation turn — the
+            //      orchestrator IS the continuation) and start the standalone staged-generation run, which
+            //      drives the model per step and renders its own GenPipelineCard. ----
+            if (pipelineCalls.length) {
+                for (const tc of pipelineCalls) {
+                    this.resolvePipelineTrigger(tc.id, "Generation started — follow the generation panel.");
+                    this.startClassPipeline(tc, epoch);
+                }
+                this.setStatus("idle");        // the pipeline card owns progress from here, not the chat ticker
+                this.setActivePhase("idle");
+                void this.persistCurrent();
+                this.maybeGenerateTitle();
             }
 
             // ---- Edit (edit_homebrew): build a diff preview and surface it; it stays outstanding until the

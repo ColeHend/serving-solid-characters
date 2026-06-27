@@ -15,11 +15,14 @@
  *                  completeness / Low-Medium-High routing or save-as-new.
  * - "control":     switch_mode — changes the assistant's mode and auto-resolves so the continuation turn
  *                  re-derives its tool set. No card, no user interaction.
+ * - "pipeline":    generate_* — a SEED that hands off to the standalone staged-generation orchestrator
+ *                  (genPipeline/). finishTurn resolves the trigger immediately (no continuation turn) and
+ *                  kicks off the orchestrator, which drives the model per step and renders its own card.
  *
  * This is a leaf module (no imports) so the orchestration store, the schema modules, and the dispatchers
  * can all share the mapping without import cycles. Mirrors homebrewKind.ts.
  */
-export type ToolCategory = "homebrew" | "compute" | "interactive" | "lookup" | "edit" | "control";
+export type ToolCategory = "homebrew" | "compute" | "interactive" | "lookup" | "edit" | "control" | "pipeline";
 
 /** Deterministic math tools — auto-executed, no UI. Keep in sync with computeTools.ts. */
 export const COMPUTE_TOOL_NAMES = [
@@ -56,11 +59,17 @@ export const CONTROL_TOOL_NAMES = [
     "switch_mode",
 ] as const;
 
+/** Seed tools that trigger the staged generation pipeline. Keep in sync with toolSchemas.ts (PIPELINE_TOOLS). */
+export const PIPELINE_TOOL_NAMES = [
+    "generate_class",
+] as const;
+
 const COMPUTE = new Set<string>(COMPUTE_TOOL_NAMES);
 const INTERACTIVE = new Set<string>(INTERACTIVE_TOOL_NAMES);
 const LOOKUP = new Set<string>(LOOKUP_TOOL_NAMES);
 const EDIT = new Set<string>(EDIT_TOOL_NAMES);
 const CONTROL = new Set<string>(CONTROL_TOOL_NAMES);
+const PIPELINE = new Set<string>(PIPELINE_TOOL_NAMES);
 
 /**
  * The execution category for a tool name. Anything not explicitly registered falls through to
@@ -73,5 +82,6 @@ export function toolCategory(name: string): ToolCategory {
     if (LOOKUP.has(name)) return "lookup";
     if (EDIT.has(name)) return "edit";
     if (CONTROL.has(name)) return "control";
+    if (PIPELINE.has(name)) return "pipeline";
     return "homebrew";
 }

@@ -1,8 +1,9 @@
 /**
- * Staged generation pipeline — shared infrastructure (milestone M0). See StagedGenPipeline.Plan.md.
+ * Staged generation pipeline. See StagedGenPipeline.Plan.md.
  *
- * Public surface for the orchestrator + UI built in later milestones. The state machine
- * (orchestrator.ts, classPipeline.ts, characterPipeline.ts) lands in M1+.
+ * M0 shipped the shared infrastructure (types, compute, carry-forward, step worker, validators, concept
+ * brief, checkpoints). M1 adds the Class thin slice: the skeleton (Phase B) + chassis (Phase C) steps, the
+ * assemble step, and the standalone orchestrator that drives Phase A → B (ratified) → C → assemble.
  */
 export * from "./types";
 export * from "./compute";
@@ -10,5 +11,10 @@ export * from "./carryForward";
 export * from "./validate";
 export * from "./stepWorker";
 export * from "./conceptBrief";
+export * from "./skeleton";
+export * from "./chassis";
+export * from "./assemble";
+export * from "./orchestrator";
+export * from "./classPipeline";
 export { pipelineCheckpointManager } from "./checkpoint/pipelineCheckpointManager";
 export type { NewCheckpoint } from "./checkpoint/pipelineCheckpointManager";

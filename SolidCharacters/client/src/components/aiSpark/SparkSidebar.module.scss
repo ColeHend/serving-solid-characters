@@ -816,6 +816,52 @@
     font-size: var(--font-size-small, 0.78rem);
 }
 
+// ----- staged generation pipeline card -----
+.pipelinePhaseLabel {
+    font-size: var(--font-size-small, 0.85rem);
+    font-weight: 600;
+    opacity: 0.9;
+}
+.pipelineStrip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-1, 6px);
+    margin: var(--spacing-1, 6px) 0;
+}
+.pipelineStep {
+    flex: 1 1 0;
+    min-width: 56px;
+    padding: 3px var(--spacing-1, 8px);
+    border-radius: 999px;
+    text-align: center;
+    font-size: var(--font-size-small, 0.72rem);
+    background: var(--spark-raise, rgba(255, 255, 255, 0.08));
+    opacity: 0.55;
+    white-space: nowrap;
+}
+.pipelineStepDone {
+    opacity: 1;
+    color: var(--spark-success-color, #3fae6b);
+}
+.pipelineStepActive {
+    opacity: 1;
+    font-weight: 600;
+    background: var(--primary-color, rgba(120, 140, 255, 0.25));
+    color: var(--on-primary-color, inherit);
+}
+.pipelineStepError {
+    opacity: 1;
+    color: var(--error-color, #c33);
+}
+.pipelineWorking {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 6px);
+    font-style: italic;
+    opacity: 0.8;
+    font-size: var(--font-size-small, 0.85rem);
+}
+
 .inputContainer {
     display: flex;
     flex-direction: column;

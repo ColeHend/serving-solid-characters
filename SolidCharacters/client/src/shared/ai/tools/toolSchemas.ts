@@ -238,6 +238,37 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
 ];
 
 /**
+ * Seed tool for the staged generation pipeline (plan §4). Unlike a `create_*` tool the model does NOT
+ * fill the whole entity here — it hands a concept + any hard user picks to the code-owned orchestrator,
+ * which then drives the model per step (design brief → ratified skeleton → chassis → …). Routed to the
+ * "pipeline" category (toolCategory.ts), so finishTurn starts the orchestrator instead of building a
+ * one-shot preview.
+ *
+ * ZERO-PERSONA SURFACE: keep procedurally neutral, like the other tool schemas.
+ */
+export const GENERATE_CLASS_TOOL: AiToolDef = {
+    name: "generate_class",
+    description:
+        "Generate a complete homebrew D&D 5e class through a guided, staged process: it drafts a design brief, " +
+        "proposes a skeleton for the user to approve, then builds the class around it. Prefer this over create_class " +
+        "for any \"make/create/build a class\" request — it produces a more coherent, balanced result. Pass the user's " +
+        "concept verbatim plus any hard requirements they stated. Example: {\"concept\":\"a knight who borrows strength " +
+        "from a bound storm\",\"requirements\":[\"no spellcasting\",\"d10 hit die\"]}.",
+    inputSchema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+            concept: { type: "string", description: "The class concept in the user's words — what it fundamentally is." },
+            requirements: { type: "array", items: { type: "string" }, description: "Hard requirements the user stated (hit die, role, no spellcasting, power level, etc.). May be empty." },
+        },
+        required: ["concept"],
+    },
+};
+
+/** The seed tools that trigger the staged generation pipeline. Only `generate_class` ships in M1. */
+export const PIPELINE_TOOLS: AiToolDef[] = [GENERATE_CLASS_TOOL];
+
+/**
  * Resolve which homebrew kinds the model is permitted to create under the given permissions.
  * "all" → every kind; "allow" → only the listed kinds; "deny" → every kind except the listed ones.
  * Defensive against missing/garbage lists (treats them as empty).
