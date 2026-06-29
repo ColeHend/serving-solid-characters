@@ -1,3 +1,5 @@
+@import '../../../../index.scss';
+
 .featWrapper {
     // background parchment paper.
     background-color: #d6bf94;
@@ -19,47 +21,90 @@
 
 .nameHeader {
     font-family: 'Mr_Eaves_Small_Caps';
-    font-weight: 100;
-    color: #AA0505;
+    font-weight: 700;
+    font-size: 17.5px;
+    letter-spacing: 0.12em;
+    color: #7c2718;
     z-index: 2;
     padding: 0;
     margin: 0;
-    text-align: left;
-    display: flex;
-    align-items: center;
 }
 
-.preRequisites {
-    font-family: 'Bookinsanity';
-    // font-weight: 100;
-    color: #000;
-    text-wrap: wrap;
-    z-index: 1;
-    display: flex;
-    flex-direction: row;
-    // justify-content: start;
-    margin-left: 8px;
-    width: 100%;
-    white-space: pre;
+.prerequisites {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: baseline;
+    width: 50%;
+
+    // :nth-child(1) {
+    //     margin-top: 100%;
+
+    //     @media screen and (max-width: 768px) {
+    //         margin-top: 40%;
+    //     }
+    // }
+
+    // :nth-child(2) {
+    //     margin-top: 10%;
+    // }
+
+    span {
+        color: #241405;
+        font-family: 'Bookinsanity';
+        font-weight: 400;
+        font-size: 17.5px;
+        line-height: 1.62;
+    }
 }
 
 
 .description {
     font-family: 'Bookinsanity';
-    font-weight: 100;
-    color: #000;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.62;
+    color: #241405;
     text-wrap: wrap;
     z-index: 1;
     text-align: left;
     margin-left: 8px;
-}
 
-.flexHeader {
-    display: flex;
-    flex-direction: row;
+    strong {
+        font-family: 'Bookinsanity';
+        font-weight: 400;
+        font-size: 17px;
+        line-height: 1.62;
+
+        em {
+            display: block;
+        }
+    }
 }
 
 .smallerText { 
     // font-weight: 100;
     font-size: medium;
+}
+
+.styledHeader {
+    
+
+    h1 {
+        margin: 0;
+    }
+
+    span {
+        font-size: 12px !important;
+    }
+    
+    text-align: left;
+
+    @include styledDndHeader;
+}
+
+.divider {
+    height: 18%;
+}
+
+.firstPrereq {
 }

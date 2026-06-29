@@ -241,6 +241,105 @@ code {
   margin-bottom: 15px;
 }
 
+
+@mixin styledDndTable {
+  table {
+        border: 1px solid rgba(74, 46, 18, 0.42);
+        overflow: hidden;
+        box-shadow: rgba(74, 46, 18, 0.18) 0px 1px 4px;
+        width: fit-content;
+        border-collapse: collapse;
+        border-bottom: 1px solid rgba(90, 55, 20, 0.16);
+
+        thead {
+            box-sizing: border-box;
+
+            tr {
+                background: #581c11;
+                color: #f6ecd2;
+
+                th {
+                    padding: 8px 10px;
+                    font-family: "Zatanna_Misdirection";
+                    font-weight: 600;
+                    font-size: 10.5px;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
+                    text-align: center;
+                }
+            }
+        }
+
+        tbody {
+            box-sizing: border-box;
+            
+            :nth-child(odd) {
+                background: transparent;
+            }
+
+            tr {
+                background: rgba(122,82,34,0.10);
+            }
+            
+            tr:nth-of-type(n):not(:last-child) {
+                border-bottom: 1px solid rgba(90, 55, 20, 0.16);
+            }
+
+            td {
+                padding: 7px 10px;
+                text-align: center;
+                font-size: 15.5px;
+                font-family: "Scaly_Sans";
+                font-weight: 600;
+                color: rgb(58, 28, 10);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            width: 100%;
+        }
+    }
+}
+
+@mixin FlankedLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Mr_Eaves_Small_Caps";
+  color: #7c2718;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+      content: "" !important;
+      flex: 1 !important;
+      height: 1px !important;
+      background: rgba(124,39,24,.4) !important;
+  }
+}
+
+@mixin styledDndHeader {
+  font-family: 'Mr_Eaves_Small_Caps', serif;
+  font-size: 14px;
+  color: rgb(231, 185, 106);
+  padding: 15px 56px 13px 30px;
+
+  h1 {
+    font-weight: 700;
+  }
+
+  span {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 14px;
+    color: rgb(231, 185, 106);
+  }
+
+  @media screen and (max-width: 768px) {
+    padding: 13px 46px 13px 20px;
+    font-size: 11px;
+  }
+}
+
 /* 
  * Load fonts asynchronously with font-display: swap 
  * to prevent font loading from blocking rendering

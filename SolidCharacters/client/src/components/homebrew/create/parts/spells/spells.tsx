@@ -37,13 +37,39 @@ const Spells: Component = () => {
     components:"", 
   });
   
+   // Helper to extract pure data from the store for API calls
+  const getCleanData = () => {
+    return {
+      id: currentSpell.id,
+      name: currentSpell.name,
+      description: spellDesc(), // Use the signal value directly
+      duration: currentSpell.duration,
+      concentration: currentSpell.concentration,
+      level: currentSpell.level,
+      range: currentSpell.range,
+      ritual: currentSpell.ritual,
+      school: currentSpell.school,
+      castingTime: currentSpell.castingTime,
+      damageType: currentSpell.damageType,
+      page: currentSpell.page,
+      isMaterial: currentSpell.isMaterial,
+      isSomatic: currentSpell.isSomatic,
+      isVerbal: currentSpell.isVerbal,
+      materialsNeeded: currentSpell.materialsNeeded,
+      higherLevel: spellHigherLevel(), // Use the signal value directly
+      classes: [...currentSpell.classes],
+      subClasses: [...currentSpell.subClasses],
+      components: currentSpell.components,
+    };
+  };
+
   const doesExist = createMemo(()=>HomebrewManager.spells().findIndex((x) => x.name.toLowerCase() === currentSpell.name.toLowerCase()) > -1)
    const createSpell = () => {
-    HomebrewManager.addSpell(currentSpell);
+    HomebrewManager.addSpell(structuredClone(getCleanData()));
   }
   
   const updateSpell = () => {
-    HomebrewManager.updateSpell(currentSpell);
+    HomebrewManager.updateSpell(structuredClone(getCleanData()));
   }
   
   const spellLevels = Array.from({ length: 10 }, (_, i) => i);

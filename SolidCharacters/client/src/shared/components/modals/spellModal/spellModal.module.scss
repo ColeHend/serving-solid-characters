@@ -1,3 +1,5 @@
+@import '../../../../index.scss';
+
 .view {
     box-sizing: border-box;
     // background: none;
@@ -57,12 +59,14 @@
         
     }
 
-    h5 {
-        font-family: 'Mr_Eaves_Small_Caps';
-        color: #7c2718;
-        text-wrap: wrap;
-        z-index: 2;
-    }
+    // h5 {
+    //     font-family: 'Mr_Eaves_Small_Caps';
+    //     color: #7c2718;
+    //     text-wrap: wrap;
+    //     z-index: 2;
+
+        
+    // }
 
     span {
         font-family: 'Bookinsanity';
@@ -91,80 +95,100 @@
         }
     }
 
-    table {
-        border: 1px solid rgba(74, 46, 18, 0.42);
-        overflow: hidden;
-        box-shadow: rgba(74, 46, 18, 0.18) 0px 1px 4px;
-        width: 70%;
-        border-collapse: collapse;
-        border-bottom: 1px solid rgba(90, 55, 20, 0.16);
+    // table {
+    //     border: 1px solid rgba(74, 46, 18, 0.42);
+    //     overflow: hidden;
+    //     box-shadow: rgba(74, 46, 18, 0.18) 0px 1px 4px;
+    //     width: fit-content;
+    //     border-collapse: collapse;
+    //     border-bottom: 1px solid rgba(90, 55, 20, 0.16);
 
-        thead {
-            box-sizing: border-box;
+    //     thead {
+    //         box-sizing: border-box;
 
-            tr {
-                background: #581c11;
-                color: #f6ecd2;
+    //         tr {
+    //             background: #581c11;
+    //             color: #f6ecd2;
 
-                th {
-                    padding: 8px 10px;
-                    font-family: "Zatanna_Misdirection";
-                    font-weight: 600;
-                    font-size: 10.5px;
-                    letter-spacing: 0.05em;
-                    text-transform: uppercase;
-                    text-align: center;
-                }
-            }
-        }
+    //             th {
+    //                 padding: 8px 10px;
+    //                 font-family: "Zatanna_Misdirection";
+    //                 font-weight: 600;
+    //                 font-size: 10.5px;
+    //                 letter-spacing: 0.05em;
+    //                 text-transform: uppercase;
+    //                 text-align: center;
+    //             }
+    //         }
+    //     }
 
-        tbody {
-            box-sizing: border-box;
+    //     tbody {
+    //         box-sizing: border-box;
             
-            :nth-child(odd) {
-                background: transparent;
-            }
+    //         :nth-child(odd) {
+    //             background: transparent;
+    //         }
 
-            tr {
-                background: rgba(122,82,34,0.10);
-            }
+    //         tr {
+    //             background: rgba(122,82,34,0.10);
+    //         }
             
-            tr:nth-of-type(n):not(:last-child) {
-                border-bottom: 1px solid rgba(90, 55, 20, 0.16);
-            }
+    //         tr:nth-of-type(n):not(:last-child) {
+    //             border-bottom: 1px solid rgba(90, 55, 20, 0.16);
+    //         }
 
-            td {
-                padding: 7px 10px;
-                text-align: center;
-                font-size: 15.5px;
-                font-family: "Scaly_Sans";
-                font-weight: 600;
-                color: rgb(58, 28, 10);
-            }
-        }
+    //         td {
+    //             padding: 7px 10px;
+    //             text-align: center;
+    //             font-size: 15.5px;
+    //             font-family: "Scaly_Sans";
+    //             font-weight: 600;
+    //             color: rgb(58, 28, 10);
+    //         }
+    //     }
 
-        @media screen and (max-width: 768px) {
-            width: 100%;
-        }
+    //     @media screen and (max-width: 768px) {
+    //         width: 100%;
+    //     }
+    // }
+
+    // Section Header Rule — flanked label
+    h4,h5 {
+        font-weight: 700;
+        font-size: 13.5px;
+        letter-spacing: .12em;
+
+        @include FlankedLabel;
     }
 
-
+    @include styledDndTable;
 }
 
 .dndStyledHeader {
-  font-family: 'Mr_Eaves_Small_Caps', serif;
-//   font-weight: 600;
-  font-size: 14px;
-//   letter-spacing: 0.24em;
-  color: rgb(231, 185, 106);
-  padding: 15px 56px 13px 30px;
+//   font-family: 'Mr_Eaves_Small_Caps', serif;
+// //   font-weight: 600;
+//   font-size: 14px;
+// //   letter-spacing: 0.24em;
+//   color: rgb(231, 185, 106);
+//   padding: 15px 56px 13px 30px;
 
-  h1 {
-    font-weight: 700;
-  }
+//   h1 {
+//     font-weight: 700;
+//   }
+
+//   span {
+//     font-family: 'Mr_Eaves_Small_Caps', serif;
+//     font-size: 14px;
+//     color: rgb(231, 185, 106);
+//   }
 
 
+//   @media screen and (max-width: 768px) {
+//     padding: 13px 46px 13px 20px;
+//     font-size: 11px;
+//   }
 
+    @include styledDndHeader;
 }
 
 .flavor {
@@ -174,15 +198,19 @@
 }
 
 .spellInfo {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 9px 30px;
-  align-items: baseline;
-  margin-left: 26px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 9px 30px;
+    align-items: baseline;
+    margin-left: 26px;
 
-  h2 {
-    margin: 0;
-  }
+    h2 {
+        margin: 0;
+    }
+
+    @media screen and (max-width: 768px) {
+        margin-top: 15%;
+    }
 }
 
 .infoBox {
@@ -195,4 +223,20 @@
 
 .spellSchoolTitle {
     margin-top: 12% !important;
+}
+
+.sectionHeaderRule {
+    margin-left: 0 !important;
+
+    @include FlankedLabel;
+}
+
+
+.title {
+    font-size: 20px;
+}
+
+.HigherLevels {
+    margin-left: 2%;
+    margin-right: 2%;
 }

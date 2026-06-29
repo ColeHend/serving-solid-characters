@@ -51,8 +51,10 @@ const SpellModal: Component<props> = (props) => {
 
         <DndDialogHeader onClose={()=>setShowSpell(false)}>
           <div class={`${style.dndStyledHeader}`}>
-            level {props.spell().level} spell · {props.spell().school}
-            <h1>{props.spell().name}</h1>
+            <span>level {props.spell().level} spell</span>
+            <span> · </span>
+            <span>{props.spell().school}</span>
+            <h1 class={`${style.title}`}>{props.spell().name}</h1>
           </div>
         </DndDialogHeader>
 
@@ -109,11 +111,12 @@ const SpellModal: Component<props> = (props) => {
         </span>
 
         <Show when={!!props.spell()?.higherLevel}>
-          <h2>Higher Levels</h2>
+          <h2 class={`${style.sectionHeaderRule}`}>Higher Levels</h2>
           
           <span>
             <Markdown
               text={props.spell().higherLevel ?? ""}
+              class={`${style.HigherLevels}`}
             />
           </span>
         </Show>

@@ -1,10 +1,11 @@
 @use 'coles-solid-library/themes/variables' as vars;
 
+
 $mobile: 768px;
 
 .body {
     display: block;
-    // width: 35%;
+    width: 35%;
     
     margin: 0 auto;
     background-color: vars.$color-surface;
@@ -32,52 +33,21 @@ $mobile: 768px;
     }
 
     @media screen and (max-width: $mobile) {
-        width: 100%;
+        width: 95%;
     }
 }
 
-.spellsBody {
-  table {
-    display: flex;
-    flex-direction: column;
-    width: 35%;
-  }
+.scrollable {
+    height: 49vh;
+    overflow: auto;
+}
 
-  thead,
-  tbody {
-    display: flex;
-    flex-direction: column;
+.spellsBody {
     width: 100%;
 
-    tr {
-      display: flex;
-      width: 100%;
-    }
-  }
-
-  th,
-  td {
-    flex: 1;
-    padding: 0.5rem;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  tbody {
-    height: 49vh;
-    overflow-y: auto;
-    gap: 0.5rem;
-  }
-
-  @media screen and (max-width: 768px) {
     table {
-      width: 100%;
+        width: 100% !important;
     }
-
-    font-size: .8em;
-  }
 }
 
 .paginator {
@@ -100,13 +70,36 @@ $mobile: 768px;
 
 .searchBar {
     margin: 0 auto;
-    width: 30%;
+    width: 55%;
 
     button {
         background: transparent !important;
     }
 
     @media screen and (max-width: 768px) {
-        width: 100%;
+        width: 92%;
     }
+}
+
+.bodyTitle {
+    text-align: center;
+}
+
+.SpellName {
+    width: 40% !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.SpellSchool {
+    width: 30% !important;
+}
+
+.SpellLevel {
+    width: 12% !important;
+}
+
+.SpellActions {
+    width: 20% !important;
 }

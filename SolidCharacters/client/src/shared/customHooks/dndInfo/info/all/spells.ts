@@ -6,6 +6,8 @@ import { getUserSettings } from "../../../userSettings";
 export function useDnDSpells() {
   const [userSettings] = getUserSettings();
   const homebrew = useGetHombrewSpells();
+
+  
   // Return unified list reactively by version + homebrew changes
   return createMemo(() => {
     const version = userSettings().dndSystem || '2014';
