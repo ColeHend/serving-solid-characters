@@ -4,8 +4,7 @@ import { A } from "@solidjs/router";
 import { Button, Container, Icon } from "coles-solid-library";
 import DataTransferModal from "../DataTransfering/dataTransferModal";
 import { FileExport, Menu } from "coles-solid-library/icons";
-import SparkIcon from "../../shared/components/aiSpark/sparkIcon";
-import { aiAssistant } from "../../shared/customHooks/aiAssistant";
+import GrimoireNavButton from "./GrimoireNavButton";
 import { isAiConfigured } from "../../shared/customHooks/userSettings";
 
 type Props = {
@@ -52,9 +51,7 @@ const Navbar: Component<Props> = (props) => {
           </Button>
 
           <Show when={isAiConfigured()}>
-            <Button transparent title="Grimoire AI" onClick={() => aiAssistant.toggle()}>
-              <SparkIcon size={24} />
-            </Button>
+            <GrimoireNavButton />
           </Show>
 
           <Button transparent ref={props.setAnchor} onClick={()=>(local.list[1](true))} >

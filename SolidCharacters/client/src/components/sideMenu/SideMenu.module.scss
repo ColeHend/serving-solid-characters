@@ -12,7 +12,8 @@ $padding: 7px;
     transform: translateX(0);
     width: 180px !important;
     padding: $padding;
-    background-color: color-mix(in srgb, vars.$color-surface 90%, transparent) !important;
+    background-color: color-mix(in srgb, vars.$color-surface 90%, transparent);
+    background-image: var(--container-gradient-translucent) !important;
     z-index: 1;
     box-shadow: -4px 0 15px 0 vars.$color-primary;
     

@@ -23,7 +23,10 @@
 //   border: 3px solid red !important;
 // }
 :root {
-  --background-image: none;
+  // Default page backdrop = subtle depth gradient. Route classes below override this with
+  // their cover art (see the $background-images loop). Kept as ONE layer on `body` so the
+  // route image can never be invalidated by the gradient.
+  --background-image: var(--background-gradient);
   --menu-pos: absolute;
   --menu-top: 0;
   --menu-left: 0;
@@ -38,12 +41,70 @@
   // light-theme block below darkens them so they keep >= 4.5:1 contrast on the light surface.
   --spark-warn-color: #e0a52e;
   --spark-success-color: #3fae6b;
+
+  // NB: the Spark chat-chrome overlays (--spark-raise / --spark-raise-strong / --spark-hairline)
+  // are defined per-theme in the [data-theme] blocks below — NOT here. They must live where
+  // --on-container-color is in scope (coles sets data-theme on <body>), and a custom property
+  // referencing another resolves on its *declaring* element; declared on :root the dependency
+  // is undefined and the token comes out invalid (everything fell back to a white rgba → the
+  // chips/dividers vanished in light mode).
+
+  /* ===== Gradient tokens =====
+     Derived from the live palette via color-mix so they track the active
+     [data-theme] — same hues as today, just depth + a faint brand tint. */
+
+  /* Panel depth — opaque, with a whisper of the brand hue up top (cards, .box) */
+  --background-gradient: linear-gradient(180deg,
+    color-mix(in srgb, var(--background-color), var(--primary-color) 8%),
+    var(--background-color) 55%,
+    color-mix(in srgb, var(--background-color), #000 18%));
+  --surface-gradient: linear-gradient(160deg,
+    color-mix(in srgb, var(--surface-color), var(--primary-color) 9%),
+    color-mix(in srgb, var(--surface-color), #000 15%));
+  --container-gradient: linear-gradient(160deg,
+    color-mix(in srgb, var(--container-color), var(--primary-color) 9%),
+    color-mix(in srgb, var(--container-color), #000 15%));
+
+  /* Panel depth — translucent (let page art show through; alpha range = the depth) */
+  --surface-gradient-translucent: linear-gradient(160deg,
+    color-mix(in srgb, var(--surface-color) 74%, transparent),
+    color-mix(in srgb, var(--surface-color) 46%, transparent));
+  --container-gradient-translucent: linear-gradient(160deg,
+    color-mix(in srgb, var(--container-color) 95%, transparent),
+    color-mix(in srgb, var(--container-color) 78%, transparent));
+
+  /* Brand blends (primary <-> secondary) */
+  --primary-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  --primary-gradient-soft: linear-gradient(135deg,
+    var(--primary-color),
+    color-mix(in srgb, var(--primary-color), var(--secondary-color) 45%));
+  --accent-gradient-soft: linear-gradient(135deg,
+    var(--secondary-color),
+    color-mix(in srgb, var(--secondary-color), var(--primary-color) 45%));
+
+  /* Accent bars — vertical, blend then fade (the thin 4px edge bars) */
+  --accent-bar-primary: linear-gradient(180deg, var(--primary-color), var(--secondary-color) 55%, transparent);
+  --accent-bar-secondary: linear-gradient(180deg, var(--secondary-color), var(--primary-color) 55%, transparent);
 }
 
 // Light theme: the default amber/green fail WCAG AA on the light surface (~2:1) — darken to pass.
 [data-theme="light"] {
   --spark-warn-color: #8a6300;
   --spark-success-color: #1f7d45;
+  --spark-text-color: #000;
+  // Raised-surface + hairline overlays for the Spark chat chrome (chips, bubbles, popovers,
+  // dividers). On light, a black overlay darkens against the white container so the elements
+  // read as defined surfaces.
+  --spark-raise:        rgba(0, 0, 0, 0.05);
+  --spark-raise-strong: rgba(0, 0, 0, 0.10); // hover
+  --spark-hairline:     rgba(0, 0, 0, 0.14); // borders/dividers
+}
+[data-theme="dark"] {
+  --spark-text-color: #fff;
+  // Same overlays, white so they lighten against the dark container.
+  --spark-raise:        rgba(255, 255, 255, 0.06);
+  --spark-raise-strong: rgba(255, 255, 255, 0.11); // hover
+  --spark-hairline:     rgba(255, 255, 255, 0.16); // borders/dividers
 }
 //------------------------------------------------------------------
 // Styles
@@ -58,6 +119,7 @@ body {
   height: 100%;
   background-color: var(--background-color);
   color: var(--on-background-color);
+  // Single layer: route art when a *-bg class is present, else the depth gradient default.
   background-image: var(--background-image);
   z-index: 0;
   

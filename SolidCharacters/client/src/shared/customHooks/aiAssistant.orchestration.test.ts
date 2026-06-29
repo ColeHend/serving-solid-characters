@@ -315,7 +315,7 @@ describe("switch_mode control tool", () => {
 });
 
 describe("confirmPreview save flow", () => {
-    it("saves a confirmed preview, removes the card, and continues the turn", async () => {
+    it("saves a confirmed preview, leaves a 'saved' confirmation card, and continues the turn", async () => {
         h.settings.ai.usageLevel = "low";
         h.turns = [toolCall(validSpell), textTurn("Saved it.")];
 
@@ -325,8 +325,14 @@ describe("confirmPreview save flow", () => {
         const preview = aiAssistant.pendingPreviews()[0];
         await aiAssistant.confirmPreview(preview.previewId);
 
-        expect(aiAssistant.pendingPreviews()).toHaveLength(0);   // card removed after save
+        // The card is NOT removed — it transforms into a "Saved" confirmation the user can dismiss.
+        expect(aiAssistant.pendingPreviews()).toHaveLength(1);
+        expect(aiAssistant.pendingPreviews()[0].saved).toBe(true);
         await vi.waitFor(() => expect(h.calls).toBe(2));         // tool_result resolved → continuation turn ran
         await vi.waitFor(() => expect(aiAssistant.messages().at(-1)!.text).toContain("Saved it."));
+
+        // Dismissing the saved card clears it.
+        aiAssistant.dismissPreview(preview.previewId);
+        expect(aiAssistant.pendingPreviews()).toHaveLength(0);
     });
 });

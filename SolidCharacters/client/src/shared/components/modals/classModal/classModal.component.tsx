@@ -124,43 +124,36 @@ const ClassModal: Component<props> = (props) => {
                 </For>
               </span>
 
-              <Show when={props.currentClass().startChoices?.armor !== null}>
+              <Show when={choices()[armorChoiceKey()]}>
                 <h3>
                   {armorChoiceKey()}
                 </h3>
 
                 <h4>Choose:
                   <span>
-                    { choices()[armorChoiceKey()].amount }
+                    { choices()[armorChoiceKey()]?.amount }
                   </span>
                 </h4>
 
                 <div>
-                  { choices()[armorChoiceKey()].options.join(", ") }
+                  { choices()[armorChoiceKey()]?.options?.join(", ") }
                 </div>
               </Show>
 
-              <Show when={props.currentClass().startChoices?.equipment !== null}>
+              <Show when={choices()[equipChoiceKey()]}>
                 <h3>
                   {equipChoiceKey()}
                 </h3>
 
                 <h4>Choose:
                   <span>
-                    { choices()[equipChoiceKey()].amount }
+                    { choices()[equipChoiceKey()]?.amount }
                   </span>
                 </h4>
-                
+
                 <div>
-                  {/* <span>A: 
-                    { choices()[equipChoiceKey()].options[0] }
-                  </span>
-                  <br />
-                  <span>B:
-                    { choices()[equipChoiceKey()].options[1] }
-                  </span> */}
                   <ul class={`${styles.itemList}`}>
-                    <For each={choices()[equipChoiceKey()].options}>
+                    <For each={choices()[equipChoiceKey()]?.options ?? []}>
                       { (itemOption) => <li>
                         {itemOption}
                       </li>
@@ -172,7 +165,7 @@ const ClassModal: Component<props> = (props) => {
                 </div>
               </Show>
 
-              <Show when={props.currentClass().startChoices?.skills !== null}>
+              <Show when={choices()[skillChoiceKey()]}>
                   <h3>
                     {skillChoiceKey()}
                   </h3>
@@ -184,12 +177,12 @@ const ClassModal: Component<props> = (props) => {
                   </h4>
 
                   <div>
-                    { choices()[skillChoiceKey()]?.options.join(", ") }
+                    { choices()[skillChoiceKey()]?.options?.join(", ") }
                   </div>
                 {/*  */}
               </Show>
 
-              <Show when={props.currentClass().startChoices?.tools !== null}>
+              <Show when={choices()[toolChoiceKey()]}>
                 <h3>
                   {toolChoiceKey()}
                 </h3>
@@ -201,23 +194,23 @@ const ClassModal: Component<props> = (props) => {
                 </h4>
 
                 <div>
-                  { choices()[toolChoiceKey()]?.options.join(", ") }
+                  { choices()[toolChoiceKey()]?.options?.join(", ") }
                 </div>
               </Show>
 
-              <Show when={props.currentClass().startChoices?.weapon !== null}>
+              <Show when={choices()[weaponChoiceKey()]}>
                 <h3>
                   {weaponChoiceKey()}
                 </h3>
 
                 <h4>Choose:
                   <span>
-                    { choices()[weaponChoiceKey()].amount }
+                    { choices()[weaponChoiceKey()]?.amount }
                   </span>
                 </h4>
 
                 <div>
-                  { choices()[weaponChoiceKey()].options.join(", ") }
+                  { choices()[weaponChoiceKey()]?.options?.join(", ") }
                 </div>
               </Show>
 

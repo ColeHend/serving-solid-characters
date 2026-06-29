@@ -1,6 +1,7 @@
 import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
 import { DEFAULT_AI_MAX_TOKENS, RESERVED_PROMPT_TOKENS } from "../../../models/userSettings";
 import { createNewId } from "../../customHooks/utility/tools/idGen";
+import { currentOrigin, diagnoseLocalEndpoint, mixedContentHint, normalizeBaseUrl } from "../localEndpoint";
 
 /**
  * Direct browser adapter for Ollama's NATIVE API ({baseUrl}/api/chat). Unlike the OpenAI-compatible
@@ -19,7 +20,8 @@ export class OllamaAdapter implements AiProvider {
         tools: AiToolDef[] | undefined,
         opts: StreamChatOpts,
     ): AsyncGenerator<ChatStreamEvent, void, unknown> {
-        const url = `${this.baseUrl.replace(/\/$/, "")}/api/chat`;
+        const base = normalizeBaseUrl(this.baseUrl);
+        const url = `${base}/api/chat`;
         // For Ollama, output tokens come OUT of num_ctx, so an output cap larger than the window is
         // impossible. Clamp num_predict to (num_ctx − reserved prompt) so a misconfigured maxTokens
         // can't promise more generation room than the window actually has.
@@ -44,6 +46,16 @@ export class OllamaAdapter implements AiProvider {
             }));
         }
 
+        // An HTTPS page can't fetch an HTTP cross-origin endpoint — the browser blocks it before the
+        // request leaves. Detect that up front and explain it, instead of attempting a doomed fetch
+        // and reporting it as "is it running?" (the server is fine; the browser is the blocker).
+        const diagnosis = diagnoseLocalEndpoint(this.baseUrl);
+        if (diagnosis.kind === "mixed-content") {
+            yield { type: "error", error: mixedContentHint(currentOrigin()) };
+            yield { type: "message_done", stopReason: "error" };
+            return;
+        }
+
         let res: Response;
         try {
             res = await fetch(url, {
@@ -53,7 +65,7 @@ export class OllamaAdapter implements AiProvider {
                 signal: opts.signal,
             });
         } catch (e) {
-            yield { type: "error", error: `Could not reach Ollama at ${this.baseUrl}. Is it running? (${String(e)})` };
+            yield { type: "error", error: `Couldn't reach Ollama at ${base}. If it responds when you open that address directly, the server is up and this is usually a CORS block — set OLLAMA_ORIGINS to allow this site (and if the site is HTTPS, serve the model over HTTPS or allow insecure content). (${String(e)})` };
             yield { type: "message_done", stopReason: "error" };
             return;
         }
@@ -129,7 +141,7 @@ export class OllamaAdapter implements AiProvider {
 }
 
 /** Map the provider-agnostic history to Ollama's native message format (tool results keyed by name). */
-function toOllamaMessages(messages: AiMessage[], system?: string): Record<string, unknown>[] {
+export function toOllamaMessages(messages: AiMessage[], system?: string): Record<string, unknown>[] {
     const out: Record<string, unknown>[] = [];
     if (system?.trim()) out.push({ role: "system", content: system });
 
@@ -154,7 +166,16 @@ function toOllamaMessages(messages: AiMessage[], system?: string): Record<string
             }
             out.push(msg);
         } else {
-            out.push({ role: "user", content: m.text ?? "" });
+            // Native API takes per-message `images` as an array of raw base64 strings (no data-URL prefix).
+            // Audio rides in the SAME array — the server auto-detects audio vs. image from the bytes
+            // (confirmed with gemma4). Media goes before text, per Gemma's guidance.
+            const media = [
+                ...(m.images?.map(i => i.data) ?? []),
+                ...(m.audio?.map(a => a.data) ?? []),
+            ];
+            const msg: Record<string, unknown> = { role: "user", content: m.text ?? "" };
+            if (media.length) msg.images = media;
+            out.push(msg);
         }
     }
     return out;

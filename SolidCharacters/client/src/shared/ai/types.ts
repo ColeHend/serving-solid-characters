@@ -16,6 +16,18 @@ export interface AiToolResult {
     isError?: boolean;
 }
 
+/** A user-attached image. `data` is raw base64 (no "data:...;base64," prefix). */
+export interface AiImage {
+    data: string;
+    mediaType: string;   // e.g. "image/png", "image/jpeg"
+}
+
+/** A user-attached audio clip. `data` is raw base64 (no "data:...;base64," prefix). */
+export interface AiAudio {
+    data: string;
+    mediaType: string;   // e.g. "audio/wav", "audio/mpeg"
+}
+
 /**
  * Provider-agnostic message. `toolCalls` appear on assistant turns; `toolResults` on tool turns.
  * This is the shape the client sends to /api/ai/chat and the shape the local adapter translates
@@ -24,6 +36,10 @@ export interface AiToolResult {
 export interface AiMessage {
     role: AiRole;
     text?: string;
+    /** User-attached images, sent to vision-capable local models. Present only on user turns. */
+    images?: AiImage[];
+    /** User-attached audio clips, sent to audio-capable local models (e.g. Gemma). Present only on user turns. */
+    audio?: AiAudio[];
     toolCalls?: AiToolCall[];
     toolResults?: AiToolResult[];
 }
