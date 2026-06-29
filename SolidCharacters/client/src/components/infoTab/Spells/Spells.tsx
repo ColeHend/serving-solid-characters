@@ -135,7 +135,7 @@ const masterSpells: Component = () => {
 
   return (
     <Body class={`${styles.body}`}>
-      <h1>Spells</h1>
+      <h1 class={`${styles.bodyTitle}`}>Spells</h1>
       <div class={`${styles.searchBar}`}>
         <SearchBar 
           setResults={setSearchResults}
@@ -144,58 +144,86 @@ const masterSpells: Component = () => {
         />
       </div>
       <div class={`${styles.spellsBody}`}>
-        <Table 
-          data={() => paginatedSpells()} 
-          columns={["name","school","level","menu"]}> 
-          <Column name="name">
+        <Table
+          data={() => paginatedSpells()}
+          columns={["name","school","level","menu"]}>
+          <Column name="name" class={`${styles.SpellName}`}>
             <Header onClick={()=>dataSort("name")}>
               Name
               <Show when={currentSort().sortKey === "name"}>
                 <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
               </Show>
             </Header>
-            <Cell<Spell> rowNumber={1}>{(spell) => <span>
-              {spell.name}
-            </span>}</Cell>
           </Column>
 
-          <Column name="school">
+           <Column name="school" class={`${styles.SpellSchool}`}>
             <Header onClick={()=>dataSort("school")}>
               School
               <Show when={currentSort().sortKey === "school"}>
                 <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
               </Show>
             </Header>
-            <Cell<Spell>>{(spell) => spell.school }</Cell>
           </Column>
 
-          <Column name="level">
+          <Column name="level" class={`${styles.SpellLevel}`}>
             <Header onClick={()=>dataSort("level")}>
               Level
               <Show when={currentSort().sortKey === "level"}>
                 <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
               </Show>
             </Header>
-            <Cell<Spell>>{(spell) => spell.level }</Cell>
           </Column>
 
-          <Column name="menu">
+          <Column name="menu" class={`${styles.SpellActions}`}>
             <Header><></></Header>
-            <Cell<Spell> onClick={(e)=>{
-              e.stopPropagation()
-            }}>{(spell) => <>
-              <SpellMenu 
-                spell={spell}
-                lastChar={[lastChar, setLastChar]}/>
-            </> }</Cell>
           </Column>
-
-          <Row rowNumber={1} onClick={(e,spell)=>{
-            setCurrentSpell(spell);
-            setShowSpell((old)=>!old);
-            
-          }} style={{height:"40px"}}/>
         </Table>
+
+        <div class={`${styles.scrollable}`}>
+          <Table 
+            data={() => paginatedSpells()} 
+            columns={["name","school","level","menu"]}> 
+            <Column name="name" class={`${styles.SpellName}`}>
+              <Header onClick={()=>dataSort("name")}>
+                <></>
+              </Header>
+              <Cell<Spell> rowNumber={1}>{(spell) => <span>
+                {spell.name}
+              </span>}</Cell>
+            </Column>
+
+            <Column name="school" class={`${styles.SpellSchool}`}>
+              <Header onClick={()=>dataSort("school")}>
+                <></>
+              </Header>
+              <Cell<Spell>>{(spell) => spell.school }</Cell>
+            </Column>
+
+            <Column name="level" class={`${styles.SpellLevel}`}>
+              <Header onClick={()=>dataSort("level")}>
+                <></>
+              </Header>
+              <Cell<Spell>>{(spell) => spell.level }</Cell>
+            </Column>
+
+            <Column name="menu" class={`${styles.SpellActions}`}>
+              <Header><></></Header>
+              <Cell<Spell> onClick={(e)=>{
+                e.stopPropagation()
+              }}>{(spell) => <>
+                <SpellMenu 
+                  spell={spell}
+                  lastChar={[lastChar, setLastChar]}/>
+              </> }</Cell>
+            </Column>
+
+            <Row rowNumber={1} onClick={(e,spell)=>{
+              setCurrentSpell(spell);
+              setShowSpell((old)=>!old);
+              
+            }} style={{height:"40px"}}/>
+          </Table>
+        </div>
       </div>
 
       <Show when={showSpell() && currentSpell()}>
