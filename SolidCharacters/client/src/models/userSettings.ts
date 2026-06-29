@@ -174,6 +174,9 @@ export type PersonaStrength = "auto" | "off" | "min" | "low" | "full";
 /** Default: "auto" picks a light persona on small local models and the full voice on cloud. */
 export const DEFAULT_AI_PERSONA_STRENGTH: PersonaStrength = "auto";
 
+/** Max length of a mic recording in seconds. Gemma's hard audio limit is 30s; longer is truncated. */
+export const DEFAULT_AI_MAX_AUDIO_SECONDS = 30;
+
 /**
  * AI ("Grimoire") configuration. Only non-secret selection lives here / in IndexedDB —
  * cloud API keys are sent to the .NET backend and stored server-side, never persisted
@@ -220,6 +223,8 @@ export interface AiSettings {
     resumeGeneration?: boolean;
     /** How much in-character Grimoire persona to apply (any model). Defaults to DEFAULT_AI_PERSONA_STRENGTH. */
     personaStrength?: PersonaStrength;
+    /** Max mic recording length in seconds (local audio attach). Defaults to DEFAULT_AI_MAX_AUDIO_SECONDS. */
+    maxAudioSeconds?: number;
 }
 
 export interface UserSettings {

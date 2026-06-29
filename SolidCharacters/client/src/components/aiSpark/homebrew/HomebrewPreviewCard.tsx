@@ -53,13 +53,16 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                     </div>
                 </div>
                 <div class={styles.previewActions}>
-                    <Button transparent title="Open it in the homebrew editor" onClick={editManually}>
+                    <Button transparent title="View" aria-label="View" onClick={() => setShowPreview(true)}>
                         <Icon icon={Visibility} size="small" /> View
                     </Button>
                     <Button transparent title="Dismiss" onClick={() => aiAssistant.dismissPreview(p().previewId)}>
                         <Icon icon={Close} size="small" /> Dismiss
                     </Button>
                 </div>
+                <Show when={showPreview()}>
+                    <HomebrewPreviewDialog preview={p()} show={[showPreview, setShowPreview]} />
+                </Show>
             </Container>
         }>
         <Show when={!p().repairing || isDetached()} fallback={

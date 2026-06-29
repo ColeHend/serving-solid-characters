@@ -7,6 +7,7 @@ import { aiAssistant } from "../../shared/customHooks/aiAssistant";
 import ConversationMenu from "./menus/ConversationMenu";
 import ChatMessageList from "./chat/ChatMessageList";
 import ChatInput from "./chat/ChatInput";
+import ImageLightbox from "./chat/ImageLightbox";
 import DecisionLog from "./menus/DecisionLog";
 import styles from "./SparkSidebar.module.scss";
 
@@ -29,7 +30,12 @@ const SparkSidebar: Component = () => {
     let restoreFocus: HTMLElement | null = null;
 
     // Single reusable entry (removal is by identity); `element` is patched in when we register.
-    const entry: WindowManagerEntry = { element: undefined!, onClickOutside: () => aiAssistant.close() };
+    // Don't close on an outside click while a native file/camera picker is in flight (the iOS "phantom
+    // click" on return) or while the image lightbox is open (its overlay sits outside the panel).
+    const entry: WindowManagerEntry = {
+        element: undefined!,
+        onClickOutside: () => { if (!aiAssistant.filePicking() && !aiAssistant.lightboxImage()) aiAssistant.close(); },
+    };
 
     createEffect(() => {
         // Clear any in-flight animation timer first so a rapid close-then-reopen (<300ms) can't fire a
@@ -54,9 +60,14 @@ const SparkSidebar: Component = () => {
     onCleanup(() => { if (timer) clearTimeout(timer); });
 
     // Escape closes the sidebar from anywhere (deliberate, non-destructive: the turn keeps streaming).
+    // But not while the lightbox is open (it handles its own Escape) or a file picker is in flight.
     createEffect(() => {
         if (!aiAssistant.isOpen()) return;
-        const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") aiAssistant.close(); };
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key !== "Escape") return;
+            if (aiAssistant.lightboxImage() || aiAssistant.filePicking()) return;
+            aiAssistant.close();
+        };
         document.addEventListener("keydown", onKey);
         onCleanup(() => document.removeEventListener("keydown", onKey));
     });
@@ -125,6 +136,7 @@ const SparkSidebar: Component = () => {
                     <ChatMessageList />
                     <ChatInput />
                 </Container>
+                <ImageLightbox />
             </Portal>
         </Show>
     );
