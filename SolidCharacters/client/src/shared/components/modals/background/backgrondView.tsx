@@ -86,12 +86,6 @@ const BackgroundView: Component<props> = (props) => {
           <span>{proficiencies().skills.join(", ") || "None"}</span>
         </div>
 
-        <h4 class={`${styles.styledLabel}`}>Languages</h4>
-        
-        <div class={`${styles.languages}`}>
-          <ChoiceCard ChoiceKey="2" text={languages()?.join(", ")} />
-        </div>
-
         <h4 class={`${styles.styledLabel}`}>Starting Equipment</h4>
 
         
@@ -117,6 +111,35 @@ const BackgroundView: Component<props> = (props) => {
         </div>
 
 
+        <h4 class={`${styles.styledLabel}`}>Languages</h4>
+        
+        <div class={`${styles.languages}`}>
+          <ChoiceCard ChoiceKey="2" text={languages()?.join(", ")} />
+        </div>
+
+        <h4 class={`${styles.styledLabel}`}>Suggested Feat</h4>
+
+        <div class={`${styles.suggestedFeat}`}>
+          <ChoiceCard ChoiceKey="S" text={feat()} />
+        </div>
+
+        <h4 class={`${styles.styledLabel}`}>Ability Choices</h4>
+
+        <div class={`${styles.abilityChoices}`}>
+          <For each={abilityOptions()}>
+            {(choice, i) => <ChoiceCard ChoiceKey={`${i() + 1}`} text={choice} />}
+          </For>
+        </div>
+        
+        <Show when={features().length >= 1}>
+          <h4 class={`${styles.styledLabel}`}>Feature</h4>
+
+          <div>
+            <For each={features()}>
+              {(feature, i) => <ChoiceCard ChoiceKey={`${i() + 1}`} text={feature?.name ?? ""} />}
+            </For>
+          </div>
+        </Show>
       </div>
     </Modal>
   );
