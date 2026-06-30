@@ -74,8 +74,12 @@ export function validateConceptBrief(b: ConceptBrief): string[] {
     return errors;
 }
 
-/** The StepSpec for the brief, parameterized by the user's seed and the pipeline type. */
-export function conceptBriefStep(seed: string, pipelineType: PipelineType): StepSpec<ConceptBrief> {
+/**
+ * The StepSpec for the brief, parameterized by the user's seed and the pipeline type. `pipelineType` is
+ * only interpolated into the prompt text ("a homebrew class/character/spell/…"), so it accepts any label
+ * — the class/character pipelines pass their PipelineType; the homebrew mini-pipeline passes a kind label.
+ */
+export function conceptBriefStep(seed: string, pipelineType: PipelineType | string): StepSpec<ConceptBrief> {
     return {
         id: "design_brief",
         tool: CONCEPT_BRIEF_TOOL,
@@ -91,7 +95,7 @@ export function conceptBriefStep(seed: string, pipelineType: PipelineType): Step
 /** Run Phase A/1: produce a validated ConceptBrief from the user's seed. */
 export function produceConceptBrief(
     seed: string,
-    pipelineType: PipelineType,
+    pipelineType: PipelineType | string,
     ai: AiSettings,
     opts?: RunStepOptions,
     runner?: StepModelRunner,

@@ -4,33 +4,38 @@ import getUserSettings from "./userSettings";
 import {
     AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_LOOKUP_TOOLS,
     DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_RESUME_GENERATION,
-    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES,
-    DEFAULT_USAGE_LEVEL, UsageControlLevel,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_CREATION_PIPELINE_LEVEL,
+    DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES, DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
 import { AiAudio, AiImage, AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
 import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterPipelineTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
-import { HOMEBREW_KINDS, KIND_TO_TOOL } from "../ai/refs/homebrewKind";
+import { HOMEBREW_KINDS, HomebrewKind, KIND_TO_TOOL, kindLabel, TOOL_TO_KIND } from "../ai/refs/homebrewKind";
 import { toolCategory } from "../ai/tools/toolCategory";
 import { runComputeTool } from "../ai/tools/computeTools";
 import { LOOKUP_TOOLS, runLookupTool } from "../ai/tools/lookupTools";
 import { EDIT_TOOLS } from "../ai/tools/editTools";
 import { CONTROL_TOOLS, parseSwitchMode } from "../ai/tools/controlTools";
 import { DELEGATE_RESEARCH_TOOL, researchAgentSpec, runSubAgent } from "../ai/subAgent";
-import { attachCommands, hasFeatures } from "../ai/commands/commandAgent";
+import { attachCommandsWithStats, hasFeatures } from "../ai/commands/commandAgent";
 import {
     buildInteraction, interactionResultText, InteractionResponse, PendingInteraction,
 } from "../ai/tools/interactions";
 import { buildEditPreview, buildPreview, HomebrewPreview, saveHomebrew } from "../ai/tools/toolDispatcher";
 import { logDecision } from "./decisionLogManager";
+import { DebugConsole } from "./DebugConsole";
 import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
 import { runClassPipeline, CLASS_PIPELINE_PHASES } from "../ai/genPipeline/classPipeline";
 import { runCharacterPipeline, CHARACTER_PIPELINE_PHASES } from "../ai/genPipeline/characterPipeline";
+import { runHomebrewPipeline, supportsHomebrewPipeline, HOMEBREW_PIPELINE_PHASES } from "../ai/genPipeline/homebrewPipeline";
+import { runMechanicsReview } from "../ai/genPipeline/mechanicsStep";
+import { featuresMissingMads } from "../ai/commands/validateMads";
 import { buildClassReviewer } from "../ai/genPipeline/critic";
-import type { CharacterPipelineHost, PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
+import type { CharacterPipelineHost, HomebrewPipelineHost, PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
 import { skeletonSummaryLines, type SkeletonPlan } from "../ai/genPipeline/skeleton";
+import { PipelinePhase } from "../ai/genPipeline/types";
 import type { ConceptBrief, PipelineCheckpoint, PipelineResume, PipelineRun, PipelineType, WorkingCharacter, WorkingClass, WorkingEntity } from "../ai/genPipeline/types";
 import { pipelineCheckpointManager } from "../ai/genPipeline/checkpoint/pipelineCheckpointManager";
 import characterManager from "./dndInfo/useCharacters";
@@ -582,6 +587,8 @@ export class AiAssistant {
      * there's no remembered seed (e.g. a brand-new session after a hard reload, where Resume is the path).
      */
     restartPipeline = () => {
+        // The homebrew mini-pipeline doesn't support restart (it clears its seed and never checkpoints).
+        if (this.currentPipelineType === "homebrew") return;
         const seed = this.currentPipelineSeed;
         if (!seed) return;
         const type = this.currentPipelineType;
@@ -602,6 +609,8 @@ export class AiAssistant {
         const cp = this.resumableCheckpoint();
         if (!cp || this.pipelineRun()) return;
         this.setResumableCheckpoint(null);
+        // The mini-pipeline never checkpoints, so a homebrew checkpoint shouldn't exist — drop it defensively.
+        if (cp.pipelineType === "homebrew") return;
         const epoch = this.turnEpoch;
         if (cp.pipelineType === "character") {
             const resume: PipelineResume<WorkingCharacter> = { working: cp.working as WorkingCharacter, brief: cp.conceptBrief, fromPhaseIndex: cp.currentPhaseIndex };
@@ -657,6 +666,53 @@ export class AiAssistant {
         this.launchCharacterPipeline(seed, epoch);
     }
 
+    /** Build the mini-pipeline seed from a one-shot create_* draft + the user's latest request. */
+    private seedFromHomebrewCall(tc: AiToolCall): string {
+        const draft = JSON.stringify(tc.input ?? {});
+        const ask = this.lastUserText();
+        const label = kindLabel(TOOL_TO_KIND[tc.name] ?? "homebrew");
+        return `${ask ? `${ask}\n` : ""}Make a homebrew ${label} based on this draft: ${draft}`.trim();
+    }
+
+    /** The user's most recent prompt text (used to seed the homebrew mini-pipeline's concept step). */
+    private lastUserText(): string {
+        const msg = [...this.messages()].reverse().find(m => m.role === "user" && m.text.trim());
+        return msg?.text.trim() ?? "";
+    }
+
+    /**
+     * Launch the Homebrew mini-pipeline (Generation depth ≥ Medium) for one create_* kind. Like the staged
+     * pipelines it is a standalone run that owns the progress card; on completion it reuses
+     * {@link onPipelineComplete} (which surfaces + enriches the preview, so the High MADS step is reached).
+     * It never checkpoints, so `currentPipelineSeed` is cleared — Restart/Resume don't apply (see their guards).
+     */
+    private startHomebrewPipeline(kind: HomebrewKind, seed: string, epoch: number) {
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        if (!ai) { this.pushSystemBubble("AI is not configured."); return; }
+        const dndSystem = userSettings().dndSystem;
+
+        this.teardownPipeline();              // supersede any prior run before starting a new one
+        this.setResumableCheckpoint(null);
+        this.pipelineCheckpointId = null;     // the mini-pipeline never checkpoints
+        this.currentPipelineType = "homebrew";
+        this.currentPipelineSeed = "";        // Restart/Resume are not offered for the mini-pipeline
+        this.pipelineController = new AbortController();
+        const signal = this.pipelineController.signal;
+
+        const host: HomebrewPipelineHost = {
+            ai, dndSystem, signal, kind,
+            usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            creationPipelineLevel: ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL,
+            onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },
+            onComplete: previews => this.onPipelineComplete(previews, epoch),
+            onError: message => { if (epoch === this.turnEpoch) this.pushSystemBubble(message); },
+        };
+        void runHomebrewPipeline(seed, host).finally(() => {
+            if (this.pipelineController?.signal === signal) this.pipelineController = null;
+        });
+    }
+
     /**
      * Launch (or RESUME/RESTART) the Class pipeline for `seed`. Supersedes any prior run, wires the reactive
      * host callbacks, and drives the standalone orchestrator. When `resume` is given the orchestrator picks
@@ -680,6 +736,7 @@ export class AiAssistant {
         const host: PipelineHost = {
             ai, dndSystem, signal,
             usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            creationPipelineLevel: ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL,
             // Phase-F critic reviewer (runs only at the High usage level; the orchestrator gates on usageLevel).
             reviewer: buildClassReviewer(ai, dndSystem, signal),
             // Once aborted (user "Abort"), drop the run's card and ignore its trailing progress so it can't
@@ -714,6 +771,7 @@ export class AiAssistant {
         const host: CharacterPipelineHost = {
             ai, dndSystem, signal,
             usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            creationPipelineLevel: ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL,
             onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },
             onCheckpoint: (phaseIndex, working, brief) => this.savePipelineCheckpoint(phaseIndex, working, brief, epoch),
             onComplete: character => this.onCharacterComplete(character, epoch),
@@ -792,11 +850,43 @@ export class AiAssistant {
     private onPipelineComplete(previews: HomebrewPreview[], epoch: number) {
         if (epoch !== this.turnEpoch || !previews.length) return;
         this.setPendingPreviews(prev => [...prev, ...previews]);
-        this.setPipelineRun(null);            // hand off from the progress card to the preview card(s)
         void this.discardPipelineCheckpoint();
-        // Attach mechanical commands to the class's (and subclasses') features, like the one-shot Low path does.
-        void this.enrichWithCommands(previews.map(p => p.previewId), epoch);
+        // Keep the progress card alive through a final "MADS" phase while mechanical commands are attached
+        // (like the one-shot Low path does), THEN hand off to the preview card(s).
+        void this.runMadsPhaseThenHandoff(previews, epoch);
         void this.persistCurrent();
+    }
+
+    /**
+     * Drive the post-completion MADS phase shown in the progress strip (class + homebrew only): hold the
+     * pipeline run on a `MadsReview` step while {@link enrichWithCommands} attaches/validates the mechanical
+     * "mads" commands, then clear the run to hand off to the preview card(s). When no enrichment will run
+     * (command generation off, or no feature-bearing preview), there's nothing to review, so hand off at once
+     * — exactly the previous behaviour. The phase index is the trailing MadsReview slot appended to each
+     * pipeline's PHASES, so the orchestrator's generation phases and this step share one consistent total.
+     */
+    private async runMadsPhaseThenHandoff(previews: HomebrewPreview[], epoch: number) {
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        const willEnrich = !!ai
+            && (ai.commandGeneration ?? DEFAULT_AI_COMMAND_GENERATION)
+            && previews.some(p => p.valid && hasFeatures(p.kind));
+        if (!willEnrich) { this.setPipelineRun(null); return; }   // nothing to review — hand off immediately
+
+        const phases = this.currentPipelineType === "homebrew" ? HOMEBREW_PIPELINE_PHASES : CLASS_PIPELINE_PHASES;
+        this.setPipelineRun({
+            pipelineType: this.currentPipelineType, phase: PipelinePhase.MadsReview,
+            phaseIndex: phases.length - 1, totalPhases: phases.length, status: "running",
+        });
+
+        await this.enrichWithCommands(previews.map(p => p.previewId), epoch);
+
+        if (epoch === this.turnEpoch) this.setPipelineRun(null);   // hand off from the progress card to the preview card(s)
+    }
+
+    /** Update the working-line note on the live pipeline run (no-op when no progress card is showing). */
+    private setRunNote(note: string) {
+        this.setPipelineRun(r => (r ? { ...r, note } : r));
     }
 
     /** Upsert the run's single checkpoint row after a phase (best-effort; resume UI lands in a later milestone). */
@@ -836,6 +926,10 @@ export class AiAssistant {
     private teardownPipeline() {
         this.pipelineController?.abort();
         this.pipelineController = null;
+        // The MADS phase keeps the card alive while command enrichment runs; Abort must stop that too, else
+        // the card vanishes but enrichment keeps mutating the (now handed-off) preview in the background.
+        this.commandController?.abort();
+        this.commandController = null;
         if (this.pipelineRatify.size) {
             for (const [id, resolve] of this.pipelineRatify) { resolve({ type: "reject" }); this.removeInteraction(id); }
             this.pipelineRatify.clear();
@@ -1437,6 +1531,26 @@ export class AiAssistant {
 
             // ---- Homebrew: the existing preview build + Low/Medium/High routing, over the homebrew subset. ----
             if (homebrewCalls.length) {
+                // Generation depth ≥ Medium: run the concept → creation mini-pipeline instead of a one-shot
+                // build. The mini-pipeline is a single-run orchestrator, so only when exactly one homebrew
+                // call landed this turn (the common case); a rare multi-call turn falls through to one-shot.
+                const creationLevel = ai?.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL;
+                if (creationLevel !== "low" && homebrewCalls.length === 1) {
+                    const { tc } = homebrewCalls[0];
+                    const kind = TOOL_TO_KIND[tc.name];
+                    if (kind && supportsHomebrewPipeline(kind)) {
+                        // Resolve the create_* call now (no continuation turn — the orchestrator is the
+                        // continuation, like a generate_* seed), then launch the mini-pipeline.
+                        this.resolvePipelineTrigger(tc.id, "Generation started — follow the generation panel.");
+                        this.startHomebrewPipeline(kind, this.seedFromHomebrewCall(tc), epoch);
+                        this.setStatus("idle");        // the pipeline card owns progress from here
+                        this.setActivePhase("idle");
+                        void this.persistCurrent();
+                        this.maybeGenerateTitle();
+                        return;
+                    }
+                }
+
                 const previews = homebrewCalls.map(({ tc, idx }) => {
                     const p = buildPreview(tc, dndSystem);
                     p.repairAttempts = this.repairCounts.get(p.title.toLowerCase()) ?? 0;
@@ -1653,13 +1767,44 @@ export class AiAssistant {
                 if (!preview || !preview.valid || !hasFeatures(preview.kind)) continue;   // gone / broken / no features
 
                 this.setPendingPreviews(prev => prev.map(p => p.previewId === id ? { ...p, enriching: true } : p));
+
+                // Base command pass at every level. Medium adds the keyword gap-fill (one focused turn per
+                // mechanical feature still empty); High skips it — its Mechanics review below does a stronger,
+                // description-driven encode instead. Low is the single whole-entity pass only.
+                const level = ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL;
+                const maxGapFill = level === "medium" ? 6 : 0;
+
                 let enriched: HomebrewPreview["entity"] | null = null;
-                try { enriched = await attachCommands(preview, ai, signal); }
-                catch (e) { console.error("Command enrichment failed", e); }
+                try {
+                    const stats = await attachCommandsWithStats(preview, ai, signal, { maxGapFill });
+                    enriched = stats.entity;
+                    DebugConsole.info(`[MADS] ${preview.title}: proposed ${stats.proposed}, attached ${stats.attached}`);
+                } catch (e) { console.error("Command enrichment failed", e); }
 
                 if (epoch !== this.turnEpoch || signal.aborted) return false;
+
+                // High generation depth: the multi-stage "Mechanics" review — describe how each feature changes
+                // what/whom (fresh-context sub-agent), encode those self-effects into commands, then an
+                // adversarial audit + fix pass (mechanicsStep). Runs AFTER the base pass and merges/dedupes onto it.
+                let finalEntity = enriched ?? preview.entity;
+                if (level === "high") {
+                    try {
+                        const reviewed = await runMechanicsReview(
+                            { ...preview, entity: finalEntity }, ai, signal, note => this.setRunNote(note));
+                        if (reviewed) finalEntity = reviewed;
+                    } catch (e) { console.error("Mechanics review failed", e); }
+                    if (epoch !== this.turnEpoch || signal.aborted) return false;
+                }
+
+                // Dev-only: surface MECHANICAL features the MADS pass still left without a command (a real
+                // generator/catalog gap; pure-flavor features legitimately have none). No-op in prod.
+                const missingMads = featuresMissingMads(preview.kind, finalEntity, true);
+                if (missingMads.length) DebugConsole.warn(
+                    `[MADS review] ${preview.title}: ${missingMads.length} mechanical feature(s) have no mads command — add mechanical info:`,
+                    missingMads);
+
                 this.setPendingPreviews(prev => prev.map(p =>
-                    p.previewId === id ? { ...p, enriching: false, entity: enriched ?? p.entity } : p));
+                    p.previewId === id ? { ...p, enriching: false, entity: finalEntity } : p));
                 // Re-persist so the enriched entity (mads commands attached) survives a chat-history switch.
                 void this.persistCurrent();
             }

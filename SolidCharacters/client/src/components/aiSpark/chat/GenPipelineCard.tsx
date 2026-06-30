@@ -5,6 +5,7 @@ import { aiAssistant } from "../../../shared/customHooks/aiAssistant";
 import { PipelinePhase, type PipelineStatus } from "../../../shared/ai/genPipeline/types";
 import { CLASS_PIPELINE_PHASES } from "../../../shared/ai/genPipeline/classPipeline";
 import { CHARACTER_PIPELINE_PHASES } from "../../../shared/ai/genPipeline/characterPipeline";
+import { HOMEBREW_PIPELINE_PHASES } from "../../../shared/ai/genPipeline/homebrewPipeline";
 import type { HomebrewPreview } from "../aiSpark.shared";
 import ReviewVerdicts from "../homebrew/ReviewVerdicts";
 import styles from "../SparkSidebar.module.scss";
@@ -33,6 +34,8 @@ const PHASE_LABEL: Record<PipelinePhase, string> = {
     [PipelinePhase.Features]: "Features",
     [PipelinePhase.Subclasses]: "Subclasses",
     [PipelinePhase.Balance]: "Balance",
+    // post-completion mechanics step (class + homebrew) — attaching/reviewing the "mads" commands
+    [PipelinePhase.MadsReview]: "Mechanics",
 };
 
 /**
@@ -55,6 +58,7 @@ const PHASE_FLAVOR: Record<PipelinePhase, string> = {
     [PipelinePhase.Loadout]: "Packing the loadout…",
     [PipelinePhase.Narrative]: "Spinning the tale…",
     [PipelinePhase.Compute]: "Tallying the numbers…",
+    [PipelinePhase.MadsReview]: "Refining mechanics…",
 };
 
 const SUBTITLE: Record<PipelineStatus, string> = {
@@ -71,10 +75,11 @@ const GenPipelineCard: Component = () => {
     const isLive = () => { const s = run()?.status; return s === "running" || s === "awaiting_user" || s === "idle"; };
     const isTerminalBad = () => { const s = run()?.status; return s === "error" || s === "aborted"; };
     const isCharacter = () => run()?.pipelineType === "character";
+    const isHomebrew = () => run()?.pipelineType === "homebrew";
     /** The phase strip + headings switch on which pipeline is running. */
-    const phases = () => (isCharacter() ? CHARACTER_PIPELINE_PHASES : CLASS_PIPELINE_PHASES);
-    const title = () => (isCharacter() ? "Generating character" : "Generating class");
-    const workingLabel = () => (isCharacter() ? "Building your character…" : "Building your class…");
+    const phases = () => (isHomebrew() ? HOMEBREW_PIPELINE_PHASES : isCharacter() ? CHARACTER_PIPELINE_PHASES : CLASS_PIPELINE_PHASES);
+    const title = () => (isHomebrew() ? "Generating homebrew" : isCharacter() ? "Generating character" : "Generating class");
+    const workingLabel = () => (isHomebrew() ? "Building your homebrew…" : isCharacter() ? "Building your character…" : "Building your class…");
     /** The live working line: a precise orchestrator note if present, else phase-appropriate flavor. */
     const workingMessage = () => { const r = run(); return r?.note?.trim() || (r ? PHASE_FLAVOR[r.phase] : "") || workingLabel(); };
 
@@ -136,9 +141,12 @@ const GenPipelineCard: Component = () => {
                             </Button>
                         </Show>
                         <Show when={isTerminalBad()}>
-                            <Button transparent title="Start this generation over from the beginning" onClick={() => aiAssistant.restartPipeline()}>
-                                <Icon icon={Refresh} size="small" /> Restart
-                            </Button>
+                            {/* The homebrew mini-pipeline doesn't support Restart (no remembered seed) — just Dismiss. */}
+                            <Show when={!isHomebrew()}>
+                                <Button transparent title="Start this generation over from the beginning" onClick={() => aiAssistant.restartPipeline()}>
+                                    <Icon icon={Refresh} size="small" /> Restart
+                                </Button>
+                            </Show>
                             <Button transparent title="Dismiss" onClick={() => aiAssistant.dismissPipeline()}>
                                 <Icon icon={Close} size="small" /> Dismiss
                             </Button>
