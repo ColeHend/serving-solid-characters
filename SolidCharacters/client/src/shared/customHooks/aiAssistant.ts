@@ -10,7 +10,7 @@ import {
 import { AiAudio, AiImage, AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
 import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterPipelineTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
-import { HOMEBREW_KINDS, HomebrewKind, KIND_TO_TOOL, kindLabel, TOOL_TO_KIND } from "../ai/refs/homebrewKind";
+import { HOMEBREW_KINDS, HomebrewKind, KIND_TO_TOOL, kindLabel, kindLabelLower, TOOL_TO_KIND } from "../ai/refs/homebrewKind";
 import { toolCategory } from "../ai/tools/toolCategory";
 import { runComputeTool } from "../ai/tools/computeTools";
 import { LOOKUP_TOOLS, runLookupTool } from "../ai/tools/lookupTools";
@@ -192,6 +192,7 @@ export class AiAssistant {
     private currentPipelineType: PipelineType = "class";       // which pipeline the active run drives (for checkpoint rows)
     private currentPipelineSeed = "";                          // the active/last run's generation seed (for checkpoints + restart)
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
+    private narratedDrafts = new Set<string>();          // toolCallIds whose drafted entity was already announced in chat
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
     private schemaRetryStreak = 0;                       // High-mode SCHEMA-gate regenerations (pre-handoff) for this request
     private reviewFixStreak = 0;                         // High-mode READINESS auto-fix regenerations (post-review) for this request
@@ -285,6 +286,7 @@ export class AiAssistant {
         this.pipelineCheckpointId = null;
         this.setResumableCheckpoint(null);   // drop any "Resume generation" offer from a prior load
         this.repairCounts.clear();
+        this.narratedDrafts.clear();
         this.mediumRetryStreak = 0;
         this.schemaRetryStreak = 0;
         this.reviewFixStreak = 0;
@@ -430,9 +432,16 @@ export class AiAssistant {
         const snackMessage = result.ok && persona.confirmFlourish ? "It is done. Let it be written." : result.message;
         addSnackbar({ message: snackMessage, severity: result.ok ? "success" : "error" });
         if (result.ok) {
+            // A durable, in-flow chat record naming the saved entity — so both the user and (on the next
+            // turn, by re-reading the chat) the model know exactly what was created/edited and its name.
+            // App-emitted because the model has no turn at save time (mirrors the character-pipeline note).
+            const noteId = this.pushAssistantBubble(preview.mode === "edit"
+                ? `✦ Updated **${preview.title}** (${kindLabelLower(preview.kind)}).`
+                : `✦ Saved **${preview.title}** (${kindLabelLower(preview.kind)}) to your homebrew. Say "edit ${preview.title}" to change it.`);
             // Transform the card into a "Saved" confirmation (the user dismisses it when ready) instead of
-            // removing it — a save is acknowledged, not silently vanished.
-            this.updatePreview(previewId, { saved: true, saveError: undefined });
+            // removing it — and anchor it under the announcement above so it stays in place in the
+            // transcript instead of drifting to the bottom as the conversation continues.
+            this.updatePreview(previewId, { saved: true, saveError: undefined, anchorId: noteId });
             // Auto-log every committed change (the model's chat reply is the "why"; we capture a short note).
             void logDecision({
                 entityKind: preview.kind,
@@ -530,10 +539,38 @@ export class AiAssistant {
         this.resolveToolCall(preview.toolCallId, repairInstruction(preview, reason), true);
     };
 
-    /** Dismiss a card that's mid-repair. UI-only: its tool call was already resolved by completePreview. */
+    /**
+     * Dismiss a card that's mid-repair: abort the in-flight completion turn and restore the pre-repair card
+     * (instead of deleting it). completePreview collapsed the card (`repairing`), bumped the repair count, and
+     * RESOLVED the card's tool call to kick off the repair turn — so we un-collapse it, roll back the count
+     * (re-enabling "Complete with AI"), and re-open that tool call so the restored card is fully live again.
+     */
     cancelRepair = (previewId: string) => {
-        this.removePreview(previewId);
+        const preview = this.pendingPreviews().find(p => p.previewId === previewId);
+        if (!preview) return;
+        this.cancel();   // abort the streaming turn (+ any pipeline it spawned); bumps turnEpoch so a late finishTurn is dropped
+        this.reopenToolCall(preview.toolCallId);   // undo the repair injection so Save/Reject/Complete all work again
+        this.updatePreview(previewId, { repairing: false });   // un-collapse → the previous full card returns
+        this.repairCounts.delete(preview.title.toLowerCase());  // roll back the attempt bump so the user can retry
+        void this.persistCurrent();
     };
+
+    /**
+     * Undo a repair injection so a dismissed "Complete with AI" card is fully live again: drop the tool_result
+     * completePreview recorded for it (from the in-flight buffer or, if already flushed, the last history tool
+     * message) and re-open the call as outstanding — leaving history exactly as it was before the repair.
+     */
+    private reopenToolCall(toolCallId: string) {
+        if (this.outstanding.has(toolCallId)) return;   // still open (never resolved) — nothing to undo
+        this.resolved = this.resolved.filter(r => r.toolCallId !== toolCallId);
+        const last = this.history[this.history.length - 1];
+        if (last?.role === "tool" && last.toolResults?.some(r => r.toolCallId === toolCallId)) {
+            const remaining = last.toolResults.filter(r => r.toolCallId !== toolCallId);
+            if (remaining.length) last.toolResults = remaining;
+            else this.history.pop();
+        }
+        this.outstanding.add(toolCallId);
+    }
 
     /**
      * Regenerate an entity the readiness pipeline couldn't get past schema validation ("needs direction").
@@ -1112,16 +1149,31 @@ export class AiAssistant {
      * `detached` is NOT set here; it's stamped on load so a same-session snapshot stays live.
      */
     private sanitizePreviewsForStore(previews: HomebrewPreview[]): HomebrewPreview[] {
-        // A "Saved" confirmation card is an in-session acknowledgement only — never persist it, so saved
-        // cards don't accumulate in the chat forever and a saved-then-detached card can't "resurrect".
-        return previews.filter(p => !p.saved).map(p => {
-            const { repairing: _r, enriching: _e, detached: _d, saveError: _se, ...rest } = p;
-            const reviewState: ReviewState | undefined =
-                p.reviewState === "reviewing" || p.reviewState === "needs_user_direction"
-                    ? "review_unavailable"
-                    : p.reviewState;
-            return { ...rest, reviewState, reviewBlocked: false };
-        });
+        // "Saved" confirmation cards persist across reloads as a record of what was created/edited. Strip
+        // their transient/live-turn flags but keep `saved` so they restore as compact confirmations (a
+        // detached + saved card can't "resurrect": confirmPreview no-ops on an already-saved preview). Cap
+        // to the most recent few so a long conversation's record stays bounded.
+        const SAVED_CARD_CAP = 10;
+        let savedKept = 0;
+        const result: HomebrewPreview[] = [];
+        // Walk newest→oldest so the cap keeps the most recent saved cards; restore original order after.
+        for (let i = previews.length - 1; i >= 0; i--) {
+            const p = previews[i];
+            if (p.saved) {
+                if (savedKept >= SAVED_CARD_CAP) continue;
+                savedKept++;
+                const { previewId, toolCallId, kind, title, entity, valid, mode, baseEntity, appliedOps, rejectedOps, anchorId } = p;
+                result.push({ previewId, toolCallId, kind, title, entity, valid, errors: [], saved: true, mode, baseEntity, appliedOps, rejectedOps, anchorId });
+            } else {
+                const { repairing: _r, enriching: _e, detached: _d, saveError: _se, ...rest } = p;
+                const reviewState: ReviewState | undefined =
+                    p.reviewState === "reviewing" || p.reviewState === "needs_user_direction"
+                        ? "review_unavailable"
+                        : p.reviewState;
+                result.push({ ...rest, reviewState, reviewBlocked: false });
+            }
+        }
+        return result.reverse();
     }
 
     /**
@@ -1205,12 +1257,30 @@ export class AiAssistant {
     private pushUserBubble(text: string, historyIndex?: number, images?: AiImage[], audio?: AiAudio[]) {
         this.setMessages(prev => [...prev, { id: createNewId(), role: "user", text, historyIndex, images, audio }]);
     }
-    private pushAssistantBubble(text: string, thinking?: string) {
-        this.setMessages(prev => [...prev, { id: createNewId(), role: "assistant", text, thinking: thinking || undefined }]);
+    /** Append an assistant bubble and return its message id (so a card can anchor itself under it). */
+    private pushAssistantBubble(text: string, thinking?: string): string {
+        const id = createNewId();
+        this.setMessages(prev => [...prev, { id, role: "assistant", text, thinking: thinking || undefined }]);
+        return id;
     }
     /** An app-emitted notice (error/refusal/cut-off/warning), tagged kind:"system" and shown with a ⚠️. */
     private pushSystemBubble(text: string) {
         this.setMessages(prev => [...prev, { id: createNewId(), role: "assistant", kind: "system", text: `⚠️ ${text}` }]);
+    }
+    /**
+     * App-emitted draft narration: a one-line note naming a freshly-surfaced CREATE entity so the chat
+     * actually says what Grimoire is doing — but ONLY when the model itself stayed silent this turn (a
+     * tool-call-only turn; the model is also prompted to narrate, and that takes precedence). Deduped by
+     * toolCallId so a repair/regeneration replacement doesn't re-announce. Edits are skipped (their diff
+     * card is self-explanatory and their save emits its own "Updated" line).
+     */
+    private narrateDraft(previews: HomebrewPreview[], modelSpoke: boolean) {
+        if (modelSpoke) return;
+        for (const p of previews) {
+            if (p.mode === "edit" || this.narratedDrafts.has(p.toolCallId)) continue;
+            this.narratedDrafts.add(p.toolCallId);
+            this.pushAssistantBubble(`I've drafted a ${kindLabelLower(p.kind)}, **${p.title}** — review and save it below.`);
+        }
     }
     private removePreview(previewId: string) {
         this.setPendingPreviews(prev => prev.filter(p => p.previewId !== previewId));
@@ -1232,7 +1302,9 @@ export class AiAssistant {
         if (this.resolved.length) this.history.push({ role: "tool", toolResults: this.resolved });
         this.resolved = [];
         this.outstanding.clear();
-        this.setPendingPreviews([]);
+        // Keep "Saved" confirmation cards: their tool call is already resolved, so they have no
+        // wire-validity obligation and shouldn't be collateral when we close out unanswered calls.
+        this.setPendingPreviews(prev => prev.filter(p => p.saved));
         this.setPendingInteractions([]);
     }
 
@@ -1511,7 +1583,14 @@ export class AiAssistant {
             //      user accepts/rejects (no Low/Medium/High routing — it patches an existing entity). ----
             if (editCalls.length) {
                 const editPreviews = editCalls.map(tc => buildEditPreview(tc, dndSystem));
-                this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...editPreviews]);
+                const surface = editPreviews.filter(p => !p.targetMissing);
+                if (surface.length) this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...surface]);
+                // A missing-target edit (wrong/unknown name) has no real card — feed the available names
+                // straight back so the model retries with a correct name (or looks it up) instead of
+                // stranding the user on a dead-end card it can only reject.
+                for (const p of editPreviews) {
+                    if (p.targetMissing) this.resolveToolCall(p.toolCallId, p.errors.join(" "), true);
+                }
             }
 
             // ---- Lookup (+ research delegate): async auto-resolve. In a mixed turn other ids keep
@@ -1542,6 +1621,10 @@ export class AiAssistant {
                         // Resolve the create_* call now (no continuation turn — the orchestrator is the
                         // continuation, like a generate_* seed), then launch the mini-pipeline.
                         this.resolvePipelineTrigger(tc.id, "Generation started — follow the generation panel.");
+                        // Drop any "Complete with AI" card collapsed to "Improving…": a repair that routes into
+                        // the mini-pipeline is superseded by the pipeline card (which yields the improved card via
+                        // onComplete). Without this the old card is stranded showing "Improving with AI…" forever.
+                        this.setPendingPreviews(prev => prev.filter(p => !p.repairing));
                         this.startHomebrewPipeline(kind, this.seedFromHomebrewCall(tc), epoch);
                         this.setStatus("idle");        // the pipeline card owns progress from here
                         this.setActivePhase("idle");
@@ -1550,6 +1633,10 @@ export class AiAssistant {
                         return;
                     }
                 }
+
+                // The model produced its own reply this turn → it narrates the draft itself (it's prompted
+                // to); only fall back to an app-emitted draft note when the create turn was tool-call-only.
+                const modelSpoke = !!text.trim();
 
                 const previews = homebrewCalls.map(({ tc, idx }) => {
                     const p = buildPreview(tc, dndSystem);
@@ -1584,6 +1671,7 @@ export class AiAssistant {
                     const show = previews.filter(p => !failed(p));
                     // Show the good ones (dropping any collapsed "Improving…" cards); their tool calls stay outstanding.
                     this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...show]);
+                    this.narrateDraft(show, modelSpoke);
                     void this.enrichWithCommands(show.filter(p => p.valid && hasFeatures(p.kind)).map(p => p.previewId), epoch);
                     void this.persistCurrent();
                     this.maybeGenerateTitle();
@@ -1607,6 +1695,7 @@ export class AiAssistant {
                         this.schemaRetryStreak++;
                         const reviewing = schemaOk.map(p => ({ ...p, reviewState: "reviewing" as ReviewState }));
                         this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...reviewing]);
+                        this.narrateDraft(reviewing, modelSpoke);
                         void this.persistCurrent();
                         this.maybeGenerateTitle();
                         // If valid cards remain for the user, the turn is idle now; otherwise resolving the last
@@ -1626,6 +1715,7 @@ export class AiAssistant {
                     const needDirection = schemaFailed.map(p => ({ ...p, reviewState: "needs_user_direction" as ReviewState }));
                     const reviewing = schemaOk.map(p => ({ ...p, reviewState: "reviewing" as ReviewState }));
                     this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...needDirection, ...reviewing]);
+                    this.narrateDraft(reviewing, modelSpoke);
                     void this.persistCurrent();
                     this.maybeGenerateTitle();
                     this.setStatus("idle");
@@ -1635,6 +1725,7 @@ export class AiAssistant {
 
                 // Low: drop any collapsed "Improving…" cards — their replacement has now arrived.
                 this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...previews]);
+                this.narrateDraft(previews, modelSpoke);
                 // Enrich the surfaced feature-bearing entities with mechanical commands (no-op if disabled).
                 void this.enrichWithCommands(previews.filter(p => p.valid && hasFeatures(p.kind)).map(p => p.previewId), epoch);
             } else {

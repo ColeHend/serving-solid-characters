@@ -1,6 +1,6 @@
 import {
     AbilityScores, Background, CasterType, Class5E, Feat, FeatureDetail, ItemType, MagicItem,
-    Prerequisite, PrerequisiteType, Proficiencies, Race, Spell, StatBonus, Subclass,
+    Prerequisite, PrerequisiteType, Proficiencies, Race, Spell, StartingEquipment, StatBonus, Subclass,
 } from "../../../models/generated";
 import { srdItem, srdSubclass } from "../../../models/data/generated";
 import { createNewId } from "../../customHooks/utility/tools/idGen";
@@ -68,6 +68,13 @@ export interface HomebrewPreview {
      * visibly acknowledged rather than silently vanishing.
      */
     saved?: boolean;
+    /**
+     * The chat-message id this card is anchored under, set when it becomes a "Saved" confirmation so the
+     * card renders inline beneath its "Saved …" announcement instead of floating at the bottom of the chat
+     * as the conversation grows. Persisted with the card; the referenced message persists too, so the
+     * anchor survives a reload.
+     */
+    anchorId?: string;
     /** Set when a Save attempt failed (the entity did NOT persist): shown on the card so the user can retry. */
     saveError?: string;
     /** High-mode readiness state. Undefined for Low/Medium (no pipeline runs). */
@@ -92,6 +99,12 @@ export interface HomebrewPreview {
      * load), but the AI-driven actions (Complete/Improve/Try again) — which need a live turn — are hidden.
      */
     detached?: boolean;
+    /**
+     * Set on an EDIT preview that couldn't be built because its target entity doesn't exist (wrong/unknown
+     * name or kind). Such a preview carries no real card — the orchestrator resolves its tool call back to
+     * the model (with the available names in `errors`) so it can retry, instead of surfacing a dead-end card.
+     */
+    targetMissing?: boolean;
 }
 
 const TOOL_TO_KIND: Record<string, HomebrewKind> = {
@@ -202,12 +215,19 @@ function toBackground(i: Record<string, unknown>): Background {
         const f = raw as Record<string, unknown>;
         return { id: createNewId(), name: str(f.name), description: str(f.description) };
     });
+    // Each entry is one equipment package/choice (optionKeys = the choice label, items = its contents).
+    // Drop empties so a model that sends a blank entry doesn't persist a meaningless group.
+    const startEquipment: StartingEquipment[] = list(i.startEquipment).map(raw => {
+        const e = raw as Record<string, unknown>;
+        const optionKeys = strList(e.optionKeys);
+        return { optionKeys: optionKeys.length ? optionKeys : undefined, items: strList(e.items) };
+    }).filter(e => (e.items?.length ?? 0) > 0 || (e.optionKeys?.length ?? 0) > 0);
     return {
         id: createNewId(),
         name: str(i.name),
         desc: str(i.desc),
         proficiencies,
-        startEquipment: [],
+        startEquipment,
         // 2024 backgrounds are the sole source of ability score increases; the character build reads
         // abilityOptions to offer the +2/+1. Without it an AI 2024 background grants no ASI.
         abilityOptions: strList(i.abilityOptions).length ? strList(i.abilityOptions) : undefined,
@@ -528,6 +548,21 @@ function coerceOps(v: unknown): PatchOp[] {
         .filter(o => o.path.length > 0 && !UNSAFE_PATH_SEGMENT.test(o.path));
 }
 
+/** The names of every homebrew entity of a kind (for "did you mean…" hints on a failed edit lookup). */
+export function homebrewNames(kind: HomebrewKind): string[] {
+    const named = <T extends { name?: string }>(arr: T[]): string[] => arr.map(e => (e.name ?? "").trim()).filter(Boolean);
+    switch (kind) {
+        case "spell": return named(homebrewManager.spells());
+        case "item": return named(homebrewManager.items());
+        case "magic_item": return named(homebrewManager.magicItems());
+        case "feat": return homebrewManager.feats().map(f => (f.details?.name ?? f.name ?? "").trim()).filter(Boolean);
+        case "background": return named(homebrewManager.backgrounds());
+        case "race": return named(homebrewManager.races());
+        case "subclass": return named(homebrewManager.subclasses());
+        case "class": return named(homebrewManager.classes());
+    }
+}
+
 /** Find a live homebrew entity by kind + name (subclass also needs its parent class). */
 export function findHomebrewEntity(kind: HomebrewKind, name: string, parentClass?: string): HomebrewPreview["entity"] | undefined {
     const n = name.trim().toLowerCase();
@@ -559,11 +594,16 @@ export function buildEditPreview(toolCall: AiToolCall, _dndSystem = "both"): Hom
     const base = { previewId, toolCallId: toolCall.id, mode: "edit" as const };
 
     if (!HOMEBREW_KINDS.includes(kind)) {
-        return { ...base, kind: "item", title: name || "(edit)", entity: toItem({}), valid: false, errors: [`Unknown kind "${str(input.kind)}" to edit.`] };
+        return { ...base, kind: "item", title: name || "(edit)", entity: toItem({}), valid: false, targetMissing: true, errors: [`Unknown kind "${str(input.kind)}" to edit. Valid kinds: ${HOMEBREW_KINDS.join(", ")}.`] };
     }
     const target = findHomebrewEntity(kind, name, str(input.parentClass));
     if (!target) {
-        return { ...base, kind, title: name || "(edit)", entity: toItem({}), valid: false, errors: [`No homebrew ${kind.replace("_", " ")} named "${name}" to edit. Look it up with lookup_homebrew first.`] };
+        const label = kind.replace("_", " ");
+        const names = homebrewNames(kind).slice(0, 15);
+        const hint = names.length
+            ? ` Your homebrew ${label}s: ${names.map(n => `"${n}"`).join(", ")}. Call edit_homebrew again with one of these exact names (or lookup_homebrew first).`
+            : ` You have no homebrew ${label}s yet — create one before editing.`;
+        return { ...base, kind, title: name || "(edit)", entity: toItem({}), valid: false, targetMissing: true, errors: [`No homebrew ${label} named "${name}".${hint}`] };
     }
     const { next, applied, rejected } = applyPatch(target, coerceOps(input.changes));
     const title = entityTitle(kind, next);
@@ -658,7 +698,9 @@ export async function saveHomebrew(p: HomebrewPreview): Promise<{ ok: boolean; m
     }
     const outcome = await resolveSaveOutcome(result);
     if (!outcome.ok) return { ok: false, message: outcome.error ?? `Couldn't save ${p.kind.replace("_", " ")} "${p.title}" — please try again.` };
-    return { ok: true, message: `Saved ${p.kind.replace("_", " ")} "${p.title}".` };
+    // Append an explicit edit handle so the exact name survives in the model's history (resistant to
+    // context windowing) and it knows precisely how to modify this entity on a later turn.
+    return { ok: true, message: `Saved ${p.kind.replace("_", " ")} "${p.title}". To change it later, call edit_homebrew with kind "${p.kind}" and the exact name "${p.title}".` };
 }
 
 /** Route from a confirmed preview to the homebrew create page where the user can refine it. */
