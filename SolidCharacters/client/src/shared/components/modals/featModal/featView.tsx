@@ -63,13 +63,15 @@ const FeatView: Component<props> = (props) => {
         <div class={`${style.prerequisites}`}>
           <h2 class={`${style.nameHeader}`}>Prerequisites</h2>
 
-          <span class={`${style.firstPrereq}`}>
-            <Show when={currentFeat().prerequisites[0].type !== 0 || currentFeat().prerequisites[0].type !== 7}>
-              <span>{PrerequisiteType[currentFeat().prerequisites[0].type]}</span>
-            </Show>
-            
-            <span> {currentFeat().prerequisites[0].value}</span>
-          </span>
+          <Show when={currentFeat().prerequisites.length > 0} fallback={<span>None</span>}>
+            <span class={`${style.firstPrereq}`}>
+              <Show when={currentFeat().prerequisites?.[0].type !== 0 || currentFeat().prerequisites?.[0].type !== 7}>
+                <span>{PrerequisiteType[currentFeat().prerequisites?.[0].type]}</span>
+              </Show>
+              
+              <span> {currentFeat().prerequisites?.[0].value}</span>
+            </span>
+          </Show>
         </div>
 
         <div class={`${style.description}`}>

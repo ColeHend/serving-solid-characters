@@ -1,4 +1,4 @@
-@import '../../../../index.scss';
+@use '../../../../index.scss' as vars;
 
 .featWrapper {
     // background parchment paper.
@@ -99,7 +99,7 @@
     
     text-align: left;
 
-    @include styledDndHeader;
+    @include vars.styledDndHeader;
 }
 
 .divider {

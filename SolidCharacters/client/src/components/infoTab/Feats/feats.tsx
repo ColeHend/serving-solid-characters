@@ -105,9 +105,7 @@ const featsList: Component = () => {
 
   createEffect(()=>{
   const list = allFeats();
-  const feats = allFeatures();
 
-  console.table(feats);
   setTableData(list.filter(f => f?.details?.name));
   })
 
