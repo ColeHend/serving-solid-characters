@@ -1,70 +1,97 @@
+@use "../../../../index.scss" as indexsheet;
+
 $mobile: 768px;
+$marginLeft: 5%;
+
 .wrapper {
-    background-color: none;
-    background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
-    // margin-top: 1%;
     overflow-y: scroll;
     height: 100%;
-    // display: flex;
-    // flex-direction: column;
-    // justify-content: left;
 
     h3 {
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #AA0505;
-        font-size: 1.6em;
         text-wrap: wrap;
+
+        @include indexsheet.styledDndTitle;
     }
 
     h2 {
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #AA0505;
-        font-size: 1.4em;
         text-wrap: wrap;
+        
+        @include indexsheet.styledDndTitle;
     }
 
     span {
-        font-family: 'Bookinsanity';
-        font-weight: 100;
-        color: #000;
-        font-size: 1.2em;
         text-wrap: wrap;
+
+        @include indexsheet.styledDndText;
     }
     
+    @include indexsheet.parchementBG;
 }
 
-.skillProfsBar {
-    font-family: 'Bookinsanity';
-    font-weight: 100;
-    color: #000;
-    font-size: 1.2em;
+.styledHeader {
+
+    @include indexsheet.styledDndHeader;
+}
+
+.desc {
     text-wrap: wrap;
 
-    @media screen and (max-width:$mobile)  {
-        flex-direction: column;
+    @include indexsheet.styledDndText;  
+    
+    text-align: left;
+    
+    div {
+        margin-top: 11%;
+        margin-left: $marginLeft;
+
+        @media screen and (max-width: $mobile) {
+            margin-top: 35%;
+        }
     }
 }
 
-.info {
-    font-family: 'Bookinsanity';
-    font-weight: 100;
-    color: #000;
-    font-size: 1.2em;
-    text-wrap: wrap;
-}
-
-.flexBoxRow {
-    display: flex;
-    flex-direction: row;
-
-    @media screen and (max-width: 768px) {
-        flex-direction: column;
+.Proficiencies {
+    display: grid;
+    grid-template-columns: 0.2fr 1fr;
+    align-items: baseline;
+    text-align: left;
+    margin-left: $marginLeft;
+    
+    h3 {
+        margin: 3%;
     }
+
+    @media screen and (max-width: $mobile) {
+        grid-template-columns: 0.5fr 1fr;
+    }
+
 }
 
-.flexBoxColumn {
+.styledLabel {
+    $margin: 5%;
+    margin-left: $margin;
+    margin-right: $margin;
+
+    @include indexsheet.FlankedLabel;
+}
+
+.flavor {
+    span {
+        @include indexsheet.flavorText;
+    }
+
+    @include indexsheet.flavorText;
+}
+
+.itemChoices {
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    width: 85%;
+    margin: 0 auto;
+}
+
+.languages {
+    width: 85%;
+    margin: 0 auto;
 }

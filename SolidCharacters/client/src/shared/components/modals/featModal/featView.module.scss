@@ -1,4 +1,6 @@
-@import '../../../../index.scss';
+@use '../../../../index.scss' as vars;
+
+$margin-left: 2vw;
 
 .featWrapper {
     // background parchment paper.
@@ -28,32 +30,27 @@
     z-index: 2;
     padding: 0;
     margin: 0;
+    // margin-left: $margin-left;
 }
 
 .prerequisites {
     display: grid;
-    grid-template-columns: 120px 1fr;
+    grid-template-columns: 0.5fr 1fr;
     align-items: baseline;
-    width: 50%;
-
-    // :nth-child(1) {
-    //     margin-top: 100%;
-
-    //     @media screen and (max-width: 768px) {
-    //         margin-top: 40%;
-    //     }
-    // }
-
-    // :nth-child(2) {
-    //     margin-top: 10%;
-    // }
-
+    max-width: 75%;
+    text-align: left;
+    margin-left: $margin-left;
+    
     span {
         color: #241405;
         font-family: 'Bookinsanity';
         font-weight: 400;
         font-size: 17.5px;
         line-height: 1.62;
+    }
+
+    @media screen and (max-width: 768px) {
+        grid-template-columns: 1fr 1fr;
     }
 }
 
@@ -67,28 +64,21 @@
     text-wrap: wrap;
     z-index: 1;
     text-align: left;
-    margin-left: 8px;
+    margin-left: $margin-left;
 
     strong {
-        font-family: 'Bookinsanity';
-        font-weight: 400;
-        font-size: 17px;
-        line-height: 1.62;
+        display: block;
+        margin-top: 2%;
 
-        em {
-            display: block;
-        }
+        @include vars.styledDndText;
     }
 }
 
 .smallerText { 
-    // font-weight: 100;
     font-size: medium;
 }
 
 .styledHeader {
-    
-
     h1 {
         margin: 0;
     }
@@ -99,7 +89,7 @@
     
     text-align: left;
 
-    @include styledDndHeader;
+    @include vars.styledDndHeader;
 }
 
 .divider {

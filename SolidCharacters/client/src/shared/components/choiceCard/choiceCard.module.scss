@@ -1,0 +1,30 @@
+.choiceCard {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 12px 15px;
+    border: 1px solid rgba(124, 39, 24, 0.32);
+    border-radius: 5px;
+    background: rgba(255, 250, 238, 0.32);
+}
+
+.roundel {
+    flex: 0 0 auto;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: rgb(124, 39, 24);
+    color: rgb(244, 234, 208);
+    font-family: "Bookinsanity", serif;
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.text {
+    font-size: 16px;
+    line-height: 1.45;
+    color: #241405;
+}

@@ -27,8 +27,8 @@ export const FeatMenu:Component<menuProps> = (props) => {
     return false;
   }
 
-  return <>
-    <Button ref={setAnchorEl} class={`${styles.menuBtn}`} onClick={()=>setShowMenu((old)=>!old)}>
+  return <div  class={`${styles.menuBtn}`}>
+    <Button ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>
       <Icon icon={MoreVert} />
     </Button>
 
@@ -41,5 +41,5 @@ export const FeatMenu:Component<menuProps> = (props) => {
         {checkForHomebrew(props.feat)?"Edit":"Clone and Edit"}
       </MenuItem>
     </Menu>
-  </>
+  </div>
 }

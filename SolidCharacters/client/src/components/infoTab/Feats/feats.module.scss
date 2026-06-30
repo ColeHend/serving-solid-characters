@@ -5,10 +5,18 @@ $mobile-size:768px;
 .body {
   background-color: vars.$color-surface;
   background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+  width: 35%;
 
+  h1 {
+    text-align: center;
+  }
 
   button {
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
   }
 }
 
@@ -26,7 +34,7 @@ $mobile-size:768px;
 
 .searchDiv {
     margin: 0 auto;
-    width: 35%; 
+    width: 55%; 
     height: 3vh;
     margin-bottom: 1vh;
 
@@ -35,8 +43,7 @@ $mobile-size:768px;
     }
     
     @media screen and (max-width:$mobile-size) {
-        width: 100%;
-        margin: 0;
+        width: 92%;
     }
 }
 
@@ -45,7 +52,7 @@ $mobile-size:768px;
     margin: 0 auto;
     height: 45vh;
     overflow-y: scroll;
-    width: 35%;
+    width: 100%;
     text-align: center;
    
     table {
