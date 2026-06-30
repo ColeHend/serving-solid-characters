@@ -1,4 +1,4 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { Feat, PrerequisiteType } from "../../../../models/generated";
 import style from "./featView.module.scss";
 import { Modal } from "coles-solid-library";
@@ -18,11 +18,8 @@ const FeatView: Component<props> = (props) => {
 
   const featDescription = createMemo(()=> currentFeat()?.details?.description?.replaceAll(`\\n`, "<br />"));
 
-  const featPrereqTypes = createMemo(() => currentFeat()?.prerequisites?.flatMap(x => PrerequisiteType?.[x.type]));
-
   const featPreReqLength = createMemo(() => currentFeat()?.prerequisites?.length);
   
-
   const [menuRef, setMenuRef] = createSignal<HTMLElement|null>(null);
 
   createEffect(() => {
@@ -32,8 +29,6 @@ const FeatView: Component<props> = (props) => {
 
       return;
     }
-
-    console.table(currentFeat().prerequisites)
 
     const firstParent = ref?.parentElement;
 
