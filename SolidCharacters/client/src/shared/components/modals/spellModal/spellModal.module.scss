@@ -1,4 +1,4 @@
-@import '../../../../index.scss';
+@use '../../../../index.scss' as vars;
 
 .view {
     box-sizing: border-box;
@@ -158,10 +158,10 @@
         font-size: 13.5px;
         letter-spacing: .12em;
 
-        @include FlankedLabel;
+        @include vars.FlankedLabel;
     }
 
-    @include styledDndTable;
+    @include vars.styledDndTable;
 }
 
 .dndStyledHeader {
@@ -188,7 +188,7 @@
 //     font-size: 11px;
 //   }
 
-    @include styledDndHeader;
+    @include vars.styledDndHeader;
 }
 
 .flavor {
@@ -228,7 +228,7 @@
 .sectionHeaderRule {
     margin-left: 0 !important;
 
-    @include FlankedLabel;
+    @include vars.FlankedLabel;
 }
 
 

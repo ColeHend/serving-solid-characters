@@ -1,9 +1,11 @@
-import { Accessor, Component, createMemo, For, Setter, Show } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 // import { Background } from "../../../../models";
 import { Background } from "../../../../models/generated";
 import { Modal } from "coles-solid-library";
 import styles from "./backgroundView.module.scss"
 import Markdown from "../../MarkDown/MarkDown";
+import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { ChoiceCard } from "../../choiceCard/choiceCard";
 
 interface props {
   background: Accessor<Background>;
@@ -13,112 +15,107 @@ interface props {
 const BackgroundView: Component<props> = (props) => {
   const currentBackground = props.background;
 
-  const languages = createMemo(() => currentBackground().languages?.options || []);
-  const features = createMemo(() => currentBackground().features || []);
-  const abilityOptions = createMemo(() => currentBackground().abilityOptions || []);
-  const proficiencies = createMemo(() => currentBackground().proficiencies || []);
-  const feat = createMemo(() => currentBackground().feat || "");
-  const itemOptionKeys = createMemo(() => currentBackground().startEquipment.flatMap(item => item.optionKeys || []));
+  const [, setShowMenu] = props.backClick;
+
+  const [menuref, setMenuRef] = createSignal<HTMLElement|null>(null);
+
+  const srdLanguages = createMemo<string[]>(()=>[
+      "Common",
+      "Undercommon",
+      "Abyssal",
+      "Infernal",
+      "Celestial",
+      "Primordial",
+      "Draconic",
+      "Dwarvish",
+      "Elvish",
+      "Giant",
+      "Gnomish",
+      "Goblin",
+      "Halfling",
+      "Orc",
+      "Sylvan",
+      "Deep Speech",
+  ])
+  
+  const languages = createMemo(() => currentBackground()?.languages?.options || srdLanguages());
+  const features = createMemo(() => currentBackground()?.features || []);
+  const abilityOptions = createMemo(() => currentBackground()?.abilityOptions || []);
+  const proficiencies = createMemo(() => currentBackground()?.proficiencies || []);
+  const feat = createMemo(() => currentBackground()?.feat || "");
+  const startEquipmentKeys = createMemo(() => currentBackground()?.startEquipment?.flatMap(x => x?.optionKeys?.join(", ") ?? ""))
+  const startEquipment = createMemo(() => currentBackground()?.startEquipment ?? [])
+
+  createEffect(() => {
+    const ref = menuref();
+
+    const first = ref?.parentElement ?? null;
+
+    const second = first?.parentElement ?? null;
+
+    if (second) {
+      second.style.paddingBottom = "0";
+    }
+  })
 
   return (
-    <Modal title={currentBackground().name} show={props.backClick}>
-      <div class={`${styles.wrapper}`}>
+    <Modal title={currentBackground().name} noHeader show={props.backClick}>
+      <div class={`${styles.wrapper}`} ref={setMenuRef}>
+        <DndDialogHeader onClose={()=>setShowMenu(false)}>
+          <div class={`${styles.styledHeader}`}>
+            Background 
 
-        <span> 
+            <h1>{currentBackground()?.name}</h1>
+          </div>
+        </DndDialogHeader>
+
+        <span class={`${styles.desc}`}> 
           <Markdown 
             text={currentBackground().desc}
           />  
         </span>
 
-        <div class={`${styles.flexBoxRow}`}>
-          <div class={`${styles.flexBoxColumn}`}>
-            <Show when={abilityOptions().length > 0}>
-              <h3 class={`${styles.header}`}> 
-                <div>Ability Score Increase</div> 
-              </h3>
-                <span>Increase by 1:</span>
-              <ul class={`${styles.skillProfsBar}`}>
-                <For each={abilityOptions()}>
-                  {(score) => <li>{score}</li>}
-                </For>
-              </ul>
-            </Show>
-
-            <Show when={feat() !== ""}>
-              <h3 class={`${styles.header}`}> Suggested Feat </h3>
-              <div class={`${styles.info}`}>
-                {feat()}
-              </div>
-            </Show>
-          </div>
-          <div class={`${styles.flexBoxColumn}`}>
-            <Show when={features().length > 0}>
-              <div>
-                <For each={features()}>
-                  {(feature) =>
-                    <div class={`${styles.backgroundFeature}`}>
-                      <h3>
-                        {feature.name}
-                      </h3>
-                      <span>
-                        <Markdown text={feature.description} />
-                      </span>
-                    </div>
-                  }
-                </For>
-              </div>
-            </Show>
-
-            <Show when={languages().length > 0}>
-              <h3 class={`${styles.header}`}> Languages </h3>
-
-              <h3>Choose: { currentBackground().languages?.amount} </h3>
-
-              <div>
-                <For each={currentBackground().languages?.options }>
-                  {(choice) =>
-                    <div>
-                      <span>{choice}</span>
-                    </div>
-                  }
-                </For>
-              </div>
-            </Show>
-
-            <h3>Starting Equipment</h3>
-            <div>
-              <For each={currentBackground().startEquipment}>
-                {(item,i) =>
-                  <div>
-                    <span>{itemOptionKeys()[i()]}:</span>
-                    <span>{item.items?.join(", ")}</span>
-                  </div>
-                }
-              </For>
-           </div>
-          </div>
+        <div class={`${styles.Proficiencies}`}>
+          <h3>Armor</h3>
+          <span>{proficiencies().armor.join(", ") || "None"}</span>
+          <h3>Weapons</h3>
+          <span>{proficiencies().weapons.join(", ") || "None"}</span>
+          <h3>Tools</h3>
+          <span>{proficiencies().tools.join(", ") || "None"}</span>
+          <h3>Skills</h3>
+          <span>{proficiencies().skills.join(", ") || "None"}</span>
         </div>
 
-
-
-
-        <h3>Proficiencies</h3>
+        <h4 class={`${styles.styledLabel}`}>Languages</h4>
         
-        <div class={`${styles.info}`}>
-          Armor : {proficiencies().armor.join(", ") || "None"}
+        <div class={`${styles.languages}`}>
+          <ChoiceCard ChoiceKey="2" text={languages()?.join(", ")} />
         </div>
 
-        <div class={`${styles.info}`}>
-          Weapons : {proficiencies().weapons.join(", ") || "None"}
+        <h4 class={`${styles.styledLabel}`}>Starting Equipment</h4>
+
+        
+        <div class={`${styles.flavor}`}>
+          Choose 
+          
+          <For each={startEquipmentKeys()}>
+            {(key, i) => <>
+              <span>{key}</span>
+
+              <Show when={i() !== startEquipmentKeys().length - 1}>
+                <span> or </span>
+              </Show>
+            
+            </>}
+          </For>
         </div>
 
-        <div class={`${styles.info}`}>
-          Tools : {proficiencies().tools.join(", ") || "None"}
+        <div class={`${styles.itemChoices}`}>
+          <For each={startEquipment()}>
+            {(startingChoice) => <ChoiceCard ChoiceKey={startingChoice.optionKeys?.join(", ") ?? ''} text={startingChoice?.items?.join(", ") ?? ""} />}
+          </For>
         </div>
 
-        <div class={`${styles.info}`}>
-          Skills : {proficiencies().skills.join(", ") || "None"}
-        </div>
 
       </div>
     </Modal>
