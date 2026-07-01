@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Accessor, Component, createEffect, createMemo, createSignal, Show } from "solid-js";
 import style from "./amorView.module.scss";
 import { Item } from "../../../../../models/generated";
@@ -135,60 +136,79 @@ export const ArmorView:Component<viewProps> = (props) => {
         
         <div class={`${style.table}`}>
             <Table columns={["name","props","cost","menu"]} data={()=>paginatedItems()}>
-                <Column name="name">
+              <Column name="name" class={`${style.nameColumn}`}>
                     <Header onClick={()=>dataSort("name")}>
                     Name
                     <Show when={currentSort().sortKey === "name"}>
                         <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                     </Show>
                     </Header>
-                    <Cell<Item>>
-                    {(item)=> <span>
-                        {item.name}
-                    </span>}
-                    </Cell>
                 </Column>
         
-                <Column name="props">
+                <Column name="props" class={`${style.propsColumn}`}>
                     <Header onClick={()=>dataSort("properties")}>
                     AC
                     <Show when={currentSort().sortKey === "properties"}>
                         <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                     </Show>
                     </Header>
-                    <Cell<srdItem>>
-                    {(item)=><span>
-                        {item.properties?.AC}
-                    </span>}
-                    </Cell>
                 </Column>
         
-                <Column name="cost">
+                <Column name="cost" class={`${style.costColumn}`}>
                     <Header onClick={()=>dataSort("cost")}>
                     Cost
                     <Show when={ currentSort().sortKey === "cost"}>
                         <span>{ currentSort().isAsc ? " ▲" : " ▼"}</span>
                     </Show>
                     </Header>
-                    <Cell<srdItem>>
-                    {(item)=><span>
-                        {(item.cost)}
-                    </span>}
-                    </Cell>
                 </Column>
 
-                <Column name="menu">
+                <Column name="menu" class={`${style.actionColumn}`}> 
                   <Header><></></Header>
-                  <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
-                    {(item)=><ItemsMenu item={item} />}
-                  </Cell>
                 </Column>
-                    
-                <Row rowNumber={1} onClick={(e, Item)=>{
-                    setCurrentItem(Item);
-                    setShowItem(old => !old);
-                }}/>
             </Table>
+            <div class={`${style.scrollable}`}>
+              <Table  columns={["name","props","cost","menu"]} data={()=>paginatedItems()}>
+                  <Column name="name" class={`${style.nameColumn}`}>
+                      <Header><></></Header>
+                      <Cell<Item>>
+                      {(item)=> <span>
+                          {item.name}
+                      </span>}
+                      </Cell>
+                  </Column>
+          
+                  <Column name="props" class={`${style.propsColumn}`}>
+                      <Header><></></Header>
+                      <Cell<srdItem>>
+                      {(item)=><span>
+                          {item.properties?.AC}
+                      </span>}
+                      </Cell>
+                  </Column>
+          
+                  <Column name="cost" class={`${style.costColumn}`}>
+                      <Header><></></Header>
+                      <Cell<srdItem>>
+                      {(item)=><span>
+                          {(item.cost)}
+                      </span>}
+                      </Cell>
+                  </Column>
+
+                  <Column name="menu" class={`${style.actionColumn}`}>
+                    <Header><></></Header>
+                    <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
+                      {(item)=><ItemsMenu item={item} />}
+                    </Cell>
+                  </Column>
+                      
+                  <Row rowNumber={1} onClick={(e, Item)=>{
+                      setCurrentItem(Item);
+                      setShowItem(old => !old);
+                  }}/>
+              </Table>
+            </div>
         </div>
 
         <div class={`${style.paginator}`}>

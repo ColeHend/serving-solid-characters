@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { 
     Accessor, 
     Component, 
@@ -138,8 +139,6 @@ export const WeaponsView:Component<viewProps> = (props) => {
         });
     }; 
 
-    // const properties = createMemo<ItemProperties>(()=>currentItem()?.properties ?? {});
-
     return <Body class={`${styles.itemsBody}`}>
         <div class={`${styles.searchBar}`}>
             <SearchBar 
@@ -150,7 +149,7 @@ export const WeaponsView:Component<viewProps> = (props) => {
 
         <div class={`${styles.table}`}>
             <Table columns={["name","dmg","cost","menu"]} data={()=>paginatedItems()}>
-                <Column name="name">
+                <Column name="name" class={`${styles.nameColumn}`}>
                     <Header
                         onClick={()=>dataSort("name")}
                     >
@@ -159,14 +158,9 @@ export const WeaponsView:Component<viewProps> = (props) => {
                             <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                         </Show>
                     </Header>
-                    <Cell<srdItem>>
-                        {(item)=><span>
-                            {item.name}
-                        </span>}
-                    </Cell>
                 </Column>
 
-                <Column name="dmg">
+                <Column name="dmg" class={`${styles.propsColumn}`}>
                     <Header
                         onClick={()=>dataSort("properties")}
                     >
@@ -175,14 +169,9 @@ export const WeaponsView:Component<viewProps> = (props) => {
                             <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                         </Show>
                     </Header>
-                    <Cell<srdItem>>
-                        {(item)=><span>
-                            {item.properties?.Damage ?? "" }
-                        </span>}
-                    </Cell>
                 </Column>
 
-                <Column name="cost">
+                <Column name="cost" class={`${styles.costColumn}`}>
                     <Header
                     onClick={
                         ()=>dataSort("cost")
@@ -192,25 +181,51 @@ export const WeaponsView:Component<viewProps> = (props) => {
                             <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
                         </Show>
                     </Header>
-                    <Cell<srdItem>>
-                        {(item)=><span>
-                            {item.cost}
-                        </span>}
-                    </Cell>
                 </Column>
 
-                <Column name="menu">
+                <Column name="menu" class={`${styles.actionColumn}`}>
                     <Header><></></Header>
-                    <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
-                    {(item)=><ItemsMenu item={item} />}
-                    </Cell>
                 </Column>
-
-                <Row rowNumber={1} onClick={(e, Item)=>{
-                    setCurrentItem(Item);
-                    setShowItem(old => !old);
-                }}/>
             </Table>
+
+            <div class={`${styles.scrollable}`}>
+                <Table columns={["name","dmg","cost","menu"]} data={()=>paginatedItems()}>
+                    <Column name="name" class={`${styles.nameColumn}`}>
+                        <Cell<srdItem>>
+                            {(item)=><span>
+                                {item.name}
+                            </span>}
+                        </Cell>
+                    </Column>
+
+                    <Column name="dmg" class={`${styles.propsColumn}`}>
+                        <Cell<srdItem>>
+                            {(item)=><span>
+                                {item.properties?.Damage ?? "" }
+                            </span>}
+                        </Cell>
+                    </Column>
+
+                    <Column name="cost" class={`${styles.costColumn}`}>
+                        <Cell<srdItem>>
+                            {(item)=><span>
+                                {item.cost}
+                            </span>}
+                        </Cell>
+                    </Column>
+
+                    <Column name="menu" class={`${styles.actionColumn}`}>
+                        <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
+                        {(item)=><ItemsMenu item={item} />}
+                        </Cell>
+                    </Column>
+
+                    <Row rowNumber={1} onClick={(e, Item)=>{
+                        setCurrentItem(Item);
+                        setShowItem(old => !old);
+                    }}/>
+                </Table>
+            </div>
         </div>
 
         <div>

@@ -83,7 +83,7 @@ const ItemsViewTab:Component = () => {
   })
 
   return <Body class={`${styles.body}`}>
-    <h1>Items</h1>
+    <h1 class={`${styles.title}`}>Items</h1>
     
     <Carousel 
       startingIndex={startingIndex()} 

@@ -7,13 +7,16 @@
 }
 
 .table {
-    height: 49vh;
-    overflow-y: scroll;
+    width: 100%;
+
+    table {
+        width: 100% !important;
+    }
     
 }
 
 .searchBar {
-    width: 35%; 
+    width: 75%; 
     height: 3vh;
     margin: 0 auto;
     margin-bottom: 1vh;
@@ -23,6 +26,27 @@
     }
 
     @media screen and (max-width: 768px) {
-        width: 100%;
+        width: 92%;
     }
+}
+
+.scrollable {
+    height: 49vh;
+    overflow-y: auto;
+}
+
+.nameColumn {
+    width: 40%;
+}
+
+.propsColumn {
+    width: 30%;
+}
+
+.costColumn {
+    width: 20%;
+}
+
+.actionColumn {
+    width: 10%;
 }

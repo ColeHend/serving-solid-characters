@@ -1,42 +1,81 @@
+@use "../../../../index.scss" as *;
+
+$marginLeft: 5%;
+
 .itemWrapper {
-    background-color: none;
-    background: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
     overflow-y: scroll;
     overflow-x: hidden;
     height: 100%;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2%
+    gap: 2%;
+    text-align: left;
+
+    @include parchementBG;
 }
 
 .properties {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1%;
-}
+    display: grid;
+    grid-template-columns: 0.3fr 1fr;
+    align-items: baseline;
+    text-align: left;
+    margin-left: $marginLeft;
 
-.push {
-    margin-left: 3%;
+    h3 {
+        color: #241405 !important;
+
+        @include styledDndTitle;
+    }
+
+    span {
+        margin-left: 0;
+    }
 }
 
 .header {
-    font-family: 'Mr_Eaves_Small_Caps';
-    font-weight: 100;
-    color: #AA0505;
     height: min-content;
-    margin-left: 5%;
+    margin-left: $marginLeft;
     margin: 0;
     padding: 0;
+
+    @include styledDndTitle;
 }
 
 .info {
-    font-family: 'Bookinsanity';
-    font-weight: 100;
-    font-size: medium;
-    color: #000;
     text-wrap: wrap;
     height: min-content;
+    margin-left: $marginLeft;
+
+    @include styledDndText;
+}
+
+.flankedHeader {
+    margin-left: $marginLeft;
+    margin-right: $marginLeft;
+
+    @include FlankedLabel;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: 0.2fr 1fr;
+    align-items: baseline;
+    text-align: left;
+    margin-left: $marginLeft;
+}
+
+.desc {
+    @include flavorText;
+}
+
+.headerTitle {
+
+    @include styledDndHeader;
+}
+
+.divider {
+    margin-top: 11%;
+
+    @media screen and (max-width: 768px) {
+        margin-top: 38%;
+    }
 }

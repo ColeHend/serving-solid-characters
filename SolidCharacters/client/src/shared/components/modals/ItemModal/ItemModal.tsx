@@ -1,8 +1,9 @@
 import { Modal } from "coles-solid-library";
-import { Component,Accessor, Setter, createMemo, For, Show } from "solid-js";
+import { Component,Accessor, Setter, createMemo, For, Show, createSignal } from "solid-js";
 import { srdItem } from "../../../../models/data/generated";
-import { ItemProperties } from "../../../../models/data";
 import styles from "./itemsModal.module.scss";
+import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { ItemType } from "../../../../models/generated";
 
 
 interface modalProps {
@@ -12,34 +13,74 @@ interface modalProps {
 
 export const ItemPopup:Component<modalProps> = (props) => {
     const currentItem = props.item();
+    
+    const [menuRef, setMenuRef] = createSignal<HTMLElement | null>(null);
+    const [,setShow] = props.show;
+
     const propertieKeys = createMemo(()=> {
         return Object.keys(props.item().properties);
     })
-    
-    return <Modal title={`${currentItem.name}`} show={props.show}>
-        <div class={`${styles.itemWrapper}`}>
-            <span class={`${styles.info} ${styles.push}`}>
-                {currentItem.desc}
-            </span>
 
-            <h2 class={`${styles.header}`}>Cost: 
+    const prettyTypeName = (type: string) => {
+        switch (type) {
+            case "Item":
+                return "Adventuring Gear";
+            default:
+                return type;
+        }
+    }
+    
+    createMemo(() => {
+        const menu = menuRef();
+
+        const first = menu?.parentElement ?? null;
+
+        const second = first?.parentElement ?? null;
+
+        if (second) {
+            second.style.paddingBottom = "0";
+        }
+    })
+
+    return <Modal title={`${currentItem.name}`} noHeader show={props.show}>
+        <div class={`${styles.itemWrapper}`} ref={setMenuRef}>
+            <DndDialogHeader onClose={()=>setShow(false)}>
+                <div class={`${styles.headerTitle}`}> 
+                    {prettyTypeName(ItemType[currentItem.type])}
+
+                    <h1>{currentItem.name}</h1>
+                </div>
+            </DndDialogHeader>
+
+            <div class={`${styles.divider}`} />
+
+            <div class={`${styles.info} ${styles.desc}`}>
+                {currentItem.desc}
+            </div>
+            
+            <div class={`${styles.stats}`}>
+                <h2 class={`${styles.header}`}>
+                    Cost: 
+                </h2>
                 <span class={`${styles.info}`}>
                     {currentItem.cost}
                 </span>
-            </h2>
 
-            <h2 class={`${styles.header}`}>Weight: 
+                <h2 class={`${styles.header}`}>
+                    Weight: 
+                </h2>
                 <span class={`${styles.info}`}>
                     {currentItem.weight} lbs
                 </span>
-            </h2>
+
+            </div>
 
             <Show when={propertieKeys().length > 0}>
-                <h2 class={`${styles.header}`}>Properties</h2>
+                <h3 class={` ${styles.flankedHeader}`}>Properties</h3>
                 <div>
                     <For each={propertieKeys()}>
                         {(key) => <div class={`${styles.properties}`}>
-                            <h3 class={`${styles.header}`}>{key}</h3>
+                            <h3 class={`${styles.header}`}>{key}.</h3>
                             <span class={`${styles.info}`}>
                                 <Show 
                                 when={

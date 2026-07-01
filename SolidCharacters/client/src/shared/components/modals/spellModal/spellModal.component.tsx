@@ -1,13 +1,9 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, Setter, Show, splitProps, useContext } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, Setter, Show, splitProps,} from "solid-js";
 import { Spell } from "../../../../models/generated";
-import getUserSettings from "../../../customHooks/userSettings";
-import { SharedHookContext } from "../../../../components/rootApp";
-import { useUserStyles } from "../../../customHooks/utility/style/styleHook";
 import style from "./spellModal.module.scss";
 import { spellLevel, spellComponents } from "../../../customHooks/utility/tools/Tools";
 import { Modal } from "coles-solid-library";
 import Markdown from "../../MarkDown/MarkDown";
-import { DndDialogButton } from "../../dndDialogButton/dndDialogButton";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
 import { FleuronDivider } from "../../fleuronDivider/fleuronDivider";
 
@@ -18,7 +14,7 @@ type props = {
 
 const SpellModal: Component<props> = (props) => {
   
-  const sharedHooks = useContext(SharedHookContext);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [{"0":showSpell, "1":setShowSpell}, other] = splitProps(props.backgroundClick, ["0","1"]);
 
   const [menuRef, setMenuRef] = createSignal<HTMLElement|null>(null)
@@ -31,7 +27,7 @@ const SpellModal: Component<props> = (props) => {
       return;
     }
 
-    const firstParent = ref.parentElement;
+    const firstParent = ref?.parentElement;
 
     const second = firstParent?.parentElement;
 
@@ -42,7 +38,7 @@ const SpellModal: Component<props> = (props) => {
 
   return (
     <Modal
-      title={props.spell().name}
+      title={props?.spell()?.name}
       show={[showSpell,setShowSpell]}
       noHeader
     >
@@ -51,52 +47,52 @@ const SpellModal: Component<props> = (props) => {
 
         <DndDialogHeader onClose={()=>setShowSpell(false)}>
           <div class={`${style.dndStyledHeader}`}>
-            <span>level {props.spell().level} spell</span>
+            <span>level {props?.spell()?.level} spell</span>
             <span> · </span>
-            <span>{props.spell().school}</span>
-            <h1 class={`${style.title}`}>{props.spell().name}</h1>
+            <span>{props?.spell()?.school}</span>
+            <h1 class={`${style.title}`}>{props?.spell()?.name}</h1>
           </div>
         </DndDialogHeader>
 
         <h2 class={`${style.spellSchoolTitle}`}>
           <span class={`${style.flavor}`}>
-            {spellLevel(+props.spell().level)}-level {props.spell().school}
+            {spellLevel(+props?.spell()?.level)}-level {props?.spell()?.school}
           </span>
         </h2>
 
         <div class={`${style.spellInfo}`}>
           <h2>Casting time: </h2>
           <span>
-            {props.spell().castingTime}  
+            {props?.spell()?.castingTime}  
           </span>
 
-          <Show when={props.spell().range !== ""}>
+          <Show when={props?.spell()?.range !== ""}>
             <h2>Range: </h2>
             <span>
-              {props.spell().range}
+              {props?.spell()?.range}
             </span>
           </Show>
 
           <h2>Components: </h2>
           <span>
-            {spellComponents(props.spell())}
+            {spellComponents(props?.spell())}
           </span>
 
           <Show when={props.spell().duration !== ""}>
             <h2>Duration: </h2>
             <span>
-              {props.spell().duration}
+              {props?.spell()?.duration}
             </span>
           </Show>
 
-          <Show when={props.spell().classes.length !== 0}>
+          <Show when={props?.spell()?.classes?.length !== 0}>
             <h2>Classes: </h2>
-            <span>{props.spell().classes.join(", ")}</span>
+            <span>{props?.spell()?.classes?.join(", ")}</span>
           </Show>
 
-          <Show when={props.spell().subClasses.length > 0}>
+          <Show when={props?.spell()?.subClasses?.length > 0}>
             <h2>SubClasses: </h2>
-            <span>{props.spell().subClasses.join(", ")}</span>
+            <span>{props?.spell()?.subClasses?.join(", ")}</span>
           </Show>
         </div>
 
@@ -105,17 +101,17 @@ const SpellModal: Component<props> = (props) => {
 
         <span>
           <Markdown 
-            text={props.spell().description}
+            text={props?.spell()?.description}
             class={`${style.desc}`}
           />
         </span>
 
-        <Show when={!!props.spell()?.higherLevel}>
+        <Show when={!!props?.spell()?.higherLevel}>
           <h2 class={`${style.sectionHeaderRule}`}>Higher Levels</h2>
           
           <span>
             <Markdown
-              text={props.spell().higherLevel ?? ""}
+              text={props?.spell()?.higherLevel ?? ""}
               class={`${style.HigherLevels}`}
             />
           </span>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import { Accessor, Component, createEffect, createMemo, createSignal, Show } from "solid-js";
 import { ItemType } from "../../../../../models/generated";
@@ -134,60 +135,76 @@ export const ItemsView:Component<viewProps> = (props) => {
 
     <div class={`${styles.table}`}>
       <Table columns={["name","type","cost","menu"]} data={()=>paginatedItems()}>
-        <Column name="name">
+        <Column name="name" class={`${styles.nameColumn}`}>
           <Header onClick={()=>dataSort("name")}>
             Name
             <Show when={currentSort().sortKey === "name"}>
               <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
             </Show>
           </Header>
-          <Cell<srdItem>>
-            {(item)=> <span>
-              {item.name}
-            </span>}
-          </Cell>
         </Column>
 
-        <Column name="type">
+        <Column name="type" class={`${styles.propsColumn}`}>
           <Header onClick={()=>dataSort("type")}>
             Type
             <Show when={currentSort().sortKey === "type"}>
               <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
             </Show>
           </Header>
-          <Cell<srdItem>>
-            {(item)=><span>
-              {ItemType[item.type]}
-            </span>}
-          </Cell>
         </Column>
 
-        <Column name="cost">
+        <Column name="cost" class={`${styles.costColumn}`}>
           <Header onClick={()=>dataSort("cost")}>
             Cost
             <Show when={ currentSort().sortKey === "cost"}>
               <span>{ currentSort().isAsc ? " ▲" : " ▼"}</span>
             </Show>
           </Header>
-          <Cell<srdItem>>
-            {(item)=><span>
-              {(item.cost)}
-            </span>}
-          </Cell>
         </Column>
 
-        <Column name="menu">
+        <Column name="menu" class={`${styles.actionColumn}`}>
           <Header><></></Header>
-          <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
-            {(item)=><ItemsMenu item={item} />}
-          </Cell>
         </Column>
-          
-        <Row rowNumber={1} onClick={(e, Item)=>{
-          setCurrentItem(Item);
-          setShowItem(old => !old);
-        }}/>
+         
       </Table>
+      <div class={`${styles.scrollable}`}>
+        <Table columns={["name","type","cost","menu"]} data={()=>paginatedItems()}>
+          <Column name="name" class={`${styles.nameColumn}`}>
+            <Cell<srdItem>>
+              {(item)=> <span>
+                {item.name}
+              </span>}
+            </Cell>
+          </Column>
+
+          <Column name="type" class={`${styles.propsColumn}`}>
+            <Cell<srdItem>>
+              {(item)=><span>
+                {ItemType[item.type]}
+              </span>}
+            </Cell>
+          </Column>
+
+          <Column name="cost" class={`${styles.costColumn}`}>
+            <Cell<srdItem>>
+              {(item)=><span>
+                {(item.cost)}
+              </span>}
+            </Cell>
+          </Column>
+
+          <Column name="menu" class={`${styles.actionColumn}`}>
+            <Cell<srdItem> onClick={(e)=>e.stopPropagation()}>
+              {(item)=><ItemsMenu item={item} />}
+            </Cell>
+          </Column>
+            
+          <Row rowNumber={1} onClick={(e, Item)=>{
+            setCurrentItem(Item);
+            setShowItem(old => !old);
+          }}/>
+        </Table>
+      </div>
     </div>
 
     <div class={`${styles.paginator}`}>
