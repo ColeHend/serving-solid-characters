@@ -42,20 +42,20 @@ export const ItemPopup:Component<modalProps> = (props) => {
         }
     })
 
-    return <Modal title={`${currentItem.name}`} noHeader show={props.show}>
+    return <Modal title={`${currentItem?.name}`} noHeader show={props.show}>
         <div class={`${styles.itemWrapper}`} ref={setMenuRef}>
             <DndDialogHeader onClose={()=>setShow(false)}>
                 <div class={`${styles.headerTitle}`}> 
-                    {prettyTypeName(ItemType[currentItem.type])}
+                    {prettyTypeName(ItemType?.[currentItem?.type])}
 
-                    <h1>{currentItem.name}</h1>
+                    <h1>{currentItem?.name}</h1>
                 </div>
             </DndDialogHeader>
 
             <div class={`${styles.divider}`} />
 
             <div class={`${styles.info} ${styles.desc}`}>
-                {currentItem.desc}
+                {currentItem?.desc}
             </div>
             
             <div class={`${styles.stats}`}>
@@ -63,19 +63,19 @@ export const ItemPopup:Component<modalProps> = (props) => {
                     Cost: 
                 </h2>
                 <span class={`${styles.info}`}>
-                    {currentItem.cost}
+                    {currentItem?.cost}
                 </span>
 
                 <h2 class={`${styles.header}`}>
                     Weight: 
                 </h2>
                 <span class={`${styles.info}`}>
-                    {currentItem.weight} lbs
+                    {currentItem?.weight} lbs
                 </span>
 
             </div>
 
-            <Show when={propertieKeys().length > 0}>
+            <Show when={propertieKeys()?.length > 0}>
                 <h3 class={` ${styles.flankedHeader}`}>Properties</h3>
                 <div>
                     <For each={propertieKeys()}>
@@ -84,10 +84,10 @@ export const ItemPopup:Component<modalProps> = (props) => {
                             <span class={`${styles.info}`}>
                                 <Show 
                                 when={
-                                    Array.isArray(props.item().properties[key]) 
+                                    Array.isArray(props?.item()?.properties?.[key]) 
                                 }
-                                fallback={props.item().properties[key]}>
-                                    {Array.from(props.item().properties[key]).join(" ")}
+                                fallback={props?.item()?.properties?.[key]}>
+                                    {Array.from(props?.item()?.properties?.[key])?.join(" ")}
                                 </Show>
                             </span>
                         </div>}
