@@ -71,7 +71,7 @@ const ItemsViewTab:Component = () => {
   const [itemIndex,setItemIndex] = createSignal<number>(startingIndex() ?? 0);
 
   createEffect(()=>{
-    setSearchParam({itemType: elementMemo()[itemIndex()].name})
+    setSearchParam({itemType: elementMemo()[itemIndex()]?.name})
   })
 
   onMount(()=>{
@@ -83,7 +83,7 @@ const ItemsViewTab:Component = () => {
   })
 
   return <Body class={`${styles.body}`}>
-    <h1>Items</h1>
+    <h1 class={`${styles.title}`}>Items</h1>
     
     <Carousel 
       startingIndex={startingIndex()} 

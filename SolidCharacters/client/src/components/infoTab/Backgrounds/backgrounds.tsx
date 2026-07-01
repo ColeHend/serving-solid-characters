@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, createEffect, createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
 import styles from "./backgrounds.module.scss";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
-// import { Background } from "../../../models/data";
 import { Background } from "../../../models/generated";
 import { Paginator } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
@@ -72,7 +72,7 @@ const Viewbackgrounds: Component = () => {
   })
 
   return <Body class={`${styles.body}`}>
-    <h1>Backgrounds</h1>
+    <h1 class={`${styles.Title}`}>Backgrounds</h1>
     <div class={`${styles.searchBar}`}>
       <SearchBar 
         dataSource={tableData} 
