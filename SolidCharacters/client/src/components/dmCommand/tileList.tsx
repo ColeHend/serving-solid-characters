@@ -3,6 +3,18 @@ import { JSX } from "solid-js";
 interface TileData {
     width: number;
     height: number;
+    info?: TileInfo;
+}
+interface TileInfo {
+    type: 'tool' | 'campaign';
+    metadata: TileMetadata;
+}
+type locationKey = 'campaign' | 'area' | 'location';
+type toolType = 'monster' | 'item' | 'spell' | 'note';
+type TagKey = locationKey | toolType;
+interface TileMetadata {
+    autoTags?: Record<TagKey, string>;
+    tags?: string[];
 }
 
 export type tiles = 'main';
