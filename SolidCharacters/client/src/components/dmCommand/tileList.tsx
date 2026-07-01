@@ -7,6 +7,7 @@ interface TileData {
 
 export type tiles = 'main';
 
+/// keep it to a max width of 3 for mobile;
 const tileSizes: Record<tiles, TileData> = {
     main: { width: 3, height: 3 },
 };
