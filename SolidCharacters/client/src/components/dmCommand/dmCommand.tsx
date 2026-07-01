@@ -2,6 +2,7 @@ import { Component, For, createSignal, onMount, onCleanup } from "solid-js";
 import { Body } from "coles-solid-library";
 import { isMobile } from "coles-solid-library/dist/tools/tools.js";
 import GetTileElement, { tiles, getTileMetadata } from "./tileList";
+import style from "./dmCommand.module.scss";
 
 const GAP = 10;
 
@@ -25,10 +26,10 @@ const DmCommand: Component = () => {
 
     return (
         <Body>
-            <div>
+            <div class={`${style.header}`}>
                 <h1>DM Command</h1>
             </div>
-            <div>
+            <div class={`${style.body}`}>
                 <div ref={gridRef} style={{
                     display: "grid",
                     "grid-template-columns": `repeat(${maxColumns}, 1fr)`,
