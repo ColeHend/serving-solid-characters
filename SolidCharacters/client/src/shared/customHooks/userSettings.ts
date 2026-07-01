@@ -2,7 +2,7 @@ import { Accessor, createSignal, Setter } from "solid-js";
 import {
   AiProviderKind, UserSettings,
   DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_SHOW_THINKING, DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW,
-  DEFAULT_MEDIUM_RETRIES, DEFAULT_REVIEW_SETTINGS, DEFAULT_TOOL_PERMISSIONS, DEFAULT_USAGE_LEVEL,
+  DEFAULT_CREATION_PIPELINE_LEVEL, DEFAULT_MEDIUM_RETRIES, DEFAULT_REVIEW_SETTINGS, DEFAULT_TOOL_PERMISSIONS, DEFAULT_USAGE_LEVEL,
 } from "../../models/userSettings";
 import httpClient$ from "./utility/tools/httpClientObs";
 import userSettingDB from "./utility/localDB/userSettingDB";
@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS: UserSettings = {
     thinking: DEFAULT_AI_THINKING, thinkingHomebrew: DEFAULT_AI_THINKING_HOMEBREW,
     showThinking: DEFAULT_AI_SHOW_THINKING,
     usageLevel: DEFAULT_USAGE_LEVEL, mediumRetries: DEFAULT_MEDIUM_RETRIES,
+    creationPipelineLevel: DEFAULT_CREATION_PIPELINE_LEVEL,
     toolPermissions: DEFAULT_TOOL_PERMISSIONS, review: DEFAULT_REVIEW_SETTINGS,
   },
 }

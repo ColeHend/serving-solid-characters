@@ -186,6 +186,31 @@ function matchOption(raw: string, options: readonly string[]): string | null {
     return options.find(o => o.toLowerCase() === lc) ?? null;
 }
 
+/**
+ * Singular/loose aliases → canonical category, so a small model writing "Resistance"/"Saving Throw"/"AC"
+ * still resolves instead of silently dropping the command. Only the CATEGORY lookup is loosened here; the
+ * value-field coercion below stays strict (sheet safety — see the SAFETY note at the top).
+ */
+const CATEGORY_ALIASES: Record<string, MadCategory> = {
+    resistance: "Resistances", vulnerability: "Vulnerabilities", immunity: "Immunities",
+    stat: "Stats", ability: "Stats", abilityscore: "Stats", abilities: "Stats",
+    proficiency: "Proficiencies", skill: "Proficiencies", skills: "Proficiencies",
+    savingthrow: "SavingThrows", savingthrows: "SavingThrows", save: "SavingThrows", saves: "SavingThrows",
+    language: "Languages", spell: "Spells", item: "Items", feat: "Feats",
+    feature: "Features", speed: "Speed", ac: "ArmorClass", armorclass: "ArmorClass",
+    expertise: "Expertise", currency: "Currency", allproficiency: "AllProficiencies",
+};
+
+/** Resolve a model-written category to its canonical form: exact match, then alias, then singular→plural. */
+export function resolveCategory(raw: string): MadCategory | null {
+    const exact = matchOption(norm(raw), MAD_CATEGORIES);
+    if (exact) return exact as MadCategory;
+    const key = norm(raw).toLowerCase().replace(/[^a-z]/g, "");
+    if (CATEGORY_ALIASES[key]) return CATEGORY_ALIASES[key];
+    const plural = matchOption(`${norm(raw)}s`, MAD_CATEGORIES);
+    return plural ? (plural as MadCategory) : null;
+}
+
 function coerceAbility(raw: string): string | null {
     if (!raw) return null;
     const lc = raw.toLowerCase();
@@ -253,7 +278,7 @@ export function coerceCommand(
     target: string | undefined,
     resolveRef: (refKind: RefKind, name: string) => string | null,
 ): MadFeature | null {
-    const category = matchOption(norm(rawCategory), MAD_CATEGORIES) as MadCategory | null;
+    const category = resolveCategory(rawCategory);
     if (!category) return null;
     const t = type === "Remove" ? "Remove" : "Add";
     const spec = COMMAND_CATALOG[category];
@@ -281,6 +306,45 @@ export function prettyCommand(command: string): string {
 export function categoryOf(command: string): MadCategory | null {
     const cat = command.replace(/^(Add|Remove)/, "");
     return (MAD_CATEGORIES as string[]).includes(cat) ? (cat as MadCategory) : null;
+}
+
+/**
+ * Validate one ALREADY-STORED MadFeature against the catalog — used by the High-mode MADS validation step
+ * (genPipeline/madsStep) to catch sheet-corrupting commands (the runtime sheet handlers throw / produce NaN
+ * on an unknown key, see the SAFETY note at the top). Returns the reasons the command is illegal, or [] if
+ * it is well-formed. Mirrors coerceCommand's strictness for value fields; ID-based ref fields hold an opaque
+ * catalog id post-enrichment (the name is already resolved away), so we only require a non-empty string there.
+ */
+export function validateStoredCommand(mad: MadFeature): string[] {
+    const command = typeof mad?.command === "string" ? mad.command : "";
+    const isAdd = command.startsWith("Add");
+    const isRemove = command.startsWith("Remove");
+    const category = categoryOf(command);
+    if (!category || (!isAdd && !isRemove)) {
+        return [`"${command || "(empty)"}" is not a valid Add/Remove command`];
+    }
+    const errors: string[] = [];
+    if (mad.type !== MadType.Character && mad.type !== MadType.Info) {
+        errors.push(`${prettyCommand(command)} has an invalid type ("${String(mad.type)}")`);
+    }
+    const spec = COMMAND_CATALOG[category];
+    const fields = isRemove ? spec.removeFields : spec.addFields;
+    const value = (mad.value ?? {}) as Record<string, unknown>;
+    for (const field of fields) {
+        if (!field.required) continue;
+        if (field.type === "ref") {
+            // Opaque id post-enrichment — the resolved name is gone, so just require a non-empty string.
+            const id = typeof value[field.key] === "string" ? (value[field.key] as string).trim() : "";
+            if (!id) errors.push(`${prettyCommand(command)} is missing its ${field.key}`);
+            continue;
+        }
+        // A value field must still resolve to a known option (refs are handled above, so resolveRef is unused).
+        const coerced = coerceField(field, value[field.key], "", () => null, undefined);
+        if (coerced === null) {
+            errors.push(`${prettyCommand(command)} has an invalid ${field.key} ("${String(value[field.key] ?? "")}")`);
+        }
+    }
+    return errors;
 }
 
 /**

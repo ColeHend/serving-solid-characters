@@ -4,33 +4,38 @@ import getUserSettings from "./userSettings";
 import {
     AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_LOOKUP_TOOLS,
     DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_RESUME_GENERATION,
-    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES,
-    DEFAULT_USAGE_LEVEL, UsageControlLevel,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_CREATION_PIPELINE_LEVEL,
+    DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES, DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
 import { AiAudio, AiImage, AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
 import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterPipelineTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
-import { HOMEBREW_KINDS, KIND_TO_TOOL } from "../ai/refs/homebrewKind";
+import { HOMEBREW_KINDS, HomebrewKind, KIND_TO_TOOL, kindLabel, kindLabelLower, TOOL_TO_KIND } from "../ai/refs/homebrewKind";
 import { toolCategory } from "../ai/tools/toolCategory";
 import { runComputeTool } from "../ai/tools/computeTools";
 import { LOOKUP_TOOLS, runLookupTool } from "../ai/tools/lookupTools";
 import { EDIT_TOOLS } from "../ai/tools/editTools";
 import { CONTROL_TOOLS, parseSwitchMode } from "../ai/tools/controlTools";
 import { DELEGATE_RESEARCH_TOOL, researchAgentSpec, runSubAgent } from "../ai/subAgent";
-import { attachCommands, hasFeatures } from "../ai/commands/commandAgent";
+import { attachCommandsWithStats, hasFeatures } from "../ai/commands/commandAgent";
 import {
     buildInteraction, interactionResultText, InteractionResponse, PendingInteraction,
 } from "../ai/tools/interactions";
 import { buildEditPreview, buildPreview, HomebrewPreview, saveHomebrew } from "../ai/tools/toolDispatcher";
 import { logDecision } from "./decisionLogManager";
+import { DebugConsole } from "./DebugConsole";
 import { assembleVerdicts } from "../ai/readiness/pipeline";
 import { isBlocked, ReviewState, ReviewVerdict } from "../ai/readiness/types";
 import { ensureReviewAgentsLoaded } from "./reviewAgentManager";
 import { runClassPipeline, CLASS_PIPELINE_PHASES } from "../ai/genPipeline/classPipeline";
 import { runCharacterPipeline, CHARACTER_PIPELINE_PHASES } from "../ai/genPipeline/characterPipeline";
+import { runHomebrewPipeline, supportsHomebrewPipeline, HOMEBREW_PIPELINE_PHASES } from "../ai/genPipeline/homebrewPipeline";
+import { runMechanicsReview } from "../ai/genPipeline/mechanicsStep";
+import { featuresMissingMads } from "../ai/commands/validateMads";
 import { buildClassReviewer } from "../ai/genPipeline/critic";
-import type { CharacterPipelineHost, PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
+import type { CharacterPipelineHost, HomebrewPipelineHost, PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
 import { skeletonSummaryLines, type SkeletonPlan } from "../ai/genPipeline/skeleton";
+import { PipelinePhase } from "../ai/genPipeline/types";
 import type { ConceptBrief, PipelineCheckpoint, PipelineResume, PipelineRun, PipelineType, WorkingCharacter, WorkingClass, WorkingEntity } from "../ai/genPipeline/types";
 import { pipelineCheckpointManager } from "../ai/genPipeline/checkpoint/pipelineCheckpointManager";
 import characterManager from "./dndInfo/useCharacters";
@@ -187,6 +192,7 @@ export class AiAssistant {
     private currentPipelineType: PipelineType = "class";       // which pipeline the active run drives (for checkpoint rows)
     private currentPipelineSeed = "";                          // the active/last run's generation seed (for checkpoints + restart)
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
+    private narratedDrafts = new Set<string>();          // toolCallIds whose drafted entity was already announced in chat
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
     private schemaRetryStreak = 0;                       // High-mode SCHEMA-gate regenerations (pre-handoff) for this request
     private reviewFixStreak = 0;                         // High-mode READINESS auto-fix regenerations (post-review) for this request
@@ -280,6 +286,7 @@ export class AiAssistant {
         this.pipelineCheckpointId = null;
         this.setResumableCheckpoint(null);   // drop any "Resume generation" offer from a prior load
         this.repairCounts.clear();
+        this.narratedDrafts.clear();
         this.mediumRetryStreak = 0;
         this.schemaRetryStreak = 0;
         this.reviewFixStreak = 0;
@@ -425,9 +432,16 @@ export class AiAssistant {
         const snackMessage = result.ok && persona.confirmFlourish ? "It is done. Let it be written." : result.message;
         addSnackbar({ message: snackMessage, severity: result.ok ? "success" : "error" });
         if (result.ok) {
+            // A durable, in-flow chat record naming the saved entity — so both the user and (on the next
+            // turn, by re-reading the chat) the model know exactly what was created/edited and its name.
+            // App-emitted because the model has no turn at save time (mirrors the character-pipeline note).
+            const noteId = this.pushAssistantBubble(preview.mode === "edit"
+                ? `✦ Updated **${preview.title}** (${kindLabelLower(preview.kind)}).`
+                : `✦ Saved **${preview.title}** (${kindLabelLower(preview.kind)}) to your homebrew. Say "edit ${preview.title}" to change it.`);
             // Transform the card into a "Saved" confirmation (the user dismisses it when ready) instead of
-            // removing it — a save is acknowledged, not silently vanished.
-            this.updatePreview(previewId, { saved: true, saveError: undefined });
+            // removing it — and anchor it under the announcement above so it stays in place in the
+            // transcript instead of drifting to the bottom as the conversation continues.
+            this.updatePreview(previewId, { saved: true, saveError: undefined, anchorId: noteId });
             // Auto-log every committed change (the model's chat reply is the "why"; we capture a short note).
             void logDecision({
                 entityKind: preview.kind,
@@ -525,10 +539,38 @@ export class AiAssistant {
         this.resolveToolCall(preview.toolCallId, repairInstruction(preview, reason), true);
     };
 
-    /** Dismiss a card that's mid-repair. UI-only: its tool call was already resolved by completePreview. */
+    /**
+     * Dismiss a card that's mid-repair: abort the in-flight completion turn and restore the pre-repair card
+     * (instead of deleting it). completePreview collapsed the card (`repairing`), bumped the repair count, and
+     * RESOLVED the card's tool call to kick off the repair turn — so we un-collapse it, roll back the count
+     * (re-enabling "Complete with AI"), and re-open that tool call so the restored card is fully live again.
+     */
     cancelRepair = (previewId: string) => {
-        this.removePreview(previewId);
+        const preview = this.pendingPreviews().find(p => p.previewId === previewId);
+        if (!preview) return;
+        this.cancel();   // abort the streaming turn (+ any pipeline it spawned); bumps turnEpoch so a late finishTurn is dropped
+        this.reopenToolCall(preview.toolCallId);   // undo the repair injection so Save/Reject/Complete all work again
+        this.updatePreview(previewId, { repairing: false });   // un-collapse → the previous full card returns
+        this.repairCounts.delete(preview.title.toLowerCase());  // roll back the attempt bump so the user can retry
+        void this.persistCurrent();
     };
+
+    /**
+     * Undo a repair injection so a dismissed "Complete with AI" card is fully live again: drop the tool_result
+     * completePreview recorded for it (from the in-flight buffer or, if already flushed, the last history tool
+     * message) and re-open the call as outstanding — leaving history exactly as it was before the repair.
+     */
+    private reopenToolCall(toolCallId: string) {
+        if (this.outstanding.has(toolCallId)) return;   // still open (never resolved) — nothing to undo
+        this.resolved = this.resolved.filter(r => r.toolCallId !== toolCallId);
+        const last = this.history[this.history.length - 1];
+        if (last?.role === "tool" && last.toolResults?.some(r => r.toolCallId === toolCallId)) {
+            const remaining = last.toolResults.filter(r => r.toolCallId !== toolCallId);
+            if (remaining.length) last.toolResults = remaining;
+            else this.history.pop();
+        }
+        this.outstanding.add(toolCallId);
+    }
 
     /**
      * Regenerate an entity the readiness pipeline couldn't get past schema validation ("needs direction").
@@ -582,6 +624,8 @@ export class AiAssistant {
      * there's no remembered seed (e.g. a brand-new session after a hard reload, where Resume is the path).
      */
     restartPipeline = () => {
+        // The homebrew mini-pipeline doesn't support restart (it clears its seed and never checkpoints).
+        if (this.currentPipelineType === "homebrew") return;
         const seed = this.currentPipelineSeed;
         if (!seed) return;
         const type = this.currentPipelineType;
@@ -602,6 +646,8 @@ export class AiAssistant {
         const cp = this.resumableCheckpoint();
         if (!cp || this.pipelineRun()) return;
         this.setResumableCheckpoint(null);
+        // The mini-pipeline never checkpoints, so a homebrew checkpoint shouldn't exist — drop it defensively.
+        if (cp.pipelineType === "homebrew") return;
         const epoch = this.turnEpoch;
         if (cp.pipelineType === "character") {
             const resume: PipelineResume<WorkingCharacter> = { working: cp.working as WorkingCharacter, brief: cp.conceptBrief, fromPhaseIndex: cp.currentPhaseIndex };
@@ -657,6 +703,53 @@ export class AiAssistant {
         this.launchCharacterPipeline(seed, epoch);
     }
 
+    /** Build the mini-pipeline seed from a one-shot create_* draft + the user's latest request. */
+    private seedFromHomebrewCall(tc: AiToolCall): string {
+        const draft = JSON.stringify(tc.input ?? {});
+        const ask = this.lastUserText();
+        const label = kindLabel(TOOL_TO_KIND[tc.name] ?? "homebrew");
+        return `${ask ? `${ask}\n` : ""}Make a homebrew ${label} based on this draft: ${draft}`.trim();
+    }
+
+    /** The user's most recent prompt text (used to seed the homebrew mini-pipeline's concept step). */
+    private lastUserText(): string {
+        const msg = [...this.messages()].reverse().find(m => m.role === "user" && m.text.trim());
+        return msg?.text.trim() ?? "";
+    }
+
+    /**
+     * Launch the Homebrew mini-pipeline (Generation depth ≥ Medium) for one create_* kind. Like the staged
+     * pipelines it is a standalone run that owns the progress card; on completion it reuses
+     * {@link onPipelineComplete} (which surfaces + enriches the preview, so the High MADS step is reached).
+     * It never checkpoints, so `currentPipelineSeed` is cleared — Restart/Resume don't apply (see their guards).
+     */
+    private startHomebrewPipeline(kind: HomebrewKind, seed: string, epoch: number) {
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        if (!ai) { this.pushSystemBubble("AI is not configured."); return; }
+        const dndSystem = userSettings().dndSystem;
+
+        this.teardownPipeline();              // supersede any prior run before starting a new one
+        this.setResumableCheckpoint(null);
+        this.pipelineCheckpointId = null;     // the mini-pipeline never checkpoints
+        this.currentPipelineType = "homebrew";
+        this.currentPipelineSeed = "";        // Restart/Resume are not offered for the mini-pipeline
+        this.pipelineController = new AbortController();
+        const signal = this.pipelineController.signal;
+
+        const host: HomebrewPipelineHost = {
+            ai, dndSystem, signal, kind,
+            usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            creationPipelineLevel: ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL,
+            onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },
+            onComplete: previews => this.onPipelineComplete(previews, epoch),
+            onError: message => { if (epoch === this.turnEpoch) this.pushSystemBubble(message); },
+        };
+        void runHomebrewPipeline(seed, host).finally(() => {
+            if (this.pipelineController?.signal === signal) this.pipelineController = null;
+        });
+    }
+
     /**
      * Launch (or RESUME/RESTART) the Class pipeline for `seed`. Supersedes any prior run, wires the reactive
      * host callbacks, and drives the standalone orchestrator. When `resume` is given the orchestrator picks
@@ -680,6 +773,7 @@ export class AiAssistant {
         const host: PipelineHost = {
             ai, dndSystem, signal,
             usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            creationPipelineLevel: ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL,
             // Phase-F critic reviewer (runs only at the High usage level; the orchestrator gates on usageLevel).
             reviewer: buildClassReviewer(ai, dndSystem, signal),
             // Once aborted (user "Abort"), drop the run's card and ignore its trailing progress so it can't
@@ -714,6 +808,7 @@ export class AiAssistant {
         const host: CharacterPipelineHost = {
             ai, dndSystem, signal,
             usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
+            creationPipelineLevel: ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL,
             onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },
             onCheckpoint: (phaseIndex, working, brief) => this.savePipelineCheckpoint(phaseIndex, working, brief, epoch),
             onComplete: character => this.onCharacterComplete(character, epoch),
@@ -792,11 +887,43 @@ export class AiAssistant {
     private onPipelineComplete(previews: HomebrewPreview[], epoch: number) {
         if (epoch !== this.turnEpoch || !previews.length) return;
         this.setPendingPreviews(prev => [...prev, ...previews]);
-        this.setPipelineRun(null);            // hand off from the progress card to the preview card(s)
         void this.discardPipelineCheckpoint();
-        // Attach mechanical commands to the class's (and subclasses') features, like the one-shot Low path does.
-        void this.enrichWithCommands(previews.map(p => p.previewId), epoch);
+        // Keep the progress card alive through a final "MADS" phase while mechanical commands are attached
+        // (like the one-shot Low path does), THEN hand off to the preview card(s).
+        void this.runMadsPhaseThenHandoff(previews, epoch);
         void this.persistCurrent();
+    }
+
+    /**
+     * Drive the post-completion MADS phase shown in the progress strip (class + homebrew only): hold the
+     * pipeline run on a `MadsReview` step while {@link enrichWithCommands} attaches/validates the mechanical
+     * "mads" commands, then clear the run to hand off to the preview card(s). When no enrichment will run
+     * (command generation off, or no feature-bearing preview), there's nothing to review, so hand off at once
+     * — exactly the previous behaviour. The phase index is the trailing MadsReview slot appended to each
+     * pipeline's PHASES, so the orchestrator's generation phases and this step share one consistent total.
+     */
+    private async runMadsPhaseThenHandoff(previews: HomebrewPreview[], epoch: number) {
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        const willEnrich = !!ai
+            && (ai.commandGeneration ?? DEFAULT_AI_COMMAND_GENERATION)
+            && previews.some(p => p.valid && hasFeatures(p.kind));
+        if (!willEnrich) { this.setPipelineRun(null); return; }   // nothing to review — hand off immediately
+
+        const phases = this.currentPipelineType === "homebrew" ? HOMEBREW_PIPELINE_PHASES : CLASS_PIPELINE_PHASES;
+        this.setPipelineRun({
+            pipelineType: this.currentPipelineType, phase: PipelinePhase.MadsReview,
+            phaseIndex: phases.length - 1, totalPhases: phases.length, status: "running",
+        });
+
+        await this.enrichWithCommands(previews.map(p => p.previewId), epoch);
+
+        if (epoch === this.turnEpoch) this.setPipelineRun(null);   // hand off from the progress card to the preview card(s)
+    }
+
+    /** Update the working-line note on the live pipeline run (no-op when no progress card is showing). */
+    private setRunNote(note: string) {
+        this.setPipelineRun(r => (r ? { ...r, note } : r));
     }
 
     /** Upsert the run's single checkpoint row after a phase (best-effort; resume UI lands in a later milestone). */
@@ -836,6 +963,10 @@ export class AiAssistant {
     private teardownPipeline() {
         this.pipelineController?.abort();
         this.pipelineController = null;
+        // The MADS phase keeps the card alive while command enrichment runs; Abort must stop that too, else
+        // the card vanishes but enrichment keeps mutating the (now handed-off) preview in the background.
+        this.commandController?.abort();
+        this.commandController = null;
         if (this.pipelineRatify.size) {
             for (const [id, resolve] of this.pipelineRatify) { resolve({ type: "reject" }); this.removeInteraction(id); }
             this.pipelineRatify.clear();
@@ -1018,16 +1149,31 @@ export class AiAssistant {
      * `detached` is NOT set here; it's stamped on load so a same-session snapshot stays live.
      */
     private sanitizePreviewsForStore(previews: HomebrewPreview[]): HomebrewPreview[] {
-        // A "Saved" confirmation card is an in-session acknowledgement only — never persist it, so saved
-        // cards don't accumulate in the chat forever and a saved-then-detached card can't "resurrect".
-        return previews.filter(p => !p.saved).map(p => {
-            const { repairing: _r, enriching: _e, detached: _d, saveError: _se, ...rest } = p;
-            const reviewState: ReviewState | undefined =
-                p.reviewState === "reviewing" || p.reviewState === "needs_user_direction"
-                    ? "review_unavailable"
-                    : p.reviewState;
-            return { ...rest, reviewState, reviewBlocked: false };
-        });
+        // "Saved" confirmation cards persist across reloads as a record of what was created/edited. Strip
+        // their transient/live-turn flags but keep `saved` so they restore as compact confirmations (a
+        // detached + saved card can't "resurrect": confirmPreview no-ops on an already-saved preview). Cap
+        // to the most recent few so a long conversation's record stays bounded.
+        const SAVED_CARD_CAP = 10;
+        let savedKept = 0;
+        const result: HomebrewPreview[] = [];
+        // Walk newest→oldest so the cap keeps the most recent saved cards; restore original order after.
+        for (let i = previews.length - 1; i >= 0; i--) {
+            const p = previews[i];
+            if (p.saved) {
+                if (savedKept >= SAVED_CARD_CAP) continue;
+                savedKept++;
+                const { previewId, toolCallId, kind, title, entity, valid, mode, baseEntity, appliedOps, rejectedOps, anchorId } = p;
+                result.push({ previewId, toolCallId, kind, title, entity, valid, errors: [], saved: true, mode, baseEntity, appliedOps, rejectedOps, anchorId });
+            } else {
+                const { repairing: _r, enriching: _e, detached: _d, saveError: _se, ...rest } = p;
+                const reviewState: ReviewState | undefined =
+                    p.reviewState === "reviewing" || p.reviewState === "needs_user_direction"
+                        ? "review_unavailable"
+                        : p.reviewState;
+                result.push({ ...rest, reviewState, reviewBlocked: false });
+            }
+        }
+        return result.reverse();
     }
 
     /**
@@ -1111,12 +1257,30 @@ export class AiAssistant {
     private pushUserBubble(text: string, historyIndex?: number, images?: AiImage[], audio?: AiAudio[]) {
         this.setMessages(prev => [...prev, { id: createNewId(), role: "user", text, historyIndex, images, audio }]);
     }
-    private pushAssistantBubble(text: string, thinking?: string) {
-        this.setMessages(prev => [...prev, { id: createNewId(), role: "assistant", text, thinking: thinking || undefined }]);
+    /** Append an assistant bubble and return its message id (so a card can anchor itself under it). */
+    private pushAssistantBubble(text: string, thinking?: string): string {
+        const id = createNewId();
+        this.setMessages(prev => [...prev, { id, role: "assistant", text, thinking: thinking || undefined }]);
+        return id;
     }
     /** An app-emitted notice (error/refusal/cut-off/warning), tagged kind:"system" and shown with a ⚠️. */
     private pushSystemBubble(text: string) {
         this.setMessages(prev => [...prev, { id: createNewId(), role: "assistant", kind: "system", text: `⚠️ ${text}` }]);
+    }
+    /**
+     * App-emitted draft narration: a one-line note naming a freshly-surfaced CREATE entity so the chat
+     * actually says what Grimoire is doing — but ONLY when the model itself stayed silent this turn (a
+     * tool-call-only turn; the model is also prompted to narrate, and that takes precedence). Deduped by
+     * toolCallId so a repair/regeneration replacement doesn't re-announce. Edits are skipped (their diff
+     * card is self-explanatory and their save emits its own "Updated" line).
+     */
+    private narrateDraft(previews: HomebrewPreview[], modelSpoke: boolean) {
+        if (modelSpoke) return;
+        for (const p of previews) {
+            if (p.mode === "edit" || this.narratedDrafts.has(p.toolCallId)) continue;
+            this.narratedDrafts.add(p.toolCallId);
+            this.pushAssistantBubble(`I've drafted a ${kindLabelLower(p.kind)}, **${p.title}** — review and save it below.`);
+        }
     }
     private removePreview(previewId: string) {
         this.setPendingPreviews(prev => prev.filter(p => p.previewId !== previewId));
@@ -1138,7 +1302,9 @@ export class AiAssistant {
         if (this.resolved.length) this.history.push({ role: "tool", toolResults: this.resolved });
         this.resolved = [];
         this.outstanding.clear();
-        this.setPendingPreviews([]);
+        // Keep "Saved" confirmation cards: their tool call is already resolved, so they have no
+        // wire-validity obligation and shouldn't be collateral when we close out unanswered calls.
+        this.setPendingPreviews(prev => prev.filter(p => p.saved));
         this.setPendingInteractions([]);
     }
 
@@ -1417,7 +1583,14 @@ export class AiAssistant {
             //      user accepts/rejects (no Low/Medium/High routing — it patches an existing entity). ----
             if (editCalls.length) {
                 const editPreviews = editCalls.map(tc => buildEditPreview(tc, dndSystem));
-                this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...editPreviews]);
+                const surface = editPreviews.filter(p => !p.targetMissing);
+                if (surface.length) this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...surface]);
+                // A missing-target edit (wrong/unknown name) has no real card — feed the available names
+                // straight back so the model retries with a correct name (or looks it up) instead of
+                // stranding the user on a dead-end card it can only reject.
+                for (const p of editPreviews) {
+                    if (p.targetMissing) this.resolveToolCall(p.toolCallId, p.errors.join(" "), true);
+                }
             }
 
             // ---- Lookup (+ research delegate): async auto-resolve. In a mixed turn other ids keep
@@ -1437,6 +1610,34 @@ export class AiAssistant {
 
             // ---- Homebrew: the existing preview build + Low/Medium/High routing, over the homebrew subset. ----
             if (homebrewCalls.length) {
+                // Generation depth ≥ Medium: run the concept → creation mini-pipeline instead of a one-shot
+                // build. The mini-pipeline is a single-run orchestrator, so only when exactly one homebrew
+                // call landed this turn (the common case); a rare multi-call turn falls through to one-shot.
+                const creationLevel = ai?.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL;
+                if (creationLevel !== "low" && homebrewCalls.length === 1) {
+                    const { tc } = homebrewCalls[0];
+                    const kind = TOOL_TO_KIND[tc.name];
+                    if (kind && supportsHomebrewPipeline(kind)) {
+                        // Resolve the create_* call now (no continuation turn — the orchestrator is the
+                        // continuation, like a generate_* seed), then launch the mini-pipeline.
+                        this.resolvePipelineTrigger(tc.id, "Generation started — follow the generation panel.");
+                        // Drop any "Complete with AI" card collapsed to "Improving…": a repair that routes into
+                        // the mini-pipeline is superseded by the pipeline card (which yields the improved card via
+                        // onComplete). Without this the old card is stranded showing "Improving with AI…" forever.
+                        this.setPendingPreviews(prev => prev.filter(p => !p.repairing));
+                        this.startHomebrewPipeline(kind, this.seedFromHomebrewCall(tc), epoch);
+                        this.setStatus("idle");        // the pipeline card owns progress from here
+                        this.setActivePhase("idle");
+                        void this.persistCurrent();
+                        this.maybeGenerateTitle();
+                        return;
+                    }
+                }
+
+                // The model produced its own reply this turn → it narrates the draft itself (it's prompted
+                // to); only fall back to an app-emitted draft note when the create turn was tool-call-only.
+                const modelSpoke = !!text.trim();
+
                 const previews = homebrewCalls.map(({ tc, idx }) => {
                     const p = buildPreview(tc, dndSystem);
                     p.repairAttempts = this.repairCounts.get(p.title.toLowerCase()) ?? 0;
@@ -1470,6 +1671,7 @@ export class AiAssistant {
                     const show = previews.filter(p => !failed(p));
                     // Show the good ones (dropping any collapsed "Improving…" cards); their tool calls stay outstanding.
                     this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...show]);
+                    this.narrateDraft(show, modelSpoke);
                     void this.enrichWithCommands(show.filter(p => p.valid && hasFeatures(p.kind)).map(p => p.previewId), epoch);
                     void this.persistCurrent();
                     this.maybeGenerateTitle();
@@ -1493,6 +1695,7 @@ export class AiAssistant {
                         this.schemaRetryStreak++;
                         const reviewing = schemaOk.map(p => ({ ...p, reviewState: "reviewing" as ReviewState }));
                         this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...reviewing]);
+                        this.narrateDraft(reviewing, modelSpoke);
                         void this.persistCurrent();
                         this.maybeGenerateTitle();
                         // If valid cards remain for the user, the turn is idle now; otherwise resolving the last
@@ -1512,6 +1715,7 @@ export class AiAssistant {
                     const needDirection = schemaFailed.map(p => ({ ...p, reviewState: "needs_user_direction" as ReviewState }));
                     const reviewing = schemaOk.map(p => ({ ...p, reviewState: "reviewing" as ReviewState }));
                     this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...needDirection, ...reviewing]);
+                    this.narrateDraft(reviewing, modelSpoke);
                     void this.persistCurrent();
                     this.maybeGenerateTitle();
                     this.setStatus("idle");
@@ -1521,6 +1725,7 @@ export class AiAssistant {
 
                 // Low: drop any collapsed "Improving…" cards — their replacement has now arrived.
                 this.setPendingPreviews(prev => [...prev.filter(p => !p.repairing), ...previews]);
+                this.narrateDraft(previews, modelSpoke);
                 // Enrich the surfaced feature-bearing entities with mechanical commands (no-op if disabled).
                 void this.enrichWithCommands(previews.filter(p => p.valid && hasFeatures(p.kind)).map(p => p.previewId), epoch);
             } else {
@@ -1653,13 +1858,44 @@ export class AiAssistant {
                 if (!preview || !preview.valid || !hasFeatures(preview.kind)) continue;   // gone / broken / no features
 
                 this.setPendingPreviews(prev => prev.map(p => p.previewId === id ? { ...p, enriching: true } : p));
+
+                // Base command pass at every level. Medium adds the keyword gap-fill (one focused turn per
+                // mechanical feature still empty); High skips it — its Mechanics review below does a stronger,
+                // description-driven encode instead. Low is the single whole-entity pass only.
+                const level = ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL;
+                const maxGapFill = level === "medium" ? 6 : 0;
+
                 let enriched: HomebrewPreview["entity"] | null = null;
-                try { enriched = await attachCommands(preview, ai, signal); }
-                catch (e) { console.error("Command enrichment failed", e); }
+                try {
+                    const stats = await attachCommandsWithStats(preview, ai, signal, { maxGapFill });
+                    enriched = stats.entity;
+                    DebugConsole.info(`[MADS] ${preview.title}: proposed ${stats.proposed}, attached ${stats.attached}`);
+                } catch (e) { console.error("Command enrichment failed", e); }
 
                 if (epoch !== this.turnEpoch || signal.aborted) return false;
+
+                // High generation depth: the multi-stage "Mechanics" review — describe how each feature changes
+                // what/whom (fresh-context sub-agent), encode those self-effects into commands, then an
+                // adversarial audit + fix pass (mechanicsStep). Runs AFTER the base pass and merges/dedupes onto it.
+                let finalEntity = enriched ?? preview.entity;
+                if (level === "high") {
+                    try {
+                        const reviewed = await runMechanicsReview(
+                            { ...preview, entity: finalEntity }, ai, signal, note => this.setRunNote(note));
+                        if (reviewed) finalEntity = reviewed;
+                    } catch (e) { console.error("Mechanics review failed", e); }
+                    if (epoch !== this.turnEpoch || signal.aborted) return false;
+                }
+
+                // Dev-only: surface MECHANICAL features the MADS pass still left without a command (a real
+                // generator/catalog gap; pure-flavor features legitimately have none). No-op in prod.
+                const missingMads = featuresMissingMads(preview.kind, finalEntity, true);
+                if (missingMads.length) DebugConsole.warn(
+                    `[MADS review] ${preview.title}: ${missingMads.length} mechanical feature(s) have no mads command — add mechanical info:`,
+                    missingMads);
+
                 this.setPendingPreviews(prev => prev.map(p =>
-                    p.previewId === id ? { ...p, enriching: false, entity: enriched ?? p.entity } : p));
+                    p.previewId === id ? { ...p, enriching: false, entity: finalEntity } : p));
                 // Re-persist so the enriched entity (mads commands attached) survives a chat-history switch.
                 void this.persistCurrent();
             }

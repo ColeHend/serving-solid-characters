@@ -116,7 +116,7 @@ describe("persisting & restoring save-choice cards", () => {
         expect(restored[0].valid).toBe(true);
     });
 
-    it("saves a detached card without starting a continuation turn, and persists the empty set", async () => {
+    it("saves a detached card without starting a continuation turn, and persists the saved confirmation", async () => {
         h.settings.ai.usageLevel = "low";
         h.turns = [toolCall(validSpell)];
         aiAssistant.send("make a fire cantrip");
@@ -128,16 +128,20 @@ describe("persisting & restoring save-choice cards", () => {
         const callsBefore = h.calls;
 
         await aiAssistant.confirmPreview(aiAssistant.pendingPreviews()[0].previewId);
-        // The card stays in-session as a "Saved" confirmation, but is NOT persisted.
+        // The card stays in-session as a "Saved" confirmation.
         expect(aiAssistant.pendingPreviews()).toHaveLength(1);
         expect(aiAssistant.pendingPreviews()[0].saved).toBe(true);
         expect(h.calls).toBe(callsBefore);   // resolveToolCall no-ops (outstanding empty) → no model call
 
-        // The saved confirmation is not persisted, so switching back must NOT resurrect the card.
-        await vi.waitFor(() => expect((db.rows.get(convId)!.pendingPreviews as unknown[])).toHaveLength(0));
+        // The saved confirmation is now persisted as a durable record, and restores as a detached
+        // "Saved" card on switch-back (it can't "resurrect": confirmPreview no-ops on an already-saved card).
+        await vi.waitFor(() => expect((db.rows.get(convId)!.pendingPreviews as unknown[])).toHaveLength(1));
         aiAssistant.newConversation();
         await aiAssistant.loadConversation(convId);
-        expect(aiAssistant.pendingPreviews()).toHaveLength(0);
+        const restored = aiAssistant.pendingPreviews();
+        expect(restored).toHaveLength(1);
+        expect(restored[0].saved).toBe(true);
+        expect(restored[0].detached).toBe(true);
     });
 
     it("restores a reviewed card unblocked (reviewBlocked cleared, detached)", async () => {

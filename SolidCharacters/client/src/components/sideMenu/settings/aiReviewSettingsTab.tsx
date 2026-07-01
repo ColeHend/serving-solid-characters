@@ -3,7 +3,8 @@ import { Checkbox, Input, Radio, RadioGroup } from "coles-solid-library";
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import {
-    AiSettings, DEFAULT_AI_ASK_TOOLS, DEFAULT_AI_MATH_TOOLS, DEFAULT_AI_PLAN_TOOLS,
+    AiSettings, CreationPipelineLevel, DEFAULT_AI_ASK_TOOLS, DEFAULT_AI_COMMAND_GENERATION,
+    DEFAULT_AI_MATH_TOOLS, DEFAULT_AI_PLAN_TOOLS, DEFAULT_CREATION_PIPELINE_LEVEL,
     DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES, DEFAULT_REVIEW_SETTINGS,
     DEFAULT_TOOL_PERMISSIONS, DEFAULT_USAGE_LEVEL, MANDATORY_PASSES, OPTIONAL_PASSES, ReviewPassId,
     ReviewSettings, ReviewerModelMode, ToolPermissions, UsageControlLevel,
@@ -13,6 +14,7 @@ import ReviewAgentList from "../../aiSpark/reviewAgents/ReviewAgentList";
 
 const DEFAULT_AI: Partial<AiSettings> = {
     usageLevel: DEFAULT_USAGE_LEVEL,
+    creationPipelineLevel: DEFAULT_CREATION_PIPELINE_LEVEL,
     mediumRetries: DEFAULT_MEDIUM_RETRIES,
     toolPermissions: DEFAULT_TOOL_PERMISSIONS,
     review: DEFAULT_REVIEW_SETTINGS,
@@ -34,6 +36,8 @@ const AiReviewSettingsTab: Component = () => {
         setUserSettings(old => Clone({ ...old, ai: { ...(old.ai ?? {}), ...patch } as AiSettings }));
 
     const usageLevel = (): UsageControlLevel => ai().usageLevel ?? DEFAULT_USAGE_LEVEL;
+    const creationLevel = (): CreationPipelineLevel => ai().creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL;
+    const commandGenOn = (): boolean => ai().commandGeneration ?? DEFAULT_AI_COMMAND_GENERATION;
     const perms = (): ToolPermissions => ai().toolPermissions ?? DEFAULT_TOOL_PERMISSIONS;
     const review = (): ReviewSettings => ai().review ?? DEFAULT_REVIEW_SETTINGS;
 
@@ -93,6 +97,27 @@ const AiReviewSettingsTab: Component = () => {
                     <Radio value="medium" label="Medium — auto-retry a failed generation once before showing it" />
                     <Radio value="high" label="High — run a readiness review before handing content over" />
                 </RadioGroup>
+            </div>
+
+            {/* ---------------- Generation depth ---------------- */}
+            <div style={section}>
+                <label>Generation depth</label>
+                <RadioGroup value={creationLevel()} onChange={(v) => updateAi({ creationPipelineLevel: v as CreationPipelineLevel })}>
+                    <Radio value="low" label="Low — generate each piece in one step (fastest)" />
+                    <Radio value="medium" label="Medium — plan a concept first, then build it (more coherent)" />
+                    <Radio value="high" label="High — also validate & fix mechanical effects before saving (slowest)" />
+                </RadioGroup>
+                <div style={hint}>
+                    How many passes Grimoire makes when generating content. Higher depth is more coherent and
+                    mechanically correct but costs more model calls and time. This is separate from the
+                    quality-control level above.
+                </div>
+                <Show when={creationLevel() === "high" && !commandGenOn()}>
+                    <div style={hint}>
+                        High's mechanical-effect validation only runs when “Auto-add mechanical effects”
+                        (in the AI tab) is enabled — otherwise there are no effects to check.
+                    </div>
+                </Show>
             </div>
 
             <Show when={usageLevel() === "medium"}>

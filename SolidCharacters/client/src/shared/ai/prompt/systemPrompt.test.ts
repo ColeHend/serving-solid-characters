@@ -130,6 +130,33 @@ describe("buildSystemPrompt — class creation routes through the staged pipelin
     });
 });
 
+describe("buildSystemPrompt — name tracking guidance (chat-tracking fix)", () => {
+    it("tells the model to state the exact name it gave a created entity", () => {
+        const p = buildSystemPrompt("2024", "homebrew", "large", allKinds, allFlags);
+        expect(p).toContain("state the exact name you gave the entity");
+    });
+
+    it("tells the model to use the exact stored name (and look it up first) before editing", () => {
+        const p = buildSystemPrompt("2024", "homebrew", "large", allKinds, allFlags);
+        expect(p).toContain("EXACT stored name");
+        expect(p).toContain("call lookup_homebrew first");
+        expect(p).toContain("never guess the name");
+    });
+
+    it("keeps the 'never guess' rule but drops the lookup mention when lookup tools are off", () => {
+        const noLookup = { ...allFlags, lookup: false };
+        const p = buildSystemPrompt("2024", "homebrew", "large", allKinds, noLookup);
+        expect(p).toContain("never guess the name");
+        expect(p).not.toContain("call lookup_homebrew first");
+    });
+
+    it("omits the edit guidance entirely when the edit tool isn't advertised", () => {
+        const noEdit = { ...allFlags, edit: false };
+        const p = buildSystemPrompt("2024", "homebrew", "large", allKinds, noEdit);
+        expect(p).not.toContain("EXACT stored name");
+    });
+});
+
 describe("zero-persona surfaces stay neutral", () => {
     it("review-pass prompt carries no Grimoire voice and forbids prose", () => {
         const sys = buildReviewSystemPrompt(BUILTIN_LLM_PASSES.balance!, "spell", "2024");
