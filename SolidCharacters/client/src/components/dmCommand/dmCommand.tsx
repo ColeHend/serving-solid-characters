@@ -23,8 +23,8 @@ const DmCommand: Component = () => {
                         const size = tileSizes[key];
                         return (
                             <div style={{
-                                "grid-column": `span ${size.width}`,
-                                "grid-row": `span ${size.height}`,
+                                "grid-column": `span ${size.columns}`,
+                                "grid-row": `span ${size.rows}`,
                                 border: "1px solid black",
                                 padding: "10px",
                             }}>
