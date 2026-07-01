@@ -1,14 +1,14 @@
 import { JSX } from "solid-js";
 
 interface TileData {
-    columns: number;
-    rows: number;
+    width: number;
+    height: number;
 }
 
 export type tiles = 'main';
 
 const tileSizes: Record<tiles, TileData> = {
-    main: { columns: 3, rows: 3 },
+    main: { width: 3, height: 3 },
 };
 
 export default function GetTileElement(tile: tiles): JSX.Element {
@@ -22,10 +22,10 @@ export default function GetTileElement(tile: tiles): JSX.Element {
     }
 }
 
-export function getTileSize(tile: tiles): TileData {
+export function getTileMetadata(tile: tiles): TileData {
     const data = tileSizes?.[tile];
     if (!data) {
-        return { columns: 1, rows: 1 };
+        return { width: 1, height: 1 };
     }
     return data;
 }
