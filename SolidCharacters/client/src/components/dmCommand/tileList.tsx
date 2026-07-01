@@ -7,12 +7,25 @@ interface TileData {
 
 export type tiles = 'main';
 
-export const tileSizes: Record<tiles, TileData> = {
+const tileSizes: Record<tiles, TileData> = {
     main: { columns: 3, rows: 3 },
 };
+
 export default function GetTileElement(tile: tiles): JSX.Element {
     switch (tile) {
         default:
-            return <div>Unknown Tile</div>;
+            return <div style={{
+                width: '100%',
+                height: '100%',
+                'text-align': 'center',
+            }}>Unknown Tile</div>;
     }
+}
+
+export function getTileSize(tile: tiles): TileData {
+    const data = tileSizes?.[tile];
+    if (!data) {
+        return { columns: 1, rows: 1 };
+    }
+    return data;
 }
