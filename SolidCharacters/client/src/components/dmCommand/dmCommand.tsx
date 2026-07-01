@@ -1,19 +1,40 @@
-import { Component, For, createSignal, onMount, onCleanup } from "solid-js";
-import { Body, Button, Icon } from "coles-solid-library";
+import { Component, For, createSignal, onMount, onCleanup, createEffect, createMemo } from "solid-js";
+import { Body, Button, Icon, Menu, Modal } from "coles-solid-library";
 import { isMobile } from "coles-solid-library/dist/tools/tools.js";
-import GetTileElement, { tiles, getTileMetadata } from "./tileList";
+import GetTileElement, { tiles, getTileMetadata, TileData } from "./tileList";
 import style from "./dmCommand.module.scss";
-import { Filter } from "coles-solid-library/icons";
+import { FilterAlt } from "coles-solid-library/icons";
+import { JSX } from "solid-js";
 
 const GAP = 10;
 
 const DmCommand: Component = () => {
     const maxColumns = isMobile() ? 3 : 6;
-    const [tileList, setTileList] = createSignal<tiles[]>(['main']);
+    // Filter Settings
+    const [showFilterSettings, setShowFilterSettings] = createSignal<boolean>(false);
+    const [filterModal, setFilterModal] = createSignal<Element>()
+    const [filterSettings, setFilterSettings] = createSignal<Record<string, string>>({});
+    
+    // Tiles stuff
+    const [tileList, setTileList] = createSignal<tiles[]>([
+        'main',
+    ]);
+    const completeTileList = createMemo(()=>{
+        return tileList().map((key)=>[
+            GetTileElement(key),
+            getTileMetadata(key),
+        ]);
+    });
+    const filteredTileList = createMemo<Array<[JSX.Element, TileData]>>(() => {
+        // Filter logic goes here
+        return completeTileList().filter(([element, data])=> true) as Array<[JSX.Element, TileData]>;
+    });
+    
     const [cellSize, setCellSize] = createSignal(0);
     let gridRef: HTMLDivElement | undefined;
 
     onMount(() => {
+        document.body.classList.add("character-view-bg");
         if (!gridRef) return;
         const measure = () => {
             const w = gridRef!.clientWidth;
@@ -22,14 +43,35 @@ const DmCommand: Component = () => {
         const observer = new ResizeObserver(measure);
         observer.observe(gridRef);
         measure();
-        onCleanup(() => observer.disconnect());
+        onCleanup(() => {
+            document.body.classList.remove("character-view-bg");
+            observer.disconnect();
+        });
+    });
+
+    // Add class to modal
+    createEffect(()=>{
+        const modal = filterModal();
+        if (modal) {
+            modal.classList.add(`${style.modal}`);
+        }
     });
 
     return (
-        <Body>
+        <Body class={`${style.mainBody}`}>
             <div class={`${style.header}`}>
                 <h1>DM Command</h1>
-                <Button><Icon icon={Filter} /></Button>
+                <Button transparent onClick={()=>{
+                    setShowFilterSettings(true);
+                }}><Icon icon={FilterAlt} /></Button>
+                <Modal 
+                    title="Filter Settings" 
+                    show={[showFilterSettings, setShowFilterSettings]}
+                    width={isMobile() ? '' : '20vw'}
+                    height={'30vh'}
+                    ref={setFilterModal}>
+
+                </Modal>
             </div>
             <div class={`${style.body}`}>
                 <div ref={gridRef} style={{
@@ -39,18 +81,16 @@ const DmCommand: Component = () => {
                     "grid-auto-flow": "row dense",
                     gap: `${GAP}px`,
                 }}>
-                    <For each={tileList()}>{(key) => {
-                        const meta = getTileMetadata(key);
+                    <For each={filteredTileList()}>{([tile, meta]) => {
                         return (
                             <div style={{
                                 "grid-column": `span ${Math.min(meta.width, maxColumns)}`,
                                 "grid-row": `span ${meta.height}`,
                                 "box-sizing": "border-box",
                                 overflow: "hidden",
-                                border: "1px solid black",
-                                padding: "10px",
+                                'border-radius': '11px'
                             }}>
-                                {GetTileElement(key)}
+                                {tile}
                             </div>
                         );
                     }}</For>

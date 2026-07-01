@@ -1,6 +1,7 @@
 import { JSX } from "solid-js";
+import styles from './tileList.module.scss';
 
-interface TileData {
+export interface TileData {
     width: number;
     height: number;
     info?: TileInfo;
@@ -17,17 +18,16 @@ interface TileMetadata {
     tags?: string[];
 }
 
-export type tiles = 'main';
+export type tiles = 'main' | string;
 
 /// keep it to a max width of 3 for mobile;
 const tileSizes: Record<tiles, TileData> = {
-    main: { width: 3, height: 3 },
 };
 
 export default function GetTileElement(tile: tiles): JSX.Element {
     switch (tile) {
         default:
-            return <div style={{
+            return <div class={`${styles.mainBody}`} style={{
                 width: '100%',
                 height: '100%',
                 'text-align': 'center',

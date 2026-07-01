@@ -38,6 +38,7 @@ const CharacterCreate = lazy(() => import("./components/characters/create/create
 const CharacterView = lazy(() => import("./components/characters/view/view"));
 const CreateCharacterPDF = lazy(() => import("./components/characters/characterCreatePDF/characterCreatePDF").then(m => ({ default: m.CreateCharacterPDF })));
 const HomebrewBackgrounds = lazy(() => import("./components/homebrew/Parts/background/Background").then(m => ({ default: m.HomebrewBackgrounds })));
+const DMCommand = lazy(() => import("./components/dmCommand/dmCommand"));
 
 console.log("Application initializing...");
 
@@ -104,6 +105,9 @@ if (root) {
               <Route path="/subraces" component={Subraces} />
             </Route>
             <Route path="/*any" component={Homebrew} />
+          </Route>
+          <Route path="/dm">
+            <Route path="/command" component={DMCommand} />
           </Route>
           <Route path="/about" component={aboutPage}></Route>
         </Router>
