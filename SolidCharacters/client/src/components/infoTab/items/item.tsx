@@ -71,7 +71,7 @@ const ItemsViewTab:Component = () => {
   const [itemIndex,setItemIndex] = createSignal<number>(startingIndex() ?? 0);
 
   createEffect(()=>{
-    setSearchParam({itemType: elementMemo()[itemIndex()].name})
+    setSearchParam({itemType: elementMemo()[itemIndex()]?.name})
   })
 
   onMount(()=>{

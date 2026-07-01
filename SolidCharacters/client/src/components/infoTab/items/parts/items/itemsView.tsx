@@ -31,21 +31,21 @@ export const ItemsView:Component<viewProps> = (props) => {
   const searchResults = createMemo(() => searchResult().length > 0 ? searchResult() : props.items());
 
   createEffect(()=>{
-    const list = props.items();
-    const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
+    const list = props?.items();
+    const param = typeof searchParam?.name === "string" ? searchParam?.name : searchParam?.name?.join(" ");
     if (list.length === 0) return;
-    const found = param && list.some(i => i.name.toLowerCase() === param.toLowerCase())
-    if ((!param || !found) && list[0].name === param) {
+    const found = param && list?.some(i => i?.name?.toLowerCase() === param?.toLowerCase())
+    if ((!param || !found) && list?.[0]?.name === param) {
       setSearchParam({ name: list[0].name});
     }
   });
 
   const selectedItem = createMemo(() => {
-    const list = props.items();
-    const param = typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ");
+    const list = props?.items();
+    const param = typeof searchParam?.name === "string" ? searchParam?.name : searchParam?.name?.join(" ");
     if (list.length === 0) return undefined;
-    const target = (param || list[0].name).toLowerCase();
-    return list.find(i => i.name.toLowerCase() === target) || list[0];
+    const target = (param || (list?.[0]?.name ?? ""))?.toLowerCase();
+    return list?.find(i => i?.name.toLowerCase() === target) || list[0];
   })
 
   createEffect(() => {
@@ -58,7 +58,7 @@ export const ItemsView:Component<viewProps> = (props) => {
 
     if (showItem() && cur?.name) {
       setSearchParam({
-        name: cur.name
+        name: cur?.name
       })
     } else if (!showItem()) {
       setSearchParam({
@@ -69,7 +69,7 @@ export const ItemsView:Component<viewProps> = (props) => {
 
 
   createEffect(()=>{
-    const list = props.items();
+    const list = props?.items();
     setTableData(list);
 
   });
@@ -79,29 +79,29 @@ export const ItemsView:Component<viewProps> = (props) => {
 
   const dataSort = (sortBy: keyof srdItem) => {
     setCurrentSort(old => {
-      if (old.sortKey === sortBy) {
-        return Clone({ sortKey: sortBy as string, isAsc: !old.isAsc });
+      if (old?.sortKey === sortBy) {
+        return Clone({ sortKey: sortBy as string, isAsc: !old?.isAsc });
       } else {
-        return Clone({ sortKey: sortBy as string, isAsc: old.isAsc });
+        return Clone({ sortKey: sortBy as string, isAsc: old?.isAsc });
       }
     });
     setTableData((old) => {
       const currentSorting = currentSort();
-      const shouldAsc = currentSorting.isAsc;
+      const shouldAsc = currentSorting?.isAsc;
 
       const sorted = Clone(
         old.sort((a, b) => {
           let aSort: any, bSort: any;
 
           if (sortBy === "cost") {
-            aSort = costToCopper(a.cost);
-            bSort = costToCopper(b.cost);
+            aSort = costToCopper(a?.cost);
+            bSort = costToCopper(b?.cost);
           } else {
             aSort = typeof a?.[sortBy] === "string"
-              ? a?.[sortBy].replaceAll(" ", "")
+              ? a?.[sortBy]?.replaceAll(" ", "")
               : a?.[sortBy];
             bSort = typeof b?.[sortBy] === "string"
-              ? b?.[sortBy].replaceAll(" ", "")
+              ? b?.[sortBy]?.replaceAll(" ", "")
               : b?.[sortBy];
           }
 
@@ -128,7 +128,7 @@ export const ItemsView:Component<viewProps> = (props) => {
         dataSource={tableData}
         setResults={setSearchResult}
         searchFunction={
-          (item,search) => item.name.toLowerCase().includes(search.toLowerCase())
+          (item,search) => item?.name?.toLowerCase()?.includes(search?.toLowerCase())
         }
       />
     </div>
@@ -138,8 +138,8 @@ export const ItemsView:Component<viewProps> = (props) => {
         <Column name="name" class={`${styles.nameColumn}`}>
           <Header onClick={()=>dataSort("name")}>
             Name
-            <Show when={currentSort().sortKey === "name"}>
-              <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
+            <Show when={currentSort()?.sortKey === "name"}>
+              <span>{ currentSort()?.isAsc ? " ▲" : " ▼" }</span>
             </Show>
           </Header>
         </Column>
@@ -147,8 +147,8 @@ export const ItemsView:Component<viewProps> = (props) => {
         <Column name="type" class={`${styles.propsColumn}`}>
           <Header onClick={()=>dataSort("type")}>
             Type
-            <Show when={currentSort().sortKey === "type"}>
-              <span>{ currentSort().isAsc ? " ▲" : " ▼" }</span>
+            <Show when={currentSort()?.sortKey === "type"}>
+              <span>{ currentSort()?.isAsc ? " ▲" : " ▼" }</span>
             </Show>
           </Header>
         </Column>
@@ -156,8 +156,8 @@ export const ItemsView:Component<viewProps> = (props) => {
         <Column name="cost" class={`${styles.costColumn}`}>
           <Header onClick={()=>dataSort("cost")}>
             Cost
-            <Show when={ currentSort().sortKey === "cost"}>
-              <span>{ currentSort().isAsc ? " ▲" : " ▼"}</span>
+            <Show when={ currentSort()?.sortKey === "cost"}>
+              <span>{ currentSort()?.isAsc ? " ▲" : " ▼"}</span>
             </Show>
           </Header>
         </Column>
@@ -172,7 +172,7 @@ export const ItemsView:Component<viewProps> = (props) => {
           <Column name="name" class={`${styles.nameColumn}`}>
             <Cell<srdItem>>
               {(item)=> <span>
-                {item.name}
+                {item?.name}
               </span>}
             </Cell>
           </Column>
@@ -180,7 +180,7 @@ export const ItemsView:Component<viewProps> = (props) => {
           <Column name="type" class={`${styles.propsColumn}`}>
             <Cell<srdItem>>
               {(item)=><span>
-                {ItemType[item.type]}
+                {ItemType?.[item?.type]}
               </span>}
             </Cell>
           </Column>
@@ -188,7 +188,7 @@ export const ItemsView:Component<viewProps> = (props) => {
           <Column name="cost" class={`${styles.costColumn}`}>
             <Cell<srdItem>>
               {(item)=><span>
-                {(item.cost)}
+                {(item?.cost)}
               </span>}
             </Cell>
           </Column>
