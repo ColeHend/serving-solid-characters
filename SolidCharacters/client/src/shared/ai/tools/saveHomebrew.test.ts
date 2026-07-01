@@ -73,4 +73,13 @@ describe("saveHomebrew — honest results", () => {
         expect(r.ok).toBe(false);
         expect(addClassMock).not.toHaveBeenCalled();
     });
+
+    it("names the saved entity and tells the model the exact edit handle (so the name survives in history)", async () => {
+        addClassMock.mockResolvedValue(true);
+        const r = await saveHomebrew(classPreview());
+        expect(r.ok).toBe(true);
+        expect(r.message).toContain('Saved class "Tester".');
+        expect(r.message).toContain("edit_homebrew");
+        expect(r.message).toContain('the exact name "Tester"');
+    });
 });

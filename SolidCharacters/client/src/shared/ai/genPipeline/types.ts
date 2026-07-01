@@ -11,8 +11,12 @@ import type { ReviewVerdict } from "../readiness/types";
  * checkpoint. Kept dependency-light (only `import type` from the heavier modules) so it can't create cycles.
  */
 
-/** Which entity the pipeline is building. Class ships first (extends an existing generated kind); character is net-new. */
-export type PipelineType = "class" | "character";
+/**
+ * Which entity the pipeline is building. Class/character are the staged multi-phase pipelines; "homebrew"
+ * is the generic 2-step (concept → creation) mini-pipeline the other create_* kinds use at Generation
+ * depth ≥ Medium (see genPipeline/homebrewPipeline). Drives the progress card's label only.
+ */
+export type PipelineType = "class" | "character" | "homebrew";
 
 /** Lower-case ability keys, matching `Stats` on the character model. */
 export type AbilityKey = "str" | "dex" | "con" | "int" | "wis" | "cha";
@@ -146,6 +150,8 @@ export enum PipelinePhase {
     Loadout = "loadout",
     Narrative = "narrative",
     Compute = "compute",
+    // post-completion mechanics (class + homebrew): attach/validate "mads" commands (driven by aiAssistant, not the orchestrator)
+    MadsReview = "mads_review",
 }
 
 export type PhaseKind = "model" | "code" | "gate";

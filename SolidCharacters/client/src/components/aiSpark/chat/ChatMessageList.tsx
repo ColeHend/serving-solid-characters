@@ -9,7 +9,15 @@ import HomebrewDiffCard from "../homebrew/HomebrewDiffCard";
 import InteractionCard from "../homebrew/InteractionCard";
 import GenPipelineCard from "./GenPipelineCard";
 import ResumeGenerationCard from "./ResumeGenerationCard";
+import type { HomebrewPreview } from "../aiSpark.shared";
 import styles from "../SparkSidebar.module.scss";
+
+/** A create preview renders as a full/saved card; an edit preview renders as a before→after diff card. */
+const PreviewCard: Component<{ preview: HomebrewPreview }> = (props) => (
+    <Show when={props.preview.mode === "edit"} fallback={<HomebrewPreviewCard preview={props.preview} />}>
+        <HomebrewDiffCard preview={props.preview} />
+    </Show>
+);
 
 const ChatMessageList: Component = () => {
     let scroller: HTMLDivElement | undefined;
@@ -21,6 +29,15 @@ const ChatMessageList: Component = () => {
     const atBottom = () => !scroller || scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < NEAR_PX;
     const toBottom = () => { if (scroller) { scroller.scrollTop = scroller.scrollHeight; pinned = true; setShowJump(false); } };
     const onScroll = () => { pinned = atBottom(); setShowJump(!pinned); };
+
+    // Saved confirmation cards render inline beneath the message they're anchored to; everything still
+    // awaiting a decision (and any saved card whose anchor message is gone) stays in the bottom tray.
+    const anchoredPreviews = (messageId: string) =>
+        aiAssistant.pendingPreviews().filter(p => p.saved && p.anchorId === messageId);
+    const trayPreviews = () => {
+        const ids = new Set(aiAssistant.messages().map(m => m.id));
+        return aiAssistant.pendingPreviews().filter(p => !(p.saved && p.anchorId && ids.has(p.anchorId)));
+    };
 
     onMount(toBottom);
     // Follow new content ONLY when the user is already at the bottom, so scrolling up to read history
@@ -62,15 +79,20 @@ const ChatMessageList: Component = () => {
                         </Show>
                     </div>
                 </Show>
-                <For each={aiAssistant.messages()}>{(m) => <ChatBubble message={m} />}</For>
+                <For each={aiAssistant.messages()}>{(m) => (
+                    <>
+                        <ChatBubble message={m} />
+                        {/* A "Saved" confirmation card sits inline under its own announcement (it carries
+                            anchorId) so it stays put in the transcript rather than drifting to the bottom. */}
+                        <For each={anchoredPreviews(m.id)}>{(p) => <PreviewCard preview={p} />}</For>
+                    </>
+                )}</For>
                 <Show when={aiAssistant.status() === "streaming"}><StreamingBubble /></Show>
                 <GenPipelineCard />
                 <ResumeGenerationCard />
-                <For each={aiAssistant.pendingPreviews()}>{(p) => (
-                    <Show when={p.mode === "edit"} fallback={<HomebrewPreviewCard preview={p} />}>
-                        <HomebrewDiffCard preview={p} />
-                    </Show>
-                )}</For>
+                {/* Cards still awaiting a decision (and any saved card whose anchor message is missing)
+                    stay in the bottom tray, where the user acts on them. */}
+                <For each={trayPreviews()}>{(p) => <PreviewCard preview={p} />}</For>
                 <For each={aiAssistant.pendingInteractions()}>{(i) => <InteractionCard interaction={i} />}</For>
                 <Show when={aiAssistant.status() === "error"}>
                     <div class={styles.errorActions}>

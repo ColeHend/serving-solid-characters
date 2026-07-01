@@ -15,6 +15,17 @@ export type LocalApiKind = "ollama" | "openai";
 export type UsageControlLevel = "low" | "medium" | "high";
 export const DEFAULT_USAGE_LEVEL: UsageControlLevel = "low";
 
+/**
+ * How DEEP the generation pipeline runs, independent of usageLevel (which controls QC retries/review).
+ * - "low":    current behavior — the 7 create_* kinds generate one-shot; class/character use their pipelines.
+ * - "medium": every kind runs at least a 2-step concept → creation mini-pipeline (more coherent content).
+ *             Class/character already have many steps, so they are unchanged.
+ * - "high":   on top of medium, every feature-bearing result has its mechanical "mads" commands validated
+ *             and AI-repaired before it's surfaced. See shared/ai/genPipeline/madsStep + commands/validateMads.
+ */
+export type CreationPipelineLevel = "low" | "medium" | "high";
+export const DEFAULT_CREATION_PIPELINE_LEVEL: CreationPipelineLevel = "low";
+
 /** Medium-mode auto-retry budget on a schema/parse failure ("at least once"). */
 export const DEFAULT_MEDIUM_RETRIES = 1;
 
@@ -201,6 +212,8 @@ export interface AiSettings {
     showThinking?: boolean;
     /** How much automated QC to apply to generated homebrew. Defaults to DEFAULT_USAGE_LEVEL. */
     usageLevel?: UsageControlLevel;
+    /** How deep the generation pipeline runs (concept steps, MADS validation). Defaults to DEFAULT_CREATION_PIPELINE_LEVEL. */
+    creationPipelineLevel?: CreationPipelineLevel;
     /** Medium-mode auto-retry budget per entity. Defaults to DEFAULT_MEDIUM_RETRIES. */
     mediumRetries?: number;
     /** Which create_* tools the model may use. Defaults to DEFAULT_TOOL_PERMISSIONS. */

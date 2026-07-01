@@ -39,6 +39,8 @@ import type { ConceptBrief, PipelineResume, PipelineRun, PipelineStatus, RunStep
 export const CLASS_PIPELINE_PHASES = [
     PipelinePhase.DesignBrief, PipelinePhase.Skeleton, PipelinePhase.Chassis,
     PipelinePhase.Features, PipelinePhase.Subclasses, PipelinePhase.Balance, PipelinePhase.Assemble,
+    // Post-completion mechanics step: aiAssistant drives this index (never the orchestrator) once enrichment runs.
+    PipelinePhase.MadsReview,
 ];
 const PHASES = CLASS_PIPELINE_PHASES;
 const TOTAL = PHASES.length;

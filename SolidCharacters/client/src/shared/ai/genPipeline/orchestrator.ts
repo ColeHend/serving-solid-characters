@@ -1,5 +1,6 @@
-import { AiSettings, UsageControlLevel } from "../../../models/userSettings";
+import { AiSettings, CreationPipelineLevel, UsageControlLevel } from "../../../models/userSettings";
 import type { Character } from "../../../models/character.model";
+import type { HomebrewKind } from "../refs/homebrewKind";
 import type { HomebrewPreview } from "../tools/toolDispatcher";
 import type { StepModelRunner } from "./stepWorker";
 import type { ClassReviewer } from "./critic";
@@ -28,6 +29,8 @@ export interface PipelineHost {
     signal: AbortSignal;
     /** Tunes per-step repair budget + whether the Phase-F critic runs (plan §8). Defaults to "low" when omitted. */
     usageLevel?: UsageControlLevel;
+    /** Generation depth (carried for completeness; the High MADS step runs in the host's enrichment, not here). */
+    creationPipelineLevel?: CreationPipelineLevel;
     /** Test seam: a scripted model runner. Production omits it and the real `runSubAgent` is used. */
     runner?: StepModelRunner;
     /**
@@ -64,6 +67,8 @@ export interface CharacterPipelineHost {
     dndSystem: string;
     signal: AbortSignal;
     usageLevel?: UsageControlLevel;
+    /** Generation depth (carried for completeness; characters are never MADS-enriched). */
+    creationPipelineLevel?: CreationPipelineLevel;
     runner?: StepModelRunner;
 
     /** Push the latest reactive run state to the UI (GenPipelineCard / StatusTicker). Called on every transition. */
@@ -72,6 +77,35 @@ export interface CharacterPipelineHost {
     onCheckpoint?: (phaseIndex: number, working: WorkingCharacter, brief?: ConceptBrief) => void;
     /** Terminal success: the assembled character. The host saves it and surfaces a confirmation. */
     onComplete: (character: Character) => void;
+    /** Terminal failure: a short, user-facing reason. */
+    onError: (message: string) => void;
+}
+
+/**
+ * The Homebrew mini-pipeline's host (Generation depth ≥ Medium). The 7 non-class/character create_* kinds
+ * (spell/item/magic_item/feat/background/race/subclass) run a tiny 2-step concept → creation pipeline
+ * instead of a single one-shot call. Like the others it is a STANDALONE driver behind injectable callbacks
+ * (no chat machinery): there is NO ratification gate and NO critic. On success it hands back ONE assembled
+ * `HomebrewPreview`, which the host surfaces and enriches exactly like a one-shot result (so the High MADS
+ * step is reached for free via the host's command enrichment). No checkpoint — the run is only two steps.
+ */
+export interface HomebrewPipelineHost {
+    ai: AiSettings;
+    dndSystem: string;
+    signal: AbortSignal;
+    /** Tunes per-step repair budget (plan §8). Defaults to "low" when omitted. */
+    usageLevel?: UsageControlLevel;
+    /** Generation depth that launched this run ("medium" or "high"); carried for observability. */
+    creationPipelineLevel?: CreationPipelineLevel;
+    /** Which create_* kind this run is building. */
+    kind: HomebrewKind;
+    /** Test seam: a scripted model runner. Production omits it and the real `runSubAgent` is used. */
+    runner?: StepModelRunner;
+
+    /** Push the latest reactive run state to the UI (GenPipelineCard / StatusTicker). Called on every transition. */
+    onProgress: (run: PipelineRun) => void;
+    /** Terminal success: the single assembled, savable preview. The host surfaces + enriches it. */
+    onComplete: (previews: HomebrewPreview[]) => void;
     /** Terminal failure: a short, user-facing reason. */
     onError: (message: string) => void;
 }

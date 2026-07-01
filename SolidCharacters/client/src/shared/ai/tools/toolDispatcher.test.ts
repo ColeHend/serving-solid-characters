@@ -1,10 +1,16 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("../../customHooks/homebrewManager", () => ({ homebrewManager: { classes: () => [], feats: () => [] } }));
+const hb = vi.hoisted(() => ({ backgrounds: [] as Array<{ name?: string; description?: string }> }));
+vi.mock("../../customHooks/homebrewManager", () => ({
+    homebrewManager: {
+        classes: () => [], feats: () => [], spells: () => [], items: () => [], magicItems: () => [],
+        backgrounds: () => hb.backgrounds, races: () => [], subclasses: () => [], findSubclass: () => undefined,
+    },
+}));
 
-import { buildPreview } from "./toolDispatcher";
+import { buildPreview, buildEditPreview } from "./toolDispatcher";
 import type { AiToolCall } from "../types";
-import type { Class5E, Spell, Race } from "../../../models/generated";
+import type { Background, Class5E, Spell, Race } from "../../../models/generated";
 
 const call = (name: string, input: Record<string, unknown>): AiToolCall => ({ id: "t1", name, input });
 
@@ -84,6 +90,22 @@ describe("buildPreview — description is a hard failure", () => {
         expect((p.warnings ?? []).some(w => /name or description/i.test(w))).toBe(true);
     });
 
+    it("maps a background's starting equipment instead of dropping it", () => {
+        const p = buildPreview(call("create_background", {
+            name: "Chronicler of Truth", desc: "A seeker of hidden truths.",
+            startEquipment: [
+                { items: ["Quill", "Ink (1-ounce bottle)", "Parchment (10 sheets)", "8 GP"] },
+                { optionKeys: ["Option A"], items: ["50 GP"] },
+                { items: [] },   // empty group is dropped
+            ],
+        }));
+        const bg = p.entity as Background;
+        expect(bg.startEquipment).toHaveLength(2);
+        expect(bg.startEquipment[0].items).toContain("Quill");
+        expect(bg.startEquipment[1].optionKeys).toEqual(["Option A"]);
+        expect(bg.startEquipment[1].items).toEqual(["50 GP"]);
+    });
+
     it("drops an unrecognized race ability bonus instead of defaulting to STR", () => {
         const p = buildPreview(call("create_race", { name: "X", size: "Medium", speed: 30, abilityBonuses: [{ ability: "LUC", value: 2 }] }));
         expect((p.entity as Race).abilityBonuses).toHaveLength(0);
@@ -101,5 +123,37 @@ describe("buildPreview — description is a hard failure", () => {
         }));
         expect(klass.errors).not.toContain("Missing description.");
         expect(klass.valid).toBe(true);
+    });
+});
+
+describe("buildEditPreview — missing target self-corrects instead of dead-ending", () => {
+    beforeEach(() => { hb.backgrounds = []; });
+
+    it("flags targetMissing and lists the real names when the requested name doesn't exist", () => {
+        hb.backgrounds = [{ name: "Chronicler of Truth", description: "A seeker of hidden truths." }];
+        const p = buildEditPreview(call("edit_homebrew", { kind: "background", name: "Journalist", changes: [] }));
+        expect(p.valid).toBe(false);
+        expect(p.targetMissing).toBe(true);
+        expect(p.errors[0]).toContain('No homebrew background named "Journalist"');
+        expect(p.errors[0]).toContain("Chronicler of Truth");   // hands the model the real name to retry with
+    });
+
+    it("tells the model to create one first when there are none of that kind", () => {
+        const p = buildEditPreview(call("edit_homebrew", { kind: "background", name: "Journalist", changes: [] }));
+        expect(p.targetMissing).toBe(true);
+        expect(p.errors[0]).toContain("no homebrew backgrounds yet");
+    });
+
+    it("builds a real edit preview (no targetMissing) when the name matches case-insensitively", () => {
+        hb.backgrounds = [{ name: "Chronicler of Truth", description: "A seeker of hidden truths." }];
+        const p = buildEditPreview(call("edit_homebrew", { kind: "background", name: "chronicler of truth", changes: [] }));
+        expect(p.targetMissing).toBeFalsy();
+        expect(p.baseEntity).toBeTruthy();
+    });
+
+    it("flags an unknown kind as targetMissing rather than surfacing a card", () => {
+        const p = buildEditPreview(call("edit_homebrew", { kind: "potion", name: "X", changes: [] }));
+        expect(p.targetMissing).toBe(true);
+        expect(p.errors[0]).toContain("Unknown kind");
     });
 });

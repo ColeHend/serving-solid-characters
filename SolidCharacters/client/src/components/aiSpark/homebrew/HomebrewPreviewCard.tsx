@@ -72,8 +72,8 @@ const HomebrewPreviewCard: Component<{ preview: HomebrewPreview }> = (props) => 
                     <Icon icon={Bolt} size="small" /> Improving with AI…
                 </div>
                 <div class={styles.previewActions}>
-                    <Button transparent title="Cancel" onClick={() => aiAssistant.cancelRepair(p().previewId)}>
-                        <Icon icon={Close} size="small" /> Cancel
+                    <Button transparent title="Dismiss and restore the previous card" onClick={() => aiAssistant.cancelRepair(p().previewId)}>
+                        <Icon icon={Close} size="small" /> Dismiss
                     </Button>
                 </div>
             </Container>
