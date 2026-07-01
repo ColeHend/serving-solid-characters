@@ -4,6 +4,7 @@ import { srdItem } from "../../../../models/data/generated";
 import styles from "./itemsModal.module.scss";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
 import { ItemType } from "../../../../models/generated";
+import Markdown from "../../MarkDown/MarkDown";
 
 
 interface modalProps {
@@ -55,7 +56,7 @@ export const ItemPopup:Component<modalProps> = (props) => {
             <div class={`${styles.divider}`} />
 
             <div class={`${styles.info} ${styles.desc}`}>
-                {currentItem?.desc}
+                <Markdown text={currentItem?.desc} />
             </div>
             
             <div class={`${styles.stats}`}>
