@@ -83,7 +83,7 @@ const races: Component = () => {
   })
 
   return <Body class={`${styles.body}`}>
-    <h1>Races</h1>
+    <h1 class={`${styles.title}`}>Races</h1>
 
     <div class={`${styles.searchBar}`}>
       <SearchBar 

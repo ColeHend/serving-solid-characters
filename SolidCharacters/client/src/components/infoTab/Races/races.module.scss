@@ -5,6 +5,7 @@ $mobile: 768px;
 .body {
     background-color: vars.$color-surface;
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+    width: 35%;
 
     button {
         background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
@@ -12,7 +13,7 @@ $mobile: 768px;
 }
 
 .searchBar {
-    width: 35%; 
+    width: 55%; 
     height: 3vh;
     margin: 0 auto;
     margin-bottom: 1vh;
@@ -22,13 +23,13 @@ $mobile: 768px;
     }
 
     @media screen and (max-width:$mobile) {
-        width: 100%;
+        width: 92%;
     }
 }
 
 .racesTable {
     margin: 0 auto;
-    width: 35%;
+    width: 100%;
     overflow-y: scroll;
     height: 49vh;
 
@@ -54,5 +55,9 @@ $mobile: 768px;
 
 .header {
     margin: 0 auto;
+    text-align: center;
+}
+
+.title {
     text-align: center;
 }
