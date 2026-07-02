@@ -132,8 +132,8 @@ function byTypeLine(kind: HomebrewKind, dndSystem: string): string {
     case "magic_item": return "- Magic item: rarity and whether it requires attunement (note any restriction on who may attune).";
     case "feat": return "- Feat: prerequisites and the concrete benefits, each spelled out with real numbers.";
     case "background": return dndSystem === "2024"
-      ? "- Background: skill proficiencies, a background feature, and (2024) its ability score options and a granted feat that names a real feat."
-      : "- Background: skill proficiencies and a background feature.";
+      ? "- Background: skill proficiencies, a background feature, the starting equipment it grants (concrete items plus any gold, in startEquipment), and (2024) its ability score options and a granted feat that names a real feat."
+      : "- Background: skill proficiencies, a background feature, and the starting equipment it grants (concrete items plus any gold, in startEquipment).";
     case "race": return "- Race: distinct traits with real effects, plus languages, size, and speed.";
     case "subclass": return "- Subclass: features at the right levels with full rules text. If it grants spellcasting, set casterType (third/half/full/pact) so spell slots are generated.";
     case "class": return "- Class: hit die, primary ability, saving throws, and features at the right levels with full rules text. For a spellcaster, set casterType (third/half/full/pact) so the spell-slot table is generated.";
@@ -151,12 +151,12 @@ function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKi
     ? ` You may add a short line of flavor alongside the call (e.g. ${persona.confirmFlourish}), but never wait for a yes before calling the tool.`
     : "";
   const opener = labels.length
-    ? `When the user asks you to create homebrew content (${labels.join(", ")}), call the matching create_* tool with a complete, balanced entry. Generate directly — do not ask permission first; the app shows the user a preview to approve before anything is saved. Emit the create_* tool call itself; never describe the entity in prose instead of calling the tool. Make one create_* call per entity the user asks for. If the request is ambiguous, make sensible design choices and note them in your reply. For anything that is not a request to create content, answer normally without calling a tool.${flourish}`
+    ? `When the user asks you to create homebrew content (${labels.join(", ")}), call the matching create_* tool with a complete, balanced entry. Generate directly — do not ask permission first; the app shows the user a preview to approve before anything is saved. Emit the create_* tool call itself; never describe the entity in prose instead of calling the tool. Make one create_* call per entity the user asks for. If the request is ambiguous, make sensible design choices and note them in your reply. After you call a create_* tool, state the exact name you gave the entity in your reply — you (and the user) will need that exact name to edit it later. For anything that is not a request to create content, answer normally without calling a tool.${flourish}`
     : `Content creation is turned off in settings — you have no create_* tools this turn. If the user asks for homebrew, tell them it is disabled in settings rather than calling a tool.`;
 
   // Edit-vs-create routing — only when the edit tool is actually advertised.
   const editLine = flags?.edit
-    ? "\n\nIf the request targets homebrew that already EXISTS (named, or \"my <X>\"), change it with edit_homebrew, which emits only the fields that change as a diff the user reviews — do not call create_* to rebuild it (that discards the entry's other fields and is rejected as a duplicate). Use create_* only for brand-new content. After an edit, add one short sentence saying what you changed and why."
+    ? `\n\nIf the request targets homebrew that already EXISTS (named, or "my <X>"), change it with edit_homebrew, which emits only the fields that change as a diff the user reviews — do not call create_* to rebuild it (that discards the entry's other fields and is rejected as a duplicate). Use create_* only for brand-new content. Always pass the entity's EXACT stored name to edit_homebrew; if you are not certain of it${flags?.lookup ? ", call lookup_homebrew first (an empty query lists every name of a kind) and use the exact name it returns" : ""} — never guess the name. After an edit, add one short sentence saying what you changed and why.`
     : "";
 
   // Class routing — when the staged pipeline is offered, a base CLASS is built through generate_class, not

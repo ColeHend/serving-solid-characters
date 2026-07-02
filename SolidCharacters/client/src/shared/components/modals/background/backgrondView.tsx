@@ -1,5 +1,4 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
-// import { Background } from "../../../../models";
 import { Background } from "../../../../models/generated";
 import { Modal } from "coles-solid-library";
 import styles from "./backgroundView.module.scss"
@@ -86,36 +85,66 @@ const BackgroundView: Component<props> = (props) => {
           <span>{proficiencies().skills.join(", ") || "None"}</span>
         </div>
 
-        <h4 class={`${styles.styledLabel}`}>Languages</h4>
-        
-        <div class={`${styles.languages}`}>
-          <ChoiceCard ChoiceKey="2" text={languages()?.join(", ")} />
-        </div>
+        <Show when={startEquipment().length >=1}>
+          <h4 class={`${styles.styledLabel}`}>Starting Equipment</h4>
 
-        <h4 class={`${styles.styledLabel}`}>Starting Equipment</h4>
-
-        
-        <div class={`${styles.flavor}`}>
-          Choose 
-          
-          <For each={startEquipmentKeys()}>
-            {(key, i) => <>
-              <span>{key}</span>
-
-              <Show when={i() !== startEquipmentKeys().length - 1}>
-                <span> or </span>
-              </Show>
+          <div class={`${styles.flavor}`}>
+            Choose 
             
-            </>}
-          </For>
-        </div>
+            <For each={startEquipmentKeys()}>
+              {(key, i) => <>
+                <span>{key}</span>
 
-        <div class={`${styles.itemChoices}`}>
-          <For each={startEquipment()}>
-            {(startingChoice) => <ChoiceCard ChoiceKey={startingChoice.optionKeys?.join(", ") ?? ''} text={startingChoice?.items?.join(", ") ?? ""} />}
-          </For>
-        </div>
+                <Show when={i() !== startEquipmentKeys().length - 1}>
+                  <span> or </span>
+                </Show>
+              
+              </>}
+            </For>
+          </div>
 
+          <div class={`${styles.itemChoices}`}>
+            <For each={startEquipment()}>
+              {(startingChoice) => <ChoiceCard ChoiceKey={startingChoice.optionKeys?.join(", ") ?? ''} text={startingChoice?.items?.join(", ") ?? ""} />}
+            </For>
+          </div>
+        </Show>
+
+        <Show when={languages().length >= 1}>
+          <h4 class={`${styles.styledLabel}`}>Languages</h4>
+          
+          <div class={`${styles.languages}`}>
+            <ChoiceCard ChoiceKey="2" text={languages()?.join(", ")} />
+          </div>
+        </Show>
+
+        <Show when={feat() !== ""}>
+          <h4 class={`${styles.styledLabel}`}>Suggested Feat</h4>
+
+          <div class={`${styles.suggestedFeat}`}>
+            <ChoiceCard ChoiceKey="S" text={feat()} />
+          </div>
+        </Show>
+
+        <Show when={abilityOptions().length >= 1}>
+          <h4 class={`${styles.styledLabel}`}>Ability Choices</h4>
+
+          <div class={`${styles.abilityChoices}`}>
+            <For each={abilityOptions()}>
+              {(choice, i) => <ChoiceCard ChoiceKey={`${i() + 1}`} text={choice} />}
+            </For>
+          </div>
+        </Show>
+
+        <Show when={features().length >= 1}>
+          <h4 class={`${styles.styledLabel}`}>Feature</h4>
+
+          <div>
+            <For each={features()}>
+              {(feature, i) => <ChoiceCard ChoiceKey={`${i() + 1}`} text={feature?.name ?? ""} />}
+            </For>
+          </div>
+        </Show>
 
       </div>
     </Modal>

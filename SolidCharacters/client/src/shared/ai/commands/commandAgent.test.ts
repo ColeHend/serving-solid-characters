@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import type { HomebrewPreview } from "../tools/toolDispatcher";
 import type { HomebrewKind } from "../refs/homebrewKind";
 import type { RefKind } from "./madCommandCatalog";
+import type { AiSettings } from "../../../models/userSettings";
 
 // commandAgent imports the SRD/homebrew catalogs (which boot IndexedDB) and the provider factory. Mock
 // them so importing the module is side-effect-free; the pure logic under test takes an injected resolver.
@@ -15,7 +16,11 @@ vi.mock("../../customHooks/dndInfo/useDndFeatures", () => ({ useDndFeature: () =
 vi.mock("../providers/providerFactory", () => ({ buildProvider: () => ({ streamChat: async function* () { /* none */ } }) }));
 
 import { coerceCommand, commandChipLabel } from "./madCommandCatalog";
-import { applyCommandsToEntity, featuresOf, hasFeatures } from "./commandAgent";
+import {
+    applyCommandsToEntity, extractFeatures, featuresOf, gapFillCommands, generateCommands,
+    hasFeatures, looksMechanical, normalizeName,
+    type CommandTurn, type CommandTurnRunner,
+} from "./commandAgent";
 
 const noRef = (): string | null => null;
 const fixedRef = (id: string) => (_k: RefKind, _n: string) => id;
@@ -152,8 +157,11 @@ describe("applyCommandsToEntity", () => {
         expect(featuresOf("race", entity)[0].metadata?.mads?.map(m => m.command)).toEqual(["AddSpeed"]);
     });
 
-    it("ignores feature names that don't match", () => {
-        const p = racePreview();
+    it("ignores feature names that don't match (multi-feature: no fuzzy fallback)", () => {
+        const p = preview("race", { name: "Cairnkin", traits: [
+            { details: { id: "t1", name: "Stoneborn", description: "d" } },
+            { details: { id: "t2", name: "Earthsense", description: "d" } },
+        ] });
         const parsed = [{ name: "Ghost Feature", commands: [{ type: "Add", category: "Speed", value: { speed: "5" } }] }];
         expect(applyCommandsToEntity(p, parsed, noRef).attached).toBe(0);
     });
@@ -161,5 +169,166 @@ describe("applyCommandsToEntity", () => {
     it("returns the clone unchanged when there's nothing to apply", () => {
         expect(applyCommandsToEntity(racePreview(), null, noRef).attached).toBe(0);
         expect(applyCommandsToEntity(racePreview(), [], noRef).attached).toBe(0);
+    });
+});
+
+// ---- small-model reliability: salvage, retry, gap-fill, fuzzy matching ----
+
+const ai = { model: "test-model" } as unknown as AiSettings;
+
+const toolCallTurn = (features: unknown): CommandTurn =>
+    ({ text: "", ok: true, toolCalls: [{ id: "c1", name: "attach_commands", input: { features } }] });
+const proseTurn = (text: string): CommandTurn => ({ text, ok: true, toolCalls: [] });
+
+/** A runner whose Nth call returns `fn(N)`, tracking how many times it ran. */
+function countingRunner(fn: (n: number) => CommandTurn): { runner: CommandTurnRunner; count: () => number } {
+    let n = 0;
+    const runner: CommandTurnRunner = async () => fn(n++);
+    return { runner, count: () => n };
+}
+
+describe("extractFeatures", () => {
+    it("reads features from a fenced json block", () => {
+        expect(extractFeatures("Sure!\n```json\n{\"features\":[{\"name\":\"X\",\"commands\":[]}]}\n```"))
+            .toEqual([{ name: "X", commands: [] }]);
+    });
+    it("reads features from a bare balanced object", () => {
+        expect(extractFeatures('prefix {"features":[{"name":"Y"}]} suffix')?.[0].name).toBe("Y");
+    });
+    it("returns null for prose with no JSON", () => {
+        expect(extractFeatures("no json here")).toBeNull();
+    });
+});
+
+describe("generateCommands — salvage & retry", () => {
+    const racePreview = () => preview("race", {
+        name: "Cairnkin", traits: [{ details: { id: "t1", name: "Stoneborn", description: "resistance to poison" } }],
+    });
+
+    it("returns parsed features straight from a tool call (one attempt)", async () => {
+        const { runner, count } = countingRunner(() => toolCallTurn([{ name: "Stoneborn", commands: [] }]));
+        expect(await generateCommands(racePreview(), ai, undefined, { runner })).toEqual([{ name: "Stoneborn", commands: [] }]);
+        expect(count()).toBe(1);
+    });
+
+    it("retries on a prose-only turn, then succeeds on the tool call", async () => {
+        const { runner, count } = countingRunner(n =>
+            n === 0 ? proseTurn("I'll consider it...") : toolCallTurn([{ name: "Stoneborn", commands: [] }]));
+        expect((await generateCommands(racePreview(), ai, undefined, { runner }))?.[0].name).toBe("Stoneborn");
+        expect(count()).toBe(2);
+    });
+
+    it("salvages prose JSON without spending a retry", async () => {
+        const { runner, count } = countingRunner(() =>
+            proseTurn('```json\n{"features":[{"name":"Stoneborn","commands":[]}]}\n```'));
+        expect((await generateCommands(racePreview(), ai, undefined, { runner }))?.[0].name).toBe("Stoneborn");
+        expect(count()).toBe(1);
+    });
+
+    it("gives up (null) after 1 + toolCallRetries unusable turns", async () => {
+        const { runner, count } = countingRunner(() => proseTurn("still no json"));
+        expect(await generateCommands(racePreview(), ai, undefined, { runner, toolCallRetries: 2 })).toBeNull();
+        expect(count()).toBe(3);
+    });
+});
+
+describe("looksMechanical", () => {
+    it("flags descriptions that grant a concrete effect", () => {
+        for (const d of ["resistance to fire", "you gain proficiency in Stealth",
+            "your speed increases by 10 feet", "+1 Constitution", "you learn one extra language"]) {
+            expect(looksMechanical(d)).toBe(true);
+        }
+    });
+    it("ignores pure flavor and empty descriptions", () => {
+        expect(looksMechanical("You feel a deep kinship with the mountains.")).toBe(false);
+        expect(looksMechanical(undefined)).toBe(false);
+    });
+});
+
+describe("gapFillCommands", () => {
+    const emberkin = () => preview("race", {
+        name: "Emberkin",
+        traits: [
+            { details: { id: "t1", name: "Flavor Soul", description: "You feel a deep kinship with fire." } },
+            { details: { id: "t2", name: "Ember Body", description: "You have resistance to fire damage." } },
+        ],
+    });
+
+    it("fills a mechanical feature with no mads and leaves flavor features alone", async () => {
+        const runner: CommandTurnRunner = async () =>
+            toolCallTurn([{ name: "Ember Body", commands: [{ type: "Add", category: "Resistances", value: { damageType: "fire" } }] }]);
+        const { entity, attached } = await gapFillCommands(emberkin(), ai, undefined, { maxPerFeaturePasses: 6, runner });
+        expect(attached).toBe(1);
+        const feats = featuresOf("race", entity);
+        expect(feats.find(f => f.name === "Ember Body")?.metadata?.mads?.map(m => m.command)).toEqual(["AddResistances"]);
+        expect(feats.find(f => f.name === "Flavor Soul")?.metadata).toBeUndefined();
+    });
+
+    it("runs at most maxPerFeaturePasses focused turns", async () => {
+        const cls = preview("class", {
+            name: "Pyromancer",
+            features: { 1: Array.from({ length: 10 }, (_, i) => ({ id: `f${i}`, name: `Ward ${i}`, description: "you gain resistance to cold" })) },
+        });
+        let calls = 0;
+        const runner: CommandTurnRunner = async () => {
+            calls++;
+            return toolCallTurn([{ name: "x", commands: [{ type: "Add", category: "Resistances", value: { damageType: "cold" } }] }]);
+        };
+        await gapFillCommands(cls, ai, undefined, { maxPerFeaturePasses: 3, runner });
+        expect(calls).toBe(3);
+    });
+
+    it("is a no-op when the cap is 0 (never calls the model)", async () => {
+        let calls = 0;
+        const runner: CommandTurnRunner = async () => { calls++; return toolCallTurn([]); };
+        expect((await gapFillCommands(emberkin(), ai, undefined, { maxPerFeaturePasses: 0, runner })).attached).toBe(0);
+        expect(calls).toBe(0);
+    });
+});
+
+describe("applyCommandsToEntity — fuzzy feature matching", () => {
+    it("matches across punctuation and case", () => {
+        const p = preview("race", { name: "R", traits: [{ details: { id: "t1", name: "Stoneborn", description: "d" } }] });
+        const parsed = [{ name: "stone-born", commands: [{ type: "Add", category: "Speed", value: { speed: "5" } }] }];
+        expect(applyCommandsToEntity(p, parsed, noRef).attached).toBe(1);
+    });
+
+    it("attaches to the only feature regardless of the reported name", () => {
+        const p = preview("feat", { details: { id: "d1", name: "Alert", description: "d" } });
+        const parsed = [{ name: "Totally Different", commands: [{ type: "Add", category: "Speed", value: { speed: "5" } }] }];
+        expect(applyCommandsToEntity(p, parsed, noRef).attached).toBe(1);
+    });
+
+    it("matches on a normalized substring among several features", () => {
+        const p = preview("race", { name: "R", traits: [
+            { details: { id: "t1", name: "Keen Senses", description: "d" } },
+            { details: { id: "t2", name: "Draconic Resistance", description: "d" } },
+        ] });
+        const parsed = [{ name: "Resistance", commands: [{ type: "Add", category: "Resistances", value: { damageType: "fire" } }] }];
+        const { entity, attached } = applyCommandsToEntity(p, parsed, noRef);
+        expect(attached).toBe(1);
+        expect(featuresOf("race", entity).find(f => f.name === "Draconic Resistance")?.metadata?.mads?.length).toBe(1);
+    });
+});
+
+describe("normalizeName", () => {
+    it("folds case, punctuation and whitespace", () => {
+        expect(normalizeName("  Stone-Born!! ")).toBe("stone born");
+        expect(normalizeName(undefined)).toBe("");
+    });
+});
+
+describe("coerceCommand — category aliases (small-model tolerance)", () => {
+    it("accepts singular / loose category spellings", () => {
+        expect(coerceCommand("Add", "Resistance", { damageType: "fire" }, undefined, noRef)?.command).toBe("AddResistances");
+        expect(coerceCommand("Add", "Stat", { stat: "con", statValue: "1" }, undefined, noRef)?.command).toBe("AddStats");
+        expect(coerceCommand("Add", "Saving Throw", { stat: "dex" }, undefined, noRef)?.command).toBe("AddSavingThrows");
+        expect(coerceCommand("Add", "proficiency", { proficiency: "Stealth" }, undefined, noRef)?.command).toBe("AddProficiencies");
+    });
+    it("still rejects genuinely unknown categories", () => {
+        expect(coerceCommand("Add", "Teleport", { x: "1" }, undefined, noRef)).toBeNull();
+    });
+    it("does not loosen value-field coercion — bad fields still drop (safety preserved)", () => {
+        expect(coerceCommand("Add", "Resistance", { damageType: "holy" }, undefined, noRef)).toBeNull();
     });
 });

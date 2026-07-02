@@ -5,16 +5,21 @@ $mobile: 768px;
 .body {
   background-color: vars.$color-surface;
   background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+  width: 35%;
 
   button {
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+  }
+
+  @media screen and (max-width: $mobile) {
+    width: 100%;
   }
 }
 
 .backgroundsDiv {
   margin: 0 auto;
   height: 49vh;
-  width: 35%;
+  width: 100%;
   overflow-y: scroll;
 
   table {
@@ -29,7 +34,7 @@ $mobile: 768px;
 
 .searchBar {
   margin: 0 auto;
-  width: 35%; 
+  width: 55%; 
   height: 3vh;
 
   button {
@@ -37,7 +42,7 @@ $mobile: 768px;
   }
 
   @media screen and (max-width: $mobile) {
-    width: 100%;
+    width: 92%;
   }
 }
 .paginator {
@@ -49,4 +54,8 @@ $mobile: 768px;
   background: inherit;
 
   
+}
+
+.Title {
+  text-align: center;
 }

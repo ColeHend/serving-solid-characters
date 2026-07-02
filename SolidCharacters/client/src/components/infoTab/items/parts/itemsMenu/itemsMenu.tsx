@@ -18,8 +18,8 @@ export const ItemsMenu:Component<menuProps> = (props) => {
     const navigate = useNavigate();
 
     const checkForHomebrew = (item: string) => {
-        homebrewManager.items().forEach((customItem:srdItem) => {
-            if (customItem.name.toLowerCase() === item.toLowerCase()) return true;
+        homebrewManager?.items()?.forEach((customItem:srdItem) => {
+            if (customItem?.name?.toLowerCase() === item?.toLowerCase()) return true;
         })
 
         return false
@@ -31,8 +31,8 @@ export const ItemsMenu:Component<menuProps> = (props) => {
         </Button>
 
         <Menu anchorElement={anchorEl} show={[showMenu, setShowMenu]}>
-            <MenuItem onClick={()=>navigate(`/homebrew/create/items?name=${props.item.name}`)}>
-              {checkForHomebrew(props.item.name) ? "Edit" : "Clone & Edit"}
+            <MenuItem onClick={()=>navigate(`/homebrew/create/items?name=${props?.item?.name}`)}>
+              {checkForHomebrew(props?.item?.name) ? "Edit" : "Clone & Edit"}
             </MenuItem>
         </Menu>
     </>

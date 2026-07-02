@@ -150,6 +150,18 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 feat: { type: "string", description: "Granted feat name (2024 backgrounds), if any. Must name a real feat — the character build resolves it by name." },
                 abilityOptions: { type: "array", items: { type: "string", enum: ABILITIES }, description: "Ability scores this background can boost (2024 rules — the +2/+1 or +1×3 ASI). Usually three, e.g. [\"INT\",\"WIS\",\"CHA\"]. Leave empty for 2014 backgrounds." },
                 features: { type: "array", items: namedFeatureSchema, description: "Background feature(s) — at least one, e.g. \"Shelter of the Faithful\"." },
+                startEquipment: {
+                    type: "array",
+                    description: "Starting equipment the background grants. Each entry is one equipment package/choice: list its concrete items (and any gold) in `items`, and set `optionKeys` to a short label only when there are either/or choices. 2024 backgrounds usually grant a themed gear package plus some gold. Example: [{\"items\":[\"Quill\",\"Ink (1-ounce bottle)\",\"Parchment (10 sheets)\",\"A letter from a dead colleague\",\"8 GP\"]}].",
+                    items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                            optionKeys: { type: "array", items: { type: "string" }, description: "Label(s) for this choice group when the equipment is an either/or option (e.g. [\"Option A\"]). Omit for a single fixed package." },
+                            items: { type: "array", items: { type: "string" }, description: "The concrete items and any gold in this package, e.g. [\"Quill\",\"Ink\",\"Parchment\",\"10 GP\"]." },
+                        },
+                    },
+                },
             },
             required: ["name", "desc"],
         },

@@ -2,6 +2,7 @@
 
 $mobile: 768px;
 $marginLeft: 5%;
+$choiceWidth: 85%;
 
 .wrapper {
     overflow-y: scroll;
@@ -87,11 +88,24 @@ $marginLeft: 5%;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 85%;
+    width: $choiceWidth;
     margin: 0 auto;
 }
 
 .languages {
-    width: 85%;
+    width: $choiceWidth;
     margin: 0 auto;
+}
+
+.suggestedFeat {
+    width: $choiceWidth;
+    margin: 0 auto;
+}
+
+.abilityChoices {
+    width: $choiceWidth;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
