@@ -173,7 +173,7 @@ export const SideMenu: Component<MenuProps> = (props) => {
                   navigate("/");
                 }}
               >
-                Naviagtion
+                Navigation
               </h3>
 
               <Button onClick={() => setShowSettings((old) => !old)}>
