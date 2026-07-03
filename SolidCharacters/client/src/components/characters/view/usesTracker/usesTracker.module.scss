@@ -1,0 +1,12 @@
+.usesTracker {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+
+    .label {
+        margin-right: 0.25rem;
+        font-size: var(--font-size-small);
+    }
+}

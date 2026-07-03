@@ -17,16 +17,18 @@ import { MadFeature, MadType } from "../../../models/generated";
  * resolve to KNOWN options is dropped entirely rather than attached as a sheet-corrupting no-op.
  */
 
-/** The 16 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
+/** The 20 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
 export type MadCategory =
     | "Spells" | "Items" | "Proficiencies" | "Features" | "Currency" | "ArmorClass"
     | "Expertise" | "Feats" | "Languages" | "Resistances" | "Vulnerabilities"
-    | "Immunities" | "SavingThrows" | "Stats" | "Speed" | "AllProficiencies";
+    | "Immunities" | "SavingThrows" | "Stats" | "Speed" | "AllProficiencies"
+    | "ClassFeature" | "Advantage" | "Attacks" | "Uses";
 
 export const MAD_CATEGORIES: MadCategory[] = [
     "Spells", "Items", "Proficiencies", "Features", "Currency", "ArmorClass",
     "Expertise", "Feats", "Languages", "Resistances", "Vulnerabilities",
     "Immunities", "SavingThrows", "Stats", "Speed", "AllProficiencies",
+    "ClassFeature", "Advantage", "Attacks", "Uses",
 ];
 
 /** Catalog entities a command can reference by name (resolved to the entity's `.id`). */
@@ -79,9 +81,29 @@ export const COMMON_LANGUAGES = [
     "Dwarvish", "Elvish", "Giant", "Gnomish", "Goblin", "Halfling", "Orc", "Sylvan", "Deep Speech",
 ] as const;
 
+/** Roll types an Advantage command can target (matches AdvantageRollType on the character model). */
+export const ROLL_TYPES = ["SavingThrow", "WeaponAttack", "SpellAttack", "Initiative", "AbilityCheck"] as const;
+
+/** Advantage modes (disadvantage is still an ADD command; Remove revokes a previous grant). */
+export const ADV_MODES = ["advantage", "disadvantage"] as const;
+
+/** Recharge cadences for limited-use (Uses) commands. */
+export const RECHARGE_TYPES = ["Short Rest", "Long Rest"] as const;
+
+/** Loose roll-type phrasings → canonical ROLL_TYPES entry (keys are lowercased, non-alpha stripped). */
+const ROLL_TYPE_ALIASES: Record<string, string> = {
+    save: "SavingThrow", saves: "SavingThrow", savingthrow: "SavingThrow", savingthrows: "SavingThrow",
+    attack: "WeaponAttack", attacks: "WeaponAttack", attackroll: "WeaponAttack", attackrolls: "WeaponAttack",
+    weaponattack: "WeaponAttack", weaponattacks: "WeaponAttack", meleeattack: "WeaponAttack", rangedattack: "WeaponAttack",
+    spellattack: "SpellAttack", spellattacks: "SpellAttack", spellattackroll: "SpellAttack",
+    initiative: "Initiative", initiativeroll: "Initiative", initiativerolls: "Initiative",
+    check: "AbilityCheck", checks: "AbilityCheck", abilitycheck: "AbilityCheck", abilitychecks: "AbilityCheck",
+    skillcheck: "AbilityCheck", skillchecks: "AbilityCheck",
+};
+
 // ---- field specs ----
 
-type FieldType = "number" | "ability" | "abilityCsv" | "skill" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref";
+type FieldType = "number" | "ability" | "abilityCsv" | "skill" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge";
 
 interface FieldSpec {
     /** The value-object key this field writes (e.g. "bonus", "damageType", "ID"). */
@@ -101,6 +123,10 @@ interface CommandSpec {
     removeFields: FieldSpec[];
     /** One-line cheat-sheet hint shown to the sub-agent. */
     hint: string;
+    /** MadType stamped by coerceCommand (defaults to Character; Uses is Info). */
+    madType?: MadType;
+    /** Value keys commandChipLabel shows (defaults to all — keeps long fields like descriptions off chips). */
+    labelKeys?: string[];
 }
 
 const REF = (key: string): FieldSpec => ({ key, type: "ref", required: true });
@@ -174,6 +200,48 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         removeFields: [{ key: "type", type: "currency", required: true }, { key: "amount", type: "number", required: true }],
         hint: "grants/removes currency; type = platinumPieces/goldPieces/electrumPieces/sliverPieces/copperPieces, amount = number",
     },
+    ClassFeature: {
+        category: "ClassFeature", idBased: false,
+        labelKeys: ["name", "category"],
+        addFields: [
+            { key: "name", type: "text", required: true },
+            { key: "description", type: "text", required: false },
+            { key: "category", type: "text", required: false },
+        ],
+        removeFields: [{ key: "name", type: "text", required: true }],
+        hint: "grants a named class-specific pick (Eldritch Invocation, Fighting Style, Weapon Mastery, Maneuver, Metamagic...) as a new feature on the sheet; name = the pick's name, description = its rules text, category = the pick type",
+    },
+    Advantage: {
+        category: "Advantage", idBased: false,
+        addFields: [
+            { key: "rollType", type: "rollType", required: true },
+            { key: "mode", type: "advMode", required: true },
+            { key: "stat", type: "ability", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        removeFields: [
+            { key: "rollType", type: "rollType", required: true },
+            { key: "mode", type: "advMode", required: true },
+            { key: "stat", type: "ability", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        hint: "grants advantage OR disadvantage on a roll — disadvantage is still an Add with mode=disadvantage (Remove only revokes a previous grant); rollType = SavingThrow/WeaponAttack/SpellAttack/Initiative/AbilityCheck, mode = advantage/disadvantage, stat (optional) = str/dex/con/int/wis/cha for saves/checks, condition (optional) = qualifier like 'against being frightened'",
+    },
+    Attacks: {
+        category: "Attacks", idBased: false,
+        addFields: [{ key: "amount", type: "number", required: true }],
+        removeFields: [{ key: "amount", type: "number", required: true }],
+        hint: "grants extra attacks per Attack action (Extra Attack = amount 1); amount = number of additional attacks",
+    },
+    Uses: {
+        category: "Uses", idBased: false, madType: MadType.Info,
+        addFields: [
+            { key: "amount", type: "number", required: true },
+            { key: "recharge", type: "recharge", required: false },
+        ],
+        removeFields: [{ key: "amount", type: "number", required: true }],
+        hint: "marks THIS feature as limited-use (e.g. 'you can use this twice, regaining all uses on a long rest'); amount = number of uses, recharge = Short Rest or Long Rest",
+    },
 };
 
 // ---- pure coercion ----
@@ -199,6 +267,15 @@ const CATEGORY_ALIASES: Record<string, MadCategory> = {
     language: "Languages", spell: "Spells", item: "Items", feat: "Feats",
     feature: "Features", speed: "Speed", ac: "ArmorClass", armorclass: "ArmorClass",
     expertise: "Expertise", currency: "Currency", allproficiency: "AllProficiencies",
+    advantage: "Advantage", disadvantage: "Advantage", advantages: "Advantage",
+    attack: "Attacks", extraattack: "Attacks", extraattacks: "Attacks",
+    use: "Uses", limiteduse: "Uses", limiteduses: "Uses",
+    classfeature: "ClassFeature", classfeatures: "ClassFeature",
+    invocation: "ClassFeature", invocations: "ClassFeature",
+    eldritchinvocation: "ClassFeature", eldritchinvocations: "ClassFeature",
+    fightingstyle: "ClassFeature", fightingstyles: "ClassFeature",
+    weaponmastery: "ClassFeature", mastery: "ClassFeature", masteries: "ClassFeature",
+    maneuver: "ClassFeature", maneuvers: "ClassFeature", metamagic: "ClassFeature",
 };
 
 /** Resolve a model-written category to its canonical form: exact match, then alias, then singular→plural. */
@@ -234,6 +311,30 @@ function coercePbChoice(raw: string): string | null {
     return null;
 }
 
+function coerceRollType(raw: string): string | null {
+    if (!raw) return null;
+    const exact = matchOption(raw, ROLL_TYPES);
+    if (exact) return exact;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    return ROLL_TYPE_ALIASES[key] ?? null;
+}
+
+function coerceAdvMode(raw: string): string | null {
+    if (!raw) return null;
+    const lc = raw.toLowerCase();
+    if (lc.startsWith("dis")) return "disadvantage";
+    if (lc.startsWith("adv")) return "advantage";
+    return null;
+}
+
+function coerceRecharge(raw: string): string | null {
+    if (!raw) return null;
+    const lc = raw.toLowerCase();
+    if (lc.includes("short")) return "Short Rest";
+    if (lc.includes("long") || lc.includes("day") || lc.includes("dawn")) return "Long Rest";
+    return null;
+}
+
 /** Coerce CSV input against an option mapper; returns the canonical comma-joined list, or null if empty. */
 function coerceCsv(raw: string, map: (s: string) => string | null): string | null {
     const parts = raw.split(",").map(s => s.trim()).filter(Boolean).map(map).filter((x): x is string => !!x);
@@ -261,6 +362,9 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
         case "damageType": return matchOption(value, DAMAGE_TYPES);
         case "currency": return coerceCurrency(value);
         case "pbChoice": return coercePbChoice(value);
+        case "rollType": return coerceRollType(value);
+        case "advMode": return coerceAdvMode(value);
+        case "recharge": return coerceRecharge(value);
         case "text": return value || null;
         default: return null;
     }
@@ -292,7 +396,7 @@ export function coerceCommand(
         }
         value[field.key] = coerced;
     }
-    return { command: `${t}${category}`, value, type: MadType.Character, prerequisites: [], group: 0 };
+    return { command: `${t}${category}`, value, type: spec.madType ?? MadType.Character, prerequisites: [], group: 0 };
 }
 
 // ---- display ----
@@ -356,6 +460,8 @@ export function commandChipLabel(mad: Pick<MadFeature, "command" | "value">): st
     const pretty = prettyCommand(mad.command);
     const cat = categoryOf(mad.command);
     if (!cat || COMMAND_CATALOG[cat].idBased) return pretty;
-    const detail = Object.values(mad.value ?? {}).map(v => String(v).trim()).filter(Boolean).join(", ");
+    const value = mad.value ?? {};
+    const keys = COMMAND_CATALOG[cat].labelKeys ?? Object.keys(value);
+    const detail = keys.map(k => String(value[k] ?? "").trim()).filter(Boolean).join(", ");
     return detail ? `${pretty}: ${detail}` : pretty;
 }

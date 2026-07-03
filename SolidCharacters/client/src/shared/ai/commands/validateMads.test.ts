@@ -57,6 +57,18 @@ describe("validateStoredCommand", () => {
     it("rejects an invalid MadType", () => {
         expect(validateStoredCommand(mad({ type: 7 as MadType }))).not.toEqual([]);
     });
+
+    it("accepts well-formed new-category commands", () => {
+        expect(validateStoredCommand(mad({ command: "AddAdvantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "wis" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddClassFeature", value: { name: "Archery" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddAttacks", value: { amount: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddUses", value: { amount: "2", recharge: "Long Rest" }, type: MadType.Info }))).toEqual([]);
+    });
+
+    it("flags a stored Advantage with a bogus rollType and a Uses with a non-numeric amount", () => {
+        expect(validateStoredCommand(mad({ command: "AddAdvantage", value: { rollType: "Nonsense", mode: "advantage" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddUses", value: { amount: "some" }, type: MadType.Info }))).not.toEqual([]);
+    });
 });
 
 describe("validateMads", () => {

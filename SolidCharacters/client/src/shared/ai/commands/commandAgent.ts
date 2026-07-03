@@ -132,7 +132,8 @@ const COMMAND_SYSTEM_PROMPT =
     "Only emit a command when the feature text clearly states that effect — e.g. \"resistance to fire\" → Add " +
     "Resistances {damageType: Fire}; \"+1 Constitution\" → Add Stats {stat: con, statValue: 1}; \"your walking " +
     "speed increases by 10 feet\" → Add Speed {speed: 10}; \"you gain proficiency in Stealth\" → Add Proficiencies " +
-    "{proficiency: Stealth}; \"your AC equals 13 + your Dexterity modifier\" → Add ArmorClass {bonus: 13, stats: dex}. " +
+    "{proficiency: Stealth}; \"your AC equals 13 + your Dexterity modifier\" → Add ArmorClass {bonus: 13, stats: dex}; " +
+    "\"advantage on Wisdom saving throws\" → Add Advantage {rollType: SavingThrow, mode: advantage, stat: wis}. " +
     "Do not invent effects, do not infer numbers that aren't stated, and add no commands for purely narrative flavor. " +
     "Use the exact field keys and option spellings provided. Reference spells, items, feats, or other features by their " +
     "exact name in target.";
@@ -171,6 +172,12 @@ const KEYWORD_CATEGORIES: { re: RegExp; cats: MadCategory[] }[] = [
     { re: /\bspell/i, cats: ["Spells"] },
     { re: /\bfeat\b/i, cats: ["Feats"] },
     { re: /\bgp\b|gold|silver|copper|platinum|electrum|currenc/i, cats: ["Currency"] },
+    // Must outrank the proficiency/save rows: "advantage on saving throws" without this row would show
+    // only SavingThrows and the model would mis-emit a proficiency command.
+    { re: /advantage|disadvantage/i, cats: ["Advantage"] },
+    { re: /extra attack|attack twice|additional attack|number of attacks/i, cats: ["Attacks"] },
+    { re: /invocation|fighting style|weapon mastery|maneuver|metamagic/i, cats: ["ClassFeature"] },
+    { re: /\buses?\b|per (?:short|long) rest|regain(?:s|ing)? (?:all|expended)|expended use/i, cats: ["Uses"] },
 ];
 
 /** A cheat sheet trimmed to only the categories the feature's text hints at (falls back to all). */
@@ -187,7 +194,9 @@ const SINGLE_FEATURE_EXAMPLES =
     "- \"You have resistance to fire damage\" → {\"type\":\"Add\",\"category\":\"Resistances\",\"value\":{\"damageType\":\"Fire\"}}\n" +
     "- \"Your Constitution score increases by 1\" → {\"type\":\"Add\",\"category\":\"Stats\",\"value\":{\"stat\":\"con\",\"statValue\":\"1\"}}\n" +
     "- \"You gain proficiency in Stealth\" → {\"type\":\"Add\",\"category\":\"Proficiencies\",\"value\":{\"proficiency\":\"Stealth\"}}\n" +
-    "- \"Your walking speed increases by 10 feet\" → {\"type\":\"Add\",\"category\":\"Speed\",\"value\":{\"speed\":\"10\"}}";
+    "- \"Your walking speed increases by 10 feet\" → {\"type\":\"Add\",\"category\":\"Speed\",\"value\":{\"speed\":\"10\"}}\n" +
+    "- \"You have advantage on saving throws against being frightened\" → {\"type\":\"Add\",\"category\":\"Advantage\",\"value\":{\"rollType\":\"SavingThrow\",\"mode\":\"advantage\",\"condition\":\"against being frightened\"}}\n" +
+    "- \"You can use this feature twice, regaining all uses on a long rest\" → {\"type\":\"Add\",\"category\":\"Uses\",\"value\":{\"amount\":\"2\",\"recharge\":\"Long Rest\"}}";
 
 /** Focused, few-shot message for the per-feature gap-fill pass (ONE feature, trimmed cheat sheet). */
 function buildSingleFeatureMessage(preview: HomebrewPreview, feature: FeatureDetail): string {
@@ -405,7 +414,7 @@ export function applyCommandsToEntity(
 // turn on features whose text actually grants something (pure-flavor traits are skipped). Permissive on
 // purpose: a false positive costs one cheap, bounded turn, and the coercion still drops spurious output.
 const MECHANICAL_RE =
-    /resist|immun|vulnerab|proficien|expertise|saving throw|\bsaves?\b|speed|armou?r class|\bac\b|language|darkvision|\+\s*\d|increases? by \d|score increases|advantage on|\bspell\b|\bfeat\b/i;
+    /resist|immun|vulnerab|proficien|expertise|saving throw|\bsaves?\b|speed|armou?r class|\bac\b|language|darkvision|\+\s*\d|increases? by \d|score increases|advantage on|disadvantage on|extra attack|attack twice|per (?:short|long) rest|invocation|fighting style|weapon mastery|\bspell\b|\bfeat\b/i;
 
 /** True when a feature's description reads as granting a concrete mechanical effect (worth a gap-fill turn). */
 export function looksMechanical(description?: string): boolean {

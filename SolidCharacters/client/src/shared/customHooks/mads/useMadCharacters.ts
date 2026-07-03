@@ -1,6 +1,9 @@
 import { Character } from "../../../models/character.model";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
+import { addAdvantageFeature, removeAdvantageFeature } from "./commands/useAdvantageFeature";
 import { addAllProficiencyFeature ,removeAllProficiencyFeature } from "./commands/useAllProficiencyFeature";
+import { addAttacksFeature, removeAttacksFeature } from "./commands/useAttacksFeature";
+import { addClassFeature, removeClassFeature } from "./commands/useClassFeature";
 import { AddCurrencyFeature, RemoveCurrencyFeature } from "./commands/useCurrencyFeature";
 import { addExpertiseFeature, removeExpertiseFeature } from "./commands/useExpertiseFeature";
 import { AddFeat, RemoveFeat } from "./commands/useFeat";
@@ -14,8 +17,9 @@ import { addSavingThrowFeature, removeSavingThrowFeature } from "./commands/useS
 import { addSpeedFeature, removeSpeedFeature } from "./commands/useSpeedFeature";
 import { AddSpellFeature, RemoveSpellFeature } from "./commands/useSpellFeature";
 import { addStatFeature, removeStatFeature } from "./commands/useStatFeature";
+import { addUsesFeature, removeUsesFeature } from "./commands/useUsesFeature";
 import { addVulnerabilityFeature, removeVulnerabilityFeature } from "./commands/useVulnerabilitiesFeature";
-import { MadFeature } from "./madModels";
+import { MadFeature, MadType } from "./madModels";
 
 // this hook should return a character with its MAD attributes applied, so that the character sheet can be rendered with the MAD features included. It should also be memoized to prevent unnecessary recalculations when the character or MAD features haven't changed.
 export function useMadCharacters(character: Character, madFeatures: MadFeature[]): Character {
@@ -126,10 +130,50 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
         case "RemoveFeats":
             character = RemoveFeat(character, feature);
             break;
+        case "AddClassFeature":
+            character = addClassFeature(character, feature);
+            break;
+        case "RemoveClassFeature":
+            character = removeClassFeature(character, feature);
+            break;
+        case "AddAdvantage":
+            character = addAdvantageFeature(character, feature);
+            break;
+        case "RemoveAdvantage":
+            character = removeAdvantageFeature(character, feature);
+            break;
+        case "AddAttacks":
+            character = addAttacksFeature(character, feature);
+            break;
+        case "RemoveAttacks":
+            character = removeAttacksFeature(character, feature);
+            break;
+        case "AddUses":
+            character = addUsesFeature(character, feature);
+            break;
+        case "RemoveUses":
+            character = removeUsesFeature(character, feature);
+            break;
         default:
             break;
     }
     return character;
+}
+
+/**
+ * Every Character-type mad across all of a character's feature sources
+ * (class levels, race, and top-level features), ready to feed useMadCharacters.
+ * Info-type mads (like Uses) describe their owning feature and are excluded.
+ */
+export function collectMadFeatures(character: Character): MadFeature[] {
+    const feats = [
+        ...(character.levels ?? []).flatMap(l => l.features ?? []),
+        ...(character.race?.features ?? []),
+        ...(character.features ?? []),
+    ];
+
+    return feats.flatMap(f => (f.metadata?.mads ?? []) as MadFeature[])
+                .filter(m => m.type === MadType.Character);
 }
 
 
