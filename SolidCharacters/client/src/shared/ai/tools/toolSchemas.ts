@@ -210,6 +210,51 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
         },
     },
     {
+        name: "create_subrace",
+        description: "Create a homebrew subrace/lineage of an EXISTING race (SRD or homebrew) with at least one distinct trait. parentRace must be the exact name of a real race — look it up first if unsure. Only include what the subrace ADDS or changes; everything else is inherited from the parent. Example: {\"name\":\"Moonshade Elf\",\"parentRace\":\"Elf\",\"desc\":\"Elves of the deep twilight forests, veiled in silver mist.\",\"abilityBonuses\":[{\"ability\":\"WIS\",\"value\":1}],\"traits\":[{\"name\":\"Umbral Step\",\"description\":\"Once per short rest, when you are in dim light or darkness, you can teleport up to 15 feet to another space of dim light or darkness you can see as a bonus action.\"}]}",
+        inputSchema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                name: { type: "string", description: "Subrace name." },
+                parentRace: { type: "string", description: 'The EXACT name of the existing race this subrace belongs to, e.g. "Elf", "Dwarf".' },
+                desc: { type: "string", description: "Flavorful description of the subrace and how it differs from the parent race (Markdown allowed). 1-3 sentences." },
+                size: { type: "string", enum: SIZES, description: "Creature size — set ONLY if it differs from the parent race." },
+                speed: { type: "integer", description: "Walking speed in feet — set ONLY if it differs from the parent race." },
+                languages: { type: "array", items: { type: "string" }, description: "EXTRA languages this subrace grants beyond the parent race's, if any." },
+                abilityBonuses: {
+                    type: "array",
+                    description: "Ability score increases the subrace adds (2014-style, usually one +1; for 2024 these usually come from the background instead).",
+                    items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                            ability: { type: "string", enum: ABILITIES, description: "Which ability." },
+                            value: { type: "integer", description: "Bonus amount, usually 1." },
+                        },
+                        required: ["ability", "value"],
+                    },
+                },
+                traits: {
+                    type: "array",
+                    description: "Traits the subrace adds — at least one, each with a real rules effect.",
+                    items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                            name: { type: "string", description: "Trait name." },
+                            description: { type: "string", description: "What the trait does (Markdown allowed)." },
+                        },
+                        required: ["name", "description"],
+                    },
+                },
+                age: { type: "string", description: "Flavor: aging/lifespan, only if it differs from the parent race. Empty otherwise." },
+                alignment: { type: "string", description: "Flavor: typical alignment tendencies. Empty if not applicable." },
+            },
+            required: ["name", "parentRace", "traits"],
+        },
+    },
+    {
         name: "create_subclass",
         description: "Create a homebrew subclass for an existing class, with a description and features at the appropriate levels. Example: {\"name\":\"Path of the Tempest\",\"parentClass\":\"Barbarian\",\"description\":\"Barbarians who call the storm into their fury, crackling with lightning as their rage builds.\",\"features\":[{\"level\":3,\"name\":\"Storm's Wrath\",\"description\":\"While raging, a creature that hits you with a melee attack takes 2 lightning damage.\"},{\"level\":6,\"name\":\"Thunderhide\",\"description\":\"You gain resistance to lightning and thunder damage.\"}]}",
         inputSchema: {

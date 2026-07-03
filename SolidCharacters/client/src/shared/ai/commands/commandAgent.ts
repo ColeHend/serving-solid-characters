@@ -38,6 +38,7 @@ export function featuresOf(kind: HomebrewKind, entity: HomebrewPreview["entity"]
             return details ? [details] : [];
         }
         case "race":
+        case "subrace":   // a Subrace extends Race — traits carry its features the same way
             return ((entity as Race).traits ?? []).map(t => t.details).filter(Boolean) as FeatureDetail[];
         case "background":
             return ((entity as Background).features ?? []) as FeatureDetail[];
@@ -57,7 +58,7 @@ function leveled(features: Record<number, FeatureDetail[]> | undefined): Feature
 
 /** Kinds the command pass applies to (those that carry FeatureDetail features). */
 export function hasFeatures(kind: HomebrewKind): boolean {
-    return kind === "feat" || kind === "race" || kind === "background" || kind === "class" || kind === "subclass";
+    return kind === "feat" || kind === "race" || kind === "subrace" || kind === "background" || kind === "class" || kind === "subclass";
 }
 
 // ---- name → catalog id resolution (the ID-based categories) ----

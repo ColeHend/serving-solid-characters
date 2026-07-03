@@ -41,18 +41,18 @@ export function draftToModel(d: SubraceDraft): any {
   };
 }
 
-export interface RaceLike { name: string; subRaces?: any[] }
+export interface SubraceLike { id?: string; name?: string; parentRace?: string }
 
-export function validateDraft(d?: SubraceDraft, races: RaceLike[] = []): string[] {
+export function validateDraft(d?: SubraceDraft, subraces: SubraceLike[] = []): string[] {
   if (!d) return ['No draft'];
   const errs: string[] = [];
   if (!d.parentRace) errs.push('Parent required');
   if (!d.name.trim()) errs.push('Name required');
-  const race = races.find(r => r.name === d.parentRace);
-  if (race) {
-    const dup = (race.subRaces || []).some(s => s.name?.toLowerCase() === d.name.toLowerCase() && s.id !== d.id);
-    if (dup) errs.push('Duplicate name');
-  }
+  // Duplicate check against the flat subrace list, scoped to the same parent
+  // race (parentRace === race id).
+  const dup = subraces.some(s =>
+    s.parentRace === d.parentRace && s.name?.toLowerCase() === d.name.toLowerCase() && s.id !== d.id);
+  if (dup) errs.push('Duplicate name');
   const traitNames = new Set<string>();
   d.traits.forEach(t=> { const key = t.name.toLowerCase(); if (traitNames.has(key)) errs.push(`Trait dup: ${t.name}`); else traitNames.add(key); });
   return errs;

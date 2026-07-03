@@ -1,0 +1,28 @@
+@use 'coles-solid-library/themes/variables' as vars;
+$mobile: 768px;
+.mainBody {
+    background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
+    min-height: 80vh;
+}
+.header {
+    display: flex;
+    flex-direction: row;
+    max-width: 30%;
+    @media screen and (max-width: $mobile) {
+        max-width: 100%;
+    }
+    h1 {
+        flex-grow: 1;
+    }
+    
+}
+.body {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+.modal {
+    @media screen and (max-width: $mobile) {
+        margin-top: 30vh;
+    }
+}

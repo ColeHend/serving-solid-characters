@@ -149,6 +149,14 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
             style={"margin-bottom: 15px;"} 
             list={[defaultShowList, setDefaultShowList]} />
           <Container theme="subheader"   class={`${styles.subheader}`}>
+            <For each={quickLinks()}>
+              {(quickLink)=><>
+                <Button transparent onClick={()=>navigate(quickLink.link)}>
+                  {quickLink.name}
+                  
+                </Button>
+                </>}
+            </For>
             <InstallControl /> {/* install + offline-data download; also pushes quick links right */}
             <Show when={!online()}>
               <Container
@@ -160,17 +168,6 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
                 Offline — showing cached data
               </Container>
             </Show>
-            <For each={quickLinks()}>
-              {(quickLink)=><>
-                <Button transparent onClick={()=>navigate(quickLink.link)}>
-                  {quickLink.name}
-                  
-                </Button>
-                {/* <Show when={quickLinks().length !== i()}>
-                  
-                </Show> */}
-                </>}
-            </For>
           </Container>
           <div class={`body ${styles.rootBody}`}>
             <ErrorBoundary fallback={(err) => {

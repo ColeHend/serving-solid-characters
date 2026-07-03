@@ -1,0 +1,6 @@
+@use 'coles-solid-library/themes/variables' as vars;
+.mainBody {
+    background-color: vars.$color-surface;
+    border-radius: 11px;
+    padding: 6px;
+}

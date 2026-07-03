@@ -1,61 +1,44 @@
-import { Component, For, Show, createSignal, createEffect } from 'solid-js';
+import { Component, For, Show, createSignal } from 'solid-js';
 import { FormField, Input, Select, Option, Button, Chip, TextArea } from 'coles-solid-library';
-import { racesStore } from '../racesStore';
+import { RaceLikeFormApi, RaceLikeFormShape } from '../../shared/raceLikeForm.shared';
 
 const SIZES = ['Tiny','Small','Medium','Large','Huge','Gargantuan'];
 
-interface Props { errors: string[]; }
+interface Props { api: RaceLikeFormApi }
 
-const IdentitySection: Component<Props> = () => {
-  const store = racesStore;
-  const race = () => store.activeRace();
-  const isNew = () => store.state.selection.activeName === '__new__';
+const IdentitySection: Component<Props> = (p) => {
+  const { form } = p.api;
   const [pendingSize, setPendingSize] = createSignal('');
   const [customSize, setCustomSize] = createSignal('');
-  // local description editors (keep decoupled so existing draft object rebuilds don't reset cursor mid-typing)
-  const [ageDesc, setAgeDesc] = createSignal('');
-  const [alignDesc, setAlignDesc] = createSignal('');
-  const [sizeDesc, setSizeDesc] = createSignal('');
-  const [langDesc, setLangDesc] = createSignal('');
-  const [abilitiesDesc, setAbilitiesDesc] = createSignal('');
 
-  // sync when race changes (selection swap or when entering new mode)
-  createEffect(() => {
-    const r = race();
-    setAgeDesc(r?.text.age || '');
-    setAlignDesc(r?.text.alignment || '');
-    setSizeDesc(r?.text.sizeDesc || '');
-    setLangDesc(r?.languages.desc || '');
-  setAbilitiesDesc(r?.text.abilitiesDesc || '');
+  // TextArea uses a text/setText accessor pair; point it straight at the form.
+  const textPair = (key: keyof RaceLikeFormShape) => ({
+    text: () => form.getR(key) as string,
+    setText: ((v: string | ((prev: string) => string)) =>
+      form.set(key, (typeof v === 'function' ? v(form.getR(key) as string) : v) as never)) as any,
   });
 
-  // helper to update draft text block
-  function commitText(part: 'age'|'alignment'|'sizeDesc'|'abilitiesDesc', val: string) {
-    if (!isNew()) return;
-    const current = race()?.text || { age:'', alignment:'', sizeDesc:'', abilitiesDesc:'' };
-    store.updateBlankDraft('text', { ...current, [part]: val } as any);
-  }
-  function commitLangDesc(val: string) { if (isNew()) store.setLanguageDesc(val); }
+  const addSizes = (sizes: string[]) => {
+    const next = [...(form.getR('sizes') as string[])];
+    for (const s of sizes) {
+      const t = s.trim();
+      if (t && !next.includes(t)) next.push(t);
+    }
+    form.set('sizes', next);
+  };
+  const removeSize = (size: string) =>
+    form.set('sizes', (form.getR('sizes') as string[]).filter(s => s !== size));
 
-  // proxy setters matching Setter<string>
-  const ageSetter = (v: string | ((prev: string) => string)) => { const next = typeof v === 'function' ? (v as any)(ageDesc()) : v; setAgeDesc(next); commitText('age', next); return next; };
-  const alignSetter = (v: string | ((prev: string) => string)) => { const next = typeof v === 'function' ? (v as any)(alignDesc()) : v; setAlignDesc(next); commitText('alignment', next); return next; };
-  const sizeSetter = (v: string | ((prev: string) => string)) => { const next = typeof v === 'function' ? (v as any)(sizeDesc()) : v; setSizeDesc(next); commitText('sizeDesc', next); return next; };
-  const langSetter = (v: string | ((prev: string) => string)) => { const next = typeof v === 'function' ? (v as any)(langDesc()) : v; setLangDesc(next); commitLangDesc(next); return next; };
-  const abilitiesSetter = (v: string | ((prev: string) => string)) => { const next = typeof v === 'function' ? (v as any)(abilitiesDesc()) : v; setAbilitiesDesc(next); commitText('abilitiesDesc', next); return next; };
   return (
     <div>
       <h3 class="visuallyHidden">Identity</h3>
       {/* Dense single-line row: Name | Speed | Size Select | Custom Size | Add */}
-  <div class="inlineRow inlineDense">
+      <div class="inlineRow inlineDense">
         <FormField name="Name" class="grow">
           <Input
             transparent
-            value={race()?.name || ''}
-            onInput={e => {
-              const v = e.currentTarget.value;
-              if (isNew()) store.updateBlankDraft('name', v); else store.renameActiveRace(v);
-            }}
+            value={form.getR('name')}
+            onInput={e => form.set('name', e.currentTarget.value)}
           />
         </FormField>
         <FormField name="Speed">
@@ -63,11 +46,8 @@ const IdentitySection: Component<Props> = () => {
             type="number"
             transparent
             style={{ width: '80px' }}
-            value={race()?.speed ?? 30}
-            onInput={e => {
-              const val = parseInt(e.currentTarget.value||'0');
-              if (isNew()) store.updateBlankDraft('speed', val); else store.updateExistingField('speed', val as any);
-            }}
+            value={form.getR('speed')}
+            onInput={e => form.set('speed', parseInt(e.currentTarget.value || '0'))}
             min={0}
           />
         </FormField>
@@ -83,33 +63,32 @@ const IdentitySection: Component<Props> = () => {
         <Button onClick={() => {
           const customRaw = customSize().split(/[,;]+/).map(s=>s.trim()).filter(Boolean);
           if (customRaw.length) {
-            store.addSizes(customRaw);
+            addSizes(customRaw);
           } else if (pendingSize()) {
-            store.addSize(pendingSize());
+            addSizes([pendingSize()]);
           }
           setPendingSize('');
           setCustomSize('');
         }} disabled={!pendingSize() && !customSize().trim()}>Add</Button>
       </div>
       <div class="chipsRowSingle" aria-label="Sizes">
-        <Show when={race()?.sizes?.length} fallback={<Chip value="None" />}> <For each={race()?.sizes || []}>{s => <Chip value={s} remove={() => store.removeSize(s)} />}</For></Show>
+        <Show when={(form.getR('sizes') as string[]).length} fallback={<Chip value="None" />}> <For each={form.getR('sizes') as string[]}>{s => <Chip value={s} remove={() => removeSize(s)} />}</For></Show>
       </div>
-      {/* Descriptions (editable only when new) */}
       <div style={{ 'margin-top': '.75rem', display:'flex', 'flex-direction':'column', gap:'.6rem', 'max-width':'760px' }}>
         <FormField name="Age Description">
-          <TextArea transparent rows={2} text={ageDesc} setText={ageSetter as any} placeholder="Describe typical age / lifespan" />
+          <TextArea transparent rows={2} {...textPair('descAge')} placeholder="Describe typical age / lifespan" />
         </FormField>
         <FormField name="Alignment Description">
-          <TextArea transparent rows={2} text={alignDesc} setText={alignSetter as any} placeholder="Describe common alignment tendencies" />
+          <TextArea transparent rows={2} {...textPair('descAlignment')} placeholder="Describe common alignment tendencies" />
         </FormField>
         <FormField name="Size Description">
-          <TextArea transparent rows={2} text={sizeDesc} setText={sizeSetter as any} placeholder="Narrative size description" />
+          <TextArea transparent rows={2} {...textPair('descSize')} placeholder="Narrative size description" />
         </FormField>
         <FormField name="Language Description">
-          <TextArea transparent rows={2} text={langDesc} setText={langSetter as any} placeholder="Explain racial languages / dialects" />
+          <TextArea transparent rows={2} {...textPair('langDesc')} placeholder="Explain racial languages / dialects" />
         </FormField>
         <FormField name="Abilities Description">
-          <TextArea transparent rows={2} text={abilitiesDesc} setText={abilitiesSetter as any} placeholder="Explain typical ability bonuses or lack thereof" />
+          <TextArea transparent rows={2} {...textPair('descAbilities')} placeholder="Explain typical ability bonuses or lack thereof" />
         </FormField>
       </div>
     </div>

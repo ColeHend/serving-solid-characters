@@ -10,6 +10,8 @@ import { loadSrdBackgrounds } from "../../customHooks/dndInfo/info/srd/backgroun
 import { loadSrdItems } from "../../customHooks/dndInfo/info/srd/items";
 import { loadSrdMagicItems } from "../../customHooks/dndInfo/info/srd/magicItems";
 import { loadSrdSubclasses } from "../../customHooks/dndInfo/info/srd/subclasses";
+import { loadSrdSubraces } from "../../customHooks/dndInfo/info/srd/subraces";
+import { ensureRaceCatalog, raceNameById } from "../refs/raceRefs";
 
 /**
  * Read-only reference lookup. lookup_srd searches official 5e content; lookup_homebrew searches the
@@ -37,6 +39,11 @@ function nameOf(kind: HomebrewKind, e: AnyEntity): string {
 
 function descOf(kind: HomebrewKind, e: AnyEntity): string {
     if (kind === "feat") return str(e.details?.description);
+    // Race-like rows keep their flavor text in the descriptions map, not a top-level field.
+    if (kind === "subrace" || kind === "race") {
+        const d = (e as { descriptions?: Record<string, unknown> }).descriptions;
+        return str(d?.desc) || str((e as { desc?: string }).desc);
+    }
     return str((e as { description?: string }).description) || str((e as { desc?: string }).desc);
 }
 
@@ -51,6 +58,8 @@ function summarize(kind: HomebrewKind, e: AnyEntity): string {
         case "magic_item": f("rarity", e.rarity); f("category", e.category); break;
         case "item": f("type", e.type); f("cost", e.cost); break;
         case "race": f("size", e.size); f("speed", e.speed); break;
+        // parentRace stores the race's ID; show its name when resolvable (raw id is useless to the model).
+        case "subrace": f("parent race", raceNameById(str(e.parentRace)) ?? ""); f("size", e.size); f("speed", e.speed); break;
         case "subclass": f("parent", e.parentClass); break;
         case "class": f("hit die", e.hitDie); f("primary", e.primaryAbility); break;
     }
@@ -70,6 +79,7 @@ function homebrewRows(kind: HomebrewKind): AnyEntity[] {
         case "feat": return asEntities(homebrewManager.feats());
         case "background": return asEntities(homebrewManager.backgrounds());
         case "race": return asEntities(homebrewManager.races());
+        case "subrace": return asEntities(homebrewManager.subraces());
         case "subclass": return asEntities(homebrewManager.subclasses());
         case "class": return asEntities(homebrewManager.classes());
     }
@@ -89,6 +99,7 @@ async function srdRows(kind: HomebrewKind, version: string): Promise<AnyEntity[]
         case "feat": return collect(loadSrdFeats);
         case "background": return collect(loadSrdBackgrounds);
         case "race": return collect(loadSrdRaces);
+        case "subrace": return collect(loadSrdSubraces);
         case "subclass": return collect(loadSrdSubclasses);
         case "class": return collect(loadSrdClasses);
     }
@@ -126,7 +137,7 @@ export const LOOKUP_TOOLS: AiToolDef[] = [
             type: "object",
             additionalProperties: false,
             properties: {
-                kind: { type: "string", enum: [...HOMEBREW_KINDS], description: "What to search: spell, item, magic_item, feat, background, race, subclass, or class." },
+                kind: { type: "string", enum: [...HOMEBREW_KINDS], description: "What to search: spell, item, magic_item, feat, background, race, subrace, subclass, or class." },
                 query: { type: "string", description: "Name or keyword to search for. An exact name returns full detail; a keyword returns a short list." },
                 version: { type: "string", enum: ["2014", "2024"], description: "Ruleset edition. Omit to search both." },
             },
@@ -140,7 +151,7 @@ export const LOOKUP_TOOLS: AiToolDef[] = [
             type: "object",
             additionalProperties: false,
             properties: {
-                kind: { type: "string", enum: [...HOMEBREW_KINDS], description: "What to search: spell, item, magic_item, feat, background, race, subclass, or class." },
+                kind: { type: "string", enum: [...HOMEBREW_KINDS], description: "What to search: spell, item, magic_item, feat, background, race, subrace, subclass, or class." },
                 query: { type: "string", description: "Name or keyword. Leave empty to list everything of this kind." },
             },
             required: ["kind"],
@@ -158,6 +169,8 @@ export async function runLookupTool(tc: AiToolCall): Promise<{ content: string; 
     }
     const homebrew = tc.name === "lookup_homebrew";
     try {
+        // Subrace summaries render the parent by resolving its stored race ID back to a name.
+        if (kind === "subrace") await ensureRaceCatalog();
         const rows = homebrew ? homebrewRows(kind) : await srdRows(kind, str(i.version));
         return { content: formatResults(kind, homebrew ? "homebrew" : "SRD", query, rows), isError: false };
     } catch {

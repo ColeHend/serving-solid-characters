@@ -8,14 +8,9 @@ interface Props {
   api: SubraceEditorApi;
 }
 export const LanguageSection: Component<Props> = (p) => {
-  const {
-    draft,
-    addLanguageFixed,
-    removeLanguageFixed,
-    setLanguageChoice,
-    removeLanguageOption,
-    setLangDesc,
-  } = p.api;
+  const { form } = p.api;
+  const fixed = () => form.getR("langFixed") as string[];
+  const options = () => form.getR("langOptions") as string[];
   return (
     <FlatCard icon={Chat} headerName="languages" transparent>
       <div class="inlineRow inlineDense" style={{ "margin-top": ".25rem" }}>
@@ -27,8 +22,8 @@ export const LanguageSection: Component<Props> = (p) => {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 const v = (e.currentTarget as HTMLInputElement).value.trim();
-                if (v) {
-                  addLanguageFixed(v);
+                if (v && !fixed().includes(v)) {
+                  form.set("langFixed", [...fixed(), v]);
                   (e.currentTarget as HTMLInputElement).value = "";
                 }
               }
@@ -41,12 +36,9 @@ export const LanguageSection: Component<Props> = (p) => {
             min={0}
             transparent
             style={{ width: "70px" }}
-            value={draft()!.languages.amount}
-            onInput={(e) =>
-              setLanguageChoice(
-                parseInt(e.currentTarget.value || "0"),
-                draft()!.languages.options
-              )
+            value={form.getR("langAmount") as number}
+            onChange={(e) =>
+              form.set("langAmount", parseInt(e.currentTarget.value || "0"))
             }
           />
         </FormField>
@@ -59,10 +51,10 @@ export const LanguageSection: Component<Props> = (p) => {
               if (e.key === "Enter") {
                 const v = (e.currentTarget as HTMLInputElement).value.trim();
                 if (!v) return;
-                const opts = Array.from(
-                  new Set([...draft()!.languages.options, v])
+                form.set(
+                  "langOptions",
+                  Array.from(new Set([...options(), v]))
                 );
-                setLanguageChoice(draft()!.languages.amount, opts);
                 (e.currentTarget as HTMLInputElement).value = "";
               }
             }}
@@ -70,24 +62,37 @@ export const LanguageSection: Component<Props> = (p) => {
         </FormField>
       </div>
       <div class="chipsRowSingle" style={{ "margin-top": ".25rem" }}>
-        <For each={draft()!.languages.fixed}>
-          {(l) => <Chip value={l} remove={() => removeLanguageFixed(l)} />}
+        <For each={fixed()}>
+          {(l) => (
+            <Chip
+              value={l}
+              remove={() => form.set("langFixed", fixed().filter((x) => x !== l))}
+            />
+          )}
         </For>
       </div>
       <div class="chipsRowSingle" style={{ "margin-top": ".25rem" }}>
-        <For each={draft()!.languages.options}>
-          {(l) => <Chip value={l} remove={() => removeLanguageOption(l)} />}
+        <For each={options()}>
+          {(l) => (
+            <Chip
+              value={l}
+              remove={() =>
+                form.set("langOptions", options().filter((o) => o !== l))
+              }
+            />
+          )}
         </For>
       </div>
       <FormField name="Language Description">
         <TextArea
           transparent
           rows={2}
-          text={() => draft()!.languages.desc}
-          setText={(v) =>
-            setLangDesc(
-              typeof v === "function" ? v(draft()!.languages.desc) : v
-            )
+          text={() => form.getR("langDesc") as string}
+          setText={((v: string | ((prev: string) => string)) =>
+            form.set(
+              "langDesc",
+              typeof v === "function" ? v(form.getR("langDesc") as string) : v
+            )) as any
           }
         />
       </FormField>
