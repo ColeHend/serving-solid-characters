@@ -42,14 +42,16 @@ const invalidSpell = { name: "Emberlet", fits_concept: "no description → inval
 /** A runner that replies to each forced step tool with the n-th scripted input for that tool. */
 function scriptRunner(seq: Record<string, Record<string, unknown>[]>) {
     const counts: Record<string, number> = {};
+    const systems: Record<string, string> = {};
     const runner: StepModelRunner = async (spec): Promise<SubAgentResult> => {
         const tool = spec.tools[0]?.name ?? "";
         const n = (counts[tool] = (counts[tool] ?? 0) + 1);
+        systems[tool] = spec.system;
         const arr = seq[tool] ?? [{}];
         const input = arr[Math.min(n - 1, arr.length - 1)] ?? {};
         return { text: "", toolCalls: [{ id: tool, name: tool, input }], ok: true };
     };
-    return { runner, counts };
+    return { runner, counts, systems };
 }
 
 function makeHost(runner: StepModelRunner, kind: HomebrewKind, extra: Partial<HomebrewPipelineHost> = {}) {
@@ -82,6 +84,16 @@ describe("runHomebrewPipeline", () => {
         expect(counts.create_spell).toBe(1);
         // The progress card is labelled as a homebrew run.
         expect(runs.every(r => r.pipelineType === "homebrew")).toBe(true);
+    });
+
+    it("carries the one-shot quality scaffolding in the creation step's system prompt", async () => {
+        const { runner, systems } = scriptRunner({ concept_brief: [briefInput], create_spell: [validSpell] });
+        const { host } = makeHost(runner, "spell");
+        await runHomebrewPipeline("make a fire spell", host);
+        // The deeper Medium/High path must never get LESS balance anchoring than a Low one-shot.
+        expect(systems.create_spell).toContain("Quality bar:");
+        expect(systems.create_spell).toContain("never leave a supported field empty");
+        expect(systems.create_spell).toContain("- Spell:");   // per-kind byTypeLine guidance
     });
 
     it("repairs an invalid creation within the gate budget, then completes", async () => {

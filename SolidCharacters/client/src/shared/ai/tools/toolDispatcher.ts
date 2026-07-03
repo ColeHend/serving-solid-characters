@@ -64,6 +64,13 @@ export interface HomebrewPreview {
      */
     enriching?: boolean;
     /**
+     * Names of MECHANICAL-looking features that ended the command pass with no mads command — their effect
+     * exists only as prose and won't touch the character sheet. Set by the enrichment pass (undefined until
+     * it has run); drives the "no sheet effect" warning chip and the user-initiated "Generate commands"
+     * repair (aiAssistant.regenerateCommands). Pure-flavor features are never listed here.
+     */
+    inertFeatures?: string[];
+    /**
      * True once this entity has been successfully saved to the homebrew collection. The card then renders a
      * compact "Saved" confirmation (with View / Dismiss) instead of being removed outright — so a save is
      * visibly acknowledged rather than silently vanishing.

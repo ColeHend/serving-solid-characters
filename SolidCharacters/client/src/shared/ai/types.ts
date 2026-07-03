@@ -79,6 +79,27 @@ export interface StreamChatOpts {
      * before calling, so adapters just forward it. Undefined leaves the server default untouched.
      */
     think?: boolean;
+    /**
+     * JSON schema to constrain the model's TEXT output to (native structured outputs: Ollama `format`,
+     * OpenAI-compatible `response_format`). When set, adapters MUST NOT send tools — the two modes
+     * conflict on local servers — and the caller parses the JSON out of the text stream instead of
+     * reading a tool call. Undefined leaves output unconstrained (the tool-call path).
+     */
+    responseSchema?: Record<string, unknown>;
+    /**
+     * Ask the server to force a tool call (OpenAI-compatible `tool_choice: "required"`). Ollama's
+     * native API has no equivalent and ignores it; meaningless without tools. Used by forced-single-
+     * tool pipeline steps so cloud/compat models can't answer in prose instead of calling the tool.
+     */
+    forceTool?: boolean;
+    /**
+     * Sampling temperature. Structured/tool-JSON turns pass a low value (~0.2) because the server
+     * default (0.8 on Ollama) is tuned for prose, not for emitting exact enum keys and legal JSON.
+     * Undefined leaves the server default untouched — chat/narrative turns stay creative.
+     */
+    temperature?: number;
+    /** Nucleus sampling cap. Forwarded verbatim; undefined leaves the server default untouched. */
+    topP?: number;
 }
 
 export interface AiProvider {

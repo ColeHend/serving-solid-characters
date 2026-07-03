@@ -8,7 +8,7 @@ import { produceSubclassBrief, subclassFeatureLevels, subclassNames } from "./su
 import { assembleClassPreviews } from "./assemble";
 import { critiqueClass, type FlaggedFeature } from "./critic";
 import { repairBudgetFor, type PipelineHost } from "./orchestrator";
-import { PipelinePhase } from "./types";
+import { HEAVY_STEP_MAX_TOKENS, PipelinePhase } from "./types";
 import type { ReviewVerdict } from "../readiness/types";
 import type { ConceptBrief, PipelineResume, PipelineRun, PipelineStatus, RunStepOptions, StepContext, WorkingClass, WorkingFeature, WorkingSubclass } from "./types";
 
@@ -122,7 +122,7 @@ export async function runClassPipeline(seed: string, host: PipelineHost, resume?
         // ── Phase C — chassis (skip if already built on a prior run) ───────────
         if (!hasChassis(working)) {
             emit(2, "running");
-            const chassisResult = await produceChassis(brief, classCtx(), host.ai, opts, host.runner);
+            const chassisResult = await produceChassis(brief, classCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner);
             if (host.signal.aborted) return void emit(2, "aborted");
             if (!chassisResult.ok || !chassisResult.value) {
                 return fail(host, emit, 2, chassisResult.errors[0] ?? "Couldn't build the class chassis.");

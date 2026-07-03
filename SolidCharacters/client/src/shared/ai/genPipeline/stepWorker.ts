@@ -1,4 +1,4 @@
-import { AiSettings } from "../../../models/userSettings";
+import { AiSettings, STRUCTURED_TURN_TEMPERATURE } from "../../../models/userSettings";
 import { str } from "../coerce";
 import type { SubAgentResult, SubAgentSpec } from "../subAgent";
 import type { ConceptBrief, RunStepOptions, StepContext, StepResult, StepSpec } from "./types";
@@ -64,9 +64,13 @@ function buildTask(spec: StepSpec<unknown>, ctx: StepContext, repairErrors: stri
     if (noToolCall) {
         blocks.push(`You did not call the tool last time. You MUST respond by calling ${spec.tool.name}.`);
     }
+    // Only demand `fits_concept` from tools whose schema declares it (all pipeline step tools do; the
+    // create_* schemas don't and forbid extra fields via additionalProperties — demanding it there
+    // contradicts the schema and wastes output budget).
+    const wantsFits = !!(spec.tool.inputSchema as { properties?: Record<string, unknown> })?.properties?.fits_concept;
     blocks.push(
-        `Respond ONLY by calling ${spec.tool.name} with the requested fields. ` +
-        "Include a short `fits_concept` note (one line) explaining how this serves the concept.",
+        `Respond ONLY by calling ${spec.tool.name} with the requested fields.` +
+        (wantsFits ? " Include a short `fits_concept` note (one line) explaining how this serves the concept." : ""),
     );
     return blocks.join("\n\n");
 }
@@ -120,6 +124,8 @@ export async function runStep<T>(
         maxTokens: opts.maxTokens ?? 1024,
         numCtx: opts.numCtx,
         think: false,   // reasoning would burn the small budget before the tool call (matches llmReview/commandAgent)
+        temperature: STRUCTURED_TURN_TEMPERATURE,   // exact enum keys + legal JSON want near-greedy decoding
+        forceTool: true,   // cloud/compat servers must not answer a forced-tool step in prose
     };
 
     let attempts = 0;

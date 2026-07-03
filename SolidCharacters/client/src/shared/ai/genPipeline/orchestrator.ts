@@ -3,7 +3,7 @@ import type { Character } from "../../../models/character.model";
 import type { HomebrewKind } from "../refs/homebrewKind";
 import type { HomebrewPreview } from "../tools/toolDispatcher";
 import type { StepModelRunner } from "./stepWorker";
-import type { ClassReviewer } from "./critic";
+import type { CharacterReviewer, ClassReviewer } from "./critic";
 import type { SkeletonPlan } from "./skeleton";
 import type { ConceptBrief, PipelineRun, WorkingCharacter, WorkingClass } from "./types";
 
@@ -56,9 +56,9 @@ export interface PipelineHost {
 
 /**
  * The Character pipeline's host (plan §7). Mirrors {@link PipelineHost} but for the net-new character
- * surface: there is NO ratification gate (the character phases 1–7 have none) and NO Phase-F LLM critic
- * (`balanceFacts` has no character branch and a character is not a homebrew preview — plan §12 risk #5), so
- * those fields are absent. On success it hands back the assembled `Character`; the host persists it via
+ * surface: there is NO ratification gate (the character phases 1–7 have none). The whole-character
+ * consistency critic (spec §5.5, skipped at M5) is the optional `reviewer` — one informational LLM pass
+ * at the "high" usage level. On success it hands back the assembled `Character`; the host persists it via
  * `characterManager.createCharacter` (the pipeline stays free of DB/Solid concerns). Same injectable
  * `runner` + spy callbacks, so the driver is unit-testable without a provider.
  */
@@ -70,6 +70,12 @@ export interface CharacterPipelineHost {
     /** Generation depth (carried for completeness; characters are never MADS-enriched). */
     creationPipelineLevel?: CreationPipelineLevel;
     runner?: StepModelRunner;
+    /**
+     * The whole-character consistency critic (spec §5.5). Runs ONLY at the "high" usage level; omit it
+     * (or run at Low/Medium) to skip. Production passes `buildCharacterReviewer`; tests inject a stub.
+     * Informational — its verdicts surface on the pipeline card and never block the save.
+     */
+    reviewer?: CharacterReviewer;
 
     /** Push the latest reactive run state to the UI (GenPipelineCard / StatusTicker). Called on every transition. */
     onProgress: (run: PipelineRun) => void;

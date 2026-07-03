@@ -174,7 +174,14 @@ export async function runLookupTool(tc: AiToolCall): Promise<{ content: string; 
         const rows = homebrew ? homebrewRows(kind) : await srdRows(kind, str(i.version));
         return { content: formatResults(kind, homebrew ? "homebrew" : "SRD", query, rows), isError: false };
     } catch {
-        // Fail open — a lookup hiccup should never break the turn; the model can proceed without it.
-        return { content: `Couldn't load ${homebrew ? "homebrew" : "SRD"} ${kind.replace("_", " ")} right now — proceed with your best estimate.`, isError: false };
+        // Fail open (a lookup hiccup must never break the turn) but be HONEST that this was an infra
+        // failure, not a genuine "no match": marking it isError lets the model distinguish "the catalog
+        // says nothing like this exists" from "the catalog never loaded", so it can hedge accordingly
+        // instead of treating an outage as confirmation its invented numbers have no official peer.
+        return {
+            content: `The ${homebrew ? "homebrew" : "SRD"} ${kind.replace("_", " ")} catalog failed to load (this is NOT a "no match" result). ` +
+                "Proceed with your best estimate from official content you know, and say the lookup was unavailable if the user asks.",
+            isError: true,
+        };
     }
 }

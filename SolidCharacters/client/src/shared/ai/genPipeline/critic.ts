@@ -1,7 +1,8 @@
 import { AiSettings, DEFAULT_REVIEW_SETTINGS } from "../../../models/userSettings";
+import type { Character } from "../../../models/character.model";
 import { assembleVerdicts } from "../readiness/pipeline";
 import { runLlmReview } from "../readiness/llmReview";
-import { CLASS_BALANCE_CONSISTENCY_SPEC } from "../readiness/reviewSystemPrompt";
+import { CHARACTER_CONSISTENCY_SPEC, CLASS_BALANCE_CONSISTENCY_SPEC } from "../readiness/reviewSystemPrompt";
 import { isBlocked, ReviewSeverity, ReviewVerdict, severityRank } from "../readiness/types";
 import { HomebrewPreview } from "../tools/toolDispatcher";
 import { assembleClassPreview, assembleSubclassPreviews } from "./assemble";
@@ -56,6 +57,31 @@ export function buildClassReviewer(ai: AiSettings, dndSystem: string, signal?: A
         if (signal?.aborted) return verdicts;
         const consistency = await runLlmReview(CLASS_BALANCE_CONSISTENCY_SPEC, preview, ctx);
         return [...verdicts, consistency];
+    };
+}
+
+/**
+ * The character pipeline's end-of-build critic (spec §5.5 — skipped at M5, run at usage HIGH only). One
+ * LLM pass over the assembled character: the per-step gates already validate structure, so this judges
+ * only what they can't see — whether the fiction and the mechanics agree. Injectable like ClassReviewer
+ * (tests stub it; production wires {@link buildCharacterReviewer}). Fail-open: any error → no verdicts.
+ * Informational only — a character saves regardless; the verdicts surface on the pipeline card.
+ */
+export type CharacterReviewer = (character: Character) => Promise<ReviewVerdict[]>;
+
+export function buildCharacterReviewer(ai: AiSettings, dndSystem: string, signal?: AbortSignal): CharacterReviewer {
+    return async (character) => {
+        try {
+            const subject = {
+                kind: "character" as const,
+                title: character.name?.trim() || "(unnamed character)",
+                entity: character as object,
+            };
+            const verdict = await runLlmReview(CHARACTER_CONSISTENCY_SPEC, subject, { ai, dndSystem, signal });
+            return [verdict];
+        } catch {
+            return [];
+        }
     };
 }
 

@@ -16,6 +16,20 @@ import type {
 const ARMOR_CATEGORIES: ArmorCategory[] = ["none", "light", "medium", "heavy"];
 const ARMOR_SET = new Set<string>(ARMOR_CATEGORIES);
 
+/**
+ * Highest armor weight class each OFFICIAL class is proficient with, and which get shields. The armor
+ * category is the one loadout field that feeds straight into code-computed AC (computeAC), so a
+ * non-proficient pick doesn't read as flavor — it silently becomes a wrong AC (a wizard in plate is
+ * AC 18). A class name not in this table (homebrew) skips the gate: its proficiencies are unknowable here.
+ */
+const ARMOR_RANK: Record<ArmorCategory, number> = { none: 0, light: 1, medium: 2, heavy: 3 };
+const CLASS_MAX_ARMOR: Record<string, ArmorCategory> = {
+    barbarian: "medium", bard: "light", cleric: "medium", druid: "medium", fighter: "heavy",
+    monk: "none", paladin: "heavy", ranger: "medium", rogue: "light", sorcerer: "none",
+    warlock: "light", wizard: "none", artificer: "medium",
+};
+const SHIELD_CLASSES = new Set(["barbarian", "cleric", "druid", "fighter", "paladin", "ranger", "artificer"]);
+
 /** The loadout the model picks. `armor.category` drives AC; the rest is descriptive gear. */
 export interface CharacterLoadout {
     armor: { category: ArmorCategory; name?: string };
@@ -67,10 +81,23 @@ export function coerceLoadout(raw: Record<string, unknown>): CharacterLoadout {
     };
 }
 
-/** Gate the loadout: the armor's weight class must be legal (it drives AC). The rest is best-effort. */
-export function validateLoadout(l: CharacterLoadout): string[] {
+/**
+ * Gate the loadout: the armor's weight class must be legal AND proficient for an official class (both
+ * drive AC). The rest is best-effort. Homebrew/unknown classes skip the proficiency check (fail open).
+ */
+export function validateLoadout(l: CharacterLoadout, className?: string): string[] {
     if (!ARMOR_SET.has(l.armor.category)) return ["Armor category must be one of none, light, medium, heavy."];
-    return [];
+    const cls = (className ?? "").trim().toLowerCase();
+    const max = CLASS_MAX_ARMOR[cls];
+    if (max === undefined) return [];
+    const errors: string[] = [];
+    if (ARMOR_RANK[l.armor.category] > ARMOR_RANK[max]) {
+        errors.push(`A ${className} is not proficient with ${l.armor.category} armor — pick ${max === "none" ? "no armor" : `${max} armor or lighter`}.`);
+    }
+    if (l.shield && !SHIELD_CLASSES.has(cls)) {
+        errors.push(`A ${className} is not proficient with shields — set shield to false.`);
+    }
+    return errors;
 }
 
 /** Apply the loadout onto the working character: a flat equipment list plus the AC-bearing armor fields. */
@@ -81,7 +108,7 @@ export function applyLoadout(working: WorkingCharacter, l: CharacterLoadout): vo
     working.shield = l.shield;
 }
 
-export function loadoutStep(): StepSpec<CharacterLoadout> {
+export function loadoutStep(className?: string): StepSpec<CharacterLoadout> {
     return {
         id: "loadout",
         tool: LOADOUT_TOOL,
@@ -94,17 +121,18 @@ export function loadoutStep(): StepSpec<CharacterLoadout> {
             "shield, its weapons, and other gear. Pick only armor it is proficient with.",
         parse: raw => {
             const value = coerceLoadout(raw);
-            return { value, errors: validateLoadout(value) };
+            return { value, errors: validateLoadout(value, className) };
         },
     };
 }
 
 /** Run Phase 5 once: produce a gated loadout (armor weight class + shield + weapons + gear). */
 export function produceLoadout(
+    className: string | undefined,
     ctx: StepContext,
     ai: AiSettings,
     opts?: RunStepOptions,
     runner?: StepModelRunner,
 ): Promise<StepResult<CharacterLoadout>> {
-    return runStep(loadoutStep(), ctx, ai, opts, runner);
+    return runStep(loadoutStep(className), ctx, ai, opts, runner);
 }

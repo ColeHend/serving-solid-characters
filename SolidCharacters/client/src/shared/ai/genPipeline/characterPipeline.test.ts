@@ -210,6 +210,46 @@ describe("runCharacterPipeline (M5)", () => {
 });
 
 /**
+ * The whole-character critic (spec §5.5, added post-M6): one informational reviewer pass over the
+ * ASSEMBLED character, HIGH usage only. Verdicts surface on the Compute phase; the save never blocks.
+ */
+describe("runCharacterPipeline — whole-character critic", () => {
+    const verdict = {
+        passId: "character_consistency", label: "Character consistency", pass: false,
+        issues: [{ severity: "warning" as const, message: "The backstory never mentions Rage." }],
+    };
+
+    it("runs the reviewer at HIGH usage over the assembled character and surfaces its verdicts", async () => {
+        const { runner } = scriptRunner();
+        const reviewedNames: string[] = [];
+        const { host, runs, completed, errors } = makeHost(runner, {
+            usageLevel: "high",
+            reviewer: async c => { reviewedNames.push(c.name); return [verdict]; },
+        });
+
+        await runCharacterPipeline("a goliath", host);
+
+        expect(errors).toEqual([]);
+        expect(completed).toHaveLength(1);                       // informational — never blocks the save
+        expect(reviewedNames).toEqual(["Varra Stoneheart"]);     // reviewed AFTER assembly (it saw the final character)
+        const computeRuns = runs.filter(r => r.phase === PipelinePhase.Compute);
+        expect(computeRuns[computeRuns.length - 1].verdicts).toEqual([verdict]);
+        expect(computeRuns[computeRuns.length - 1].status).toBe("completed");
+    });
+
+    it("skips the reviewer below HIGH usage", async () => {
+        const { runner } = scriptRunner();
+        let calls = 0;
+        const { host, completed } = makeHost(runner, { usageLevel: "medium", reviewer: async () => { calls++; return []; } });
+
+        await runCharacterPipeline("a goliath", host);
+
+        expect(calls).toBe(0);
+        expect(completed).toHaveLength(1);
+    });
+});
+
+/**
  * M6 resume (plan §9, §13): re-entering with a persisted working object + brief skips every phase whose
  * slice is already present. A build stopped before the loadout re-runs only loadout → narrative → compute,
  * keeping the already-decided foundation, scores, training, and capabilities.

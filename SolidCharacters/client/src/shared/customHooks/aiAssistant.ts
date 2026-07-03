@@ -18,7 +18,7 @@ import { LOOKUP_TOOLS, runLookupTool } from "../ai/tools/lookupTools";
 import { EDIT_TOOLS } from "../ai/tools/editTools";
 import { CONTROL_TOOLS, parseSwitchMode } from "../ai/tools/controlTools";
 import { DELEGATE_RESEARCH_TOOL, researchAgentSpec, runSubAgent } from "../ai/subAgent";
-import { attachCommandsWithStats, hasFeatures } from "../ai/commands/commandAgent";
+import { attachCommandsWithStats, gapFillCommands, hasFeatures } from "../ai/commands/commandAgent";
 import {
     buildInteraction, interactionResultText, InteractionResponse, PendingInteraction,
 } from "../ai/tools/interactions";
@@ -33,7 +33,7 @@ import { runCharacterPipeline, CHARACTER_PIPELINE_PHASES } from "../ai/genPipeli
 import { runHomebrewPipeline, supportsHomebrewPipeline, HOMEBREW_PIPELINE_PHASES } from "../ai/genPipeline/homebrewPipeline";
 import { runMechanicsReview } from "../ai/genPipeline/mechanicsStep";
 import { featuresMissingMads } from "../ai/commands/validateMads";
-import { buildClassReviewer } from "../ai/genPipeline/critic";
+import { buildCharacterReviewer, buildClassReviewer } from "../ai/genPipeline/critic";
 import type { CharacterPipelineHost, HomebrewPipelineHost, PipelineHost, RatifyDecision } from "../ai/genPipeline/orchestrator";
 import { skeletonSummaryLines, type SkeletonPlan } from "../ai/genPipeline/skeleton";
 import { PipelinePhase } from "../ai/genPipeline/types";
@@ -86,6 +86,13 @@ export interface ChatMessage {
 export type { HomebrewPreview };
 export type { PendingInteraction, InteractionResponse };
 export type { PipelineRun };
+
+/**
+ * Bound on the Medium+ per-feature MADS turns per entity (each is one cheap focused sub-agent call).
+ * Features past the cap are logged by gapFillCommands and land in `inertFeatures`, where the card's
+ * "Generate commands" repair can pick them up.
+ */
+const PER_FEATURE_MADS_CAP = 12;
 
 /**
  * The tool_result text that asks the model to regenerate an entity. Used by the manual "Complete with
@@ -606,6 +613,38 @@ export class AiAssistant {
         this.resolveToolCall(preview.toolCallId, instruction, true);
     };
 
+    /**
+     * User-initiated MADS repair for the "no sheet effect" warning: re-run the focused per-feature command
+     * pass over every mechanical feature still missing a command. Uses the enrichment sub-agent channel
+     * (fresh context, own abort controller) — NOT the chat repair channel — so conversation history is
+     * untouched, no repair budget is spent, and it works even on a detached/restored card. Fails open:
+     * worst case the warning chip stays and the user edits manually.
+     */
+    regenerateCommands = async (previewId: string) => {
+        const [userSettings] = getUserSettings();
+        const ai = userSettings().ai;
+        if (!ai) return;
+        const preview = this.pendingPreviews().find(p => p.previewId === previewId);
+        if (!preview || preview.enriching || !hasFeatures(preview.kind)) return;
+        const inert = featuresMissingMads(preview.kind, preview.entity, true);
+        if (!inert.length) return;
+
+        this.commandController = new AbortController();
+        const signal = this.commandController.signal;
+        this.setPendingPreviews(prev => prev.map(p => p.previewId === previewId ? { ...p, enriching: true } : p));
+        let entity = preview.entity;
+        try {
+            // Focused per-feature turns over exactly the gaps the base pass left (no whole-entity re-run).
+            const gap = await gapFillCommands(preview, ai, signal, { maxPerFeaturePasses: inert.length });
+            if (gap.attached) entity = gap.entity;
+        } catch (e) { console.error("Command regeneration failed", e); }
+        this.setPendingPreviews(prev => prev.map(p => p.previewId === previewId
+            ? { ...p, enriching: false, entity, inertFeatures: featuresMissingMads(preview.kind, entity, true) }
+            : p));
+        void this.persistCurrent();
+        if (this.commandController?.signal === signal) this.commandController = null;
+    };
+
     // ----------------- staged generation pipeline -----------------
 
     /** Abort the in-flight staged-generation run (user "Abort"). Settles its ratify gate and clears the card. */
@@ -810,6 +849,8 @@ export class AiAssistant {
             ai, dndSystem, signal,
             usageLevel: ai.usageLevel ?? DEFAULT_USAGE_LEVEL,
             creationPipelineLevel: ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL,
+            // Whole-character consistency critic (spec §5.5; runs only at the High usage level).
+            reviewer: buildCharacterReviewer(ai, dndSystem, signal),
             onProgress: run => { if (epoch === this.turnEpoch && !signal.aborted) this.setPipelineRun(run); },
             onCheckpoint: (phaseIndex, working, brief) => this.savePipelineCheckpoint(phaseIndex, working, brief, epoch),
             onComplete: character => this.onCharacterComplete(character, epoch),
@@ -1185,7 +1226,7 @@ export class AiAssistant {
      * for the system prompt + generation), cut at a `user` boundary so no tool_use/tool_result pair is
      * split. Short sessions are returned unchanged.
      */
-    private windowedHistory(numCtx: number): AiMessage[] {
+    private windowedHistory(numCtx: number, overheadTokens = 0): AiMessage[] {
         const h = this.history;
         if (h.length <= 4) return h;
         // Exclude base64 image/audio data from the char-count estimate (it would dwarf the text and evict
@@ -1195,7 +1236,10 @@ export class AiAssistant {
             Math.ceil(JSON.stringify({ ...m, images: undefined, audio: undefined }).length / 4)
             + (m.images?.length ?? 0) * 768
             + (m.audio?.length ?? 0) * 800;
-        const budget = Math.max(2048, Math.floor((numCtx || DEFAULT_AI_NUM_CTX) * 0.5));
+        // History gets half the window MINUS the turn's fixed overhead (system prompt + tool schemas,
+        // measured by the caller). A flat half under-reserved in homebrew mode, where the fixed surface
+        // alone is ~5-6k tokens of a 16k window — history would then crowd out generation room.
+        const budget = Math.max(2048, Math.floor((numCtx || DEFAULT_AI_NUM_CTX) * 0.5) - overheadTokens);
         let used = 0;
         let cut = h.length;
         for (let i = h.length - 1; i >= 0; i--) {
@@ -1376,7 +1420,8 @@ export class AiAssistant {
         // Build the windowed send-history once, then drop audio from all but the most recent audio turn —
         // audio base64 is heavy and the model already "heard" earlier clips, so replaying them wastes the
         // window. This is a send-time transform only; `history`/persistence keep the full audio.
-        const sendHistory = this.stripStaleAudio(this.windowedHistory(ai.numCtx ?? DEFAULT_AI_NUM_CTX));
+        const overheadTokens = Math.ceil((system.length + JSON.stringify(tools ?? []).length) / 4);
+        const sendHistory = this.stripStaleAudio(this.windowedHistory(ai.numCtx ?? DEFAULT_AI_NUM_CTX, overheadTokens));
         const turnHasAudio = sendHistory.some(m => m.audio?.length);
         // Thinking is split per-mode: chat defaults on (better answers, more context use); homebrew
         // defaults off (a reasoning model can burn its budget before emitting the create_* tool call).
@@ -1863,17 +1908,24 @@ export class AiAssistant {
 
                 this.setPendingPreviews(prev => prev.map(p => p.previewId === id ? { ...p, enriching: true } : p));
 
-                // Base command pass at every level. Medium adds the keyword gap-fill (one focused turn per
-                // mechanical feature still empty); High skips it — its Mechanics review below does a stronger,
-                // description-driven encode instead. Low is the single whole-entity pass only.
+                // Low runs the single whole-entity pass (cheapest — one turn). At Medium+ the focused
+                // per-feature loop is the PRIMARY pass, not a gap-filler: small models follow the trimmed
+                // per-feature cheat sheet far better than the whole-entity 16-row table (see commandAgent),
+                // and the extra turns are what the depth ladder exists to buy. High additionally runs the
+                // 4-stage Mechanics review below, merged on top.
                 const level = ai.creationPipelineLevel ?? DEFAULT_CREATION_PIPELINE_LEVEL;
-                const maxGapFill = level === "medium" ? 6 : 0;
 
                 let enriched: HomebrewPreview["entity"] | null = null;
                 try {
-                    const stats = await attachCommandsWithStats(preview, ai, signal, { maxGapFill });
-                    enriched = stats.entity;
-                    DebugConsole.info(`[MADS] ${preview.title}: proposed ${stats.proposed}, attached ${stats.attached}`);
+                    if (level === "low") {
+                        const stats = await attachCommandsWithStats(preview, ai, signal, { maxGapFill: 0 });
+                        enriched = stats.entity;
+                        DebugConsole.info(`[MADS] ${preview.title}: proposed ${stats.proposed}, attached ${stats.attached}`);
+                    } else {
+                        const gap = await gapFillCommands(preview, ai, signal, { maxPerFeaturePasses: PER_FEATURE_MADS_CAP });
+                        enriched = gap.attached ? gap.entity : null;
+                        DebugConsole.info(`[MADS] ${preview.title}: per-feature pass attached ${gap.attached}`);
+                    }
                 } catch (e) { console.error("Command enrichment failed", e); }
 
                 if (epoch !== this.turnEpoch || signal.aborted) return false;
@@ -1891,15 +1943,17 @@ export class AiAssistant {
                     if (epoch !== this.turnEpoch || signal.aborted) return false;
                 }
 
-                // Dev-only: surface MECHANICAL features the MADS pass still left without a command (a real
-                // generator/catalog gap; pure-flavor features legitimately have none). No-op in prod.
+                // Surface MECHANICAL features the MADS pass still left without a command: dev log, plus
+                // `inertFeatures` on the card so the user sees a "no sheet effect" warning with a
+                // "Generate commands" repair (regenerateCommands). Pure-flavor features legitimately have
+                // none and are never listed.
                 const missingMads = featuresMissingMads(preview.kind, finalEntity, true);
                 if (missingMads.length) DebugConsole.warn(
                     `[MADS review] ${preview.title}: ${missingMads.length} mechanical feature(s) have no mads command — add mechanical info:`,
                     missingMads);
 
                 this.setPendingPreviews(prev => prev.map(p =>
-                    p.previewId === id ? { ...p, enriching: false, entity: finalEntity } : p));
+                    p.previewId === id ? { ...p, enriching: false, entity: finalEntity, inertFeatures: missingMads } : p));
                 // Re-persist so the enriched entity (mads commands attached) survives a chat-history switch.
                 void this.persistCurrent();
             }

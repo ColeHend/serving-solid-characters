@@ -35,12 +35,24 @@ export class LocalAdapter implements AiProvider {
         // whole token budget thinking out loud and hit max_tokens before emitting the create_* call.
         // Ollama honors `think`; other OpenAI-compatible local servers ignore the extra field.
         if (opts.think !== undefined) body.think = opts.think;
-        if (tools?.length) {
+        if (opts.temperature !== undefined) body.temperature = opts.temperature;
+        if (opts.topP !== undefined) body.top_p = opts.topP;
+        // Structured outputs: response_format constrains the reply's text to the schema. Tools and a
+        // schema-constrained reply conflict, so responseSchema wins and tools are withheld.
+        if (opts.responseSchema) {
+            body.response_format = {
+                type: "json_schema",
+                json_schema: { name: "output", schema: opts.responseSchema, strict: true },
+            };
+        }
+        if (tools?.length && !opts.responseSchema) {
             body.tools = tools.map(t => ({
                 type: "function",
                 function: { name: t.name, description: t.description, parameters: t.inputSchema },
             }));
-            body.tool_choice = "auto";
+            // "required" stops compat servers/cloud models from answering in prose on a forced-tool
+            // step; Ollama's compat endpoint ignores the field, so local behavior is unchanged.
+            body.tool_choice = opts.forceTool ? "required" : "auto";
         }
 
         const headers: Record<string, string> = { "Content-Type": "application/json" };
