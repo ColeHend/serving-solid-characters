@@ -32,11 +32,13 @@ const ChatMessageList: Component = () => {
 
     // Saved confirmation cards render inline beneath the message they're anchored to; everything still
     // awaiting a decision (and any saved card whose anchor message is gone) stays in the bottom tray.
+    // Deferred cards are pipeline builds whose command enrichment is still running — the progress card
+    // carries their status, so the tray holds them back until the pipeline hands off.
     const anchoredPreviews = (messageId: string) =>
         aiAssistant.pendingPreviews().filter(p => p.saved && p.anchorId === messageId);
     const trayPreviews = () => {
         const ids = new Set(aiAssistant.messages().map(m => m.id));
-        return aiAssistant.pendingPreviews().filter(p => !(p.saved && p.anchorId && ids.has(p.anchorId)));
+        return aiAssistant.pendingPreviews().filter(p => !p.deferred && !(p.saved && p.anchorId && ids.has(p.anchorId)));
     };
 
     onMount(toBottom);

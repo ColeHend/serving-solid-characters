@@ -923,15 +923,16 @@ export class AiAssistant {
     }
 
     /**
-     * Terminal success: surface the assembled class (and any subclasses) as ordinary preview cards and clear
-     * the pipeline card. `previews` is the class first, then one per subclass.
+     * Terminal success: record the assembled class (and any subclasses) as preview cards, but HOLD THEM
+     * BACK (`deferred`) until the post-completion MADS phase finishes — the user sees the progress card's
+     * status line, never a savable card that's still being enriched. The cards live in pendingPreviews
+     * from the start (flag stripped on persist), so a mid-enrichment reload or conversation switch still
+     * restores the finished build instead of losing it. `previews` is the class first, then one per subclass.
      */
     private onPipelineComplete(previews: HomebrewPreview[], epoch: number) {
         if (epoch !== this.turnEpoch || !previews.length) return;
-        this.setPendingPreviews(prev => [...prev, ...previews]);
+        this.setPendingPreviews(prev => [...prev, ...previews.map(p => ({ ...p, deferred: true }))]);
         void this.discardPipelineCheckpoint();
-        // Keep the progress card alive through a final "MADS" phase while mechanical commands are attached
-        // (like the one-shot Low path does), THEN hand off to the preview card(s).
         void this.runMadsPhaseThenHandoff(previews, epoch);
         void this.persistCurrent();
     }
@@ -939,28 +940,38 @@ export class AiAssistant {
     /**
      * Drive the post-completion MADS phase shown in the progress strip (class + homebrew only): hold the
      * pipeline run on a `MadsReview` step while {@link enrichWithCommands} attaches/validates the mechanical
-     * "mads" commands, then clear the run to hand off to the preview card(s). When no enrichment will run
-     * (command generation off, or no feature-bearing preview), there's nothing to review, so hand off at once
-     * — exactly the previous behaviour. The phase index is the trailing MadsReview slot appended to each
-     * pipeline's PHASES, so the orchestrator's generation phases and this step share one consistent total.
+     * "mads" commands, then hand off — clear the run AND un-defer the preview card(s) so they appear only
+     * now, fully enriched. Hand-off also runs on an abort mid-enrichment (same epoch), so an aborted MADS
+     * phase surfaces the un-enriched cards rather than leaving them hidden. When no enrichment will run
+     * (command generation off, or no feature-bearing preview), hand off at once. The phase index is the
+     * trailing MadsReview slot appended to each pipeline's PHASES, so the orchestrator's generation phases
+     * and this step share one consistent total.
      */
     private async runMadsPhaseThenHandoff(previews: HomebrewPreview[], epoch: number) {
+        const ids = new Set(previews.map(p => p.previewId));
+        const handoff = () => {
+            if (epoch !== this.turnEpoch) return;   // conversation swapped — the loaded session owns the cards now
+            this.setPendingPreviews(prev => prev.map(p => (ids.has(p.previewId) ? { ...p, deferred: false } : p)));
+            this.setPipelineRun(null);
+        };
+
         const [userSettings] = getUserSettings();
         const ai = userSettings().ai;
         const willEnrich = !!ai
             && (ai.commandGeneration ?? DEFAULT_AI_COMMAND_GENERATION)
             && previews.some(p => p.valid && hasFeatures(p.kind));
-        if (!willEnrich) { this.setPipelineRun(null); return; }   // nothing to review — hand off immediately
+        if (!willEnrich) { handoff(); return; }   // nothing to review — hand off immediately
 
         const phases = this.currentPipelineType === "homebrew" ? HOMEBREW_PIPELINE_PHASES : CLASS_PIPELINE_PHASES;
         this.setPipelineRun({
             pipelineType: this.currentPipelineType, phase: PipelinePhase.MadsReview,
             phaseIndex: phases.length - 1, totalPhases: phases.length, status: "running",
+            note: "Adding mechanics…",
         });
 
         await this.enrichWithCommands(previews.map(p => p.previewId), epoch);
 
-        if (epoch === this.turnEpoch) this.setPipelineRun(null);   // hand off from the progress card to the preview card(s)
+        handoff();
     }
 
     /** Update the working-line note on the live pipeline run (no-op when no progress card is showing). */
@@ -1207,7 +1218,7 @@ export class AiAssistant {
                 const { previewId, toolCallId, kind, title, entity, valid, mode, baseEntity, appliedOps, rejectedOps, anchorId } = p;
                 result.push({ previewId, toolCallId, kind, title, entity, valid, errors: [], saved: true, mode, baseEntity, appliedOps, rejectedOps, anchorId });
             } else {
-                const { repairing: _r, enriching: _e, detached: _d, saveError: _se, ...rest } = p;
+                const { repairing: _r, enriching: _e, detached: _d, saveError: _se, deferred: _df, ...rest } = p;
                 const reviewState: ReviewState | undefined =
                     p.reviewState === "reviewing" || p.reviewState === "needs_user_direction"
                         ? "review_unavailable"
@@ -1907,6 +1918,9 @@ export class AiAssistant {
                 if (!preview || !preview.valid || !hasFeatures(preview.kind)) continue;   // gone / broken / no features
 
                 this.setPendingPreviews(prev => prev.map(p => p.previewId === id ? { ...p, enriching: true } : p));
+                // Status for the pipeline card's working line (no-op on the one-shot path, where no run
+                // card is showing); the High mechanics stages refine it per stage via their own onNote.
+                this.setRunNote(`Adding mechanics to “${preview.title}”…`);
 
                 // Low runs the single whole-entity pass (cheapest — one turn). At Medium+ the focused
                 // per-feature loop is the PRIMARY pass, not a gap-filler: small models follow the trimmed

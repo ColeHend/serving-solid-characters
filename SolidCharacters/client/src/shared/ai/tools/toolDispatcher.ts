@@ -71,6 +71,13 @@ export interface HomebrewPreview {
      */
     inertFeatures?: string[];
     /**
+     * True while a pipeline-built card is HELD BACK from the tray: the build's initial command enrichment
+     * (the MadsReview phase) is still running, so the progress card carries the status instead of showing
+     * a savable card that's still mutating. Cleared at hand-off (including abort); STRIPPED on persist
+     * (like `enriching`) so a restored card is never invisibly stuck hidden.
+     */
+    deferred?: boolean;
+    /**
      * True once this entity has been successfully saved to the homebrew collection. The card then renders a
      * compact "Saved" confirmation (with View / Dismiss) instead of being removed outright — so a save is
      * visibly acknowledged rather than silently vanishing.
