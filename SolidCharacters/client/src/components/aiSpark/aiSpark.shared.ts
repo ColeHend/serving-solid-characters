@@ -1,9 +1,10 @@
 // Shared leaf types/helpers for the Grimoire sidebar components (kept here to avoid component<->component cycles).
 import type { ChatMessage } from "../../shared/customHooks/aiAssistant";
 import type { HomebrewPreview } from "../../shared/ai/tools/toolDispatcher";
-import { Background, Class5E, Feat, MagicItem, Race, Spell, Subclass } from "../../models/generated";
+import { Background, Class5E, Feat, MagicItem, Race, Spell, Subclass, Subrace } from "../../models/generated";
 import { srdItem } from "../../models/data/generated";
 import { getAtPath, parsePath } from "../../shared/ai/tools/patch";
+import { raceNameById } from "../../shared/ai/refs/raceRefs";
 
 export type { ChatMessage, HomebrewPreview };
 
@@ -20,6 +21,12 @@ export function previewSubtitle(p: HomebrewPreview): string {
         case "feat": return "Feat";
         case "background": return "Background";
         case "race": return `Race · ${(p.entity as Race).size}`;
+        case "subrace": {
+            // parentRace stores the race's ID; resolve it for display (fall back to a bare label —
+            // never show a raw id on the card).
+            const parent = raceNameById((p.entity as Subrace).parentRace);
+            return parent ? `Subrace of ${parent}` : "Subrace";
+        }
         case "subclass": return `Subclass of ${(p.entity as Subclass).parentClass}`;
         case "class": return `Class · Hit Die ${(p.entity as Class5E).hitDie}`;
     }
@@ -88,6 +95,12 @@ export function previewBody(p: HomebrewPreview): string {
         case "feat": return (p.entity as Feat).details.description;
         case "background": return (p.entity as Background).desc;
         case "race": return (p.entity as Race).traits.map(t => `**${t.details.name}.** ${t.details.description}`).join("\n\n");
+        case "subrace": {
+            const sr = p.entity as Subrace;
+            const traits = (sr.traits ?? []).map(t => `**${t.details.name}.** ${t.details.description}`).join("\n\n");
+            const desc = sr.descriptions?.desc ?? "";
+            return [desc, traits].filter(Boolean).join("\n\n");
+        }
         case "subclass": return (p.entity as Subclass).description;
         case "class": return `Primary ability: ${(p.entity as Class5E).primaryAbility}`;
     }

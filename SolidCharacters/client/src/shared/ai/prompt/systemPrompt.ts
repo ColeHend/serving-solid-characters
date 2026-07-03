@@ -135,16 +135,17 @@ function byTypeLine(kind: HomebrewKind, dndSystem: string): string {
       ? "- Background: skill proficiencies, a background feature, the starting equipment it grants (concrete items plus any gold, in startEquipment), and (2024) its ability score options and a granted feat that names a real feat."
       : "- Background: skill proficiencies, a background feature, and the starting equipment it grants (concrete items plus any gold, in startEquipment).";
     case "race": return "- Race: distinct traits with real effects, plus languages, size, and speed.";
+    case "subrace": return "- Subrace: parentRace must be the EXACT name of an existing race (look it up if unsure) plus at least one distinct trait with a real effect. Only include what it adds or changes — everything else is inherited from the parent.";
     case "subclass": return "- Subclass: features at the right levels with full rules text. If it grants spellcasting, set casterType (third/half/full/pact) so spell slots are generated.";
     case "class": return "- Class: hit die, primary ability, saving throws, and features at the right levels with full rules text. For a spellcaster, set casterType (third/half/full/pact) so the spell-slot table is generated.";
   }
 }
 
 /** Kinds for which 2014-vs-2024 ability-source guidance is relevant (origin/ASI carriers). */
-const ORIGIN_KINDS: HomebrewKind[] = ["race", "background", "class", "subclass"];
+const ORIGIN_KINDS: HomebrewKind[] = ["race", "subrace", "background", "class", "subclass"];
 
 function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKinds: HomebrewKind[] | undefined, flags: UtilityToolFlags | undefined, persona: PersonaConfig): string {
-  const kinds = allowedKinds ?? [...(["spell", "item", "magic_item", "feat", "background", "race", "subclass", "class"] as HomebrewKind[])];
+  const kinds = allowedKinds ?? [...(["spell", "item", "magic_item", "feat", "background", "race", "subrace", "subclass", "class"] as HomebrewKind[])];
   const labels = kinds.map(k => HOMEBREW_KIND_LABELS[k].toLowerCase());
   // A post-generation flourish is allowed ALONGSIDE the tool call, never instead of it and never waiting.
   const flourish = labels.length && persona.confirmFlourish
