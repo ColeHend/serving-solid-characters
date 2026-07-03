@@ -24,6 +24,10 @@ export class Character {
     other: {}
   };
   public savingThrows: CharacterSavingThrow[] = [];
+  public rollAdvantages: RollAdvantage[] = [];
+  public attacksPerAction: number = 1;
+  /** Spent use counts per limited-use feature, keyed by feature name (feature ids are often empty). */
+  public featureUses: Record<string, number> = {};
   public resistances: DamageAffinity[] = [];
   public vulnerabilities: DamageAffinity[] = [];
   public immunities: DamageAffinity[] = [];
@@ -114,9 +118,23 @@ export interface CharacterSavingThrow {
   proficient: boolean;
 }
 
+export type AdvantageMode = "advantage" | "disadvantage";
+export type AdvantageRollType = "SavingThrow" | "WeaponAttack" | "SpellAttack" | "Initiative" | "AbilityCheck";
+
+export interface RollAdvantage {
+  rollType: AdvantageRollType;
+  mode: AdvantageMode;
+  /** Only meaningful for SavingThrow / AbilityCheck; absent = all stats. */
+  stat?: keyof Stats;
+  /** Free-text qualifier, e.g. "against being frightened". */
+  condition?: string;
+  /** Name of the feature that granted it. */
+  source?: string;
+}
+
 // -- Character Form Models --
 
-type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"> 
+type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"|"rollAdvantages"|"attacksPerAction"|"featureUses">
 
 export interface CharacterForm extends halfCharacter {
   race: string;

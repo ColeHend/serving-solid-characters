@@ -2,6 +2,7 @@ import { addSnackbar } from "coles-solid-library";
 import { Spell } from "../../../../models/generated";
 import { CharacterSpell } from "../../../../models/character.model";
 import characterManager from "../../dndInfo/useCharacters";
+import { Clone } from "./Tools";
 
 export const AddSpell = (spell: Spell, charName: string) => {
   addSnackbar({
@@ -27,29 +28,9 @@ export const AddSpell = (spell: Spell, charName: string) => {
       severity: "info",
     });
 
-    characterManager.updateCharacter({
-      name: character.name,
-      level: character.level,
-      levels: character.levels,
-      spells: newSpellArr,
-      race: character.race,
-      className: character.className,
-      subclass: character.subclass,
-      vulnerabilities: character.vulnerabilities,
-      savingThrows: character.savingThrows,
-      resistances: character.resistances,
-      immunities: character.immunities,
-      features: character.features,
-      ArmorClass: character.ArmorClass,
-      Speed: character.Speed,      
-      background: character.background,
-      alignment: character.alignment,
-      proficiencies: character.proficiencies,
-      languages: character.languages,
-      health: character.health,
-      stats: character.stats,
-      items: character.items,
-    });
+    const updated = Clone(character);
+    updated.spells = newSpellArr;
+    characterManager.updateCharacter(updated);
     return;
   } else {
     addSnackbar({

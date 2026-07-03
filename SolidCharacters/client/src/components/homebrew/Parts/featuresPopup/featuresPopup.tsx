@@ -24,6 +24,10 @@ import { AllProfsFeature } from "./parts/allProfsFeature/allProfsFeature";
 import { FeatFeature } from "./parts/featFeature/featFeature";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import { FeaturePrerequisites } from "./parts/featurePrerequisites/featurePrerequisites";
+import { ClassFeature } from "./parts/classFeature/classFeature";
+import { AdvantageFeature } from "./parts/advantageFeature/advantageFeature";
+import { AttacksFeature } from "./parts/attacksFeature/attacksFeature";
+import { UsesFeature } from "./parts/usesFeature/usesFeature";
 
 interface popupProps {
     Show: [Accessor<boolean>, Setter<boolean>];
@@ -197,6 +201,10 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         'Stats',
         'Speed',
         'AllProficiencies',
+        'ClassFeature',
+        'Advantage',
+        'Attacks',
+        'Uses',
     ]
 
     const getMadType = (index: number) => {
@@ -706,6 +714,48 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         }}
                                                         getValue={getMadValue?.(i()) ?? (() => undefined)}
                                                         allFeats={AllFeats}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddClassFeature" || getMaDCommand(i())?.() === "RemoveClassFeature"}>
+                                                    <ClassFeature
+                                                        toggleValue={(name, description, category) => {
+                                                            setMadFeature("value", i(), {"name": name, "description": description, "category": category});
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddAdvantage" || getMaDCommand(i())?.() === "RemoveAdvantage"}>
+                                                    <AdvantageFeature
+                                                        toggleValue={(rollType, mode, stat, condition) => {
+                                                            setMadFeature("value", i(), {"rollType": rollType, "mode": mode, "stat": stat, "condition": condition});
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddAttacks" || getMaDCommand(i())?.() === "RemoveAttacks"}>
+                                                    <AttacksFeature
+                                                        toggleValue={(amount) => {
+                                                            setMadFeature("value", i(), {"amount": amount.toString()});
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddUses" || getMaDCommand(i())?.() === "RemoveUses"}>
+                                                    <UsesFeature
+                                                        toggleValue={(amount, recharge) => {
+                                                            setMadFeature("value", i(), {"amount": amount.toString(), "recharge": recharge});
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            // Uses describes its owning feature (uses/recharge), not a sheet change.
+                                                            setMadFeature("type", i(), MadType.Info);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
                                                     />
                                                 </Match>
                                             </Switch>

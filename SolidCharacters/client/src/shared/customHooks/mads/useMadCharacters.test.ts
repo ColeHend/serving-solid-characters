@@ -1,0 +1,241 @@
+import { describe, it, expect, vi } from "vitest";
+import type { Character } from "../../../models/character.model";
+import type { FeatureDetail, MadFeature as StoredMad } from "../../../models/generated";
+
+// These handler modules resolve data hooks at import time; mock them so the
+// suite never touches IndexedDB (same pattern as commandAgent.test.ts).
+vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
+vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
+
+import { addMadFeature, collectMadFeatures, useMadCharacters } from "./useMadCharacters";
+import { MadFeature, MadType } from "./madModels";
+import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
+
+function makeCharacter(overrides: Partial<Character> = {}): Character {
+    return {
+        name: "Test",
+        level: 1,
+        levels: [],
+        spells: [],
+        race: { species: "human", features: [] },
+        ArmorClass: 10,
+        Speed: 30,
+        className: "Fighter",
+        subclass: [],
+        background: "",
+        alignment: "",
+        features: [],
+        proficiencies: { skills: {}, other: {} },
+        savingThrows: [],
+        rollAdvantages: [],
+        attacksPerAction: 1,
+        featureUses: {},
+        resistances: [],
+        vulnerabilities: [],
+        immunities: [],
+        languages: [],
+        health: { max: 10, current: 10, temp: 0 },
+        stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+        items: {
+            inventory: [], equipped: [], attuned: [],
+            currency: { platinumPieces: 0, goldPieces: 0, electrumPieces: 0, sliverPieces: 0, copperPieces: 0 },
+        },
+        ...overrides,
+    } as Character;
+}
+
+function mad(command: string, value: Record<string, string>, type = MadType.Character): MadFeature {
+    return { command: command as MadFeature["command"], value, type, prerequisites: [], group: 0 };
+}
+
+/** The runtime shapes are identical; the two MadFeature declarations differ only nominally (enum vs enum). */
+const stored = (...mads: MadFeature[]) => mads as unknown as StoredMad[];
+
+describe("AddClassFeature / RemoveClassFeature", () => {
+    it("pushes a named feature with description and category onto character.features", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddClassFeature", {
+            name: "Agonizing Blast",
+            description: "Add CHA to eldritch blast damage.",
+            category: "Eldritch Invocation",
+        }));
+
+        expect(c.features).toHaveLength(1);
+        expect(c.features[0]).toMatchObject({
+            id: "",
+            name: "Agonizing Blast",
+            description: "Add CHA to eldritch blast damage.",
+            metadata: { category: "Eldritch Invocation" },
+        });
+    });
+
+    it("dedupes by name and ignores a missing name", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddClassFeature", { name: "Archery" }));
+        c = addMadFeature(c, mad("AddClassFeature", { name: "archery" }));
+        c = addMadFeature(c, mad("AddClassFeature", { name: "   " }));
+
+        expect(c.features).toHaveLength(1);
+    });
+
+    it("removes by case-insensitive name", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddClassFeature", { name: "Defense" }));
+        c = addMadFeature(c, mad("RemoveClassFeature", { name: "DEFENSE" }));
+
+        expect(c.features).toHaveLength(0);
+    });
+});
+
+describe("AddAdvantage / RemoveAdvantage", () => {
+    it("initializes rollAdvantages on old-shape characters and appends", () => {
+        const old = makeCharacter();
+        delete (old as Partial<Character>).rollAdvantages;
+
+        const c = addMadFeature(old, mad("AddAdvantage", {
+            rollType: "SavingThrow", mode: "advantage", stat: "wis", condition: "against being frightened",
+        }));
+
+        expect(c.rollAdvantages).toEqual([{
+            rollType: "SavingThrow", mode: "advantage", stat: "wis", condition: "against being frightened",
+        }]);
+    });
+
+    it("dedupes identical grants and drops invalid rollType/mode", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddAdvantage", { rollType: "Initiative", mode: "advantage" }));
+        c = addMadFeature(c, mad("AddAdvantage", { rollType: "Initiative", mode: "advantage" }));
+        c = addMadFeature(c, mad("AddAdvantage", { rollType: "Nonsense", mode: "advantage" }));
+        c = addMadFeature(c, mad("AddAdvantage", { rollType: "Initiative", mode: "sideways" }));
+
+        expect(c.rollAdvantages).toHaveLength(1);
+    });
+
+    it("keeps disadvantage as a separate Add and removes only the matching entry", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddAdvantage", { rollType: "WeaponAttack", mode: "advantage" }));
+        c = addMadFeature(c, mad("AddAdvantage", { rollType: "WeaponAttack", mode: "disadvantage" }));
+
+        expect(c.rollAdvantages).toHaveLength(2);
+
+        c = addMadFeature(c, mad("RemoveAdvantage", { rollType: "WeaponAttack", mode: "disadvantage" }));
+
+        expect(c.rollAdvantages).toEqual([{ rollType: "WeaponAttack", mode: "advantage", stat: undefined, condition: undefined }]);
+    });
+
+    it("remove without stat clears all matching entries; with stat narrows the match", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddAdvantage", { rollType: "SavingThrow", mode: "advantage", stat: "dex" }));
+        c = addMadFeature(c, mad("AddAdvantage", { rollType: "SavingThrow", mode: "advantage", stat: "wis" }));
+
+        const narrowed = addMadFeature(c, mad("RemoveAdvantage", { rollType: "SavingThrow", mode: "advantage", stat: "dex" }));
+        expect(narrowed.rollAdvantages).toHaveLength(1);
+        expect(narrowed.rollAdvantages[0].stat).toBe("wis");
+
+        const cleared = addMadFeature(narrowed, mad("RemoveAdvantage", { rollType: "SavingThrow", mode: "advantage" }));
+        expect(cleared.rollAdvantages).toHaveLength(0);
+    });
+});
+
+describe("AddAttacks / RemoveAttacks", () => {
+    it("adds to attacksPerAction, defaulting a missing field to 1", () => {
+        const old = makeCharacter();
+        delete (old as Partial<Character>).attacksPerAction;
+
+        const c = addMadFeature(old, mad("AddAttacks", { amount: "1" }));
+
+        expect(c.attacksPerAction).toBe(2);
+    });
+
+    it("floors at 1 on remove and ignores non-numeric amounts", () => {
+        let c = addMadFeature(makeCharacter(), mad("RemoveAttacks", { amount: "5" }));
+        expect(c.attacksPerAction).toBe(1);
+
+        c = addMadFeature(c, mad("AddAttacks", { amount: "lots" }));
+        expect(c.attacksPerAction).toBe(1);
+    });
+});
+
+describe("Uses (Info command)", () => {
+    it("is a no-op on the character", () => {
+        const before = makeCharacter();
+        const after = addMadFeature(before, mad("AddUses", { amount: "2", recharge: "Long Rest" }, MadType.Info));
+
+        expect(after).toEqual(makeCharacter());
+    });
+
+    it("featureUsage prefers the AddUses command over metadata", () => {
+        const feature: FeatureDetail = {
+            id: "", name: "Rage", description: "",
+            metadata: {
+                uses: 9, recharge: "Short Rest",
+                mads: stored(mad("AddUses", { amount: "2", recharge: "Long Rest" }, MadType.Info)),
+            },
+        };
+
+        expect(featureUsage(feature)).toEqual({ max: 2, recharge: LONG_REST });
+    });
+
+    it("featureUsage falls back to metadata.uses/recharge and returns null otherwise", () => {
+        const fromMeta: FeatureDetail = {
+            id: "", name: "Second Wind", description: "",
+            metadata: { uses: 1, recharge: "short rest" },
+        };
+        const unlimited: FeatureDetail = { id: "", name: "Darkvision", description: "" };
+
+        expect(featureUsage(fromMeta)).toEqual({ max: 1, recharge: SHORT_REST });
+        expect(featureUsage(unlimited)).toBeNull();
+    });
+
+    it("resetFeatureUses: long rest clears everything, short rest only short-rest features", () => {
+        const limited: { name: string; recharge: RechargeType }[] = [
+            { name: "Rage", recharge: LONG_REST },
+            { name: "Action Surge", recharge: SHORT_REST },
+        ];
+        const c = makeCharacter({ featureUses: { "Rage": 1, "Action Surge": 1 } });
+
+        const afterShort = resetFeatureUses(makeCharacter({ featureUses: { ...c.featureUses } }), SHORT_REST, limited);
+        expect(afterShort.featureUses).toEqual({ "Rage": 1 });
+
+        const afterLong = resetFeatureUses(c, LONG_REST, limited);
+        expect(afterLong.featureUses).toEqual({});
+    });
+});
+
+describe("collectMadFeatures", () => {
+    it("gathers Character-type mads from levels, race, and top-level features and skips Info", () => {
+        const speed = mad("AddSpeed", { speed: "10" });
+        const advantage = mad("AddAdvantage", { rollType: "Initiative", mode: "advantage" });
+        const classFeature = mad("AddClassFeature", { name: "Dueling" });
+        const uses = mad("AddUses", { amount: "2" }, MadType.Info);
+
+        const c = makeCharacter({
+            levels: [{
+                class: "Barbarian", level: 1, hitDie: 12,
+                features: [{ id: "", name: "Rage", description: "", metadata: { mads: stored(speed, uses) } }],
+            }],
+            race: {
+                species: "elf",
+                features: [{ id: "", name: "Fey Ancestry", description: "", metadata: { mads: stored(advantage) } }],
+            },
+            features: [{ id: "", name: "Fighting Style", description: "", metadata: { mads: stored(classFeature) } }],
+        });
+
+        expect(collectMadFeatures(c)).toEqual([speed, advantage, classFeature]);
+    });
+
+    it("applying the collected mads to fresh clones is deterministic", () => {
+        const base = makeCharacter({
+            levels: [{
+                class: "Fighter", level: 1, hitDie: 10,
+                features: [{
+                    id: "", name: "Extra Attack", description: "",
+                    metadata: { mads: stored(mad("AddAttacks", { amount: "1" }), mad("AddSpeed", { speed: "10" })) },
+                }],
+            }],
+        });
+
+        const first = useMadCharacters(structuredClone(base), collectMadFeatures(base));
+        const second = useMadCharacters(structuredClone(base), collectMadFeatures(base));
+
+        expect(first).toEqual(second);
+        expect(first.attacksPerAction).toBe(2);
+        expect(first.Speed).toBe(40);
+        expect(base.attacksPerAction).toBe(1);
+        expect(base.Speed).toBe(30);
+    });
+});

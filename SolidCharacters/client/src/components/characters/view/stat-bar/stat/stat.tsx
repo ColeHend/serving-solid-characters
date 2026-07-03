@@ -1,14 +1,17 @@
 import { Component, For, createMemo } from "solid-js";
+import { Chip } from "coles-solid-library";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./stat.module.scss";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
-import { CharacterSkillProficiency } from "../../../../../models/character.model";
+import { CharacterSkillProficiency, RollAdvantage } from "../../../../../models/character.model";
 
 type Props = {
   stat: number;
   name: string;
   skills: Record<string, CharacterSkillProficiency>;
   proficientMod: number;
+  /** Save/check advantages that apply to this ability (renders nothing when absent). */
+  advantages?: RollAdvantage[];
 };
 
 const StatBlock: Component<Props> = (props) => {
@@ -64,7 +67,18 @@ const StatBlock: Component<Props> = (props) => {
       </div>
       <div class={`${styles.secondBox}`}>
         <ul>
-          <li>{props.name} Saving Throw: </li>
+          <li>
+            {props.name} Saving Throw:{" "}
+            <For each={props.advantages ?? []}>
+              {(adv) => (
+                <Chip value={
+                  `${adv.mode === "advantage" ? "ADV" : "DIS"}` +
+                  `${adv.rollType === "AbilityCheck" ? " (checks)" : ""}` +
+                  `${adv.condition ? ` · ${adv.condition}` : ""}`
+                } />
+              )}
+            </For>
+          </li>
           <For
             each={getSkills(props.name)}>
             {

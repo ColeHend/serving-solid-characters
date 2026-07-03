@@ -104,6 +104,9 @@ const Gandalf = createExampleCharacter({
     { stat: "int", proficient: true },
     { stat: "wis", proficient: true },
   ],
+  rollAdvantages: [],
+  attacksPerAction: 1,
+  featureUses: {},
   background: "Noble",
   alignment: "neutral",
   proficiencies: {

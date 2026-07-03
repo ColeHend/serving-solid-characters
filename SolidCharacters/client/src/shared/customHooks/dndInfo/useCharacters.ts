@@ -89,9 +89,9 @@ class CharacterManager {
 
   // ------Update------
 
-  public updateCharacter(character: Character) {
+  public updateCharacter(character: Character, silent = false) {
     if (!this.characters().some(c => c.name === character.name)) return;
-    this.updateCharInDB(character);
+    this.updateCharInDB(character, silent);
   }
 
   public updateCharSpell(characterName: string,newSpell: CharacterSpell) {
@@ -103,29 +103,9 @@ class CharacterManager {
 
       spells.push(newSpell);
 
-      this.updateCharacter({
-        name: character.name,
-        ArmorClass: character.ArmorClass,
-        Speed: character.Speed,
-        level: character.level,
-        levels: character.levels,
-        race: character.race,
-        className: character.className,
-        subclass: character.subclass,
-        background: character.background,
-        alignment: character.alignment,
-        proficiencies: character.proficiencies,
-        savingThrows: character.savingThrows,
-        resistances: character.resistances,
-        vulnerabilities: character.vulnerabilities,
-        immunities: character.immunities,
-        languages: character.languages,
-        health: character.health,
-        stats: character.stats,
-        items: character.items,
-        spells: spells,
-        features: character.features
-      })
+      const updated = Clone(character);
+      updated.spells = spells;
+      this.updateCharacter(updated)
       addSnackbar({
         message: `Added ${newSpell.name} to ${characterName}`,
         severity: "success"
@@ -141,7 +121,7 @@ class CharacterManager {
 
   }
 
-  private updateCharInDB(updated: Character) {
+  private updateCharInDB(updated: Character, silent = false) {
     let failed = false;
     return httpClient$.toObservable(CharacterDB.characters.put(updated)).pipe(
       take(1),
@@ -158,10 +138,12 @@ class CharacterManager {
       finalize(() => {
         if (!failed) {
           this._setCharacters(list => list.map(c => c.name === updated.name ? updated : c));
-          addSnackbar({
-            message: "Character updated successfully",
-            severity: "success"
-          });
+          if (!silent) {
+            addSnackbar({
+              message: "Character updated successfully",
+              severity: "success"
+            });
+          }
         }
       })
     );

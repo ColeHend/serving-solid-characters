@@ -330,6 +330,56 @@ describe("normalizeName", () => {
     });
 });
 
+describe("coerceCommand — ClassFeature / Advantage / Attacks / Uses", () => {
+    it("builds an Advantage command from loose rollType/mode phrasings", () => {
+        const mad = coerceCommand("Add", "Advantage",
+            { rollType: "saving throws", mode: "adv", stat: "Wisdom", condition: "against being frightened" }, undefined, noRef);
+        expect(mad).toEqual({
+            command: "AddAdvantage",
+            value: { rollType: "SavingThrow", mode: "advantage", stat: "wis", condition: "against being frightened" },
+            type: 0, prerequisites: [], group: 0,
+        });
+    });
+
+    it("maps disadvantage text to mode=disadvantage on an Add and drops unknown roll types", () => {
+        expect(coerceCommand("Add", "disadvantage", { rollType: "attack rolls", mode: "disadvantage" }, undefined, noRef)?.value)
+            .toEqual({ rollType: "WeaponAttack", mode: "disadvantage" });
+        expect(coerceCommand("Add", "Advantage", { rollType: "teleporting", mode: "advantage" }, undefined, noRef)).toBeNull();
+    });
+
+    it("silently drops an unknown optional stat instead of the whole Advantage command", () => {
+        expect(coerceCommand("Add", "Advantage", { rollType: "Initiative", mode: "advantage", stat: "luck" }, undefined, noRef)?.value)
+            .toEqual({ rollType: "Initiative", mode: "advantage" });
+    });
+
+    it("requires a name for ClassFeature and resolves its aliases", () => {
+        expect(coerceCommand("Add", "ClassFeature", { description: "d" }, undefined, noRef)).toBeNull();
+        expect(coerceCommand("Add", "Eldritch Invocation", { name: "Agonizing Blast", description: "d" }, undefined, noRef)?.command)
+            .toBe("AddClassFeature");
+        expect(coerceCommand("Add", "fighting style", { name: "Archery" }, undefined, noRef)?.command).toBe("AddClassFeature");
+    });
+
+    it("coerces Attacks amounts and Uses recharge phrasings", () => {
+        expect(coerceCommand("Add", "extra attack", { amount: "1" }, undefined, noRef)?.command).toBe("AddAttacks");
+        expect(coerceCommand("Add", "Attacks", { amount: "one" }, undefined, noRef)).toBeNull();
+        expect(coerceCommand("Add", "Uses", { amount: "2", recharge: "until you finish a long rest" }, undefined, noRef)?.value)
+            .toEqual({ amount: "2", recharge: "Long Rest" });
+    });
+
+    it("stamps Uses as an Info command (type 1), everything else as Character (type 0)", () => {
+        expect(coerceCommand("Add", "Uses", { amount: "2" }, undefined, noRef)?.type).toBe(1);
+        expect(coerceCommand("Add", "Attacks", { amount: "1" }, undefined, noRef)?.type).toBe(0);
+    });
+
+    it("keeps ClassFeature chips short via labelKeys (no description dump)", () => {
+        const label = commandChipLabel({
+            command: "AddClassFeature",
+            value: { name: "Agonizing Blast", description: "A very long rules text that must not appear.", category: "Eldritch Invocation" },
+        });
+        expect(label).toBe("Add Class Feature: Agonizing Blast, Eldritch Invocation");
+    });
+});
+
 describe("coerceCommand — category aliases (small-model tolerance)", () => {
     it("accepts singular / loose category spellings", () => {
         expect(coerceCommand("Add", "Resistance", { damageType: "fire" }, undefined, noRef)?.command).toBe("AddResistances");
