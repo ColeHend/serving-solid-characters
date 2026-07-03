@@ -123,4 +123,33 @@ describe('homebrewManager (5E internal types)', () => {
     await homebrewManager.removeRace('Elf');
     expect(homebrewManager.races().some(r => r.name === 'Elf')).toBe(false);
   });
+
+  function sampleSubrace(id = 'wood-id', name = 'Wood', parentRace = 'Elf') {
+    return { ...sampleRace(id, name), id, name, parentRace } as any;
+  }
+
+  it('saves, updates & removes a standalone subrace', async () => {
+    expect(await homebrewManager.saveSubrace(sampleSubrace())).toBe(true);
+    expect(homebrewManager.subraces().some(s => s.name === 'Wood' && s.parentRace === 'Elf')).toBe(true);
+    // upsert by id/parent+name, not append
+    expect(await homebrewManager.saveSubrace({ ...sampleSubrace(), speed: 35 })).toBe(true);
+    const rows = homebrewManager.subraces().filter(s => s.name === 'Wood');
+    expect(rows.length).toBe(1);
+    expect(rows[0].speed).toBe(35);
+    expect(await homebrewManager.removeSubrace('Elf', 'Wood')).toBe(true);
+    expect(homebrewManager.subraces().length).toBe(0);
+  });
+
+  it('rename replaces the old subrace row instead of stranding it', async () => {
+    await homebrewManager.saveSubrace(sampleSubrace());
+    await homebrewManager.saveSubrace(sampleSubrace('wood-id', 'High'));
+    const names = homebrewManager.subraces().map(s => s.name);
+    expect(names).toEqual(['High']);
+  });
+
+  it('removeSubrace matches by id when the form name drifted', async () => {
+    await homebrewManager.saveSubrace(sampleSubrace());
+    expect(await homebrewManager.removeSubrace('Elf', 'Renamed-in-form', 'wood-id')).toBe(true);
+    expect(homebrewManager.subraces().length).toBe(0);
+  });
 });

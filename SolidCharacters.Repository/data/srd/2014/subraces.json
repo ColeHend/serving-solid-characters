@@ -2,7 +2,7 @@
   {
     "id": "f58190ff-2410-4982-9a81-5a8fe2613455",
     "name": "Hill Dwarf",
-    "parentRace": "1",
+    "parentRace": "3e97a7b0-060d-467e-9780-bb2c0ee22d1c",
     "size": "Medium",
     "speed": 30,
     "languages": [],
@@ -32,7 +32,7 @@
   {
     "id": "f0066dd5-405a-4200-83c5-de318c0ce540",
     "name": "High Elf",
-    "parentRace": "2",
+    "parentRace": "16c1428d-41e5-4d0c-a25e-169eb22bb7e8",
     "size": "Medium",
     "speed": 30,
     "languages": [],
@@ -76,7 +76,7 @@
   {
     "id": "894705bb-587e-40cb-85ea-0cc01f8faaf4",
     "name": "Lightfoot Halfling",
-    "parentRace": "3",
+    "parentRace": "212324d1-3bb9-4afe-8750-a8e945146203",
     "size": "Medium",
     "speed": 30,
     "languages": [],
@@ -106,7 +106,7 @@
   {
     "id": "be15b450-a00b-4daa-ba63-460f23952e43",
     "name": "Rock Gnome",
-    "parentRace": "6",
+    "parentRace": "46e5c14f-d096-4ceb-99f0-d959623ebfcc",
     "size": "Medium",
     "speed": 30,
     "languages": [

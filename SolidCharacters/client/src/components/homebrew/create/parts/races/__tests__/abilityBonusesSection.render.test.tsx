@@ -1,15 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@solidjs/testing-library';
 import AbilityBonusesSection from '../sections/AbilityBonusesSection';
-import { racesStore } from '../racesStore';
+import { createRaceLikeForm, makeAbilityRow } from '../../shared/raceLikeForm.shared';
 
 describe('AbilityBonusesSection', () => {
-  it('adds an ability bonus', () => {
-    // ensure new draft
-    racesStore.selectNew();
-    render(() => <AbilityBonusesSection />);
-    // open select not easily testable without library specifics; directly call store
-    racesStore.addAbilityBonus('STR', 2);
-    expect(racesStore.activeRace()?.abilityBonuses.some(a => a.name === 'STR')).toBe(true);
+  it('renders added ability bonuses', () => {
+    const api = createRaceLikeForm({ kind: 'race' });
+    const { getByText } = render(() => <AbilityBonusesSection api={api} />);
+    api.abilityBonuses.add(makeAbilityRow('STR', 2));
+    expect(api.abilityBonuses.get().some(a => a.name === 'STR')).toBe(true);
+    expect(getByText('STR+2')).toBeTruthy();
   });
 });

@@ -7,13 +7,10 @@ import { AbilitySection } from './AbilitySection';
 import { LanguageSection } from './LanguageSection';
 import { TraitsSection } from './TraitsSection';
 import { SaveSection } from './SaveSection';
-import { homebrewManager } from '../../../../../shared';
 
 const Subraces: Component = () => {
   const api = useSubraceEditor();
-  const { parent, subraceName, parentNames, selectParent, selectSubrace } = api;
-
-  // useSubraceEditor centralizes previous logic
+  const { parent, subraceName, parentNames, existingSubraceNames, selectParent, selectSubrace } = api;
 
   onMount(()=>{
     document.body.classList.add('race-bg');
@@ -27,6 +24,9 @@ const Subraces: Component = () => {
     <Body class={`${styles.body}`}>
       <h1>Subraces</h1>
       <div style={{ display: "flex", gap: "1rem", "flex-wrap": "wrap" }}>
+        {/* selectParent/selectSubrace internally run untracked & unowned
+            (runWithOwner(null)) because the library Select fires onChange
+            from a tracked effect — see useSubraceEditor. */}
         <FormField name="Parent Race">
           <Select
             transparent
@@ -47,15 +47,7 @@ const Subraces: Component = () => {
               onChange={(v) => selectSubrace(v)}
             >
               <Option value="">+ New Subrace</Option>
-              <For
-                each={(
-                  (
-                    homebrewManager
-                      .races()
-                      .find((r) => r.name === parent()) as any
-                  )?.subRaces || []
-                ).map((sr: any) => sr.name)}
-              >
+              <For each={existingSubraceNames()}>
                 {(n: string) => <Option value={n}>{n}</Option>}
               </For>
             </Select>
@@ -74,7 +66,6 @@ const Subraces: Component = () => {
           <SaveSection api={api} />
         </div>
       </Show>
-      <Show when={api.state.snackbar}><div class={styles.snackbar} data-type={api.state.snackbar!.type}>{api.state.snackbar!.msg}</div></Show>
     </Body>
   );
 };

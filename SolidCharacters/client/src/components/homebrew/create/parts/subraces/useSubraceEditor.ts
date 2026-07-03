@@ -1,7 +1,8 @@
-import { createMemo, createSignal, onCleanup } from "solid-js";
+import { createEffect, createMemo, createSignal, runWithOwner } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useSearchParams } from "@solidjs/router";
-import { Clone, homebrewManager, SIZE_TOKENS } from "../../../../../shared";
+import { addSnackbar } from "coles-solid-library";
+import { homebrewManager, SIZE_TOKENS, Subrace } from "../../../../../shared";
 import {
   SubraceDraft,
   blankDraft,
@@ -9,18 +10,15 @@ import {
   ABILITIES,
   validateDraft,
 } from "./helpers";
+import { createRaceLikeForm, decodeStat } from "../shared/raceLikeForm.shared";
 
 export interface StoreState {
-  draft?: SubraceDraft;
   selection: { race: string; subrace: string };
   editingExisting: boolean;
   status: "idle" | "ready";
+  hasDraft: boolean;
   errors: string[];
-  snackbar?: { msg: string; type: "success" | "error"; at: number };
 }
-
-const validateLocal = (d?: SubraceDraft) =>
-  validateDraft(d, homebrewManager.races() as any);
 
 export function useSubraceEditor() {
   const [params, setParams] = useSearchParams();
@@ -30,287 +28,251 @@ export function useSubraceEditor() {
       .filter(Boolean)
       .sort()
   );
+  const asString = (v: string | string[] | undefined) =>
+    typeof v === "string" ? v : v?.join(" ") ?? "";
   const [state, setState] = createStore<StoreState>({
-    selection: { race: params.race || "", subrace: params.subrace || "" },
+    selection: { race: asString(params.race), subrace: asString(params.subrace) },
     editingExisting: false,
     status: "idle",
+    hasDraft: false,
     errors: [],
   });
   const [editingTrait, setEditingTrait] = createSignal<string | null>(null);
-  const [collapsed, setCollapsed] = createStore<Record<string, boolean>>({});
-  const toggle = (k: string) => setCollapsed(k, (v) => !v);
-  let snackbarTimer: number | undefined;
-  function pushSnack(msg: string, type: "success" | "error" = "success") {
-    setState("snackbar", { msg, type, at: Date.now() });
-    if (snackbarTimer) clearTimeout(snackbarTimer);
-    snackbarTimer = window.setTimeout(
-      () => setState("snackbar", undefined),
-      3500
-    );
-  }
-  onCleanup(() => {
-    if (snackbarTimer) clearTimeout(snackbarTimer);
-  });
 
-  function ensureDraft(parent: string) {
-    if (!state.draft || state.draft.parentRace !== parent)
-      setState("draft", blankDraft(parent));
+  // Editor state lives in the FormGroup + standalone FormArrays; id/parent
+  // are not form keys (see raceLikeForm.shared.ts).
+  const { form, abilityBonuses, traits, fill, formToDraft } =
+    createRaceLikeForm({ kind: "subrace" });
+  const [draftId, setDraftId] = createSignal<string>(crypto.randomUUID());
+  const parentRaceId = createMemo(() => {
+    const parent = state.selection.race;
+    if (!parent) return "";
+    const race = homebrewManager.races().find((r: Subrace) => r.name === parent);
+    return race?.id ?? "";
+  });
+  // The flat `subraces` table (each row keyed to its parent by parentRace ===
+  // race id) is the single source of truth — the same list the race popup and
+  // character creation read. No more nested race.subRaces copy.
+  const existingSubraces = createMemo(() => {
+    const id = parentRaceId();
+    return id ? homebrewManager.subraces().filter((s) => s.parentRace === id) : [];
+  });
+  const existingSubraceNames = createMemo(() => existingSubraces().map((s) => s.name));
+
+  function currentDraft(): SubraceDraft {
+    return {
+      ...formToDraft(),
+      id: draftId(),
+      parentRace: parentRaceId(),
+    };
+  }
+
+  function fillBlank(parent: string) {
+    fill(blankDraft(parent));
+    setDraftId(crypto.randomUUID());
+    setEditingTrait(null);
+    setState({ hasDraft: true, editingExisting: false });
   }
   function loadExisting(parent: string, name: string) {
-    const race = homebrewManager
-      .races()
-      .find((r: any) => r.name === parent) as any;
-    if (!race) return;
-    const existing = race.subRaces?.find((sr: any) => sr.name === name);
+    const parentId = homebrewManager.races().find((r: any) => r.name === parent)?.id;
+    if (!parentId) return;
+    // Typed `any` to keep the legacy top-level text fallbacks below compiling
+    // (older rows predate the `descriptions` map).
+    const existing: any = homebrewManager
+      .subraces()
+      .find((sr) => sr.parentRace === parentId && sr.name === name);
     if (!existing) return;
     const sizes = (existing.size || "")
       .split(",")
       .map((s: string) => s.trim())
       .filter(Boolean);
-    const abilityBonuses = (existing.abilityBonuses || []).map((a: any) => ({
-      name: String(a.stat ?? a.name),
+    const abilityBonusRows = (existing.abilityBonuses || []).map((a: any) => ({
+      name: decodeStat(a.stat ?? a.name),
       value: a.value,
     }));
-    const traits = (existing.traits || []).map((t: any) => ({
+    const traitRows = (existing.traits || []).map((t: any) => ({
       name: t.details?.name || t.name,
       value: (t.details?.description || t.value || "").split("\n"),
     }));
-    const draft: SubraceDraft = {
-      id: existing.id || crypto.randomUUID(),
+    // Saved subraces keep their text under descriptions (see draftToModel);
+    // fall back to legacy top-level fields for older rows.
+    const descs = existing.descriptions || {};
+    fill({
       name: existing.name || "",
-      parentRace: parent,
       sizes,
-      speed: (existing as any).speed || 30,
-      abilityBonuses,
+      speed: existing.speed || 30,
+      abilityBonuses: abilityBonusRows,
       languages: {
         fixed: [...(existing.languages || [])],
-        amount: (existing.languageChoice as any)?.amount || 0,
-        options: (existing.languageChoice as any)?.options || [],
-        desc: (existing as any).languageDesc || "",
+        amount: existing.languageChoice?.amount || 0,
+        options: existing.languageChoice?.options || [],
+        desc: descs.language ?? existing.languageDesc ?? "",
       },
-      traits,
+      traits: traitRows,
       text: {
-        age: (existing as any).age || "",
-        alignment: (existing as any).alignment || "",
-        sizeDesc: (existing as any).sizeDescription || "",
-        desc: (existing as any).desc || "",
+        age: descs.age ?? existing.age ?? "",
+        alignment: descs.alignment ?? existing.alignment ?? "",
+        sizeDesc: descs.size ?? existing.sizeDescription ?? "",
+        desc: descs.desc ?? existing.desc ?? "",
       },
-    };
-    setState({ draft, editingExisting: true });
+    });
+    setDraftId(existing.id || crypto.randomUUID());
+    setEditingTrait(null);
+    setState({ hasDraft: true, editingExisting: true });
+  }
+  // The library Select fires onChange from a TRACKED internal effect (on
+  // mount, and again whenever anything the handler read last run changes),
+  // not just on user picks. Untracked+unowned (runWithOwner(null)) is
+  // mandatory for both handlers below: without it the echo effect subscribed
+  // to the editor state read inside them, so save()'s selection change
+  // re-fired the subrace select's echo with a stale "" and fillBlank wiped
+  // the just-saved draft. Handlers must also stay idempotent for echoed
+  // values, and only navigate when the URL actually changes — otherwise
+  // select -> setParams -> effect re-run -> onChange echo loops until the
+  // router throws "Too many redirects".
+  function setParamsIfChanged(next: { race: string; subrace: string }) {
+    if (
+      asString(params.race) === next.race &&
+      asString(params.subrace) === next.subrace
+    )
+      return;
+    setParams(next);
   }
   function selectParent(p: string) {
-    setState((old)=>({ selection: { race: p, subrace: old.selection?.subrace ?? '' }, editingExisting: false }));
-    ensureDraft(p);
-    setParams({ race: p, subrace: state.selection.subrace ?? '' });
+    runWithOwner(null, () => selectParentInner(p));
+  }
+  function selectParentInner(p: string) {
+    const parentChanged = p !== state.selection.race;
+    // Echo of the current value with nothing left to do: ignore.
+    if (!parentChanged && (p ? state.hasDraft : true)) return;
+    setState((old) => ({
+      selection: { race: p, subrace: parentChanged ? "" : old.selection.subrace },
+      editingExisting: parentChanged ? false : old.editingExisting,
+    }));
+    if (p) {
+      if (parentChanged || !state.hasDraft) fillBlank(p);
+    } else if (parentChanged) {
+      // Parent cleared ("-- choose --"): hide the stale form behind the
+      // "Select a parent race to begin." fallback.
+      setState("hasDraft", false);
+      setEditingTrait(null);
+    }
+    setParamsIfChanged({ race: p, subrace: state.selection.subrace ?? "" });
   }
   function selectSubrace(name: string) {
-    const newState = Clone(state);
-    // const pass = window.location.href.includes(`subrace=${name}`) === false;
-    const pass = !!parent() && !!subraceName()
-    
-    if (!newState.selection.race || pass) return;
-    loadExisting(newState.selection.race, name);
-    setState("selection", { race: newState.selection.race, subrace: name });
-    setParams({ race: newState.selection.race, subrace: name });
+    runWithOwner(null, () => selectSubraceInner(name));
   }
-  function updateDraft<K extends keyof SubraceDraft>(
-    key: K,
-    value: SubraceDraft[K]
-  ) {
-    if (!state.draft) return;
-    setState("draft", { ...state.draft, [key]: value });
-  }
-
-  function addSize(sz: string) {
-    if (!sz.trim() || !state.draft) return;
-    if (!state.draft.sizes.includes(sz))
-      updateDraft("sizes", [...state.draft.sizes, sz]);
-  }
-  function removeSize(sz: string) {
-    if (!state.draft) return;
-    updateDraft(
-      "sizes",
-      state.draft.sizes.filter((s) => s !== sz)
-    );
-  }
-  function addAbility(name: string, value: number) {
+  function selectSubraceInner(name: string) {
+    const race = state.selection.race;
+    if (!race) return;
+    // Echo of the current value with nothing left to do: ignore.
     if (
-      !state.draft ||
-      !name ||
-      state.draft.abilityBonuses.some((a) => a.name === name)
+      name === state.selection.subrace &&
+      (name ? state.editingExisting : state.hasDraft)
     )
       return;
-    updateDraft("abilityBonuses", [
-      ...state.draft.abilityBonuses,
-      { name, value },
-    ]);
-  }
-  function removeAbility(name: string) {
-    if (!state.draft) return;
-    updateDraft(
-      "abilityBonuses",
-      state.draft.abilityBonuses.filter((a) => a.name !== name)
-    );
-  }
-  function setAbilityValue(name: string, value: number) {
-    if (!state.draft) return;
-    updateDraft(
-      "abilityBonuses",
-      state.draft.abilityBonuses.map((a) =>
-        a.name === name ? { ...a, value } : a
-      )
-    );
-  }
-  function addLanguageFixed(l: string) {
-    if (!state.draft || !l.trim() || state.draft.languages.fixed.includes(l))
+    if (!name) {
+      // "+ New Subrace"
+      fillBlank(race);
+      setState("selection", { race, subrace: "" });
+      setParamsIfChanged({ race, subrace: "" });
       return;
-    updateDraft("languages", {
-      ...state.draft.languages,
-      fixed: [...state.draft.languages.fixed, l],
-    });
-  }
-  function removeLanguageFixed(l: string) {
-    if (!state.draft) return;
-    updateDraft("languages", {
-      ...state.draft.languages,
-      fixed: state.draft.languages.fixed.filter((x) => x !== l),
-    });
-  }
-  function setLanguageChoice(amount: number, options: string[]) {
-    if (!state.draft) return;
-    updateDraft("languages", { ...state.draft.languages, amount, options });
-  }
-  function removeLanguageOption(opt: string) {
-    if (!state.draft) return;
-    setLanguageChoice(
-      state.draft.languages.amount,
-      state.draft.languages.options.filter((o) => o !== opt)
-    );
-  }
-  function setLangDesc(desc: string) {
-    if (!state.draft) return;
-    updateDraft("languages", { ...state.draft.languages, desc });
-  }
-  function addTrait(name: string, text: string) {
-    if (
-      !state.draft ||
-      !name.trim() ||
-      state.draft.traits.some(
-        (t) => t.name.toLowerCase() === name.toLowerCase()
-      )
-    )
-      return;
-    updateDraft("traits", [
-      ...state.draft.traits,
-      { name: name.trim(), value: text.trim() ? text.split(/\n+/) : [] },
-    ]);
-  }
-  function removeTrait(name: string) {
-    if (!state.draft) return;
-    updateDraft(
-      "traits",
-      state.draft.traits.filter((t) => t.name !== name)
-    );
-    if (editingTrait() === name) setEditingTrait(null);
-  }
-  function updateTraitText(name: string, text: string) {
-    if (!state.draft) return;
-    updateDraft(
-      "traits",
-      state.draft.traits.map((t) =>
-        t.name === name ? { ...t, value: text.split(/\n+/) } : t
-      )
-    );
+    }
+    loadExisting(race, name);
+    setState("selection", { race, subrace: name });
+    setParamsIfChanged({ race, subrace: name });
   }
 
   function save() {
-    if (!state.draft) return;
-    const errs = validateLocal(state.draft);
+    if (!state.hasDraft) return;
+    const d = currentDraft();
+    const errs = validateDraft(d, homebrewManager.subraces() as any);
     setState("errors", errs);
     if (errs.length) return;
-    const races = homebrewManager.races() as any[];
-    const parent = races.find((r) => r.name === state.draft!.parentRace);
-    if (!parent) return;
-    const existingIdx =
-      parent.subRaces?.findIndex(
-        (s: any) => s.id === state.draft!.id || s.name === state.draft!.name
-      ) ?? -1;
-    const model = draftToModel(state.draft);
-    const updatedParent = {
-      ...parent,
-      subRaces: [...(parent.subRaces || [])],
-    } as any;
-    if (existingIdx > -1) updatedParent.subRaces[existingIdx] = model;
-    else updatedParent.subRaces.push(model);
-    homebrewManager.updateRace(updatedParent);
-    setState({ editingExisting: true });
-    pushSnack(
-      existingIdx > -1 ? "Subrace updated" : "Subrace created",
-      "success"
-    );
+    // Write only to the flat `subraces` table (the popup/char-creation source).
+    // parentRace already carries the parent race id (see currentDraft).
+    const isUpdate = homebrewManager
+      .subraces()
+      .some((s) => s.id === d.id || (s.parentRace === d.parentRace && s.name === d.name));
+    homebrewManager.saveSubrace(draftToModel(d));
+    // Keep the NAME in selection.race — the parent Select value and the
+    // loadExisting/deleteCurrent/selectParent lookups all key on the name.
+    setState({
+      editingExisting: true,
+      selection: { race: state.selection.race, subrace: d.name },
+    });
+    addSnackbar({
+      message: isUpdate ? "Subrace updated" : "Subrace created",
+      severity: "success",
+    });
   }
   function deleteCurrent() {
-    if (!state.draft) return;
+    if (!state.hasDraft || !state.editingExisting) return;
+    const name = form.getR("name") as string;
     const confirmed = window.confirm(
-      `Delete subrace "${state.draft.name}"? This cannot be undone.`
+      `Delete subrace "${name}"? This cannot be undone.`
     );
     if (!confirmed) return;
-    const races = homebrewManager.races() as any[];
-    const parent = races.find((r) => r.name === state.draft!.parentRace);
-    if (!parent) return;
-    const filtered = (parent.subRaces || []).filter(
-      (s: any) => s.id !== state.draft!.id
-    );
-    homebrewManager.updateRace({ ...parent, subRaces: filtered });
-    pushSnack("Subrace deleted", "success");
-    setState({
-      draft: undefined,
-      selection: { race: state.selection.race, subrace: "" },
-      editingExisting: false,
-    });
-    ensureDraft(state.selection.race!);
-    setParams({ race: state.selection.race || "" });
+    // removeSubrace matches by id OR (parentRace, name); draftId() is authoritative.
+    homebrewManager.removeSubrace(parentRaceId(), name, draftId());
+    addSnackbar({ message: "Subrace deleted", severity: "success" });
+    fillBlank(state.selection.race);
+    setState("selection", { race: state.selection.race, subrace: "" });
+    setParamsIfChanged({ race: state.selection.race || "", subrace: "" });
   }
 
   const parent = createMemo(() => state.selection.race);
   const subraceName = createMemo(() => state.selection.subrace);
-  const draft = () => state.draft;
+  const draft = () => (state.hasDraft ? currentDraft() : undefined);
   if (state.status === "idle") {
-    if (parent()) ensureDraft(parent()!);
+    if (parent()) {
+      if (subraceName()) loadExisting(parent(), subraceName());
+      if (!state.hasDraft) fillBlank(parent());
+    }
     setState("status", "ready");
   }
-  const validationErrors = createMemo(() => validateLocal(draft()));
+  // Deep link (?race=&subrace=) on a hard reload races the async Dexie
+  // hydration: the init block above finds no races/subraces yet. Retry once
+  // BOTH the parent race and the target subrace row show up (they hydrate from
+  // separate tables), unless a subrace was already loaded.
+  let pendingDeepLink = !!(parent() && subraceName());
+  createEffect(() => {
+    if (!pendingDeepLink) return;
+    if (state.editingExisting) { pendingDeepLink = false; return; }
+    const parentId = homebrewManager
+      .races()
+      .find((r: any) => r.name === state.selection.race)?.id;
+    if (!parentId) return; // keep waiting for race hydration
+    const existing = homebrewManager
+      .subraces()
+      .find((s) => s.parentRace === parentId && s.name === state.selection.subrace);
+    if (!existing) return; // keep waiting for subrace hydration
+    pendingDeepLink = false;
+    loadExisting(state.selection.race, state.selection.subrace);
+  });
+  const validationErrors = createMemo(() =>
+    state.hasDraft
+      ? validateDraft(currentDraft(), homebrewManager.subraces() as any)
+      : ["No draft"]
+  );
 
   return {
     state,
+    form,
+    abilityBonuses,
+    traits,
     draft,
     parent,
     subraceName,
     parentNames,
-    collapsed,
+    existingSubraceNames,
     validationErrors,
     editingTrait,
     setEditingTrait,
     selectParent,
     selectSubrace,
-    updateDraft,
-    addSize,
-    removeSize,
-    addAbility,
-    removeAbility,
-    setAbilityValue,
-    addLanguageFixed,
-    removeLanguageFixed,
-    setLanguageChoice,
-    removeLanguageOption,
-    setLangDesc,
-    addTrait,
-    removeTrait,
-    updateTraitText,
     save,
     deleteCurrent,
-    toggle,
-    pushSnack,
     SIZE_TOKENS,
     ABILITIES,
   };

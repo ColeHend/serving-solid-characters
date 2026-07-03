@@ -21,20 +21,22 @@ describe('subraces helpers', () => {
   });
 
   it('validateDraft detects duplicate name within race', () => {
-    const draft = makeDraft({ name: 'High' });
-    const errs = validateDraft(draft, [{ name: 'Elf', subRaces: [{ id: 'x', name: 'High' }] }]);
+    // Duplicates are scoped by parentRace (the parent race id), checked against
+    // the flat subrace list.
+    const draft = makeDraft({ name: 'High', parentRace: 'elf-id' });
+    const errs = validateDraft(draft, [{ id: 'x', name: 'High', parentRace: 'elf-id' }]);
     expect(errs).toContain('Duplicate name');
   });
 
   it('validateDraft allows same name if different race', () => {
-    const draft = makeDraft({ name: 'High' });
-    const errs = validateDraft(draft, [{ name: 'Dwarf', subRaces: [{ id: 'x', name: 'High' }] }]);
+    const draft = makeDraft({ name: 'High', parentRace: 'elf-id' });
+    const errs = validateDraft(draft, [{ id: 'x', name: 'High', parentRace: 'dwarf-id' }]);
     expect(errs).not.toContain('Duplicate name');
   });
 
   it('validateDraft flags duplicate trait names', () => {
     const draft = makeDraft({ name: 'Sun', traits: [ { name: 'Keen', value: [] }, { name: 'keen', value: [] } ] });
-    const errs = validateDraft(draft, [{ name: 'Elf', subRaces: [] }]);
+    const errs = validateDraft(draft, []);
     expect(errs.some(e => e.startsWith('Trait dup'))).toBe(true);
   });
 
