@@ -20,6 +20,10 @@ export interface SubAgentSpec {
     maxTokens?: number;
     numCtx?: number;
     think?: boolean;
+    /** Sampling temperature; set low (~0.2) on structured/tool-JSON agents. Undefined keeps the server default. */
+    temperature?: number;
+    /** Force a tool call on OpenAI-compatible/cloud servers (tool_choice "required"); Ollama-native ignores it. */
+    forceTool?: boolean;
 }
 
 export interface SubAgentResult {
@@ -55,6 +59,8 @@ async function streamOnce(spec: SubAgentSpec, messages: AiMessage[], ai: AiSetti
         maxTokens: spec.maxTokens ?? 1024,
         numCtx: spec.numCtx ?? ai.numCtx ?? DEFAULT_AI_NUM_CTX,
         think: spec.think ?? false,
+        temperature: spec.temperature,
+        forceTool: spec.forceTool,
         signal,
     })) {
         switch (ev.type) {

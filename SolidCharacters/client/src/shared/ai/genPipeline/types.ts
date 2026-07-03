@@ -264,6 +264,13 @@ export interface StepResult<T> {
     aborted?: boolean;
 }
 
+/**
+ * Output-token cap for the payload-heavy steps (chassis, capabilities, narrative): the default 1024 can
+ * truncate a full feature set or a mechanics-referencing backstory mid-JSON, which then reads as a gate
+ * failure and burns a repair for no reason. Single-field steps stay at the 1024 default.
+ */
+export const HEAVY_STEP_MAX_TOKENS = 2048;
+
 export interface RunStepOptions {
     /** Model re-tries on a gate failure. Default 1 (Low usage level). Medium/High raise this (plan §8). */
     repairBudget?: number;

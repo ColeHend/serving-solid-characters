@@ -115,6 +115,19 @@ describe("loadout step", () => {
         expect(coerceLoadout({ armor: { category: "powered" } }).armor.category).toBe("none");
         expect(validateLoadout(coerceLoadout({ armor: { category: "medium" } }))).toEqual([]);
     });
+    it("rejects armor an official class isn't proficient with (it silently drives a wrong AC)", () => {
+        // A wizard in plate would compute AC 18 via computeAC — the gate must turn that into a repair.
+        expect(validateLoadout(coerceLoadout({ armor: { category: "heavy" } }), "Wizard")).not.toEqual([]);
+        expect(validateLoadout(coerceLoadout({ armor: { category: "medium" } }), "Barbarian")).toEqual([]);
+        expect(validateLoadout(coerceLoadout({ armor: { category: "heavy" } }), "Fighter")).toEqual([]);
+    });
+    it("rejects a shield on a class without shield proficiency", () => {
+        expect(validateLoadout(coerceLoadout({ armor: { category: "none" }, shield: true }), "Sorcerer")).not.toEqual([]);
+        expect(validateLoadout(coerceLoadout({ armor: { category: "medium" }, shield: true }), "Cleric")).toEqual([]);
+    });
+    it("skips the proficiency gate for a homebrew class (fail open — proficiencies unknowable)", () => {
+        expect(validateLoadout(coerceLoadout({ armor: { category: "heavy" }, shield: true }), "Stormwarden")).toEqual([]);
+    });
     it("builds a flat equipment list with the armor name and shield", () => {
         const working: WorkingCharacter = {};
         applyLoadout(working, coerceLoadout({ armor: { category: "medium", name: "Half plate" }, shield: true, weapons: ["Greataxe"], items: ["Rope"] }));

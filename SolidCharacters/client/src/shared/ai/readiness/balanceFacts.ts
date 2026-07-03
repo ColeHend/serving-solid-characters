@@ -1,5 +1,5 @@
 import { DiceGroup, averageDamageFromDice } from "../../customHooks/utility/tools/dndMath";
-import { Class5E, FeatureDetail, MagicItem, Spell, Subclass } from "../../../models/generated";
+import { Background, Class5E, Feat, FeatureDetail, MagicItem, Race, Spell, Subclass } from "../../../models/generated";
 import { HomebrewPreview } from "../tools/toolDispatcher";
 
 /**
@@ -31,6 +31,22 @@ function featuresText(features: Record<number, FeatureDetail[]> | undefined): st
     return Object.values(features).flat().map(f => f.description ?? "").filter(Boolean).join("\n");
 }
 
+/**
+ * Feature/trait rules text for the feature-bearing non-class kinds. Mirrors commandAgent.featuresOf but
+ * stays local — importing commandAgent would pull the SRD/homebrew catalog graph into the readiness module.
+ */
+function detailTexts(preview: HomebrewPreview): string {
+    switch (preview.kind) {
+        case "feat":
+            return (preview.entity as Feat).details?.description ?? "";
+        case "race": case "subrace":
+            return ((preview.entity as Race).traits ?? []).map(t => t.details?.description ?? "").filter(Boolean).join("\n");
+        case "background":
+            return (((preview.entity as Background).features ?? []) as FeatureDetail[]).map(f => f.description ?? "").filter(Boolean).join("\n");
+        default: return "";
+    }
+}
+
 function descriptionOf(preview: HomebrewPreview): string {
     switch (preview.kind) {
         case "spell": return (preview.entity as Spell).description ?? "";
@@ -38,8 +54,10 @@ function descriptionOf(preview: HomebrewPreview): string {
         case "class": return featuresText((preview.entity as Class5E).features);
         case "subclass": return featuresText((preview.entity as Subclass).features);
         default: {
+            // Feature-bearing kinds keep their rules in trait/feature details — scan those too, so the
+            // dice/DC extraction isn't blind to everything but the summary line.
             const e = preview.entity as unknown as { description?: string; desc?: string };
-            return e.description ?? e.desc ?? "";
+            return [e.description ?? e.desc ?? "", detailTexts(preview)].filter(Boolean).join("\n");
         }
     }
 }
@@ -113,6 +131,16 @@ export function balanceFacts(preview: HomebrewPreview): string {
         lines.push("Reference: official damage cantrips average ~5.5 at level 1, scaling to ~22 by level 17; a 1st-level damage spell averages ~10–14, 3rd-level ~14–28, on a hit/failed save.");
     } else if (preview.kind === "magic_item") {
         lines.push(`Rarity: ${(preview.entity as MagicItem).rarity || "(unset)"}.`);
+    } else if (preview.kind === "feat") {
+        lines.push("Reference: an official feat grants either a +1 ability score increase plus a minor benefit, or one strong standalone benefit. Several strong benefits stacked in one feat is above the curve.");
+    } else if (preview.kind === "race" || preview.kind === "subrace") {
+        const traits = (preview.entity as Race).traits?.length ?? 0;
+        if (traits) lines.push(`Grants ${traits} trait${traits === 1 ? "" : "s"}.`);
+        lines.push("Reference: an official race grants 2-4 traits — ability increases, one signature trait (e.g. Darkvision or one damage resistance), and minor riders; a subrace adds 1-2 traits on top of its parent. Stacking several resistances, flight, and other combat traits together is above the curve.");
+    } else if (preview.kind === "background") {
+        lines.push("Reference: an official background grants two skill proficiencies, a tool or language, ~15 gp of starting equipment, and a narrative-only feature (2024 rules: plus one Origin feat). Any numeric combat bonus is above the curve.");
+    } else if (preview.kind === "item") {
+        lines.push("Reference: mundane gear matches the PHB tables — weapons top out at 1d8 one-handed (1d10 versatile) or 1d12 two-handed with at most one property pairing; light armor AC 11-12+Dex, medium 13-15 (Dex max 2), heavy 14-18. Anything better than its PHB peer should be a magic item with a rarity instead.");
     } else if (preview.kind === "class") {
         lines.push(...classFacts(preview.entity as Class5E));
     } else if (preview.kind === "subclass") {

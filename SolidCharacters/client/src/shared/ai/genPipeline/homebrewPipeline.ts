@@ -1,4 +1,5 @@
 import { AiSettings, DEFAULT_AI_MAX_TOKENS } from "../../../models/userSettings";
+import { byTypeLine, editionNote, ORIGIN_KINDS, QUALITY_BAR } from "../prompt/systemPrompt";
 import { HomebrewKind, KIND_TO_TOOL, kindLabelLower } from "../refs/homebrewKind";
 import { HOMEBREW_TOOLS } from "../tools/toolSchemas";
 import { buildPreview, HomebrewPreview } from "../tools/toolDispatcher";
@@ -42,11 +43,19 @@ export function supportsHomebrewPipeline(kind: HomebrewKind): boolean {
 /** Creation step: build the full entity by forcing the kind's create_* tool, gated by buildPreview. */
 function creationStep(kind: HomebrewKind, tool: AiToolDef, dndSystem: string): StepSpec<HomebrewPreview> {
     const label = kindLabelLower(kind);
+    // Carry the one-shot path's quality scaffolding (quality bar, per-kind guidance, edition note) so the
+    // deeper Medium/High path never gets LESS balance anchoring than a Low one-shot. All three are the
+    // canonical exports from systemPrompt.ts — never restate them here.
+    const guidance = [
+        QUALITY_BAR,
+        byTypeLine(kind, dndSystem),
+        ORIGIN_KINDS.includes(kind) ? editionNote(dndSystem) : "",
+    ].filter(Boolean).join("\n\n");
     return {
         id: `create_${kind}`,
         tool,
-        system: `Build one complete, well-formed homebrew ${label} by calling ${tool.name}. Fill every field the ` +
-            `schema asks for with concrete, rules-legal 5e values — no placeholders. Serve the concept brief and weave in its motifs.`,
+        system: `Build one complete, well-formed homebrew ${label} by calling ${tool.name} with concrete, ` +
+            `rules-legal 5e values. Serve the concept brief and weave in its motifs.\n\n${guidance}`,
         task: `Create the full homebrew ${label} now, using the concept brief above as the design target: every ` +
             `field should reflect it. Provide complete rules text.`,
         parse: raw => {

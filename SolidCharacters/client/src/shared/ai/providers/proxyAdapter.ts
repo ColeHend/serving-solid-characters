@@ -23,6 +23,12 @@ export class ProxyAdapter implements AiProvider {
             maxTokens: opts.maxTokens ?? DEFAULT_AI_MAX_TOKENS,
             messages,
             tools,
+            // Structured-output/sampling hints. The .NET service maps what its upstream supports and
+            // ignores the rest, so threading them is always safe.
+            responseSchema: opts.responseSchema,
+            forceTool: opts.forceTool,
+            temperature: opts.temperature,
+            topP: opts.topP,
         };
 
         let res: Response;

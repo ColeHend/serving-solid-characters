@@ -114,7 +114,7 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         category: "ArmorClass", idBased: false,
         addFields: [{ key: "bonus", type: "number", required: true }, { key: "stats", type: "abilityCsv", required: true }],
         removeFields: [{ key: "bonus", type: "number", required: true }, { key: "stats", type: "abilityCsv", required: true }],
-        hint: "sets AC = bonus + listed ability modifier(s); bonus = number, stats = one or more of str,dex,con,int,wis,cha (use for 'AC equals 13 + Dex' style traits)",
+        hint: "sets AC = bonus + listed ability modifier(s); bonus = number, stats = one or more of str,dex,con,int,wis,cha (use for 'AC equals 13 + Dex' style traits — an AC formula is NEVER Stats)",
     },
     Speed: {
         category: "Speed", idBased: false,
@@ -125,17 +125,17 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         category: "Stats", idBased: false,
         addFields: [{ key: "stat", type: "ability", required: true }, { key: "statValue", type: "number", required: true }],
         removeFields: [{ key: "stat", type: "ability", required: true }, { key: "statValue", type: "number", required: true }],
-        hint: "changes an ability score; stat = str/dex/con/int/wis/cha, statValue = number",
+        hint: "changes an ability score; stat = str/dex/con/int/wis/cha, statValue = number (for '+1 Con' style increases — never for AC formulas or skill bonuses)",
     },
     SavingThrows: {
         category: "SavingThrows", idBased: false,
         addFields: [{ key: "stat", type: "ability", required: true }], removeFields: [{ key: "stat", type: "ability", required: true }],
-        hint: "grants saving-throw proficiency; stat = str/dex/con/int/wis/cha",
+        hint: "grants saving-throw proficiency; stat = str/dex/con/int/wis/cha (saving throws only — skill proficiency is Proficiencies)",
     },
     Proficiencies: {
         category: "Proficiencies", idBased: false,
         addFields: [{ key: "proficiency", type: "skill", required: true }], removeFields: [{ key: "proficiency", type: "skill", required: true }],
-        hint: "grants proficiency in one skill; proficiency = a skill name",
+        hint: "grants proficiency in one skill; proficiency = a skill name (skills only — saving-throw proficiency is SavingThrows)",
     },
     Expertise: {
         category: "Expertise", idBased: false,
@@ -175,6 +175,21 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         hint: "grants/removes currency; type = platinumPieces/goldPieces/electrumPieces/sliverPieces/copperPieces, amount = number",
     },
 };
+
+/**
+ * Cross-category disambiguation appended to every command cheat sheet (whole-entity, per-feature, and
+ * the mechanics translate stage). These are the observed wrong-placement failures on small local
+ * models — value keys swapped between look-alike categories — stated as input → exact command so the
+ * model pattern-matches the boundary instead of guessing it. Keep this the single canonical home for
+ * mistake examples; the cheat-sheet builders import it rather than restating them.
+ */
+export const COMMAND_COMMON_MISTAKES =
+    "Common mistakes — encode these exactly:\n" +
+    "- \"your AC equals 13 + your Dexterity modifier\" → ArmorClass {\"bonus\":\"13\",\"stats\":\"dex\"} (an AC formula is NEVER Stats)\n" +
+    "- \"unarmored defense: AC 10 + Dex + Con\" → ArmorClass {\"bonus\":\"10\",\"stats\":\"dex,con\"}\n" +
+    "- \"your Constitution score increases by 1\" → Stats {\"stat\":\"con\",\"statValue\":\"1\"} (an ability increase is NEVER ArmorClass)\n" +
+    "- \"proficiency in Dexterity saving throws\" → SavingThrows {\"stat\":\"dex\"} (Proficiencies is for SKILLS only)\n" +
+    "- \"advantage on Stealth checks\" / \"once per long rest…\" → no command (advantage and temporary or situational effects have no category)";
 
 // ---- pure coercion ----
 

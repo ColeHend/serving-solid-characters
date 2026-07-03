@@ -123,8 +123,11 @@ export const DEFAULT_AI_NUM_CTX = 16384;
  * Tokens to hold back from the context window for the system prompt + tool schemas + history when
  * computing the local model's effective output cap (num_predict). For Ollama, output tokens come OUT of
  * num_ctx, so an output cap larger than (num_ctx − this reserve) is impossible; the adapter clamps to it.
+ * Sized to the measured homebrew surface (~5-6k tokens of system prompt + tool schemas — see
+ * DEFAULT_AI_NUM_CTX above): the old 4096 promised generation room the window didn't actually have once
+ * that surface loaded, which truncated create_* tool calls mid-JSON.
  */
-export const RESERVED_PROMPT_TOKENS = 4096;
+export const RESERVED_PROMPT_TOKENS = 6144;
 
 /**
  * Default for model "thinking"/reasoning in plain chat. On by default: reasoning improves answer
@@ -170,6 +173,24 @@ export const DEFAULT_AI_COMMAND_GENERATION = true;
  * a reload mid-build can pick up where it left off instead of starting over. Turn off to always start fresh.
  */
 export const DEFAULT_AI_RESUME_GENERATION = true;
+
+/**
+ * Sampling temperature for structured/tool-JSON sub-agent turns (MADS attach, mechanics review, readiness
+ * verdicts, pipeline steps). The server default (0.8 on Ollama) is tuned for prose; emitting exact enum
+ * keys and legal JSON wants a near-greedy decode. Chat and narrative turns are NOT affected — they omit
+ * temperature entirely and keep the server default.
+ */
+export const STRUCTURED_TURN_TEMPERATURE = 0.2;
+
+/**
+ * Whether the forced-JSON sub-agent turns (MADS command attach, mechanics review) use native structured
+ * outputs — Ollama `format`, OpenAI-compatible `response_format` — instead of a nudged tool call.
+ * Grammar-constrained decoding makes a malformed or misspelled command category structurally impossible,
+ * which is the dominant small-model placement failure. Resolved by `structuredOutputsEnabled`: default ON
+ * for the local provider (where those failures live), OFF for cloud until the .NET proxy maps it.
+ */
+export const structuredOutputsEnabled = (ai: AiSettings): boolean =>
+    ai.structuredOutputs ?? (ai.provider === "local");
 
 /**
  * How much of the in-character Grimoire (sentient-spellbook) persona to apply — chosen by the user for
@@ -234,6 +255,8 @@ export interface AiSettings {
     commandGeneration?: boolean;
     /** Offer to resume an interrupted staged generation when its conversation is reloaded. Defaults to DEFAULT_AI_RESUME_GENERATION. */
     resumeGeneration?: boolean;
+    /** Constrain forced-JSON sub-agent turns with native structured outputs. Resolved via structuredOutputsEnabled (default: on for local). */
+    structuredOutputs?: boolean;
     /** How much in-character Grimoire persona to apply (any model). Defaults to DEFAULT_AI_PERSONA_STRENGTH. */
     personaStrength?: PersonaStrength;
     /** Max mic recording length in seconds (local audio attach). Defaults to DEFAULT_AI_MAX_AUDIO_SECONDS. */

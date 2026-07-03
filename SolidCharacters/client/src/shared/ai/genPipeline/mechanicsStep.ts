@@ -1,4 +1,6 @@
-import { AiSettings, DEFAULT_AI_NUM_CTX } from "../../../models/userSettings";
+import {
+    AiSettings, DEFAULT_AI_NUM_CTX, STRUCTURED_TURN_TEMPERATURE, structuredOutputsEnabled,
+} from "../../../models/userSettings";
 import { FeatureDetail } from "../../../models/generated";
 import { buildProvider } from "../providers/providerFactory";
 import { AiMessage, AiToolDef } from "../types";
@@ -6,7 +8,8 @@ import { HomebrewKind } from "../refs/homebrewKind";
 import { HomebrewPreview } from "../tools/toolDispatcher";
 import { applyCommandsToEntity, ensureCatalogs, featuresOf, normalizeName } from "../commands/commandAgent";
 import {
-    COMMAND_CATALOG, commandChipLabel, DAMAGE_TYPES, MAD_CATEGORIES, MadCategory, SKILL_KEYS,
+    COMMAND_CATALOG, COMMAND_COMMON_MISTAKES, commandChipLabel, DAMAGE_TYPES, MAD_CATEGORIES, MadCategory,
+    SKILL_KEYS,
 } from "../commands/madCommandCatalog";
 import { ATTACH_COMMANDS_TOOL } from "../commands/attachCommandsTool";
 import { DESCRIBE_MECHANICS_TOOL, REVIEW_MECHANICS_TOOL } from "../commands/mechanicsTools";
@@ -63,12 +66,18 @@ const defaultRunner: MechanicsRunner = async (system, userText, tool, ai, signal
         const messages: AiMessage[] = [{ role: "user", text: userText }];
         const acc = new Map<number, { args: string }>();
         let text = "";
-        for await (const ev of provider.streamChat(messages, [tool], {
+        // Structured mode: constrain the reply's text to this stage's tool schema instead of sending the
+        // tool — the parse below already falls back to extractToolJson(text), which picks the JSON up.
+        const structured = structuredOutputsEnabled(ai);
+        for await (const ev of provider.streamChat(messages, structured ? undefined : [tool], {
             model,
             system,
             maxTokens: 1200,
             numCtx: ai.review?.reviewerNumCtx ?? ai.numCtx ?? DEFAULT_AI_NUM_CTX,
             think: false,
+            temperature: STRUCTURED_TURN_TEMPERATURE,   // exact enum keys want near-greedy decoding
+            responseSchema: structured ? tool.inputSchema : undefined,
+            forceTool: structured ? undefined : true,
             signal,
         })) {
             switch (ev.type) {
@@ -90,7 +99,8 @@ const defaultRunner: MechanicsRunner = async (system, userText, tool, ai, signal
 /** A compact cheat sheet of the encodable command categories (optionally narrowed) + the value reference. */
 function cheatSheet(categories: readonly MadCategory[] = MAD_CATEGORIES): string {
     return `Command categories — fields:\n${categories.map(c => `- ${c}: ${COMMAND_CATALOG[c].hint}`).join("\n")}` +
-        `\n\nAbilities: str, dex, con, int, wis, cha\nSkills: ${SKILL_KEYS.join(", ")}\nDamage types: ${DAMAGE_TYPES.join(", ")}`;
+        `\n\nAbilities: str, dex, con, int, wis, cha\nSkills: ${SKILL_KEYS.join(", ")}\nDamage types: ${DAMAGE_TYPES.join(", ")}` +
+        `\n\n${COMMAND_COMMON_MISTAKES}`;
 }
 
 function featureList(features: FeatureDetail[]): string {
@@ -154,12 +164,21 @@ const TRANSLATE_SYSTEM =
     "exact field keys and option spellings provided — one command per effect. Do not invent effects beyond those " +
     "listed. Reference spells, items, feats, or other features by their exact name in target.";
 
+// The translate stage works from pre-extracted effect phrases, so its examples map phrase → command
+// (the whole-entity pass in commandAgent maps full feature text instead).
+const TRANSLATE_EXAMPLES =
+    "Examples (effect → command):\n" +
+    "- \"resistance to fire damage\" → {\"type\":\"Add\",\"category\":\"Resistances\",\"value\":{\"damageType\":\"Fire\"}}\n" +
+    "- \"Constitution increases by 1\" → {\"type\":\"Add\",\"category\":\"Stats\",\"value\":{\"stat\":\"con\",\"statValue\":\"1\"}}\n" +
+    "- \"AC equals 13 + Dexterity modifier\" → {\"type\":\"Add\",\"category\":\"ArmorClass\",\"value\":{\"bonus\":\"13\",\"stats\":\"dex\"}}\n" +
+    "- \"proficiency in Dexterity saving throws\" → {\"type\":\"Add\",\"category\":\"SavingThrows\",\"value\":{\"stat\":\"dex\"}}";
+
 function buildTranslateMessage(preview: HomebrewPreview, byFeature: { name: string; effects: string[] }[]): string {
     const list = byFeature
         .map(f => `«${f.name}»\n${f.effects.map(e => `   - ${e}`).join("\n")}`)
         .join("\n");
     return `Entity: ${preview.kind.replace("_", " ")} «${preview.title}». Turn each listed self-effect into a command.\n\n` +
-        `Effects by feature:\n${list}\n\n${cheatSheet()}\n\n` +
+        `Effects by feature:\n${list}\n\n${cheatSheet()}\n\n${TRANSLATE_EXAMPLES}\n\n` +
         "Call attach_commands with one entry per feature, copying the feature names exactly. Emit one command per listed effect that maps to a category.";
 }
 
