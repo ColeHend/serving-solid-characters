@@ -1,11 +1,12 @@
+@use "../../../../index.scss" as *;
+
 .raceWrapper {
-    margin-top: 1%;
     overflow-y: scroll;
     overflow-x: hidden;
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 1%;
+    // padding: 1%;
     background-color: #d6bf94;
     background-image:
         radial-gradient(circle at 17% 11%, rgba(120,82,38,.17), transparent 40%),
@@ -20,61 +21,112 @@
 
 }
 
+$margin: 5%;
+
 .header {
-    font-family: 'Mr_Eaves_Small_Caps';
-    font-weight: 100;
-    color: #AA0505;
+    text-align: left;
+
+    @include styledDndTitle;
 }
 
+
 .info {
-    font-family: 'Bookinsanity';
-    font-weight: 100;
-    color: #000;
-    text-wrap: wrap;
+    text-align: left;
+
+    @include styledDndText;
 }
 
 .startingProfsRow {
     display: flex;
     flex-direction: row;
-    width: 100%;
-    gap: 2%;
-    justify-content: center;
-    align-items: center;
-}
-
-// .subclassesTabRow {
-//     display: flex;
-//     flex-direction: column;
+    flex-wrap: wrap;
+    height: 25%; 
     
-//     div {
-//         font-family: 'Bookinsanity';
-//         font-weight: 100;
-//         color: #000;
+    
+    span {
+        text-align: left;
 
-//     }
-// }
+    }
+}
 
 .leftAlignHeader {
     text-align: left;
     display: block;
+    margin-right: $margin;
+    margin-left: $margin;
 }
 
 .leftAlignInfo {
     text-align: left;
     display: block;
-    margin-left: 8px;
+    margin-right: $margin;
+    margin-left: $margin;
 }
 
 .flexBoxRow {
     display: flex;
     flex-direction: row;
     // width: 50%;
-    margin: 0 auto;
-    gap:5%
+    gap:5%;
+    margin-right: $margin;
+    margin-left: $margin;
     
 } 
 
 .flexBoxColumn {
     display: flex;
     flex-direction: column;
+    width: 35%;
+}
+
+
+.description {
+    text-align: justify;
+    margin-right: $margin;
+    margin-left: $margin;
+}
+
+.divider {
+    display: inline-block;
+    margin: 4px;
+}
+
+.styledHeader {
+    text-align: left;
+
+    @include styledDndHeader;
+}
+
+.topDivider {
+    margin-top: 11%;
+}
+
+.coolLabel {
+    margin-right: $margin;
+    margin-left: $margin;
+
+    @include FlankedLabel;
+}
+
+.subraceContainer {
+    display: flex;
+    flex-direction: column;
+    margin-right: $margin;
+    margin-left: $margin;
+}
+
+.subraceCard {
+    border-color: #7c2718 !important;
+
+    div {
+        border-color: #7c2718 !important;
+    }
+
+    button {
+        background: linear-gradient(177deg, rgb(112, 40, 23), rgb(81, 26, 13) 92%) !important;
+
+        svg {
+            fill: #f6ecd2 !important;
+        }
+    }
 }
