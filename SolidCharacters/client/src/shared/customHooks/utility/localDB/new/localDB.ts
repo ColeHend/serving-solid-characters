@@ -7,7 +7,8 @@ export class LocalDB extends Dexie {
   classes!: Dexie.Table<Class5E, 'name'>;
   subclasses!: Dexie.Table<srdSubclass, 'name'>; // unified store (v1 primary key 'name')
   races!: Dexie.Table<Race, 'name'>;
-  subraces!: Dexie.Table<Subrace, 'name'>;
+  // Second type param is the primary-key TYPE (the key is the `name` field, a string).
+  subraces!: Dexie.Table<Subrace, string>;
   backgrounds!: Dexie.Table<Background, 'name'>;
   items!: Dexie.Table<srdItem, 'name'>;
   magicItems!: Dexie.Table<MagicItem, 'name'>;

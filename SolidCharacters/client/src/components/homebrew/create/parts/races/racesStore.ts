@@ -2,6 +2,12 @@ import { createStore } from "solid-js/store";
 import { createMemo, createRoot } from "solid-js";
 import type { Race } from "../../../../../models/generated";
 import { homebrewManager } from "../../../../../shared";
+import { decodeStat } from "../shared/raceLikeForm.shared";
+
+// Catalog + selection store for the race editor. Editing state lives in the
+// FormGroup/FormArray trio created by races.tsx (see raceLikeForm.shared.ts);
+// this store only tracks the SRD/homebrew entity catalog, the current
+// selection, and maps entities into the draft shape used to hydrate the form.
 
 export interface RaceDraft {
   name: string;
@@ -20,7 +26,7 @@ interface RacesState {
   status: 'idle' | 'loading' | 'ready' | 'error';
   error?: string;
   selection: { activeName?: string; prevName?: string };
-  blankDraft?: RaceDraft; // new race being created
+  blankDraft?: RaceDraft; // seed for the form when creating a new race
 }
 
 const blankDraft = (): RaceDraft => ({
@@ -60,10 +66,14 @@ function mapRaceToDraft(r: Race): RaceDraft {
     const parts = replaced.split(',').map(p => p.trim());
     const found: string[] = [];
     for (const part of parts) {
+      if (!part) continue;
       // Extract first word (strip parentheses etc.)
       const firstWord = (part.match(/^[A-Za-z]+/) || [''])[0];
-      const candidate = SIZE_TOKENS.find(sz => sz.toLowerCase() === firstWord.toLowerCase());
-      if (candidate && !found.includes(candidate)) found.push(candidate);
+      const canonical = SIZE_TOKENS.find(sz => sz.toLowerCase() === firstWord.toLowerCase());
+      // Keep custom sizes (an explicit editor feature) while still dropping
+      // long descriptive fragments accidentally saved into the size field.
+      const value = canonical ?? (part.length <= 30 && !/[.()]/.test(part) ? part : undefined);
+      if (value && !found.includes(value)) found.push(value);
     }
     return found;
   }
@@ -71,7 +81,7 @@ function mapRaceToDraft(r: Race): RaceDraft {
     name: r.name || '',
     speed: r.speed || 30,
     sizes: parseSizes(r.size || ''),
-    abilityBonuses: (r.abilityBonuses || []).map(a => ({ name: String(a.stat), value: a.value })),
+    abilityBonuses: (r.abilityBonuses || []).map(a => ({ name: decodeStat(a.stat as unknown as number | string), value: a.value })),
     languages: {
       fixed: [...(r.languages || [])],
       amount: r.languageChoice?.amount || 0,
@@ -145,211 +155,34 @@ function createRacesStore() {
     // If a previous non-new selection exists, seed draft from it (prefill descriptions & core fields)
     const prev = state.selection.activeName && state.selection.activeName !== '__new__' ? state.selection.activeName : state.selection.prevName;
     if (prev && state.entities[prev]) {
-      
       setState({ selection: { activeName: '__new__', prevName: prev }, blankDraft: mapRaceToDraft(state.entities[prev]) });
     } else {
       setState({ selection: { activeName: '__new__', prevName: state.selection.activeName }, blankDraft: blankDraft() });
     }
   }
 
-  function updateBlankDraft<K extends keyof RaceDraft>(key: K, value: RaceDraft[K]) {
-    if (state.selection.activeName !== '__new__') return;
-    setState('blankDraft', draft => ({ ...(draft || blankDraft()), [key]: value }));
+  // Record a race that was just persisted to homebrew: inject it into the
+  // catalog immediately (the homebrewManager signal updates asynchronously)
+  // and select it, leaving create mode.
+  function noteSaved(race: Race) {
+    const alreadyInOrder = state.order.includes(race.name);
+    setState({
+      blankDraft: undefined,
+      selection: { activeName: race.name, prevName: state.selection.activeName },
+      entities: { ...state.entities, [race.name]: race },
+      order: alreadyInOrder ? state.order : [...state.order, race.name]
+    });
   }
 
-  function renameActiveRace(newName: string) {
-    if (!state.selection.activeName || state.selection.activeName === '__new__') return;
-    const current = state.selection.activeName;
-    const trimmed = newName.trim();
-    if (!trimmed || trimmed === current) return;
-    if (state.entities[trimmed]) return; // avoid collision
-    const entity = state.entities[current];
-    if (!entity) return;
-    const rest = { ...state.entities };
-    delete rest[current];
-    const newEntity = { ...entity, name: trimmed } as Race;
-    const newEntities = { ...rest, [trimmed]: newEntity };
-    const newOrder = state.order.map(o => (o === current ? trimmed : o));
-    setState({ entities: newEntities, order: newOrder, selection: { activeName: trimmed } });
-  }
-
-  function startFromExisting() {
-    // Convert currently selected SRD (non-homebrew) race into a new editable draft
-    if (!state.selection.activeName || state.selection.activeName === '__new__') return false;
-    const name = state.selection.activeName;
-    // Don't overwrite if already in draft mode
-    const entity = state.entities[name];
-    if (!entity) return false;
-    // Seed blank draft from existing entity
-    setState({ blankDraft: mapRaceToDraft(entity), selection: { activeName: '__new__' } });
-    return true;
-  }
-
+  // Clone the currently selected SRD race into homebrew as-is.
   function cloneSelectedToHomebrew(): boolean {
-    // Case 1: User is in draft mode (after starting from existing) -> saveNew
-    if (state.selection.activeName === '__new__') {
-      // If draft name already exists in homebrew, treat as update instead of no-op
-      if (state.blankDraft) {
-        const draftName = state.blankDraft.name.trim();
-        if (!draftName) return false;
-        const existingHomebrew = homebrewManager.races().find((r: any) => r.name === draftName);
-        if (existingHomebrew) {
-          // Build race from draft but preserve existing id
-          const updated = { ...draftToRace(state.blankDraft), id: existingHomebrew.id } as Race;
-          // Optimistic in-memory replace so tests/UI see change immediately
-          try {
-            (homebrewManager as any)._setRaces((list: any[]) => list.map(r => r.name === updated.name ? updated : r));
-          } catch { /* ignore if private shape changes */ }
-          homebrewManager.updateRace(updated);
-          // Update local entities (overwriting SRD view with homebrew variant)
-          const alreadyInOrder = state.order.includes(updated.name);
-          setState({ blankDraft: undefined, selection: { activeName: updated.name }, entities: { ...state.entities, [updated.name]: updated }, order: alreadyInOrder ? state.order : [...state.order, updated.name] });
-          return true;
-        }
-      }
-      return saveNew();
-    }
-    // Case 2: Selected SRD race directly (no draft). We should first create a draft (allow modifications?)
-    if (!state.selection.activeName) return false;
+    if (!state.selection.activeName || state.selection.activeName === '__new__') return false;
     const entity = state.entities[state.selection.activeName];
     if (!entity) return false;
     if (homebrewManager.races().some(r => (r as any).name === entity.name)) return true;
-    // Direct clone of SRD as-is
     const cloned: Race = { ...entity, id: crypto.randomUUID() };
     homebrewManager.addRace(cloned);
     return true;
-  }
-
-  function updateExistingField<K extends keyof Race>(key: K, value: Race[K]) {
-    if (!state.selection.activeName || state.selection.activeName === '__new__') return;
-    if (!state.entities[state.selection.activeName]) return;
-    setState('entities', state.selection.activeName, key as any, value as any);
-  }
-
-  // ---- Ability Bonuses ----
-  function addAbilityBonus(name: string, value: number) {
-    if (state.selection.activeName !== '__new__') return;
-    if (!name.trim()) return;
-    updateBlankDraft('abilityBonuses', [...(state.blankDraft?.abilityBonuses || []), { name: name.trim(), value }]);
-  }
-  function removeAbilityBonus(name: string) {
-    if (state.selection.activeName !== '__new__') return;
-    updateBlankDraft('abilityBonuses', (state.blankDraft?.abilityBonuses || []).filter(a => a.name !== name));
-  }
-
-  // ---- Languages ----
-  function addLanguage(lang: string) {
-    if (state.selection.activeName !== '__new__') return;
-    if (!lang.trim()) return;
-    updateBlankDraft('languages', { ...(state.blankDraft?.languages || { fixed: [], amount: 0, options: [], desc: '' }), fixed: Array.from(new Set([...(state.blankDraft?.languages.fixed || []), lang.trim()])) });
-  }
-  function removeLanguage(lang: string) {
-    if (state.selection.activeName !== '__new__') return;
-    updateBlankDraft('languages', { ...(state.blankDraft?.languages || { fixed: [], amount: 0, options: [], desc: '' }), fixed: (state.blankDraft?.languages.fixed || []).filter(l => l !== lang) });
-  }
-  function setLanguageDesc(desc: string) { if (state.selection.activeName === '__new__') updateBlankDraft('languages', { ...(state.blankDraft?.languages || { fixed: [], amount:0, options: [], desc: '' }), desc }); }
-  function setLanguageChoice(amount: number, options: string[]) {
-    if (state.selection.activeName !== '__new__') return;
-    updateBlankDraft('languages', { ...(state.blankDraft?.languages || { fixed: [], amount:0, options: [], desc: '' }), amount, options });
-  }
-
-  // ---- Traits (simplified) ----
-  function addTrait(name: string, value: string[]) {
-    if (state.selection.activeName !== '__new__') return;
-    if (!name.trim()) return;
-    updateBlankDraft('traits', [...(state.blankDraft?.traits || []), { name: name.trim(), value }]);
-  }
-  function removeTrait(name: string) {
-    if (state.selection.activeName !== '__new__') return;
-    updateBlankDraft('traits', (state.blankDraft?.traits || []).filter(t => t.name !== name));
-  }
-  function updateTrait(originalName: string, newName: string, value: string[]) {
-    if (state.selection.activeName !== '__new__') return;
-    const list = state.blankDraft?.traits || [];
-    const idx = list.findIndex(t => t.name === originalName);
-    if (idx === -1) return;
-    const trimmed = newName.trim();
-    if (!trimmed) return; // keep original if empty? skip
-    const updated = [...list];
-    updated[idx] = { name: trimmed, value };
-    updateBlankDraft('traits', updated);
-  }
-
-  // ---- Proficiencies (basic skills only for now) ----
-  function addSkill(skill: string) {
-    if (state.selection.activeName !== '__new__') return;
-    updateBlankDraft('proficiencies', { ...(state.blankDraft?.proficiencies || { armor: [], weapons: [], tools: [], skills: [] }), skills: Array.from(new Set([...(state.blankDraft?.proficiencies.skills || []), skill])) });
-  }
-  function removeSkill(skill: string) {
-    if (state.selection.activeName !== '__new__') return;
-    updateBlankDraft('proficiencies', { ...(state.blankDraft?.proficiencies || { armor: [], weapons: [], tools: [], skills: [] }), skills: (state.blankDraft?.proficiencies.skills || []).filter(s => s !== skill) });
-  }
-
-  // ---- Save / Update ----
-  function draftToRace(d: RaceDraft): Race {
-    return {
-      id: crypto.randomUUID(),
-      name: d.name,
-      size: d.sizes.join(', '),
-      speed: d.speed,
-      languages: [...d.languages.fixed],
-      languageChoice: d.languages.amount ? { amount: d.languages.amount, options: d.languages.options } : undefined,
-      abilityBonuses: d.abilityBonuses.map(a => ({ stat: Number(a.name) as any, value: a.value })),
-      abilityBonusChoice: undefined,
-      traits: d.traits.map(t => ({ id: crypto.randomUUID(), details: { name: t.name, description: t.value.join('\n') }, prerequisites: [] })),
-      traitChoice: undefined,
-      descriptions: { age: d.text.age, alignment: d.text.alignment, size: d.text.sizeDesc, language: d.languages.desc, abilities: d.text.abilitiesDesc }
-    };
-  }
-
-  function saveNew(): boolean {
-    if (state.selection.activeName !== '__new__' || !state.blankDraft) return false;
-    if (!state.blankDraft.name.trim()) return false;
-  const race = draftToRace(state.blankDraft);
-  homebrewManager.addRace(race);
-  // after save, exit new mode and select; if race already existed in SRD list, don't duplicate order entry
-  const alreadyInOrder = state.order.includes(race.name);
-  setState({ blankDraft: undefined, selection: { activeName: race.name }, entities: { ...state.entities, [race.name]: race }, order: alreadyInOrder ? state.order : [...state.order, race.name] });
-    return true;
-  }
-  function updateExisting(): boolean {
-    if (!state.selection.activeName || state.selection.activeName === '__new__') return false;
-    const original = state.entities[state.selection.activeName];
-    if (!original) return false;
-    // For now only speed/size changes in existing (others would require diff UI) -> reconstruct from draft mapping
-    // Not implementing partial edit yet.
-  homebrewManager.updateRace(original);
-    return true;
-  }
-
-  function addSize(size: string) {
-    if (!size.trim()) return;
-    if (state.selection.activeName === '__new__') {
-      updateBlankDraft('sizes', Array.from(new Set([...(state.blankDraft?.sizes || []), size.trim()])));
-    } else if (state.selection.activeName) {
-      const r = state.entities[state.selection.activeName];
-      if (!r) return;
-      const sizes = (r.size || '').split(',').map(s => s.trim()).filter(Boolean);
-      if (!sizes.includes(size.trim())) {
-        const newSizeStr = [...sizes, size.trim()].join(', ');
-        setState('entities', state.selection.activeName, 'size', newSizeStr as any);
-      }
-    }
-  }
-
-  function addSizes(sizes: string[]) {
-    for (const s of sizes) addSize(s);
-  }
-
-  function removeSize(size: string) {
-    if (state.selection.activeName === '__new__') {
-      updateBlankDraft('sizes', (state.blankDraft?.sizes || []).filter(s => s !== size));
-    } else if (state.selection.activeName) {
-      const r = state.entities[state.selection.activeName];
-      if (!r) return;
-      const sizes = (r.size || '').split(',').map(s => s.trim()).filter(Boolean).filter(s => s !== size);
-      setState('entities', state.selection.activeName, 'size', sizes.join(', ') as any);
-    }
   }
 
   const activeRace = createMemo<RaceDraft | undefined>(() => {
@@ -360,7 +193,7 @@ function createRacesStore() {
 
   // eager load
   if (state.status === 'idle') {
-     
+
     load('2024');
   }
 
@@ -391,32 +224,13 @@ function createRacesStore() {
   return {
     state,
     load,
-  selectRace, // legacy
-  selectSrdRace,
-  selectHomebrewRace,
+    selectRace, // legacy
+    selectSrdRace,
+    selectHomebrewRace,
     selectNew,
-  startFromExisting,
-  cloneSelectedToHomebrew,
-    updateBlankDraft,
-  renameActiveRace,
-  updateExistingField,
-  addSize,
-  addSizes,
-  removeSize,
-  addAbilityBonus,
-  removeAbilityBonus,
-  addLanguage,
-  removeLanguage,
-  setLanguageDesc,
-  setLanguageChoice,
-  addTrait,
-  removeTrait,
-  updateTrait,
-  addSkill,
-  removeSkill,
-  saveNew,
-  updateExisting,
-  activeRace
+    cloneSelectedToHomebrew,
+    noteSaved,
+    activeRace
   };
 }
 

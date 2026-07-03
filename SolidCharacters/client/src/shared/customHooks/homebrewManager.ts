@@ -1,7 +1,7 @@
 // New implementation using 5E data model types while keeping legacy-compatible accessors.
 import { Observable, take, tap, of, concatMap, catchError, finalize, endWith } from "rxjs";
 import { Accessor, Setter, createSignal } from "solid-js";
-import { Class5E, Item, Feat, Spell, Background, Race, Subclass, MagicItem } from "../../models/generated";
+import { Class5E, Item, Feat, Spell, Background, Race, Subclass, Subrace, MagicItem } from "../../models/generated";
 import { srdItem, srdSubclass } from "../../models/data/generated";
 import HombrewDB from "./utility/localDB/new/homebrewDB";
 import httpClient$ from "./utility/tools/httpClientObs";
@@ -37,6 +37,7 @@ class HomebrewManager {
   private _spells: Accessor<Spell[]>; private _setSpells: Setter<Spell[]>;
   private _backgrounds: Accessor<Background[]>; private _setBackgrounds: Setter<Background[]>;
   private _races: Accessor<Race[]>; private _setRaces: Setter<Race[]>;
+  private _subraces: Accessor<Subrace[]>; private _setSubraces: Setter<Subrace[]>;
   private _subclasses: Accessor<srdSubclass[]>; private _setSubclasses: Setter<srdSubclass[]>;
 
   // Public accessors (legacy-compatible)
@@ -47,6 +48,7 @@ class HomebrewManager {
   public spells: Accessor<Spell[]>;
   public backgrounds: Accessor<any[]>;
   public races: Accessor<any[]>;
+  public subraces: Accessor<Subrace[]>;
   public subclasses: Accessor<srdSubclass[]>;
 
   private homebrewClasses$: Observable<Class5E[]> = httpClient$.toObservable(HombrewDB.classes.toArray());
@@ -56,6 +58,7 @@ class HomebrewManager {
   private homebrewSpells$: Observable<Spell[]> = httpClient$.toObservable(HombrewDB.spells.toArray());
   private homebrewBackgrounds$: Observable<Background[]> = httpClient$.toObservable(HombrewDB.backgrounds.toArray());
   private homebrewRaces$: Observable<Race[]> = httpClient$.toObservable(HombrewDB.races.toArray());
+  private homebrewSubraces$: Observable<Subrace[]> = httpClient$.toObservable(HombrewDB.subraces.toArray());
   private homebrewSubclasses$: Observable<srdSubclass[]> = httpClient$.toObservable(
     (async () => {
       try {
@@ -78,6 +81,7 @@ class HomebrewManager {
     [this._spells, this._setSpells] = createSignal(spells);
     [this._backgrounds, this._setBackgrounds] = createSignal(backgrounds);
     [this._races, this._setRaces] = createSignal(races);
+    [this._subraces, this._setSubraces] = createSignal<Subrace[]>([]);
   [this._subclasses, this._setSubclasses] = createSignal(subclasses);
 
     // Public mapped accessors
@@ -88,6 +92,7 @@ class HomebrewManager {
     this.spells = this._spells; // spells already similar
     this.backgrounds = () => this._backgrounds().map(mapBackground);
     this.races = () => this._races().map(mapRace);
+    this.subraces = this._subraces;
   this.subclasses = this._subclasses; // already correct shape for new model
 
     // Load persisted
@@ -98,6 +103,7 @@ class HomebrewManager {
     this.homebrewSpells$.pipe(take(1), tap(s => this._setSpells(old => [...old, ...s]))).subscribe();
     this.homebrewBackgrounds$.pipe(take(1), tap(b => this._setBackgrounds(old => [...old, ...b]))).subscribe();
     this.homebrewRaces$.pipe(take(1), tap(r => this._setRaces(old => [...old, ...r]))).subscribe();
+    this.homebrewSubraces$.pipe(take(1), tap(sr => this._setSubraces(old => [...old, ...sr]))).subscribe();
   this.homebrewSubclasses$.pipe(take(1), tap(sc => this._setSubclasses(old => [...old, ...sc]))).subscribe();
   }
 
@@ -112,6 +118,7 @@ class HomebrewManager {
         HombrewDB.spells.clear(),
         HombrewDB.backgrounds.clear(),
   HombrewDB.races.clear(),
+  HombrewDB.subraces.clear(),
   HombrewDB.subclasses.clear(),
   // best-effort clear deprecated store if still present
 	(HombrewDB as any).subclasses_v2 ? (HombrewDB as any).subclasses_v2.clear() : Promise.resolve()
@@ -119,7 +126,7 @@ class HomebrewManager {
     } catch (e) {
       // ignore
     }
-  this._setClasses([]); this._setItems([]); this._setMagicItems([]); this._setFeats([]); this._setSpells([]); this._setBackgrounds([]); this._setRaces([]); this._setSubclasses([]);
+  this._setClasses([]); this._setItems([]); this._setMagicItems([]); this._setFeats([]); this._setSpells([]); this._setBackgrounds([]); this._setRaces([]); this._setSubraces([]); this._setSubclasses([]);
   }
 
   // Classes (Class5E)
@@ -276,6 +283,41 @@ class HomebrewManager {
   public updateRace = (race: Race): Promise<void> | void => { if (!this._races().some(r => r.name === race.name)) return; return new Promise(res => this.updateRacesInDB(race).subscribe({ complete: () => res(), error: () => res() })); }
   private updateRacesInDB = (race: Race) => { const updated = this._races().map(r => r.name === race.name ? race : r); let error = false; return this.homebrewRaces$.pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.races.bulkPut(updated))), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating races", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setRaces(updated); addSnackbar({ message: "Races updated", severity: "success" }); } })); }
   public removeRace = (name: string): Promise<void> | void => { if (!this._races().some(r => r.name === name)) return; const rest = this._races().filter(r => r.name !== name); return new Promise(res => { httpClient$.toObservable(HombrewDB.races.clear()).pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.races.bulkAdd(rest)))).subscribe({ error: err => { console.error(err); addSnackbar({ message: "Error removing race", severity: "error" }); res(); }, complete: () => { this._setRaces(rest); addSnackbar({ message: "Race removed", severity: "success" }); res(); } }); }); }
+
+  // Subraces (standalone persistence in the `subraces` table, keyed by `name`; the subrace editor also
+  // nests a copy under the parent race's subRaces array). Success snackbars are left to the caller —
+  // the editor already announces "Subrace created/updated" and updateRace fires its own toast.
+  public saveSubrace = async (subrace: Subrace): Promise<boolean> => {
+    const toStore = Clone(subrace);
+    const existing = this._subraces().find(s =>
+      (toStore.id && s.id === toStore.id) ||
+      (s.parentRace === toStore.parentRace && s.name === toStore.name));
+    try {
+      // The table is keyed by name, so a rename would otherwise strand the old row.
+      if (existing && existing.name !== toStore.name) await HombrewDB.subraces.delete(existing.name);
+      await HombrewDB.subraces.put(toStore);
+    } catch (err) {
+      console.error(err);
+      addSnackbar({ message: "Error saving subrace to database", severity: "error" });
+      return false;
+    }
+    this._setSubraces(list => existing ? list.map(s => s === existing ? toStore : s) : [...list, toStore]);
+    return true;
+  }
+  public removeSubrace = async (parentRace: string, name: string, id?: string): Promise<boolean> => {
+    const existing = this._subraces().find(s =>
+      (id && s.id === id) || (s.parentRace === parentRace && s.name === name));
+    if (!existing) return false;
+    try {
+      await HombrewDB.subraces.delete(existing.name);
+    } catch (err) {
+      console.error(err);
+      addSnackbar({ message: "Error removing subrace from database", severity: "error" });
+      return false;
+    }
+    this._setSubraces(list => list.filter(s => s !== existing));
+    return true;
+  }
 
   // Subclasses (standalone persistence; projection into classes left to consumer if needed)
   // Like addClass: returns true only on a real persist (false on dedup/DB error), uses `.put` (the table is

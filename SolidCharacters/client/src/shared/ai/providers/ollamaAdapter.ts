@@ -30,6 +30,8 @@ export class OllamaAdapter implements AiProvider {
         if (numCtx) numPredict = Math.min(numPredict, Math.max(512, numCtx - RESERVED_PROMPT_TOKENS));
         const options: Record<string, unknown> = { num_predict: numPredict };
         if (numCtx) options.num_ctx = numCtx;
+        if (opts.temperature !== undefined) options.temperature = opts.temperature;
+        if (opts.topP !== undefined) options.top_p = opts.topP;
         const body: Record<string, unknown> = {
             model: opts.model,
             stream: true,
@@ -39,7 +41,11 @@ export class OllamaAdapter implements AiProvider {
         // Native API honors a top-level `think`; false suppresses message.thinking entirely. Resolved
         // per-mode by the caller (chat on by default, homebrew off by default).
         if (opts.think !== undefined) body.think = opts.think;
-        if (tools?.length) {
+        // Structured outputs: `format` takes a JSON schema and constrains message.content to it via
+        // grammar-level decoding. Tools and format conflict — a schema-constrained reply can't also be
+        // a tool call — so responseSchema wins and the tools array is withheld for this request.
+        if (opts.responseSchema) body.format = opts.responseSchema;
+        if (tools?.length && !opts.responseSchema) {
             body.tools = tools.map(t => ({
                 type: "function",
                 function: { name: t.name, description: t.description, parameters: t.inputSchema },

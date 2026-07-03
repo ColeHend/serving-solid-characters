@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Class5E } from "../../../models/generated";
+import type { Class5E, Subrace } from "../../../models/generated";
 import type { srdSubclass } from "../../../models/data/generated";
 
 /**
@@ -9,15 +9,17 @@ import type { srdSubclass } from "../../../models/data/generated";
  * a manager add that resolves `false`/`null` or rejects ⇒ `{ok:false}`; a real persist ⇒ `{ok:true}`.
  */
 
-const { addClassMock, addSubclassMock } = vi.hoisted(() => ({ addClassMock: vi.fn(), addSubclassMock: vi.fn() }));
+const { addClassMock, addSubclassMock, saveSubraceMock } = vi.hoisted(
+    () => ({ addClassMock: vi.fn(), addSubclassMock: vi.fn(), saveSubraceMock: vi.fn() }));
 
 vi.mock("../../customHooks/homebrewManager", () => ({
     homebrewManager: {
         classes: () => [], subclasses: () => [], feats: () => [], spells: () => [], items: () => [],
-        magicItems: () => [], backgrounds: () => [], races: () => [],
+        magicItems: () => [], backgrounds: () => [], races: () => [], subraces: () => [],
         findSubclass: () => undefined,
         addClass: addClassMock,
         addSubclass: addSubclassMock,
+        saveSubrace: saveSubraceMock,
     },
 }));
 
@@ -31,9 +33,23 @@ const subclassPreview = (): HomebrewPreview => ({
     previewId: "p2", toolCallId: "t2", kind: "subclass", title: "Tester Path",
     entity: { name: "Tester Path", parentClass: "Tester" } as srdSubclass, valid: true, errors: [],
 });
+const subracePreview = (): HomebrewPreview => ({
+    previewId: "p3", toolCallId: "t3", kind: "subrace", title: "Tester Kin",
+    entity: { name: "Tester Kin", parentRace: "race-1" } as Subrace, valid: true, errors: [],
+});
 
 describe("saveHomebrew — honest results", () => {
-    beforeEach(() => { addClassMock.mockReset(); addSubclassMock.mockReset(); });
+    beforeEach(() => { addClassMock.mockReset(); addSubclassMock.mockReset(); saveSubraceMock.mockReset(); });
+
+    it("saves a subrace through the upserting saveSubrace and reports its boolean honestly", async () => {
+        saveSubraceMock.mockResolvedValue(true);
+        const r = await saveHomebrew(subracePreview());
+        expect(r.ok).toBe(true);
+        expect(saveSubraceMock).toHaveBeenCalledOnce();
+
+        saveSubraceMock.mockResolvedValue(false);
+        expect((await saveHomebrew(subracePreview())).ok).toBe(false);
+    });
 
     it("reports success when the class actually persisted", async () => {
         addClassMock.mockResolvedValue(true);

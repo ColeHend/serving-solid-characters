@@ -1,16 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const hb = vi.hoisted(() => ({ backgrounds: [] as Array<{ name?: string; description?: string }> }));
+const hb = vi.hoisted(() => ({
+    backgrounds: [] as Array<{ name?: string; description?: string }>,
+    races: [] as Array<{ id: string; name: string; size?: string; speed?: number }>,
+    subraces: [] as Array<{ id?: string; name?: string; parentRace?: string }>,
+}));
 vi.mock("../../customHooks/homebrewManager", () => ({
     homebrewManager: {
         classes: () => [], feats: () => [], spells: () => [], items: () => [], magicItems: () => [],
-        backgrounds: () => hb.backgrounds, races: () => [], subclasses: () => [], findSubclass: () => undefined,
+        backgrounds: () => hb.backgrounds, races: () => hb.races, subraces: () => hb.subraces,
+        subclasses: () => [], findSubclass: () => undefined,
     },
 }));
 
 import { buildPreview, buildEditPreview } from "./toolDispatcher";
 import type { AiToolCall } from "../types";
-import type { Background, Class5E, Spell, Race } from "../../../models/generated";
+import type { Background, Class5E, Spell, Race, Subrace } from "../../../models/generated";
 
 const call = (name: string, input: Record<string, unknown>): AiToolCall => ({ id: "t1", name, input });
 
@@ -123,6 +128,55 @@ describe("buildPreview — description is a hard failure", () => {
         }));
         expect(klass.errors).not.toContain("Missing description.");
         expect(klass.valid).toBe(true);
+    });
+});
+
+describe("buildPreview — create_subrace resolves its parent race", () => {
+    beforeEach(() => {
+        hb.races = [{ id: "race-elf", name: "Elf", size: "Medium", speed: 30 }];
+        hb.subraces = [];
+    });
+
+    const subraceCall = (input: Record<string, unknown>) =>
+        call("create_subrace", { name: "Moonshade", parentRace: "Elf", traits: [{ name: "Umbral Step", description: "Once per short rest, teleport 15 feet through dim light." }], ...input });
+
+    it("stores the parent race's ID (not its name) so consumers' id filter matches", () => {
+        const p = buildPreview(subraceCall({}));
+        expect(p.valid).toBe(true);
+        expect((p.entity as Subrace).parentRace).toBe("race-elf");
+    });
+
+    it("resolves the parent name case-insensitively and inherits size/speed", () => {
+        hb.races = [{ id: "race-dwarf", name: "Dwarf", size: "Medium", speed: 25 }];
+        const p = buildPreview(subraceCall({ parentRace: "dwarf" }));
+        const sr = p.entity as Subrace;
+        expect(sr.parentRace).toBe("race-dwarf");
+        expect(sr.size).toBe("Medium");
+        expect(sr.speed).toBe(25);
+    });
+
+    it("hard-blocks an unknown parent race and hands the model the real names", () => {
+        const p = buildPreview(subraceCall({ parentRace: "Elff" }));
+        expect(p.valid).toBe(false);
+        expect(p.errors.some(e => e.includes('No race named "Elff"') && e.includes('"Elf"'))).toBe(true);
+    });
+
+    it("hard-blocks a missing parent race", () => {
+        const p = buildPreview(subraceCall({ parentRace: "" }));
+        expect(p.valid).toBe(false);
+        expect(p.errors).toContain("Missing parent race.");
+    });
+
+    it("warns (does not block) when the subrace has no usable traits", () => {
+        const p = buildPreview(subraceCall({ traits: [] }));
+        expect(p.valid).toBe(true);
+        expect(p.warnings).toContain("No subrace traits.");
+        expect(p.missingFields).toContain("traits");
+    });
+
+    it("keeps the 2024 double-dip ASI warning for subraces", () => {
+        const p = buildPreview(subraceCall({ abilityBonuses: [{ ability: "DEX", value: 1 }] }), "2024");
+        expect((p.warnings ?? []).some(w => /2024/.test(w))).toBe(true);
     });
 });
 

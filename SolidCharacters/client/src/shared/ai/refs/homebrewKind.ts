@@ -8,11 +8,11 @@
  * existing `import { HomebrewKind } from "../tools/toolDispatcher"` call sites keep working.
  */
 export type HomebrewKind =
-    | "spell" | "item" | "magic_item" | "feat" | "background" | "race" | "subclass" | "class";
+    | "spell" | "item" | "magic_item" | "feat" | "background" | "race" | "subrace" | "subclass" | "class";
 
 /** All kinds, in display order. Handy for permission grids and "applies to" pickers. */
 export const HOMEBREW_KINDS: HomebrewKind[] = [
-    "spell", "item", "magic_item", "feat", "background", "race", "subclass", "class",
+    "spell", "item", "magic_item", "feat", "background", "race", "subrace", "subclass", "class",
 ];
 
 /** Human-readable label for a kind (used in settings UIs and prompts). */
@@ -23,6 +23,7 @@ export const HOMEBREW_KIND_LABELS: Record<HomebrewKind, string> = {
     feat: "Feat",
     background: "Background",
     race: "Race",
+    subrace: "Subrace",
     subclass: "Subclass",
     class: "Class",
 };
@@ -35,6 +36,7 @@ export const KIND_TO_TOOL: Record<HomebrewKind, string> = {
     feat: "create_feat",
     background: "create_background",
     race: "create_race",
+    subrace: "create_subrace",
     subclass: "create_subclass",
     class: "create_class",
 };

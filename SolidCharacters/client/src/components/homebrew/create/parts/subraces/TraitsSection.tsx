@@ -2,20 +2,36 @@ import { Component, For, Show } from "solid-js";
 import { FormField, Input, Button, Chip, TextArea } from "coles-solid-library";
 import { Star } from "coles-solid-library/icons";
 import { SubraceEditorApi } from "./useSubraceEditor";
+import { makeTraitRow } from "../shared/raceLikeForm.shared";
 import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
 
 interface Props {
   api: SubraceEditorApi;
 }
 export const TraitsSection: Component<Props> = (p) => {
-  const {
-    draft,
-    addTrait,
-    removeTrait,
-    updateTraitText,
-    editingTrait,
-    setEditingTrait,
-  } = p.api;
+  const { traits, editingTrait, setEditingTrait } = p.api;
+  const editingIndex = () =>
+    traits.get().findIndex((t) => t.name === editingTrait());
+  const editingBody = () => {
+    const i = editingIndex();
+    return i > -1 ? traits.get()[i].body : "";
+  };
+  const setEditingBody = (txt: string) => {
+    const i = editingIndex();
+    if (i > -1) traits.getGroup(i)?.set("body", txt);
+  };
+  const addTrait = (name: string) => {
+    if (
+      !name.trim() ||
+      traits.get().some((t) => t.name.toLowerCase() === name.toLowerCase())
+    )
+      return;
+    traits.add(makeTraitRow(name.trim(), ""));
+  };
+  const removeTrait = (index: number, name: string) => {
+    traits.remove(index);
+    if (editingTrait() === name) setEditingTrait(null);
+  };
   return <FlatCard icon={Star} headerName="Traits" transparent>
       <div class="inlineRow inlineDense" style={{ "margin-top": ".25rem" }}>
         <FormField name="Trait Name">
@@ -27,7 +43,7 @@ export const TraitsSection: Component<Props> = (p) => {
               if (e.key === "Enter") {
                 const v = (e.currentTarget as HTMLInputElement).value.trim();
                 if (v) {
-                  addTrait(v, "");
+                  addTrait(v);
                   (e.currentTarget as HTMLInputElement).value = "";
                 }
               }
@@ -36,10 +52,10 @@ export const TraitsSection: Component<Props> = (p) => {
         </FormField>
       </div>
       <div class="chipsRowSingle" style={{ "margin-top": ".25rem" }}>
-        <Show when={draft()!.traits.length} fallback={<Chip value="None" />}>
+        <Show when={traits.get().length} fallback={<Chip value="None" />}>
           {" "}
-          <For each={draft()!.traits}>
-            {(t) => (
+          <For each={traits.get()}>
+            {(t, i) => (
               <span
                 style={{ display: "inline-flex", "align-items": "stretch" }}
               >
@@ -47,7 +63,7 @@ export const TraitsSection: Component<Props> = (p) => {
                   onClick={() => setEditingTrait(t.name)}
                   style={{ padding: 0 }}
                 >
-                  <Chip value={t.name} remove={() => removeTrait(t.name)} />
+                  <Chip value={t.name} remove={() => removeTrait(i(), t.name)} />
                 </Button>
               </span>
             )}
@@ -60,22 +76,12 @@ export const TraitsSection: Component<Props> = (p) => {
             <TextArea
               rows={4}
               transparent
-              text={() =>
-                draft()!
-                  .traits.find((t) => t.name === editingTrait())
-                  ?.value.join("\n") || ""
+              text={editingBody}
+              setText={((v: string | ((prev: string) => string)) =>
+                setEditingBody(
+                  typeof v === "function" ? v(editingBody()) : v
+                )) as any
               }
-              setText={(v) => {
-                const txt =
-                  typeof v === "function"
-                    ? v(
-                        draft()!
-                          .traits.find((t) => t.name === editingTrait())
-                          ?.value.join("\n") || ""
-                      )
-                    : v;
-                updateTraitText(editingTrait()!, txt);
-              }}
             />
           </FormField>
           <div class="inlineRow" style={{ "margin-top": ".35rem" }}>

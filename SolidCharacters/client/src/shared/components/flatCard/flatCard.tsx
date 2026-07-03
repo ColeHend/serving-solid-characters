@@ -1,4 +1,4 @@
-import { Accessor, Component, createEffect, createSignal, JSX, onCleanup, Setter, Show, splitProps } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, JSX, Setter, Show, splitProps } from "solid-js";
 import styles from "./flatCard.module.scss";
 import { Button, Container, Icon } from "coles-solid-library";
 import { Add, Remove } from "coles-solid-library/icons";
@@ -100,13 +100,6 @@ export const FlatCard:Component<FlatCardProps> = (props) => {
             closeAnimated();
         }
     };
-
-    onCleanup(() => {
-        const el = contentRef();
-        if (el) {
-            el.removeEventListener("transitionend", () => {});
-        }
-    });
 
     createEffect(()=>{
         if (isAlwaysOpen()) {

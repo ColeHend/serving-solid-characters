@@ -9,7 +9,7 @@ export function validateRace(ctx: RaceValidationContext): string[] {
   const errs: string[] = [];
   const d = ctx.draft;
   if (!d) return ['No race selected'];
-  if (ctx.isNew && !d.name.trim()) errs.push('Name is required');
+  if (!d.name.trim()) errs.push('Name is required');
   if (d.sizes.length === 0) errs.push('At least one size is required');
   if (!d.speed || d.speed <= 0) errs.push('Speed must be greater than 0');
   const abilityNames = d.abilityBonuses.map(a => a.name.toLowerCase());

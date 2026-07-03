@@ -168,6 +168,21 @@ describe("runStep", () => {
         expect(task).toContain("DECIDED DETAIL");
         expect(task).toContain("RELEVANT HOMEBREW");
         expect(task).toContain("HOMEBREW DEF");
-        expect(task).toContain("fits_concept");
+        // fill_n's schema doesn't declare fits_concept (additionalProperties:false), so the closing line
+        // must not demand it — demanding an undeclared field contradicts the schema and wastes budget.
+        expect(task).not.toContain("fits_concept");
+    });
+
+    it("demands fits_concept only when the tool schema declares it", async () => {
+        const fitsTool: AiToolDef = {
+            ...TOOL,
+            inputSchema: {
+                type: "object", additionalProperties: false,
+                properties: { n: { type: "number" }, fits_concept: { type: "string" } }, required: ["n"],
+            },
+        };
+        const sr = scriptedRunner([toolCall({ n: 1 })]);
+        await runStep({ ...STEP, tool: fitsTool }, {}, AI, {}, sr.runner);
+        expect(sr.calls[0]).toContain("fits_concept");
     });
 });

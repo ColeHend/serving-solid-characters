@@ -4,6 +4,7 @@ import { CloudDone, CloudOff, CloudSync, Check, Close, Refresh } from "coles-sol
 import useClickOutside from "solid-click-outside";
 import { offlineReport, refreshOfflineReadiness } from "./offline/preloadSrd";
 import { isPersisted, checkPersisted, getStorageEstimate, type StorageEstimateInfo } from "./offline/persistentStorage";
+import { Portal } from "solid-js/web";
 
 /**
  * Compact offline-readiness indicator for the subheader. Shows at a glance whether the app is
@@ -75,7 +76,7 @@ const OfflineStatus: Component = () => {
   const persistedText = () => (isPersisted() === undefined ? 'Unknown' : isPersisted() ? 'Yes (permanent)' : 'No (may be cleared)');
 
   return (
-    <div ref={setRootRef} style={{ position: 'relative', display: 'inline-flex' }}>
+    <div ref={setRootRef} style={{ position: 'relative', display: 'inline-flex', 'z-index': 1000 }}>
       <div
         role="button"
         tabindex={0}
@@ -89,65 +90,67 @@ const OfflineStatus: Component = () => {
       </div>
 
       <Show when={open()}>
-        <Container
-          theme="surface"
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + var(--spacing-1))',
-            right: '0',
-            'z-index': '1000',
-            'min-width': '260px',
-            padding: 'var(--spacing-2)',
-            'border-radius': 'var(--spacing-1)',
-            'box-shadow': 'var(--shadow-elevation-3)',
-            display: 'flex',
-            'flex-direction': 'column',
-            gap: 'var(--spacing-1)',
-            'font-size': 'var(--font-size-small)',
-          }}
-        >
-          <div style={{ display: 'flex', 'justify-content': 'space-between', 'align-items': 'center', 'margin-bottom': 'var(--spacing-1)' }}>
-            <strong>{ready() ? 'Available offline' : 'Offline status'}</strong>
-            <Button transparent disabled={busy()} title="Re-check offline readiness" onClick={() => void refresh()}>
-              <Icon icon={Refresh} size="small" /> {busy() ? 'Checking…' : 'Re-check'}
-            </Button>
-          </div>
-
-          <Line label="Permanent storage" value={persistedText()} ok={isPersisted() === undefined ? undefined : isPersisted()} />
-
-          <Show when={estimate()?.supported}>
-            <Line
-              label="Storage used"
-              value={<span>{fmtMB(estimate()!.usage)} / {fmtMB(estimate()!.quota)} ({estimate()!.percent}%)</span>}
-            />
-          </Show>
-
-          <Line label="Service worker" value={report()?.serviceWorker.controlling ? 'Active' : 'Not controlling'} ok={!!report()?.serviceWorker.controlling} />
-
-          <Line
-            label="App shell"
-            value={report()?.precache.ok ? `Cached (${report()!.precache.entryCount} files)` : 'Not cached'}
-            ok={!!report()?.precache.ok}
-          />
-
-          <Line
-            label="Reference data"
-            value={report() ? `${report()!.data.checks.filter((c) => c.ok).length}/${report()!.data.checks.length} datasets` : '—'}
-            ok={report() ? report()!.data.ok : undefined}
-          />
-
-          <Show when={report() && report()!.data.missing.length > 0}>
-            <div style={{ color: 'red', opacity: 0.9, 'padding-left': 'var(--spacing-1)' }}>
-              Missing: {report()!.data.missing.join(', ')}
+        <Portal mount={document.getElementById("root") ?? rootRef()?.parentElement?.parentElement ?? document.body}>
+          <Container
+            theme="surface"
+            style={{
+              position: 'absolute',
+              top: '87px',
+              left: '0',
+              'z-index': '1000',
+              'min-width': '260px',
+              padding: 'var(--spacing-2)',
+              'border-radius': 'var(--spacing-1)',
+              'box-shadow': 'var(--shadow-elevation-3)',
+              display: 'flex',
+              'flex-direction': 'column',
+              gap: 'var(--spacing-1)',
+              'font-size': 'var(--font-size-small)',
+            }}
+          >
+            <div style={{ display: 'flex', 'justify-content': 'space-between', 'align-items': 'center', 'margin-bottom': 'var(--spacing-1)' }}>
+              <strong>{ready() ? 'Available offline' : 'Offline status'}</strong>
+              <Button transparent disabled={busy()} title="Re-check offline readiness" onClick={() => void refresh()}>
+                <Icon icon={Refresh} size="small" /> {busy() ? 'Checking…' : 'Re-check'}
+              </Button>
             </div>
-          </Show>
 
-          <Line
-            label="Image-to-text (OCR)"
-            value={report()?.ocr.ok ? 'Cached' : 'Online only'}
-            ok={report() ? report()!.ocr.ok : undefined}
-          />
-        </Container>
+            <Line label="Permanent storage" value={persistedText()} ok={isPersisted() === undefined ? undefined : isPersisted()} />
+
+            <Show when={estimate()?.supported}>
+              <Line
+                label="Storage used"
+                value={<span>{fmtMB(estimate()!.usage)} / {fmtMB(estimate()!.quota)} ({estimate()!.percent}%)</span>}
+              />
+            </Show>
+
+            <Line label="Service worker" value={report()?.serviceWorker.controlling ? 'Active' : 'Not controlling'} ok={!!report()?.serviceWorker.controlling} />
+
+            <Line
+              label="App shell"
+              value={report()?.precache.ok ? `Cached (${report()!.precache.entryCount} files)` : 'Not cached'}
+              ok={!!report()?.precache.ok}
+            />
+
+            <Line
+              label="Reference data"
+              value={report() ? `${report()!.data.checks.filter((c) => c.ok).length}/${report()!.data.checks.length} datasets` : '—'}
+              ok={report() ? report()!.data.ok : undefined}
+            />
+
+            <Show when={report() && report()!.data.missing.length > 0}>
+              <div style={{ color: 'red', opacity: 0.9, 'padding-left': 'var(--spacing-1)' }}>
+                Missing: {report()!.data.missing.join(', ')}
+              </div>
+            </Show>
+
+            <Line
+              label="Image-to-text (OCR)"
+              value={report()?.ocr.ok ? 'Cached' : 'Online only'}
+              ok={report() ? report()!.ocr.ok : undefined}
+            />
+          </Container>
+        </Portal>
       </Show>
     </div>
   );

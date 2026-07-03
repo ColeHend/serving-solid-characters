@@ -18,7 +18,7 @@ type Props = {
 
 export interface Tab {
     Name: string;
-    Link: string;
+    Link?: string;
 }
 
 const Navbar: Component<Props> = (props) => {

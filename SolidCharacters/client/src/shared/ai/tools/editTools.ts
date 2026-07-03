@@ -20,9 +20,10 @@ export const EDIT_HOMEBREW_TOOL: AiToolDef = {
         type: "object",
         additionalProperties: false,
         properties: {
-            kind: { type: "string", enum: [...HOMEBREW_KINDS], description: "The kind of homebrew to edit: spell, item, magic_item, feat, background, race, subclass, or class." },
+            kind: { type: "string", enum: [...HOMEBREW_KINDS], description: "The kind of homebrew to edit: spell, item, magic_item, feat, background, race, subrace, subclass, or class." },
             name: { type: "string", description: "The exact name of the existing homebrew entity to edit." },
             parentClass: { type: "string", description: "Required only for a subclass — its parent class, to disambiguate." },
+            parentRace: { type: "string", description: "Required only for a subrace — the name of its parent race, to disambiguate." },
             changes: {
                 type: "array",
                 description: "The field changes to apply. Only include fields that actually change.",

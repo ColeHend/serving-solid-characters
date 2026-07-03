@@ -8,7 +8,8 @@ import { produceNarrative, applyNarrative } from "./narrative";
 import { computeCharacterStats } from "./compute";
 import { assembleCharacter } from "./assembleCharacter";
 import { repairBudgetFor, type CharacterPipelineHost } from "./orchestrator";
-import { PipelinePhase } from "./types";
+import { HEAVY_STEP_MAX_TOKENS, PipelinePhase } from "./types";
+import type { ReviewVerdict } from "../readiness/types";
 import type { ConceptBrief, PipelineResume, PipelineRun, PipelineStatus, RunStepOptions, StepContext, WorkingCharacter } from "./types";
 
 /**
@@ -123,7 +124,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ── Phase 4 — capabilities (features, + spells if a caster) ────────────
         if (working.features === undefined) {
             emit(CAPABILITIES_PHASE, "running");
-            const capsResult = await produceCapabilities(working.level ?? 1, charCtx(), host.ai, opts, host.runner);
+            const capsResult = await produceCapabilities(working.level ?? 1, charCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner);
             if (host.signal.aborted) return void emit(CAPABILITIES_PHASE, "aborted");
             if (capsResult.ok && capsResult.value) {
                 working.casterType = capsResult.value.casterType;
@@ -144,7 +145,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ── Phase 5 — loadout (skip if already chosen) ─────────────────────────
         if (!working.equipment) {
             emit(LOADOUT_PHASE, "running");
-            const loadoutResult = await produceLoadout(charCtx(), host.ai, opts, host.runner);
+            const loadoutResult = await produceLoadout(working.className, charCtx(), host.ai, opts, host.runner);
             if (host.signal.aborted) return void emit(LOADOUT_PHASE, "aborted");
             if (loadoutResult.ok && loadoutResult.value) {
                 applyLoadout(working, loadoutResult.value);   // resilient: no loadout → unarmored (AC 10+Dex)
@@ -155,7 +156,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ── Phase 6 — narrative (and the character's name; skip if already written) ──
         if (!working.name) {
             emit(NARRATIVE_PHASE, "running");
-            const narrativeResult = await produceNarrative(charCtx(), host.ai, opts, host.runner);
+            const narrativeResult = await produceNarrative(charCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner);
             if (host.signal.aborted) return void emit(NARRATIVE_PHASE, "aborted");
             if (narrativeResult.ok && narrativeResult.value) {
                 applyNarrative(working, narrativeResult.value);   // resilient: assembler falls back to a class+lineage name
@@ -168,8 +169,19 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         working.derived = computeCharacterStats(working);
         const character = assembleCharacter(working);
         if (host.signal.aborted) return void emit(COMPUTE_PHASE, "aborted");
+
+        // Whole-character critic (spec §5.5) — HIGH usage only, and only when the host wired a reviewer.
+        // One informational pass judging fiction↔mechanics coherence; the per-step gates already caught
+        // structural problems. Never blocks the save — verdicts just surface on the pipeline card.
+        let verdicts: ReviewVerdict[] = [];
+        if (host.usageLevel === "high" && host.reviewer) {
+            emit(COMPUTE_PHASE, "running", { note: "Reviewing the finished character…" });
+            verdicts = await host.reviewer(character);
+            if (host.signal.aborted) return void emit(COMPUTE_PHASE, "aborted");
+        }
+
         host.onCheckpoint?.(COMPUTE_PHASE, working, brief);
-        emit(COMPUTE_PHASE, "completed");
+        emit(COMPUTE_PHASE, "completed", verdicts.length ? { verdicts } : undefined);
         host.onComplete(character);
     } catch (e) {
         if (host.signal.aborted) return;

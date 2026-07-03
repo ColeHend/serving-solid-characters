@@ -110,6 +110,16 @@ describe("featuresMissingMads", () => {
         const spell = { name: "Firebolt", description: "..." } as unknown as Spell;
         expect(featuresMissingMads("spell", spell)).toEqual([]);
     });
+
+    // mechanicalOnly=true is the `inertFeatures` filter on the preview card: a command-less feature only
+    // warns when its text reads as granting a concrete effect — pure flavor is never flagged.
+    it("mechanicalOnly narrows to features whose text grants a concrete effect", () => {
+        const mechanical = { id: "f1", details: { id: "d1", name: "Tough", description: "You gain resistance to fire damage." } } as unknown as Feat;
+        const flavor = { id: "f2", details: { id: "d2", name: "Stoic", description: "You rarely show emotion." } } as unknown as Feat;
+        expect(featuresMissingMads("feat", mechanical, true)).toEqual(["Tough"]);
+        expect(featuresMissingMads("feat", flavor, true)).toEqual([]);
+        expect(featuresMissingMads("feat", flavor)).toEqual(["Stoic"]);   // un-narrowed still lists it
+    });
 });
 
 describe("stripInvalidMads", () => {

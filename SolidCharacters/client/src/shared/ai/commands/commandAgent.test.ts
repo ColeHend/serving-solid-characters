@@ -13,7 +13,19 @@ vi.mock("../../customHooks/dndInfo/info/all/spells", () => ({ useDnDSpells: () =
 vi.mock("../../customHooks/dndInfo/info/all/items", () => ({ useDnDItems: () => () => [] }));
 vi.mock("../../customHooks/dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 vi.mock("../../customHooks/dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
-vi.mock("../providers/providerFactory", () => ({ buildProvider: () => ({ streamChat: async function* () { /* none */ } }) }));
+// Capturing provider stub: records the (tools, opts) each defaultCommandRunner turn sends, and replies
+// with the attach_commands payload as plain text — the shape a structured-output (format-constrained)
+// turn produces. Tests that inject their own runner never reach it.
+const providerCapture = vi.hoisted(() => ({ calls: [] as { tools: unknown; opts: Record<string, unknown> }[] }));
+vi.mock("../providers/providerFactory", () => ({
+    buildProvider: () => ({
+        streamChat: async function* (_messages: unknown, tools: unknown, opts: Record<string, unknown>) {
+            providerCapture.calls.push({ tools, opts });
+            yield { type: "text_delta", text: '{"features":[{"name":"Stoneborn","commands":[]}]}' };
+            yield { type: "message_done", stopReason: "end_turn" };
+        },
+    }),
+}));
 
 import { coerceCommand, commandChipLabel } from "./madCommandCatalog";
 import {
@@ -380,5 +392,56 @@ describe("coerceCommand — category aliases (small-model tolerance)", () => {
     });
     it("does not loosen value-field coercion — bad fields still drop (safety preserved)", () => {
         expect(coerceCommand("Add", "Resistance", { damageType: "holy" }, undefined, noRef)).toBeNull();
+    });
+});
+
+describe("coerceCommand — value-key placement (the MADS wrong-placement table)", () => {
+    // The category/value-key pairings the cheat sheet's "Common mistakes" block teaches. Right pairings
+    // coerce; swapped keys (the observed small-model failure) DROP — becoming an inert-feature warning
+    // rather than a corrupted sheet.
+    it("encodes the canonical placements", () => {
+        expect(coerceCommand("Add", "ArmorClass", { bonus: "13", stats: "dex" }, undefined, noRef)?.command).toBe("AddArmorClass");
+        expect(coerceCommand("Add", "Stats", { stat: "con", statValue: "1" }, undefined, noRef)?.command).toBe("AddStats");
+        expect(coerceCommand("Add", "Resistances", { damageType: "Fire" }, undefined, noRef)?.command).toBe("AddResistances");
+        expect(coerceCommand("Add", "SavingThrows", { stat: "dex" }, undefined, noRef)?.command).toBe("AddSavingThrows");
+        expect(coerceCommand("Add", "Speed", { speed: "35" }, undefined, noRef)?.command).toBe("AddSpeed");
+    });
+    it("drops an AC formula mis-filed under Stats (wrong value keys)", () => {
+        expect(coerceCommand("Add", "Stats", { bonus: "13", stats: "dex" }, undefined, noRef)).toBeNull();
+    });
+    it("drops an ability increase mis-filed under ArmorClass (wrong value keys)", () => {
+        expect(coerceCommand("Add", "ArmorClass", { stat: "con", statValue: "1" }, undefined, noRef)).toBeNull();
+    });
+    it("drops a skill mis-filed under SavingThrows (skills are not abilities)", () => {
+        expect(coerceCommand("Add", "SavingThrows", { stat: "Stealth" }, undefined, noRef)).toBeNull();
+    });
+});
+
+describe("defaultCommandRunner — structured outputs vs tool path", () => {
+    const stoneborn = () => preview("race", {
+        name: "Cairnkin", traits: [{ details: { id: "t1", name: "Stoneborn", description: "resistance to poison" } }],
+    });
+
+    it("local provider: constrains with responseSchema, withholds the tool, and parses the text reply", async () => {
+        providerCapture.calls.length = 0;
+        const localAi = { model: "m", provider: "local" } as unknown as AiSettings;
+        const out = await generateCommands(stoneborn(), localAi);
+        expect(out?.[0].name).toBe("Stoneborn");
+        const call = providerCapture.calls[0];
+        expect(call.tools).toBeUndefined();
+        expect(call.opts.responseSchema).toBeDefined();
+        expect(call.opts.forceTool).toBeUndefined();
+        expect(call.opts.temperature).toBeCloseTo(0.2);
+    });
+
+    it("structuredOutputs=false: sends the tool with forceTool (and still salvages a text reply)", async () => {
+        providerCapture.calls.length = 0;
+        const optOutAi = { model: "m", provider: "local", structuredOutputs: false } as unknown as AiSettings;
+        const out = await generateCommands(stoneborn(), optOutAi);
+        expect(out?.[0].name).toBe("Stoneborn");
+        const call = providerCapture.calls[0];
+        expect(Array.isArray(call.tools) && (call.tools as unknown[]).length).toBe(1);
+        expect(call.opts.responseSchema).toBeUndefined();
+        expect(call.opts.forceTool).toBe(true);
     });
 });

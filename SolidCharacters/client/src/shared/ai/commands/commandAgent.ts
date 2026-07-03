@@ -1,4 +1,6 @@
-import { AiSettings, DEFAULT_AI_NUM_CTX } from "../../../models/userSettings";
+import {
+    AiSettings, DEFAULT_AI_NUM_CTX, STRUCTURED_TURN_TEMPERATURE, structuredOutputsEnabled,
+} from "../../../models/userSettings";
 import {
     Background, Class5E, Feat, FeatureDetail, MadFeature, Race,
 } from "../../../models/generated";
@@ -8,7 +10,8 @@ import { AiMessage, AiToolCall } from "../types";
 import { HomebrewKind } from "../refs/homebrewKind";
 import { HomebrewPreview } from "../tools/toolDispatcher";
 import {
-    coerceCommand, COMMAND_CATALOG, DAMAGE_TYPES, MAD_CATEGORIES, MadCategory, RefKind, SKILL_KEYS,
+    coerceCommand, COMMAND_CATALOG, COMMAND_COMMON_MISTAKES, DAMAGE_TYPES, MAD_CATEGORIES, MadCategory,
+    RefKind, SKILL_KEYS,
 } from "./madCommandCatalog";
 import { ATTACH_COMMANDS_TOOL } from "./attachCommandsTool";
 import { homebrewManager } from "../../customHooks/homebrewManager";
@@ -38,6 +41,7 @@ export function featuresOf(kind: HomebrewKind, entity: HomebrewPreview["entity"]
             return details ? [details] : [];
         }
         case "race":
+        case "subrace":   // a Subrace extends Race — traits carry its features the same way
             return ((entity as Race).traits ?? []).map(t => t.details).filter(Boolean) as FeatureDetail[];
         case "background":
             return ((entity as Background).features ?? []) as FeatureDetail[];
@@ -57,7 +61,7 @@ function leveled(features: Record<number, FeatureDetail[]> | undefined): Feature
 
 /** Kinds the command pass applies to (those that carry FeatureDetail features). */
 export function hasFeatures(kind: HomebrewKind): boolean {
-    return kind === "feat" || kind === "race" || kind === "background" || kind === "class" || kind === "subclass";
+    return kind === "feat" || kind === "race" || kind === "subrace" || kind === "background" || kind === "class" || kind === "subclass";
 }
 
 // ---- name → catalog id resolution (the ID-based categories) ----
@@ -145,7 +149,7 @@ const VALUE_REFERENCE =
 const CHEAT_SHEET =
     "Command categories — fields:\n" +
     MAD_CATEGORIES.map(c => `- ${c}: ${COMMAND_CATALOG[c].hint}`).join("\n") +
-    `\n\n${VALUE_REFERENCE}`;
+    `\n\n${VALUE_REFERENCE}\n\n${COMMAND_COMMON_MISTAKES}`;
 
 function buildUserMessage(preview: HomebrewPreview, features: FeatureDetail[]): string {
     const list = features
@@ -186,7 +190,10 @@ function cheatSheetFor(description: string | undefined): string {
     const cats = new Set<MadCategory>();
     for (const { re, cats: cs } of KEYWORD_CATEGORIES) if (re.test(d)) cs.forEach(c => cats.add(c));
     const list: MadCategory[] = cats.size ? [...cats] : MAD_CATEGORIES;
-    return `Command categories — fields:\n${list.map(c => `- ${c}: ${COMMAND_CATALOG[c].hint}`).join("\n")}\n\n${VALUE_REFERENCE}`;
+    // The mistakes block stays even on a trimmed sheet — it disambiguates BETWEEN look-alike categories,
+    // which is exactly when a narrowed sheet would otherwise hide the boundary.
+    return `Command categories — fields:\n${list.map(c => `- ${c}: ${COMMAND_CATALOG[c].hint}`).join("\n")}` +
+        `\n\n${VALUE_REFERENCE}\n\n${COMMAND_COMMON_MISTAKES}`;
 }
 
 const SINGLE_FEATURE_EXAMPLES =
@@ -197,6 +204,8 @@ const SINGLE_FEATURE_EXAMPLES =
     "- \"Your walking speed increases by 10 feet\" → {\"type\":\"Add\",\"category\":\"Speed\",\"value\":{\"speed\":\"10\"}}\n" +
     "- \"You have advantage on saving throws against being frightened\" → {\"type\":\"Add\",\"category\":\"Advantage\",\"value\":{\"rollType\":\"SavingThrow\",\"mode\":\"advantage\",\"condition\":\"against being frightened\"}}\n" +
     "- \"You can use this feature twice, regaining all uses on a long rest\" → {\"type\":\"Add\",\"category\":\"Uses\",\"value\":{\"amount\":\"2\",\"recharge\":\"Long Rest\"}}";
+    "- \"While unarmored, your AC equals 13 + your Dexterity modifier\" → {\"type\":\"Add\",\"category\":\"ArmorClass\",\"value\":{\"bonus\":\"13\",\"stats\":\"dex\"}}\n" +
+    "- \"You gain proficiency in Wisdom saving throws\" → {\"type\":\"Add\",\"category\":\"SavingThrows\",\"value\":{\"stat\":\"wis\"}}";
 
 /** Focused, few-shot message for the per-feature gap-fill pass (ONE feature, trimmed cheat sheet). */
 function buildSingleFeatureMessage(preview: HomebrewPreview, feature: FeatureDetail): string {
@@ -240,13 +249,21 @@ const defaultCommandRunner: CommandTurnRunner = async (messages, ai, cfg, signal
     const provider = buildProvider(ai);
     const acc = new Map<number, { id: string; name: string; args: string }>();
     let text = "";
+    // Structured mode constrains the reply's TEXT to the attach_commands schema instead of sending the
+    // tool — a misspelled/invented category cannot survive grammar-level decoding. The JSON arrives as
+    // text deltas, where the existing salvage path (extractFeatures) already parses it; the tool-call
+    // path stays as the branch for providers without structured outputs.
+    const structured = structuredOutputsEnabled(ai);
     try {
-        for await (const ev of provider.streamChat(messages, [ATTACH_COMMANDS_TOOL], {
+        for await (const ev of provider.streamChat(messages, structured ? undefined : [ATTACH_COMMANDS_TOOL], {
             model: cfg.model,
             system: cfg.system,
             maxTokens: cfg.maxTokens,
             numCtx: cfg.numCtx,
             think: false,   // reasoning would burn the budget before the tool call (matches llmReview)
+            temperature: STRUCTURED_TURN_TEMPERATURE,   // exact enum keys want near-greedy decoding
+            responseSchema: structured ? ATTACH_COMMANDS_TOOL.inputSchema : undefined,
+            forceTool: structured ? undefined : true,
             signal,
         })) {
             switch (ev.type) {

@@ -1,47 +1,65 @@
 import { Component, For, createSignal, Show } from 'solid-js';
 import { Button, Chip, FormField, Input, TextArea } from 'coles-solid-library';
-import { racesStore } from '../racesStore';
+import { RaceLikeFormApi, makeTraitRow } from '../../shared/raceLikeForm.shared';
 
-const TraitsSection: Component = () => {
-  const store = racesStore;
-  const traits = () => store.activeRace()?.traits || [];
-  const isNew = () => store.state.selection.activeName === '__new__';
+interface Props { api: RaceLikeFormApi }
+
+const TraitsSection: Component<Props> = (p) => {
+  const { traits } = p.api;
   const [tName,setTName] = createSignal('');
   const [tDesc,setTDesc] = createSignal('');
-  const [editing,setEditing] = createSignal<string | null>(null); // original name when editing
-  const add = () => { if (!tName().trim()) return; store.addTrait(tName().trim(), tDesc().trim()? tDesc().split(/\n+/): []); setTName(''); setTDesc(''); };
-  const update = () => { if (!editing()) return; if (!tName().trim()) return; store.updateTrait(editing()!, tName().trim(), tDesc().trim()? tDesc().split(/\n+/): []); setEditing(null); setTName(''); setTDesc(''); };
-  const beginEdit = (name: string) => {
-    const tr = traits().find(t => t.name === name);
-    if (!tr) return;
-    setTName(tr.name);
-    setTDesc(tr.value.join('\n'));
-    setEditing(tr.name);
+  const [editing,setEditing] = createSignal<number | null>(null); // row index when editing
+  const add = () => {
+    if (!tName().trim()) return;
+    traits.add(makeTraitRow(tName().trim(), tDesc()));
+    setTName(''); setTDesc('');
+  };
+  const update = () => {
+    const idx = editing();
+    if (idx === null || !tName().trim()) return;
+    const row = traits.getGroup(idx);
+    if (!row) return;
+    row.set('name', tName().trim());
+    row.set('body', tDesc());
+    setEditing(null); setTName(''); setTDesc('');
+  };
+  const beginEdit = (index: number) => {
+    const row = traits.getAt(index);
+    if (!row) return;
+    setTName(row.name);
+    setTDesc(row.body);
+    setEditing(index);
   };
   const cancelEdit = () => { setEditing(null); setTName(''); setTDesc(''); };
-  const remove = (n:string) => store.removeTrait(n);
+  const remove = (index: number) => {
+    traits.remove(index);
+    const e = editing();
+    if (e === null) return;
+    if (e === index) cancelEdit();
+    else if (index < e) setEditing(e - 1); // keep the edit pointed at the same row
+  };
   return (
     <div>
       <h3 class="visuallyHidden">Traits</h3>
       <div class="traitEditor">
-        <FormField name={editing() ? 'Edit Trait Name' : 'Trait Name'}>
+        <FormField name={editing() !== null ? 'Edit Trait Name' : 'Trait Name'}>
           <Input transparent value={tName()} onInput={e=>setTName(e.currentTarget.value)} placeholder="Trait name" />
         </FormField>
         <FormField name="Description">
           <TextArea transparent text={tDesc} setText={setTDesc} placeholder="Description (multi-line)" rows={3} />
         </FormField>
         <div class="buttonRow">
-          <Show when={!editing()} fallback={<Button onClick={update} disabled={!isNew() || !tName().trim()}>Update Trait</Button>}>
-            <Button onClick={add} disabled={!isNew() || !tName().trim()}>Add Trait</Button>
+          <Show when={editing() === null} fallback={<Button onClick={update} disabled={!tName().trim()}>Update Trait</Button>}>
+            <Button onClick={add} disabled={!tName().trim()}>Add Trait</Button>
           </Show>
-          <Show when={editing()}>
+          <Show when={editing() !== null}>
             <Button onClick={cancelEdit}>Cancel</Button>
           </Show>
         </div>
       </div>
       <div class="chipsRowSingle" style={{ 'margin-top': '.35rem' }} aria-label="Traits">
-        <Show when={traits().length} fallback={<Chip value="None" />}> <For each={traits()}>{t => (
-          <Chip data-editing={editing()===t.name} onClick={() => beginEdit(t.name)} value={t.name} remove={() => isNew() && remove(t.name)} />
+        <Show when={traits.get().length} fallback={<Chip value="None" />}> <For each={traits.get()}>{(t, i) => (
+          <Chip data-editing={editing()===i()} onClick={() => beginEdit(i())} value={t.name} remove={() => remove(i())} />
         )}</For></Show>
       </div>
     </div>

@@ -86,6 +86,17 @@ function permissionNote(allowed: HomebrewKind[] | undefined): string {
   return `\n\nNote: you may ONLY create the following content types right now: ${labels.join(", ")}. The other create_* tools are disabled in settings — if the user asks for one of those, explain it is turned off rather than calling a different tool.`;
 }
 
+/**
+ * The canonical homebrew quality bar — the single home of "calibrate to official peers", "never leave a
+ * supported field empty", and "concrete numbers, never placeholders". Both the one-shot homebrew prompt
+ * and the mini-pipeline's creation step import it, so the deeper path can never carry LESS balance
+ * anchoring than a Low one-shot. Do not restate these rules in tool schemas or step prompts.
+ */
+export const QUALITY_BAR = `Quality bar:
+- Calibrate power to official content of the same level, rarity, or tier. A homebrew uncommon item should sit beside official uncommon items, not above them.
+- Fill the fields the request and good design support, and never leave a supported field empty; leave a field blank only when it truly does not apply (no damageType on a non-damaging spell, no material component when there is none).
+- Give every entry real rules text with concrete numbers — saves, attack rolls, damage dice, conditions, ranges, durations, action cost, never placeholders — plus a line of flavor.`;
+
 function rulesetLabel(dndSystem: string): string {
   switch (dndSystem) {
     case "2014": return "the D&D 5e 2014 ruleset";
@@ -95,7 +106,7 @@ function rulesetLabel(dndSystem: string): string {
   }
 }
 
-function editionNote(dndSystem: string): string {
+export function editionNote(dndSystem: string): string {
   switch (dndSystem) {
     case "2024":
       return "In 2024 rules, ability score increases come from backgrounds, not species, and each background grants an Origin feat. Fill the background's ability scores, feat, and skills; leave species ability bonuses empty.";
@@ -125,7 +136,7 @@ applies is left blank.
 </example>`;
 
 /** Per-kind authoring guidance, emitted only for the permitted kinds so the prompt scales to the toolset. */
-function byTypeLine(kind: HomebrewKind, dndSystem: string): string {
+export function byTypeLine(kind: HomebrewKind, dndSystem: string): string {
   switch (kind) {
     case "spell": return "- Spell: level, school, casting time, range, duration, components (verbal/somatic/material), concentration and ritual flags, and the classes that can cast it. Set damageType only if it deals damage.";
     case "item": return "- Item: its type (weapon/armor/tool/gear), cost, weight, and concrete mechanics in the description.";
@@ -135,16 +146,17 @@ function byTypeLine(kind: HomebrewKind, dndSystem: string): string {
       ? "- Background: skill proficiencies, a background feature, the starting equipment it grants (concrete items plus any gold, in startEquipment), and (2024) its ability score options and a granted feat that names a real feat."
       : "- Background: skill proficiencies, a background feature, and the starting equipment it grants (concrete items plus any gold, in startEquipment).";
     case "race": return "- Race: distinct traits with real effects, plus languages, size, and speed.";
+    case "subrace": return "- Subrace: parentRace must be the EXACT name of an existing race (look it up if unsure) plus at least one distinct trait with a real effect. Only include what it adds or changes — everything else is inherited from the parent.";
     case "subclass": return "- Subclass: features at the right levels with full rules text. If it grants spellcasting, set casterType (third/half/full/pact) so spell slots are generated.";
     case "class": return "- Class: hit die, primary ability, saving throws, and features at the right levels with full rules text. For a spellcaster, set casterType (third/half/full/pact) so the spell-slot table is generated.";
   }
 }
 
 /** Kinds for which 2014-vs-2024 ability-source guidance is relevant (origin/ASI carriers). */
-const ORIGIN_KINDS: HomebrewKind[] = ["race", "background", "class", "subclass"];
+export const ORIGIN_KINDS: HomebrewKind[] = ["race", "subrace", "background", "class", "subclass"];
 
 function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKinds: HomebrewKind[] | undefined, flags: UtilityToolFlags | undefined, persona: PersonaConfig): string {
-  const kinds = allowedKinds ?? [...(["spell", "item", "magic_item", "feat", "background", "race", "subclass", "class"] as HomebrewKind[])];
+  const kinds = allowedKinds ?? [...(["spell", "item", "magic_item", "feat", "background", "race", "subrace", "subclass", "class"] as HomebrewKind[])];
   const labels = kinds.map(k => HOMEBREW_KIND_LABELS[k].toLowerCase());
   // A post-generation flourish is allowed ALONGSIDE the tool call, never instead of it and never waiting.
   const flourish = labels.length && persona.confirmFlourish
@@ -177,13 +189,6 @@ function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKi
     ? "\n\nBefore you invent any stat, call lookup_srd for the closest official content of the same level/rarity/tier and use its numbers as a ceiling (range, damage dice, action cost, save pattern) — homebrew should match its official peers, not exceed them. Call lookup_homebrew to avoid duplicating content the user already has. For exact derived values (ability modifier, proficiency bonus) use the calc_* tools. If a lookup returns nothing, proceed with your best estimate from official examples."
     : "";
 
-  // The quality bar is the single canonical home of "fill what applies / never leave a supported field
-  // empty" and "concrete numbers, never placeholders" — the field descriptions no longer repeat them.
-  const qualityBar = `Quality bar:
-- Calibrate power to official content of the same level, rarity, or tier. A homebrew uncommon item should sit beside official uncommon items, not above them.
-- Fill the fields the request and good design support, and never leave a supported field empty; leave a field blank only when it truly does not apply (no damageType on a non-damaging spell, no material component when there is none).
-- Give every entry real rules text with concrete numbers — saves, attack rolls, damage dice, conditions, ranges, durations, action cost, never placeholders — plus a line of flavor.`;
-
   const byType = kinds.map(k => byTypeLine(k, dndSystem)).join("\n");
   const byTypeBlock = kinds.length > 1 ? `\n\nBy type:\n${byType}` : (kinds.length === 1 ? `\n\n${byType}` : "");
 
@@ -197,7 +202,7 @@ function homebrewPrompt(base: string, dndSystem: string, tier: AiTier, allowedKi
 
 ${opener}${lookupLine}${editLine}${classPipelineLine}${characterPipelineLine}
 
-${qualityBar}${byTypeBlock}
+${QUALITY_BAR}${byTypeBlock}
 
 ${edition}${example}`.trim();
 }

@@ -1,14 +1,15 @@
 import {
     AbilityScores, Background, CasterType, Class5E, Feat, FeatureDetail, ItemType, MagicItem,
-    Prerequisite, PrerequisiteType, Proficiencies, Race, Spell, StartingEquipment, StatBonus, Subclass,
+    Prerequisite, PrerequisiteType, Proficiencies, Race, Spell, StartingEquipment, StatBonus, Subclass, Subrace,
 } from "../../../models/generated";
 import { srdItem, srdSubclass } from "../../../models/data/generated";
 import { createNewId } from "../../customHooks/utility/tools/idGen";
 import { homebrewManager } from "../../customHooks/homebrewManager";
 import { AiToolCall } from "../types";
-import { HOMEBREW_KINDS, type HomebrewKind } from "../refs/homebrewKind";
+import { HOMEBREW_KINDS, TOOL_TO_KIND, type HomebrewKind } from "../refs/homebrewKind";
 import type { ReviewState, ReviewVerdict } from "../readiness/types";
 import { canonicalClassName } from "../refs/classRefs";
+import { findParentRace, knownRaceNames, raceNameById } from "../refs/raceRefs";
 import { buildSpellcasting, parseCasterType } from "../refs/spellSlots";
 import { entityText, findPlaceholder } from "../readiness/deterministicPasses";
 import { applyPatch, PatchOp, RejectedOp } from "./patch";
@@ -39,7 +40,7 @@ export interface HomebrewPreview {
     kind: HomebrewKind;
     title: string;
     /** The fully-built model object that will be saved on confirm. */
-    entity: Spell | srdItem | MagicItem | Feat | Background | Race | srdSubclass | Class5E;
+    entity: Spell | srdItem | MagicItem | Feat | Background | Race | Subrace | srdSubclass | Class5E;
     /** Hard blockers (mirror the manual editors): if non-empty, Save is disabled. */
     valid: boolean;
     errors: string[];
@@ -62,6 +63,20 @@ export interface HomebrewPreview {
      * the enriched entity is patched back in.
      */
     enriching?: boolean;
+    /**
+     * Names of MECHANICAL-looking features that ended the command pass with no mads command — their effect
+     * exists only as prose and won't touch the character sheet. Set by the enrichment pass (undefined until
+     * it has run); drives the "no sheet effect" warning chip and the user-initiated "Generate commands"
+     * repair (aiAssistant.regenerateCommands). Pure-flavor features are never listed here.
+     */
+    inertFeatures?: string[];
+    /**
+     * True while a pipeline-built card is HELD BACK from the tray: the build's initial command enrichment
+     * (the MadsReview phase) is still running, so the progress card carries the status instead of showing
+     * a savable card that's still mutating. Cleared at hand-off (including abort); STRIPPED on persist
+     * (like `enriching`) so a restored card is never invisibly stuck hidden.
+     */
+    deferred?: boolean;
     /**
      * True once this entity has been successfully saved to the homebrew collection. The card then renders a
      * compact "Saved" confirmation (with View / Dismiss) instead of being removed outright — so a save is
@@ -106,17 +121,6 @@ export interface HomebrewPreview {
      */
     targetMissing?: boolean;
 }
-
-const TOOL_TO_KIND: Record<string, HomebrewKind> = {
-    create_spell: "spell",
-    create_item: "item",
-    create_magic_item: "magic_item",
-    create_feat: "feat",
-    create_background: "background",
-    create_race: "race",
-    create_subclass: "subclass",
-    create_class: "class",
-};
 
 const ABILITY_MAP: Record<string, AbilityScores> = {
     STR: AbilityScores.STR, DEX: AbilityScores.DEX, CON: AbilityScores.CON,
@@ -236,33 +240,67 @@ function toBackground(i: Record<string, unknown>): Background {
     };
 }
 
-function toRace(i: Record<string, unknown>): Race {
-    // Normalize the ability before lookup and DROP unrecognized ones rather than silently defaulting to
-    // STR (which would grant a wrong-stat bonus invisibly). Unmapped abilities are surfaced as a warning
-    // in assessCompleteness (which re-reads the raw input).
-    const abilityBonuses: StatBonus[] = [];
-    for (const raw of list(i.abilityBonuses)) {
+// Normalize the ability before lookup and DROP unrecognized ones rather than silently defaulting to
+// STR (which would grant a wrong-stat bonus invisibly). Unmapped abilities are surfaced as a warning
+// in assessCompleteness (which re-reads the raw input).
+function raceAbilityBonuses(v: unknown): StatBonus[] {
+    const out: StatBonus[] = [];
+    for (const raw of list(v)) {
         const b = raw as Record<string, unknown>;
         const code = toAbilityCode(b.ability);
-        if (code) abilityBonuses.push({ stat: ABILITY_MAP[code], value: num(b.value, 1) });
+        if (code) out.push({ stat: ABILITY_MAP[code], value: num(b.value, 1) });
     }
-    const traits: Feat[] = list(i.traits).map(raw => {
+    return out;
+}
+
+function raceTraits(v: unknown): Feat[] {
+    return list(v).map(raw => {
         const t = raw as Record<string, unknown>;
         return { id: createNewId(), details: { id: createNewId(), name: str(t.name), description: str(t.description) }, prerequisites: [] };
     });
+}
+
+/** The descriptions map both race-like editors persist flavor text under. Undefined when all-empty. */
+function raceDescriptions(i: Record<string, unknown>): Record<string, string> | undefined {
     const descriptions: Record<string, string> = {};
-    const age = str(i.age), alignment = str(i.alignment);
+    const age = str(i.age), alignment = str(i.alignment), desc = str(i.desc);
     if (age) descriptions.age = age;
     if (alignment) descriptions.alignment = alignment;
+    if (desc) descriptions.desc = desc;
+    return Object.keys(descriptions).length ? descriptions : undefined;
+}
+
+function toRace(i: Record<string, unknown>): Race {
     return {
         id: createNewId(),
         name: str(i.name),
         size: str(i.size, "Medium"),
         speed: num(i.speed, 30),
         languages: strList(i.languages),
-        abilityBonuses,
-        traits,
-        descriptions: Object.keys(descriptions).length ? descriptions : undefined,
+        abilityBonuses: raceAbilityBonuses(i.abilityBonuses),
+        traits: raceTraits(i.traits),
+        descriptions: raceDescriptions(i),
+    };
+}
+
+function toSubrace(i: Record<string, unknown>): Subrace {
+    // The model names the parent race, but every subrace consumer keys on the RACE'S ID
+    // (`subrace.parentRace === race.id`) — resolve it here, homebrew first. An unresolvable name is
+    // stored as-is so validateEntity can quote it in the hard error (Save stays blocked until fixed).
+    const parentName = str(i.parentRace);
+    const parent = findParentRace(parentName);
+    return {
+        id: createNewId(),
+        name: str(i.name),
+        parentRace: parent?.id ?? parentName,
+        // Size/speed inherit from the parent unless the subrace explicitly overrides them (the editor
+        // leaves them blank/default too).
+        size: str(i.size) || (parent?.size ?? ""),
+        speed: num(i.speed, parent?.speed ?? 30),
+        languages: strList(i.languages),
+        abilityBonuses: raceAbilityBonuses(i.abilityBonuses),
+        traits: raceTraits(i.traits),
+        descriptions: raceDescriptions(i),
     };
 }
 
@@ -334,6 +372,10 @@ const RECOMMENDED: Record<HomebrewKind, FieldSpec[]> = {
         { key: "traits", label: "racial traits" },
         { key: "languages", label: "languages" },
     ],
+    subrace: [
+        { key: "traits", label: "subrace traits" },
+        { key: "desc", label: "description" },
+    ],
     subclass: [
         { key: "description", label: "description" },
         { key: "features", label: "features" },
@@ -365,8 +407,10 @@ function hasUsableTrait(input: Record<string, unknown>): boolean {
 /** Recommended-but-empty fields → warnings + raw keys. Ruleset-aware; never blocks Save. */
 function assessCompleteness(kind: HomebrewKind, input: Record<string, unknown>, dndSystem: string): { warnings: string[]; missingFields: string[] } {
     const specs = [...(RECOMMENDED[kind] ?? [])];
+    // Subraces carry the same trait/ability-bonus shape as races — share every race warning below.
+    const raceLike = kind === "race" || kind === "subrace";
     // Ruleset-aware: 2014 species carry ability bonuses; 2024 moves them to the background + adds the feat + ASIs.
-    if (kind === "race" && dndSystem !== "2024") specs.push({ key: "abilityBonuses", label: "ability score bonuses" });
+    if (raceLike && dndSystem !== "2024") specs.push({ key: "abilityBonuses", label: "ability score bonuses" });
     if (kind === "background" && dndSystem === "2024") {
         specs.push({ key: "feat", label: "a granted feat" });
         specs.push({ key: "abilityOptions", label: "ability score options" });
@@ -377,12 +421,12 @@ function assessCompleteness(kind: HomebrewKind, input: Record<string, unknown>, 
     for (const s of specs) {
         // A race's "traits" array counts as present only when a trait actually has name+description, so
         // a [{name:"",description:""}] stub still surfaces as missing and drives the repair turn.
-        const satisfied = kind === "race" && s.key === "traits" ? hasUsableTrait(input) : !isEmptyInput(input[s.key]);
+        const satisfied = raceLike && s.key === "traits" ? hasUsableTrait(input) : !isEmptyInput(input[s.key]);
         if (!satisfied) { missingFields.push(s.key); warnings.push(`No ${s.label}.`); }
     }
 
-    // ---- Race: per-trait blanks, unmapped abilities, and 2024 double-dipped ASIs ----
-    if (kind === "race") {
+    // ---- Race/subrace: per-trait blanks, unmapped abilities, and 2024 double-dipped ASIs ----
+    if (raceLike) {
         list(input.traits).forEach((raw, idx) => {
             const t = raw as Record<string, unknown>;
             const hasName = str(t.name).trim().length > 0, hasDesc = str(t.description).trim().length > 0;
@@ -428,7 +472,7 @@ function assessCompleteness(kind: HomebrewKind, input: Record<string, unknown>, 
         warnings.push(`The ${label} "${String(raw)}" isn't a number and was ignored — set a numeric ${label}.`);
     };
     if (kind === "spell") numWarn("level", "spell level");
-    if (kind === "race") numWarn("speed", "speed");
+    if (raceLike) numWarn("speed", "speed");
     if (kind === "item" || kind === "magic_item") numWarn("weight", "weight");
 
     return { warnings, missingFields };
@@ -449,6 +493,17 @@ export function validateEntity(kind: HomebrewKind, entity: HomebrewPreview["enti
     const errors: string[] = [];
     if (!title?.trim()) errors.push("Missing name.");
     if (kind === "subclass" && !(entity as srdSubclass).parentClass.trim()) errors.push("Missing parent class.");
+    if (kind === "subrace") {
+        // parentRace must be a real race's ID or every consumer's `parentRace === race.id` filter drops
+        // the subrace invisibly. toSubrace stores an unresolvable NAME as-is, so quote it back with the
+        // available names — the repair/retry turn then corrects it (mirrors the failed-edit-lookup hint).
+        const parent = (entity as Subrace).parentRace?.trim() ?? "";
+        if (!parent) errors.push("Missing parent race.");
+        else if (!raceNameById(parent)) {
+            const names = knownRaceNames().slice(0, 15);
+            errors.push(`No race named "${parent}" exists.${names.length ? ` Available races: ${names.map(n => `"${n}"`).join(", ")}.` : ""} Use the exact name of an existing race as parentRace.`);
+        }
+    }
     if (kind === "race") {
         const r = entity as Race;
         if (!r.size.trim()) errors.push("Missing size.");
@@ -487,7 +542,9 @@ function primaryDescription(kind: HomebrewKind, entity: HomebrewPreview["entity"
         case "feat": return (entity as Feat).details.description ?? "";
         case "background": return (entity as Background).desc ?? "";
         case "subclass": return (entity as srdSubclass).description ?? "";
-        case "race": case "class": return null;   // no single description field (race=traits, class=features)
+        // No single description field (race/subrace=traits, class=features); a subrace's flavor desc
+        // lives in the optional descriptions map and is warn-only (RECOMMENDED), like the manual editor.
+        case "race": case "subrace": case "class": return null;
     }
 }
 
@@ -516,6 +573,7 @@ export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): Homebrew
         case "feat": entity = toFeat(input); break;
         case "background": entity = toBackground(input); break;
         case "race": entity = toRace(input); break;
+        case "subrace": entity = toSubrace(input); break;
         case "subclass": entity = toSubclass(input); break;
         case "class": entity = toClass(input); break;
     }
@@ -558,13 +616,18 @@ export function homebrewNames(kind: HomebrewKind): string[] {
         case "feat": return homebrewManager.feats().map(f => (f.details?.name ?? f.name ?? "").trim()).filter(Boolean);
         case "background": return named(homebrewManager.backgrounds());
         case "race": return named(homebrewManager.races());
+        case "subrace": return named(homebrewManager.subraces());
         case "subclass": return named(homebrewManager.subclasses());
         case "class": return named(homebrewManager.classes());
     }
 }
 
-/** Find a live homebrew entity by kind + name (subclass also needs its parent class). */
-export function findHomebrewEntity(kind: HomebrewKind, name: string, parentClass?: string): HomebrewPreview["entity"] | undefined {
+/**
+ * Find a live homebrew entity by kind + name. `parent` disambiguates the nested kinds: the subclass's
+ * parent class name, or the subrace's parent race — as a NAME (edit tool input) or a race ID (an
+ * entity's stored parentRace, from the save-time re-check).
+ */
+export function findHomebrewEntity(kind: HomebrewKind, name: string, parent?: string): HomebrewPreview["entity"] | undefined {
     const n = name.trim().toLowerCase();
     const byName = <T extends { name?: string }>(arr: T[]): T | undefined => arr.find(e => (e.name ?? "").trim().toLowerCase() === n);
     switch (kind) {
@@ -574,8 +637,13 @@ export function findHomebrewEntity(kind: HomebrewKind, name: string, parentClass
         case "feat": return homebrewManager.feats().find(f => ((f.details?.name ?? f.name ?? "").trim().toLowerCase()) === n);
         case "background": return byName(homebrewManager.backgrounds());
         case "race": return byName(homebrewManager.races());
+        case "subrace": {
+            const parentId = parent ? (raceNameById(parent) ? parent : findParentRace(parent)?.id) : undefined;
+            return homebrewManager.subraces().find(s =>
+                (s.name ?? "").trim().toLowerCase() === n && (!parentId || s.parentRace === parentId));
+        }
         case "subclass":
-            return (parentClass ? homebrewManager.findSubclass(canonicalClassName(parentClass), name) : undefined)
+            return (parent ? homebrewManager.findSubclass(canonicalClassName(parent), name) : undefined)
                 ?? homebrewManager.subclasses().find(s => (s.name ?? "").trim().toLowerCase() === n);
         case "class": return byName(homebrewManager.classes());
     }
@@ -596,7 +664,7 @@ export function buildEditPreview(toolCall: AiToolCall, _dndSystem = "both"): Hom
     if (!HOMEBREW_KINDS.includes(kind)) {
         return { ...base, kind: "item", title: name || "(edit)", entity: toItem({}), valid: false, targetMissing: true, errors: [`Unknown kind "${str(input.kind)}" to edit. Valid kinds: ${HOMEBREW_KINDS.join(", ")}.`] };
     }
-    const target = findHomebrewEntity(kind, name, str(input.parentClass));
+    const target = findHomebrewEntity(kind, name, str(input.parentRace) || str(input.parentClass));
     if (!target) {
         const label = kind.replace("_", " ");
         const names = homebrewNames(kind).slice(0, 15);
@@ -644,6 +712,9 @@ export function alreadyExists(p: HomebrewPreview): boolean {
         case "feat": return homebrewManager.feats().some(f => f.details?.name === name || f.name === name);
         case "background": return homebrewManager.backgrounds().some(b => b.name === name);
         case "race": return homebrewManager.races().some(r => r.name === name);
+        // The subraces table is keyed by name ALONE (a same-name row under another parent would be
+        // silently overwritten by `.put`), so the identity check ignores parentRace on purpose.
+        case "subrace": return homebrewManager.subraces().some(s => s.name === name);
         case "subclass": return !!homebrewManager.findSubclass((p.entity as srdSubclass).parentClass, name);
         case "class": return homebrewManager.classes().some(c => c.name === name);
     }
@@ -663,7 +734,9 @@ export async function saveHomebrew(p: HomebrewPreview): Promise<{ ok: boolean; m
         // resurrect) and reporting a success the decision log would then record. (Edit previews bypass the
         // Low/Medium/High readiness routing by design — only the hard validateEntity gates above apply.)
         const origName = p.baseEntity ? entityTitle(p.kind, p.baseEntity) : p.title;
-        const parent = p.kind === "subclass" ? (p.entity as srdSubclass).parentClass : undefined;
+        const parent = p.kind === "subclass" ? (p.entity as srdSubclass).parentClass
+            : p.kind === "subrace" ? (p.entity as Subrace).parentRace
+            : undefined;
         if (!findHomebrewEntity(p.kind, origName, parent)) {
             return { ok: false, message: `The ${p.kind.replace("_", " ")} "${origName}" no longer exists (it may have been deleted) — look it up again before editing.` };
         }
@@ -675,6 +748,8 @@ export async function saveHomebrew(p: HomebrewPreview): Promise<{ ok: boolean; m
             case "feat": result = homebrewManager.updateFeat(p.entity as Feat); break;
             case "background": result = homebrewManager.updateBackground(p.entity as Background); break;
             case "race": result = homebrewManager.updateRace(p.entity as Race); break;
+            // saveSubrace is an upsert matching by id or (parentRace, name) — it IS the update path.
+            case "subrace": result = homebrewManager.saveSubrace(p.entity as Subrace); break;
             case "subclass": result = homebrewManager.updateSubclass(p.entity as srdSubclass); break;
             case "class": result = homebrewManager.updateClass(p.entity as Class5E); break;
         }
@@ -693,6 +768,9 @@ export async function saveHomebrew(p: HomebrewPreview): Promise<{ ok: boolean; m
         case "feat": result = homebrewManager.addFeat(p.entity as Feat); break;
         case "background": result = homebrewManager.addBackground(p.entity as Background); break;
         case "race": result = homebrewManager.addRace(p.entity as Race); break;
+        // No addSubrace exists; saveSubrace upserts (`alreadyExists` above pre-empts a same-name overwrite)
+        // and returns an honest boolean, which resolveSaveOutcome interprets.
+        case "subrace": result = homebrewManager.saveSubrace(p.entity as Subrace); break;
         case "subclass": result = homebrewManager.addSubclass(p.entity as srdSubclass); break;
         case "class": result = homebrewManager.addClass(p.entity as Class5E); break;
     }
@@ -712,6 +790,7 @@ export function editorRouteFor(p: HomebrewPreview): string {
         feat: "/homebrew/create/feats",
         background: "/homebrew/create/backgrounds",
         race: "/homebrew/create/races",
+        subrace: "/homebrew/create/subraces",
         subclass: "/homebrew/create/subclasses",
         class: "/homebrew/create/classes",
     };
