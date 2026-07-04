@@ -55,13 +55,12 @@ const ClassModal: Component<props> = (props) => {
       title={props.currentClass().name}
       show={[props.boolean, props.booleanSetter]}
     >
-
-      {/*  */}
       <div class={`${stylin()?.primary} ${styles.CenterPage}`}>
         <div class={`${styles.eachPage}`}>
 
-          {/* the feature table */}
+        <div class={`${styles.table}`}>
           <FeatureTable DndClass={() => props.currentClass()} />
+        </div>
 
         <span class={`${styles.flexBoxColumn} ${styles.leftAlignText}`}>
               <Show when={props.currentClass().hitDie !== ""}>

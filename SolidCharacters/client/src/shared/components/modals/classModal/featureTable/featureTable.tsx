@@ -1,4 +1,4 @@
-import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
+import { Accessor, Component, createMemo, For, Show } from "solid-js";
 import { CasterType, Class5E, Spellslots } from "../../../../../models/generated";
 import {
   formatKeysForDisplay,
@@ -13,10 +13,10 @@ type Props = {
 
 const FeatureTable: Component<Props> = (props) => {
 
-  let classSpecificKeys = createMemo<string[]>(() => Object.keys(props.DndClass().classSpecific || {}));
-  let classLevels = createMemo<string[]>(() => Object.keys(props.DndClass().features || {}))
+  const classSpecificKeys = createMemo<string[]>(() => Object.keys(props.DndClass().classSpecific || {}));
+  const classLevels = createMemo<string[]>(() => Object.keys(props.DndClass().features || {}))
 
-  let getHighestSpellslots = createMemo(() => {
+  const getHighestSpellslots = createMemo(() => {
     
     switch (props.DndClass().spellcasting?.metadata.casterType) {
       case CasterType.Full:
@@ -41,7 +41,8 @@ const FeatureTable: Component<Props> = (props) => {
     const keys = [1,2,3,4,5];
 
     for (let index = 0; index < keys.length; index++) {
-      let spellSlot = props.DndClass().spellcasting?.metadata.slots?.[level]?.[`spellSlotsLevel${keys[index]}` as keyof Spellslots];
+      const spellSlot = props.DndClass().spellcasting?.metadata.slots?.[level]?.[`spellSlotsLevel${keys[index]}` as keyof Spellslots];
+      
       if (spellSlot) {
           return [keys[index], spellSlot];
       }
@@ -59,6 +60,7 @@ const FeatureTable: Component<Props> = (props) => {
     }
 
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const hasCantrips = !!Object.values(spellcasting?.metadata.slots || {}).some((slot: any) => slot?.cantripsKnown !== undefined);
     if (!hasCantrips) {
       columns = columns.filter((x) => x !== "Cantrips");
@@ -91,19 +93,15 @@ const FeatureTable: Component<Props> = (props) => {
         <Cell<string>>{(level) => <span>+{Math.ceil(+level / 4) + 1}</span>}</Cell>
       </Column>
 
-      <Column name="features">
+      <Column name="features" class={`${styles.featureNameRow}`}>
         <Header>
           Features
         </Header>
         <Cell<string>>
           {(level) => (
-            <span>
+            <span >
               <For each={props.DndClass().features ? props.DndClass().features?.[+level] : []}>
-                {(feature) => (
-                  <div>
-                    <strong>{feature.name}</strong>
-                  </div>
-                )}
+                {(feature, i) =><strong class={`${styles.flavor}`}>{feature.name}{i() !== (props?.DndClass()?.features?.[+level].length ?? 0) - 1 ? ", " : ""}</strong>}
               </For>
             </span>
           )}
@@ -131,7 +129,7 @@ const FeatureTable: Component<Props> = (props) => {
         <Header>
           Cantrips
         </Header>
-        <Cell<String>>
+        <Cell<string>>
           { (level) =>
             <span>
               {props.DndClass().spellcasting?.metadata.slots?.[+level]?.cantripsKnown ?? "-"}
