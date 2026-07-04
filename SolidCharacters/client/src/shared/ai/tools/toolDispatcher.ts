@@ -5,12 +5,13 @@ import {
 import { srdItem, srdSubclass } from "../../../models/data/generated";
 import { createNewId } from "../../customHooks/utility/tools/idGen";
 import { homebrewManager } from "../../customHooks/homebrewManager";
-import { AiToolCall } from "../types";
+import { AiToolCall, TokenUsage } from "../types";
 import { HOMEBREW_KINDS, TOOL_TO_KIND, type HomebrewKind } from "../refs/homebrewKind";
 import type { ReviewState, ReviewVerdict } from "../readiness/types";
 import { canonicalClassName } from "../refs/classRefs";
 import { findParentRace, knownRaceNames, raceNameById } from "../refs/raceRefs";
 import { buildSpellcasting, parseCasterType } from "../refs/spellSlots";
+import { ensureAllClassLevels } from "../refs/classProgression";
 import { entityText, findPlaceholder } from "../readiness/deterministicPasses";
 import { applyPatch, PatchOp, RejectedOp } from "./patch";
 import { boolean, list, num, str, strList } from "../coerce";
@@ -120,6 +121,12 @@ export interface HomebrewPreview {
      * the model (with the available names in `errors`) so it can retry, instead of surfacing a dead-end card.
      */
     targetMissing?: boolean;
+    /**
+     * Token cost that produced this homebrew (input + output). For a one-shot generation it's the create
+     * turn's usage; for a pipeline build it's the whole run's total. Shown on the preview/"Saved" card and
+     * carried into the decision log on save. Plain object → safe for structuredClone/persist.
+     */
+    usage?: TokenUsage;
 }
 
 const ABILITY_MAP: Record<string, AbilityScores> = {
@@ -335,7 +342,8 @@ function toClass(i: Record<string, unknown>): Class5E {
         startingEquipment: equipmentItems.length ? [{ items: equipmentItems }] : [],
         proficiencies,
         startChoices: {},
-        features: featuresByLevel(i.features),
+        // Densify to all 20 level keys (ASI/Epic Boon/backstop) so the class table shows a full 1–20 progression.
+        features: ensureAllClassLevels(featuresByLevel(i.features)),
         // Stamp a working slot table from casterType so a caster class isn't saved with zero slots.
         spellcasting: buildSpellcasting(casterType),
     };

@@ -8,6 +8,16 @@ import type { WorkingClass, WorkingFeature } from "./types";
  * owns the content, so these tests pin the structure the model never sees.
  */
 
+describe("BASE_FEATURE_LEVELS", () => {
+    it("covers every open level 2–20 the model authors — including 7, 11, 15", () => {
+        for (const l of [7, 11, 15]) expect(BASE_FEATURE_LEVELS).toContain(l);
+    });
+
+    it("excludes the ASI (4/8/12/16) and Epic Boon (19) levels — those are stamped at assembly, not authored", () => {
+        for (const l of [4, 8, 12, 16, 19]) expect(BASE_FEATURE_LEVELS).not.toContain(l);
+    });
+});
+
 describe("baseFeatureLevels", () => {
     it("returns the canonical spread when the class has no subclasses", () => {
         const working: WorkingClass = { subclassCount: 0, subclassLevel: 0 };

@@ -70,6 +70,17 @@ describe("buildPreview — description is a hard failure", () => {
         expect(p.errors).toContain("Add at least one class feature.");
     });
 
+    it("densifies a class with features to all 20 levels (ASI/Epic Boon stamped) so the popup shows a full 1–20 table", () => {
+        const p = buildPreview(classCall({ features: [{ level: 1, name: "Mark", description: "Mark a foe." }, { level: 5, name: "Hunt", description: "Track the marked foe relentlessly." }] }));
+        expect(p.valid).toBe(true);
+        const feats = (p.entity as Class5E).features ?? {};
+        expect(Object.keys(feats)).toHaveLength(20);
+        expect(feats[1]?.[0].name).toBe("Mark");
+        expect(feats[5]?.[0].name).toBe("Hunt");
+        expect(feats[4]?.[0].name).toBe("Ability Score Improvement");
+        expect(feats[19]?.[0].name).toBe("Epic Boon");
+    });
+
     it("stamps a spell-slot table from casterType so a caster isn't saved with zero slots", () => {
         const p = buildPreview(classCall({ casterType: "full" }));
         const sc = (p.entity as Class5E).spellcasting;

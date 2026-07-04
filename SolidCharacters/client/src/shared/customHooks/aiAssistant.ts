@@ -4,11 +4,13 @@ import getUserSettings from "./userSettings";
 import {
     AiSettings, DEFAULT_AI_AUTO_SWITCH, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_LOOKUP_TOOLS,
     DEFAULT_AI_MAX_TOKENS, DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_RESUME_GENERATION,
-    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_CREATION_PIPELINE_LEVEL,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_AI_TOKEN_CAP, DEFAULT_CREATION_PIPELINE_LEVEL,
     DEFAULT_HIGH_MAX_SCHEMA_RETRIES, DEFAULT_MEDIUM_RETRIES, DEFAULT_USAGE_LEVEL, UsageControlLevel,
 } from "../../models/userSettings";
-import { AiAudio, AiImage, AiMessage, AiToolCall, AiToolDef, AiToolResult } from "../ai/types";
+import { AiAudio, AiImage, AiMessage, AiToolCall, AiToolDef, AiToolResult, TokenUsage } from "../ai/types";
 import { buildProvider } from "../ai/providers/providerFactory";
+import { estimateInputTokens, estimateMessageTokens, recordUsage, resetSessionUsage, sessionUsage } from "../ai/usage";
+import { capReached, combinedUsed, ensureOverallUsageLoaded, overallUsage } from "../ai/overallUsage";
 import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterPipelineTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
 import { HOMEBREW_KINDS, HomebrewKind, KIND_TO_TOOL, kindLabel, kindLabelLower, TOOL_TO_KIND } from "../ai/refs/homebrewKind";
 import { ensureRaceCatalog } from "../ai/refs/raceRefs";
@@ -199,6 +201,9 @@ export class AiAssistant {
     private pipelineCheckpointId: string | null = null;        // id of the current run's checkpoint row, for upsert/discard
     private currentPipelineType: PipelineType = "class";       // which pipeline the active run drives (for checkpoint rows)
     private currentPipelineSeed = "";                          // the active/last run's generation seed (for checkpoints + restart)
+    // Latest successful-phase snapshot, kept in memory regardless of conversationId so Retry can resume the
+    // FAILED step even in an unsaved chat (where savePipelineCheckpoint writes no Dexie row). Cloned on write.
+    private lastCheckpointSnapshot: { phaseIndex: number; working: WorkingEntity; brief?: ConceptBrief } | null = null;
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
     private narratedDrafts = new Set<string>();          // toolCallIds whose drafted entity was already announced in chat
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
@@ -238,6 +243,10 @@ export class AiAssistant {
             document.addEventListener("visibilitychange", flush);
             window.addEventListener("pagehide", () => void this.persistCurrent());
         }
+
+        // Load the persistent overall token total so the cap can be enforced (and the readout shown) from
+        // the first turn, not only after the initial async read completes.
+        void ensureOverallUsageLoaded();
     }
 
     /** Serializes conversation-row writes so a full put() can't interleave with a title update(). */
@@ -328,10 +337,28 @@ export class AiAssistant {
         this.setActivePhase("idle");
     };
 
+    /**
+     * Soft budget gate: when the overall token cap has been reached, surface a notice + snackbar and return
+     * true so the caller blocks the new turn. An in-flight turn (and its tool continuations) still finishes —
+     * this only stops STARTING new work. 0/undefined cap = unlimited (never blocks). Resetting the overall
+     * total or raising the cap in settings clears the block.
+     */
+    private capBlocked(): boolean {
+        const [userSettings] = getUserSettings();
+        const cap = userSettings().ai?.tokenCap ?? DEFAULT_AI_TOKEN_CAP;
+        if (!capReached(cap)) return false;
+        const used = combinedUsed(overallUsage());
+        this.pushSystemBubble(`Token budget reached (${used.toLocaleString()} / ${cap.toLocaleString()} tokens). Raise the cap or hit Reset in AI settings to keep going.`);
+        addSnackbar({ message: "Token budget reached", severity: "warning" });
+        this.setStatus("idle");
+        return true;
+    }
+
     send = (text: string, images?: AiImage[], audio?: AiAudio[]) => {
         const trimmed = text.trim();
         // An attachment-only message (no prose) is valid; only bail when there's no text, image, nor audio.
         if ((!trimmed && !images?.length && !audio?.length) || this.status() === "streaming") return;
+        if (this.capBlocked()) return;   // soft budget cap: refuse to start a new turn until reset/raised
         // If the previous turn left tool calls unanswered (previews never confirmed/rejected), close
         // them out so the history stays valid (Anthropic requires every tool_use to get a tool_result).
         this.flushOutstanding();
@@ -366,6 +393,7 @@ export class AiAssistant {
 
     retryLast = () => {
         if (this.status() !== "error" || this.history.length === 0) return;
+        if (this.capBlocked()) return;   // soft budget cap: don't re-run a turn while over budget
         this.setMessages(prev => {
             const out = [...prev];
             while (out.length && out[out.length - 1].kind === "system") out.pop();
@@ -459,6 +487,7 @@ export class AiAssistant {
                 patch: preview.appliedOps,
                 conversationId: this.currentConversationId ?? undefined,
                 previewId,
+                usage: preview.usage,   // per-homebrew token cost, for the decision-log entry
             });
         } else {
             // The save genuinely didn't persist — keep the card and surface why, so the user can retry.
@@ -678,6 +707,38 @@ export class AiAssistant {
     };
 
     /**
+     * Retry a FAILED pipeline from the step that failed (user "Retry" on a terminal error card). Resumes from
+     * the last successful phase — reusing the same {@link PipelineResume} machinery as {@link resumePipeline}
+     * — so only the failed step and what follows re-run, never the whole build (an approved skeleton is never
+     * re-ratified). Uses the in-memory snapshot, which is present in saved AND unsaved chats, and keeps the
+     * existing Dexie row (via `pipelineCheckpointId`) so later steps upsert it rather than orphan it. Falls
+     * back to a full relaunch only when nothing checkpointed yet (the very first phase failed). No-op for the
+     * homebrew mini-pipeline (it never checkpoints — Retry isn't offered for it).
+     */
+    retryPipeline = () => {
+        if (this.currentPipelineType === "homebrew") return;
+        const seed = this.currentPipelineSeed;
+        if (!seed) return;
+        const type = this.currentPipelineType;
+        const snap = this.lastCheckpointSnapshot;
+        const checkpointId = this.pipelineCheckpointId ?? undefined;   // continue the same row if one exists
+        const epoch = this.turnEpoch;
+        // Nothing decided yet — resume and restart are equivalent; relaunch from the top.
+        if (!snap) {
+            if (type === "character") this.launchCharacterPipeline(seed, epoch);
+            else this.launchClassPipeline(seed, epoch);
+            return;
+        }
+        if (type === "character") {
+            const resume: PipelineResume<WorkingCharacter> = { working: snap.working as WorkingCharacter, brief: snap.brief, fromPhaseIndex: snap.phaseIndex };
+            this.launchCharacterPipeline(seed, epoch, resume, checkpointId);
+        } else {
+            const resume: PipelineResume<WorkingClass> = { working: snap.working as WorkingClass, brief: snap.brief, fromPhaseIndex: snap.phaseIndex };
+            this.launchClassPipeline(seed, epoch, resume, checkpointId);
+        }
+    };
+
+    /**
      * Resume an interrupted pipeline offered after reloading its conversation (plan §9, M6). Adopts the
      * persisted checkpoint (working object + brief + its row id, so further steps upsert the same row) and
      * re-enters the matching orchestrator, which skips every already-decided phase. No-op if no offer stands.
@@ -774,6 +835,7 @@ export class AiAssistant {
         this.pipelineCheckpointId = null;     // the mini-pipeline never checkpoints
         this.currentPipelineType = "homebrew";
         this.currentPipelineSeed = "";        // Restart/Resume are not offered for the mini-pipeline
+        this.lastCheckpointSnapshot = null;   // no resumable step for the mini-pipeline
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
 
@@ -806,6 +868,12 @@ export class AiAssistant {
         this.pipelineCheckpointId = checkpointId ?? null;
         this.currentPipelineType = "class";
         this.currentPipelineSeed = seed;
+        // Reset (fresh run) or re-seed (resume/retry) the snapshot so a stale one can't leak across runs and
+        // a second Retry still has a target before the resumed run checkpoints again. Clone: the orchestrator
+        // mutates resume.working in place.
+        this.lastCheckpointSnapshot = resume
+            ? { phaseIndex: resume.fromPhaseIndex, working: structuredClone(resume.working), brief: resume.brief }
+            : null;
         if (resume) this.seedResumeProgress(resume, "class");
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
@@ -841,6 +909,10 @@ export class AiAssistant {
         this.pipelineCheckpointId = checkpointId ?? null;
         this.currentPipelineType = "character";
         this.currentPipelineSeed = seed;
+        // See launchClassPipeline: reset on a fresh run, re-seed on resume/retry (cloned — mutated in place).
+        this.lastCheckpointSnapshot = resume
+            ? { phaseIndex: resume.fromPhaseIndex, working: structuredClone(resume.working), brief: resume.brief }
+            : null;
         if (resume) this.seedResumeProgress(resume, "character");
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
@@ -880,6 +952,7 @@ export class AiAssistant {
      */
     private onCharacterComplete(character: Character, epoch: number) {
         if (epoch !== this.turnEpoch) return;
+        const runUsage = this.pipelineRun()?.usage;   // stash BEFORE nulling the run (logDecision below needs it)
         this.setPipelineRun(null);
         void this.discardPipelineCheckpoint();
         const clash = characterManager.characters().some(c => c.name.trim().toLowerCase() === character.name.trim().toLowerCase());
@@ -896,6 +969,7 @@ export class AiAssistant {
                 changeType: "create",
                 summary: `Generated level ${character.level} ${character.race.species} ${character.className} via the staged pipeline.`,
                 conversationId: this.currentConversationId ?? undefined,
+                usage: runUsage,   // per-character token cost (the whole pipeline run's total)
             });
         }
         void this.persistCurrent();
@@ -931,7 +1005,13 @@ export class AiAssistant {
      */
     private onPipelineComplete(previews: HomebrewPreview[], epoch: number) {
         if (epoch !== this.turnEpoch || !previews.length) return;
-        this.setPendingPreviews(prev => [...prev, ...previews.map(p => ({ ...p, deferred: true }))]);
+        // Attribute the whole run's token total to the PRIMARY card (index 0 — the class); subclass cards
+        // stay unstamped so the per-homebrew figures never double-count. A homebrew-mini-pipeline preview
+        // already carries its own `usage`, so keep that when present.
+        const runUsage = this.pipelineRun()?.usage;
+        this.setPendingPreviews(prev => [...prev, ...previews.map((p, i) => ({
+            ...p, deferred: true, usage: p.usage ?? (i === 0 ? runUsage : undefined),
+        }))]);
         void this.discardPipelineCheckpoint();
         void this.runMadsPhaseThenHandoff(previews, epoch);
         void this.persistCurrent();
@@ -982,6 +1062,9 @@ export class AiAssistant {
     /** Upsert the run's single checkpoint row after a phase (best-effort; resume UI lands in a later milestone). */
     private savePipelineCheckpoint(phaseIndex: number, working: WorkingEntity, brief: ConceptBrief | undefined, epoch: number) {
         if (epoch !== this.turnEpoch) return;
+        // Snapshot in memory FIRST (before the conversationId guard) so Retry can resume the failed step even
+        // in an unsaved chat with no Dexie row. Clone: `working` is the live object the orchestrator mutates.
+        this.lastCheckpointSnapshot = { phaseIndex, working: structuredClone(working), brief };
         const conversationId = this.currentConversationId;
         if (!conversationId) return;   // nothing persisted yet to anchor a resume to
         void (async () => {
@@ -1003,6 +1086,7 @@ export class AiAssistant {
     private async discardPipelineCheckpoint() {
         const id = this.pipelineCheckpointId;
         this.pipelineCheckpointId = null;
+        this.lastCheckpointSnapshot = null;   // no step left to resume once the run is settled/restarted
         if (!id) return;
         try { await pipelineCheckpointManager.discard(id); }
         catch (e) { console.error("Failed to discard pipeline checkpoint", e); }
@@ -1037,6 +1121,7 @@ export class AiAssistant {
         this.createdAt = null;
         this.titleOverride = null;
         this.titleGenerated = false;
+        resetSessionUsage();   // fresh chat → zero the per-conversation token counter (overall total is untouched)
     };
 
     /** Refresh the reactive conversation list (most-recently-updated first). */
@@ -1071,6 +1156,7 @@ export class AiAssistant {
         this.createdAt = rec.createdAt;
         this.titleOverride = rec.title;   // restore the saved (possibly AI) name
         this.titleGenerated = true;       // already named — never re-title an existing chat
+        resetSessionUsage(rec.usage);     // restore this chat's token total into the header (undefined → zero)
         // Offer to resume an interrupted staged generation for this chat (plan §9, M6).
         void this.refreshResumableCheckpoint(rec.id);
     };
@@ -1215,8 +1301,8 @@ export class AiAssistant {
             if (p.saved) {
                 if (savedKept >= SAVED_CARD_CAP) continue;
                 savedKept++;
-                const { previewId, toolCallId, kind, title, entity, valid, mode, baseEntity, appliedOps, rejectedOps, anchorId } = p;
-                result.push({ previewId, toolCallId, kind, title, entity, valid, errors: [], saved: true, mode, baseEntity, appliedOps, rejectedOps, anchorId });
+                const { previewId, toolCallId, kind, title, entity, valid, mode, baseEntity, appliedOps, rejectedOps, anchorId, usage } = p;
+                result.push({ previewId, toolCallId, kind, title, entity, valid, errors: [], saved: true, mode, baseEntity, appliedOps, rejectedOps, anchorId, usage });
             } else {
                 const { repairing: _r, enriching: _e, detached: _d, saveError: _se, deferred: _df, ...rest } = p;
                 const reviewState: ReviewState | undefined =
@@ -1242,11 +1328,9 @@ export class AiAssistant {
         if (h.length <= 4) return h;
         // Exclude base64 image/audio data from the char-count estimate (it would dwarf the text and evict
         // real turns); count a flat per-attachment cost instead — closer to how the model tokenizes media
-        // (vision tiles an image; Gemma 4 spends ~25 tokens/sec → ~750 for a 30s clip).
-        const tokensOf = (m: AiMessage) =>
-            Math.ceil(JSON.stringify({ ...m, images: undefined, audio: undefined }).length / 4)
-            + (m.images?.length ?? 0) * 768
-            + (m.audio?.length ?? 0) * 800;
+        // (vision tiles an image; Gemma 4 spends ~25 tokens/sec → ~750 for a 30s clip). Shared with the
+        // token-usage fallback estimator so windowing and usage accounting agree (shared/ai/usage.ts).
+        const tokensOf = estimateMessageTokens;
         // History gets half the window MINUS the turn's fixed overhead (system prompt + tool schemas,
         // measured by the caller). A flat half under-reserved in homebrew mode, where the fixed surface
         // alone is ~5-6k tokens of a 16k window — history would then crowd out generation room.
@@ -1295,6 +1379,7 @@ export class AiAssistant {
             history: this.balancedHistory(),
             messages: this.messages(),
             pendingPreviews: this.sanitizePreviewsForStore(this.pendingPreviews()),
+            usage: sessionUsage(),   // per-conversation token total, restored into the header on load
             createdAt: this.createdAt,
             updatedAt: now,
         };
@@ -1485,12 +1570,22 @@ export class AiAssistant {
                         this.pushSystemBubble(ev.error);
                         break;
                     case "message_done":
-                        this.finishTurn(ev.stopReason, accumulators, epoch);
+                        this.finishTurn(ev.stopReason, accumulators, epoch, ev.usage);
                         return;
                 }
             }
-            // Stream ended without an explicit message_done.
-            this.finishTurn(accumulators.size ? "tool_use" : "end_turn", accumulators, epoch);
+            // Stream ended without an explicit message_done (adapters normally always emit one, with usage) —
+            // estimate the turn's cost so the totals stay honest. Output includes the accumulated tool-arg JSON.
+            {
+                const outChars = this.streamingText().length + this.streamingThinking().length
+                    + [...accumulators.values()].reduce((n, a) => n + a.args.length, 0);
+                const estUsage: TokenUsage = {
+                    inputTokens: estimateInputTokens(sendHistory, system, tools),
+                    outputTokens: Math.ceil(outChars / 4),
+                    estimated: true,
+                };
+                this.finishTurn(accumulators.size ? "tool_use" : "end_turn", accumulators, epoch, estUsage);
+            }
         } catch (e) {
             if (signal.aborted) { return; }   // aborted (cancel/switch) — status already handled by the swap
             this.fail(friendlyError(e));
@@ -1499,10 +1594,14 @@ export class AiAssistant {
         }
     }
 
-    private finishTurn(stopReason: string, accumulators: Map<number, { id: string; name: string; args: string }>, epoch: number) {
+    private finishTurn(stopReason: string, accumulators: Map<number, { id: string; name: string; args: string }>, epoch: number, usage?: TokenUsage) {
         // The session was swapped (new/loaded conversation) while this turn was in flight — drop it so a
         // late message_done can't push bubbles or persist onto the now-active chat.
         if (epoch !== this.turnEpoch) return;
+        // Count this turn toward the per-conversation session + persistent overall totals. Guarded by the
+        // epoch check above so a swapped-away turn never inflates the now-active chat. Any homebrew preview
+        // built below is stamped with the same `usage` (its one-shot per-homebrew cost).
+        if (usage) recordUsage(usage);
         // Some local models leak their reasoning into the content stream (with channel markers) rather
         // than the structured thinking field — split it out so the bubble shows only the answer.
         const split = splitModelReasoning(this.streamingText());
@@ -1700,6 +1799,10 @@ export class AiAssistant {
 
                 const previews = homebrewCalls.map(({ tc, idx }) => {
                     const p = buildPreview(tc, dndSystem);
+                    // One-shot per-homebrew cost = this create turn's usage. Survives the Medium/High
+                    // `{ ...p }` spreads and into the decision log on save. (Async enrichment/review tokens
+                    // count toward session/overall but not this per-homebrew figure — documented approximation.)
+                    if (usage) p.usage = usage;
                     p.repairAttempts = this.repairCounts.get(p.title.toLowerCase()) ?? 0;
                     // If this replaces a card we were repairing (same kind), keep the repair cap so the
                     // "Complete with AI" button stays suppressed even if the model renamed the entity.

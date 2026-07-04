@@ -5,9 +5,11 @@ import getUserSettings, { refreshAiProviderStatus } from "../../../shared/custom
 import {
     AiProviderKind, AiSettings, DEFAULT_AI_COMMAND_GENERATION, DEFAULT_AI_MAX_AUDIO_SECONDS, DEFAULT_AI_MAX_TOKENS,
     DEFAULT_AI_NUM_CTX, DEFAULT_AI_PERSONA_STRENGTH, DEFAULT_AI_RESUME_GENERATION, DEFAULT_AI_SHOW_THINKING,
-    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, LocalApiKind, PersonaStrength,
+    DEFAULT_AI_THINKING, DEFAULT_AI_THINKING_HOMEBREW, DEFAULT_AI_TOKEN_CAP, LocalApiKind, PersonaStrength,
 } from "../../../models/userSettings";
 import { diagnoseLocalEndpoint, normalizeBaseUrl, probeLocalEndpoint } from "../../../shared/ai/localEndpoint";
+import { combinedUsed, ensureOverallUsageLoaded, overallUsage, resetOverall } from "../../../shared/ai/overallUsage";
+import { fmtExact } from "../../aiSpark/aiSpark.shared";
 
 const DEFAULT_AI: AiSettings = {
     provider: "local", model: "", localBaseUrl: "", enabled: false,
@@ -36,6 +38,9 @@ const AiSettingsTab: Component = () => {
 
     const updateAi = (patch: Partial<AiSettings>) =>
         setUserSettings(old => Clone({ ...old, ai: { ...(old.ai ?? DEFAULT_AI), ...patch } }));
+
+    // Load the persisted overall token total so the "Overall used" readout is accurate on first open.
+    void ensureOverallUsageLoaded();
 
     const isCloud = () => ai().provider !== "local";
 
@@ -243,6 +248,35 @@ const AiSettingsTab: Component = () => {
                     Caps the model's response length (default {DEFAULT_AI_MAX_TOKENS}). Higher allows longer
                     homebrew but is slower. For local models this must fit inside the server's context window
                     (Ollama <code>num_ctx</code>); some cloud models cap lower (e.g. gpt-4o-mini at 16384).
+                </div>
+            </div>
+
+            <div style={{ "margin-top": "var(--spacing-2)" }}>
+                <label for="ai-token-cap">Token budget cap (0 = unlimited)</label>
+                <Input
+                    id="ai-token-cap"
+                    type="number"
+                    value={String(ai().tokenCap ?? DEFAULT_AI_TOKEN_CAP)}
+                    placeholder={String(DEFAULT_AI_TOKEN_CAP)}
+                    onInput={(e) => {
+                        const n = parseInt(e.currentTarget.value, 10);
+                        // Guard admits 0 (the meaningful "unlimited" value), unlike maxTokens/numCtx which reject it.
+                        updateAi({ tokenCap: Number.isFinite(n) && n >= 0 ? n : undefined });
+                    }}
+                />
+                {/* The "overall used / limit" readout with a Reset button, right next to the cap it applies to. */}
+                <div style={{ display: "flex", "align-items": "center", gap: "var(--spacing-2)", "margin-top": "var(--spacing-1)" }}>
+                    <span style={{ "font-variant-numeric": "tabular-nums" }}>
+                        Overall used: <strong>{overallUsage().estimated ? "~" : ""}{fmtExact(combinedUsed(overallUsage()))}</strong>
+                        {(ai().tokenCap ?? DEFAULT_AI_TOKEN_CAP) > 0 ? ` / ${fmtExact(ai().tokenCap ?? DEFAULT_AI_TOKEN_CAP)}` : " (unlimited)"}
+                    </span>
+                    <Button transparent title="Reset the overall token total to zero" onClick={() => resetOverall()}>Reset</Button>
+                </div>
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
+                    Total input + output tokens Grimoire may spend before it stops starting new turns. <b>0 = unlimited</b>
+                    {" "}(the default). Counts every model call across all chats — replies, homebrew generation, titles, and
+                    reviews. This is a cumulative <em>budget</em>, distinct from <em>Max response tokens</em> above (which caps a
+                    single reply's length). A turn already running is allowed to finish, so usage may overshoot slightly.
                 </div>
             </div>
 

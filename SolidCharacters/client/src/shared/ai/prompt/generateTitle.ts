@@ -1,6 +1,7 @@
 import { AiSettings, DEFAULT_AI_NUM_CTX } from "../../../models/userSettings";
 import { buildProvider } from "../providers/providerFactory";
 import { AiMessage } from "../types";
+import { recordUsage } from "../usage";
 
 /** The first exchange used to seed a conversation title. The assistant reply is optional. */
 export interface TitleContext {
@@ -56,7 +57,7 @@ export async function generateConversationTitle(
         })) {
             if (ev.type === "text_delta") raw += ev.text;
             else if (ev.type === "error") return null;
-            else if (ev.type === "message_done") break;
+            else if (ev.type === "message_done") { if (ev.usage) recordUsage(ev.usage); break; }
         }
         return cleanTitle(raw);
     } catch {

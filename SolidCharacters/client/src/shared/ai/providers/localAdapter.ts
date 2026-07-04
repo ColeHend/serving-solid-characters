@@ -1,5 +1,6 @@
-import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
+import { AiMessage, AiProvider, AiStopReason, AiToolDef, ChatStreamEvent, StreamChatOpts, TokenUsage } from "../types";
 import { DEFAULT_AI_MAX_TOKENS } from "../../../models/userSettings";
+import { estimateInputTokens } from "../usage";
 import { audioFormatOf } from "../audioAttach";
 import { parseSse } from "./sse";
 import { currentOrigin, diagnoseLocalEndpoint, mixedContentHint, normalizeBaseUrl } from "../localEndpoint";
@@ -27,6 +28,9 @@ export class LocalAdapter implements AiProvider {
         const body: Record<string, unknown> = {
             model: opts.model,
             stream: true,
+            // Ask for a trailing usage chunk (prompt/completion token counts). Servers that don't support
+            // it just omit the chunk and we fall back to the char/4 estimate below.
+            stream_options: { include_usage: true },
             max_tokens: opts.maxTokens ?? DEFAULT_AI_MAX_TOKENS,
             messages: toOpenAiMessages(messages, opts.system),
         };
@@ -83,13 +87,26 @@ export class LocalAdapter implements AiProvider {
         }
 
         const started = new Set<number>();
-        let doneEmitted = false;
+        const sentTools = tools?.length && !opts.responseSchema ? tools : undefined;
+        let toolDoneEmitted = false;
+        let pendingStop: AiStopReason | null = null;
+        let realUsage: TokenUsage | undefined;
+        let outChars = 0;   // accumulated OUTPUT chars (text + thinking + tool-arg JSON) for the estimate fallback
         for await (const ev of parseSse(res.body, opts.signal)) {
             const data = ev.data.trim();
             if (!data) continue;
             if (data === "[DONE]") break;
             let chunk: any;
             try { chunk = JSON.parse(data); } catch { continue; }
+            // With include_usage the server sends a FINAL chunk carrying `usage` and an empty `choices`
+            // array, AFTER the finish_reason chunk. Capture it BEFORE the `!choice` guard (which would
+            // otherwise drop it), and defer the single message_done until the stream ends so it can carry it.
+            if (chunk?.usage) {
+                realUsage = {
+                    inputTokens: chunk.usage.prompt_tokens ?? 0,
+                    outputTokens: chunk.usage.completion_tokens ?? 0,
+                };
+            }
             const choice = chunk?.choices?.[0];
             if (!choice) continue;
 
@@ -99,9 +116,11 @@ export class LocalAdapter implements AiProvider {
             // either as a thinking_delta so the UI can show it in a collapsible block.
             const reasoning = delta.reasoning ?? delta.reasoning_content;
             if (typeof reasoning === "string" && reasoning.length) {
+                outChars += reasoning.length;
                 yield { type: "thinking_delta", text: reasoning };
             }
             if (typeof delta.content === "string" && delta.content.length) {
+                outChars += delta.content.length;
                 yield { type: "text_delta", text: delta.content };
             }
             if (Array.isArray(delta.tool_calls)) {
@@ -113,20 +132,26 @@ export class LocalAdapter implements AiProvider {
                     }
                     const argsFragment = tc.function?.arguments;
                     if (typeof argsFragment === "string" && argsFragment.length) {
+                        outChars += argsFragment.length;
                         yield { type: "tool_call_delta", index, argsDelta: argsFragment };
                     }
                 }
             }
             if (choice.finish_reason) {
+                // Close tool calls now, but DEFER message_done — the usage chunk arrives after this.
                 for (const index of started) yield { type: "tool_call_done", index };
-                yield { type: "message_done", stopReason: mapFinishReason(choice.finish_reason) };
-                doneEmitted = true;
+                toolDoneEmitted = true;
+                pendingStop = mapFinishReason(choice.finish_reason);
             }
         }
-        if (!doneEmitted) {
-            for (const index of started) yield { type: "tool_call_done", index };
-            yield { type: "message_done", stopReason: started.size ? "tool_use" : "end_turn" };
-        }
+        // Exactly one terminal event, now that the trailing usage chunk (if any) has been seen.
+        if (!toolDoneEmitted) for (const index of started) yield { type: "tool_call_done", index };
+        const usage: TokenUsage = realUsage ?? {
+            inputTokens: estimateInputTokens(messages, opts.system, sentTools),
+            outputTokens: Math.ceil(outChars / 4),
+            estimated: true,
+        };
+        yield { type: "message_done", stopReason: pendingStop ?? (started.size ? "tool_use" : "end_turn"), usage };
     }
 }
 

@@ -9,8 +9,10 @@ import { assembleClassPreviews } from "./assemble";
 import { critiqueClass, type FlaggedFeature } from "./critic";
 import { repairBudgetFor, type PipelineHost } from "./orchestrator";
 import { HEAVY_STEP_MAX_TOKENS, PipelinePhase } from "./types";
+import { addUsage } from "../usage";
 import type { ReviewVerdict } from "../readiness/types";
-import type { ConceptBrief, PipelineResume, PipelineRun, PipelineStatus, RunStepOptions, StepContext, WorkingClass, WorkingFeature, WorkingSubclass } from "./types";
+import type { TokenUsage } from "../types";
+import type { ConceptBrief, PipelineResume, PipelineRun, PipelineStatus, RunStepOptions, StepContext, StepResult, WorkingClass, WorkingFeature, WorkingSubclass } from "./types";
 
 /**
  * The Homebrew Class pipeline (plan §6, §13). M1 shipped the spine — Phase A (design brief) → Phase B
@@ -70,8 +72,17 @@ export async function runClassPipeline(seed: string, host: PipelineHost, resume?
     const working: WorkingClass = resume?.working ?? {};
     const opts: RunStepOptions = { repairBudget: repairBudgetFor(host.usageLevel), signal: host.signal };
 
+    // Running token total for THIS generation — every step's usage folds in here and rides on each emit()
+    // so the GenPipelineCard shows the cost ticking up live. (Session/overall totals are counted separately
+    // at the streamChat boundary; this is the per-homebrew subtotal only.)
+    let runUsage: TokenUsage | undefined;
+    const accrue = <T>(res: StepResult<T>): StepResult<T> => {
+        if (res.usage) runUsage = addUsage(runUsage, res.usage);
+        return res;
+    };
+
     const emit = (index: number, status: PipelineStatus, extra?: Partial<PipelineRun>) =>
-        host.onProgress({ pipelineType: "class", phase: PHASES[index], phaseIndex: index, totalPhases: TOTAL, status, ...extra });
+        host.onProgress({ pipelineType: "class", phase: PHASES[index], phaseIndex: index, totalPhases: TOTAL, status, ...extra, usage: runUsage });
 
     /** Fresh class-scoped context for a step: the brief plus the carry-forward digest of everything so far. */
     const classCtx = (): StepContext => ({ brief, summary: summarize(working, "class") });
@@ -84,7 +95,7 @@ export async function runClassPipeline(seed: string, host: PipelineHost, resume?
             brief = resume.brief;
         } else {
             emit(0, "running");
-            const briefResult = await produceConceptBrief(seed, "class", host.ai, opts, host.runner);
+            const briefResult = accrue(await produceConceptBrief(seed, "class", host.ai, opts, host.runner));
             if (host.signal.aborted) return void emit(0, "aborted");
             if (!briefResult.ok || !briefResult.value) {
                 return fail(host, emit, 0, briefResult.errors[0] ?? "Couldn't draft a design brief for the class.");
@@ -99,8 +110,8 @@ export async function runClassPipeline(seed: string, host: PipelineHost, resume?
             let approved = false;
             for (let round = 0; round < MAX_RATIFY_ROUNDS && !approved; round++) {
                 emit(1, "running");
-                const skeletonResult = await produceSkeleton(
-                    seed, refinement, brief, classCtx(), host.ai, opts, host.runner);
+                const skeletonResult = accrue(await produceSkeleton(
+                    seed, refinement, brief, classCtx(), host.ai, opts, host.runner));
                 if (host.signal.aborted) return void emit(1, "aborted");
                 if (!skeletonResult.ok || !skeletonResult.value) {
                     return fail(host, emit, 1, skeletonResult.errors[0] ?? "Couldn't draft a class skeleton.");
@@ -122,7 +133,7 @@ export async function runClassPipeline(seed: string, host: PipelineHost, resume?
         // ── Phase C — chassis (skip if already built on a prior run) ───────────
         if (!hasChassis(working)) {
             emit(2, "running");
-            const chassisResult = await produceChassis(brief, classCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner);
+            const chassisResult = accrue(await produceChassis(brief, classCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner));
             if (host.signal.aborted) return void emit(2, "aborted");
             if (!chassisResult.ok || !chassisResult.value) {
                 return fail(host, emit, 2, chassisResult.errors[0] ?? "Couldn't build the class chassis.");
@@ -132,13 +143,13 @@ export async function runClassPipeline(seed: string, host: PipelineHost, resume?
         }
 
         // ── Phase D — features (loop) ──────────────────────────────────────────
-        if (await runFeatureLoop(working, brief, host, opts, classCtx, emit)) return;   // aborted mid-loop
+        if (await runFeatureLoop(working, brief, host, opts, classCtx, emit, accrue)) return;   // aborted mid-loop
 
         // ── Phase E — subclasses (loop) ────────────────────────────────────────
-        if (await runSubclassLoop(working, brief, host, opts, classCtx, emit)) return;  // aborted mid-loop
+        if (await runSubclassLoop(working, brief, host, opts, classCtx, emit, accrue)) return;  // aborted mid-loop
 
         // ── Phase F — balance & consistency critic (High only) ─────────────────
-        if (await runCritic(working, brief, host, opts, emit)) return;                  // aborted mid-critic
+        if (await runCritic(working, brief, host, opts, emit, accrue)) return;                  // aborted mid-critic
 
         // ── Assemble + emit savable previews (class, then subclasses) ─────────
         emit(ASSEMBLE_PHASE, "running");
@@ -153,6 +164,8 @@ export async function runClassPipeline(seed: string, host: PipelineHost, resume?
 }
 
 type Emit = (index: number, status: PipelineStatus, extra?: Partial<PipelineRun>) => void;
+/** Folds a step's usage into the driver's running per-generation total and returns the result unchanged. */
+type Accrue = <T>(res: StepResult<T>) => StepResult<T>;
 
 /**
  * Phase D: fill the base class's feature progression, one feature per level in `baseFeatureLevels`. Each
@@ -161,7 +174,7 @@ type Emit = (index: number, status: PipelineStatus, extra?: Partial<PipelineRun>
  */
 async function runFeatureLoop(
     working: WorkingClass, brief: ConceptBrief, host: PipelineHost,
-    opts: RunStepOptions, classCtx: () => StepContext, emit: Emit,
+    opts: RunStepOptions, classCtx: () => StepContext, emit: Emit, accrue: Accrue,
 ): Promise<boolean> {
     emit(FEATURES_PHASE, "running");
     const levels = baseFeatureLevels(working);
@@ -173,7 +186,7 @@ async function runFeatureLoop(
         if (have.has(level)) continue;
         emit(FEATURES_PHASE, "running", { note: `Feature ${i + 1} of ${levels.length} — level ${level}…` });
 
-        const res = await produceFeature(level, working.features ?? [], classCtx(), host.ai, opts, host.runner);
+        const res = accrue(await produceFeature(level, working.features ?? [], classCtx(), host.ai, opts, host.runner));
         if (host.signal.aborted) { emit(FEATURES_PHASE, "aborted"); return true; }
         if (res.ok && res.value) {
             (working.features ??= []).push(res.value);
@@ -192,7 +205,7 @@ async function runFeatureLoop(
  */
 async function runSubclassLoop(
     working: WorkingClass, brief: ConceptBrief, host: PipelineHost,
-    opts: RunStepOptions, classCtx: () => StepContext, emit: Emit,
+    opts: RunStepOptions, classCtx: () => StepContext, emit: Emit, accrue: Accrue,
 ): Promise<boolean> {
     emit(SUBCLASSES_PHASE, "running");
     const count = working.subclassCount ?? 0;
@@ -205,7 +218,7 @@ async function runSubclassLoop(
         // Resume idempotency: re-adopt a subclass already anchored on a prior run; otherwise anchor it now.
         let sub = (working.subclasses ?? [])[i];
         if (!sub) {
-            const briefRes = await produceSubclassBrief(i, count, subclassNames(working), classCtx(), host.ai, opts, host.runner);
+            const briefRes = accrue(await produceSubclassBrief(i, count, subclassNames(working), classCtx(), host.ai, opts, host.runner));
             if (host.signal.aborted) { emit(SUBCLASSES_PHASE, "aborted"); return true; }
             if (!briefRes.ok || !briefRes.value) continue;   // couldn't anchor it — skip this subclass
 
@@ -224,7 +237,7 @@ async function runSubclassLoop(
             emit(SUBCLASSES_PHASE, "running", { note: `${sub.name}: feature ${j + 1} of ${featureLevels.length} — level ${level}…` });
 
             const ctx: StepContext = { brief, summary: summarizeSubclass(working, sub) };
-            const fRes = await produceFeature(level, sub.features, ctx, host.ai, opts, host.runner, ownerLabel);
+            const fRes = accrue(await produceFeature(level, sub.features, ctx, host.ai, opts, host.runner, ownerLabel));
             if (host.signal.aborted) { emit(SUBCLASSES_PHASE, "aborted"); return true; }
             if (fRes.ok && fRes.value) {
                 sub.features.push(fRes.value);
@@ -246,7 +259,7 @@ async function runSubclassLoop(
  */
 async function runCritic(
     working: WorkingClass, brief: ConceptBrief, host: PipelineHost,
-    opts: RunStepOptions, emit: Emit,
+    opts: RunStepOptions, emit: Emit, accrue: Accrue,
 ): Promise<boolean> {
     emit(BALANCE_PHASE, "running");
     // Low/Medium skip the critic entirely; the strip still advances so the UI stays honest.
@@ -265,7 +278,7 @@ async function runCritic(
         verdicts = result.verdicts;
         emit(BALANCE_PHASE, "running", { verdicts });
         if (!result.flagged.length) break;   // nothing mapped to a feature → stop (verdicts already surfaced)
-        await regenerateFlagged(working, brief, result.flagged, host, opts, emit);
+        await regenerateFlagged(working, brief, result.flagged, host, opts, emit, accrue);
         if (host.signal.aborted) { emit(BALANCE_PHASE, "aborted"); return true; }
         host.onCheckpoint?.(BALANCE_PHASE, working, brief);
     }
@@ -276,17 +289,17 @@ async function runCritic(
 /** Regenerate each flagged feature in place (base class or its owning subclass), feeding the critic's complaint in. */
 async function regenerateFlagged(
     working: WorkingClass, brief: ConceptBrief, flagged: FlaggedFeature[],
-    host: PipelineHost, opts: RunStepOptions, emit: Emit,
+    host: PipelineHost, opts: RunStepOptions, emit: Emit, accrue: Accrue,
 ): Promise<void> {
     for (const f of flagged) {
         if (host.signal.aborted) return;
         emit(BALANCE_PHASE, "running", { note: `Reworking ${f.name} (level ${f.level})…` });
         if (f.subclass) {
             const sub = (working.subclasses ?? []).find(s => s.name === f.subclass);
-            if (sub) await regenerateFeatureInScope(sub.features, f, brief, () => summarizeSubclass(working, sub), `the «${sub.name}» subclass`, host, opts);
+            if (sub) await regenerateFeatureInScope(sub.features, f, brief, () => summarizeSubclass(working, sub), `the «${sub.name}» subclass`, host, opts, accrue);
         } else {
             const features = (working.features ??= []);
-            await regenerateFeatureInScope(features, f, brief, () => summarize(working, "class"), "this class", host, opts);
+            await regenerateFeatureInScope(features, f, brief, () => summarize(working, "class"), "this class", host, opts, accrue);
         }
     }
 }
@@ -299,14 +312,14 @@ async function regenerateFlagged(
  */
 async function regenerateFeatureInScope(
     list: WorkingFeature[], flagged: FlaggedFeature, brief: ConceptBrief,
-    summaryFn: () => string, ownerLabel: string, host: PipelineHost, opts: RunStepOptions,
+    summaryFn: () => string, ownerLabel: string, host: PipelineHost, opts: RunStepOptions, accrue: Accrue,
 ): Promise<void> {
     const idx = list.findIndex(x => x.name.trim().toLowerCase() === flagged.name.trim().toLowerCase());
     if (idx < 0) return;
     const original = list[idx];
     list.splice(idx, 1);
     const ctx: StepContext = { brief, summary: summaryFn() };
-    const res = await produceFeature(flagged.level, list, ctx, host.ai, opts, host.runner, ownerLabel, flagged.reason);
+    const res = accrue(await produceFeature(flagged.level, list, ctx, host.ai, opts, host.runner, ownerLabel, flagged.reason));
     list.splice(idx, 0, res.ok && res.value ? res.value : original);
 }
 

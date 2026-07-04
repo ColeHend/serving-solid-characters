@@ -9,8 +9,10 @@ import { computeCharacterStats } from "./compute";
 import { assembleCharacter } from "./assembleCharacter";
 import { repairBudgetFor, type CharacterPipelineHost } from "./orchestrator";
 import { HEAVY_STEP_MAX_TOKENS, PipelinePhase } from "./types";
+import { addUsage } from "../usage";
 import type { ReviewVerdict } from "../readiness/types";
-import type { ConceptBrief, PipelineResume, PipelineRun, PipelineStatus, RunStepOptions, StepContext, WorkingCharacter } from "./types";
+import type { TokenUsage } from "../types";
+import type { ConceptBrief, PipelineResume, PipelineRun, PipelineStatus, RunStepOptions, StepContext, StepResult, WorkingCharacter } from "./types";
 
 /**
  * The Character pipeline (plan §7, §13 M5). Net-new surface: there is no AI character-creation tool today,
@@ -62,8 +64,15 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
     const working: WorkingCharacter = resume?.working ?? {};
     const opts: RunStepOptions = { repairBudget: repairBudgetFor(host.usageLevel), signal: host.signal };
 
+    // Running token total for THIS generation — folded in per step and shown live on the GenPipelineCard.
+    let runUsage: TokenUsage | undefined;
+    const accrue = <T>(res: StepResult<T>): StepResult<T> => {
+        if (res.usage) runUsage = addUsage(runUsage, res.usage);
+        return res;
+    };
+
     const emit = (index: number, status: PipelineStatus, extra?: Partial<PipelineRun>) =>
-        host.onProgress({ pipelineType: "character", phase: PHASES[index], phaseIndex: index, totalPhases: TOTAL, status, ...extra });
+        host.onProgress({ pipelineType: "character", phase: PHASES[index], phaseIndex: index, totalPhases: TOTAL, status, ...extra, usage: runUsage });
 
     /** Fresh character-scoped context for a step: the brief plus the carry-forward digest of everything so far. */
     const charCtx = (): StepContext => ({ brief, summary: summarize(working, "character") });
@@ -76,7 +85,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
             brief = resume.brief;
         } else {
             emit(CONCEPT_PHASE, "running");
-            const briefResult = await produceConceptBrief(seed, "character", host.ai, opts, host.runner);
+            const briefResult = accrue(await produceConceptBrief(seed, "character", host.ai, opts, host.runner));
             if (host.signal.aborted) return void emit(CONCEPT_PHASE, "aborted");
             if (!briefResult.ok || !briefResult.value) {
                 return fail(host, emit, CONCEPT_PHASE, briefResult.errors[0] ?? "Couldn't draft a concept for the character.");
@@ -88,7 +97,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ── Phase 2 — mechanical foundation (skip if already decided) ──────────
         if (!working.className) {
             emit(FOUNDATION_PHASE, "running");
-            const foundationResult = await produceFoundation(seed, brief, charCtx(), host.ai, opts, host.runner);
+            const foundationResult = accrue(await produceFoundation(seed, brief, charCtx(), host.ai, opts, host.runner));
             if (host.signal.aborted) return void emit(FOUNDATION_PHASE, "aborted");
             if (!foundationResult.ok || !foundationResult.value) {
                 return fail(host, emit, FOUNDATION_PHASE, foundationResult.errors[0] ?? "Couldn't decide the character's class and lineage.");
@@ -100,7 +109,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ── Phase 3 — trained-in (scores → code modifiers → skills/saves) ──────
         if (!working.abilityScores) {
             emit(TRAINED_IN_PHASE, "running", { note: "Rolling ability scores…" });
-            const scoresResult = await produceAbilityScores(working.abilityPriority ?? [], charCtx(), host.ai, opts, host.runner);
+            const scoresResult = accrue(await produceAbilityScores(working.abilityPriority ?? [], charCtx(), host.ai, opts, host.runner));
             if (host.signal.aborted) return void emit(TRAINED_IN_PHASE, "aborted");
             if (!scoresResult.ok || !scoresResult.value) {
                 return fail(host, emit, TRAINED_IN_PHASE, scoresResult.errors[0] ?? "Couldn't assign the character's ability scores.");
@@ -113,7 +122,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ride into the next step via the carry-forward summary, which renders each score with its modifier.
         if (!working.skills) {
             emit(TRAINED_IN_PHASE, "running", { note: "Choosing skills & saving throws…" });
-            const trainingResult = await produceTraining(charCtx(), host.ai, opts, host.runner);
+            const trainingResult = accrue(await produceTraining(charCtx(), host.ai, opts, host.runner));
             if (host.signal.aborted) return void emit(TRAINED_IN_PHASE, "aborted");
             if (trainingResult.ok && trainingResult.value) {
                 applyTraining(working, trainingResult.value);   // resilient: a character with no chosen skills still assembles
@@ -124,7 +133,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ── Phase 4 — capabilities (features, + spells if a caster) ────────────
         if (working.features === undefined) {
             emit(CAPABILITIES_PHASE, "running");
-            const capsResult = await produceCapabilities(working.level ?? 1, charCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner);
+            const capsResult = accrue(await produceCapabilities(working.level ?? 1, charCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner));
             if (host.signal.aborted) return void emit(CAPABILITIES_PHASE, "aborted");
             if (capsResult.ok && capsResult.value) {
                 working.casterType = capsResult.value.casterType;
@@ -134,7 +143,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         }
         if (working.casterType && working.casterType !== "none" && !working.spells) {
             emit(CAPABILITIES_PHASE, "running", { note: "Choosing spells…" });
-            const spellsResult = await produceSpells(working.casterType, working.level ?? 1, charCtx(), host.ai, opts, host.runner);
+            const spellsResult = accrue(await produceSpells(working.casterType, working.level ?? 1, charCtx(), host.ai, opts, host.runner));
             if (host.signal.aborted) return void emit(CAPABILITIES_PHASE, "aborted");
             if (spellsResult.ok && spellsResult.value) {
                 working.spells = spellsResult.value;
@@ -145,7 +154,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ── Phase 5 — loadout (skip if already chosen) ─────────────────────────
         if (!working.equipment) {
             emit(LOADOUT_PHASE, "running");
-            const loadoutResult = await produceLoadout(working.className, charCtx(), host.ai, opts, host.runner);
+            const loadoutResult = accrue(await produceLoadout(working.className, charCtx(), host.ai, opts, host.runner));
             if (host.signal.aborted) return void emit(LOADOUT_PHASE, "aborted");
             if (loadoutResult.ok && loadoutResult.value) {
                 applyLoadout(working, loadoutResult.value);   // resilient: no loadout → unarmored (AC 10+Dex)
@@ -156,7 +165,7 @@ export async function runCharacterPipeline(seed: string, host: CharacterPipeline
         // ── Phase 6 — narrative (and the character's name; skip if already written) ──
         if (!working.name) {
             emit(NARRATIVE_PHASE, "running");
-            const narrativeResult = await produceNarrative(charCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner);
+            const narrativeResult = accrue(await produceNarrative(charCtx(), host.ai, { ...opts, maxTokens: HEAVY_STEP_MAX_TOKENS }, host.runner));
             if (host.signal.aborted) return void emit(NARRATIVE_PHASE, "aborted");
             if (narrativeResult.ok && narrativeResult.value) {
                 applyNarrative(working, narrativeResult.value);   // resilient: assembler falls back to a class+lineage name

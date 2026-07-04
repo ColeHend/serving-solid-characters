@@ -1,15 +1,18 @@
-import { AiSettings, STRUCTURED_TURN_TEMPERATURE } from "../../../models/userSettings";
+import { AiSettings, STRUCTURED_TURN_TEMPERATURE, structuredOutputsEnabled } from "../../../models/userSettings";
 import { str } from "../coerce";
+import { addUsage } from "../usage";
+import type { TokenUsage } from "../types";
 import type { SubAgentResult, SubAgentSpec } from "../subAgent";
 import type { ConceptBrief, RunStepOptions, StepContext, StepResult, StepSpec } from "./types";
 
 /**
- * The per-step worker (plan §2.1 / spec §6): force ONE tool, coerce + gate the model's output, and repair
- * within a step-scoped budget. It is a thin driver over `runSubAgent` (the existing isolated-context
- * primitive) — each attempt runs in a FRESH short context built from the brief + carry-forward summary +
- * scoped homebrew + the step task. Reliability comes from the small schema and the repair loop, not from
- * constrained decoding (Ollama can't be forced to emit a tool call — risk §4 — so "no tool call" is a
- * step failure that repairs, then surfaces).
+ * The per-step worker (plan §2.1 / spec §6): produce ONE tool's payload, coerce + gate the model's output,
+ * and repair within a step-scoped budget. It is a thin driver over `runSubAgent` (the existing
+ * isolated-context primitive) — each attempt runs in a FRESH short context built from the brief +
+ * carry-forward summary + scoped homebrew + the step task. When structured outputs are enabled (default for
+ * local models) the reply is grammar-constrained to the tool schema and salvaged from text; otherwise the
+ * tool is forced (`tool_choice` on cloud/compat — native Ollama ignores it) and a "no tool call" is a step
+ * failure that repairs, then surfaces.
  *
  * `runSubAgent` is imported LAZILY (only on the default path) so this module — and its consumers — don't
  * eagerly pull the provider/SRD graph; tests inject a stub runner and never touch it.
@@ -50,7 +53,7 @@ function formatBrief(b: ConceptBrief): string {
 }
 
 /** Build the user-message task for one attempt: context blocks, the task, and any prior-attempt errors. */
-function buildTask(spec: StepSpec<unknown>, ctx: StepContext, repairErrors: string[], noToolCall: boolean): string {
+function buildTask(spec: StepSpec<unknown>, ctx: StepContext, repairErrors: string[], noToolCall: boolean, structured: boolean): string {
     const blocks: string[] = [];
     if (ctx.brief) blocks.push(`CONCEPT BRIEF\n${formatBrief(ctx.brief)}`);
     if (ctx.summary?.trim()) blocks.push(`DECIDED SO FAR\n${ctx.summary.trim()}`);
@@ -62,14 +65,20 @@ function buildTask(spec: StepSpec<unknown>, ctx: StepContext, repairErrors: stri
         blocks.push(`FIX THESE PROBLEMS FROM YOUR LAST ATTEMPT:\n${repairErrors.map(e => `- ${e}`).join("\n")}`);
     }
     if (noToolCall) {
-        blocks.push(`You did not call the tool last time. You MUST respond by calling ${spec.tool.name}.`);
+        // In structured mode the reply is grammar-constrained JSON text (no tool call), so the nudge is
+        // phrased for JSON; otherwise it demands the forced tool call.
+        blocks.push(structured
+            ? "Your last reply was not a JSON object. Reply with ONLY the JSON object for the requested fields."
+            : `You did not call the tool last time. You MUST respond by calling ${spec.tool.name}.`);
     }
     // Only demand `fits_concept` from tools whose schema declares it (all pipeline step tools do; the
     // create_* schemas don't and forbid extra fields via additionalProperties — demanding it there
     // contradicts the schema and wastes output budget).
     const wantsFits = !!(spec.tool.inputSchema as { properties?: Record<string, unknown> })?.properties?.fits_concept;
     blocks.push(
-        `Respond ONLY by calling ${spec.tool.name} with the requested fields.` +
+        (structured
+            ? `Respond ONLY with a JSON object containing the requested fields.`
+            : `Respond ONLY by calling ${spec.tool.name} with the requested fields.`) +
         (wantsFits ? " Include a short `fits_concept` note (one line) explaining how this serves the concept." : ""),
     );
     return blocks.join("\n\n");
@@ -116,6 +125,11 @@ export async function runStep<T>(
     const gateBudget = Math.max(0, opts.repairBudget ?? 1);
     const toolCallBudget = Math.max(0, opts.toolCallRetries ?? 2);
     const maxAttempts = 1 + gateBudget + toolCallBudget;   // hard ceiling so alternating failures can't spin
+    // Structured mode (default ON for local): constrain the reply's text to the tool schema (Ollama `format`
+    // / OpenAI-compat `response_format`) instead of relying on a forced tool call — native Ollama ignores
+    // `forceTool`, so an unconstrained forced-tool step often comes back as prose. The reply arrives as JSON
+    // text with no tool call, which `extractToolJson` picks up below. See mechanicsStep for the same pattern.
+    const structured = structuredOutputsEnabled(ai);
     const subSpec: SubAgentSpec = {
         id: spec.id,
         name: spec.id,
@@ -125,7 +139,8 @@ export async function runStep<T>(
         numCtx: opts.numCtx,
         think: false,   // reasoning would burn the small budget before the tool call (matches llmReview/commandAgent)
         temperature: STRUCTURED_TURN_TEMPERATURE,   // exact enum keys + legal JSON want near-greedy decoding
-        forceTool: true,   // cloud/compat servers must not answer a forced-tool step in prose
+        responseSchema: structured ? spec.tool.inputSchema : undefined,   // grammar-constrain the JSON text
+        forceTool: structured ? undefined : true,   // tool_choice on cloud/compat only when NOT structured
     };
 
     let attempts = 0;
@@ -135,13 +150,16 @@ export async function runStep<T>(
     let lastErrors: string[] = [];
     let lastFits: string | undefined;
     let noToolCall = false;
+    // Sum the token cost of every attempt (repairs included) so the driver can total per-generation usage.
+    let usage: TokenUsage | undefined;
 
     while (attempts < maxAttempts) {
-        if (opts.signal?.aborted) return { ok: false, value: lastValue, errors: lastErrors, attempts, aborted: true };
+        if (opts.signal?.aborted) return { ok: false, value: lastValue, errors: lastErrors, attempts, aborted: true, usage };
 
         attempts++;
-        const task = buildTask(spec, ctx, attempts === 1 ? [] : lastErrors, noToolCall);
+        const task = buildTask(spec, ctx, attempts === 1 ? [] : lastErrors, noToolCall, structured);
         const res = await runner(subSpec, task, ai, opts.signal);
+        if (res.usage) usage = addUsage(usage, res.usage);
 
         // Resolve the tool input: a real forced call, else salvage a JSON object the model wrote as text.
         let raw: Record<string, unknown> | null = null;
@@ -163,7 +181,7 @@ export async function runStep<T>(
         lastFits = str(raw.fits_concept).trim() || undefined;
         const { value, errors } = spec.parse(raw);
         lastValue = value;
-        if (!errors.length) return { ok: true, value, fitsConcept: lastFits, errors: [], attempts };
+        if (!errors.length) return { ok: true, value, fitsConcept: lastFits, errors: [], attempts, usage };
 
         // Gate failure (legal call, illegal output) — spend the gate-repair budget.
         lastErrors = errors;
@@ -172,8 +190,12 @@ export async function runStep<T>(
     }
 
     // A persistent no-tool-call gets an actionable message; a gate failure keeps the validator's errors.
+    // The message points at Retry (which resumes THIS step) — usage level only changes the gate-repair
+    // budget, not the no-tool-call budget this failure exhausts, so advising it would be misleading.
     const finalErrors = noToolCall
-        ? [`The model replied with text instead of filling in ${spec.tool.name}. Try again, or raise the usage level.`]
+        ? [structured
+            ? `${spec.tool.name} came back empty or unreadable after ${attempts} attempts. Use Retry to run this step again.`
+            : `The model replied with prose instead of calling ${spec.tool.name}. Use Retry, or enable structured outputs for local models.`]
         : lastErrors;
-    return { ok: false, value: lastValue, fitsConcept: lastFits, errors: finalErrors, attempts, noToolCall };
+    return { ok: false, value: lastValue, fitsConcept: lastFits, errors: finalErrors, attempts, noToolCall, usage };
 }

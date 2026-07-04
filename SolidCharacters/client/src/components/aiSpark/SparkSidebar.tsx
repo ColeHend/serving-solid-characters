@@ -9,6 +9,7 @@ import ChatMessageList from "./chat/ChatMessageList";
 import ChatInput from "./chat/ChatInput";
 import ImageLightbox from "./chat/ImageLightbox";
 import DecisionLog from "./menus/DecisionLog";
+import SessionUsageChip from "./menus/SessionUsageChip";
 import styles from "./SparkSidebar.module.scss";
 
 const PANEL_ID = "spark-sidebar-panel";
@@ -123,6 +124,7 @@ const SparkSidebar: Component = () => {
                             <span>Grimoire</span>
                         </div>
                         <div class={styles.headerActions}>
+                            <SessionUsageChip />
                             <ConversationMenu />
                             <DecisionLog />
                             <Button transparent title="New chat" aria-label="New chat" onClick={() => aiAssistant.newConversation()}>

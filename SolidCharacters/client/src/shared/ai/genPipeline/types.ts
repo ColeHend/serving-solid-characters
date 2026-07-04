@@ -1,4 +1,4 @@
-import type { AiToolDef } from "../types";
+import type { AiToolDef, TokenUsage } from "../types";
 import type { HomebrewPreview } from "../tools/toolDispatcher";
 import type { ReviewVerdict } from "../readiness/types";
 
@@ -183,6 +183,8 @@ export interface PipelineRun {
     error?: string;
     /** Sub-step progress within a looping phase (Features/Subclasses), e.g. "Feature 3 of 12 — Storm's Fury (L5)". */
     note?: string;
+    /** Live token cost of THIS generation so far (summed across its steps). Shown on the GenPipelineCard. */
+    usage?: TokenUsage;
 }
 
 /**
@@ -262,6 +264,8 @@ export interface StepResult<T> {
     noToolCall?: boolean;
     /** True when the run was cut short by an aborted signal. */
     aborted?: boolean;
+    /** Token cost of this step, summed across its attempts. For per-homebrew attribution (the driver totals these). */
+    usage?: TokenUsage;
 }
 
 /**
