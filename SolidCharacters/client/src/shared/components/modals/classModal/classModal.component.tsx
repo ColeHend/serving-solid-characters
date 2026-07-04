@@ -14,6 +14,8 @@ import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";
 import { Modal,TabBar } from "coles-solid-library";
 import { useDnDSubclasses } from "../../../customHooks/dndInfo/info/all/subclasses";
+import { incrementString } from "../../../customHooks/utility/tools/incrementChar";
+import { ChoiceCard } from "../../choiceCard/choiceCard";
 
 type props = {
   currentClass: Accessor<Class5E>;
@@ -48,7 +50,29 @@ const ClassModal: Component<props> = (props) => {
   const skillChoiceKey = createMemo(()=>props.currentClass().startChoices?.skills ?? "");
   const toolChoiceKey = createMemo(()=>props.currentClass().startChoices?.tools ?? "");
   const weaponChoiceKey = createMemo(()=>props.currentClass().startChoices?.weapon ?? "");
-  
+  const itemOptions = createMemo(() => choices()?.[equipChoiceKey()]?.options ?? []);
+
+  const getItemOptionKey = () => {
+    const optionsLetters:string[] = [];
+    const options = itemOptions();
+
+    while (options.length !== optionsLetters.length) {
+      const letterLength = optionsLetters.length;
+      const optionLength = options.length;
+
+      if (letterLength === 0) {
+        optionsLetters.push("A")
+      } else if (letterLength < optionLength) {
+        optionsLetters.push(incrementString(optionsLetters?.[letterLength - 1]))
+      }
+
+      if (letterLength > optionLength) {
+        break;
+      }
+    }
+
+    return optionsLetters;
+  }
 
   return (
     <Modal
@@ -62,45 +86,65 @@ const ClassModal: Component<props> = (props) => {
           <FeatureTable DndClass={() => props.currentClass()} />
         </div>
 
-        <span class={`${styles.flexBoxColumn} ${styles.leftAlignText}`}>
+        <span class={`${styles.classStats} ${styles.leftAlignText}`}>
               <Show when={props.currentClass().hitDie !== ""}>
-                <h3> Hit die: 
+                <div>
+                  <h3>
+                    Hit die: 
+                  </h3>
                   <span class={`${styles.smallerFont}`}>
                     {props.currentClass().hitDie}
                   </span>
-                </h3>
+                </div>
               </Show>
               <Show when={props.currentClass().primaryAbility !== ""}>
-                <h3>Primary Ability: 
+                <div>
+                  <h3>
+                    Primary Ability: 
+                  </h3>
                   <span class={`${styles.smallerFont}`}>
                     {props.currentClass().primaryAbility}
                   </span>
-                </h3>
+                </div>
               </Show>
-              <h3>Armor: 
+              <div>
+                <h3>
+                  Armor: 
+                </h3> 
                 <span class={styles.smallerFont}>
                   {props.currentClass().proficiencies.armor.join(", ") || 
                     "None"}
                 </span>
-              </h3> 
-              <h3>Weapons: 
+              </div>
+
+              <div>
+                <h3>
+                  Weapons: 
+                </h3>
                 <span class={styles.smallerFont}>
                   {props.currentClass().proficiencies.weapons.join(", ") ||
                     "None"}
                 </span>
-              </h3>
-              <h3>Tools: 
+              </div>
+
+              <div>
+                <h3>
+                  Tools: 
+                </h3>
                 <span class={styles.smallerFont}>
                   {props.currentClass().proficiencies.tools.join(", ") || 
                     "None"}
                 </span>
-              </h3>
+              </div>
               <Show when={props.currentClass().savingThrows?.length > 0}>
-                <h3>Saving Throws: 
+                <div>
+                  <h3>
+                    Saving Throws: 
+                  </h3>
                   <span class={styles.smallerFont}>
                     {props.currentClass().savingThrows?.join(", ")}
                   </span>
-                </h3>
+                </div>
               </Show>
             </span>
 
@@ -108,7 +152,13 @@ const ClassModal: Component<props> = (props) => {
             <TabBar 
             tabs={["Choices","Features", ...currentSubclasses().map(s=>s.name)]} 
             activeTab={activeTab()} 
-            onTabChange={(label,index)=>setActiveTab(index)}/>
+            onTabChange={(label,index)=>setActiveTab(index)}
+            colors={{
+              indicator: "#7c2718",
+              text: "#7c2718"
+            }}
+            class={`${styles.tabBar}`}
+            />
 
            {/* <Show when={activeTab() === ClassModalTabs.Core}>
               
@@ -146,21 +196,25 @@ const ClassModal: Component<props> = (props) => {
 
                 <h4>Choose:
                   <span>
-                    { choices()[equipChoiceKey()]?.amount }
+                    <For each={getItemOptionKey()}>
+                      { (key, i) => <>
+                        <span>{key}</span>
+
+                        <Show when={i() !== getItemOptionKey().length - 1}>
+                          <span> or </span>
+                        </Show>
+                      </>}
+                    </For>
                   </span>
                 </h4>
 
                 <div>
-                  <ul class={`${styles.itemList}`}>
-                    <For each={choices()[equipChoiceKey()]?.options ?? []}>
-                      { (itemOption) => <li>
-                        {itemOption}
-                      </li>
-
-                      }
+                    <For each={choices()?.[equipChoiceKey()]?.options ?? []}>
+                      { (itemOption, i) => <ChoiceCard ChoiceKey={getItemOptionKey()?.[i()]} text={itemOption} /> }
                     </For>
+                  {/* <ul class={`${styles.itemList}`}>
 
-                  </ul>
+                  </ul> */}
                 </div>
               </Show>
 

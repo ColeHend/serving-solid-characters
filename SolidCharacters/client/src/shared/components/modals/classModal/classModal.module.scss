@@ -186,3 +186,34 @@ $mobile: 768px;
 .table {
     margin: 0 auto;
 }
+
+.classStats {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+
+    flex-wrap: wrap;
+
+    h3 {
+        min-width: 230px;
+    }
+
+    div {
+        display: flex;
+        flex-direction: row;
+
+        // :first-child {
+        //     flex-grow: 1;
+        // }
+    }
+}
+
+.tabBar {
+
+    width: 100%;
+    button {
+        
+        @include styledDndTitle;
+    }
+
+}

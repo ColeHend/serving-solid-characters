@@ -101,7 +101,7 @@ const FeatureTable: Component<Props> = (props) => {
           {(level) => (
             <span >
               <For each={props.DndClass().features ? props.DndClass().features?.[+level] : []}>
-                {(feature, i) =><strong class={`${styles.flavor}`}>{feature.name}{i() !== (props?.DndClass()?.features?.[+level].length ?? 0) - 1 ? ", " : ""}</strong>}
+                {(feature, i) =><div class={`${styles.flavor}`}>{feature.name}{i() !== (props?.DndClass()?.features?.[+level].length ?? 0) - 1 ? ", " : ""}</div>}
               </For>
             </span>
           )}

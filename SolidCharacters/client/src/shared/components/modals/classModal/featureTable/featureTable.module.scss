@@ -19,10 +19,12 @@ $mobile-fontsize: .3rem;
 }
 
 .flavor {
+    text-align: left;
 
     @include flavorText;
 }
 
 .featureNameRow {
     width: 40%;
+
 }
