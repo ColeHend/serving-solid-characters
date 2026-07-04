@@ -165,6 +165,9 @@ public sealed class AiChatService : IAiChatService
     {
         var toolUseIndices = new HashSet<int>();
         string stopReason = "end_turn";
+        // Anthropic splits usage across events: input_tokens on message_start (complete), output_tokens on
+        // message_delta (CUMULATIVE — overwrite, last wins). Emitted together on message_stop.
+        int inputTokens = 0, outputTokens = 0;
         string? line;
         while ((line = await reader.ReadLineAsync(ct)) != null)
         {
@@ -180,6 +183,18 @@ public sealed class AiChatService : IAiChatService
                 if (!root.TryGetProperty("type", out var typeEl)) continue;
                 switch (typeEl.GetString())
                 {
+                    case "message_start":
+                    {
+                        // message_start.message.usage.input_tokens is the COMPLETE prompt count (+ cache
+                        // reads/creations when prompt caching is used). Its output_tokens is a small partial → ignore.
+                        if (root.TryGetProperty("message", out var ms) && ms.TryGetProperty("usage", out var u0))
+                        {
+                            if (u0.TryGetProperty("input_tokens", out var it) && it.ValueKind == JsonValueKind.Number) inputTokens = it.GetInt32();
+                            if (u0.TryGetProperty("cache_read_input_tokens", out var cr) && cr.ValueKind == JsonValueKind.Number) inputTokens += cr.GetInt32();
+                            if (u0.TryGetProperty("cache_creation_input_tokens", out var cc) && cc.ValueKind == JsonValueKind.Number) inputTokens += cc.GetInt32();
+                        }
+                        break;
+                    }
                     case "content_block_start":
                     {
                         var idx = root.GetProperty("index").GetInt32();
@@ -210,11 +225,14 @@ public sealed class AiChatService : IAiChatService
                         break;
                     }
                     case "message_delta":
+                        // usage sits at the event ROOT (sibling of delta) and is cumulative — overwrite.
+                        if (root.TryGetProperty("usage", out var ud) && ud.TryGetProperty("output_tokens", out var ot) && ot.ValueKind == JsonValueKind.Number)
+                            outputTokens = ot.GetInt32();
                         if (root.TryGetProperty("delta", out var d) && d.TryGetProperty("stop_reason", out var sr) && sr.ValueKind == JsonValueKind.String)
                             stopReason = MapAnthropicStop(sr.GetString());
                         break;
                     case "message_stop":
-                        yield return Json(new { type = "message_done", stopReason });
+                        yield return Json(new { type = "message_done", stopReason, usage = new { inputTokens, outputTokens } });
                         break;
                     case "error":
                         yield return Json(new { type = "error", error = root.TryGetProperty("error", out var er) && er.TryGetProperty("message", out var em) ? em.GetString() : "stream error" });
@@ -243,6 +261,9 @@ public sealed class AiChatService : IAiChatService
             ["max_tokens"] = req.MaxTokens ?? 4096,
             ["messages"] = BuildOpenAiMessages(req.Messages, req.System),
         };
+        // Ask for a trailing usage chunk (prompt/completion token counts) on streamed responses so the
+        // proxy can report real token usage; servers that don't support it simply omit the chunk.
+        if (stream) body["stream_options"] = new { include_usage = true };
         if (req.Tools is { Count: > 0 })
         {
             body["tools"] = req.Tools.Select(t => new { type = "function", function = new { name = t.Name, description = t.Description, parameters = t.InputSchema } }).ToList();
@@ -283,7 +304,11 @@ public sealed class AiChatService : IAiChatService
     private static async IAsyncEnumerable<string> ParseOpenAi(StreamReader reader, [EnumeratorCancellation] CancellationToken ct)
     {
         var started = new HashSet<int>();
-        var doneEmitted = false;
+        var toolDoneEmitted = false;
+        string? pendingStop = null;
+        // Usage arrives on a TRAILING chunk (empty choices) AFTER finish_reason — capture it and defer the
+        // single message_done to stream end so it can carry the counts.
+        int inputTokens = 0, outputTokens = 0;
         string? line;
         while ((line = await reader.ReadLineAsync(ct)) != null)
         {
@@ -296,6 +321,12 @@ public sealed class AiChatService : IAiChatService
             try { doc = JsonDocument.Parse(payload); } catch { continue; }
             using (doc)
             {
+                if (doc.RootElement.TryGetProperty("usage", out var us) && us.ValueKind == JsonValueKind.Object)
+                {
+                    if (us.TryGetProperty("prompt_tokens", out var pt) && pt.ValueKind == JsonValueKind.Number) inputTokens = pt.GetInt32();
+                    if (us.TryGetProperty("completion_tokens", out var ctk) && ctk.ValueKind == JsonValueKind.Number) outputTokens = ctk.GetInt32();
+                }
+
                 if (!doc.RootElement.TryGetProperty("choices", out var choices) || choices.GetArrayLength() == 0) continue;
                 var choice = choices[0];
 
@@ -329,18 +360,17 @@ public sealed class AiChatService : IAiChatService
 
                 if (choice.TryGetProperty("finish_reason", out var fr) && fr.ValueKind == JsonValueKind.String)
                 {
+                    // Close tool calls now, but DEFER message_done until the trailing usage chunk / stream end.
                     foreach (var idx in started) yield return Json(new { type = "tool_call_done", index = idx });
-                    yield return Json(new { type = "message_done", stopReason = MapOpenAiFinish(fr.GetString()) });
-                    doneEmitted = true;
+                    toolDoneEmitted = true;
+                    pendingStop = MapOpenAiFinish(fr.GetString());
                 }
             }
         }
 
-        if (!doneEmitted)
-        {
+        if (!toolDoneEmitted)
             foreach (var idx in started) yield return Json(new { type = "tool_call_done", index = idx });
-            yield return Json(new { type = "message_done", stopReason = started.Count > 0 ? "tool_use" : "end_turn" });
-        }
+        yield return Json(new { type = "message_done", stopReason = pendingStop ?? (started.Count > 0 ? "tool_use" : "end_turn"), usage = new { inputTokens, outputTokens } });
     }
 
     private static string MapOpenAiFinish(string? reason) => reason switch

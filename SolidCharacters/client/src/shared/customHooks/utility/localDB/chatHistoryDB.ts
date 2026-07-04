@@ -1,5 +1,5 @@
 import Dexie from "dexie";
-import type { AiMessage } from "../../../ai/types";
+import type { AiMessage, UsageTotals } from "../../../ai/types";
 import type { AiMode } from "../../../ai/prompt/systemPrompt";
 import type { ChatMessage } from "../../aiAssistant";
 import type { HomebrewPreview } from "../../../ai/tools/toolDispatcher";
@@ -19,6 +19,8 @@ export interface SavedConversation {
     messages: ChatMessage[];
     /** Unconfirmed homebrew preview cards, sanitized of in-flight flags. Restored detached on load. */
     pendingPreviews?: HomebrewPreview[];
+    /** Cumulative token usage for this conversation (in+out+count), restored into the header on load. Absent on pre-feature rows. */
+    usage?: UsageTotals;
     createdAt: number;
     updatedAt: number;
 }

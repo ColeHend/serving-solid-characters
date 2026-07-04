@@ -4,6 +4,7 @@ import {
 import { FeatureDetail } from "../../../models/generated";
 import { buildProvider } from "../providers/providerFactory";
 import { AiMessage, AiToolDef } from "../types";
+import { recordUsage } from "../usage";
 import { HomebrewKind } from "../refs/homebrewKind";
 import { HomebrewPreview } from "../tools/toolDispatcher";
 import { applyCommandsToEntity, ensureCatalogs, featuresOf, normalizeName } from "../commands/commandAgent";
@@ -85,7 +86,9 @@ const defaultRunner: MechanicsRunner = async (system, userText, tool, ai, signal
                 case "tool_call_start": acc.set(ev.index, { args: "" }); break;
                 case "tool_call_delta": { const a = acc.get(ev.index); if (a) a.args += ev.argsDelta; break; }
                 case "error": return null;
-                case "message_done": return parseToolArgs(acc) ?? extractToolJson(text);
+                case "message_done":
+                    if (ev.usage) recordUsage(ev.usage);   // session + overall totals
+                    return parseToolArgs(acc) ?? extractToolJson(text);
             }
         }
         return parseToolArgs(acc) ?? extractToolJson(text);

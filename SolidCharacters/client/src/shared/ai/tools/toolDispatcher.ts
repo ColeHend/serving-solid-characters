@@ -5,7 +5,7 @@ import {
 import { srdItem, srdSubclass } from "../../../models/data/generated";
 import { createNewId } from "../../customHooks/utility/tools/idGen";
 import { homebrewManager } from "../../customHooks/homebrewManager";
-import { AiToolCall } from "../types";
+import { AiToolCall, TokenUsage } from "../types";
 import { HOMEBREW_KINDS, TOOL_TO_KIND, type HomebrewKind } from "../refs/homebrewKind";
 import type { ReviewState, ReviewVerdict } from "../readiness/types";
 import { canonicalClassName } from "../refs/classRefs";
@@ -121,6 +121,12 @@ export interface HomebrewPreview {
      * the model (with the available names in `errors`) so it can retry, instead of surfacing a dead-end card.
      */
     targetMissing?: boolean;
+    /**
+     * Token cost that produced this homebrew (input + output). For a one-shot generation it's the create
+     * turn's usage; for a pipeline build it's the whole run's total. Shown on the preview/"Saved" card and
+     * carried into the decision log on save. Plain object → safe for structuredClone/persist.
+     */
+    usage?: TokenUsage;
 }
 
 const ABILITY_MAP: Record<string, AbilityScores> = {

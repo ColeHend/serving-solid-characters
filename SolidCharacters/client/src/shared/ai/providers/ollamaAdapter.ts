@@ -1,6 +1,7 @@
-import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
+import { AiMessage, AiProvider, AiToolDef, ChatStreamEvent, StreamChatOpts, TokenUsage } from "../types";
 import { DEFAULT_AI_MAX_TOKENS, RESERVED_PROMPT_TOKENS } from "../../../models/userSettings";
 import { createNewId } from "../../customHooks/utility/tools/idGen";
+import { estimateInputTokens } from "../usage";
 import { currentOrigin, diagnoseLocalEndpoint, mixedContentHint, normalizeBaseUrl } from "../localEndpoint";
 
 /**
@@ -88,6 +89,22 @@ export class OllamaAdapter implements AiProvider {
         let toolIndex = 0;
         let sawTool = false;
         let doneEmitted = false;
+        // Accumulated OUTPUT char count (text + thinking + tool-arg JSON), used only for the estimate
+        // fallback when the done chunk lacks eval_count. The tools actually sent this request (withheld
+        // when responseSchema wins) — used for a matching input estimate when prompt_eval_count is absent.
+        let outChars = 0;
+        const sentTools = tools?.length && !opts.responseSchema ? tools : undefined;
+        // Ollama omits prompt_eval_count when the prompt prefix was server-cached: treat missing/zero as
+        // "unknown" and estimate that side only, keeping the real eval_count.
+        const usageFromDone = (chunk: any): TokenUsage => {
+            const inputReal = typeof chunk?.prompt_eval_count === "number" && chunk.prompt_eval_count > 0;
+            const outputReal = typeof chunk?.eval_count === "number";
+            return {
+                inputTokens: inputReal ? chunk.prompt_eval_count : estimateInputTokens(messages, opts.system, sentTools),
+                outputTokens: outputReal ? chunk.eval_count : Math.ceil(outChars / 4),
+                estimated: (!inputReal || !outputReal) || undefined,
+            };
+        };
 
         try {
             for (;;) {
@@ -106,9 +123,11 @@ export class OllamaAdapter implements AiProvider {
                     const msg = chunk?.message;
                     if (msg) {
                         if (typeof msg.thinking === "string" && msg.thinking.length) {
+                            outChars += msg.thinking.length;
                             yield { type: "thinking_delta", text: msg.thinking };
                         }
                         if (typeof msg.content === "string" && msg.content.length) {
+                            outChars += msg.content.length;
                             yield { type: "text_delta", text: msg.content };
                         }
                         if (Array.isArray(msg.tool_calls)) {
@@ -119,7 +138,9 @@ export class OllamaAdapter implements AiProvider {
                                 sawTool = true;
                                 yield { type: "tool_call_start", index, id: `ollama_${createNewId()}`, name: tc?.function?.name ?? "" };
                                 const args = tc?.function?.arguments;
-                                yield { type: "tool_call_delta", index, argsDelta: typeof args === "string" ? args : JSON.stringify(args ?? {}) };
+                                const argsDelta = typeof args === "string" ? args : JSON.stringify(args ?? {});
+                                outChars += argsDelta.length;
+                                yield { type: "tool_call_delta", index, argsDelta };
                                 yield { type: "tool_call_done", index };
                             }
                         }
@@ -127,7 +148,7 @@ export class OllamaAdapter implements AiProvider {
 
                     if (chunk?.done) {
                         const reason = chunk.done_reason === "length" ? "max_tokens" : (sawTool ? "tool_use" : "end_turn");
-                        yield { type: "message_done", stopReason: reason };
+                        yield { type: "message_done", stopReason: reason, usage: usageFromDone(chunk) };
                         doneEmitted = true;
                     }
                 }
@@ -142,7 +163,15 @@ export class OllamaAdapter implements AiProvider {
             return;
         }
 
-        if (!doneEmitted) yield { type: "message_done", stopReason: sawTool ? "tool_use" : "end_turn" };
+        if (!doneEmitted) yield {
+            type: "message_done",
+            stopReason: sawTool ? "tool_use" : "end_turn",
+            usage: {
+                inputTokens: estimateInputTokens(messages, opts.system, sentTools),
+                outputTokens: Math.ceil(outChars / 4),
+                estimated: true,
+            },
+        };
     }
 }
 

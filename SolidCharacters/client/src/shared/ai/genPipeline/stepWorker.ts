@@ -1,5 +1,7 @@
 import { AiSettings, STRUCTURED_TURN_TEMPERATURE, structuredOutputsEnabled } from "../../../models/userSettings";
 import { str } from "../coerce";
+import { addUsage } from "../usage";
+import type { TokenUsage } from "../types";
 import type { SubAgentResult, SubAgentSpec } from "../subAgent";
 import type { ConceptBrief, RunStepOptions, StepContext, StepResult, StepSpec } from "./types";
 
@@ -148,13 +150,16 @@ export async function runStep<T>(
     let lastErrors: string[] = [];
     let lastFits: string | undefined;
     let noToolCall = false;
+    // Sum the token cost of every attempt (repairs included) so the driver can total per-generation usage.
+    let usage: TokenUsage | undefined;
 
     while (attempts < maxAttempts) {
-        if (opts.signal?.aborted) return { ok: false, value: lastValue, errors: lastErrors, attempts, aborted: true };
+        if (opts.signal?.aborted) return { ok: false, value: lastValue, errors: lastErrors, attempts, aborted: true, usage };
 
         attempts++;
         const task = buildTask(spec, ctx, attempts === 1 ? [] : lastErrors, noToolCall, structured);
         const res = await runner(subSpec, task, ai, opts.signal);
+        if (res.usage) usage = addUsage(usage, res.usage);
 
         // Resolve the tool input: a real forced call, else salvage a JSON object the model wrote as text.
         let raw: Record<string, unknown> | null = null;
@@ -176,7 +181,7 @@ export async function runStep<T>(
         lastFits = str(raw.fits_concept).trim() || undefined;
         const { value, errors } = spec.parse(raw);
         lastValue = value;
-        if (!errors.length) return { ok: true, value, fitsConcept: lastFits, errors: [], attempts };
+        if (!errors.length) return { ok: true, value, fitsConcept: lastFits, errors: [], attempts, usage };
 
         // Gate failure (legal call, illegal output) — spend the gate-repair budget.
         lastErrors = errors;
@@ -192,5 +197,5 @@ export async function runStep<T>(
             ? `${spec.tool.name} came back empty or unreadable after ${attempts} attempts. Use Retry to run this step again.`
             : `The model replied with prose instead of calling ${spec.tool.name}. Use Retry, or enable structured outputs for local models.`]
         : lastErrors;
-    return { ok: false, value: lastValue, fitsConcept: lastFits, errors: finalErrors, attempts, noToolCall };
+    return { ok: false, value: lastValue, fitsConcept: lastFits, errors: finalErrors, attempts, noToolCall, usage };
 }

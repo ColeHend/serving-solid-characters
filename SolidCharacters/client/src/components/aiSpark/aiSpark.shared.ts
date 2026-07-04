@@ -45,6 +45,17 @@ export function relativeTime(ts: number): string {
     return new Date(ts).toLocaleDateString();
 }
 
+/** Compact token count for chips/triggers: 950→"950", 12_345→"12.3k", 1_200_000→"1.2M". */
+export function fmtTokens(n: number): string {
+    if (!Number.isFinite(n) || n <= 0) return "0";
+    if (n < 1000) return String(Math.round(n));
+    if (n < 1_000_000) return `${(n / 1000).toFixed(n < 10_000 ? 1 : 0)}k`;
+    return `${(n / 1_000_000).toFixed(1)}M`;
+}
+
+/** Grouped exact token count for tooltips/breakdowns: 12345 → "12,345". */
+export const fmtExact = (n: number): string => Math.round(n).toLocaleString();
+
 /** One changed field, before→after, for the edit diff card. */
 export interface FieldDiff { label: string; before: string; after: string; }
 

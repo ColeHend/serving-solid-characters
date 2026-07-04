@@ -7,6 +7,7 @@ import { CLASS_PIPELINE_PHASES } from "../../../shared/ai/genPipeline/classPipel
 import { CHARACTER_PIPELINE_PHASES } from "../../../shared/ai/genPipeline/characterPipeline";
 import { HOMEBREW_PIPELINE_PHASES } from "../../../shared/ai/genPipeline/homebrewPipeline";
 import type { HomebrewPreview } from "../aiSpark.shared";
+import { fmtExact, fmtTokens } from "../aiSpark.shared";
 import ReviewVerdicts from "../homebrew/ReviewVerdicts";
 import styles from "../SparkSidebar.module.scss";
 
@@ -133,6 +134,21 @@ const GenPipelineCard: Component = () => {
                     {/* Phase-F critic findings (High usage). ReviewVerdicts only reads verdicts/reviewBlocked. */}
                     <Show when={(r().verdicts ?? []).some(v => v.issues.length)}>
                         <ReviewVerdicts preview={{ verdicts: r().verdicts, reviewBlocked: false } as unknown as HomebrewPreview} />
+                    </Show>
+
+                    {/* Live per-homebrew token cost — ticks up as phases complete (Session/overall totals live in the header). */}
+                    <Show when={r().usage}>
+                        {(u) => (
+                            <div
+                                class={styles.usageLine}
+                                title={`${fmtExact(u().inputTokens)} input + ${fmtExact(u().outputTokens)} output tokens${u().estimated ? " (estimated)" : ""}`}
+                            >
+                                <Icon icon={Bolt} size="small" />
+                                <span classList={{ [styles.usageEstimated]: !!u().estimated }}>
+                                    {u().estimated ? "~" : ""}{fmtTokens(u().inputTokens)} in&nbsp;/&nbsp;{fmtTokens(u().outputTokens)} out
+                                </span>
+                            </div>
+                        )}
                     </Show>
 
                     <div class={styles.previewActions}>

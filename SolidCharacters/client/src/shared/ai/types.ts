@@ -53,6 +53,31 @@ export interface AiToolDef {
 export type AiStopReason = "end_turn" | "tool_use" | "max_tokens" | "refusal" | "error";
 
 /**
+ * Token cost of a single model round-trip. Populated by the provider adapters onto `message_done`
+ * (real counts where the provider reports them — Ollama `prompt_eval_count`/`eval_count`, OpenAI-compat
+ * `usage`, Anthropic via the .NET proxy — otherwise a char/4 estimate flagged `estimated`). Consumers
+ * fold this into the token ledger (shared/ai/usage.ts) for the per-conversation + overall totals.
+ */
+export interface TokenUsage {
+    inputTokens: number;
+    outputTokens: number;
+    /** true ⇒ derived from the char/4 heuristic because the provider reported no counts. */
+    estimated?: boolean;
+}
+
+/**
+ * Cumulative token totals — one per-conversation (persisted on SavedConversation) and one overall
+ * (persistent across conversations, the cap's meter). `estimated` is sticky: any estimated request
+ * flags the whole total, so it reads as a lower bound rather than an exact figure.
+ */
+export interface UsageTotals {
+    inputTokens: number;
+    outputTokens: number;
+    requestCount: number;
+    estimated?: boolean;
+}
+
+/**
  * Normalized streaming event. Both adapters (local-direct and cloud-via-.NET-proxy) produce this
  * exact shape, so the store and UI never branch on provider. Tool-call arguments stream as partial
  * JSON across `tool_call_delta` events — accumulate by `index`, JSON.parse only after `tool_call_done`.
@@ -63,7 +88,7 @@ export type ChatStreamEvent =
     | { type: "tool_call_start"; index: number; id: string; name: string }
     | { type: "tool_call_delta"; index: number; argsDelta: string }
     | { type: "tool_call_done"; index: number }
-    | { type: "message_done"; stopReason: AiStopReason }
+    | { type: "message_done"; stopReason: AiStopReason; usage?: TokenUsage }
     | { type: "error"; error: string };
 
 export interface StreamChatOpts {

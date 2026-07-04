@@ -9,7 +9,9 @@ import { produceConceptBrief } from "./conceptBrief";
 import { runStep } from "./stepWorker";
 import { repairBudgetFor, type HomebrewPipelineHost } from "./orchestrator";
 import { PipelinePhase } from "./types";
-import type { PipelineRun, PipelineStatus, RunStepOptions, StepContext, StepSpec } from "./types";
+import { addUsage } from "../usage";
+import type { TokenUsage } from "../types";
+import type { PipelineRun, PipelineStatus, RunStepOptions, StepContext, StepResult, StepSpec } from "./types";
 
 /**
  * The generic Homebrew mini-pipeline (Generation depth ≥ Medium). The 7 non-class/character create_* kinds
@@ -83,8 +85,15 @@ export async function runHomebrewPipeline(seed: string, host: HomebrewPipelineHo
     const label = kindLabelLower(kind);
     const tool = HOMEBREW_TOOL_BY_NAME[KIND_TO_TOOL[kind]];
 
+    // Running token total for THIS generation — folded in per step and shown live on the GenPipelineCard.
+    let runUsage: TokenUsage | undefined;
+    const accrue = <T>(res: StepResult<T>): StepResult<T> => {
+        if (res.usage) runUsage = addUsage(runUsage, res.usage);
+        return res;
+    };
+
     const emit = (index: number, status: PipelineStatus, extra?: Partial<PipelineRun>) =>
-        host.onProgress({ pipelineType: "homebrew", phase: HOMEBREW_PIPELINE_PHASES[index], phaseIndex: index, totalPhases: TOTAL, status, ...extra });
+        host.onProgress({ pipelineType: "homebrew", phase: HOMEBREW_PIPELINE_PHASES[index], phaseIndex: index, totalPhases: TOTAL, status, ...extra, usage: runUsage });
 
     if (!tool) return fail(host, emit, 0, `There's no generator for a homebrew ${label}.`);
 
@@ -93,7 +102,7 @@ export async function runHomebrewPipeline(seed: string, host: HomebrewPipelineHo
     try {
         // ── Phase 1 — concept brief ────────────────────────────────────────────
         emit(0, "running");
-        const briefResult = await produceConceptBrief(seed, label, host.ai, opts, host.runner);
+        const briefResult = accrue(await produceConceptBrief(seed, label, host.ai, opts, host.runner));
         if (host.signal.aborted) return void emit(0, "aborted");
         if (!briefResult.ok || !briefResult.value) {
             return fail(host, emit, 0, briefResult.errors[0] ?? `Couldn't draft a concept for the ${label}.`);
@@ -104,11 +113,14 @@ export async function runHomebrewPipeline(seed: string, host: HomebrewPipelineHo
         emit(1, "running");
         const ctx: StepContext = { brief };   // the brief is the carry-forward for a single-entity build
         const creationOpts: RunStepOptions = { ...opts, maxTokens: creationMaxTokens(host.ai) };
-        const result = await runStep(creationStep(kind, tool, host.dndSystem), ctx, host.ai, creationOpts, host.runner);
+        const result = accrue(await runStep(creationStep(kind, tool, host.dndSystem), ctx, host.ai, creationOpts, host.runner));
         if (host.signal.aborted) return void emit(1, "aborted");
 
         const preview = result.value;
         if (!preview) return fail(host, emit, 1, result.errors[0] ?? `Couldn't build the ${label}.`);
+        // Stamp the mini-pipeline's total onto the preview so its per-homebrew cost survives to the card
+        // and (on save) the decision log, exactly like a one-shot generation.
+        if (runUsage) preview.usage = runUsage;
 
         // Surface the preview even if it failed its gate — the one-shot path shows an invalid card (Save
         // disabled) rather than dropping it, and the card's own errors drive any follow-up repair.

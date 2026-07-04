@@ -1,5 +1,6 @@
 import { AiMessage, AiProvider, AiProviderKind, AiToolDef, ChatStreamEvent, StreamChatOpts } from "../types";
 import { DEFAULT_AI_MAX_TOKENS } from "../../../models/userSettings";
+import { estimateInputTokens } from "../usage";
 import { parseSse } from "./sse";
 
 /**
@@ -51,15 +52,28 @@ export class ProxyAdapter implements AiProvider {
             return;
         }
 
+        // The backend reports real usage on its `message_done` (Anthropic/OpenAI counts). Track output
+        // chars only for a defense-in-depth estimate if a backend build omits it.
+        let outChars = 0;
+        const estimate = () => ({
+            inputTokens: estimateInputTokens(messages, opts.system, tools),
+            outputTokens: Math.ceil(outChars / 4),
+            estimated: true,
+        });
         let doneEmitted = false;
         for await (const ev of parseSse(res.body, opts.signal)) {
             const data = ev.data.trim();
             if (!data || data === "[DONE]") continue;
             let parsed: ChatStreamEvent;
             try { parsed = JSON.parse(data) as ChatStreamEvent; } catch { continue; }
+            if (parsed.type === "text_delta" || parsed.type === "thinking_delta") outChars += parsed.text.length;
+            else if (parsed.type === "tool_call_delta") outChars += parsed.argsDelta.length;
+            if (parsed.type === "message_done" && !parsed.usage && parsed.stopReason !== "error") {
+                parsed = { ...parsed, usage: estimate() };
+            }
             yield parsed;
             if (parsed.type === "message_done") doneEmitted = true;
         }
-        if (!doneEmitted) yield { type: "message_done", stopReason: "end_turn" };
+        if (!doneEmitted) yield { type: "message_done", stopReason: "end_turn", usage: estimate() };
     }
 }

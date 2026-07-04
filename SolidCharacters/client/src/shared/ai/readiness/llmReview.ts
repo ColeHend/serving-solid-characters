@@ -1,6 +1,7 @@
 import { DEFAULT_AI_NUM_CTX, STRUCTURED_TURN_TEMPERATURE, structuredOutputsEnabled } from "../../../models/userSettings";
 import { buildProvider } from "../providers/providerFactory";
 import { AiMessage } from "../types";
+import { recordUsage } from "../usage";
 import { HomebrewKind } from "../refs/homebrewKind";
 import { HomebrewPreview } from "../tools/toolDispatcher";
 import { extractToolJson } from "../genPipeline/stepWorker";
@@ -117,7 +118,9 @@ export async function runLlmReview(spec: ReviewPassSpec, preview: ReviewSubject,
                 case "tool_call_start": acc.set(ev.index, { args: "" }); break;
                 case "tool_call_delta": { const a = acc.get(ev.index); if (a) a.args += ev.argsDelta; break; }
                 case "error": return failOpen;
-                case "message_done": return resolveVerdict();
+                case "message_done":
+                    if (ev.usage) recordUsage(ev.usage);   // session + overall totals
+                    return resolveVerdict();
             }
         }
         return resolveVerdict();

@@ -1,6 +1,7 @@
 import Dexie from "dexie";
 import type { HomebrewKind } from "../../../ai/refs/homebrewKind";
 import type { PatchOp } from "../../../ai/tools/patch";
+import type { TokenUsage } from "../../../ai/types";
 
 /**
  * The kind of thing a decision-log entry is about: any homebrew kind, plus `"character"` for the staged
@@ -26,6 +27,8 @@ export interface DecisionLogEntry {
     /** Links back to the chat that produced this change (chatHistoryDB). */
     conversationId?: string;
     previewId?: string;
+    /** Token cost of the generation behind this committed change (in+out). Absent on pre-feature rows. */
+    usage?: TokenUsage;
     timestamp: number;
 }
 

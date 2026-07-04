@@ -3,7 +3,8 @@ import { Button, Icon } from "coles-solid-library";
 import { Assignment, Close } from "coles-solid-library/icons";
 import useClickOutside from "solid-click-outside";
 import { decisionLog, ensureDecisionLogLoaded } from "../../../shared/customHooks/decisionLogManager";
-import { relativeTime } from "../aiSpark.shared";
+import { fmtExact, fmtTokens, relativeTime } from "../aiSpark.shared";
+import { combinedUsed } from "../../../shared/ai/overallUsage";
 import { kindLabelLower } from "../../../shared/ai/refs/homebrewKind";
 import styles from "../SparkSidebar.module.scss";
 
@@ -55,6 +56,16 @@ const DecisionLog: Component = () => {
                                             <span class={styles.logChip} data-type={e.changeType}>{e.changeType}</span>
                                             <strong>{e.entityName}</strong>
                                             <span class={styles.logKind}>{kindLabelLower(e.entityKind)}</span>
+                                            <Show when={e.usage}>
+                                                {(u) => (
+                                                    <span
+                                                        class={styles.logTokens}
+                                                        title={`${fmtExact(combinedUsed(u()))} tokens (${fmtExact(u().inputTokens)} in / ${fmtExact(u().outputTokens)} out)${u().estimated ? " — estimated" : ""}`}
+                                                    >
+                                                        {u().estimated ? "~" : ""}{fmtTokens(combinedUsed(u()))} tok
+                                                    </span>
+                                                )}
+                                            </Show>
                                             <span class={styles.logTime}>{relativeTime(e.timestamp)}</span>
                                         </div>
                                         <div class={styles.logSummary}>{e.summary}</div>

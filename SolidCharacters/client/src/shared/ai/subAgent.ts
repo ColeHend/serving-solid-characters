@@ -1,7 +1,8 @@
 import { buildProvider } from "./providers/providerFactory";
-import { AiMessage, AiToolCall, AiToolDef, AiToolResult } from "./types";
+import { AiMessage, AiToolCall, AiToolDef, AiToolResult, TokenUsage } from "./types";
 import { AiSettings, DEFAULT_AI_NUM_CTX } from "../../models/userSettings";
 import { LOOKUP_TOOLS } from "./tools/lookupTools";
+import { addUsage, recordUsage } from "./usage";
 
 /**
  * Restricted-tool sub-agents that run in a FRESH, isolated context (a brand-new short `messages` array —
@@ -37,6 +38,8 @@ export interface SubAgentResult {
     /** Tool calls from the final (unexecuted) turn, if any. */
     toolCalls: AiToolCall[];
     ok: boolean;
+    /** Token cost of this sub-agent (summed across its bounded tool-use loop). For per-homebrew attribution. */
+    usage?: TokenUsage;
 }
 
 /** Executes one of the sub-agent's tool calls. Returns the tool_result content. */
@@ -78,7 +81,9 @@ async function streamOnce(spec: SubAgentSpec, messages: AiMessage[], ai: AiSetti
             case "tool_call_start": acc.set(ev.index, { id: ev.id, name: ev.name, args: "" }); break;
             case "tool_call_delta": { const a = acc.get(ev.index); if (a) a.args += ev.argsDelta; break; }
             case "error": return { text, toolCalls: [], ok: false };
-            case "message_done": return { text, toolCalls: parseCalls(acc), ok: true };
+            case "message_done":
+                if (ev.usage) recordUsage(ev.usage);   // session + overall totals
+                return { text, toolCalls: parseCalls(acc), ok: true, usage: ev.usage };
         }
     }
     return { text, toolCalls: parseCalls(acc), ok: true };
@@ -94,27 +99,30 @@ export async function runSubAgent(
 ): Promise<SubAgentResult> {
     const messages: AiMessage[] = [{ role: "user", text: task }];
     let lastText = "";
+    // Sum usage across every turn so a multi-iteration sub-agent reports its FULL per-homebrew cost.
+    let usage: TokenUsage | undefined;
     try {
         for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
             if (signal?.aborted) break;
             const turn = await streamOnce(spec, messages, ai, signal);
-            if (!turn.ok) return { text: lastText, toolCalls: [], ok: false };
+            if (turn.usage) usage = addUsage(usage, turn.usage);
+            if (!turn.ok) return { text: lastText, toolCalls: [], ok: false, usage };
             if (turn.text) lastText = turn.text;
-            if (!turn.toolCalls.length || !execute) return { text: lastText, toolCalls: turn.toolCalls, ok: true };
+            if (!turn.toolCalls.length || !execute) return { text: lastText, toolCalls: turn.toolCalls, ok: true, usage };
 
             // Record the assistant turn + execute its tool calls, then loop with the results appended.
             messages.push({ role: "assistant", text: turn.text || undefined, toolCalls: turn.toolCalls });
             const results: AiToolResult[] = [];
             for (const tc of turn.toolCalls) {
-                if (signal?.aborted) return { text: lastText, toolCalls: [], ok: false };
+                if (signal?.aborted) return { text: lastText, toolCalls: [], ok: false, usage };
                 const r = await execute(tc);
                 results.push({ toolCallId: tc.id, content: r.content, isError: r.isError });
             }
             messages.push({ role: "tool", toolResults: results });
         }
-        return { text: lastText, toolCalls: [], ok: true };
+        return { text: lastText, toolCalls: [], ok: true, usage };
     } catch {
-        return { text: lastText, toolCalls: [], ok: false };
+        return { text: lastText, toolCalls: [], ok: false, usage };
     }
 }
 

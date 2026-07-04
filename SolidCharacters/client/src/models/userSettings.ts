@@ -111,6 +111,14 @@ export const DEFAULT_REVIEW_SETTINGS: ReviewSettings = {
 export const DEFAULT_AI_MAX_TOKENS = 16384;
 
 /**
+ * Default budget cap on CUMULATIVE token usage (input + output) that Grimoire may spend before it soft-
+ * blocks new turns/generations. Checked against the persistent OVERALL total (shared/ai/overallUsage.ts),
+ * which the user resets from the settings/header. 0 = unlimited (the default) — distinct from
+ * DEFAULT_AI_MAX_TOKENS, which caps a single response's LENGTH.
+ */
+export const DEFAULT_AI_TOKEN_CAP = 0;
+
+/**
  * Default context window for local models. Ollama's own default is ~4096, which is too small to hold
  * the homebrew system prompt + tool schemas AND leave room to generate. The homebrew tool surface +
  * system prompt is measured at ~5-6k tokens, so 8192 left almost no room for the conversation history
@@ -261,6 +269,11 @@ export interface AiSettings {
     personaStrength?: PersonaStrength;
     /** Max mic recording length in seconds (local audio attach). Defaults to DEFAULT_AI_MAX_AUDIO_SECONDS. */
     maxAudioSeconds?: number;
+    /**
+     * Budget cap on cumulative input+output tokens across all chats before Grimoire soft-blocks new turns.
+     * Enforced against the persistent overall total; 0/undefined = unlimited. Defaults to DEFAULT_AI_TOKEN_CAP.
+     */
+    tokenCap?: number;
 }
 
 export interface UserSettings {

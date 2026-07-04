@@ -7,6 +7,7 @@ import {
 import { srdSubclass } from "../../../models/data/generated";
 import { buildProvider } from "../providers/providerFactory";
 import { AiMessage, AiToolCall } from "../types";
+import { recordUsage } from "../usage";
 import { HomebrewKind } from "../refs/homebrewKind";
 import { HomebrewPreview } from "../tools/toolDispatcher";
 import {
@@ -271,7 +272,9 @@ const defaultCommandRunner: CommandTurnRunner = async (messages, ai, cfg, signal
                 case "tool_call_start": acc.set(ev.index, { id: ev.id, name: ev.name, args: "" }); break;
                 case "tool_call_delta": { const a = acc.get(ev.index); if (a) a.args += ev.argsDelta; break; }
                 case "error": return { text, toolCalls: [], ok: false };
-                case "message_done": return { text, toolCalls: parseCalls(acc), ok: true };
+                case "message_done":
+                    if (ev.usage) recordUsage(ev.usage);   // session + overall totals
+                    return { text, toolCalls: parseCalls(acc), ok: true };
             }
         }
         return { text, toolCalls: parseCalls(acc), ok: true };
