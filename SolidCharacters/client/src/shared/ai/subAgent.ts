@@ -24,6 +24,12 @@ export interface SubAgentSpec {
     temperature?: number;
     /** Force a tool call on OpenAI-compatible/cloud servers (tool_choice "required"); Ollama-native ignores it. */
     forceTool?: boolean;
+    /**
+     * JSON schema to constrain the reply's TEXT to (native structured outputs). When set, adapters emit
+     * grammar-constrained JSON as text and WITHHOLD tools, so the caller parses JSON out of `text`.
+     * Mirrors {@link StreamChatOpts.responseSchema}; leave undefined for the tool-call path.
+     */
+    responseSchema?: Record<string, unknown>;
 }
 
 export interface SubAgentResult {
@@ -53,6 +59,9 @@ async function streamOnce(spec: SubAgentSpec, messages: AiMessage[], ai: AiSetti
     const provider = buildProvider(ai);
     const acc = new Map<number, { id: string; name: string; args: string }>();
     let text = "";
+    // Keep passing `spec.tools` even in structured mode: the adapters withhold tools whenever
+    // `responseSchema` is set (locked by structuredOutput.test.ts), and the pipeline mock provider routes
+    // by the tools array. Don't "simplify" this to drop tools here — it would break both.
     for await (const ev of provider.streamChat(messages, spec.tools.length ? spec.tools : undefined, {
         model: ai.model,
         system: spec.system,
@@ -60,6 +69,7 @@ async function streamOnce(spec: SubAgentSpec, messages: AiMessage[], ai: AiSetti
         numCtx: spec.numCtx ?? ai.numCtx ?? DEFAULT_AI_NUM_CTX,
         think: spec.think ?? false,
         temperature: spec.temperature,
+        responseSchema: spec.responseSchema,
         forceTool: spec.forceTool,
         signal,
     })) {

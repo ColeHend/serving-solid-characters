@@ -1,4 +1,5 @@
 import { createNewId } from "../../customHooks/utility/tools/idGen";
+import { subclassMarkerInput } from "../refs/classProgression";
 import { buildPreview, HomebrewPreview } from "../tools/toolDispatcher";
 import type { AiToolCall } from "../types";
 import type { WorkingClass, WorkingSubclass } from "./types";
@@ -19,6 +20,12 @@ import type { WorkingClass, WorkingSubclass } from "./types";
 /** Rebuild the `create_class` tool-input object from the working class (the shape `toClass` reads). */
 export function workingClassToToolInput(working: WorkingClass): Record<string, unknown> {
     const p = working.proficiencies;
+    const features = (working.features ?? []).map(f => ({ level: f.level, name: f.name, description: f.description }));
+    // The subclass-grant level is dropped from the base feature loop, so mark it here (where subclassLevel is
+    // known) — otherwise that row is blank in the class table. `ensureAllClassLevels` fills the rest.
+    if (working.subclassCount && working.subclassCount > 0 && working.subclassLevel) {
+        features.push(subclassMarkerInput(working.name ?? "", working.subclassLevel));
+    }
     return {
         name: working.name ?? "",
         hitDie: working.hitDie ?? "",
@@ -30,7 +37,7 @@ export function workingClassToToolInput(working: WorkingClass): Record<string, u
         tools: p?.tools ?? [],
         startingEquipment: working.startingEquipment ?? [],
         casterType: working.casterType ?? "none",
-        features: (working.features ?? []).map(f => ({ level: f.level, name: f.name, description: f.description })),
+        features,
     };
 }
 

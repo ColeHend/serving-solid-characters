@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { num } from "../coerce";
 import type { AiToolDef } from "../types";
 import type { AiSettings } from "../../../models/userSettings";
-import type { SubAgentResult } from "../subAgent";
+import type { SubAgentResult, SubAgentSpec } from "../subAgent";
 import { runStep, StepModelRunner } from "./stepWorker";
 import type { ConceptBrief, StepSpec } from "./types";
 
@@ -24,19 +24,24 @@ const STEP: StepSpec<{ n: number }> = {
     },
 };
 
+// Local provider → structured outputs default ON (structuredOutputsEnabled), so runStep sends responseSchema
+// and no forceTool. AI_TOOLCALL flips the kill switch off to exercise the forced-tool-call path.
 const AI = { provider: "local", model: "test", localBaseUrl: "", enabled: true } as AiSettings;
+const AI_TOOLCALL = { ...AI, structuredOutputs: false } as AiSettings;
 
-// ── Stub runner: returns scripted SubAgentResults in order, recording each task string it was given. ──
+// ── Stub runner: returns scripted SubAgentResults in order, recording each task string + spec it was given. ──
 function scriptedRunner(responses: SubAgentResult[]) {
     let i = 0;
     const calls: string[] = [];
-    const runner: StepModelRunner = async (_spec, task) => {
+    const specs: SubAgentSpec[] = [];
+    const runner: StepModelRunner = async (spec, task) => {
         calls.push(task);
+        specs.push(spec);
         const r = responses[Math.min(i, responses.length - 1)];
         i++;
         return r;
     };
-    return { runner, calls, get count() { return i; } };
+    return { runner, calls, specs, get count() { return i; } };
 }
 
 const toolCall = (input: Record<string, unknown>): SubAgentResult => ({ text: "", toolCalls: [{ id: "c1", name: "fill_n", input }], ok: true });
@@ -73,12 +78,20 @@ describe("runStep", () => {
         expect(res.errors.length).toBeGreaterThan(0);
     });
 
-    it("treats a prose (no tool call) turn as a step failure and repairs", async () => {
+    it("treats a prose (no JSON) turn as a step failure and repairs (structured mode)", async () => {
         const sr = scriptedRunner([prose(), toolCall({ n: 3 })]);
         const res = await runStep(STEP, {}, AI, { repairBudget: 1 }, sr.runner);
         expect(res.ok).toBe(true);
         expect(res.value).toEqual({ n: 3 });
         expect(res.attempts).toBe(2);
+        // Structured mode nudges toward JSON, not a tool call.
+        expect(sr.calls[1]).toContain("Your last reply was not a JSON object");
+    });
+
+    it("nudges toward the tool call when structured outputs are disabled", async () => {
+        const sr = scriptedRunner([prose(), toolCall({ n: 3 })]);
+        const res = await runStep(STEP, {}, AI_TOOLCALL, { repairBudget: 1 }, sr.runner);
+        expect(res.ok).toBe(true);
         expect(sr.calls[1]).toContain("You did not call the tool last time");
     });
 
@@ -137,12 +150,35 @@ describe("runStep", () => {
         expect(res.attempts).toBe(3);
     });
 
-    it("ends with an actionable message when the model never calls the tool", async () => {
+    it("ends with an actionable Retry message when the model never yields JSON (structured mode)", async () => {
         const sr = scriptedRunner([prose(), prose(), prose(), prose()]);
         const res = await runStep(STEP, {}, AI, {}, sr.runner);
         expect(res.ok).toBe(false);
         expect(res.noToolCall).toBe(true);
-        expect(res.errors[0]).toContain("replied with text instead of filling in fill_n");
+        expect(res.errors[0]).toContain("fill_n came back empty or unreadable");
+        expect(res.errors[0]).toContain("Use Retry");
+        expect(res.errors[0]).not.toContain("usage level");   // usage level doesn't govern this failure
+    });
+
+    it("ends with a tool-call message when structured outputs are disabled", async () => {
+        const sr = scriptedRunner([prose(), prose(), prose(), prose()]);
+        const res = await runStep(STEP, {}, AI_TOOLCALL, {}, sr.runner);
+        expect(res.ok).toBe(false);
+        expect(res.noToolCall).toBe(true);
+        expect(res.errors[0]).toContain("prose instead of calling fill_n");
+        expect(res.errors[0]).not.toContain("usage level");
+    });
+
+    it("sends responseSchema and no forceTool in structured mode; the inverse when disabled", async () => {
+        const structured = scriptedRunner([toolCall({ n: 1 })]);
+        await runStep(STEP, {}, AI, {}, structured.runner);
+        expect(structured.specs[0].responseSchema).toEqual(TOOL.inputSchema);
+        expect(structured.specs[0].forceTool).toBeUndefined();
+
+        const toolMode = scriptedRunner([toolCall({ n: 1 })]);
+        await runStep(STEP, {}, AI_TOOLCALL, {}, toolMode.runner);
+        expect(toolMode.specs[0].responseSchema).toBeUndefined();
+        expect(toolMode.specs[0].forceTool).toBe(true);
     });
 
     it("honors toolCallRetries 0 (a single prose reply fails immediately)", async () => {

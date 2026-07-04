@@ -152,13 +152,17 @@ describe("runClassPipeline (M1 + M2)", () => {
 
         const klass = completed[0].entity as Class5E;
         const levels = Object.keys(klass.features ?? {}).map(Number).sort((a, b) => a - b);
-        // Level 1 (chassis) plus every base-feature level → a real 1–20 spread, not a single level.
+        // Level 1 (chassis) plus every model-authored base-feature level are present…
         expect(levels).toContain(1);
         for (const l of BASE_LEVELS) expect(levels).toContain(l);
-        expect(levels.length).toBeGreaterThan(8);
-        // No duplicate feature names survived (the gate rejects collisions).
-        const names = Object.values(klass.features ?? {}).flat().map(f => f.name);
-        expect(new Set(names).size).toBe(names.length);
+        // …and the deterministic fill completes every level 1–20, like a real class.
+        expect(levels).toEqual([...Array(20)].map((_, i) => i + 1));
+        expect(klass.features?.[4]?.[0].name).toBe("Ability Score Improvement");
+        expect(klass.features?.[19]?.[0].name).toBe("Epic Boon");
+        // No duplicate names among the MODEL-authored levels (the gate rejects collisions); the deterministic
+        // stamps (ASI at 4/8/12/16, Epic Boon at 19) intentionally repeat, so they're excluded from this check.
+        const authoredNames = [1, ...BASE_LEVELS].flatMap(l => (klass.features?.[l] ?? []).map(f => f.name));
+        expect(new Set(authoredNames).size).toBe(authoredNames.length);
     });
 
     it("builds each promised subclass with a brief and its own feature loop", async () => {
@@ -217,8 +221,10 @@ describe("runClassPipeline (M1 + M2)", () => {
 
         expect(errors).toEqual([]);
         const klass = completed[0].entity as Class5E;
-        // Only the level-1 chassis feature survives; the loop's failures were skipped, not fatal.
-        expect(Object.keys(klass.features ?? {})).toEqual(["1"]);
+        // The loop's failures were skipped (not fatal): level 1 is the only model-authored feature, but the
+        // deterministic fill still completes every level 1–20 so the class table is never gappy.
+        expect(Object.keys(klass.features ?? {}).length).toBe(20);
+        expect(klass.features?.[1]?.[0].name).toBe("Storm's Charge");
         expect(completed[0].valid).toBe(true);
     });
 

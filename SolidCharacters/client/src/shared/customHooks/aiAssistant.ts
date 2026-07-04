@@ -199,6 +199,9 @@ export class AiAssistant {
     private pipelineCheckpointId: string | null = null;        // id of the current run's checkpoint row, for upsert/discard
     private currentPipelineType: PipelineType = "class";       // which pipeline the active run drives (for checkpoint rows)
     private currentPipelineSeed = "";                          // the active/last run's generation seed (for checkpoints + restart)
+    // Latest successful-phase snapshot, kept in memory regardless of conversationId so Retry can resume the
+    // FAILED step even in an unsaved chat (where savePipelineCheckpoint writes no Dexie row). Cloned on write.
+    private lastCheckpointSnapshot: { phaseIndex: number; working: WorkingEntity; brief?: ConceptBrief } | null = null;
     private repairCounts = new Map<string, number>();   // entity title (lowercased) -> AI repair attempts (capped at 1)
     private narratedDrafts = new Set<string>();          // toolCallIds whose drafted entity was already announced in chat
     private mediumRetryStreak = 0;                       // Medium-mode auto-retries fired for the current request chain
@@ -678,6 +681,38 @@ export class AiAssistant {
     };
 
     /**
+     * Retry a FAILED pipeline from the step that failed (user "Retry" on a terminal error card). Resumes from
+     * the last successful phase — reusing the same {@link PipelineResume} machinery as {@link resumePipeline}
+     * — so only the failed step and what follows re-run, never the whole build (an approved skeleton is never
+     * re-ratified). Uses the in-memory snapshot, which is present in saved AND unsaved chats, and keeps the
+     * existing Dexie row (via `pipelineCheckpointId`) so later steps upsert it rather than orphan it. Falls
+     * back to a full relaunch only when nothing checkpointed yet (the very first phase failed). No-op for the
+     * homebrew mini-pipeline (it never checkpoints — Retry isn't offered for it).
+     */
+    retryPipeline = () => {
+        if (this.currentPipelineType === "homebrew") return;
+        const seed = this.currentPipelineSeed;
+        if (!seed) return;
+        const type = this.currentPipelineType;
+        const snap = this.lastCheckpointSnapshot;
+        const checkpointId = this.pipelineCheckpointId ?? undefined;   // continue the same row if one exists
+        const epoch = this.turnEpoch;
+        // Nothing decided yet — resume and restart are equivalent; relaunch from the top.
+        if (!snap) {
+            if (type === "character") this.launchCharacterPipeline(seed, epoch);
+            else this.launchClassPipeline(seed, epoch);
+            return;
+        }
+        if (type === "character") {
+            const resume: PipelineResume<WorkingCharacter> = { working: snap.working as WorkingCharacter, brief: snap.brief, fromPhaseIndex: snap.phaseIndex };
+            this.launchCharacterPipeline(seed, epoch, resume, checkpointId);
+        } else {
+            const resume: PipelineResume<WorkingClass> = { working: snap.working as WorkingClass, brief: snap.brief, fromPhaseIndex: snap.phaseIndex };
+            this.launchClassPipeline(seed, epoch, resume, checkpointId);
+        }
+    };
+
+    /**
      * Resume an interrupted pipeline offered after reloading its conversation (plan §9, M6). Adopts the
      * persisted checkpoint (working object + brief + its row id, so further steps upsert the same row) and
      * re-enters the matching orchestrator, which skips every already-decided phase. No-op if no offer stands.
@@ -774,6 +809,7 @@ export class AiAssistant {
         this.pipelineCheckpointId = null;     // the mini-pipeline never checkpoints
         this.currentPipelineType = "homebrew";
         this.currentPipelineSeed = "";        // Restart/Resume are not offered for the mini-pipeline
+        this.lastCheckpointSnapshot = null;   // no resumable step for the mini-pipeline
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
 
@@ -806,6 +842,12 @@ export class AiAssistant {
         this.pipelineCheckpointId = checkpointId ?? null;
         this.currentPipelineType = "class";
         this.currentPipelineSeed = seed;
+        // Reset (fresh run) or re-seed (resume/retry) the snapshot so a stale one can't leak across runs and
+        // a second Retry still has a target before the resumed run checkpoints again. Clone: the orchestrator
+        // mutates resume.working in place.
+        this.lastCheckpointSnapshot = resume
+            ? { phaseIndex: resume.fromPhaseIndex, working: structuredClone(resume.working), brief: resume.brief }
+            : null;
         if (resume) this.seedResumeProgress(resume, "class");
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
@@ -841,6 +883,10 @@ export class AiAssistant {
         this.pipelineCheckpointId = checkpointId ?? null;
         this.currentPipelineType = "character";
         this.currentPipelineSeed = seed;
+        // See launchClassPipeline: reset on a fresh run, re-seed on resume/retry (cloned — mutated in place).
+        this.lastCheckpointSnapshot = resume
+            ? { phaseIndex: resume.fromPhaseIndex, working: structuredClone(resume.working), brief: resume.brief }
+            : null;
         if (resume) this.seedResumeProgress(resume, "character");
         this.pipelineController = new AbortController();
         const signal = this.pipelineController.signal;
@@ -982,6 +1028,9 @@ export class AiAssistant {
     /** Upsert the run's single checkpoint row after a phase (best-effort; resume UI lands in a later milestone). */
     private savePipelineCheckpoint(phaseIndex: number, working: WorkingEntity, brief: ConceptBrief | undefined, epoch: number) {
         if (epoch !== this.turnEpoch) return;
+        // Snapshot in memory FIRST (before the conversationId guard) so Retry can resume the failed step even
+        // in an unsaved chat with no Dexie row. Clone: `working` is the live object the orchestrator mutates.
+        this.lastCheckpointSnapshot = { phaseIndex, working: structuredClone(working), brief };
         const conversationId = this.currentConversationId;
         if (!conversationId) return;   // nothing persisted yet to anchor a resume to
         void (async () => {
@@ -1003,6 +1052,7 @@ export class AiAssistant {
     private async discardPipelineCheckpoint() {
         const id = this.pipelineCheckpointId;
         this.pipelineCheckpointId = null;
+        this.lastCheckpointSnapshot = null;   // no step left to resume once the run is settled/restarted
         if (!id) return;
         try { await pipelineCheckpointManager.discard(id); }
         catch (e) { console.error("Failed to discard pipeline checkpoint", e); }

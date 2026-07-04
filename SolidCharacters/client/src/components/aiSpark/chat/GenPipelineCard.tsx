@@ -12,7 +12,8 @@ import styles from "../SparkSidebar.module.scss";
 
 /**
  * Progress card for the staged-generation pipeline (plan §10). Renders the current run's phase strip and
- * status, and offers Abort while running / Dismiss + Restart once it ends in error or abort. The
+ * status, and offers Abort while running / Retry (resume the failed step) + Restart + Dismiss once it ends
+ * in error or abort. The
  * ratification gate itself is a separate propose_plan InteractionCard (the orchestrator surfaces it), and on
  * success the assembled class hands off to an ordinary HomebrewPreviewCard — so this card only owns progress.
  */
@@ -141,8 +142,11 @@ const GenPipelineCard: Component = () => {
                             </Button>
                         </Show>
                         <Show when={isTerminalBad()}>
-                            {/* The homebrew mini-pipeline doesn't support Restart (no remembered seed) — just Dismiss. */}
+                            {/* The homebrew mini-pipeline never checkpoints, so it can neither Retry nor Restart — just Dismiss. */}
                             <Show when={!isHomebrew()}>
+                                <Button theme="primary" title="Retry the step that failed and continue" onClick={() => aiAssistant.retryPipeline()}>
+                                    <Icon icon={Refresh} size="small" /> Retry
+                                </Button>
                                 <Button transparent title="Start this generation over from the beginning" onClick={() => aiAssistant.restartPipeline()}>
                                     <Icon icon={Refresh} size="small" /> Restart
                                 </Button>

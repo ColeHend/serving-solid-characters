@@ -224,7 +224,8 @@ const ClassModal: Component<props> = (props) => {
             <Show when={activeTab() === ClassModalTabs.Features}>
               <span>
                 <For each={classLevels()}>
-                  { (level) => <span>
+                  { (level) => <Show when={features()?.[+level]?.length}>
+                    <span>
                     <h2 class={`${styles.leftAlignText}`}>Level {level} features</h2>
                     <For each={features()?.[+level]}>
                       { (feature) => <span>
@@ -234,7 +235,8 @@ const ClassModal: Component<props> = (props) => {
                       </span>}
                     </For>
 
-                  </span>}
+                    </span>
+                  </Show>}
                 </For>
               </span>   
             </Show>

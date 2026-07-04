@@ -11,6 +11,7 @@ import type { ReviewState, ReviewVerdict } from "../readiness/types";
 import { canonicalClassName } from "../refs/classRefs";
 import { findParentRace, knownRaceNames, raceNameById } from "../refs/raceRefs";
 import { buildSpellcasting, parseCasterType } from "../refs/spellSlots";
+import { ensureAllClassLevels } from "../refs/classProgression";
 import { entityText, findPlaceholder } from "../readiness/deterministicPasses";
 import { applyPatch, PatchOp, RejectedOp } from "./patch";
 import { boolean, list, num, str, strList } from "../coerce";
@@ -335,7 +336,8 @@ function toClass(i: Record<string, unknown>): Class5E {
         startingEquipment: equipmentItems.length ? [{ items: equipmentItems }] : [],
         proficiencies,
         startChoices: {},
-        features: featuresByLevel(i.features),
+        // Densify to all 20 level keys (ASI/Epic Boon/backstop) so the class table shows a full 1–20 progression.
+        features: ensureAllClassLevels(featuresByLevel(i.features)),
         // Stamp a working slot table from casterType so a caster class isn't saved with zero slots.
         spellcasting: buildSpellcasting(casterType),
     };

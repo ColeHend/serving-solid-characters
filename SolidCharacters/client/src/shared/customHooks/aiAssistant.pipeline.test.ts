@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { AiSettings } from "../../models/userSettings";
 import type { Class5E } from "../../models/generated";
+import { PipelinePhase } from "../ai/genPipeline/types";
 
 /**
  * M1 + M2 acceptance (plan §13): driven through the public send() entry point, a `generate_class` tool call
@@ -12,7 +13,13 @@ import type { Class5E } from "../../models/generated";
  * gates pass and the loops accumulate.
  */
 
-const h = vi.hoisted(() => ({ settings: {} as { ai: AiSettings; dndSystem: string }, counts: {} as Record<string, number> }));
+const h = vi.hoisted(() => ({
+    settings: {} as { ai: AiSettings; dndSystem: string },
+    counts: {} as Record<string, number>,
+    // Per-test toggles: when set, the named step's turn returns no tool call / no JSON so the step fails.
+    // Flipping them off between the error and the Retry lets one test drive fail-then-succeed on that step.
+    fail: {} as Record<string, boolean>,
+}));
 
 const briefInput = {
     concept: "A knight who borrows strength from a bound storm", tone: "grim, martial",
@@ -62,10 +69,13 @@ vi.mock("../ai/providers/providerFactory", () => ({
         kind: "local",
         async *streamChat(_messages: unknown, tools: { name: string }[] | undefined) {
             const names = (tools ?? []).map(t => t.name);
+            // A no-tool-call, no-JSON turn: makes the current step exhaust its retry budget and fail.
+            const noCall = [{ type: "message_done", stopReason: "end_turn" }];
+            const step = (name: string, input: unknown) => (h.fail[name] ? noCall : toolCallEvents(name, input));
             const events =
-                names.includes("concept_brief") ? toolCallEvents("concept_brief", briefInput)
-                    : names.includes("skeleton_plan") ? toolCallEvents("skeleton_plan", skeletonInput)
-                        : names.includes("class_chassis") ? toolCallEvents("class_chassis", chassisInput)
+                names.includes("concept_brief") ? step("concept_brief", briefInput)
+                    : names.includes("skeleton_plan") ? step("skeleton_plan", skeletonInput)
+                        : names.includes("class_chassis") ? step("class_chassis", chassisInput)
                             : names.includes("class_feature") ? toolCallEvents("class_feature", nextFeature())
                                 : names.includes("subclass_brief") ? toolCallEvents("subclass_brief", nextSubclassBrief())
                                     : names.includes("generate_class") ? toolCallEvents("generate_class", { concept: "a storm knight" })
@@ -105,6 +115,7 @@ async function waitFor(cond: () => boolean, attempts = 4000): Promise<void> {
 beforeEach(() => {
     h.settings = { ai: { ...baseAi }, dndSystem: "both" };
     h.counts = {};
+    h.fail = {};
     aiAssistant.newConversation();
     aiAssistant.setMode("homebrew");
 });
@@ -159,5 +170,49 @@ describe("generate_class → staged pipeline (M1 + M2 end-to-end)", () => {
         // The orchestrator's trailing "aborted" emit must not flash the card back after an explicit abort.
         await new Promise(r => setTimeout(r, 0));
         expect(aiAssistant.pipelineRun()).toBeNull();
+    });
+});
+
+describe("retryPipeline — resume the failed step", () => {
+    it("resumes at the failed chassis step and reuses the approved skeleton (no re-ratification)", async () => {
+        h.fail.class_chassis = true;
+        aiAssistant.send("make a storm knight class");
+
+        // Approve the skeleton (checkpointed), then Chassis — load-bearing — fails the whole run.
+        await waitFor(() => aiAssistant.pipelineRun()?.status === "awaiting_user");
+        const card = aiAssistant.pendingInteractions().find(i => i.kind === "plan")!;
+        aiAssistant.answerInteraction(card.interactionId, { type: "plan_accept" });
+        await waitFor(() => aiAssistant.pipelineRun()?.status === "error");
+        expect(aiAssistant.pipelineRun()?.phase).toBe(PipelinePhase.Chassis);
+        expect(aiAssistant.pendingPreviews()).toHaveLength(0);
+
+        // Fix the step and Retry. It must resume from Chassis and reuse the approved skeleton — if it
+        // restarted from the top it would pause on the skeleton gate again and previews would never surface
+        // (waitFor would time out). This chat is unsaved (no conversationId), so it also exercises the
+        // in-memory snapshot path.
+        h.fail.class_chassis = false;
+        aiAssistant.retryPipeline();
+        await waitFor(() => aiAssistant.pendingPreviews().length > 0);
+
+        expect(aiAssistant.pipelineRun()).toBeNull();
+        expect(aiAssistant.pendingInteractions().find(i => i.kind === "plan")).toBeUndefined();
+        const previews = aiAssistant.pendingPreviews();
+        expect(previews[0].kind).toBe("class");
+        expect((previews[0].entity as Class5E).name).toBe("Stormwarden");
+        expect(previews.filter(p => p.kind === "subclass")).toHaveLength(3);
+    });
+
+    it("falls back to a full restart when the first phase failed (nothing checkpointed)", async () => {
+        h.fail.concept_brief = true;
+        aiAssistant.send("make a storm knight class");
+        await waitFor(() => aiAssistant.pipelineRun()?.status === "error");
+        expect(aiAssistant.pipelineRun()?.phase).toBe(PipelinePhase.DesignBrief);
+
+        // No checkpoint exists, so Retry relaunches from the top; with the brief fixed it reaches the
+        // skeleton gate (a fresh plan interaction), proving it re-ran phase A rather than no-opping.
+        h.fail.concept_brief = false;
+        aiAssistant.retryPipeline();
+        await waitFor(() => aiAssistant.pipelineRun()?.status === "awaiting_user");
+        expect(aiAssistant.pendingInteractions().find(i => i.kind === "plan")).toBeTruthy();
     });
 });

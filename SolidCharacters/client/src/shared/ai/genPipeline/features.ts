@@ -15,12 +15,14 @@ import type { RunStepOptions, StepContext, StepResult, StepSpec, WorkingClass, W
  */
 
 /**
- * The levels at which the base class gains a NEW feature beyond the level-1 chassis feature. Deliberately
- * skips the ASI levels (4, 8, 12, 16, 19) and gives a feature roughly every other level, so the assembled
- * class reads like a real one (~12 base features with the chassis's level-1 feature). The subclass-grant
- * level is dropped from this list by `baseFeatureLevels` — at that level the headline is "choose a subclass".
+ * The levels at which the base class gains a model-authored feature beyond the level-1 chassis feature.
+ * Covers every "open" level — the ASI levels (4, 8, 12, 16), the Epic Boon level (19), and the subclass-grant
+ * level are NOT here because they are stamped deterministically at assembly (`ensureAllClassLevels` /
+ * `subclassMarkerInput` in `refs/classProgression`), not written by the model. Together with those stamps
+ * the assembled class carries all 20 level keys, so the class table reads like a real 1–20 progression.
+ * The subclass-grant level is dropped from this list by `baseFeatureLevels` — there the headline is "choose a subclass".
  */
-export const BASE_FEATURE_LEVELS = [2, 3, 5, 6, 9, 10, 13, 14, 17, 18, 20];
+export const BASE_FEATURE_LEVELS = [2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15, 17, 18, 20];
 
 /** The base-class feature levels to fill for this working class: the canonical spread minus the subclass-grant level. */
 export function baseFeatureLevels(working: WorkingClass): number[] {

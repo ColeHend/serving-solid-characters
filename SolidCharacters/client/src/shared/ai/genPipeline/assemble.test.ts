@@ -28,6 +28,15 @@ describe("workingClassToToolInput", () => {
         expect((input.features as unknown[])).toHaveLength(1);
         expect(input.skills).toEqual(["Athletics", "Perception"]);
     });
+
+    it("appends a subclass marker at the grant level only when the class grants subclasses", () => {
+        const withSub = workingClassToToolInput({ ...fullClass, subclassCount: 3, subclassLevel: 3 });
+        const feats = withSub.features as Array<{ level: number; name: string }>;
+        const marker = feats.find(f => f.level === 3);
+        expect(marker?.name).toBe("Stormwarden Subclass");
+        // No subclasses → no marker (features unchanged).
+        expect((workingClassToToolInput(fullClass).features as unknown[])).toHaveLength(1);
+    });
 });
 
 describe("assembleClassPreview", () => {
@@ -41,6 +50,16 @@ describe("assembleClassPreview", () => {
         expect(entity.hitDie).toBe("d10");
         expect(entity.savingThrows).toEqual(["STR", "CON"]);
         expect(entity.features?.[1]?.[0]?.name).toBe("Storm's Charge");
+    });
+
+    it("fills all 20 levels — chassis preserved, subclass marker at the grant level, ASI/Epic Boon stamped", () => {
+        const preview = assembleClassPreview({ ...fullClass, subclassCount: 3, subclassLevel: 3 }, "both");
+        const entity = preview.entity as Class5E;
+        expect(Object.keys(entity.features ?? {})).toHaveLength(20);
+        expect(entity.features?.[1]?.[0]?.name).toBe("Storm's Charge");     // model chassis preserved
+        expect(entity.features?.[3]?.[0]?.name).toBe("Stormwarden Subclass"); // subclass marker
+        expect(entity.features?.[4]?.[0]?.name).toBe("Ability Score Improvement");
+        expect(entity.features?.[19]?.[0]?.name).toBe("Epic Boon");
     });
 
     it("marks an incomplete class invalid (no features → Save blocked)", () => {
