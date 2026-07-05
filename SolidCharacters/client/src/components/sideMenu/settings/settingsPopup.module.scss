@@ -22,12 +22,11 @@
     border-radius: 0 var(--border-radius-md, 8px) var(--border-radius-lg, 16px) var(--border-radius-lg, 16px);
     box-shadow: var(--shadow-elevation-2, 0 3px 6px rgba(0, 0, 0, .30));
     padding: var(--spacing-3, 24px);
-    overflow: hidden;                  // contain the flip animation
+
 }
 
 .page {
     flex-grow: 1;
-    overflow-y: auto;
     transform-origin: top center;
     backface-visibility: hidden;
     animation: flip-in var(--transition-duration, .5s) var(--transition-easing, ease);
