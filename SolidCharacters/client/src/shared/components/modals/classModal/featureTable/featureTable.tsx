@@ -88,7 +88,7 @@ const FeatureTable: Component<Props> = (props) => {
 
       <Column name="profBonus">
         <Header>
-          Prof. Bonus
+          Bonus
         </Header>
         <Cell<string>>{(level) => <span>+{Math.ceil(+level / 4) + 1}</span>}</Cell>
       </Column>

@@ -26,7 +26,8 @@ type props = {
 
 enum ClassModalTabs {
   Items = 0,
-  Features = 1
+  Features = 1,
+  Subclasses = 2
 }
 
 const ClassModal: Component<props> = (props) => {
@@ -150,7 +151,7 @@ const ClassModal: Component<props> = (props) => {
 
           <div class={`${styles.tabBar}`}>
             <TabBar 
-            tabs={["Choices","Features", ...currentSubclasses().map(s=>s.name)]} 
+            tabs={["Choices","Features", "Subclasses"]} 
             activeTab={activeTab()} 
             onTabChange={(label,index)=>setActiveTab(index)}
             colors={{
@@ -159,10 +160,6 @@ const ClassModal: Component<props> = (props) => {
             }}
             class={`${styles.tabBar}`}
             />
-
-           {/* <Show when={activeTab() === ClassModalTabs.Core}>
-              
-            </Show>  */}
 
             <Show when={activeTab() === ClassModalTabs.Items}>
               <span>
@@ -174,11 +171,11 @@ const ClassModal: Component<props> = (props) => {
               </span>
 
               <Show when={choices()[armorChoiceKey()]}>
-                <h3>
-                  {armorChoiceKey()}
+                <h3 class={`${styles.flankedLable }`}>
+                  Armor
                 </h3>
 
-                <h4>Choose:
+                <h4>Choose: 
                   <span>
                     { choices()[armorChoiceKey()]?.amount }
                   </span>
@@ -190,11 +187,11 @@ const ClassModal: Component<props> = (props) => {
               </Show>
 
               <Show when={choices()[equipChoiceKey()]}>
-                <h3>
-                  {equipChoiceKey()}
+                <h3 class={`${styles.flankedLable }`}>
+                  Equipment
                 </h3>
 
-                <h4>Choose:
+                <h4>Choose: 
                   <span>
                     <For each={getItemOptionKey()}>
                       { (key, i) => <>
@@ -208,7 +205,7 @@ const ClassModal: Component<props> = (props) => {
                   </span>
                 </h4>
 
-                <div>
+                <div class={`${styles.ChoiceCards}`}>
                     <For each={choices()?.[equipChoiceKey()]?.options ?? []}>
                       { (itemOption, i) => <ChoiceCard ChoiceKey={getItemOptionKey()?.[i()]} text={itemOption} /> }
                     </For>
@@ -219,59 +216,54 @@ const ClassModal: Component<props> = (props) => {
               </Show>
 
               <Show when={choices()[skillChoiceKey()]}>
-                  <h3>
-                    {skillChoiceKey()}
+                  <h3 class={`${styles.flankedLable }`}>
+                    Skills
                   </h3>
 
-                  <h4>Choose:
+                  <h4>Choose: 
                     <span>
                       { choices()[skillChoiceKey()]?.amount }
                     </span>
                   </h4>
 
-                  <div>
-                    { choices()[skillChoiceKey()]?.options?.join(", ") }
+                  <div class={`${styles.ChoiceCards}`}>
+                    <ChoiceCard ChoiceKey={`${choices()[skillChoiceKey()]?.amount}`} text={choices()[skillChoiceKey()]?.options?.join(", ")} />
+                    
                   </div>
                 {/*  */}
               </Show>
 
               <Show when={choices()[toolChoiceKey()]}>
-                <h3>
-                  {toolChoiceKey()}
+                <h3 class={`${styles.flankedLable }`}>
+                  Tools
                 </h3>
 
-                <h4>Choose:
+                <h4>Choose: 
                   <span>
                     { choices()[toolChoiceKey()]?.amount }
                   </span>
                 </h4>
 
-                <div>
-                  { choices()[toolChoiceKey()]?.options?.join(", ") }
+                <div class={`${styles.ChoiceCards}`}>
+                  <ChoiceCard ChoiceKey={`${choices()[toolChoiceKey()]?.amount}`} text={choices()[toolChoiceKey()]?.options?.join(", ")} />
                 </div>
               </Show>
 
               <Show when={choices()[weaponChoiceKey()]}>
                 <h3>
-                  {weaponChoiceKey()}
+                  Weapons
                 </h3>
 
-                <h4>Choose:
+                <h4>Choose: 
                   <span>
                     { choices()[weaponChoiceKey()]?.amount }
                   </span>
                 </h4>
 
-                <div>
-                  { choices()[weaponChoiceKey()]?.options?.join(", ") }
+                <div class={`${styles.ChoiceCards}`}>
+                  <ChoiceCard ChoiceKey={`${choices()[weaponChoiceKey()]?.amount}`} text={choices()[weaponChoiceKey()]?.options?.join(", ")} />
                 </div>
               </Show>
-
-              {/* 
-                other choices will have to wait. startChoices does not have all choices options 
-                and im pretty sure that mapping the keys off "choices" object from the classes dont work either.
-              */}
-              
             </Show>
 
             <Show when={activeTab() === ClassModalTabs.Features}>
@@ -279,12 +271,12 @@ const ClassModal: Component<props> = (props) => {
                 <For each={classLevels()}>
                   { (level) => <Show when={features()?.[+level]?.length}>
                     <span>
-                    <h2 class={`${styles.leftAlignText}`}>Level {level} features</h2>
+                    <h2 class={`${styles.flankedLable}`}>level {level} features</h2>
                     <For each={features()?.[+level]}>
-                      { (feature) => <span>
-                        <h3 class={`${styles.header2}`}> {feature.name} </h3>
-
-                        <span class={`${styles.leftAlignText}`}> { `     ${feature.description}`} </span>
+                      { (feature) => <span class={`${styles.feature}`}>
+                        <strong>{feature.name} (level {level}). </strong>
+                        {`${feature.description}`}
+                        {/* <span>  </span> */}
                       </span>}
                     </For>
 
@@ -294,28 +286,10 @@ const ClassModal: Component<props> = (props) => {
               </span>   
             </Show>
 
-            <For each={currentSubclasses()}>{(subclass)=>{
-              return <Show when={activeTab() === currentSubclasses().indexOf(subclass) + 2}>
-                <span class={`${styles.flexBoxColumn}`}>
-                  <h2 class={`${styles.header2}`}>{subclass.name}</h2>
-                  <span class={`${styles.infobox}`}>{subclass.description}</span>
-
-                  <Show when={subclass.features && Object.keys(subclass.features).length > 0}>
-                    <For each={Object.keys(subclass.features || {})}>
-                      { (level) => <span>
-                        <h3 class={`${styles.leftAlignText}`}>Level {level} Features:</h3>
-                        <For each={subclass.features?.[+level]}>
-                          { (feature) => <span>
-                            <h4>{feature.name}</h4>
-                            <span class={`${styles.leftAlignText}`}>{feature.description}</span>
-                          </span>}
-                        </For>
-                      </span>}
-                    </For>
-                  </Show>
-                </span>
-              </Show>
-            }}</For>
+            <Show when={activeTab() === ClassModalTabs.Subclasses}>
+              <For each={currentSubclasses()}>{(subclass)=><></>}</For>
+              
+            </Show>
            
           </div>
         </div>

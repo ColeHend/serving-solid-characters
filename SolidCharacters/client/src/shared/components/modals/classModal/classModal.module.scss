@@ -217,3 +217,36 @@ $mobile: 768px;
     }
 
 }
+
+.ChoiceCards {
+    $margin: 5%;
+    margin-left: $margin;
+    margin-right: $margin;
+
+}
+
+.flankedLable {
+    // text-transform: none !important;
+
+    @include FlankedLabel;
+}
+
+.feature {
+    display: block;
+    // flex-direction: row;
+    // justify-items: left;
+    text-align: left;
+    margin-top: 2%;
+
+    strong {
+        font-weight: bold !important;
+        color: #7c2718 !important;
+        text-transform: capitalize;
+        
+        @include flavorText;
+    }
+
+    span { 
+        @include styledDndText;
+    }
+}
