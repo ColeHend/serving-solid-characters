@@ -1,5 +1,6 @@
 import { Component, For, Show } from "solid-js";
-import { Checkbox, Input, Radio, RadioGroup } from "coles-solid-library";
+import { Checkbox, Input, Radio, RadioGroup, Slider, SliderStop, Switch } from "coles-solid-library";
+import { SettingsField } from "../../../shared/components/settingsField/settingsField";
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import {
@@ -22,6 +23,29 @@ const DEFAULT_AI: Partial<AiSettings> = {
 
 const hint = { opacity: 0.6, "font-size": "var(--font-size-small)" } as const;
 const section = { "margin-top": "var(--spacing-3)" } as const;
+
+// Ordinal Low→Medium→High ladders rendered as sliders. The per-stop blurb (formerly the radio
+// label) is surfaced under the slider so no explanation is lost.
+const USAGE_STOPS: SliderStop<UsageControlLevel>[] = [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+];
+const USAGE_HINTS: Record<UsageControlLevel, string> = {
+    low: "Low — generate and preview (current behavior).",
+    medium: "Medium — auto-retry a failed generation once before showing it.",
+    high: "High — run a readiness review before handing content over.",
+};
+const CREATION_STOPS: SliderStop<CreationPipelineLevel>[] = [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+];
+const CREATION_HINTS: Record<CreationPipelineLevel, string> = {
+    low: "Low — generate each piece in one step (fastest).",
+    medium: "Medium — plan a concept first, then build it (more coherent).",
+    high: "High — also validate & fix mechanical effects before saving (slowest).",
+};
 
 /**
  * "AI Behavior" settings: how much automated QC Grimoire applies (usage level), which content types it
@@ -92,21 +116,25 @@ const AiReviewSettingsTab: Component = () => {
             {/* ---------------- Usage level ---------------- */}
             <div style={section}>
                 <label>Usage control level</label>
-                <RadioGroup value={usageLevel()} onChange={(v) => updateAi({ usageLevel: v as UsageControlLevel })}>
-                    <Radio value="low" label="Low — generate and preview (current behavior)" />
-                    <Radio value="medium" label="Medium — auto-retry a failed generation once before showing it" />
-                    <Radio value="high" label="High — run a readiness review before handing content over" />
-                </RadioGroup>
+                <Slider
+                    stops={USAGE_STOPS}
+                    value={usageLevel()}
+                    onChange={(v) => updateAi({ usageLevel: v })}
+                    ariaLabel="Usage control level"
+                />
+                <div style={hint}>{USAGE_HINTS[usageLevel()]}</div>
             </div>
 
             {/* ---------------- Generation depth ---------------- */}
             <div style={section}>
                 <label>Generation depth</label>
-                <RadioGroup value={creationLevel()} onChange={(v) => updateAi({ creationPipelineLevel: v as CreationPipelineLevel })}>
-                    <Radio value="low" label="Low — generate each piece in one step (fastest)" />
-                    <Radio value="medium" label="Medium — plan a concept first, then build it (more coherent)" />
-                    <Radio value="high" label="High — also validate & fix mechanical effects before saving (slowest)" />
-                </RadioGroup>
+                <Slider
+                    stops={CREATION_STOPS}
+                    value={creationLevel()}
+                    onChange={(v) => updateAi({ creationPipelineLevel: v })}
+                    ariaLabel="Generation depth"
+                />
+                <div style={hint}>{CREATION_HINTS[creationLevel()]}</div>
                 <div style={hint}>
                     How many passes Grimoire makes when generating content. Higher depth is more coherent and
                     mechanically correct but costs more model calls and time. This is separate from the
@@ -164,18 +192,18 @@ const AiReviewSettingsTab: Component = () => {
                 <div style={hint}>
                     Extra tools Grimoire can use in both Chat and Homebrew, independent of the content types above.
                 </div>
-                <div style={{ "margin-top": "var(--spacing-1)" }}>
-                    <Checkbox
+                <div style={{ display: "flex", "flex-direction": "column", gap: "var(--spacing-1)", "margin-top": "var(--spacing-1)" }}>
+                    <Switch
                         label="Math tools — exact D&D modifiers, proficiency, and damage-per-round"
                         checked={ai().mathTools ?? DEFAULT_AI_MATH_TOOLS}
                         onChange={(checked) => updateAi({ mathTools: checked })}
                     />
-                    <Checkbox
+                    <Switch
                         label="Ask me questions — let Grimoire offer choices or ask for a direction inline"
                         checked={ai().askTools ?? DEFAULT_AI_ASK_TOOLS}
                         onChange={(checked) => updateAi({ askTools: checked })}
                     />
-                    <Checkbox
+                    <Switch
                         label="Propose a plan — let Grimoire suggest a design goal/plan to approve before a big build"
                         checked={ai().planTools ?? DEFAULT_AI_PLAN_TOOLS}
                         onChange={(checked) => updateAi({ planTools: checked })}
@@ -212,16 +240,17 @@ const AiReviewSettingsTab: Component = () => {
                         <Radio value="separate" label="Use a separate (smaller/faster) reviewer model" />
                     </RadioGroup>
                     <Show when={review().reviewerMode === "separate"}>
-                        <div style={{ "margin-top": "var(--spacing-1)" }}>
-                            <label for="ai-reviewer-model">Reviewer model</label>
+                        <SettingsField
+                            label="Model name"
+                            hint={<>e.g. <code>llama3.2:3b</code> — a small fast model keeps reviews quick while you generate with a larger one.</>}
+                        >
                             <Input
                                 id="ai-reviewer-model"
                                 value={review().reviewerModel ?? ""}
                                 placeholder="e.g. llama3.2:3b"
                                 onInput={(e) => updateReview({ reviewerModel: e.currentTarget.value })}
                             />
-                            <div style={hint}>A small fast model keeps reviews quick while you generate with a larger one.</div>
-                        </div>
+                        </SettingsField>
                     </Show>
                 </div>
 

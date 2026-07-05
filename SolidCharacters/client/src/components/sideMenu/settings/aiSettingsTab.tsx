@@ -1,5 +1,6 @@
-import { Component, createSignal, Show } from "solid-js";
-import { Select, Option, Input, Checkbox, Button, addSnackbar } from "coles-solid-library";
+import { Component, createSignal, Match, Show, Switch as SolidSwitch, runWithOwner } from "solid-js";
+import { Select, Option, Input, Button, addSnackbar, Slider, SliderStop, Switch } from "coles-solid-library";
+import { SettingsField } from "../../../shared/components/settingsField/settingsField";
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import getUserSettings, { refreshAiProviderStatus } from "../../../shared/customHooks/userSettings";
 import {
@@ -24,6 +25,15 @@ const MODEL_PLACEHOLDER: Record<AiProviderKind, string> = {
     openai: "e.g. gpt-4o-mini",
 };
 
+// The persona ladder minus "auto" — "auto" is surfaced as its own switch above the slider.
+type PersonaLevel = Exclude<PersonaStrength, "auto">;
+const PERSONA_STOPS: SliderStop<PersonaLevel>[] = [
+    { value: "off", label: "Off" },
+    { value: "min", label: "Minimal" },
+    { value: "low", label: "Low" },
+    { value: "full", label: "Full" },
+];
+
 /**
  * Settings tab for the Grimoire AI assistant. Provider/model/enabled are stored in UserSettings (and
  * persisted by the popup's "Save Settings" button). Cloud API keys are NOT stored here — they are
@@ -38,6 +48,15 @@ const AiSettingsTab: Component = () => {
 
     const updateAi = (patch: Partial<AiSettings>) =>
         setUserSettings(old => Clone({ ...old, ai: { ...(old.ai ?? DEFAULT_AI), ...patch } }));
+
+    // In-character voice: "auto" is a mode (a switch); the Off→Full ladder is the slider.
+    const persona = (): PersonaStrength => ai().personaStrength ?? DEFAULT_AI_PERSONA_STRENGTH;
+    const isAutoPersona = (): boolean => persona() === "auto";
+    // When auto is on the slider is disabled; show it at a neutral position rather than snapping to Off.
+    const personaLevel = (): PersonaLevel => {
+        const current = persona();
+        return current === "auto" ? "full" : current;
+    };
 
     // Load the persisted overall token total so the "Overall used" readout is accurate on first open.
     void ensureOverallUsageLoaded();
@@ -119,42 +138,45 @@ const AiSettingsTab: Component = () => {
     };
 
     return (
-        <div>
+        <div style={{width: "99%"}}>
             <h3>AI (Grimoire)</h3>
             <p style={{ opacity: 0.75, "font-size": "var(--font-size-small)" }}>
                 Configure the AI assistant. Cloud keys are stored on the server, never in your browser.
                 Local models are called directly from this device.
             </p>
 
-            <div>
-                <label>Provider: {ai().provider}</label>
-                <Select<string> value={ai().provider} onSelect={(e) => updateAi({ provider: e as AiProviderKind })}>
+            <SettingsField label="Provider">
+                <Select<string>
+                    value={ai().provider}
+                    onChange={(v) => {
+                        if (v === ai().provider) return;   // skip the coles Select mount/echo write
+                        runWithOwner(null, () => updateAi({ provider: v as AiProviderKind }));
+                    }}
+                >
                     <Option value="local">Local (Ollama / LM Studio)</Option>
                     <Option value="anthropic">Anthropic</Option>
                     <Option value="openai">OpenAI</Option>
                 </Select>
-            </div>
+            </SettingsField>
 
-            <div>
-                <label for="ai-model">Model</label>
+            <SettingsField label="Model" hint={MODEL_PLACEHOLDER[ai().provider]}>
                 <Input
                     id="ai-model"
                     value={ai().model}
                     placeholder={MODEL_PLACEHOLDER[ai().provider]}
-                    onInput={(e) => updateAi({ model: e.currentTarget.value })}
+                    onChange={(e) => updateAi({ model: e.currentTarget.value })}
                 />
-            </div>
+            </SettingsField>
 
             <Show when={ai().provider === "local"}>
-                <div>
-                    <label for="ai-base-url">Base URL</label>
+                <SettingsField label="Base URL" hint="e.g. http://localhost:11434">
                     <Input
                         id="ai-base-url"
                         value={ai().localBaseUrl}
                         placeholder="http://localhost:11434"
-                        onInput={(e) => updateAi({ localBaseUrl: e.currentTarget.value })}
+                        onChange={(e) => updateAi({ localBaseUrl: e.currentTarget.value })}
                     />
-                </div>
+                </SettingsField>
 
                 <Show when={diagnoseLocalEndpoint(ai().localBaseUrl).kind === "mixed-content"}>
                     <div style={{
@@ -173,13 +195,18 @@ const AiSettingsTab: Component = () => {
                     </div>
                 </Show>
 
-                <div>
-                    <label>Local API</label>
-                    <Select<string> value={ai().localApi ?? "ollama"} onSelect={(e) => updateAi({ localApi: e as LocalApiKind })}>
+                <SettingsField label="Local API">
+                    <Select<string>
+                        value={ai().localApi ?? "ollama"}
+                        onChange={(v) => {
+                            if (v === (ai().localApi ?? "ollama")) return;   // skip the coles Select mount/echo write
+                            runWithOwner(null, () => updateAi({ localApi: v as LocalApiKind }));
+                        }}
+                    >
                         <Option value="ollama">Ollama (native — context + thinking control)</Option>
                         <Option value="openai">OpenAI-compatible (LM Studio, llama.cpp)</Option>
                     </Select>
-                </div>
+                </SettingsField>
 
                 <Show when={(ai().localApi ?? "ollama") === "ollama"}>
                     <div>
@@ -189,7 +216,7 @@ const AiSettingsTab: Component = () => {
                             type="number"
                             value={String(ai().numCtx ?? DEFAULT_AI_NUM_CTX)}
                             placeholder={String(DEFAULT_AI_NUM_CTX)}
-                            onInput={(e) => {
+                            onChange={(e) => {
                                 const n = parseInt(e.currentTarget.value, 10);
                                 updateAi({ numCtx: Number.isFinite(n) && n > 0 ? n : undefined });
                             }}
@@ -209,7 +236,7 @@ const AiSettingsTab: Component = () => {
                         type="number"
                         value={String(ai().maxAudioSeconds ?? DEFAULT_AI_MAX_AUDIO_SECONDS)}
                         placeholder={String(DEFAULT_AI_MAX_AUDIO_SECONDS)}
-                        onInput={(e) => {
+                        onChange={(e) => {
                             const n = parseInt(e.currentTarget.value, 10);
                             updateAi({ maxAudioSeconds: Number.isFinite(n) && n > 0 ? n : undefined });
                         }}
@@ -222,13 +249,12 @@ const AiSettingsTab: Component = () => {
             </Show>
 
             <Show when={isCloud()}>
-                <div>
-                    <label for="ai-key">API Key (stored on the server)</label>
-                    <Input id="ai-key" type="password" value={apiKey()} placeholder="Paste key to save…" onInput={(e) => setApiKey(e.currentTarget.value)} />
-                    <div style={{ display: "flex", gap: "var(--spacing-1)", "margin-top": "var(--spacing-1)" }}>
-                        <Button disabled={busy() || !apiKey().trim()} onClick={saveKey}>Save key</Button>
-                        <Button transparent disabled={busy()} onClick={clearKey}>Clear key</Button>
-                    </div>
+                <SettingsField label="API Key (stored on the server)" hint="Paste a key and press Save; it's sent to the server, never kept in your browser.">
+                    <Input id="ai-key" type="password" value={apiKey()} placeholder="Paste key to save…" onChange={(e) => setApiKey(e.currentTarget.value)} />
+                </SettingsField>
+                <div style={{ display: "flex", gap: "var(--spacing-1)", "margin-top": "var(--spacing-1)" }}>
+                    <Button disabled={busy() || !apiKey().trim()} onClick={saveKey}>Save key</Button>
+                    <Button transparent disabled={busy()} onClick={clearKey}>Clear key</Button>
                 </div>
             </Show>
 
@@ -239,7 +265,7 @@ const AiSettingsTab: Component = () => {
                     type="number"
                     value={String(ai().maxTokens ?? DEFAULT_AI_MAX_TOKENS)}
                     placeholder={String(DEFAULT_AI_MAX_TOKENS)}
-                    onInput={(e) => {
+                    onChange={(e) => {
                         const n = parseInt(e.currentTarget.value, 10);
                         updateAi({ maxTokens: Number.isFinite(n) && n > 0 ? n : undefined });
                     }}
@@ -258,7 +284,7 @@ const AiSettingsTab: Component = () => {
                     type="number"
                     value={String(ai().tokenCap ?? DEFAULT_AI_TOKEN_CAP)}
                     placeholder={String(DEFAULT_AI_TOKEN_CAP)}
-                    onInput={(e) => {
+                    onChange={(e) => {
                         const n = parseInt(e.currentTarget.value, 10);
                         // Guard admits 0 (the meaningful "unlimited" value), unlike maxTokens/numCtx which reject it.
                         updateAi({ tokenCap: Number.isFinite(n) && n >= 0 ? n : undefined });
@@ -281,7 +307,7 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox
+                <Switch
                     label="Enable model thinking (chat)"
                     checked={ai().thinking ?? DEFAULT_AI_THINKING}
                     onChange={(checked) => updateAi({ thinking: checked })}
@@ -293,7 +319,7 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox
+                <Switch
                     label="Show AI thoughts in chat"
                     checked={ai().showThinking ?? DEFAULT_AI_SHOW_THINKING}
                     onChange={(checked) => updateAi({ showThinking: checked })}
@@ -305,7 +331,7 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox
+                <Switch
                     label="Enable thinking during Homebrew generation"
                     checked={ai().thinkingHomebrew ?? DEFAULT_AI_THINKING_HOMEBREW}
                     onChange={(checked) => updateAi({ thinkingHomebrew: checked })}
@@ -318,7 +344,7 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox
+                <Switch
                     label="Auto-add mechanical effects to generated homebrew"
                     checked={ai().commandGeneration ?? DEFAULT_AI_COMMAND_GENERATION}
                     onChange={(checked) => updateAi({ commandGeneration: checked })}
@@ -332,7 +358,7 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox
+                <Switch
                     label="Resume interrupted generations on reload"
                     checked={ai().resumeGeneration ?? DEFAULT_AI_RESUME_GENERATION}
                     onChange={(checked) => updateAi({ resumeGeneration: checked })}
@@ -345,25 +371,50 @@ const AiSettingsTab: Component = () => {
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
-                <Checkbox label="Enable Grimoire assistant" checked={ai().enabled} onChange={(checked) => updateAi({ enabled: checked })} />
+                <Switch label="Enable Grimoire assistant" checked={ai().enabled} onChange={(checked) => updateAi({ enabled: checked })} />
             </div>
 
             <div style={{ "margin-top": "var(--spacing-2)" }}>
                 <label>In-character voice</label>
-                <Select<string>
-                    value={ai().personaStrength ?? DEFAULT_AI_PERSONA_STRENGTH}
-                    onSelect={(e) => updateAi({ personaStrength: e as PersonaStrength })}
-                >
-                    <Option value="auto">Auto (match the model)</Option>
-                    <Option value="full">Full — the complete Grimoire voice</Option>
-                    <Option value="low">Low — warmth in greetings, plain rules</Option>
-                    <Option value="min">Minimal — just a touch of character</Option>
-                    <Option value="off">Off — neutral, no flavor</Option>
-                </Select>
-                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)" }}>
-                    How much Grimoire speaks as a sentient spellbook. Substance — rules, numbers, stat blocks —
-                    stays plain at every level. "Auto" keeps it light on small local models and full on cloud;
-                    pick a fixed level to apply it to any model.
+                <div style={{ "margin-top": "var(--spacing-1)", "margin-bottom": "var(--spacing-2)" }}>
+                    <Switch
+                        label="Match the model (Auto)"
+                        checked={isAutoPersona()}
+                        onChange={(on) => updateAi({ personaStrength: on ? "auto" : "full" })}
+                    />
+                </div>
+                <Slider
+                    stops={PERSONA_STOPS}
+                    value={personaLevel()}
+                    onChange={(v) => updateAi({ personaStrength: v })}
+                    disabled={isAutoPersona()}
+                    ariaLabel="In-character voice level"
+                />
+                <div style={{ opacity: 0.6, "font-size": "var(--font-size-small)", "margin-top": "var(--spacing-1)" }}>
+                    <span>
+                        How much Grimoire speaks as a sentient spellbook. Substance — rules, numbers, stat blocks —
+                    stays plain at every level.
+                    </span>
+                    <br />
+                    <span>
+                        <SolidSwitch>
+                            <Match when={persona() === 'auto'}>
+                                "Auto" keeps it minimal on local models and full on cloud;
+                            </Match>
+                            <Match when={persona() === 'off'}>
+                                "Off" is a neutral, mechanical voice;
+                            </Match>
+                            <Match when={persona() === 'min'}>
+                                "Minimal" adds a touch of warmth and personality;
+                            </Match>
+                            <Match when={persona() === 'low'}>
+                                "Low" adds a bit more character and flair;
+                            </Match>
+                            <Match when={persona() === 'full'}>
+                                "Full" is a rich, lively voice with lots of character.
+                            </Match>
+                        </SolidSwitch>
+                    </span>
                 </div>
             </div>
 

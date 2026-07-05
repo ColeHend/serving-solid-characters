@@ -1,0 +1,57 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
+// Layout wrapper around a coles FormField for the Settings AI tabs. FormField already supplies the
+// pill fill (--container-color), the floating legend, and focus behaviour; this only adds full-width
+// + even rhythm, a full-width/non-truncating Select, a sized password field (FormField doesn't size
+// type=password), and the muted hint line that replaces the old inline {opacity:.6; font-size:small}
+// divs. Number inputs are intentionally NOT touched (handled in a later library-update pass).
+.field {
+    display: block;
+    width: 100%;
+    margin-block: var(--spacing-2, 12px);
+}
+
+// The FormField renders a <fieldset> (inline-block by default, with per-control-type margins).
+// Stretch it to the row and let `.field` above own the spacing so every field lines up evenly.
+.field fieldset {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+// coles Select control carries the literal, un-hashed global class `coles-solid-selectControl`
+// (its module class names are hashed, so those can't be targeted). Inside a FormField the select is
+// already stretched via the library's own :has([is=coles-solid-select]) rules — this is
+// belt-and-suspenders for non-truncation / any bare usage.
+.field :global(.coles-solid-selectControl) {
+    width: 100%;
+    min-width: 0;
+}
+
+// FormField only sizes input[type=text|number]; the API-key field is type=password and falls
+// through to the bare fieldset. Mirror the text-input treatment so it matches the other pills.
+.field fieldset:has(input[type="password"]) {
+    position: relative;
+    height: 48px;
+}
+
+.field fieldset:has(input[type="password"]) input[type="password"] {
+    background-color: transparent !important;
+    color: var(--on-container-color, #000);
+    height: 24px;
+    margin: 8px 0;
+    width: 100%;
+    min-width: 95%;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+// Muted help text under the control (replaces the repeated inline hint divs).
+.hint {
+    margin-top: var(--spacing-1, 8px);
+    color: vars.$color-on-surface;
+    opacity: 0.6;
+    font-size: var(--font-size-small, 0.85rem);
+    line-height: 1.35;
+}
