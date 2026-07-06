@@ -1,63 +1,54 @@
+@use "../../../../index.scss" as *;
+
 $mobile: 768px;
+$margin: 5%;
 
 .CenterPage {
     // padding: 0;
     margin: 0 auto;
     width: 100%;
     text-align: center;
-    background: none;
-    background-image: url("https://upload.wikimedia.org/wikipedia/commons/8/84/Parchment.00.jpg");
-    border-radius: 15px;
 	overflow-y: scroll;
 	height: 100%;
 
     h1{
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #AA0505;
-        margin-left: 12px;
-        font-size: 1.8em;
-		z-index: 1;
+        z-index: 1;
+
+        @include styledDndTitle;
     }
 
     h2 {
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #AA0505;
-        margin-left: 12px;
-        font-size: 1.4em;
-		z-index: 1;
+        z-index: 1;
+        
+        @include styledDndTitle;
     }
     
     h3 {
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #AA0505;
-        margin-left: 12px;
-        font-size: 1.4em;
 		z-index: 1;
         margin: 0;
         padding: 0;
+        
+        @include styledDndTitle;
     }
 
     h4 {
-        font-family: 'Bookinsanity';
-        font-weight: 100;
-        color: #AA0505;
         margin-left: 12px;
 		z-index: 1;
+        
+        @include styledDndTitle;
     }
 
     span {
-        font-family: 'Bookinsanity';
-        font-weight: 100;
-        color: #000;
 		z-index: 1;
+
+        @include styledDndText;
     }
 
     @media screen and (max-width:$mobile)  {
         font-size: .8em;
     }
+
+    @include parchementBG;
 }
 
 .eachPage {
@@ -66,39 +57,15 @@ $mobile: 768px;
 	flex-direction: column;
 	justify-content: center;
 	gap: 10px;
-    margin-top: 5%;
-    table {
-		margin: 0 auto;
-        thead {
-
-            tr{
-
-                th {
-
-                font-family: 'Zatanna_Misdirection';
-                font-weight: 100;
-                color: #000;
-                }
-            }
-        }
-
-        tbody {
-
-            tr {
-                td {
-                font-family: 'Scaly_Sans';
-                font-weight: 100;
-                color: #000;
-                }
-            }
-        }
-    }
+    margin-top: 15%;
 
     @media screen and (max-width:$mobile)  {
         font-size: .8em;
         overflow-y: scroll;
         width: 90%;
     }
+
+    @include styledDndTable;
 }
 
 
@@ -108,23 +75,6 @@ $mobile: 768px;
     background-color: none;
     background: none;
     }
-    // h2 {
-    // font-family: 'Nodesto_Caps_Condensed';
-    // font-weight: 100;
-    // color: #000;
-    // font-size: 2em;
-    // }
-    // h3 {
-    // font-family: 'Mr_Eaves_Small_Caps';
-    // font-weight: 100;
-    // color: #000;
-    // font-size: 1.5em;
-    // }
-    // span {
-    // font-family: 'Bookinsanity';
-    // font-weight: 100;
-    // color: #000;
-    // }
 }
 
 .flexbox {
@@ -137,46 +87,7 @@ $mobile: 768px;
     flex-direction: column;
     margin: 0 5%;
     width: 100%;
-    // h3 {
-    //     font-family: 'Mr_Eaves_Small_Caps';
-    //     font-weight: 100;
-    //     color: #000;
-    //     font-size: 1.5em;
-    // }
-    // span {
-    //     font-family: 'Bookinsanity';
-    //     font-weight: 100;
-    //     color: #000;
-    // }
 }
-// .left {
-//     width: min-content;
-//     text-wrap: nowrap;
-// 		margin: 0 auto;
-//     // span {
-//     //     width: min-content;
-//     // }
-//     // div {
-//     //     width: min-content;
-//     // }
-//     // h1 {
-//     //     width: min-content;
-//     // }
-//     // h2 {
-//     //     width: min-content;
-// 	// 	margin: 0 auto;
-//     // }
-//     // h3 {
-//     //     width: min-content;
-//     // }
-//     // br {
-//     //     width: min-content;
-//     // }
-//     // hr {
-//     //     width: min-content;
-//     // }
-
-// }
 
 .flexBoxColumn {
 	display: flex;
@@ -213,12 +124,9 @@ $mobile: 768px;
 
 .header1 {
     h1{
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #AA0505 !important;
-        margin-left: 12px;
-        font-size: 1.8em;
 		z-index: 1;
+
+        @include styledDndTitle;
     }
 
     @media screen and (max-width:$mobile)  {
@@ -228,12 +136,9 @@ $mobile: 768px;
 
 .header2 {
     h2 {
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #AA0505 !important;
-        margin-left: 12px;
-        font-size: 1.2em;
 		z-index: 1;
+        
+        @include styledDndTitle;
     }
 
     @media screen and (max-width:$mobile)  {
@@ -244,11 +149,9 @@ $mobile: 768px;
 .header4 {
 
     h4 {
-        font-family: 'Mr_Eaves_Small_Caps';
-        font-weight: 100;
-        color: #AA0505 !important; 
-        margin-left: 12px;
 		z-index: 1;
+
+        @include styledDndTitle;
     }
 
     @media screen and (max-width:$mobile)  {
@@ -257,12 +160,11 @@ $mobile: 768px;
 }
 
 .infobox {
-    font-family: 'Bookinsanity';
-    font-weight: 100;
-    color: #000 !important;
     z-index: 1;
     padding: 0;
     margin: 0;
+
+    @include styledDndText;
 }
 
 .smallerFont { 
@@ -280,4 +182,111 @@ $mobile: 768px;
 
 .itemList {
     list-style: upper-alpha;
+}
+
+.table {
+    margin: 0 auto;
+}
+
+.classStats {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    margin-left: $margin;
+
+    flex-wrap: wrap;
+
+    h3 {
+        min-width: 230px;
+$margin: 5%;
+    }
+
+    div {
+        display: flex;
+        flex-direction: row;
+
+        // :first-child {
+        //     flex-grow: 1;
+        // }
+    }
+}
+
+.tabBar {
+
+    width: 100%;
+    button {
+        
+        @include styledDndTitle;
+    }
+
+}
+
+
+.ChoiceCards {
+    margin-left: $margin;
+    margin-right: $margin;
+
+}
+
+.flankedLable {
+    // text-transform: none !important;
+
+    @include FlankedLabel;
+}
+
+.feature {
+    display: block;
+    // flex-wrap: wrap;
+    text-align: left;
+    margin-top: 2%;
+    margin-left: $margin !important;
+    margin-right: $margin !important;
+
+    strong {
+        font-weight: bold !important;
+        color: #7c2718 !important;
+        text-transform: capitalize;
+        display: inline;
+        
+        @include flavorText;
+    }
+        
+    
+    p {
+
+        @include styledDndText;
+    }
+}
+
+.subclassCard {
+    border-color: #7c2718 !important;
+
+    &::before {
+        background: #7c2718 !important;
+    }
+
+    div {
+        border-color: #7c2718 !important;
+    }
+
+    button {
+        background: linear-gradient(177deg, rgb(112, 40, 23), rgb(81, 26, 13) 92%) !important;
+
+        svg {
+            fill: #f6ecd2 !important;
+        }
+    }
+}
+
+.subclassDesc {
+
+    @include flavorText;
+}
+
+.styledHeader {
+    text-align: baseline;
+    h1 {
+        font-size: 28px;
+    }
+    @include styledDndHeader;
 }

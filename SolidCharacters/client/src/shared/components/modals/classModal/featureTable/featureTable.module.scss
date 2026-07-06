@@ -1,17 +1,11 @@
+@use "../../../../../index.scss" as *;
+
 $mobile-fontsize: .3rem;
 
 .table {
     border: 1px solid !important;
     width: 88%;
     margin-right: 20%;
-    tbody tr {
-        box-shadow: 0 0 4px #ccc !important;
-        &:hover {
-            background-color: #6b6b6b22;
-            // opacity: .3;
-            font-weight: bold;
-        }
-    }
 }
 
 
@@ -22,4 +16,15 @@ $mobile-fontsize: .3rem;
         width: 20px;
         text-align: center;
     }
+}
+
+.flavor {
+    text-align: left;
+
+    @include flavorText;
+}
+
+.featureNameRow {
+    width: 40%;
+
 }

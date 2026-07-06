@@ -327,6 +327,7 @@ code {
   h1 {
     font-weight: 700;
     margin: 0;
+    color: #f6ecd2 !important;
   }
 
   span {
@@ -374,7 +375,7 @@ code {
 @mixin flavorText {
   font-family: 'Bookinsanity';
   font-size: 16px;
-  font-style: italic;
+  font-style: italic !important;
   color: #5a3414;
 }
 

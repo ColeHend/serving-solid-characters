@@ -76,6 +76,8 @@ const viewClasses: Component = () => {
     }
   })
 
+
+
   onMount(()=>{
     document.body.classList.add('classes-bg');
   })
@@ -102,7 +104,7 @@ const viewClasses: Component = () => {
           searchFunction={(data, search)=>{
             return data.name.toLowerCase() === search.toLowerCase();
           }}
-          class={`${styles.searchBar}`}/>
+          />
       </div>
 
       <div class={`${styles.classesTable}`}>

@@ -118,6 +118,10 @@ $margin: 5%;
 .subraceCard {
     border-color: #7c2718 !important;
 
+    &::before {
+        background: #7c2718 !important;
+    }
+
     div {
         border-color: #7c2718 !important;
     }
