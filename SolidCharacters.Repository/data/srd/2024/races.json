@@ -106,7 +106,8 @@
      "value": 1
     }
    ]
-  }
+  },
+  "legacy": false
  },
  {
   "id": "47bbfb0d-7bcf-4c53-838b-2bdb593b8ca6",
@@ -215,7 +216,8 @@
      "value": 1
     }
    ]
-  }
+  },
+  "legacy": false
  },
  {
   "id": "07c0f5a8-439c-4412-b54d-d85a280e65a4",
@@ -321,7 +323,8 @@
      "value": 1
     }
    ]
-  }
+  },
+  "legacy": false
  },
  {
   "id": "b4a04425-302b-4ce9-acd2-4f3fb286eb4a",
@@ -452,7 +455,8 @@
      "value": 1
     }
    ]
-  }
+  },
+  "legacy": false
  },
  {
   "id": "b498011d-b53b-42b5-a83f-dc49df19b9e8",
@@ -612,7 +616,8 @@
      "value": 1
     }
    ]
-  }
+  },
+  "legacy": false
  },
  {
   "id": "7e6335b1-e62a-4bfa-b5ca-2da3fcf4e67c",
@@ -709,7 +714,8 @@
      "value": 1
     }
    ]
-  }
+  },
+  "legacy": false
  },
  {
   "id": "1bf63816-e9c4-49b1-9d61-8ece12dabaf0",
@@ -787,7 +793,8 @@
     "Any"
    ],
    "amount": 1
-  }
+  },
+  "legacy": false
  },
  {
   "id": "bdb7692f-ad71-4c1d-8cf6-a506eac47b6b",
@@ -878,7 +885,8 @@
      "value": 1
     }
    ]
-  }
+  },
+  "legacy": false
  },
  {
   "id": "1a7d899b-f6a7-4b65-b639-b236f6cca7ad",
@@ -951,6 +959,7 @@
      "value": 1
     }
    ]
-  }
+  },
+  "legacy": false
  }
 ]

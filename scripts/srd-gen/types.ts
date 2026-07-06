@@ -3,6 +3,10 @@
  * These mirror the C# DTOs in SolidCharacters.Domain/Models/DTO/Class5e.cs using the
  * EXACT key casing found in the served files (snake_case where [JsonProperty] dictates,
  * camelCase otherwise). Newtonsoft reads case-insensitively, but we match the files.
+ *
+ * `legacy` (2014 → true, 2024 → false) is optional in these types because parsers must
+ * NOT emit it — the central emit/stampLegacy.ts pass owns it, and validateLegacy hard-gates
+ * its presence before write (same ownership model as ids/mads).
  */
 
 export type Ruleset = "2014" | "2024";
@@ -38,6 +42,7 @@ export interface PrerequisiteJson {
 
 export interface FeatJson {
     id: string;
+    legacy?: boolean;
     details: FeatureDetailJson;
     prerequisites: PrerequisiteJson[];
 }
@@ -85,6 +90,7 @@ export interface SpellcastingJson {
 
 export interface ClassJson {
     id: string;
+    legacy?: boolean;
     name: string;
     hit_die: string;
     primary_ability: string;
@@ -100,6 +106,7 @@ export interface ClassJson {
 
 export interface SubclassJson {
     id: string;
+    legacy?: boolean;
     name: string;
     parent_class: string;
     description: string;
@@ -120,6 +127,7 @@ export interface AbilityBonusChoiceJson {
 
 export interface RaceJson {
     id: string;
+    legacy?: boolean;
     name: string;
     size: string;
     speed: number;
@@ -138,6 +146,7 @@ export interface SubraceJson extends RaceJson {
 
 export interface BackgroundJson {
     id: string;
+    legacy?: boolean;
     name: string;
     desc: string;
     proficiencies: ProficienciesJson;
@@ -150,6 +159,7 @@ export interface BackgroundJson {
 
 export interface SpellJson {
     id: string;
+    legacy?: boolean;
     name: string;
     description: string;
     duration: string;
@@ -173,6 +183,7 @@ export interface SpellJson {
 
 export interface ItemJson {
     id: string;
+    legacy?: boolean;
     name: string;
     desc: string;
     type: number; // 0 Weapon, 1 Armor, 2 Tool, 3 Item
@@ -183,6 +194,7 @@ export interface ItemJson {
 
 export interface MagicItemJson {
     id: string;
+    legacy?: boolean;
     name: string;
     desc: string;
     rarity: string;
@@ -195,6 +207,7 @@ export interface MagicItemJson {
 
 export interface WeaponMasteryJson {
     id: string;
+    legacy?: boolean;
     name: string;
     damage: string;
     properties: string[];

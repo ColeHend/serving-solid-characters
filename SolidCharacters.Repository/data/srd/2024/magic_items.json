@@ -7,7 +7,8 @@
   "cost": "400 GP",
   "category": "Armor (Any Medium or Heavy, Except Hide Armor)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "9e8ec9b4-ae16-5bde-b979-fd5a07946680",
@@ -17,7 +18,8 @@
   "cost": "",
   "category": "Weapon (Any Ammunition)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "a8d899d3-7058-5c6b-aef6-dd215864a346",
@@ -27,7 +29,8 @@
   "cost": "40,000 GP",
   "category": "Weapon (Any Ammunition)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "d64398f3-db6e-5e99-b127-615ed3af0e2e",
@@ -40,6 +43,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -66,7 +70,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "1e272214-d0d3-5eb3-b724-b943b0986d88",
@@ -78,7 +83,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "32ec52e1-c623-530c-b8b9-72def6147a92",
@@ -90,7 +96,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "b3499737-9df5-55d2-a02c-48d1f6b486f5",
@@ -100,7 +107,8 @@
   "cost": "200,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "c2d8d0c6-dd68-5bd9-a8f7-059399aa3556",
@@ -110,7 +118,8 @@
   "cost": "",
   "category": "Armor (Any Light, Medium, or Heavy)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "9ac27ddd-ccc4-594a-89fe-718f164f40a0",
@@ -123,6 +132,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -165,7 +175,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "db927c40-6c9d-5843-94bb-30f3b0652169",
@@ -177,7 +188,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "3a17eb8e-3273-5e0e-a68c-2fd869890599",
@@ -189,7 +201,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "b7ad9389-1539-592a-b8bf-419a1617c5c5",
@@ -199,7 +212,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "aad037e6-a6a8-58b1-9766-9c944ff4809b",
@@ -209,7 +223,8 @@
   "cost": "40,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "2c3c8a8c-abfc-4757-836a-ab8787f4233f",
@@ -219,7 +234,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "8d73a292-eb87-5083-b056-309725847d95",
@@ -229,7 +245,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "49984930-4f2a-51a8-97eb-10a08a8e47b2",
@@ -239,7 +256,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "bfe9c34d-77d8-5400-8425-1725ae54edd2",
@@ -252,6 +270,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -318,7 +337,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "311c9a5c-c5aa-5b46-a4ce-5b2614a33cbc",
@@ -330,7 +350,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "769bf54c-df4a-4eb3-b35e-740b99f85c23",
@@ -341,6 +362,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -367,7 +389,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "f44384ea-a18a-5b28-9414-f4622549451b",
@@ -379,7 +402,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "ae0f422a-3bc1-570d-8cf0-57d5b2209d30",
@@ -391,7 +415,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "4d347021-ae9f-5419-91b1-7775bf516e5f",
@@ -404,6 +429,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -426,7 +452,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "64e1a293-2c4e-54f1-a5dc-c66f903a3c51",
@@ -438,7 +465,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "e3d1b36f-d15d-5f57-a423-976762fea0fe",
@@ -450,7 +478,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "53271167-24b3-50f7-b286-5f4941821407",
@@ -460,7 +489,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "96461be6-ec15-5178-802a-5d2b3a45020d",
@@ -473,6 +503,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -497,7 +528,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "c0fba825-b7d2-5584-a969-cacb094182c9",
@@ -509,7 +541,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "cb3a23c8-821a-5157-a306-d8101278a417",
@@ -519,7 +552,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "ca5ae3ee-3db2-4842-841d-f941f7f0b180",
@@ -529,7 +563,8 @@
   "cost": "40,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "1d8322ae-e0b9-511e-8dfa-038e242c3206",
@@ -539,7 +574,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "fd874fae-b16f-44eb-a7ed-8ad1fd0f32ff",
@@ -549,7 +585,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "e7570aa7-d014-44e3-b39a-3ebffe408896",
@@ -559,7 +596,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "5a235b8e-88ee-573d-8d16-78635c02ccf1",
@@ -572,6 +610,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -596,7 +635,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "ed7016cc-2521-5573-ae77-4bbd044f98a7",
@@ -609,6 +649,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -635,7 +676,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "ea48546c-65c6-55d2-b72d-ca209fcd3235",
@@ -648,6 +690,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -674,7 +717,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "76c40bdd-76a2-518f-8fd9-999d877c0e3c",
@@ -686,7 +730,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "59b21442-6a6d-541f-b69f-8d7aca3078ea",
@@ -698,7 +743,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "78a39a1c-867f-5a22-9cf8-0c181264da71",
@@ -710,7 +756,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "e61c9f03-401c-5a0e-93a7-2bee1c61928b",
@@ -722,7 +769,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "ddd2665b-70c5-491c-b6bb-d5e9ca8636f5",
@@ -734,7 +782,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "255bf73b-46f1-5813-b5ab-9903f457bbcb",
@@ -744,7 +793,8 @@
   "cost": "200,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "5c47afcd-8503-5f54-bfaf-c749ef87c868",
@@ -754,7 +804,8 @@
   "cost": "4,000 GP",
   "category": "Weapon (Dagger)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "13e408b7-0dfa-529d-b720-81886753e0bd",
@@ -766,7 +817,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "c6cc5b8f-dbca-518e-b358-82624c982182",
@@ -776,7 +828,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "dabe7df7-8063-5c64-8c0d-b668d30e2e9e",
@@ -786,7 +839,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "ab02ba0b-a5eb-5c28-9062-66f8eb133e2d",
@@ -798,7 +852,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "341c4f99-fda4-50a2-a46b-c52b95152013",
@@ -810,7 +865,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "bf2f9c99-cc67-5ee7-9ffd-197375de56aa",
@@ -820,7 +876,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "2db19c74-61ca-5670-b0d6-7df7c806cf5d",
@@ -832,7 +889,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "f7f6bd5f-247f-51e0-ace9-c99fbcbec148",
@@ -845,6 +903,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -869,7 +928,8 @@
   "cost": "4,000 GP",
   "category": "Weapon (Any Simple or Martial)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "1b2f3eca-a085-5d15-99a9-72ac7bc6ebc1",
@@ -879,7 +939,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "b9967944-b6b4-5e98-9e3f-5ecd0c79e5f5",
@@ -889,7 +950,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "3722dce7-82d9-5974-8dfb-96d298604620",
@@ -899,7 +961,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "ead6e5e9-cfa8-55d7-a20e-555d86992133",
@@ -909,7 +972,8 @@
   "cost": "40,000 GP",
   "category": "Armor (Half Plate Armor or Plate Armor)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "efffed75-0c27-5aff-8667-f7600bd925ff",
@@ -921,7 +985,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement by a Dwarf or a Creature Attuned to a Belt of Dwarvenkind"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "46fd8282-dc4e-53c2-9368-d0e1ba8f2048",
@@ -931,7 +996,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "92d68a58-1372-5321-916b-f8e2bd66afba",
@@ -941,7 +1007,8 @@
   "cost": "40,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "90f7a687-7076-5f1d-8df9-ea557a6ffc80",
@@ -951,7 +1018,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "bccbdba6-fa41-54e7-bda8-a02b7e6889f2",
@@ -961,7 +1029,8 @@
   "cost": "4,000 GP",
   "category": "Armor (Chain Mail or Chain Shirt)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "c63a74cb-aa02-5b34-a418-580b8e5b70ba",
@@ -971,7 +1040,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "1b5a3455-e32d-51d8-a2b2-74539d28f0b3",
@@ -983,7 +1053,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "aa2ec145-0904-5e77-a0ec-72881c91dedf",
@@ -994,6 +1065,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1019,6 +1091,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1043,7 +1116,8 @@
   "cost": "",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "b4be6741-3739-59d4-8d04-65a6f8a42ada",
@@ -1053,7 +1127,8 @@
   "cost": "",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "cb4ef4bd-c2f5-5d78-921a-c537d8cbcb47",
@@ -1065,7 +1140,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "3ae52d54-47ba-5cd7-b607-c81ccbef2255",
@@ -1075,7 +1151,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "eea23273-0696-527e-9378-40e88d0fa5bb",
@@ -1088,6 +1165,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1113,6 +1191,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1139,7 +1218,8 @@
   "weight": "",
   "properties": {
    "charges": "This prism has 50 charges."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "3700c699-9db6-55bc-8189-734b3b4d3a7a",
@@ -1152,7 +1232,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "This gem has 3 charges."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "f57e8f72-486a-596a-abbf-6960089fe59a",
@@ -1162,7 +1243,8 @@
   "cost": "4,000 GP",
   "category": "Weapon (Any Simple or Martial)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "ba182c15-4f36-55c4-b467-6bea5c661574",
@@ -1172,7 +1254,8 @@
   "cost": "4,000 GP",
   "category": "Armor (Studded Leather Armor)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "d0b392f8-38d7-5725-aeec-90ba9f5235c5",
@@ -1184,7 +1267,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "1568c26d-3a32-5a3f-89f1-1d573f61db1d",
@@ -1196,7 +1280,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "d38fc259-5e8d-5c93-8c73-065ef036a9da",
@@ -1206,7 +1291,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "33a0d68e-bcd2-5384-8178-c246b26aae21",
@@ -1218,7 +1304,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "1c7367df-aea8-587d-bbcb-a51ddd367842",
@@ -1228,7 +1315,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "a7a2c0f3-1e1e-52a3-acd7-aa7c0984e72b",
@@ -1240,7 +1328,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "e588db98-a2b6-5934-8800-4f9d52b788a8",
@@ -1253,6 +1342,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1279,7 +1369,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "24ee93ac-cb6d-50dc-8c5e-dd2604913b89",
@@ -1289,7 +1380,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "c8f40daf-6685-597f-b722-2ce94e3c6e52",
@@ -1301,7 +1393,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "429ba1e3-88bc-59e1-9054-5847dddb52cc",
@@ -1314,7 +1407,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "This helm has 3 charges."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "ef34ea94-0094-539a-a6c0-ac3320a53092",
@@ -1327,6 +1421,7 @@
   "properties": {
    "attunement": "Requires Attunement by a Paladin"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1351,7 +1446,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "1c3411c1-c085-50f2-9380-a1ad0e183b76",
@@ -1361,7 +1457,8 @@
   "cost": "",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "c74a3864-3843-5812-b64c-528455f2849b",
@@ -1371,7 +1468,8 @@
   "cost": "40,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "b7c4e2c9-9954-5a3f-941c-5fc8fe6c2d67",
@@ -1381,7 +1479,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "78d59925-8874-537e-8aec-ce139963f674",
@@ -1391,7 +1490,8 @@
   "cost": "400 GP",
   "category": "Rod",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "0ae0222e-4c11-532f-a80a-27c5f87a3aa0",
@@ -1403,7 +1503,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "458e578f-c677-5ffa-a40d-6b6c5e9df0f3",
@@ -1415,7 +1516,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "0d4e5fc8-f9a9-5ba1-801c-67d8bd248f9d",
@@ -1425,7 +1527,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "1afb29a7-c7d1-5ee3-a1a4-6eb32851c6cd",
@@ -1435,7 +1538,8 @@
   "cost": "200,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "f2fd6a27-d599-5d79-bf3a-b6a6989f6c58",
@@ -1445,7 +1549,8 @@
   "cost": "400 GP",
   "category": "Weapon (Javelin)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "58c0cce1-7e73-51c5-b64b-d78130519e20",
@@ -1455,7 +1560,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "b9bb4c75-2098-556c-a38e-2c58e676f50b",
@@ -1468,7 +1574,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "this property if it has no charges."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "80aff2ee-3a1e-5b30-a4cc-82a447c461e6",
@@ -1480,7 +1587,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "65d4e978-bf5c-5077-9b2b-7c92a043c98a",
@@ -1490,7 +1598,8 @@
   "cost": "4,000 GP",
   "category": "Weapon (Mace)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "a33144b8-a74a-5b57-b7bc-8c29c327986b",
@@ -1503,7 +1612,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "This magic weapon has 3 charges and regains 1d3 expended charges daily at dawn."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "fc7cac82-9bf7-53b1-b757-c2ebe6a13e80",
@@ -1516,6 +1626,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1541,6 +1652,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1565,6 +1677,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1588,7 +1701,8 @@
   "cost": "40,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "821425f9-84c6-5635-83c8-cac2d117eab1",
@@ -1599,6 +1713,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1622,7 +1737,8 @@
   "cost": "40,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "47e57431-b1f0-5027-8ee9-5e3f846e6404",
@@ -1634,7 +1750,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "9b783ade-1039-59d5-86e2-f70881974d38",
@@ -1644,7 +1761,8 @@
   "cost": "40,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "b11f5186-b0d6-52c5-a05a-f945ca98ebb6",
@@ -1654,7 +1772,8 @@
   "cost": "400 GP",
   "category": "Armor (Any Medium or Heavy, Except Hide Armor)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "031f6ab7-ef8e-59d3-aa07-55758bc7b556",
@@ -1664,7 +1783,8 @@
   "cost": "200,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "bf528511-4859-5e7e-b30b-9b9f357036e2",
@@ -1677,6 +1797,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1701,7 +1822,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "cd2faed1-47e1-566b-8086-5591d2cd9f28",
@@ -1713,7 +1835,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement by a Cleric, Druid, or Paladin"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "8506a45b-94a0-5dae-b808-9cceaa584647",
@@ -1725,7 +1848,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "08971e2f-c202-589e-807e-44874a604b3c",
@@ -1737,7 +1861,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "02b85d0d-015f-5e9a-b8fa-09ff6b22c2f3",
@@ -1747,7 +1872,8 @@
   "cost": "4,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "e18d8177-6193-59a6-ac1e-96b2def42eb1",
@@ -1757,7 +1883,8 @@
   "cost": "40,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "5775bc77-9081-522f-ba7c-25b23506c649",
@@ -1767,7 +1894,8 @@
   "cost": "400 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "ae03a55a-38ae-57ef-a6bd-f4ae569e55a3",
@@ -1779,7 +1907,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement by a Spellcaster"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "323c8268-2770-57d3-b4ef-359f78aba6e4",
@@ -1792,6 +1921,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1819,6 +1949,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -1843,7 +1974,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "b1f678e4-115c-5f8c-a9f6-22b8debf9f32",
@@ -1853,7 +1985,8 @@
   "cost": "400 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "57eeb7b1-08a7-53dd-b034-098eb43482a7",
@@ -1863,7 +1996,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "24d0fbb0-3e23-5d4f-ab13-d02bab35d349",
@@ -1875,7 +2009,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "cf19d6ae-3595-580a-aab6-43479eb7f86f",
@@ -1887,7 +2022,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "d0dbb0cf-1241-5223-b583-84a3af19132b",
@@ -1897,7 +2033,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "9501a322-88f0-5ef7-bd50-9b2f83e9a5d3",
@@ -1907,7 +2044,8 @@
   "cost": "400 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "d9bc42b1-8ddd-5506-9d94-7ba4002588bf",
@@ -1917,7 +2055,8 @@
   "cost": "4,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "9fbecaa2-c5e4-5841-bf63-162ea3da6f93",
@@ -1927,7 +2066,8 @@
   "cost": "100 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "54697caf-5aac-5cb5-92c0-49955388f6ae",
@@ -1937,7 +2077,8 @@
   "cost": "4,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "e11dbc8e-d968-578f-a601-ac49e4a26523",
@@ -1947,7 +2088,8 @@
   "cost": "40,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "c721ee76-ef40-57c9-8d9d-0923c09c57f6",
@@ -1957,7 +2099,8 @@
   "cost": "4,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "6c267421-00cc-583d-9dc1-263cd7b23025",
@@ -1967,7 +2110,8 @@
   "cost": "",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "77c9a095-57ec-594a-96f4-a02eb03e6f5d",
@@ -1977,7 +2121,8 @@
   "cost": "400 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "e541968a-abb7-5922-b955-2ec67bc9c2fc",
@@ -1987,7 +2132,8 @@
   "cost": "",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "e9e857a4-d75d-50df-a378-c9265b72f2ac",
@@ -1997,7 +2143,8 @@
   "cost": "4,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "e3fdea6d-9c66-5dbf-99f5-a53f50edb439",
@@ -2007,7 +2154,8 @@
   "cost": "4,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "69f3321c-ffd1-5e3d-8b6c-16041d82d410",
@@ -2017,7 +2165,8 @@
   "cost": "4,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "699df3b1-6c37-53d7-9927-e99365ae3c2a",
@@ -2027,7 +2176,8 @@
   "cost": "400 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "d555b550-c3dd-577f-bada-d49d0c10908d",
@@ -2037,7 +2187,8 @@
   "cost": "400 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "bdeabe89-fe55-511a-b33a-3b4fb65b3476",
@@ -2047,7 +2198,8 @@
   "cost": "40,000 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "b528d232-6814-5f07-82b2-002426e2a347",
@@ -2057,7 +2209,8 @@
   "cost": "400 GP",
   "category": "Potion",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "f5205198-3f7b-5155-809c-e72d6c910663",
@@ -2069,7 +2222,8 @@
   "weight": "",
   "properties": {
    "charges": "This ring has 3 charges, and it regains 1d3 expended charges daily at dawn."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "829f2575-16a4-54be-bfe3-4b7a5c9d1f22",
@@ -2081,7 +2235,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "81ef728f-0e46-547c-9c00-b97727c9fb0d",
@@ -2093,7 +2248,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "9f53ce4e-0700-519b-a807-ca8f379909e2",
@@ -2106,7 +2262,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "This ring has 3 charges, and it regains 1d3 expended charges daily at dawn."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "97b0b176-4bd8-585a-b95c-30c10062ced1",
@@ -2118,7 +2275,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "16bf371a-3232-588f-bf6f-5f45b382287d",
@@ -2130,7 +2288,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "6877e838-5615-43ff-9f74-3dece88b1b43",
@@ -2142,7 +2301,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "a2db2a14-b158-5193-bb97-018bcd7e9e52",
@@ -2154,7 +2314,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "a4afd6c0-59d9-5d51-8ed0-0ed3eef44207",
@@ -2166,7 +2327,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "d7cbdf58-8cf0-556c-8d34-2c265f0c92bd",
@@ -2178,7 +2340,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "70af721d-411f-5403-82a8-3294b4d088ee",
@@ -2190,7 +2353,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "fb1b5ad3-5c02-5f1f-a57b-e63d2f843d6a",
@@ -2200,7 +2364,8 @@
   "cost": "4,000 GP",
   "category": "Ring",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "11e0c154-6d4a-58e9-b838-45baf01dcd35",
@@ -2212,7 +2377,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "896918a5-dbdf-5728-979a-19ffb77343ee",
@@ -2224,7 +2390,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "f403724b-a378-5428-ae4e-6b6a9d0ebf0d",
@@ -2237,6 +2404,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2261,7 +2429,8 @@
   "cost": "400 GP",
   "category": "Ring",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "411cad07-fcf3-50f1-af65-c5aa7178551e",
@@ -2273,7 +2442,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "9ecf0b84-08bb-55d1-99f5-5a6a9ccdee70",
@@ -2286,7 +2456,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "This ring has 3 charges and regains 1d3 expended charges daily at dawn."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "3589280b-6821-5723-98f4-988dad9f7c24",
@@ -2296,7 +2467,8 @@
   "cost": "200,000 GP",
   "category": "Ring",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "40f6f9ba-ac6f-5c23-b116-7cf8d78e29e2",
@@ -2308,7 +2480,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "093c161c-6d85-5231-a786-45ce61f500db",
@@ -2318,7 +2491,8 @@
   "cost": "400 GP",
   "category": "Ring",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "60cd5c4a-2016-5adb-8690-aa8336d64438",
@@ -2330,7 +2504,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "c5dd0666-838c-56aa-96d0-8c6d98f77e16",
@@ -2343,6 +2518,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2370,7 +2546,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "This robe has 3 charges, and it regains 1d3 expended charges daily at dawn."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "174521ff-4b18-5e3a-a42b-bd5e22543f68",
@@ -2382,7 +2559,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "f7bdca52-0120-5831-9f6b-cd5cf3909293",
@@ -2395,6 +2573,7 @@
   "properties": {
    "attunement": "Requires Attunement by a Sorcerer, Warlock, or Wizard"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2429,7 +2608,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "e62d1945-be8b-5c55-8f5b-f60277a9ad5b",
@@ -2441,7 +2621,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "63f09a02-1b61-5098-bcf7-01302695171f",
@@ -2454,6 +2635,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2490,7 +2672,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "4c3a562a-9659-588d-aba2-b4451b89a756",
@@ -2502,7 +2685,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "c3a77a23-599b-5ff5-8259-e83f6b63c848",
@@ -2512,7 +2696,8 @@
   "cost": "40,000 GP",
   "category": "Rod",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "1bd68915-f4e0-5bcf-8879-5a9cf526aeac",
@@ -2522,7 +2707,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "51b84992-ad14-51e9-b101-a9e7db61dfc6",
@@ -2532,7 +2718,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "ee0041fa-4c4f-52d6-9e51-393c041e2912",
@@ -2545,6 +2732,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2571,7 +2759,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "0d9da9fb-9202-57f5-bd89-a36f8f34def0",
@@ -2581,7 +2770,8 @@
   "cost": "",
   "category": "Armor (Shield)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "379d3bdb-0cfd-5765-8ddf-203e6fbcd61a",
@@ -2593,7 +2783,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "05635299-be03-5ba6-8cab-50151195d8c9",
@@ -2605,7 +2796,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "5f930d14-f4c9-5284-ab99-7f0530d7eca2",
@@ -2615,7 +2807,8 @@
   "cost": "200,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "b21ea4f6-bf16-5d88-954c-f5ac463e9b7e",
@@ -2628,6 +2821,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2652,7 +2846,8 @@
   "cost": "",
   "category": "Scroll",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "75615c90-b415-5c94-8729-9cbe84626750",
@@ -2662,7 +2857,8 @@
   "cost": "200,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "a4b83a97-410a-5007-9480-1b42a16d673f",
@@ -2675,7 +2871,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Bard, Cleric, Druid, Sorcerer, Warlock, or Wizard",
    "charges": "Regaining Charges. The staff regains 1d8 + 2 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff crumbles to dust and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "7c5ffd5a-f60b-5c53-af50-e32c8f2c0dbc",
@@ -2689,6 +2886,7 @@
    "attunement": "Requires Attunement by a Druid, Sorcerer, Warlock, or Wizard",
    "charges": "Regaining Charges. The staff regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff crumbles into cinders and is destroyed."
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2715,6 +2913,7 @@
    "attunement": "Requires Attunement by a Druid, Sorcerer, Warlock, or Wizard",
    "charges": "Regaining Charges. The staff regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff turns to water and is destroyed."
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2740,7 +2939,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Bard, Cleric, or Druid",
    "charges": "Regaining Charges. The staff regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff vanishes in a flash of light, lost forever."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "7c7ecd46-1e56-5309-91b3-3762861f76be",
@@ -2753,7 +2953,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Sorcerer, Warlock, or Wizard",
    "charges": "Regaining Charges. The staff regains 2d8 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff retains its +2 bonus to attack rolls and damage rolls but loses all other properties. On a 20, the staff regains 1d8 + 2 charges."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "bbcf1b21-2d16-5876-b4a1-306b5ff98aa2",
@@ -2766,7 +2967,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "Regaining Charges. The staff regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff becomes a nonmagical Quarterstaff."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "65bd474b-1b29-5a28-b274-ec4c5f539c9c",
@@ -2779,7 +2981,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Bard, Cleric, Druid, Sorcerer, Warlock, or Wizard",
    "charges": "Regaining Charges. The staff regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, a swarm of insects consumes and destroys the staff, then disperses."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "ddf3c12b-a4a5-594e-84f3-98c4c6a4ef63",
@@ -2793,6 +2996,7 @@
    "attunement": "Requires Attunement by a Sorcerer, Warlock, or Wizard",
    "charges": "Regaining Charges. The staff regains 4d6 + 2 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 20, the staff regains 1d12 + 1 charges."
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2819,7 +3023,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "0f04a8af-ab8b-41a1-8b1a-f88667b75291",
@@ -2832,7 +3037,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Druid",
    "charges": "Regaining Charges. The staff regains 1d6 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff loses its properties and becomes a nonmagical Quarterstaff."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "e118acbd-fe87-525c-bced-f29fe466514f",
@@ -2844,7 +3050,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "a33d4ad5-4b44-5591-88e2-46c213c889d1",
@@ -2857,7 +3064,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "This staff has 3 charges and regains 1d3 expended charges daily at dawn."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "d9145917-0dc6-5a0c-b2d5-633d6d813c59",
@@ -2867,7 +3075,8 @@
   "cost": "4,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "151aad3e-049b-5da7-9327-98c927842e2d",
@@ -2879,7 +3088,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "67c0cbe9-4c77-52db-a807-0fd536ab3a45",
@@ -2891,7 +3101,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "dcb76324-7dbe-51f0-a367-c6a184d61861",
@@ -2903,7 +3114,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "5cc2890d-11ff-53e4-bbe8-1496c098b582",
@@ -2915,7 +3127,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "24529ed9-3655-504f-9a8f-65c71a093637",
@@ -2927,7 +3140,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "b76780ce-262e-5ab4-a09e-3c0ac5eeab32",
@@ -2939,7 +3153,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement by a Cleric or Paladin"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "abded85e-91f7-5266-9065-805e29aff9e1",
@@ -2951,7 +3166,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "716f4d93-a370-51a9-b08a-2d7dbb229032",
@@ -2963,7 +3179,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "cc127bbd-4c9a-538d-9c08-64f5952df7bd",
@@ -2974,6 +3191,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -2998,6 +3216,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -3022,6 +3241,7 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -3048,7 +3268,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "This magic weapon has 3 charges, and it regains 1d3 expended charges daily at dawn."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "0d91cae2-6ec6-5a11-b96b-377d5fb6022b",
@@ -3058,7 +3279,8 @@
   "cost": "200,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "64ab5e27-03fa-5bd3-a576-62dc9d340f25",
@@ -3068,7 +3290,8 @@
   "cost": "4,000 GP",
   "category": "Weapon (Any Simple or Martial)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "1795755c-07b9-4b2a-bb7a-25a43cb7962a",
@@ -3080,7 +3303,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "0f64791c-d75a-54d2-b1ac-9667ee809d44",
@@ -3093,7 +3317,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "302be5bc-39c6-5d3d-95a7-c8bdd2f74a19",
@@ -3106,7 +3331,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "7b6b548b-a8eb-569c-ac8a-a2b03b15bed5",
@@ -3119,7 +3345,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "8bcccbac-1fa4-4090-9d30-d0500cf93f0d",
@@ -3132,7 +3359,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Spellcaster",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "9f79618f-e24e-5340-9fb8-6ad0bef69b12",
@@ -3145,7 +3373,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Spellcaster",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "bdfc9738-54a5-5c3b-9cb8-4b086831268c",
@@ -3157,7 +3386,8 @@
   "weight": "",
   "properties": {
    "charges": "This wand has 3 charges."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "8b81d363-012f-52e3-b90b-ba307674b1ef",
@@ -3169,7 +3399,8 @@
   "weight": "",
   "properties": {
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "1dc33a4c-7400-59eb-aabe-a56a592a45e5",
@@ -3182,7 +3413,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Spellcaster",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "dedbebcb-e4c4-5163-aa3a-94441dcfe0c7",
@@ -3195,7 +3427,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Spellcaster",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "c306c697-9f76-5042-8045-5395309080d8",
@@ -3207,7 +3440,8 @@
   "weight": "",
   "properties": {
    "charges": "This wand has 3 charges and regains 1d3 expended charges daily at dawn."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "25dc3bd5-7615-5478-9104-6b04c55cdcf8",
@@ -3219,7 +3453,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement by a Spellcaster"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "8eae4a43-254f-5385-baf0-01f237825cc8",
@@ -3232,7 +3467,8 @@
   "properties": {
    "attunement": "Requires Attunement by a Spellcaster",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into ashes and is destroyed."
-  }
+  },
+  "legacy": false
  },
  {
   "id": "485b76ac-6c2b-5ba5-b3a0-c39a58a8c772",
@@ -3245,7 +3481,8 @@
   "properties": {
    "attunement": "Requires Attunement",
    "charges": "Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll 1d20. On a 1, the wand crumbles into dust and is destroyed.\n\nTable: Wand of Wonder Effects"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "a4fe73c9-02ff-5def-8826-928dc9280fc9",
@@ -3255,7 +3492,8 @@
   "cost": "",
   "category": "Weapon (Any Simple or Martial)",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "fec6335c-d79e-5234-8ad9-b7756067346e",
@@ -3268,6 +3506,7 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
+  "legacy": false,
   "metadata": {
    "mads": [
     {
@@ -3291,7 +3530,8 @@
   "cost": "200,000 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "14519905-9a77-5f15-863d-5e7de52521a8",
@@ -3301,7 +3541,8 @@
   "cost": "400 GP",
   "category": "Wondrous Item",
   "weight": "",
-  "properties": {}
+  "properties": {},
+  "legacy": false
  },
  {
   "id": "f22dfe94-b58b-57b5-9da6-c323458f6e5f",
@@ -3313,7 +3554,8 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  },
  {
   "id": "d6bc38d2-793f-5d8a-b5d6-814cf070ad34",
@@ -3325,6 +3567,7 @@
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
-  }
+  },
+  "legacy": false
  }
 ]

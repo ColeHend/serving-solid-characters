@@ -9,6 +9,8 @@ namespace SolidCharacters.Domain.DTO.Updated
 public class Feat
 {
   [JsonProperty("id")] public string Id { get; set; } = null!;
+  /// <summary>True for 2014 (legacy) SRD data, false for 2024; null when unknown (homebrew, stale caches).</summary>
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   public FeatureDetail Details { get; set; } = null!;
   public List<Prerequisite> Prerequisites { get; set; } = new();
 }
@@ -90,6 +92,7 @@ public class StartingEquipment
 public class MagicItem
 {
   [JsonProperty("id")] public string Id { get; set; } = null!;
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   public string Name { get; set; } = null!;
   public string Desc { get; set; } = null!;
   public string Rarity { get; set; } = null!;
@@ -111,6 +114,7 @@ public class MagicItemProperties
 public class Item
 {
   [JsonProperty("id")] public string Id { get; set; } = null!;
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   public string Name { get; set; } = null!;
   public string Desc { get; set; } = null!;
   public ItemType Type { get; set; }
@@ -161,6 +165,7 @@ public class PrimitiveDictionaryConverter : Newtonsoft.Json.JsonConverter<Dictio
 public class WeaponMastery
 {
   [JsonProperty("id")] public string Id { get; set; } = null!;
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   public string Name { get; set; } = null!;
   public string Damage { get; set; } = null!;
   public List<string> Properties { get; set; } = new();
@@ -170,6 +175,7 @@ public class WeaponMastery
 public class Spell
 {
   [JsonProperty("id")] public string Id { get; set; } = null!;
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   // Keep C# names for internal code, but expose snake_case / expected client names via attributes
   [JsonProperty("name")] public string Name { get; set; } = null!;
   [JsonProperty("description")] public string Description { get; set; } = null!; // front-end expects 'description'
@@ -196,6 +202,7 @@ public class Spell
 public class Background
 {
   [JsonProperty("id")] public string Id { get; set; } = null!;
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   public string Name { get; set; } = null!;
   public string Desc { get; set; } = null!;
   public Proficiencies Proficiencies { get; set; } = new();
@@ -209,6 +216,7 @@ public class Background
 public class Race
 {
   public string Id { get; set; } = null!;
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   public string Name { get; set; } = null!;
   public string Size { get; set; } = null!;
   public int Speed { get; set; }
@@ -229,6 +237,7 @@ public class Subrace : Race
 public class Subclass
 {
   [JsonProperty("id")] public string Id { get; set; } = null!;
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   [JsonProperty("name")] public string Name { get; set; } = null!;
 
   [JsonProperty("parent_class")] public string ParentClass { get; set; } = null!;
@@ -243,6 +252,7 @@ public class Subclass
 public class Class5E
 {
   [JsonProperty("id")] public string Id { get; set; } = null!;
+  [JsonProperty("legacy")] public bool? Legacy { get; set; }
   [JsonProperty("name")] public string Name { get; set; } = null!;
   [JsonProperty("hit_die")] public string HitDie { get; set; } = null!;
   [JsonProperty("primary_ability")] public string PrimaryAbility { get; set; } = null!;

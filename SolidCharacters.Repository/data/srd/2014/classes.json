@@ -448,7 +448,8 @@
     "19": "+4",
     "20": "+4"
    }
-  }
+  },
+  "legacy": true
  },
  {
   "id": "2e018eb1-fc86-4319-9fd2-7716eeec10e8",
@@ -974,7 +975,8 @@
     "amount": 1
    }
   },
-  "classSpecific": {}
+  "classSpecific": {},
+  "legacy": true
  },
  {
   "id": "66209f87-c6e1-4348-9cd7-a82be312368c",
@@ -1466,7 +1468,8 @@
     "amount": 1
    }
   },
-  "classSpecific": {}
+  "classSpecific": {},
+  "legacy": true
  },
  {
   "id": "790ab343-5817-4e8a-a5d8-fcfbb06438ce",
@@ -1945,7 +1948,8 @@
     "amount": 1
    }
   },
-  "classSpecific": {}
+  "classSpecific": {},
+  "legacy": true
  },
  {
   "id": "e773ac06-b31c-4beb-91e7-97209f552952",
@@ -2360,7 +2364,8 @@
     "amount": 1
    }
   },
-  "classSpecific": {}
+  "classSpecific": {},
+  "legacy": true
  },
  {
   "id": "d128340f-85c3-43e2-b799-406b5bf6f165",
@@ -2851,7 +2856,8 @@
     "19": "+30 ft.",
     "20": "+30 ft."
    }
-  }
+  },
+  "legacy": true
  },
  {
   "id": "51c6913d-90bd-4ed9-bcf7-75332f9b329f",
@@ -3295,7 +3301,8 @@
     "amount": 1
    }
   },
-  "classSpecific": {}
+  "classSpecific": {},
+  "legacy": true
  },
  {
   "id": "4c8c39a0-6bf7-46e4-b082-f8899a7cca4c",
@@ -3740,7 +3747,8 @@
     "amount": 1
    }
   },
-  "classSpecific": {}
+  "classSpecific": {},
+  "legacy": true
  },
  {
   "id": "2017cf77-17c7-489f-a36f-5c6abab15614",
@@ -4114,7 +4122,8 @@
     "19": "10d6",
     "20": "10d6"
    }
-  }
+  },
+  "legacy": true
  },
  {
   "id": "95cafb97-77ad-4632-87f6-0d496c624469",
@@ -4593,7 +4602,8 @@
     "19": "19",
     "20": "20"
    }
-  }
+  },
+  "legacy": true
  },
  {
   "id": "ba516ec1-b640-478f-a89e-00dc05e610ca",
@@ -4996,7 +5006,8 @@
     "19": "8",
     "20": "8"
    }
-  }
+  },
+  "legacy": true
  },
  {
   "id": "b605b882-9fad-4066-aea0-45ebeac5ee65",
@@ -5422,6 +5433,7 @@
     "amount": 1
    }
   },
-  "classSpecific": {}
+  "classSpecific": {},
+  "legacy": true
  }
 ]

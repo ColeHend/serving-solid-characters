@@ -21,7 +21,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3c92b769-0c8e-48a5-98eb-73d32bf0b3ab",
@@ -44,7 +45,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c283f2a3-a4e4-4608-a874-a971a52c5ee5",
@@ -69,7 +71,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0ad6dc9d-2d1d-4d09-a328-91d8161fa496",
@@ -93,7 +96,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6521dca9-c3f2-43ab-a98c-946cac108b0a",
@@ -116,7 +120,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c087c1b1-3332-4e81-a712-c173e38b3846",
@@ -142,7 +147,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2a1993c8-6cf6-4956-87b6-d658d64f5153",
@@ -168,7 +174,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5d06ef8c-b790-4d9e-b7d6-8950204150f1",
@@ -190,7 +197,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ccf93d6a-ec1e-43cb-bb8a-36960eb27117",
@@ -215,7 +223,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9c09ebc1-d0f8-42b8-8636-a03bb7555463",
@@ -240,7 +249,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "7191025b-5462-4034-862d-c49bfb2883a3",
@@ -262,7 +272,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2d7f59e7-76a2-4673-8aef-e609395af46d",
@@ -286,7 +297,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3778af48-2f09-4c18-86ef-2a1750336ffa",
@@ -310,7 +322,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "aad01900-0f96-4ad1-8e75-e160b4d48930",
@@ -333,7 +346,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6829a2ab-2dcf-45cc-a9bb-b6a35d6da187",
@@ -357,7 +371,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "930417d4-d042-452c-9301-d4806dfe47af",
@@ -380,7 +395,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0de8d3eb-86e2-4d69-a58f-66a2218efa01",
@@ -404,7 +420,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "702a582d-26b4-481a-adfa-03a9a3ef0a35",
@@ -427,7 +444,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ce312dda-4415-4aed-b8d0-0aafc6c852d2",
@@ -452,7 +470,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "fefe5bda-5a9d-4bc2-b480-6dc9ffcd3942",
@@ -475,7 +494,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "03a220dc-108b-4f19-8078-95bb1298ace2",
@@ -499,7 +519,8 @@
    "Bard",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d6aa2c75-cb44-441e-bf2d-85f1295b9bd0",
@@ -524,7 +545,8 @@
    "Bard",
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "afc7ce31-7a77-4344-89cb-364f024fff95",
@@ -552,7 +574,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d9aff910-046f-4c5d-a4eb-4014df2116c4",
@@ -576,7 +599,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "488a5b92-ea44-47fb-96a6-ea5da93059f6",
@@ -598,7 +622,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3b733caa-4b3c-41fe-b202-3fb4ce67ff10",
@@ -623,7 +648,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "60904da8-4cd2-4581-b149-b83e445028f8",
@@ -646,7 +672,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "8c7689ea-7e0e-45e1-b920-57261b044c07",
@@ -668,7 +695,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d7deaf7e-7421-4367-87d2-cd8410d52403",
@@ -693,7 +721,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9c835c5b-36f6-43f6-8171-98da5942d63c",
@@ -719,7 +748,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1c7f1229-38e7-40c5-83f8-0e080029c030",
@@ -745,7 +775,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "abbdc137-d27c-442f-9880-205f3d671e48",
@@ -768,7 +799,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ed470fb1-e087-4570-879e-d7169978e4af",
@@ -791,7 +823,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b3a94752-0f54-4765-9fe9-fdcc96a5a846",
@@ -814,7 +847,8 @@
   "classes": [
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "65fb389c-e1fc-46fc-9ac3-ea4ef91025a0",
@@ -838,7 +872,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "61e4b6d7-4717-402e-8d1b-88ebe14c62fd",
@@ -861,7 +896,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c8454bda-2ab7-4170-a09a-f81cffa14adb",
@@ -884,7 +920,8 @@
    "Bard",
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1e32ab50-6a15-46f0-8bf7-910f9011ffe7",
@@ -909,7 +946,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "62e68bbd-9664-4bc8-9bd9-7080748fa58f",
@@ -936,7 +974,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f90c3e88-67ce-4d9a-bf2a-d12fac82c712",
@@ -960,7 +999,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a5d5801b-cc3b-4fcd-962d-08d71ad56b46",
@@ -986,7 +1026,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9990fe23-5bdf-4333-9a50-83cd20adf497",
@@ -1012,7 +1053,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6480fcaa-43ae-4ae1-897f-6e054fd0a221",
@@ -1035,7 +1077,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0779e0cd-7e8c-4a3e-bfe8-b305abfb46e9",
@@ -1059,7 +1102,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "16aa5b68-673e-46f2-9190-977ad4c2dce3",
@@ -1084,7 +1128,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "19a3ef58-3ada-428e-a6d3-db4166610ae1",
@@ -1108,7 +1153,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3714145d-d135-4dd8-961a-629d79bb64eb",
@@ -1131,7 +1177,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3ff41dfa-58ec-4349-af1a-60de92ed82d9",
@@ -1154,7 +1201,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e9fb898c-acc5-4d38-9365-3f99e9ed7c16",
@@ -1180,7 +1228,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "24a249fe-0e79-402b-8f79-f6adecd1305e",
@@ -1202,7 +1251,8 @@
   "classes": [
    "Bard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e2d7dddd-e6c5-4c42-a4a7-1b0b4865b360",
@@ -1227,7 +1277,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d8c0b697-8189-4b3e-98ae-f0d1e9721f40",
@@ -1254,7 +1305,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "04296429-584a-4642-9e28-470ffd4ed4f5",
@@ -1278,7 +1330,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "452bb324-6b92-4324-9cbd-886f56ec78aa",
@@ -1301,7 +1354,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "65759a43-2d53-43f4-ad03-6cd9eb218886",
@@ -1326,7 +1380,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b7d2f343-2bf7-4dc7-9643-1ea77940825d",
@@ -1350,7 +1405,8 @@
    "Druid",
    "Warlock"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "59a4b1ce-9980-4517-b9ec-6569d02107be",
@@ -1374,7 +1430,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2478e215-71ae-4749-8778-21140af3dd3d",
@@ -1399,7 +1456,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "76ffaa9c-c045-4929-8a20-6f3529548d23",
@@ -1422,7 +1480,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "fa185c0f-3ddf-4ca7-bd92-20b4966f0ad6",
@@ -1445,7 +1504,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "29e3a704-5c69-4bb6-bd69-6f9947e981fe",
@@ -1468,7 +1528,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e1c8d6ae-044c-4b3c-9527-4743d028d54a",
@@ -1492,7 +1553,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c404ef16-d075-4f21-962c-40bce4ec1605",
@@ -1517,7 +1579,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e4483cdf-4d32-43f6-bbac-3cecf8e3598d",
@@ -1542,7 +1605,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1a7faebb-21cc-48b6-b22e-1c10a2a7aa7f",
@@ -1567,7 +1631,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5f955b83-2da2-4134-b991-d04e8bcf9feb",
@@ -1590,7 +1655,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3be19a6f-d4a9-450f-abe7-09f716024a11",
@@ -1615,7 +1681,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c8dbbb7e-292d-499e-a247-81b2733fca79",
@@ -1641,7 +1708,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d2c60c95-9177-41a3-8f4d-96f9f4828014",
@@ -1666,7 +1734,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d9cee192-ed56-40bd-9835-5aa38b48fd5d",
@@ -1693,7 +1762,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "fe896621-482c-4c20-ab6d-4fcfa3ef19ef",
@@ -1718,7 +1788,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "37ea62e0-bea1-4890-99b5-5c0e63f35a8c",
@@ -1743,7 +1814,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d5385520-4244-4be6-89fa-c5e0ffc71bb7",
@@ -1769,7 +1841,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "91bd72ce-208f-460c-a0a9-82351889397e",
@@ -1795,7 +1868,8 @@
    "Ranger",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ba369564-7811-4082-8b87-b575c9cd03c6",
@@ -1818,7 +1892,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d5b86a77-aadb-4e87-b289-82305b6f0f64",
@@ -1843,7 +1918,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "87d31695-821a-4435-af14-96b5ab7c2066",
@@ -1866,7 +1942,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "96e7e5bd-edff-4a83-a49d-e7ba3215a6e2",
@@ -1889,7 +1966,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2f7742e4-9e55-424e-8163-e6db269af689",
@@ -1917,7 +1995,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "24df0705-c152-43ce-bba7-bc9b3d89c439",
@@ -1943,7 +2022,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b3b98e00-5d70-4d6e-b555-15189a5d872a",
@@ -1968,7 +2048,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6b629cbc-42b8-4da8-8c49-951b7fe39c77",
@@ -1993,7 +2074,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a1bd5899-5d77-4ef0-bc29-7c14ec924b06",
@@ -2017,7 +2099,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0bada087-a0b5-4bf9-9290-edfd5de8df0d",
@@ -2042,7 +2125,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3ab51661-c834-4351-b5d7-e72db192723e",
@@ -2066,7 +2150,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d2ea7944-8ea0-4b38-bece-4975a34b8c34",
@@ -2095,7 +2180,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "02f8b4b4-831d-4be8-894f-6db40635caca",
@@ -2118,7 +2204,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ac4c1c26-9f3b-4d6a-8794-2fbd2001a76f",
@@ -2140,7 +2227,8 @@
   "classes": [
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0272ef9f-0bec-4709-8481-67d3bd3e4e4f",
@@ -2162,7 +2250,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "db777826-fd15-4924-b263-ecf3993933ea",
@@ -2186,7 +2275,8 @@
    "Druid",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "65010c8a-da4d-43fe-9b8b-a2114ae8d30d",
@@ -2212,7 +2302,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "fc562171-68b6-4929-b757-1bd3f9226664",
@@ -2237,7 +2328,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "43fd365b-6dcc-4480-8224-7b0962626267",
@@ -2262,7 +2354,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "8356ac38-c77a-4377-9168-dfe3302f977b",
@@ -2284,7 +2377,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2868744d-bc16-4e71-9a9f-7ada41afa0b5",
@@ -2309,7 +2403,8 @@
    "Druid",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ed98fe46-95ff-4341-a513-7c70f79c1a1a",
@@ -2331,7 +2426,8 @@
   "classes": [
    "Warlock"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5d614b52-b946-4a29-92ad-8e56a4aadbfa",
@@ -2358,7 +2454,8 @@
    "Druid",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4f1c6db0-add9-4a3b-83a7-d40842aec5e3",
@@ -2382,7 +2479,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d3b8961a-2727-4e7f-9a20-ef48448e58da",
@@ -2404,7 +2502,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5e0f6a60-bbeb-4159-8ded-e20d2567c398",
@@ -2427,7 +2526,8 @@
    "Bard",
    "Warlock"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "fb1f7846-cd81-4abd-8552-a58132f55de0",
@@ -2454,7 +2554,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2a6512fe-6139-46ca-a428-6ce959b5c562",
@@ -2478,7 +2579,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d1a68e84-223d-4883-84c1-334c27b8d738",
@@ -2503,7 +2605,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "23b7b9ab-e984-43ae-8c5a-69a679e6e23a",
@@ -2525,7 +2628,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "86f0e2cc-0d51-4527-8cd3-7b35fc2e546e",
@@ -2548,7 +2652,8 @@
    "Bard",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9fa426c9-c01a-4ab0-adde-ddf7ac513187",
@@ -2571,7 +2676,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c779f454-6ad1-4a2c-ad02-3188a8b29b3d",
@@ -2596,7 +2702,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "7a6f60db-8188-4820-b9ca-f591522342f5",
@@ -2622,7 +2729,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5720fc06-b0b7-4f53-9397-8e99ec7d9f13",
@@ -2647,7 +2755,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9522c37d-f5b0-4b62-859e-66baba09a791",
@@ -2673,7 +2782,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f359b105-cee8-4b71-834b-502b3026c2f0",
@@ -2696,7 +2806,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "db9564a4-6dce-4e58-8b96-f84bec0d1ebc",
@@ -2718,7 +2829,8 @@
   "classes": [
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9aaff38c-e6ec-4eed-964f-bbf88911623c",
@@ -2743,7 +2855,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ab6b7778-7bfc-4e8c-bd77-a8711654848f",
@@ -2767,7 +2880,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "25a6d441-500c-4dc0-bcd8-e865283ae8b3",
@@ -2791,7 +2905,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d0d42231-2164-4bbe-97eb-ec2cf2b02d9d",
@@ -2814,7 +2929,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ab20f0a5-cdc4-48c4-802d-134dcade8260",
@@ -2837,7 +2953,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "bf3badca-a207-4437-b353-433fe06c4d30",
@@ -2861,7 +2978,8 @@
    "Druid",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "7c5f7c48-4aa4-463a-bc8a-f69ca4eed16c",
@@ -2886,7 +3004,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "03d7ae2d-0022-4436-bf37-c1ed617ec60d",
@@ -2910,7 +3029,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "628ff931-0eb9-4d94-a29a-b31cdd691c49",
@@ -2934,7 +3054,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3b32ef92-5f13-43f8-b782-c9e0e36f613b",
@@ -2959,7 +3080,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c7db6246-9aa4-4ebd-9d03-bbff38917469",
@@ -2983,7 +3105,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d3f1e4d3-90fe-4699-9db7-048d22ba159e",
@@ -3006,7 +3129,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "8c33ad3b-566d-489b-ac2b-441071111251",
@@ -3032,7 +3156,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "501138bc-173a-46e2-8146-860c9f4904e9",
@@ -3058,7 +3183,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9591e3ec-37c6-46ec-b4d1-02c56cabf0d5",
@@ -3081,7 +3207,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "db53e837-f720-49aa-9e33-40d978e6becd",
@@ -3106,7 +3233,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "735adcc2-0f3d-4c06-be2d-9158fc3fb788",
@@ -3132,7 +3260,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "50c93a0f-c0a2-4929-b3c0-17bb7ee24c7f",
@@ -3158,7 +3287,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "01f17eb8-ebdb-414c-b96a-2860789b7ee1",
@@ -3182,7 +3312,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "cb6b04b0-86d3-4193-890d-68ee5c1770b7",
@@ -3207,7 +3338,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "21dadf53-c83e-4437-8ae7-0822a71f9cdb",
@@ -3232,7 +3364,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "211d2f70-778e-4177-8bf3-ccb2f5d01c49",
@@ -3259,7 +3392,8 @@
    "Paladin",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "63d8d45b-1a50-4885-9e24-9a0d6c5740b8",
@@ -3283,7 +3417,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "83d88247-caa0-465b-9f23-1a7f23b28f6b",
@@ -3305,7 +3440,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "13664188-00e9-432f-a8b8-99d95019e83c",
@@ -3328,7 +3464,8 @@
    "Bard",
    "Warlock"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "627d9847-55c5-41f3-a9e9-a960399513b8",
@@ -3353,7 +3490,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2f8918b6-503f-4629-a458-60b74989c63f",
@@ -3379,7 +3517,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1332ba91-9436-469f-ad3b-a4b033aa32d3",
@@ -3403,7 +3542,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1549983e-8633-43c9-88c3-f4637959c98e",
@@ -3426,7 +3566,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "13ce20da-d33a-4cea-86cc-cba1a68bf11b",
@@ -3450,7 +3591,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "cc961109-ce96-4e29-be47-a87792e97a9b",
@@ -3475,7 +3617,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2656de37-c9c4-486c-b8d2-6b9e42d7c50d",
@@ -3497,7 +3640,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "456a82b3-0c77-4387-8311-59a37c8f222d",
@@ -3521,7 +3665,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "99c1bb57-da78-42e0-b0f0-0f46780234b4",
@@ -3544,7 +3689,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6b3b8f07-03f3-4b4f-92e5-8258e437fbab",
@@ -3567,7 +3713,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c9101b40-b25d-4dd6-aeb7-dec7ca88d54c",
@@ -3592,7 +3739,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "7133c155-8486-44b0-965f-fe2fbbd77682",
@@ -3615,7 +3763,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1eed48bc-7c12-42df-a301-4dfdf3c7649d",
@@ -3641,7 +3790,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f8521add-b4c8-4c83-ba69-c8a06ac57546",
@@ -3663,7 +3813,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "38274761-037b-47c4-870d-95696575e80e",
@@ -3687,7 +3838,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "37ecfdfd-88ad-4fe9-b7d2-f006b7857657",
@@ -3711,7 +3863,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "53066b4c-f33c-4a14-98f0-e5e1efdb7890",
@@ -3736,7 +3889,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3573b0ed-3ca8-48df-83b7-6f83305ce063",
@@ -3761,7 +3915,8 @@
    "Bard",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6a06dae2-7823-41ef-9981-b83782dd1f45",
@@ -3784,7 +3939,8 @@
   "classes": [
    "Warlock"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "7ba1e10c-82a5-468d-b2c1-58e66cc8deba",
@@ -3808,7 +3964,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ebd4490e-0e16-411a-8fa2-559a0a469557",
@@ -3832,7 +3989,8 @@
    "Bard",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9bfe21f5-acf5-4f86-8727-cc17679eb0be",
@@ -3856,7 +4014,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4a7ca521-3551-48cd-88fd-86663523191a",
@@ -3883,7 +4042,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6b1a4493-58cc-4339-a16a-361d740d53b8",
@@ -3912,7 +4072,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "127f3a16-aa93-4887-ac7e-988933508071",
@@ -3935,7 +4096,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "137ba13d-6937-4cd1-afc6-8101241c5bf2",
@@ -3958,7 +4120,8 @@
   "classes": [
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b510555f-a836-4255-b343-0afb9d24286a",
@@ -3984,7 +4147,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f315bca8-2f40-4a31-a9ba-af21db37c643",
@@ -4010,7 +4174,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a8903a2b-2461-4c78-8239-4d78045de06d",
@@ -4034,7 +4199,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "51dfb90f-141f-4a12-85ab-240bd515a394",
@@ -4059,7 +4225,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "967ce660-d139-442f-ba42-5b8eb384ee7e",
@@ -4083,7 +4250,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "79a789c4-637e-40c5-9561-7f1f86f8dee3",
@@ -4106,7 +4274,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "eb2e9f5e-042d-4b93-959a-4b0d301cb6ec",
@@ -4129,7 +4298,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "93aa6c69-fb51-489a-9493-eb8eefc96e84",
@@ -4155,7 +4325,8 @@
    "Druid",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3ac0e5df-c874-432d-80e7-ecd37eccc8f7",
@@ -4178,7 +4349,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "cc3211bc-a954-4f4f-b00d-d658fa283217",
@@ -4205,7 +4377,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1f645f21-b63d-4f09-97c7-26849f5709ec",
@@ -4228,7 +4401,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4c1181d2-cdf8-4d0e-b1d7-2002f11bda5a",
@@ -4254,7 +4428,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b31158a4-b472-46ca-8295-ad456039f66b",
@@ -4278,7 +4453,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0c633e28-3650-4750-8430-e35ef96d3940",
@@ -4303,7 +4479,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "629ac13f-9812-412a-bce6-5d8627f3e9be",
@@ -4329,7 +4506,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b47c3aa0-62a3-4a88-bdf8-f0336ce8be37",
@@ -4353,7 +4531,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "62d3cea2-fb1e-48bc-8f1a-94ee6e948803",
@@ -4379,7 +4558,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "95fac4d5-a11f-4987-ac2c-745956d77b25",
@@ -4404,7 +4584,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "220d6a48-7b95-4869-ae12-522caabe66d2",
@@ -4429,7 +4610,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ef74b983-8d10-47d4-b107-eb461df861ad",
@@ -4457,7 +4639,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0386052c-c4ce-4269-aaf6-6925e9cf72dc",
@@ -4485,7 +4668,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c17bf96a-4943-4048-8ca4-7653cae42a6b",
@@ -4512,7 +4696,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "397e2293-3e2a-4262-8800-d48557a8f51d",
@@ -4536,7 +4721,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ef59f2b2-8a11-46fa-a647-26a6ebd0ad01",
@@ -4561,7 +4747,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "37e12a64-5d1b-40d0-b2a9-9b610be380c8",
@@ -4588,7 +4775,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "af66dd7b-30bb-45ae-b920-152ac0e477d8",
@@ -4611,7 +4799,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ff25a359-e75d-430b-89a2-e999528b2a86",
@@ -4635,7 +4824,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "47aac6c5-4435-44a8-b6c4-99720ca30cf6",
@@ -4659,7 +4849,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "abdd6137-90e5-4f9f-aa92-5dc1aa1238dc",
@@ -4683,7 +4874,8 @@
    "Paladin",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c8bf5f39-78df-44b1-a6b6-e8eaace7ba5c",
@@ -4707,7 +4899,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5bc55365-723f-4493-881e-bbb803dcf48a",
@@ -4734,7 +4927,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e2231ee1-67a0-4ad1-af95-c30d1997a065",
@@ -4759,7 +4953,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "91aa8c08-e290-4864-9319-ca10592ed6da",
@@ -4781,7 +4976,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d93a9c9b-3c32-4463-a342-a6adef466d36",
@@ -4804,7 +5000,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "54fd592c-e4c3-48cd-8354-1339a125890a",
@@ -4831,7 +5028,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c3759cd9-c6d1-4565-b595-ee8e55d3a2c5",
@@ -4853,7 +5051,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c2fa1c92-ce6a-45f2-b967-61c0c84534f7",
@@ -4876,7 +5075,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "71a8d162-5986-4814-b6b8-63fb5780ec2b",
@@ -4903,7 +5103,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "865277e2-6569-4c51-b04c-def56112fbeb",
@@ -4928,7 +5129,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "727fa992-3dc4-4a63-a674-19b4f9f03f8d",
@@ -4951,7 +5153,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6026da06-d7a3-4a15-b4c9-ec19719d6624",
@@ -4974,7 +5177,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c92ae7e2-d1d9-45ad-8993-678b6ea03845",
@@ -5000,7 +5204,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e472c970-b232-43fd-96e6-db3ca651ff60",
@@ -5024,7 +5229,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "69762463-a038-4dd3-aacb-d74bf894a95d",
@@ -5048,7 +5254,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a502e978-35a3-4d93-aa5c-618990bccded",
@@ -5071,7 +5278,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b3d3366b-1343-4fca-a907-8a935625c850",
@@ -5095,7 +5303,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "570ad090-8e32-4542-a93e-7d30a0f119c0",
@@ -5119,7 +5328,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "67f953d0-8dbb-4661-9b54-76fa8322052e",
@@ -5143,7 +5353,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4dd33176-6323-4104-a2b0-14909f648772",
@@ -5168,7 +5379,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f1e69a6a-07d4-4060-9d0e-6c4808214228",
@@ -5193,7 +5405,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e58e5f6b-4941-4698-87ee-8c03042ff186",
@@ -5217,7 +5430,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "bd33b5ea-75d9-4492-9e95-24c1a22401f1",
@@ -5240,7 +5454,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "cb8cee31-8422-428c-833c-98097a9c77cd",
@@ -5263,7 +5478,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4b980070-282c-4160-98d2-eb5205b24f72",
@@ -5285,7 +5501,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "75fd175e-8120-485f-87ab-4f3edc90541b",
@@ -5307,7 +5524,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d5577c55-964a-42ab-9bba-bdc91007bfc2",
@@ -5334,7 +5552,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "00774407-5492-4931-a72f-48c3d07ff8bf",
@@ -5361,7 +5580,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ac83adc0-4d53-45af-bcd4-32f030171add",
@@ -5385,7 +5605,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "84ac09ab-31cc-4611-b717-b25e37cf364b",
@@ -5410,7 +5631,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "cba22362-7ec8-4711-a34d-a9b80eb2e94f",
@@ -5436,7 +5658,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2dec5b09-44d3-4dd1-b851-c61bcfcf3071",
@@ -5461,7 +5684,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0814f88e-fd20-4306-95c5-439541f133e6",
@@ -5486,7 +5710,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "aa38a915-2d16-4a5b-bb1c-0b0f2890d37e",
@@ -5509,7 +5734,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "67ec9853-1a6f-4194-85e1-a4d48967ad3a",
@@ -5534,7 +5760,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "66bb0073-7322-4bd3-bfa1-a84558de6ffc",
@@ -5557,7 +5784,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "36fc8faf-e4df-456a-a5b7-d166a900a51a",
@@ -5579,7 +5807,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "719a011a-2347-4e0f-af18-ac2c1f0604fd",
@@ -5603,7 +5832,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "cac29828-bedc-4d30-ad89-172f0be0f877",
@@ -5625,7 +5855,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f42f744b-e90f-4122-adc8-27eceee43274",
@@ -5649,7 +5880,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "6f895ee2-5e69-44c4-9b7a-0de826c8277a",
@@ -5673,7 +5905,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "42a8ea17-5a4d-4456-bdb4-dfc847b9a862",
@@ -5699,7 +5932,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0a265df8-a685-435d-8a4a-d2f1ec22914a",
@@ -5725,7 +5959,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "8c1eceb1-3fb3-47a4-8354-fbc39e6dc8c2",
@@ -5750,7 +5985,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "95d90872-b4e7-4228-8231-85e5bd24731f",
@@ -5774,7 +6010,8 @@
    "Druid",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9e7c82fb-e7fb-4241-af13-374e3da98e4c",
@@ -5799,7 +6036,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "987b6df2-2354-4051-a3bf-a0a17676ce98",
@@ -5822,7 +6060,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3ca9b936-01df-49b6-a3a3-b5b9b64285a9",
@@ -5845,7 +6084,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "fd90657e-bf04-416c-9405-958adc711963",
@@ -5870,7 +6110,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e591566f-5486-4ce5-9887-87eee323ca80",
@@ -5893,7 +6134,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "82e9f6c5-3c04-45c5-92c5-59ab2c1e6451",
@@ -5918,7 +6160,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "cf2747d8-105b-4470-b651-9043ca33ba73",
@@ -5941,7 +6184,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9c22c30d-62e1-4b12-8954-3b75e00a18a4",
@@ -5965,7 +6209,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "180ad30b-dc44-4cb2-b9a8-585fbe4a05bb",
@@ -5989,7 +6234,8 @@
    "Bard",
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "54597cba-cf58-4700-bf8e-21990a6c4461",
@@ -6014,7 +6260,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e2edd9f4-9182-46b0-8329-d35606454a7f",
@@ -6038,7 +6285,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4dc8c916-9dc7-46f2-90df-f4f8c87ea61f",
@@ -6061,7 +6309,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "58d6d1ef-ab64-4e02-acef-793fc3084341",
@@ -6083,7 +6332,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "27381467-5792-499b-bdd9-8b8191f185be",
@@ -6106,7 +6356,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3b3c91d7-f7f6-4844-a07d-728695f88896",
@@ -6130,7 +6381,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c5d46fb2-ee00-4671-9776-8485e6fc84ac",
@@ -6157,7 +6409,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2d188bf0-178d-44e1-ac83-7ada4103f280",
@@ -6180,7 +6433,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "9fb4ab4a-166e-4183-ac8e-6850ff17f055",
@@ -6205,7 +6459,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "7ca9b2b5-0bcf-4fad-b54e-e59b933476da",
@@ -6229,7 +6484,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "ab90ccad-0891-4344-838a-a2651fb2febb",
@@ -6254,7 +6510,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5b457a20-d9fe-4df7-91e1-f619708223f8",
@@ -6277,7 +6534,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "fe22d642-4741-41bb-ba04-5d10da17239f",
@@ -6301,7 +6559,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "35cbf8c8-acc7-494e-9aa2-2acc7598b5e1",
@@ -6328,7 +6587,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3823d1f3-9e51-46d7-a20b-2c554c4cbf9e",
@@ -6351,7 +6611,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a7e52d8b-b402-46bf-bbbe-a71945b7ca86",
@@ -6375,7 +6636,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a9397998-ae99-4ae5-8882-5d26b03d0611",
@@ -6398,7 +6660,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f2a620ba-570a-4e66-8664-54e2ead7bf5e",
@@ -6421,7 +6684,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "86af70fa-add3-4433-a6f1-1b8392c74840",
@@ -6445,7 +6709,8 @@
    "Cleric",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4e87c202-0e16-4cde-8684-1215de168bcb",
@@ -6470,7 +6735,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "8a0c7d70-6b6c-4c70-9f61-1bd5aa127510",
@@ -6493,7 +6759,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d86bd90b-cf1f-43b4-836e-a116fc870ae0",
@@ -6519,7 +6786,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a44d8658-79ee-4930-be7d-992932007d4d",
@@ -6544,7 +6812,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "73353c1f-592a-40df-acc1-e174e6cb2cdf",
@@ -6568,7 +6837,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f26ed539-27d3-4357-bcf7-221399e73fb9",
@@ -6590,7 +6860,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c0dda6ba-893a-43d2-bd7c-7e743612562a",
@@ -6614,7 +6885,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "280f5afe-32f3-42e6-b21f-57ef9b4122e5",
@@ -6638,7 +6910,8 @@
    "Bard",
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "dd9fee09-5006-4c4a-a44f-a07814506f41",
@@ -6662,7 +6935,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "bbd5fbfd-65d4-4682-9d05-ff98aed0539d",
@@ -6687,7 +6961,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "04065e7b-f6de-4d8c-95d5-bf3538e85440",
@@ -6711,7 +6986,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1cf3f6e0-dd1f-4a7d-b311-6caad863f3a3",
@@ -6735,7 +7011,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "13d6e18d-43a9-4561-9300-57622c22904f",
@@ -6758,7 +7035,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4ce4cf0b-c65c-40a4-9708-456d69319de6",
@@ -6783,7 +7061,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e94d7991-7991-47be-b46b-73c08469af55",
@@ -6808,7 +7087,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "3bc8b132-fb2f-4877-af00-0c6ec7867759",
@@ -6834,7 +7114,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "67e02b23-1e90-449e-8c11-4b05a15ef302",
@@ -6856,7 +7137,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "243056aa-1fd6-46aa-9dcf-07a87372fb26",
@@ -6882,7 +7164,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0f7eb645-4b93-472b-90e2-9f91d699b984",
@@ -6907,7 +7190,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "beeea597-d27c-4389-91d7-6a33ec734f9f",
@@ -6932,7 +7216,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "f237ca89-d876-4a86-ba50-b00ff4ca9e8e",
@@ -6957,7 +7242,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b1f283de-54a7-4f89-b07b-57ca4276c9c7",
@@ -6980,7 +7266,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1e7aa7d5-2fda-41a6-b310-7d075246f90c",
@@ -7003,7 +7290,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c19c85ab-5ac4-4d80-899f-074d246b1c2d",
@@ -7027,7 +7315,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "094d271f-40bd-45ce-a308-a29b31f80f60",
@@ -7052,7 +7341,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b40b32d4-3fd3-407b-8939-538d501891a0",
@@ -7074,7 +7364,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5100411e-236d-4855-9410-cad9cd77358a",
@@ -7100,7 +7391,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c8478301-2d0d-41bd-81b1-ebfdbc4b13f6",
@@ -7123,7 +7415,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "1b018951-b512-4751-89b3-ad8d8dd1da0a",
@@ -7147,7 +7440,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "e4337abe-4e29-474b-9453-c5c1a3f000a3",
@@ -7174,7 +7468,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "7080dede-ebb9-4b26-94b8-45be82d12fba",
@@ -7196,7 +7491,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a42a767b-df73-4715-a1e4-258d3d09a9de",
@@ -7219,7 +7515,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "4104d81f-4274-40b0-862b-8002b0649291",
@@ -7244,7 +7541,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "14a53cd4-f119-43b6-9061-ca3334bd2b87",
@@ -7268,7 +7566,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c986d6f2-24e4-473b-bf03-0d0e9ba39d19",
@@ -7295,7 +7594,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c415595c-4bb0-4520-a550-02a09df9ae90",
@@ -7320,7 +7620,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "5facb451-9a28-48d5-9a08-14491a3f364e",
@@ -7345,7 +7646,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "aa735586-8505-4ea6-87d3-d2302260c051",
@@ -7369,7 +7671,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "bd3d4595-293c-44b4-9b87-cf54b115480e",
@@ -7391,7 +7694,8 @@
   "classes": [
    "Bard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "717cf3d0-c13c-47bd-aa70-a8d658793f6a",
@@ -7417,7 +7721,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "82ee12af-dd34-43d9-b98c-e757bcd495ae",
@@ -7440,7 +7745,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "688b205e-ad21-4586-adc4-af59991b3ffd",
@@ -7464,7 +7770,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "44fe3db3-2ca8-4584-81a4-e383ab7f22d5",
@@ -7489,7 +7796,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "42801b73-05ae-4faf-a41f-9c15ae3d6d78",
@@ -7513,7 +7821,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "b8135ad5-5f60-4755-82c3-089e5ee90ed2",
@@ -7536,7 +7845,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "c5694c40-a1c6-4d65-97d9-78dbffc594e4",
@@ -7562,7 +7872,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "2bcb7e6f-c7ba-464d-8c1b-c6f9d5f013a1",
@@ -7588,7 +7899,8 @@
    "Ranger",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "71632df0-ddc2-4c5e-96c4-141fdbf3a2cd",
@@ -7612,7 +7924,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "bc589ae2-1e20-4e04-866d-2ac2638f2fe7",
@@ -7634,7 +7947,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "0fbbf4fc-cbfe-4a46-a5cb-da66da18b8bf",
@@ -7657,7 +7971,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "7e080046-8c83-4e2e-806a-9f120d13f1cd",
@@ -7681,7 +7996,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "bd9593fa-8f24-40e4-8b4e-c06f282e6acf",
@@ -7704,7 +8020,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "d52ef242-65a6-4f63-bca3-ccb0ffc604b5",
@@ -7726,7 +8043,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  },
  {
   "id": "a0c1c6ae-81c6-4fe2-9f1e-ba076290bd6d",
@@ -7750,6 +8068,7 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": true
  }
 ]

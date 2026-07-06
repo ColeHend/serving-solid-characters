@@ -43,7 +43,8 @@
    "Charisma"
   ],
   "feat": "Magic Initiate (Cleric)",
-  "features": []
+  "features": [],
+  "legacy": false
  },
  {
   "id": "93ac101f-6942-4513-a813-a356f738836b",
@@ -89,7 +90,8 @@
    "Intelligence"
   ],
   "feat": "Alert",
-  "features": []
+  "features": [],
+  "legacy": false
  },
  {
   "id": "e24460ca-0397-4d20-a15d-c8234335f5ca",
@@ -135,7 +137,8 @@
    "Wisdom"
   ],
   "feat": "Magic Initiate (Wizard)",
-  "features": []
+  "features": [],
+  "legacy": false
  },
  {
   "id": "d23c55e4-782c-4f8c-97de-003fe46c774d",
@@ -183,6 +186,7 @@
    "Constitution"
   ],
   "feat": "Savage Attacker",
-  "features": []
+  "features": [],
+  "legacy": false
  }
 ]

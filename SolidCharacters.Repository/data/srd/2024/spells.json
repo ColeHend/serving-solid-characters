@@ -21,7 +21,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage (both initial and later) increases by 1d4 for each spell slot level above 2."
+  "higherLevel": "The damage (both initial and later) increases by 1d4 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "855d96e5-f521-4c16-bcab-4030e7ef09d4",
@@ -46,7 +47,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
+  "higherLevel": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).",
+  "legacy": false
  },
  {
   "id": "28f7742c-7792-41c5-9659-4632e31bdaac",
@@ -74,7 +76,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "Each target's Hit Points increase by 5 for each spell slot level above 2."
+  "higherLevel": "Each target's Hit Points increase by 5 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "a789db0f-7609-4b2d-bf81-54b4d394f431",
@@ -98,7 +101,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "39bb835d-fcc3-4b5c-af8e-c808db88c013",
@@ -122,7 +126,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "cb9d4113-47d5-4148-b57e-71efb76664f1",
@@ -148,7 +153,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional Beast for each spell slot level above 1."
+  "higherLevel": "You can target one additional Beast for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "e46c5de0-8679-414d-8dcb-9e43bfd4a7da",
@@ -174,7 +180,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "The spell's duration increases by 48 hours for each spell slot level above 2."
+  "higherLevel": "The spell's duration increases by 48 hours for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "283a1b44-74b8-4897-b164-1dec77438870",
@@ -197,7 +204,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "275dc088-4bfb-4d79-b40c-aa3c9b1c35a0",
@@ -222,7 +230,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You animate or reassert control over two additional Undead creatures for each spell slot level above 3. Each of the creatures must come from a different corpse or pile of bones."
+  "higherLevel": "You animate or reassert control over two additional Undead creatures for each spell slot level above 3. Each of the creatures must come from a different corpse or pile of bones.",
+  "legacy": false
  },
  {
   "id": "8b3d3b45-b417-4238-805a-8b81738c0c9f",
@@ -248,7 +257,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The creature's Slam damage increases by 1d4 (Medium or smaller), 1d6 (Large), or 1d12 (Huge) for each spell slot level above 5.\n\n> #### Animated Object\n>\n> *Huge or Smaller Construct, Unaligned*\n>\n> **AC** 15\n>\n> **HP** 10 (Medium or smaller), 20 (Large), 40 (Huge)\n>\n> **Speed** 30 ft.\n>\n> | Attribute | Score | Mod | Save |\n> |-----------|-------|-----|------|\n> | Str | 16 | +3 | +3 |\n> | Dex | 10 | +0 | +0 |\n> | Con | 10 | +0 | +0 |\n> | Int | 3 | -4 | -4 |\n> | Wis | 3 | -4 | -4 |\n> | Cha | 1 | -5 | -5 |\n>\n> **Immunities** Poison, Psychic; Charmed, Exhaustion, Frightened, Paralyzed, Poisoned\n>\n> **Senses** Blindsight 30 ft.; Passive Perception 6\n>\n> **Languages** Understands the languages you know\n>\n> **CR** None (XP 0; PB equals your Proficiency Bonus)\n>\n> #### Actions\n>\n> **Slam.** *Melee Attack Roll:* Bonus equals your spell attack modifier, reach 5 ft. *Hit:* Force damage equal to 1d4 + 3 (Medium or smaller), 2d6 + 3 + your spellcasting ability modifier (Large), or 2d12 + 3 + your spellcasting ability modifier (Huge)."
+  "higherLevel": "The creature's Slam damage increases by 1d4 (Medium or smaller), 1d6 (Large), or 1d12 (Huge) for each spell slot level above 5.\n\n> #### Animated Object\n>\n> *Huge or Smaller Construct, Unaligned*\n>\n> **AC** 15\n>\n> **HP** 10 (Medium or smaller), 20 (Large), 40 (Huge)\n>\n> **Speed** 30 ft.\n>\n> | Attribute | Score | Mod | Save |\n> |-----------|-------|-----|------|\n> | Str | 16 | +3 | +3 |\n> | Dex | 10 | +0 | +0 |\n> | Con | 10 | +0 | +0 |\n> | Int | 3 | -4 | -4 |\n> | Wis | 3 | -4 | -4 |\n> | Cha | 1 | -5 | -5 |\n>\n> **Immunities** Poison, Psychic; Charmed, Exhaustion, Frightened, Paralyzed, Poisoned\n>\n> **Senses** Blindsight 30 ft.; Passive Perception 6\n>\n> **Languages** Understands the languages you know\n>\n> **CR** None (XP 0; PB equals your Proficiency Bonus)\n>\n> #### Actions\n>\n> **Slam.** *Melee Attack Roll:* Bonus equals your spell attack modifier, reach 5 ft. *Hit:* Force damage equal to 1d4 + 3 (Medium or smaller), 2d6 + 3 + your spellcasting ability modifier (Large), or 2d12 + 3 + your spellcasting ability modifier (Huge).",
+  "legacy": false
  },
  {
   "id": "f7a6eb00-1abc-4eb0-a2db-a26c57598466",
@@ -271,7 +281,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "108e0c3a-b9a3-4f08-864b-5d709115c060",
@@ -295,7 +306,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "2fe8141f-579a-46a9-b57d-49569e61e511",
@@ -320,7 +332,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "dc51d217-c9ee-45e9-a53c-807645763c25",
@@ -343,7 +356,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "0659010c-27a0-48d6-a633-f1e0275272ce",
@@ -368,7 +382,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage of the Clenched Fist increases by 2d8 and the damage of the Grasping Hand increases by 2d6 for each spell slot level above 5."
+  "higherLevel": "The damage of the Clenched Fist increases by 2d8 and the damage of the Grasping Hand increases by 2d6 for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "dba4b69d-cdb3-4141-a56e-fbf9cef74128",
@@ -391,7 +406,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f6a4a824-8562-484e-bd12-01dde6eb5972",
@@ -415,7 +431,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "7c64e4ec-5436-4912-8a9d-7558e6b06605",
@@ -438,7 +455,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "c9bbbdba-f72e-48ad-b3cd-27503f1bc560",
@@ -463,7 +481,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "46d917da-71bc-4cd5-b7df-a6e0ecb95b23",
@@ -488,7 +507,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "194c577a-dc5c-4dde-8139-2a7a60d6f11d",
@@ -512,7 +532,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "58b4b448-d085-4c8e-96d8-066c3541cc2d",
@@ -536,7 +557,8 @@
    "Bard",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "e1e2bb1d-e3d9-4f80-965c-d14140a8240b",
@@ -562,7 +584,8 @@
    "Warlock"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 1."
+  "higherLevel": "You can target one additional creature for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "a28588b8-d85f-4262-a7e5-5e8b46f93509",
@@ -590,7 +613,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 4."
+  "higherLevel": "You can target one additional creature for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "7b1f660e-3795-4766-8ed6-4269143fe73d",
@@ -614,7 +638,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "e213423a-26ad-4cce-80c9-d59f43ef55bd",
@@ -637,7 +662,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3aa17632-e7f9-47b8-9e1d-4cb1bb6c6bd8",
@@ -663,7 +689,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d07e8a8b-01c0-4fe3-9c40-d5fe47d957ef",
@@ -689,7 +716,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "If you cast this spell using a level 4 spell slot, you can maintain Concentration on it for up to 10 minutes. If you use a level 5+ spell slot, the spell doesn't require Concentration, and the duration becomes 8 hours (level 5–6 slot) or 24 hours (level 7–8 slot). If you use a level 9 spell slot, the spell lasts until dispelled."
+  "higherLevel": "If you cast this spell using a level 4 spell slot, you can maintain Concentration on it for up to 10 minutes. If you use a level 5+ spell slot, the spell doesn't require Concentration, and the duration becomes 8 hours (level 5–6 slot) or 24 hours (level 7–8 slot). If you use a level 9 spell slot, the spell lasts until dispelled.",
+  "legacy": false
  },
  {
   "id": "19a5ef7e-f1c8-4ee1-af1a-b0b41dff79c6",
@@ -712,7 +740,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f24e9d5a-9c7e-4044-91a8-1c2e1d99c145",
@@ -735,7 +764,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "a670802e-0fcb-4ec6-9cf3-cdf76217238b",
@@ -760,7 +790,8 @@
    "Paladin"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 1."
+  "higherLevel": "You can target one additional creature for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "5ca3df11-da54-4598-9b14-0edb00a2cc4c",
@@ -787,7 +818,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 4."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "023ff1ba-f790-47dd-bd1d-d6841234b311",
@@ -814,7 +846,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 2."
+  "higherLevel": "You can target one additional creature for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "14d84078-0abe-47f9-8ca0-0d974a4e801b",
@@ -838,7 +871,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "963142bd-20f3-45b5-9a74-05514515c11a",
@@ -862,7 +896,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "73ba42a1-dcd2-4bb4-8256-444d2da3859b",
@@ -887,7 +922,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "548371b3-4d0f-4ee0-b2fe-3bd8fed14c80",
@@ -911,7 +947,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 for each spell slot level above 3."
+  "higherLevel": "The damage increases by 1d10 for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "904ed48b-0c4b-478a-95f4-8bd0120ef29b",
@@ -935,7 +972,8 @@
    "Bard",
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "31bdd73c-352b-474d-afbc-4f54825143d1",
@@ -960,7 +998,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "One additional bolt leaps from the first target to another target for each spell slot level above 6."
+  "higherLevel": "One additional bolt leaps from the first target to another target for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "b8ace30c-c27f-482d-816e-a4f335c14a9e",
@@ -988,7 +1027,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 4."
+  "higherLevel": "You can target one additional creature for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "8aee54a5-4798-44be-8a0e-611f1d68a38d",
@@ -1016,7 +1056,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 1."
+  "higherLevel": "You can target one additional creature for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "35d85a31-1dea-4052-acf4-1d48642aa0cd",
@@ -1042,7 +1083,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10)."
+  "higherLevel": "The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10).",
+  "legacy": false
  },
  {
   "id": "dc977faf-abff-44f2-9840-970627944908",
@@ -1067,7 +1109,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creature can be targeted only once by each casting of this spell."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creature can be targeted only once by each casting of this spell.",
+  "legacy": false
  },
  {
   "id": "3fccb842-c844-45df-8904-cd838bb791b8",
@@ -1093,7 +1136,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 2d8 for each spell slot level above 6."
+  "higherLevel": "The damage increases by 2d8 for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "4cbf1ef9-045f-4a1c-97b9-12a7ec50712b",
@@ -1119,7 +1163,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "59b14fda-e442-4232-add1-8e905a0d2d76",
@@ -1142,7 +1187,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "c230a517-8fcc-4b8e-856e-fc493b7cc3aa",
@@ -1167,7 +1213,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 5."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "6572dc35-a6bd-4149-8db6-467363887737",
@@ -1192,7 +1239,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "43653572-1775-4c02-9146-2d987a34f73b",
@@ -1218,7 +1266,8 @@
    "Paladin"
   ],
   "subclasses": [],
-  "higherLevel": "You can affect one additional creature for each spell slot level above 1."
+  "higherLevel": "You can affect one additional creature for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "835b9f54-2b8b-43ca-8f86-6c56adc7b6d0",
@@ -1241,7 +1290,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "6eb5a3bc-3039-4eb6-aef3-652e51edce3d",
@@ -1265,7 +1315,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "237d1ba7-1ecb-4ace-94ac-10d871d761f4",
@@ -1291,7 +1342,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "37dce975-1864-4f79-996c-f64621edc7af",
@@ -1314,7 +1366,8 @@
   "classes": [
    "Bard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "b05e29bb-9750-48c8-8fd7-5ed4995ff5c1",
@@ -1340,7 +1393,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 5."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "18333f78-e12f-4c1d-8e4a-bdd5384bd13b",
@@ -1367,7 +1421,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The Sphere's radius increases by 5 feet for each spell slot level above 4."
+  "higherLevel": "The Sphere's radius increases by 5 feet for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "87f87d60-c4b1-4b13-8510-12638946c1ba",
@@ -1392,7 +1447,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 for each spell slot level above 3."
+  "higherLevel": "The damage increases by 1d10 for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "14a4d1d5-8e00-4cbd-8995-be71a948694e",
@@ -1416,7 +1472,8 @@
    "Cleric"
   ],
   "subclasses": [],
-  "higherLevel": "The healing and damage increase by 1d12 for each spell slot level above 7."
+  "higherLevel": "The healing and damage increase by 1d12 for each spell slot level above 7.",
+  "legacy": false
  },
  {
   "id": "86d5f259-9393-439a-ad69-5c5dc3525cf6",
@@ -1441,7 +1498,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 5."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "e8241708-dad3-43e8-80e8-ea37a3fd9bbe",
@@ -1465,7 +1523,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d12 for each spell slot level above 6."
+  "higherLevel": "The damage increases by 1d12 for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "ac6bbf59-efb7-4a84-a42e-dd2d7f289c3f",
@@ -1490,7 +1549,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 4."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "3aef9c9b-4144-41c4-899e-5014cf862a62",
@@ -1515,7 +1575,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 4."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "e48a80ce-87ab-42ea-bfe8-5bd69b968eda",
@@ -1539,7 +1600,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "47c6be61-b629-40d2-a87c-432504aaa572",
@@ -1563,7 +1625,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "9bc2b114-5412-48c3-bc13-bcbbfa221331",
@@ -1586,7 +1649,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "7cf78301-16be-47e0-916a-42ab23400eca",
@@ -1611,7 +1675,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3cef82b7-7fab-4f03-9e1a-bec1b17fa626",
@@ -1636,7 +1701,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "054bec2a-6f39-40bb-8ad1-9e299ff3ac05",
@@ -1661,7 +1727,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5dedc7ae-0fe2-4cc5-8d80-2c059e366d7b",
@@ -1686,7 +1753,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "aa98a800-3f0e-45eb-860b-9a2ca3e99c43",
@@ -1710,7 +1778,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3461b9b1-b00e-42aa-9850-7cc0244d8a04",
@@ -1735,7 +1804,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "You create or destroy 10 additional gallons of water, or the size of the Cube increases by 5 feet, for each spell slot level above 1."
+  "higherLevel": "You create or destroy 10 additional gallons of water, or the size of the Cube increases by 5 feet, for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "67e33159-e2ee-423f-a5c7-12f0180ba6f9",
@@ -1761,7 +1831,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "If you use a level 7 spell slot, you can animate or reassert control over four **Ghouls**. If you use a level 8 spell slot, you can animate or reassert control over five **Ghouls** or two **Ghasts** or **Wights**. If you use a level 9 spell slot, you can animate or reassert control over six **Ghouls**, three **Ghasts** or **Wights**, or two **Mummies**. See \"Monsters\" for these stat blocks."
+  "higherLevel": "If you use a level 7 spell slot, you can animate or reassert control over four **Ghouls**. If you use a level 8 spell slot, you can animate or reassert control over five **Ghouls** or two **Ghasts** or **Wights**. If you use a level 9 spell slot, you can animate or reassert control over six **Ghouls**, three **Ghasts** or **Wights**, or two **Mummies**. See \"Monsters\" for these stat blocks.",
+  "legacy": false
  },
  {
   "id": "7cf1e09f-a781-4b48-b034-e100ce9515e4",
@@ -1786,7 +1857,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The Cube increases by 5 feet for each spell slot level above 5."
+  "higherLevel": "The Cube increases by 5 feet for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "988e64fc-8598-49af-9b0d-dddd07faed71",
@@ -1814,7 +1886,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "The healing increases by 2d8 for each spell slot level above 1."
+  "higherLevel": "The healing increases by 2d8 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "3ebca789-1a72-47ed-9937-9d472d911743",
@@ -1839,7 +1912,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "13fa1d3f-8fe3-4f94-a2ee-e03bb83079e9",
@@ -1864,7 +1938,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "a5c6995f-af94-42ef-97d0-e31d03a4b716",
@@ -1890,7 +1965,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "48a9fa9a-f28c-4670-b6cf-ad4d3137f738",
@@ -1917,7 +1993,8 @@
    "Ranger",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "c25d6497-a1a2-4b6a-857e-2f80a057ed57",
@@ -1941,7 +2018,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "bf1c3934-b53d-4759-91cc-69a954932356",
@@ -1966,7 +2044,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The base damage increases by 1d6 for each spell slot level above 7."
+  "higherLevel": "The base damage increases by 1d6 for each spell slot level above 7.",
+  "legacy": false
  },
  {
   "id": "d2073cfe-c04d-4c66-8fbc-659d03aa4cd9",
@@ -1991,7 +2070,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "52597251-55ba-499b-b193-63ed0b1573c9",
@@ -2015,7 +2095,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "2bd0e570-fdce-4084-99d7-1f538738c9ce",
@@ -2045,7 +2126,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "fb62003f-84d1-47ef-a892-e0558adc4f59",
@@ -2071,7 +2153,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "4461b39a-35ed-4caa-b9e4-b309086b5506",
@@ -2096,7 +2179,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "84d2a0c3-4b83-4d4e-aae9-bfc9dfc4a9a5",
@@ -2122,7 +2206,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "9c237757-894a-4f3f-9b77-e65a9ec80266",
@@ -2147,7 +2232,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "92048e7e-3017-4100-ae95-d289377bdcbf",
@@ -2172,7 +2258,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 3d6 for each spell slot level above 6."
+  "higherLevel": "The damage increases by 3d6 for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "1e65fbf6-d7f9-406b-8351-79e6dfe92335",
@@ -2196,7 +2283,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "bcf632f4-1e20-445f-99c3-42d22bfe5afd",
@@ -2227,7 +2315,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use."
+  "higherLevel": "You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use.",
+  "legacy": false
  },
  {
   "id": "ef4a00e8-a225-44d1-9e63-740e207845b9",
@@ -2251,7 +2340,8 @@
    "Bard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "b4b63426-98ff-4576-900c-eac56e0a6fd7",
@@ -2276,7 +2366,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "ad1bd63b-d29b-43a1-9015-20f9a98d8b85",
@@ -2299,7 +2390,8 @@
   "classes": [
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "72b34bd0-f242-4d55-9710-b07281405b4c",
@@ -2323,7 +2415,8 @@
    "Paladin"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "36d2ff31-6c4e-40bf-a97d-534b25e5d7a1",
@@ -2346,7 +2439,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "9898f009-0c7d-4046-adb9-bc72a077d092",
@@ -2372,7 +2466,8 @@
    "Sorcerer"
   ],
   "subclasses": [],
-  "higherLevel": "Your Concentration can last longer with a spell slot of level 5 (up to 10 minutes), 6 (up to 1 hour), or 7+ (up to 8 hours)."
+  "higherLevel": "Your Concentration can last longer with a spell slot of level 5 (up to 10 minutes), 6 (up to 1 hour), or 7+ (up to 8 hours).",
+  "legacy": false
  },
  {
   "id": "45db4def-b20c-4cbe-9a8a-7f795905b05f",
@@ -2399,7 +2494,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "Your Concentration can last longer with a level 9 spell slot (up to 8 hours)."
+  "higherLevel": "Your Concentration can last longer with a level 9 spell slot (up to 8 hours).",
+  "legacy": false
  },
  {
   "id": "0888f44b-59c5-49f3-9d16-8e308e501e47",
@@ -2425,7 +2521,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "Your Concentration can last longer with a spell slot of level 6 (up to 10 minutes), 7 (up to 1 hour), or 8+ (up to 8 hours)."
+  "higherLevel": "Your Concentration can last longer with a spell slot of level 6 (up to 10 minutes), 7 (up to 1 hour), or 8+ (up to 8 hours).",
+  "legacy": false
  },
  {
   "id": "fedb2a50-5fa3-49fa-b0dc-34b04c713dc2",
@@ -2450,7 +2547,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 2."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "22f2f07f-61e3-485d-bb0e-9b22f3faab99",
@@ -2475,7 +2573,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "cac42d57-94ad-4a49-b6f4-4bfc5b185cc6",
@@ -2498,7 +2597,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "8c4a274d-c7c0-4c9c-b47f-37da42fc3191",
@@ -2523,7 +2623,8 @@
    "Druid",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5c8654c5-01d5-42b4-b40a-0ad66ed04c9c",
@@ -2547,7 +2648,8 @@
    "Warlock"
   ],
   "subclasses": [],
-  "higherLevel": "The spell creates two beams at level 5, three beams at level 11, and four beams at level 17. You can direct the beams at the same target or at different ones. Make a separate attack roll for each beam."
+  "higherLevel": "The spell creates two beams at level 5, three beams at level 11, and four beams at level 17. You can direct the beams at the same target or at different ones. Make a separate attack roll for each beam.",
+  "legacy": false
  },
  {
   "id": "fef46bf7-2e30-4901-92a3-e1c873a4c88a",
@@ -2572,7 +2674,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "211d7b99-291e-47fd-b468-d072eba589dc",
@@ -2601,7 +2704,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target."
+  "higherLevel": "You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target.",
+  "legacy": false
  },
  {
   "id": "6b966806-c50b-46f1-bd75-584933904266",
@@ -2627,7 +2731,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "6680b484-dd04-410e-87a0-e2a81b0f1de4",
@@ -2651,7 +2756,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "ea026a5c-aaa6-4fdc-b906-cd8337fafa56",
@@ -2675,7 +2781,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "bb566d9b-ba28-4d66-8f12-a64da5e2cd36",
@@ -2699,7 +2806,8 @@
    "Bard",
    "Warlock"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "54405649-e026-41d1-bc00-24331413372d",
@@ -2727,7 +2835,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target up to three willing creatures (including yourself) for each spell slot level above 7. The creatures must be within 10 feet of you when you cast the spell."
+  "higherLevel": "You can target up to three willing creatures (including yourself) for each spell slot level above 7. The creatures must be within 10 feet of you when you cast the spell.",
+  "legacy": false
  },
  {
   "id": "2c4e6b37-6b33-4443-b577-5a070f57f7e3",
@@ -2752,7 +2861,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "84668717-f236-41bc-92f8-7b3d226e73f8",
@@ -2778,7 +2888,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "dc9f39a7-9689-4564-bde3-3edf9f9a4bc8",
@@ -2801,7 +2912,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3dbe5c49-e0ac-4f60-9ffb-e20ebfb95451",
@@ -2825,7 +2937,8 @@
    "Bard",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3b07fbf4-4179-44a2-a2d9-8598e5acd8ba",
@@ -2848,7 +2961,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "249d0cae-85b8-41ca-8881-6a59491fc982",
@@ -2873,7 +2987,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You gain 5 additional Temporary Hit Points for each spell slot level above 1."
+  "higherLevel": "You gain 5 additional Temporary Hit Points for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "c8d129cd-3792-465b-90e6-20898b049150",
@@ -2899,7 +3014,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "4410220a-b2a0-44d0-9944-e8e850b094e1",
@@ -2924,7 +3040,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "058cfaaa-8dae-4dc0-a3e4-ee2840ac3abf",
@@ -2947,7 +3064,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "9b4947f3-5b6c-4bf9-8fba-2fd7404b3935",
@@ -2971,7 +3089,8 @@
    "Paladin"
   ],
   "subclasses": [],
-  "higherLevel": "Use the spell slot's level for the spell's level in the stat block.\n\n> #### **Otherworldly Steed**\n>\n> *Large Celestial, Fey, or Fiend (Your Choice), Neutral*\n>\n> **AC** 10 + 1 per spell level\n>\n> **HP** 5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)\n>\n> **Speed** 60 ft., Fly 60 ft. (requires level 4+ spell)\n>\n> | Attribute | Score | Mod | Save |\n> |-----------|-------|-----|------|\n> | Str | 18 | +4 | +4 |\n> | Dex | 12 | +1 | +1 |\n> | Con | 14 | +2 | +2 |\n> | Int | 6 | -2 | -2 |\n> | Wis | 12 | +1 | +1 |\n> | Cha | 8 | -1 | -1 |\n>\n> **Senses** Passive Perception 11\n>\n> **Languages** Telepathy 1 mile (works only with you)\n>\n> **CR** None (XP 0; PB equals your Proficiency Bonus)\n>\n> ##### Traits\n>\n> **_Life Bond._** When you regain Hit Points from a level 1+ spell, the steed regains the same number of Hit Points if you're within 5 feet of it.\n>\n> ##### Actions\n>\n> **_.Otherworldly Slam. Melee Attack Roll:_** Bonus equals your spell attack modifier, reach 5 ft. *Hit:* 1d8 plus the spell's level of Radiant (Celestial), Psychic (Fey), or Necrotic (Fiend) damage.\n>\n> ##### Bonus Actions\n>\n> **_Fell Glare (Fiend Only; Recharges after a Long Rest)._** *Wisdom Saving Throw:* DC equals your spell save DC, one creature within 60 feet the steed can see. *Failure:* The target has the Frightened condition until the end of your next turn.\n>\n> **_Fey Step (Fey Only; Recharges after a Long Rest)._** The steed teleports, along with its rider, to an unoccupied space of your choice up to 60 feet away from itself.\n>\n> **Healing Touch (Celestial Only; Recharges after a Long Rest)._** One creature within 5 feet of the steed regains a number of Hit Points equal to 2d8 plus the spell's level."
+  "higherLevel": "Use the spell slot's level for the spell's level in the stat block.\n\n> #### **Otherworldly Steed**\n>\n> *Large Celestial, Fey, or Fiend (Your Choice), Neutral*\n>\n> **AC** 10 + 1 per spell level\n>\n> **HP** 5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)\n>\n> **Speed** 60 ft., Fly 60 ft. (requires level 4+ spell)\n>\n> | Attribute | Score | Mod | Save |\n> |-----------|-------|-----|------|\n> | Str | 18 | +4 | +4 |\n> | Dex | 12 | +1 | +1 |\n> | Con | 14 | +2 | +2 |\n> | Int | 6 | -2 | -2 |\n> | Wis | 12 | +1 | +1 |\n> | Cha | 8 | -1 | -1 |\n>\n> **Senses** Passive Perception 11\n>\n> **Languages** Telepathy 1 mile (works only with you)\n>\n> **CR** None (XP 0; PB equals your Proficiency Bonus)\n>\n> ##### Traits\n>\n> **_Life Bond._** When you regain Hit Points from a level 1+ spell, the steed regains the same number of Hit Points if you're within 5 feet of it.\n>\n> ##### Actions\n>\n> **_.Otherworldly Slam. Melee Attack Roll:_** Bonus equals your spell attack modifier, reach 5 ft. *Hit:* 1d8 plus the spell's level of Radiant (Celestial), Psychic (Fey), or Necrotic (Fiend) damage.\n>\n> ##### Bonus Actions\n>\n> **_Fell Glare (Fiend Only; Recharges after a Long Rest)._** *Wisdom Saving Throw:* DC equals your spell save DC, one creature within 60 feet the steed can see. *Failure:* The target has the Frightened condition until the end of your next turn.\n>\n> **_Fey Step (Fey Only; Recharges after a Long Rest)._** The steed teleports, along with its rider, to an unoccupied space of your choice up to 60 feet away from itself.\n>\n> **Healing Touch (Celestial Only; Recharges after a Long Rest)._** One creature within 5 feet of the steed regains a number of Hit Points equal to 2d8 plus the spell's level.",
+  "legacy": false
  },
  {
   "id": "123fe894-bf35-4719-bc28-97f26d82f5fd",
@@ -2996,7 +3115,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "ff152eb2-e678-4003-9462-9dcd25f9d34b",
@@ -3021,7 +3141,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "9f0b2392-0b88-4da8-9866-d2473e7682da",
@@ -3046,7 +3167,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "9be57974-f1bd-4331-a4ec-960839d0abcd",
@@ -3071,7 +3193,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 3."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "5f378821-e3fb-4cd9-bac7-4dca04e80dd4",
@@ -3096,7 +3219,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10)."
+  "higherLevel": "The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10).",
+  "legacy": false
  },
  {
   "id": "fd9b7f14-c5af-4af1-87dd-8507687fb5af",
@@ -3121,7 +3245,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "9612f5ab-1b3d-4860-b305-882ff976cc3e",
@@ -3146,7 +3271,8 @@
    "Druid",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3d16994a-296a-46c6-b399-2040b8f67316",
@@ -3171,7 +3297,8 @@
    "Sorcerer"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 2."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "70511b0a-fb3f-441d-a8ab-bd18c145209b",
@@ -3195,7 +3322,8 @@
    "Cleric"
   ],
   "subclasses": [],
-  "higherLevel": "The Fire damage and the Radiant damage increase by 1d6 for each spell slot level above 5."
+  "higherLevel": "The Fire damage and the Radiant damage increase by 1d6 for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "6fa6018e-5292-47a4-9fd9-6af5f0c76103",
@@ -3221,7 +3349,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 2."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "57b7858c-884e-44a6-b7fa-704d0ef4d56a",
@@ -3246,7 +3375,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "71cffd84-5cc5-4649-a99c-8b18adab1f30",
@@ -3269,7 +3399,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "bcaa2f8b-f8bb-46f6-95b0-effdf2a0aa90",
@@ -3295,7 +3426,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 3."
+  "higherLevel": "You can target one additional creature for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "81cf1c01-18a7-4bb9-84d0-a50f96cec766",
@@ -3322,7 +3454,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The fog's radius increases by 20 feet for each spell slot level above 1."
+  "higherLevel": "The fog's radius increases by 20 feet for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "5e23179e-745a-4926-b84c-4f6ab89dd3d8",
@@ -3345,7 +3478,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "c06162f6-d4c6-4d0f-8359-c7c34229ba48",
@@ -3370,7 +3504,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "882087db-12b2-4b31-ba20-719a0bd09b17",
@@ -3396,7 +3531,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "0e5710cb-401e-4858-978b-76b6bb398a53",
@@ -3423,7 +3559,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 4."
+  "higherLevel": "You can target one additional creature for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "eea00272-06b8-5c0d-ad23-0616d0398336",
@@ -3448,7 +3585,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 6."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "ee973abe-18e0-4aa3-a3b2-a028537ee667",
@@ -3474,7 +3612,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 3."
+  "higherLevel": "You can target one additional creature for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "30bad14c-4ba2-4ceb-bc8c-73b19828ee92",
@@ -3500,7 +3639,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "8ff68662-61e5-4e5b-aedd-26aaead7fe87",
@@ -3528,7 +3668,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "If you use a level 7 or 8 spell slot, the duration is 365 days. If you use a level 9 spell slot, the spell lasts until it is ended by one of the spells mentioned above."
+  "higherLevel": "If you use a level 7 or 8 spell slot, the duration is 365 days. If you use a level 9 spell slot, the spell lasts until it is ended by one of the spells mentioned above.",
+  "legacy": false
  },
  {
   "id": "65d8dcd7-b256-436e-8f13-3e46d5435c18",
@@ -3553,7 +3694,8 @@
    "Paladin",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "2bf7253c-210b-423d-b08a-c5c8bc5a1ad4",
@@ -3577,7 +3719,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "Use the spell slot's level for the spell's level in the stat block.\n\n> #### Giant Insect\n>\n> *Large Beast, Unaligned*\n>\n> **AC** 11 + the spell's level\n>\n> **HP** 30 + 10 for each spell level above 4\n>\n> **Speed** 40 ft., Climb 40 ft., Fly 40 ft. (Wasp only)\n>\n> | Attribute | Score | Mod | Save |\n> |-----------|-------|-----|------|\n> | Str | 17 | +3 | +3 |\n> | Dex | 13 | +1 | +1 |\n> | Con | 15 | +2 | +2 |\n> | Int | 4 | -3 | -3 |\n> | Wis | 14 | +2 | +2 |\n> | Cha | 3 | -4 | -4 |\n>\n> **Senses** Darkvision 60 ft.; Passive Perception 12\n>\n> **Languages** Understands the languages you know\n>\n> **CR** None (XP 0; PB equals your Proficiency Bonus)\n>\n> ##### Traits\n>\n> **_Spider Climb._** The insect can climb difficult surfaces, including along ceilings, without needing to make an ability check.\n>\n> ##### Actions\n>\n> **_Multiattack._** The insect makes a number of attacks equal to half this spell's level (round down).\n>\n> **_Poison Jab. Melee Attack Roll:_** Bonus equals your spell attack modifier, reach 10 ft. *Hit:* 1d6 + 3 plus the spell's level Piercing damage plus 1d4 Poison damage.\n>\n> **Web Bolt (Spider Only). Ranged Attack Roll:_** Bonus equals your spell attack modifier, range 60 ft. *Hit:* 1d10 + 3 plus the spell's level Bludgeoning damage, and the target's Speed is reduced to 0 until the start of the insect's next turn.\n>\n> ##### Bonus Actions\n>\n> **Venomous Spew (Centipede Only). Constitution Saving Throw:_** Your spell save DC, one creature the insect can see within 10 feet. *Failure:* The target has the Poisoned condition until the start of the insect's next turn."
+  "higherLevel": "Use the spell slot's level for the spell's level in the stat block.\n\n> #### Giant Insect\n>\n> *Large Beast, Unaligned*\n>\n> **AC** 11 + the spell's level\n>\n> **HP** 30 + 10 for each spell level above 4\n>\n> **Speed** 40 ft., Climb 40 ft., Fly 40 ft. (Wasp only)\n>\n> | Attribute | Score | Mod | Save |\n> |-----------|-------|-----|------|\n> | Str | 17 | +3 | +3 |\n> | Dex | 13 | +1 | +1 |\n> | Con | 15 | +2 | +2 |\n> | Int | 4 | -3 | -3 |\n> | Wis | 14 | +2 | +2 |\n> | Cha | 3 | -4 | -4 |\n>\n> **Senses** Darkvision 60 ft.; Passive Perception 12\n>\n> **Languages** Understands the languages you know\n>\n> **CR** None (XP 0; PB equals your Proficiency Bonus)\n>\n> ##### Traits\n>\n> **_Spider Climb._** The insect can climb difficult surfaces, including along ceilings, without needing to make an ability check.\n>\n> ##### Actions\n>\n> **_Multiattack._** The insect makes a number of attacks equal to half this spell's level (round down).\n>\n> **_Poison Jab. Melee Attack Roll:_** Bonus equals your spell attack modifier, reach 10 ft. *Hit:* 1d6 + 3 plus the spell's level Piercing damage plus 1d4 Poison damage.\n>\n> **Web Bolt (Spider Only). Ranged Attack Roll:_** Bonus equals your spell attack modifier, range 60 ft. *Hit:* 1d10 + 3 plus the spell's level Bludgeoning damage, and the target's Speed is reduced to 0 until the start of the insect's next turn.\n>\n> ##### Bonus Actions\n>\n> **Venomous Spew (Centipede Only). Constitution Saving Throw:_** Your spell save DC, one creature the insect can see within 10 feet. *Failure:* The target has the Poisoned condition until the start of the insect's next turn.",
+  "legacy": false
  },
  {
   "id": "09e980c9-5b9b-4ec0-add0-1cafa4122322",
@@ -3601,7 +3744,8 @@
    "Bard",
    "Warlock"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1bdd02ca-80c3-499b-a087-60d25d2a2f20",
@@ -3626,7 +3770,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The barrier blocks spells of 1 level higher for each spell slot level above 6."
+  "higherLevel": "The barrier blocks spells of 1 level higher for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "04c67756-0930-4448-bfce-68cf058dee6d",
@@ -3652,7 +3797,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage of an explosive rune increases by 1d8 for each spell slot level above 3. If you create a spell glyph, you can store any spell of up to the same level as the spell slot you use for the *Glyph of Warding*."
+  "higherLevel": "The damage of an explosive rune increases by 1d8 for each spell slot level above 3. If you create a spell glyph, you can store any spell of up to the same level as the spell slot you use for the *Glyph of Warding*.",
+  "legacy": false
  },
  {
   "id": "576ed095-90ee-4ddc-953a-1f5ebff42a92",
@@ -3676,7 +3822,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5a00f162-b570-49fb-bfac-38950ee3e4ae",
@@ -3700,7 +3847,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f916aa7c-69ae-4c0f-8d4a-5ea1f4ad419e",
@@ -3725,7 +3873,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1b636b4b-5470-46ef-a647-fb744edd9dcf",
@@ -3752,7 +3901,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3c77d8fa-5fc3-4378-8ca0-9af31ece7039",
@@ -3775,7 +3925,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "7b492f17-e9ea-4cb1-a73b-116de7dc062b",
@@ -3799,7 +3950,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d1424687-4958-4407-ae6c-2ad9fce858aa",
@@ -3823,7 +3975,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "47982b84-7ce9-4262-8b4e-7517d93c8aa1",
@@ -3847,7 +4000,8 @@
    "Cleric"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "b80f6404-4347-4ef4-9e51-21a82d95a85d",
@@ -3873,7 +4027,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f2ef90dd-23af-46d7-87b6-343e2e700eb0",
@@ -3896,7 +4051,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "ef46fb44-ac9c-4318-941b-e2faf6d8e4f3",
@@ -3922,7 +4078,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "487df972-eabd-4b7a-a61d-97aefc9b3f9a",
@@ -3945,7 +4102,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3d2a6708-3600-4550-9f6a-1f2337345276",
@@ -3969,7 +4127,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f4c6624f-5890-4bf4-b37a-610a14637c82",
@@ -3994,7 +4153,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The healing increases by 10 for each spell slot level above 6."
+  "higherLevel": "The healing increases by 10 for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "f0bb1f29-9035-4f27-8a99-08cedf2c6082",
@@ -4020,7 +4180,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The healing increases by 2d4 for each spell slot level above 1."
+  "higherLevel": "The healing increases by 2d4 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "a062c31d-f407-4714-bf2b-88a98cce244f",
@@ -4045,7 +4206,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 2."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "e7de9b47-7e85-4b68-8c9d-c5ce22f5ff42",
@@ -4069,7 +4231,8 @@
    "Warlock"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d10 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "6720022f-af2c-429b-8394-a549d36a794a",
@@ -4094,7 +4257,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "82758c47-796c-4099-b05a-dd6076576d04",
@@ -4119,7 +4283,8 @@
    "Paladin"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 1."
+  "higherLevel": "You can target one additional creature for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "bfa3db76-e1ec-4a5d-a880-a4163449607b",
@@ -4143,7 +4308,8 @@
    "Warlock"
   ],
   "subclasses": [],
-  "higherLevel": "Your Concentration can last longer with a spell slot of level 2 (up to 4 hours), 3–4 (up to 8 hours), or 5+ (24 hours)."
+  "higherLevel": "Your Concentration can last longer with a spell slot of level 2 (up to 4 hours), 3–4 (up to 8 hours), or 5+ (24 hours).",
+  "legacy": false
  },
  {
   "id": "9661d5cc-bfa3-4721-ad2c-b892821b0505",
@@ -4169,7 +4335,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 1."
+  "higherLevel": "You can target one additional creature for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "db4141b8-2116-4024-b896-072d33dac1ba",
@@ -4196,7 +4363,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 5."
+  "higherLevel": "You can target one additional creature for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "e0a245ec-8384-405c-b8bf-fbe59ed28a4f",
@@ -4225,7 +4393,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional Humanoid for each spell slot level above 2."
+  "higherLevel": "You can target one additional Humanoid for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "c5ab56d0-b332-43dd-afae-329c9e2aa9d8",
@@ -4248,7 +4417,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "bf9b31ac-4675-4a43-a799-67095e9e8dcd",
@@ -4272,7 +4442,8 @@
    "Ranger"
   ],
   "subclasses": [],
-  "higherLevel": "Your Concentration can last longer with a spell slot of level 3–4 (up to 8 hours) or 5+ (up to 24 hours)."
+  "higherLevel": "Your Concentration can last longer with a spell slot of level 3–4 (up to 8 hours) or 5+ (up to 24 hours).",
+  "legacy": false
  },
  {
   "id": "5426af8a-28dd-4a1d-86e8-6cab43ef9b9b",
@@ -4298,7 +4469,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "b98a8cc4-fa44-4365-903b-cca8b037f05a",
@@ -4324,7 +4496,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The Cold damage increases by 1d6 for each spell slot level above 1."
+  "higherLevel": "The Cold damage increases by 1d6 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "9e862cf0-9409-4f45-9bee-7a36c3b485eb",
@@ -4350,7 +4523,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The Bludgeoning damage increases by 1d10 for each spell slot level above 4."
+  "higherLevel": "The Bludgeoning damage increases by 1d10 for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "7a1fcc7b-d4be-4adb-9897-b885371f97a1",
@@ -4374,7 +4548,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "2c49c25f-82df-4323-9fca-ecc31d20b220",
@@ -4399,7 +4574,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "54c094ea-c1f8-4f0b-a0aa-c9cffbdceb2c",
@@ -4423,7 +4599,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "46621215-d2f5-4f1e-9f3e-89cb40514c39",
@@ -4448,7 +4625,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "73822599-c15f-462f-80e2-231eb654a5fc",
@@ -4472,7 +4650,8 @@
    "Cleric"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d10 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "077c6d4d-5025-42ef-9d7c-519efb070cdc",
@@ -4498,7 +4677,8 @@
    "Sorcerer"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 for each spell slot level above 5."
+  "higherLevel": "The damage increases by 1d10 for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "88d88dfd-a790-4ffc-93a0-74ada46d7bf6",
@@ -4521,7 +4701,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d6129db3-ccf8-4e63-a8bd-8bc344879e97",
@@ -4545,7 +4726,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "7c9f4504-dae4-46e6-a7e8-a7c3b2d3f286",
@@ -4572,7 +4754,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 2."
+  "higherLevel": "You can target one additional creature for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "1d6aab21-157d-489b-8e6a-39539f9f4b72",
@@ -4599,7 +4782,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 1."
+  "higherLevel": "You can target one additional creature for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "f2aaea82-58ce-4907-86e6-2efa1f0fe9d7",
@@ -4624,7 +4808,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f679ea44-6652-4c8d-adcb-772b4011f716",
@@ -4649,7 +4834,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "22f19ac1-8bc0-4a6b-928f-3349f59e4518",
@@ -4676,7 +4862,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "0f1af673-c251-4e79-b770-7acc1883369b",
@@ -4700,7 +4887,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "b93c0aeb-0495-4078-aac8-785ed81f4e66",
@@ -4726,7 +4914,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d993aa71-7afb-4fb8-9d7e-77bba9ea6851",
@@ -4751,7 +4940,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 3."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "6b353d7f-792b-4f90-ace7-cf4a8630f037",
@@ -4776,7 +4966,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "67ca2dd5-2c55-4829-bede-b30f63e96f14",
@@ -4804,7 +4995,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "81eac5bc-1c9c-4af1-89a8-a181431e33dc",
@@ -4832,7 +5024,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "202674a3-0c2d-440d-bab3-6a759709ad0b",
@@ -4859,7 +5052,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 1."
+  "higherLevel": "You can target one additional creature for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "34307856-8a38-4c64-b04e-2b591a59c24a",
@@ -4883,7 +5077,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5b2a60a7-c2f9-4e1b-a7ce-f8e3512a2cd3",
@@ -4909,7 +5104,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5827dcb0-cd1e-4c6a-bbe3-e3f752845524",
@@ -4936,7 +5132,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The duration increases by 1 hour for each spell slot level above 3."
+  "higherLevel": "The duration increases by 1 hour for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "0f96a682-98b0-40a4-b83e-8e2a28d2ba43",
@@ -4959,7 +5156,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "670f452e-8c92-4fd9-891d-78d1b32e72ac",
@@ -4984,7 +5182,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The spell creates one more dart for each spell slot level above 1."
+  "higherLevel": "The spell creates one more dart for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "910202ff-6ab7-49ee-9ed9-d10711041580",
@@ -5008,7 +5207,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "e68d1a97-0817-4302-97d4-be1fcebec7a0",
@@ -5035,7 +5235,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The bonus increases to +2 with a level 3–5 spell slot. The bonus increases to +3 with a level 6+ spell slot."
+  "higherLevel": "The bonus increases to +2 with a level 3–5 spell slot. The bonus increases to +3 with a level 6+ spell slot.",
+  "legacy": false
  },
  {
   "id": "173073ae-5044-4ca6-acb6-0b6ea65215e4",
@@ -5059,7 +5260,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "cb5a2c2b-34d7-4398-a1d0-0a0442d67a67",
@@ -5086,7 +5288,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The spell lasts until dispelled, without requiring Concentration, if cast with a level 4+ spell slot."
+  "higherLevel": "The spell lasts until dispelled, without requiring Concentration, if cast with a level 4+ spell slot.",
+  "legacy": false
  },
  {
   "id": "c711d7cc-c829-4462-8c4f-eb929431a6c8",
@@ -5112,7 +5315,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The healing increases by 1d8 for each spell slot level above 5."
+  "higherLevel": "The healing increases by 1d8 for each spell slot level above 5.",
+  "legacy": false
  },
  {
   "id": "2707421f-f047-4b41-a3a0-89ed9bb8b8ca",
@@ -5135,7 +5339,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3d7a8914-8014-40b7-b13c-52733f60c1bf",
@@ -5160,7 +5365,8 @@
    "Cleric"
   ],
   "subclasses": [],
-  "higherLevel": "The healing increases by 1d4 for each spell slot level above 3."
+  "higherLevel": "The healing increases by 1d4 for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "e1651f59-302d-45ce-b150-ea19df9f29f6",
@@ -5186,7 +5392,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The duration is longer with a spell slot of level 7 (10 days), 8 (30 days), or 9 (366 days)."
+  "higherLevel": "The duration is longer with a spell slot of level 7 (10 days), 8 (30 days), or 9 (366 days).",
+  "legacy": false
  },
  {
   "id": "96d7854c-7328-45cd-b5cf-a1160eca3dd1",
@@ -5209,7 +5416,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "796a2e6e-7af9-4b51-b3e1-732e91f8677f",
@@ -5234,7 +5442,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "7f0857e2-3005-40d7-89a9-43b651a8a367",
@@ -5261,7 +5470,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "119acc13-4297-41b1-9a24-28a6728090e5",
@@ -5287,7 +5497,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "c8016bf8-6ad5-4a30-a5e5-4d056da85ab2",
@@ -5311,7 +5522,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "0eeea136-f153-4e8c-85d3-afbeebcd2da9",
@@ -5335,7 +5547,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5abddccb-83ea-440f-8c87-d3a6ce5e95df",
@@ -5361,7 +5574,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 2."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "b0a0227a-2289-4e3e-983e-bc438693a7b3",
@@ -5387,7 +5601,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5ba871af-f878-43dd-b5d0-9585cc5d5e07",
@@ -5412,7 +5627,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "ae4fb4da-a2cb-4b41-b95a-a9c6289e5601",
@@ -5438,7 +5654,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "686586f7-4969-4872-94b2-27a2e76b7dda",
@@ -5463,7 +5680,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "0cc12afe-8a53-40f6-9d6c-6c3a7aa0563c",
@@ -5488,7 +5706,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1218849f-5da3-4a82-a0b0-2b571de6ef42",
@@ -5513,7 +5732,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can alter the target's memories of an event that took place up to 7 days ago (level 6 spell slot), 30 days ago (level 7 spell slot), 365 days ago (level 8 spell slot), or any time in the creature's past (level 9 spell slot)."
+  "higherLevel": "You can alter the target's memories of an event that took place up to 7 days ago (level 6 spell slot), 30 days ago (level 7 spell slot), 365 days ago (level 8 spell slot), or any time in the creature's past (level 9 spell slot).",
+  "legacy": false
  },
  {
   "id": "28f0b887-a857-4a13-a776-d68841e8f421",
@@ -5537,7 +5757,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 for each spell slot level above 2."
+  "higherLevel": "The damage increases by 1d10 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "4b2d3606-9176-4351-8fe9-f9782a98a820",
@@ -5562,7 +5783,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "a4fdffca-bee4-4aa8-9b8e-57523ff22df2",
@@ -5587,7 +5809,8 @@
    "Ranger",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "50d78684-9318-48d6-80b2-3a69be327e96",
@@ -5610,7 +5833,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "e0780606-466f-45fd-80b9-c225a501fbd3",
@@ -5634,7 +5858,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1b0dbc19-cb4b-44c1-bd94-55126ce53823",
@@ -5659,7 +5884,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d1058902-7083-4bb2-97ea-4ff6d719e449",
@@ -5684,7 +5910,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d10 for each spell slot level above 4."
+  "higherLevel": "The damage increases by 1d10 for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "58d6473c-e6e1-4e46-bf2a-f47e99da3dec",
@@ -5707,7 +5934,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "6809103f-1664-49a3-8cca-e5219f62d080",
@@ -5730,7 +5958,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "79edd9ac-6731-4b46-8000-7438517924de",
@@ -5758,7 +5987,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The duration increases with a spell slot of level 6 (10 days), 7 (30 days), 8 (180 days), and 9 (366 days)."
+  "higherLevel": "The duration increases with a spell slot of level 6 (10 days), 7 (30 days), 8 (180 days), and 9 (366 days).",
+  "legacy": false
  },
  {
   "id": "313e6b19-5b02-4c43-8266-0a2195bbdf68",
@@ -5785,7 +6015,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "18ea847f-658a-4933-b02f-5ad1d7bca1dc",
@@ -5810,7 +6041,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "84b4aa30-4351-4353-ac5b-ff186d4518ec",
@@ -5837,7 +6069,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d12 when you reach levels 5 (2d12), 11 (3d12), and 17 (4d12)."
+  "higherLevel": "The damage increases by 1d12 when you reach levels 5 (2d12), 11 (3d12), and 17 (4d12).",
+  "legacy": false
  },
  {
   "id": "bb128b10-2f5a-44ca-b45c-13d31b89b482",
@@ -5863,7 +6096,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "863e9a84-f6ca-4753-9c95-253aa8f6a00a",
@@ -5887,7 +6121,8 @@
    "Bard",
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "dffde820-8efa-4c2c-8b21-9401bd5dd2fa",
@@ -5913,7 +6148,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1ab8891d-dcad-4b1d-b73b-bb272c89afc6",
@@ -5939,7 +6175,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "a14f0061-e0b1-414c-af6b-bc3a8014530a",
@@ -5964,7 +6201,8 @@
    "Paladin"
   ],
   "subclasses": [],
-  "higherLevel": "The healing increases by 1d8 for each spell slot level above 2."
+  "higherLevel": "The healing increases by 1d8 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "a62948bb-3fbc-48d4-90ff-54a5e06fed52",
@@ -5990,7 +6228,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "42d7ca70-33f6-400c-9c3a-9799d8fb43d0",
@@ -6015,7 +6254,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "a21d24ce-9792-45ba-a825-01729368fac0",
@@ -6039,7 +6279,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "302a8282-5755-4286-9411-40ff6c14b96a",
@@ -6063,7 +6304,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can increase the size of the Cube by 100 feet for each spell slot level above 4."
+  "higherLevel": "You can increase the size of the Cube by 100 feet for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "e600d61b-6564-4045-8c3b-ee89d8d2d802",
@@ -6087,7 +6329,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
+  "legacy": false
  },
  {
   "id": "9bfa765b-fce0-4005-a98f-cda546425a6f",
@@ -6111,7 +6354,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "ed144afe-9755-4507-8c8f-957771dd2e79",
@@ -6135,7 +6379,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "c6c3a947-f301-4d16-b12a-6f3d2e736985",
@@ -6162,7 +6407,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "bb875917-ea05-414f-b97b-a5a7e01858a6",
@@ -6189,7 +6435,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "6c92be92-355d-40d4-8063-4732f78c73cf",
@@ -6215,7 +6462,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "18b702af-19fd-4a49-b5b8-c0f896608014",
@@ -6240,7 +6488,8 @@
    "Druid",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "2b8802fd-962f-4473-ac03-c27eeb93fac7",
@@ -6265,7 +6514,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "32fe10f6-d05b-4498-be9d-bbb7607dfb22",
@@ -6289,7 +6539,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "321f0aa2-57ca-4a03-9a56-8da1a4de30e9",
@@ -6314,7 +6565,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
+  "legacy": false
  },
  {
   "id": "fa9e02f3-611d-45c1-88f3-e3393729b969",
@@ -6339,7 +6591,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1af4304f-bfe5-41d4-a3f9-d8526d6301cc",
@@ -6364,7 +6617,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "005ec68f-fc8d-495a-8b3c-cec184f8dc04",
@@ -6387,7 +6641,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "e645f4c9-d4ef-43d3-b88d-17e034f1b1d1",
@@ -6413,7 +6668,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "8af9ae89-b5df-4866-8cb1-92615bea785e",
@@ -6436,7 +6692,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "83b62b3a-8260-4316-8150-d139fcc2db80",
@@ -6460,7 +6717,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "a199c05e-5bbd-41a4-a7c0-3a9f61742304",
@@ -6484,7 +6742,8 @@
    "Bard",
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "34438b85-5fa9-447a-9443-302aeeda62d0",
@@ -6509,7 +6768,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5090388f-b006-44a2-a1d0-b5d250282de7",
@@ -6535,7 +6795,8 @@
    "Paladin",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "cbedec84-b6d3-4da5-847c-053a25d6b422",
@@ -6558,7 +6819,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "b37c68d4-abdf-415f-9b83-c9504594c791",
@@ -6582,7 +6844,8 @@
    "Cleric"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
+  "legacy": false
  },
  {
   "id": "9536c0bc-f796-4a17-a5ba-ad036c204a83",
@@ -6605,7 +6868,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "a2e571a8-dd95-46c3-bfcd-aa41c91b1aa3",
@@ -6630,7 +6894,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You create one additional ray for each spell slot level above 2."
+  "higherLevel": "You create one additional ray for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "1ba54424-c076-4142-8569-371d687d42d0",
@@ -6657,7 +6922,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1f41079c-110b-4537-b16c-f93b44a96a17",
@@ -6681,7 +6947,8 @@
    "Paladin"
   ],
   "subclasses": [],
-  "higherLevel": "All the damage increases by 1d6 for each spell slot level above 1."
+  "higherLevel": "All the damage increases by 1d6 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "95070612-776c-4b98-a81c-81b942c30b3c",
@@ -6704,7 +6971,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "587a43c6-a279-4857-a498-4f9b228a31ea",
@@ -6729,7 +6997,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "341a4998-c1fa-4ffe-b970-56a4c2a3a2f3",
@@ -6754,7 +7023,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "ac0a41dc-ce8f-49b4-aa8c-85f4dcf4baa2",
@@ -6779,7 +7049,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "50ae3599-c90b-496e-a238-4653485709ec",
@@ -6802,7 +7073,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "e6f14fd8-9887-4d37-aeac-72f6f501b50d",
@@ -6826,7 +7098,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1bffcb32-e4d4-49d4-a6dd-82da900a9e5e",
@@ -6852,7 +7125,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 2."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "dec9c958-de81-490a-9ba4-7743dad7ca66",
@@ -6876,7 +7150,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "db5f306b-16c3-4818-8a55-160e4cc77ac6",
@@ -6900,7 +7175,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "81367204-30a2-44db-bd7d-5302ff966a52",
@@ -6924,7 +7200,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The damage die changes when you reach levels 5 (d10), 11 (d12), and 17 (2d6)."
+  "higherLevel": "The damage die changes when you reach levels 5 (d10), 11 (d12), and 17 (2d6).",
+  "legacy": false
  },
  {
   "id": "8fd12bae-7eb3-430f-abb1-ecf8dc1f271e",
@@ -6948,7 +7225,8 @@
    "Paladin"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 2."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "7dc21188-c7e1-4e98-950c-3f589f7eb22a",
@@ -6973,7 +7251,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
+  "legacy": false
  },
  {
   "id": "4c438921-a0a8-43c3-92e6-03aa94d09771",
@@ -6998,7 +7277,8 @@
    "Cleric",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "bd46b3a5-9bc3-4273-9791-6111fd870774",
@@ -7023,7 +7303,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "9d7db9d9-07c0-4ea3-a725-73ec0a4da719",
@@ -7046,7 +7327,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d45f68e9-0c82-43cf-9fbb-5f1ffe853004",
@@ -7071,7 +7353,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f7bb4898-c634-4191-98bf-d432935ff417",
@@ -7096,7 +7379,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d98d5212-c28b-4cbb-a7e3-96757cf14394",
@@ -7121,7 +7405,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "872b1d04-b0a6-410a-a2e0-9d8bb4886019",
@@ -7145,7 +7430,8 @@
    "Sorcerer"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
+  "legacy": false
  },
  {
   "id": "2e1f8fb1-f2fe-469c-bf8b-d3c1a43b7dbd",
@@ -7170,7 +7456,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet)."
+  "higherLevel": "The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet).",
+  "legacy": false
  },
  {
   "id": "28b8d668-980d-4dd3-815a-f6fa01a352cd",
@@ -7196,7 +7483,8 @@
    "Ranger",
    "Warlock"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "959c0aa3-fc30-46d4-af83-3321f9a48e6a",
@@ -7221,7 +7509,8 @@
    "Cleric",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "248c5701-eddc-45c5-ab9c-8f35b292542c",
@@ -7246,7 +7535,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "1f514f36-2aaa-49da-b900-e6df6f586697",
@@ -7272,7 +7562,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "You can target one additional creature for each spell slot level above 2."
+  "higherLevel": "You can target one additional creature for each spell slot level above 2.",
+  "legacy": false
  },
  {
   "id": "9eb1acdd-bf2a-4830-8837-641144d4c1ea",
@@ -7296,7 +7587,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3e8a5be2-46bb-4acf-b49d-12e573fe9388",
@@ -7320,7 +7612,8 @@
    "Cleric"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 3."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "14fedbfa-1e5f-4608-9209-793f9fcd6357",
@@ -7344,7 +7637,8 @@
    "Cleric"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for every slot level above 2."
+  "higherLevel": "The damage increases by 1d8 for every slot level above 2.",
+  "legacy": false
  },
  {
   "id": "23e6ebc2-5504-4bde-95c6-a15d370c0ce2",
@@ -7369,7 +7663,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8)."
+  "higherLevel": "The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).",
+  "legacy": false
  },
  {
   "id": "40aca8d9-b54c-4e55-a23f-a86383f2fcdf",
@@ -7394,7 +7689,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "53209fee-3093-4f17-8178-db583d3e3cb9",
@@ -7419,7 +7715,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "fb58a8ea-315e-4232-9be6-301892fbee54",
@@ -7445,7 +7742,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "32bb9435-ea2e-4d02-bbb1-38aff4697f72",
@@ -7468,7 +7766,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "75c952aa-5d35-4d70-8c85-982bcf608c44",
@@ -7494,7 +7793,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "682bc470-7f03-4e86-859c-0cd6d90a3a14",
@@ -7518,7 +7818,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "Use the spell slot's level for the spell's level in the stat block.\n\n> #### Draconic Spirit\n>\n> *Large Dragon, Neutral*\n>\n> **AC** 14 + the spell's level\n>\n> **HP** 50 + 10 for each spell level above 5\n>\n> **Speed** 30 ft., Fly 60 ft., Swim 30 ft.\n>\n> | Attribute | Score | Mod | Save |\n> |-----------|-------|-----|------|\n> | Str | 19 | +4 | +4 |\n> | Dex | 14 | +2 | +2 |\n> | Con | 17 | +3 | +3 |\n> | Int | 10 | +0 | +0 |\n> | Wis | 14 | +2 | +2 |\n> | Cha | 14 | +2 | +2 |\n>\n> **Resistances** Acid, Cold, Fire, Lightning, Poison\n>\n> **Immunities** Charmed, Frightened, Poisoned\n>\n> **Senses** Blindsight 30 ft., Darkvision 60 ft.; Passive Perception 12\n>\n> **Languages** Draconic, understands the languages you know **CR** None (XP 0; PB equals your Proficiency Bonus)\n>\n> ##### Traits\n>\n> **_Shared Resistances._** When you summon the spirit, choose one of its Resistances. You have Resistance to the chosen damage type until the spell ends.\n>\n> ##### Actions\n>\n> **_Multiattack._** The spirit makes a number of Rend attacks equal to half the spell's level (round down), and it uses Breath Weapon.\n>\n> **_Rend. Melee Attack Roll:_** Bonus equals your spell attack modifier, reach 10 feet. *Hit:* 1d6 + 4 + the spell's level Piercing damage.\n>\n> **_Breath Weapon. Dexterity Saving Throw:_** DC equals your spell save DC, each creature in a 30-foot Cone. *Failure:* 2d6 damage of a type this spirit has Resistance to (your choice when you cast the spell). *Success:* Half damage."
+  "higherLevel": "Use the spell slot's level for the spell's level in the stat block.\n\n> #### Draconic Spirit\n>\n> *Large Dragon, Neutral*\n>\n> **AC** 14 + the spell's level\n>\n> **HP** 50 + 10 for each spell level above 5\n>\n> **Speed** 30 ft., Fly 60 ft., Swim 30 ft.\n>\n> | Attribute | Score | Mod | Save |\n> |-----------|-------|-----|------|\n> | Str | 19 | +4 | +4 |\n> | Dex | 14 | +2 | +2 |\n> | Con | 17 | +3 | +3 |\n> | Int | 10 | +0 | +0 |\n> | Wis | 14 | +2 | +2 |\n> | Cha | 14 | +2 | +2 |\n>\n> **Resistances** Acid, Cold, Fire, Lightning, Poison\n>\n> **Immunities** Charmed, Frightened, Poisoned\n>\n> **Senses** Blindsight 30 ft., Darkvision 60 ft.; Passive Perception 12\n>\n> **Languages** Draconic, understands the languages you know **CR** None (XP 0; PB equals your Proficiency Bonus)\n>\n> ##### Traits\n>\n> **_Shared Resistances._** When you summon the spirit, choose one of its Resistances. You have Resistance to the chosen damage type until the spell ends.\n>\n> ##### Actions\n>\n> **_Multiattack._** The spirit makes a number of Rend attacks equal to half the spell's level (round down), and it uses Breath Weapon.\n>\n> **_Rend. Melee Attack Roll:_** Bonus equals your spell attack modifier, reach 10 feet. *Hit:* 1d6 + 4 + the spell's level Piercing damage.\n>\n> **_Breath Weapon. Dexterity Saving Throw:_** DC equals your spell save DC, each creature in a 30-foot Cone. *Failure:* 2d6 damage of a type this spirit has Resistance to (your choice when you cast the spell). *Success:* Half damage.",
+  "legacy": false
  },
  {
   "id": "9235a4bb-9625-4988-9e46-e63228b62b53",
@@ -7544,7 +7845,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "a2ca6f62-19bb-4e51-8a49-46099eec9af4",
@@ -7570,7 +7872,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "74fa0be2-2a86-42ea-80a4-f1c0378b464c",
@@ -7596,7 +7899,8 @@
    "Druid",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "0943e031-eb9d-447d-bb08-23038360948c",
@@ -7620,7 +7924,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "ebb6317d-3677-480a-9151-c9315bc866d1",
@@ -7644,7 +7949,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f3d96a71-8b51-44d3-a811-cd15c7a9cb1d",
@@ -7669,7 +7975,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "469c8980-2725-4e37-b5e5-d45f5d958dfb",
@@ -7695,7 +8002,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "3ad133a3-37e5-4f89-a12a-907201bcf0ae",
@@ -7718,7 +8026,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d9d089dc-ba06-4d0b-b507-68d5a5770511",
@@ -7745,7 +8054,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 1."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 1.",
+  "legacy": false
  },
  {
   "id": "f1ef9099-a5b9-4c92-b3f2-32a7eddb10f4",
@@ -7769,7 +8079,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "e3ac72ca-7d36-4597-9050-cd4b2de6db86",
@@ -7793,7 +8104,8 @@
    "Bard",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "5eb23ef1-6b9a-4798-94c7-d044b27e4cbd",
@@ -7820,7 +8132,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "85501b17-3d85-4741-8649-7f86bb3d0d4a",
@@ -7843,7 +8156,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d64bc260-3bd9-4f4c-8c20-59641e319831",
@@ -7867,7 +8181,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "be74a668-9a5d-485c-aa83-c787348eced8",
@@ -7892,7 +8207,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "f893fc7b-3d1b-4827-830a-ac003ba44773",
@@ -7916,7 +8232,8 @@
    "Cleric",
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "4b189a4e-5a2b-4da1-b83a-2c23926fc3c5",
@@ -7943,7 +8260,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "23cd2844-cdd3-4546-94da-2ac341f79537",
@@ -7970,7 +8288,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "Whether you deal Radiant damage or the weapon's normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6)."
+  "higherLevel": "Whether you deal Radiant damage or the weapon's normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6).",
+  "legacy": false
  },
  {
   "id": "800fb5b6-b54c-4adf-b89a-e17e04072850",
@@ -7993,7 +8312,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "be7fa8f5-5c09-4d04-97fe-65d03a1a21b7",
@@ -8018,7 +8338,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "d7166338-a9f5-4412-b3aa-09ea9f12a019",
@@ -8044,7 +8365,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 for each spell slot level above 3."
+  "higherLevel": "The damage increases by 1d6 for each spell slot level above 3.",
+  "legacy": false
  },
  {
   "id": "92050e85-1f0c-40eb-b92e-bc02e99e55bf",
@@ -8068,7 +8390,8 @@
    "Bard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6)."
+  "higherLevel": "The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).",
+  "legacy": false
  },
  {
   "id": "5965860a-6ead-4082-a76f-aae0bae4334c",
@@ -8093,7 +8416,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The initial damage increases by 2d4 for each spell slot level above 4."
+  "higherLevel": "The initial damage increases by 2d4 for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "3bbbd9ac-66f0-48a5-9c08-6054d153cc95",
@@ -8119,7 +8443,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage increases by 1d8 for each spell slot level above 4."
+  "higherLevel": "The damage increases by 1d8 for each spell slot level above 4.",
+  "legacy": false
  },
  {
   "id": "a2b6b03e-d21e-4d68-acb1-f17a2f54ef16",
@@ -8142,7 +8467,8 @@
   "classes": [
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "bdd59d22-0dd5-48d4-be0f-9364a36f1991",
@@ -8166,7 +8492,8 @@
    "Wizard"
   ],
   "subclasses": [],
-  "higherLevel": "The damage the wall deals when it appears increases by 2d6 and the damage from passing through the sheet of frigid air increases by 1d6 for each spell slot level above 6."
+  "higherLevel": "The damage the wall deals when it appears increases by 2d6 and the damage from passing through the sheet of frigid air increases by 1d6 for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "4a390338-6e0a-4827-94fb-2af456e4622d",
@@ -8191,7 +8518,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "b33ed264-1a60-43fe-947a-3fb6f11c66fc",
@@ -8215,7 +8543,8 @@
    "Druid"
   ],
   "subclasses": [],
-  "higherLevel": "Both types of damage increase by 1d8 for each spell slot level above 6."
+  "higherLevel": "Both types of damage increase by 1d8 for each spell slot level above 6.",
+  "legacy": false
  },
  {
   "id": "2ea558c8-6e5d-4ba1-a5de-3aa1a7209ae9",
@@ -8239,7 +8568,8 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "6d736ab4-f045-4145-9d4a-d612b8152eec",
@@ -8265,7 +8595,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "6eb1527b-0c5a-4559-84e2-6c184295b989",
@@ -8291,7 +8622,8 @@
    "Ranger",
    "Sorcerer"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "290b7962-055e-4c5f-8ff8-57e228995d8b",
@@ -8315,7 +8647,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "b9306bfd-f70a-48cc-96c9-d48b9ee0f240",
@@ -8339,7 +8672,8 @@
    "Warlock",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "cd712f9e-b765-46f2-ba0a-2e57b04d61d9",
@@ -8362,7 +8696,8 @@
   "classes": [
    "Druid"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "09a01ef4-b485-48fb-a9f1-de519644f828",
@@ -8386,7 +8721,8 @@
    "Druid",
    "Ranger"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "ccb8458e-97f2-464e-a367-13aa1d41c9f6",
@@ -8410,7 +8746,8 @@
    "Sorcerer",
    "Wizard"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "4facf87b-caa5-49e2-a91e-efa75a09d36a",
@@ -8433,7 +8770,8 @@
   "classes": [
    "Cleric"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  },
  {
   "id": "891e04ec-dc3e-4ccf-935a-f12d7197cc56",
@@ -8458,6 +8796,7 @@
    "Cleric",
    "Paladin"
   ],
-  "subclasses": []
+  "subclasses": [],
+  "legacy": false
  }
 ]

@@ -46,6 +46,21 @@ export function validateMadsInData(data: RulesetData): ValidationResult {
     return res;
 }
 
+/** Every top-level entity must carry the centrally stamped `legacy` flag (2014 → true, 2024 → false). */
+export function validateLegacy(ruleset: Ruleset, data: RulesetData): ValidationResult {
+    const res: ValidationResult = { errors: [], warnings: [] };
+    const expected = ruleset === "2014";
+    for (const [kind, rows] of Object.entries(data)) {
+        if (!Array.isArray(rows)) continue;
+        rows.forEach((row: { legacy?: unknown; name?: string; id?: string }, i) => {
+            const label = `${kind}[${i}] "${row?.name ?? row?.id ?? "?"}"`;
+            if (typeof row?.legacy !== "boolean") res.errors.push(`${label}: missing/non-boolean legacy`);
+            else if (row.legacy !== expected) res.errors.push(`${label}: legacy=${row.legacy}, ruleset ${ruleset} expects ${expected}`);
+        });
+    }
+    return res;
+}
+
 export function validateStructure(ruleset: Ruleset, data: RulesetData): ValidationResult {
     const res: ValidationResult = { errors: [], warnings: [] };
     const nonEmpty = (kind: string, name: unknown, id: unknown) => {

@@ -20,6 +20,8 @@ Every parser module converts markdown from `Docs/` into the on-disk JSON shapes 
 7. Counts must satisfy `COUNT_GATES` in `config.ts`. Run your module with
    `npx tsx <yourtest>.ts` from `scripts/srd-gen/` and print counts + 1-2 sample entities to verify.
 8. Test scripts go in `scripts/srd-gen/selftest/` (they are not part of the pipeline).
+9. `legacy`: never emit — the central stamp pass (`emit/stampLegacy.ts`) owns it
+   (2014 → `true`, 2024 → `false`) and `validateLegacy` hard-gates it before write.
 
 ## Ruleset conventions
 

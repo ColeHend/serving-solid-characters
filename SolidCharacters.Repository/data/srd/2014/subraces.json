@@ -28,7 +28,8 @@
    "alignment": "",
    "age": "",
    "sizeDescription": ""
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f0066dd5-405a-4200-83c5-de318c0ce540",
@@ -87,7 +88,8 @@
    "alignment": "",
    "age": "",
    "sizeDescription": ""
-  }
+  },
+  "legacy": true
  },
  {
   "id": "894705bb-587e-40cb-85ea-0cc01f8faaf4",
@@ -118,7 +120,8 @@
    "alignment": "",
    "age": "",
    "sizeDescription": ""
-  }
+  },
+  "legacy": true
  },
  {
   "id": "be15b450-a00b-4daa-ba63-460f23952e43",
@@ -185,6 +188,7 @@
    "alignment": "",
    "age": "",
    "sizeDescription": ""
-  }
+  },
+  "legacy": true
  }
 ]

@@ -8,7 +8,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "41f80e56-f56d-4897-9591-e8a772c17b2b",
@@ -19,7 +20,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "06332ce2-4edd-421f-8243-014964d09d81",
@@ -30,7 +32,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "4eba371a-3d98-50d7-8545-75446bd84e46",
@@ -41,7 +44,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "fe37b3bc-85c7-5894-a136-ef5b9d1eeb0e",
@@ -52,7 +56,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "1dcb8948-f341-58e4-987a-bd9227e3a112",
@@ -63,7 +68,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f0b7243d-3e32-5fbb-812b-ba87c1bdd599",
@@ -74,7 +80,8 @@
   "cost": "4 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "4c4cfe49-32bc-49c6-930f-b76929cba4e1",
@@ -85,7 +92,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "829a5bba-e237-435e-bad4-75cebce1e23b",
@@ -96,7 +104,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "ead4b75b-77be-4b8a-8273-4228e39d697d",
@@ -107,7 +116,8 @@
   "cost": "20 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "27aecfb7-9e6f-4698-8bdf-1b48cb95c6eb",
@@ -118,7 +128,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "79d79ead-3921-46d3-bdbc-6e0fb04cf325",
@@ -129,7 +140,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "e9b50e49-0f12-4c1c-81a0-dc8540dee019",
@@ -140,7 +152,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "ae680eb6-e2fc-46a1-b58f-9eedd953e4d9",
@@ -151,7 +164,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "3ad3fa6f-b96a-49b0-8da8-92d8834b6f38",
@@ -162,7 +176,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "bd526a7d-22df-464f-9095-6b4cee0f838a",
@@ -173,7 +188,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5d05dd6f-d2a3-4e75-8174-aa0a4ac1f89a",
@@ -184,7 +200,8 @@
   "cost": "4 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "07a4f6ff-5430-43b6-8cdd-918b4bdb287f",
@@ -195,7 +212,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "6eead42e-2636-4d61-91c2-4d3de7334581",
@@ -206,7 +224,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "4c01e354-82ec-427b-93d3-333f519f6492",
@@ -217,7 +236,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "b91446e0-d022-45be-b32e-4eff346ec92a",
@@ -228,7 +248,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "d9ddbf4a-7d9b-4d17-ab3a-6c93d1c18ec4",
@@ -239,7 +260,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9969f472-ed64-438b-ac78-231c50f8473d",
@@ -250,7 +272,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "6a3e18d8-2721-4fe6-a7b4-610b5acbb007",
@@ -261,7 +284,8 @@
   "cost": "5 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "e87efb28-0730-5ac9-95f8-a952143c9cb7",
@@ -272,7 +296,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "465aa830-c4bd-46b0-8a56-e213288317a4",
@@ -283,7 +308,8 @@
   "cost": "1 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f18760b5-d51c-4b10-829f-26855f8a150f",
@@ -294,7 +320,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9e6381ce-d045-499a-89ab-61a634838915",
@@ -305,7 +332,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "30449328-fd74-413f-bc98-9aaf1b5cf696",
@@ -316,7 +344,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "dd62349f-d778-4aea-88bb-f2eb94d607b6",
@@ -327,7 +356,8 @@
   "cost": "1 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "bbbdd42f-bf9f-41b8-8642-002304e30b56",
@@ -338,7 +368,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "fe916948-5c07-42f2-b307-182b4b451fee",
@@ -349,7 +380,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "298bac9f-b1db-4d5a-aee5-17a4080371c6",
@@ -360,7 +392,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "dc907ddd-d065-4288-a4e0-60e7e2513ed5",
@@ -371,7 +404,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "948f20b2-ba5b-474f-8165-711089611945",
@@ -382,7 +416,8 @@
   "cost": "15 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "0c7f1350-cb9a-4647-87e4-a61bbd911625",
@@ -393,7 +428,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "7b260b26-2fc7-474a-86f0-dab8c56e1a72",
@@ -404,7 +440,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "db8a5891-c492-4f30-8019-f35352c1071a",
@@ -415,7 +452,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "db15bb74-6951-4d44-9c2d-0e6fb8948dfc",
@@ -426,7 +464,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5d3cff3a-789d-4eaa-913d-1d8deed3215e",
@@ -437,7 +476,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "6cd70c51-827e-476c-823e-151fa6332fd2",
@@ -448,7 +488,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "3c20117f-73bd-4a92-9e9f-89cbbbcedeb9",
@@ -459,7 +500,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "c9f20eb2-a6d9-4de3-bc38-404372c6a161",
@@ -470,7 +512,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "b9b27ac3-9ce0-417c-a359-e28e802682d7",
@@ -481,7 +524,8 @@
   "cost": "2 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "90264981-93fd-4d5d-92c3-bbc19c03c732",
@@ -492,7 +536,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "a23607de-f44c-4c48-a6ce-d4728e4adb05",
@@ -503,7 +548,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "209bf98f-1145-4599-9c2d-bc4316a3c607",
@@ -514,7 +560,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "b13174c8-55f8-4fd5-9314-c42f639a75c4",
@@ -525,7 +572,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "8d0a19a8-92c4-4598-bc09-4664ba5065ec",
@@ -536,7 +584,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "2627553c-69c9-4ea9-b0ed-f7ab9f8c96ee",
@@ -547,7 +596,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9d243657-27c1-49db-a424-00fd28bbadfe",
@@ -558,7 +608,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "2cad104a-e797-458f-8130-723adf600341",
@@ -569,7 +620,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "bc78fe49-49df-4a56-ab8b-2749296a26d8",
@@ -580,7 +632,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "1bc81619-1620-482e-b530-9e146ad0c5ab",
@@ -591,7 +644,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "96de3d94-c850-4d4a-a9b4-4350c469e9e4",
@@ -602,7 +656,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "75964757-fbbe-45f1-a6e9-677feafd46ba",
@@ -613,7 +668,8 @@
   "cost": "2 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f79add2e-cd97-489c-82df-7c07b53ff113",
@@ -624,7 +680,8 @@
   "cost": "2 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "8efcc133-e71a-4382-9696-3eda36bea63e",
@@ -635,7 +692,8 @@
   "cost": "1 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "1ae459de-160e-4d4a-9bfc-09e7d2000e4e",
@@ -646,7 +704,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "ec47b2be-0887-4db8-a5aa-924a43f728c5",
@@ -657,7 +716,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "944e264b-8f88-405d-9e12-2bdfb84147e3",
@@ -668,7 +728,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "d004feaa-934c-4dc0-9d5a-d28dfe38bdcd",
@@ -679,7 +740,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "185dd9c3-3c63-49ca-8826-d62fd37736af",
@@ -690,7 +752,8 @@
   "cost": "100 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "6adea4d6-5c27-4a5b-bd4d-b148599ebe8f",
@@ -701,7 +764,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "870057bb-3a9c-4cbc-8dc5-8902a11ac389",
@@ -712,7 +776,8 @@
   "cost": "2 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "dedd0a2e-ec9c-463c-a792-3a792f845d0d",
@@ -723,7 +788,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "7676909e-c015-4171-ac54-815360fae866",
@@ -734,7 +800,8 @@
   "cost": "1 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f865ae0a-6d6e-4861-b817-d160e7578485",
@@ -745,7 +812,8 @@
   "cost": "2 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "27425751-95a6-4abe-a831-47affca842c2",
@@ -756,7 +824,8 @@
   "cost": "1 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9ed4cdc0-31ed-4512-9f2a-7270d7b7fa32",
@@ -767,7 +836,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "d2a379b3-4663-4bde-b7c0-a18ac2121b21",
@@ -778,7 +848,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "09dd1718-1cf6-4651-bc15-f2d578102615",
@@ -789,7 +860,8 @@
   "cost": "5 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "80dade13-0aa1-4278-8209-584548d40fbe",
@@ -800,7 +872,8 @@
   "cost": "100 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5e9483f2-43e5-419d-ac53-a34d8e28ae39",
@@ -811,7 +884,8 @@
   "cost": "5 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "50bc0c5f-0b66-4094-97d8-713687a66232",
@@ -822,7 +896,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "eb199434-a3c8-4ec5-8219-44400481abe2",
@@ -833,7 +908,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "3dd64bb4-310d-4e72-8729-973ca473b74d",
@@ -844,7 +920,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "8758f4e9-ce37-48f5-a51a-162f66442389",
@@ -855,7 +932,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5a31ce27-7df6-4ab7-9dc3-f8088156fbca",
@@ -866,7 +944,8 @@
   "cost": "4 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "247fe394-8a60-4440-b68c-a81d2c5e68ce",
@@ -877,7 +956,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f327d74a-3d9e-4964-afbc-65886e5667c9",
@@ -888,7 +968,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "af538ee4-8d51-4971-b916-b4cb4f3cd63b",
@@ -899,7 +980,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "6882af75-6942-448d-a7cf-9015ef34a437",
@@ -910,7 +992,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "1d123b99-9b89-4605-9236-ee4c785ea88d",
@@ -921,7 +1004,8 @@
   "cost": "1 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "84594e5a-6a08-49bc-ab4b-eae53886bb22",
@@ -932,7 +1016,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "4b8e579a-8b8e-43b8-a150-b1b4aa65c2aa",
@@ -943,7 +1028,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "178006b3-1cef-445e-b8ef-43906b4b72a6",
@@ -954,7 +1040,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "a7541d63-6180-45b2-9f30-cbfacabc5370",
@@ -965,7 +1052,8 @@
   "cost": "5 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "36ef57f4-f719-4677-a5b0-4db76c5387c0",
@@ -976,7 +1064,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f70e037d-e01a-40b7-b606-834c794dcd9a",
@@ -987,7 +1076,8 @@
   "cost": "2 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f579c225-7239-4c55-8838-ba1a752ca7af",
@@ -998,7 +1088,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f80d000e-2d29-5922-b0bc-0b054ba48948",
@@ -1009,7 +1100,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "89c3d170-f0fb-4b87-9f26-b78285bc4d63",
@@ -1020,7 +1112,8 @@
   "cost": "1000 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "b57d2c51-ec0a-4d2f-8e2a-5c11404c74ef",
@@ -1031,7 +1124,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "c6d98760-3c1b-4c28-8edd-8c3a7e09277b",
@@ -1042,7 +1136,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "4a5368d8-6ac2-4966-88ad-4d3da5616ade",
@@ -1053,7 +1148,8 @@
   "cost": "1 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "b251b553-978c-462e-b1d3-225cda534d4f",
@@ -1064,7 +1160,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "195072a9-5f0e-4bde-a909-2948abf4adbd",
@@ -1075,7 +1172,8 @@
   "cost": "2 sp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "c1882559-6fe4-44a8-b16c-7c01634df399",
@@ -1086,7 +1184,8 @@
   "cost": "1 cp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "16ce6ac6-9c3c-4210-91c0-b6c34a542400",
@@ -1097,7 +1196,8 @@
   "cost": "16 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "ce16d417-f2ab-46fb-ae63-9189f6d97c11",
@@ -1108,7 +1208,8 @@
   "cost": "39 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "2f756f5e-2c97-4284-9a8c-3e413283ee7f",
@@ -1119,7 +1220,8 @@
   "cost": "12 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "d7f79e16-9c04-49ec-a233-1680700f26f9",
@@ -1130,7 +1232,8 @@
   "cost": "40 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "1217fe97-f13c-4d3e-9173-505f55f38566",
@@ -1141,7 +1244,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "0ec62d81-8004-425c-a611-a16c94fb1ec9",
@@ -1152,7 +1256,8 @@
   "cost": "19 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "95a61fc4-4877-4aa1-8a49-5c81a5ea56ec",
@@ -1163,7 +1268,8 @@
   "cost": "40 gp",
   "properties": {
    "category": "AdventuringGear"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "e861d85d-0aaa-452c-a692-ffca61cb6d05",
@@ -1174,7 +1280,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "fdb3ff71-ee63-4b48-8198-ad018298fe13",
@@ -1185,7 +1292,8 @@
   "cost": "20 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5975bebf-7e0c-45d8-8f9e-940e7f6cc142",
@@ -1196,7 +1304,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "ee87b825-e2c7-4a4f-acef-72c8071fe9c2",
@@ -1207,7 +1316,8 @@
   "cost": "8 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "ff0c01e6-9e0c-41a5-a7b9-97419d250e4b",
@@ -1218,7 +1328,8 @@
   "cost": "15 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "437dd0ed-ca88-4d4b-a78b-388dde955507",
@@ -1229,7 +1340,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "fcc7589f-02ef-4a56-904d-ed411f111daf",
@@ -1240,7 +1352,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "65df3b52-fe50-47f4-a471-d240bfac967f",
@@ -1251,7 +1364,8 @@
   "cost": "30 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "0555f316-4057-488d-a820-917df21b3ccc",
@@ -1262,7 +1376,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "1cf3c978-8c98-43fd-952c-7c328c9af3fc",
@@ -1273,7 +1388,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9d8a5003-1ac4-499a-8472-0f98aa95614c",
@@ -1284,7 +1400,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "494d40ff-9742-4738-822f-f43bf8ee5484",
@@ -1295,7 +1412,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "df4290fe-c7e5-4628-b03b-a80a91e5f95f",
@@ -1306,7 +1424,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "cb71ce55-724f-49ed-99ea-a7a7484e3d80",
@@ -1317,7 +1436,8 @@
   "cost": "20 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5ec21d29-8e57-4c51-b1d3-0eb5fce96127",
@@ -1328,7 +1448,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "97a6f00c-fa77-4a4a-9e3d-3095c5adc7c5",
@@ -1339,7 +1460,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "ed2aace2-87f0-4e93-b484-6b19fd679eac",
@@ -1350,7 +1472,8 @@
   "cost": "1 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "8aeec613-30c3-4aa8-b34a-37769eff4ae4",
@@ -1361,7 +1484,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "90349150-32fc-400f-bdae-4083faa2769a",
@@ -1372,7 +1496,8 @@
   "cost": "15 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "e859dfa7-c760-4636-8fb0-080092244514",
@@ -1383,7 +1508,8 @@
   "cost": "1 sp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "4edab801-ea3d-49eb-a2e8-5eaead2c95fb",
@@ -1394,7 +1520,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "35e58850-fa8c-4553-93ba-eda7bc0ce288",
@@ -1405,7 +1532,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "7ace0413-7a39-4f59-bf55-7ce01a23198a",
@@ -1416,7 +1544,8 @@
   "cost": "30 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "83a77683-3cba-4852-8253-de2084c8f2cd",
@@ -1427,7 +1556,8 @@
   "cost": "6 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9aaace9c-d91a-42cf-a49c-d69539d5e5a7",
@@ -1438,7 +1568,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "2e77bc15-3cac-4e17-bd64-741258942542",
@@ -1449,7 +1580,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "1f880ce4-5e21-4ead-a5bc-1bc8f6664bd0",
@@ -1460,7 +1592,8 @@
   "cost": "35 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "adb456ee-77bb-4c53-9893-9c3b46e130fe",
@@ -1471,7 +1604,8 @@
   "cost": "30 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "112e6d60-26e7-4c93-b493-40e35fe3134d",
@@ -1482,7 +1616,8 @@
   "cost": "3 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "56f0cdd8-c41b-4ca9-84d2-e16a515531d6",
@@ -1493,7 +1628,8 @@
   "cost": "12 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9ef16dfd-7b48-4de2-a869-552923edde4a",
@@ -1504,7 +1640,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "80238a60-039e-40bd-858d-971bc3704ed7",
@@ -1515,7 +1652,8 @@
   "cost": "30 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "6e12576c-87d8-400a-8064-439ddf92f0a8",
@@ -1526,7 +1664,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9166b01d-be6e-4403-ac64-c3e136cdffff",
@@ -1537,7 +1676,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "29a84e37-e4b2-425d-a6b2-c797e448abda",
@@ -1548,7 +1688,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "Tools"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "00373e92-e5bc-4e32-867b-97632095de8f",
@@ -1559,7 +1700,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5b631863-4495-5825-904a-c578fdeb44c3",
@@ -1570,7 +1712,8 @@
   "cost": "8 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5a697979-b763-4e0d-bf92-9e4ca1924da6",
@@ -1581,7 +1724,8 @@
   "cost": "200 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "9aa646ca-95c7-4415-8551-6853a3c2c33b",
@@ -1592,7 +1736,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "d2143059-2739-4e71-a641-4829eed2436f",
@@ -1603,7 +1748,8 @@
   "cost": "75 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "22093201-afbe-40b2-9a0f-82cda5d06d8f",
@@ -1614,7 +1760,8 @@
   "cost": "25 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "1bd71d07-b091-4728-9964-38395eee65f1",
@@ -1625,7 +1772,8 @@
   "cost": "30 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "5edffbd4-996b-4fbf-8ba4-1f8cf7f4669b",
@@ -1636,7 +1784,8 @@
   "cost": "400 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "3cebdd81-ccee-4fab-98e6-dcabe0a167bc",
@@ -1647,7 +1796,8 @@
   "cost": "2 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "bac3c3b0-cb32-4c0f-9b8b-9dac5f96870f",
@@ -1658,7 +1808,8 @@
   "cost": "100 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "67fc682b-d2e0-489c-8dbb-2467ab8e6f4e",
@@ -1669,7 +1820,8 @@
   "cost": "15 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "d18a15bf-a37b-43ce-8a9e-254e305ba1ed",
@@ -1680,7 +1832,8 @@
   "cost": "250 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "22c7d1fc-b594-5455-ae8f-d672239623a9",
@@ -1691,7 +1844,8 @@
   "cost": "5 cp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "7ce25740-6749-54c5-86da-fc51c6ae1de2",
@@ -1702,7 +1856,8 @@
   "cost": "60 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "0d6c7f25-2363-59c0-95e3-a11e4867f530",
@@ -1713,7 +1868,8 @@
   "cost": "20 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "bf69f08d-c507-58ad-92e7-2cfd3126c45a",
@@ -1724,7 +1880,8 @@
   "cost": "5 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "37530540-9101-4a3f-93c3-b80dcdd44b0c",
@@ -1735,7 +1892,8 @@
   "cost": "10 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "4253e74f-6cc9-4c01-97ab-b65619f05081",
@@ -1746,7 +1904,8 @@
   "cost": "4 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "dd921840-ecc0-4d35-b17f-bedc052bc679",
@@ -1757,7 +1916,8 @@
   "cost": "20 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f23b08c2-09af-57e4-9082-3100604905a0",
@@ -1768,7 +1928,8 @@
   "cost": "5 sp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "51297724-0c4a-4735-b0e0-359cafdc2394",
@@ -1779,7 +1940,8 @@
   "cost": "35 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "144852dd-d7ee-4e39-8251-92f47a001753",
@@ -1790,7 +1952,8 @@
   "cost": "30000 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "f7dc915d-c840-44f0-8dd5-6c30892edcb0",
@@ -1801,7 +1964,8 @@
   "cost": "3000 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "56a3e75d-2cc9-41cd-a508-f164da5a5261",
@@ -1812,7 +1976,8 @@
   "cost": "10000 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "14a03095-b957-43e5-bb56-fb03e0fbe49f",
@@ -1823,7 +1988,8 @@
   "cost": "50 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "a8aa3e89-2d1a-4e50-ab07-3347d726f40a",
@@ -1834,7 +2000,8 @@
   "cost": "10000 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  },
  {
   "id": "db44b0f4-b0d2-4ee7-91a8-b214ac1bc4df",
@@ -1845,6 +2012,7 @@
   "cost": "25000 gp",
   "properties": {
    "category": "MountsAndVehicles"
-  }
+  },
+  "legacy": true
  }
 ]

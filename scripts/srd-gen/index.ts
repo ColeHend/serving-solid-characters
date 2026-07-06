@@ -16,7 +16,8 @@ import { buildResolver } from "./mads/resolver.ts";
 import { applyMads } from "./mads/apply.ts";
 import { coverageGaps, choiceWordingLint } from "./mads/coverage.ts";
 import { filePlan, writeFiles, cleanupBackups } from "./emit/writers.ts";
-import { validateCounts, validateMadsInData, validateStructure } from "./validate/validate.ts";
+import { stampLegacy } from "./emit/stampLegacy.ts";
+import { validateCounts, validateLegacy, validateMadsInData, validateStructure } from "./validate/validate.ts";
 
 import { parseClasses2014 } from "./parsers/2014/classes.ts";
 import { parseRaces2014 } from "./parsers/2014/races.ts";
@@ -93,6 +94,7 @@ for (const ruleset of rulesets) {
     const outDir = ruleset === "2014" ? OUT_2014 : OUT_2024;
     console.log(`\n=== ${ruleset} ===`);
     const data = collect(ruleset);
+    stampLegacy(ruleset, data); // filePlan shares these object references, so this reaches the written files
 
     const store = new IdStore(ruleset, outDir);
     assignIds(store, data);
@@ -107,7 +109,7 @@ for (const ruleset of rulesets) {
     const plan = filePlan(ruleset, data);
     const errors: string[] = [];
     const warnings: string[] = [];
-    for (const r of [validateCounts(ruleset, plan), validateStructure(ruleset, data), validateMadsInData(data)]) {
+    for (const r of [validateCounts(ruleset, plan), validateStructure(ruleset, data), validateMadsInData(data), validateLegacy(ruleset, data)]) {
         errors.push(...r.errors);
         warnings.push(...r.warnings);
     }
