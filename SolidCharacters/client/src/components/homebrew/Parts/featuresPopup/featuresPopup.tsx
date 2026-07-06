@@ -20,6 +20,9 @@ import { ResistanceFeature } from "./parts/resistanceFeature/resistanceFeature";
 import { SavingThrow } from "./parts/savingThrow/savingThrow";
 import { StatFeature } from "./parts/statFeature/StatFeature";
 import { SpeedFeature } from "./parts/speedFeature/speedFeature";
+import { MovementFeature } from "./parts/movementFeature/movementFeature";
+import { SensesFeature } from "./parts/sensesFeature/sensesFeature";
+import { HitPointsFeature } from "./parts/hitPointsFeature/hitPointsFeature";
 import { AllProfsFeature } from "./parts/allProfsFeature/allProfsFeature";
 import { FeatFeature } from "./parts/featFeature/featFeature";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
@@ -205,6 +208,9 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         'Advantage',
         'Attacks',
         'Uses',
+        'Movement',
+        'Senses',
+        'HitPoints',
     ]
 
     const getMadType = (index: number) => {
@@ -663,15 +669,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     />
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddSpeed" || getMaDCommand(i())?.() === "RemoveSpeed"}>
-                                                    <SpeedFeature 
-                                                        toggleValue={(speed) => {
-                                                            const old = getMadValue(i())?.();
-                                                            
-                                                            if (old?.["speed"] === speed.toString()) {
-                                                                setMadFeature("value", i(), {"speed": ""})
-                                                            } else {
-                                                                setMadFeature("value", i(), {"speed": speed.toString()})
-                                                            }
+                                                    <SpeedFeature
+                                                        toggleValue={(speed, mode) => {
+                                                            const next: Record<string, string> = {"speed": speed.toString()};
+                                                            if (mode === "set") next["mode"] = "set";
+                                                            setMadFeature("value", i(), next);
                                                             setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             setCard(false);
                                                         }}
@@ -750,6 +752,40 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                             setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             // Uses describes its owning feature (uses/recharge), not a sheet change.
                                                             setMadFeature("type", i(), MadType.Info);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddMovement" || getMaDCommand(i())?.() === "RemoveMovement"}>
+                                                    <MovementFeature
+                                                        toggleValue={(movementType, speed) => {
+                                                            const next: Record<string, string> = {"movementType": movementType};
+                                                            if (speed !== undefined) next["speed"] = speed.toString();
+                                                            setMadFeature("value", i(), next);
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddSenses" || getMaDCommand(i())?.() === "RemoveSenses"}>
+                                                    <SensesFeature
+                                                        toggleValue={(sense, range) => {
+                                                            setMadFeature("value", i(), {"sense": sense, "range": range.toString()});
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddHitPoints" || getMaDCommand(i())?.() === "RemoveHitPoints"}>
+                                                    <HitPointsFeature
+                                                        toggleValue={(amount, perLevel) => {
+                                                            const next: Record<string, string> = {"amount": amount.toString()};
+                                                            if (perLevel) next["perLevel"] = "true";
+                                                            setMadFeature("value", i(), next);
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             setCard(false);
                                                         }}
                                                         getValue={getMadValue?.(i()) ?? (() => undefined)}

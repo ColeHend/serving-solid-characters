@@ -13,8 +13,11 @@ import type { MadMap } from "../spec.ts";
  *  - +1/+2/+3 armor & shields, Bracers of Defense, Dwarven Plate, Glamoured Studded Leather — flat AC bonus.
  *  - Armor of Resistance / Ring of Resistance / Potion of Resistance / Dragon Scale Mail — resisted damage
  *    type varies by table/choice; Armor of Invulnerability resists "nonmagical" damage (not a damage type).
- *  - Boots of Striding and Springing (walking speed becomes 30), Ring of Swimming (swim speed 40), Boots of
- *    Speed (double speed), Winged/Flying boots — Speed only applies a delta, not a set/flight, so skipped.
+ *  - Boots of Speed (double speed — a multiplier, and click-heel activated) — not representable.
+ *  - Wings of Flying (command-word, 1 hour, 1d12h cooldown), Potion of Climbing / Potion of Flying
+ *    (1-hour consumables), Broom of Flying / Carpet of Flying (the OBJECT flies, not your speed),
+ *    Cloak of the Bat (fly only in dim light gripping the cloak), Ring of Elemental Command (benefits
+ *    vary by ring element) — activated/temporary/variant movement, skipped.
  *  - Stone of Good Luck / Luck Blade / Robe of Stars — flat numeric bonus to checks/saves, no category.
  *  - Ioun Stone — one item covering many variants (some set ability scores), so no single command fits.
  *  - Periapt of Health (disease immunity), Ring of Free Action (condition immunity) — not damage-type immunities.
@@ -59,9 +62,37 @@ export const map: MadMap = {
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", condition: "Charisma (Persuasion) checks made to interact with dwarves" } },
     ],
 
+    // ---- Movement modes (permanent while worn) ----
+    // "your walking speed becomes 30 feet" — the "unless your walking speed is higher" carve-out
+    // isn't representable; encoded as a plain set.
+    "Boots of Striding and Springing": [
+        { type: "Add", category: "Speed", value: { speed: "30", mode: "set" } },
+    ],
+    "Ring of Swimming": [
+        { type: "Add", category: "Movement", value: { movementType: "swim", speed: "40" } },
+    ],
+    "Cloak of the Manta Ray": [
+        { type: "Add", category: "Movement", value: { movementType: "swim", speed: "60" } },
+    ],
+    "Slippers of Spider Climbing": [
+        { type: "Add", category: "Movement", value: { movementType: "climb" } },
+    ],
+    // "While you wear these boots, you have a flying speed equal to your walking speed."
+    // (The 4-hours-of-flight budget isn't representable.)
+    "Winged Boots": [
+        { type: "Add", category: "Movement", value: { movementType: "fly" } },
+    ],
+
+    // ---- Senses (permanent while worn) ----
+    "Goggles of Night": [
+        { type: "Add", category: "Senses", value: { sense: "darkvision", range: "60" } },
+    ],
+
     // ---- Damage resistances (fixed type stated in the text) ----
+    // (also "a climbing speed equal to your walking speed" while wearing the cloak)
     "Cloak of Arachnida": [
         { type: "Add", category: "Resistances", value: { damageType: "Poison" } },
+        { type: "Add", category: "Movement", value: { movementType: "climb" } },
     ],
     "Boots of the Winterlands": [
         { type: "Add", category: "Resistances", value: { damageType: "Cold" } },
@@ -104,8 +135,10 @@ export const map: MadMap = {
     "Boots of Elvenkind": [
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", condition: "Dexterity (Stealth) checks that rely on moving silently" } },
     ],
+    // (also "You have darkvision out to a range of 120 feet"; the see-invisible/ethereal part has no category)
     "Robe of Eyes": [
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", condition: "Wisdom (Perception) checks that rely on sight" } },
+        { type: "Add", category: "Senses", value: { sense: "darkvision", range: "120" } },
     ],
 
     // "While wearing this cloak, you have advantage on Dexterity (Stealth) checks."

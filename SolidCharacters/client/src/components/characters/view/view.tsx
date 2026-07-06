@@ -7,7 +7,7 @@ import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, Chip } from "coles-solid-library";
-import { AdvantageRollType, Character, RollAdvantage } from "../../../models/character.model";
+import { AdvantageRollType, Character, MovementSpeedKey, MovementType, RollAdvantage } from "../../../models/character.model";
 import { Spell } from "../../../models/generated";
 import { srdItem } from "../../../models/data/generated";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
@@ -16,6 +16,7 @@ import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items"
 import { characterManager, Clone } from "../../../shared";
 import { collectMadFeatures, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey } from "../../../shared/customHooks/mads/useMadCharacters";
 import { featureUsage, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
+import { movementTypeName } from "../../../shared/customHooks/mads/commands/useMovementFeature";
 import UsesTracker from "./usesTracker/usesTracker";
 import { SpellTable } from "./SpellTable/SpellTable";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
@@ -94,6 +95,29 @@ const CharacterView: Component = () => {
   const advantagesFor = (rollType: AdvantageRollType) => rollAdvantages().filter(a => a.rollType === rollType);
   const advLabel = (adv: RollAdvantage) =>
     `${adv.mode === "advantage" ? "ADV" : "DIS"}${adv.stat ? ` · ${adv.stat.toUpperCase()}` : ""}${adv.condition ? ` · ${adv.condition}` : ""}`;
+
+  const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+  // Non-walking movement modes as "Fly 60 ft" chips; a mode without its own speed moves at the walking Speed.
+  const movementChips = createMemo(() => {
+    const c = displayCharacter();
+    if (!c) return [];
+    return (c.movementTypes ?? [])
+      .filter(t => t !== MovementType.Walk)
+      .map(t => {
+        const name = movementTypeName(t);
+        const speed = c.movementSpeeds?.[name as MovementSpeedKey] ?? c.Speed;
+        return `${capitalize(name)} ${speed} ft`;
+      });
+  });
+
+  // Special senses as "Darkvision 60 ft" chips.
+  const senseChips = createMemo(() => {
+    const senses = displayCharacter()?.senses ?? {};
+    return Object.entries(senses)
+      .filter(([, range]) => typeof range === "number" && range > 0)
+      .map(([sense, range]) => `${capitalize(sense)} ${range} ft`);
+  });
 
   // Every feature source, mads applied: class levels, race, and top-level features
   // (mads-granted picks like invocations land on the top-level array).
@@ -270,12 +294,23 @@ const CharacterView: Component = () => {
                   <Input transparent value={displayCharacter()?.Speed ? `${displayCharacter()?.Speed}` : ""} />
                   <hr />
                   <span>Speed</span>
+                  <Show when={movementChips().length}>
+                    <div class={`${styles.advChips}`}>
+                      <For each={movementChips()}>{(label) => <Chip value={label} />}</For>
+                    </div>
+                  </Show>
                 </div>
               </div>
+              <Show when={senseChips().length}>
+                <div class={`${styles.advChips}`}>
+                  <For each={senseChips()}>{(label) => <Chip value={label} />}</For>
+                </div>
+              </Show>
               <div class={`${styles.baseCharInfoBox}  ${styles.infoBoxRow}`}>
                 <div class={`${styles.hpMaxTemp}`}>
                   <div>
-                    <span>{currentCharacter()?.health?.current} / {currentCharacter()?.health?.max}</span>
+                    {/* current HP is the stored value; the max shows HitPoints commands applied */}
+                    <span>{currentCharacter()?.health?.current} / {displayCharacter()?.health?.max}</span>
                     <hr />
                     <span>HP / MaxHP</span>
                   </div>

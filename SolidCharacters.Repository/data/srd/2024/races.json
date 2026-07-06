@@ -45,7 +45,21 @@
     "details": {
      "id": "4729f95f-e3cd-584d-8377-ab59902b2f10",
      "name": "Darkvision",
-     "description": "You have Darkvision with a range of 60 feet."
+     "description": "You have Darkvision with a range of 60 feet.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -125,7 +139,21 @@
     "details": {
      "id": "7e1bbbc4-5220-5b8a-95dc-66dacf7c235d",
      "name": "Darkvision",
-     "description": "You have Darkvision with a range of 120 feet."
+     "description": "You have Darkvision with a range of 120 feet.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "120"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -167,7 +195,21 @@
     "details": {
      "id": "4e93a0fe-2d5e-5d24-96f9-63bee4aaeeb7",
      "name": "Dwarven Toughness",
-     "description": "Your Hit Point maximum increases by 1, and it increases by 1 again whenever you gain a level."
+     "description": "Your Hit Point maximum increases by 1, and it increases by 1 again whenever you gain a level.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddHitPoints",
+        "value": {
+         "amount": "1",
+         "perLevel": "true"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -235,7 +277,21 @@
     "details": {
      "id": "6ae83e8c-16d6-5198-8757-eeccf2aed272",
      "name": "Darkvision",
-     "description": "You have Darkvision with a range of 60 feet."
+     "description": "You have Darkvision with a range of 60 feet.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -342,7 +398,21 @@
     "details": {
      "id": "d98a104b-7a0a-53db-bd87-cfc94b7070e4",
      "name": "Darkvision",
-     "description": "You have Darkvision with a range of 60 feet."
+     "description": "You have Darkvision with a range of 60 feet.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -824,7 +894,21 @@
     "details": {
      "id": "ee41bc19-8e36-52dc-8aa6-54632d3e4d3e",
      "name": "Darkvision",
-     "description": "You have Darkvision with a range of 120 feet."
+     "description": "You have Darkvision with a range of 120 feet.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "120"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -904,7 +988,21 @@
     "details": {
      "id": "94c925ca-263a-5ada-bd96-6e8d5f67bccf",
      "name": "Darkvision",
-     "description": "You have Darkvision with a range of 60 feet."
+     "description": "You have Darkvision with a range of 60 feet.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },

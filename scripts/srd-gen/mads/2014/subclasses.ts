@@ -70,11 +70,18 @@ export const map: MadMap = {
         { type: "Add", category: "Languages", value: { name: "Draconic" } },
     ],
     "Draconic/Draconic Resilience": [
-        // unarmored AC = 13 + Dex modifier (the +1 HP/level increase has no category — skipped)
+        // unarmored AC = 13 + Dex modifier, and "your hit point maximum increases by 1 and increases by
+        // 1 again whenever you gain a level in this class" (per SORCERER level — the perLevel command
+        // scales by character level, exact for single-class sorcerers).
         { type: "Add", category: "ArmorClass", value: { bonus: "13", stats: "dex" } },
+        { type: "Add", category: "HitPoints", value: { amount: "1", perLevel: "true" } },
     ],
-    // skipped (Draconic): Elemental Affinity (damage + situational resistance), Dragon Wings
-    //   (flying speed = current speed — Speed models walking-speed deltas only), Draconic Presence
+    // "you gain a flying speed equal to your current speed" — at-will wings (bonus action, last until
+    // dismissed) → a Movement grant; no explicit speed = equal to the walking Speed.
+    "Draconic/Dragon Wings": [
+        { type: "Add", category: "Movement", value: { movementType: "fly" } },
+    ],
+    // skipped (Draconic): Elemental Affinity (damage + situational resistance), Draconic Presence
     //   (once/rest fear/charm aura).
 
     // ----- No-command subclasses -----

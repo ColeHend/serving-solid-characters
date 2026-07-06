@@ -8,7 +8,7 @@ import type { MadMap } from "../spec.ts";
  * (2024 species grant NO ability increases — those live on the background), so none appear here.
  *
  * Deliberately SKIPPED (choice-dependent, PB-scaling, or no catalog category can express them):
- *  - Darkvision, Trance, Halfling Nimbleness / Luck / Naturally Stealthy, Human Resourceful
+ *  - Trance, Halfling Nimbleness / Luck / Naturally Stealthy, Human Resourceful
  *    (Heroic Inspiration) / Versatile (origin feat of choice) — no category.
  *  - Dragonborn Draconic Ancestry / Damage Resistance — the resisted type is CHOICE-dependent
  *    (picked from the Draconic Ancestors table), so no fixed Resistances command can be authored.
@@ -20,9 +20,28 @@ import type { MadMap } from "../spec.ts";
  *  - Goliath Speed (35 ft) — a species Speed lives in the structured `speed` field, not a command.
  *  - PB-SCALING limited uses (Uses needs a fixed `amount`, PB is not a constant): Dragonborn Breath
  *    Weapon, Dwarf Stonecunning, Orc Adrenaline Rush — "a number of times equal to your Proficiency
- *    Bonus". Left uncoded rather than pinned to a wrong fixed count.
+ *    Bonus". Left uncoded rather than pinned to a wrong fixed count. (Stonecunning's Tremorsense is
+ *    also a 10-minute bonus-action effect — temporary, so no Senses command either.)
  */
+
+/** "You have Darkvision with a range of N feet." */
+const darkvision = (range: string) =>
+    ({ type: "Add", category: "Senses", value: { sense: "darkvision", range } } as const);
+
 export const map: MadMap = {
+    // Darkvision — fixed, always-on ranges stated per species.
+    "Dragonborn/Darkvision": [darkvision("60")],
+    "Dwarf/Darkvision": [darkvision("120")],
+    "Elf/Darkvision": [darkvision("60")],
+    "Gnome/Darkvision": [darkvision("60")],
+    "Orc/Darkvision": [darkvision("120")],
+    "Tiefling/Darkvision": [darkvision("60")],
+
+    // Dwarf — "Your Hit Point maximum increases by 1, and it increases by 1 again whenever you gain a level."
+    "Dwarf/Dwarven Toughness": [
+        { type: "Add", category: "HitPoints", value: { amount: "1", perLevel: "true" } },
+    ],
+
     // Dwarf — "You have Resistance to Poison damage. You also have Advantage on saving throws you make
     // to avoid or end the Poisoned condition."
     "Dwarf/Dwarven Resilience": [

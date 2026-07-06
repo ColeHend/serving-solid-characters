@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Character } from "../../../models/character.model";
+import { MovementType } from "../../../models/character.model";
 import type { FeatureDetail, MadFeature as StoredMad } from "../../../models/generated";
 
 // These handler modules resolve data hooks at import time; mock them so the
@@ -292,5 +293,106 @@ describe("collectMadFeatures", () => {
         expect(first.Speed).toBe(40);
         expect(base.attacksPerAction).toBe(1);
         expect(base.Speed).toBe(30);
+    });
+});
+
+describe("AddMovement / RemoveMovement", () => {
+    it("initializes movementTypes on old-shape characters and stores an explicit speed", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "fly", speed: "60" }));
+        expect(c.movementTypes).toContain(MovementType.Fly);
+        expect(c.movementSpeeds?.fly).toBe(60);
+    });
+
+    it("a mode without a speed moves at the walking speed (no movementSpeeds entry)", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "climb" }));
+        expect(c.movementTypes).toContain(MovementType.Climb);
+        expect(c.movementSpeeds?.climb).toBeUndefined();
+    });
+
+    it("dedupes modes and keeps the best explicit speed", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "swim", speed: "40" }));
+        c = addMadFeature(c, mad("AddMovement", { movementType: "swim", speed: "30" }));
+        expect(c.movementTypes.filter(t => t === MovementType.Swim)).toHaveLength(1);
+        expect(c.movementSpeeds?.swim).toBe(40);
+    });
+
+    it("remove drops the mode and its speed; an unknown movementType is a no-op", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "fly", speed: "60" }));
+        c = addMadFeature(c, mad("RemoveMovement", { movementType: "fly" }));
+        expect(c.movementTypes).not.toContain(MovementType.Fly);
+        expect(c.movementSpeeds?.fly).toBeUndefined();
+
+        const untouched = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "teleport" }));
+        expect(untouched.movementTypes ?? []).not.toContain(undefined);
+        expect(untouched.movementSpeeds ?? {}).toEqual({});
+    });
+});
+
+describe("AddSenses / RemoveSenses", () => {
+    it("adds a sense with its range and keeps the longest range on overlapping grants", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddSenses", { sense: "darkvision", range: "60" }));
+        c = addMadFeature(c, mad("AddSenses", { sense: "darkvision", range: "120" }));
+        c = addMadFeature(c, mad("AddSenses", { sense: "darkvision", range: "60" }));
+        expect(c.senses?.darkvision).toBe(120);
+    });
+
+    it("remove deletes the sense; invalid sense or range is a no-op", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddSenses", { sense: "blindsight", range: "30" }));
+        c = addMadFeature(c, mad("RemoveSenses", { sense: "blindsight" }));
+        expect(c.senses?.blindsight).toBeUndefined();
+
+        const invalid = addMadFeature(makeCharacter(), mad("AddSenses", { sense: "x-ray", range: "60" }));
+        expect(invalid.senses ?? {}).toEqual({});
+        const noRange = addMadFeature(makeCharacter(), mad("AddSenses", { sense: "truesight", range: "" }));
+        expect(noRange.senses ?? {}).toEqual({});
+    });
+});
+
+describe("AddHitPoints / RemoveHitPoints", () => {
+    const levels = (n: number) =>
+        Array.from({ length: n }, (_, i) => ({ class: "Fighter", level: i + 1, hitDie: 10, features: [] }));
+
+    it("adds a flat amount to health.max", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddHitPoints", { amount: "5" }));
+        expect(c.health.max).toBe(15);
+    });
+
+    it("perLevel scales by the number of levels, treating a level-less character as level 1", () => {
+        const c5 = addMadFeature(makeCharacter({ levels: levels(5) }), mad("AddHitPoints", { amount: "1", perLevel: "true" }));
+        expect(c5.health.max).toBe(15);
+
+        const c0 = addMadFeature(makeCharacter(), mad("AddHitPoints", { amount: "1", perLevel: "true" }));
+        expect(c0.health.max).toBe(11);
+    });
+
+    it("remove subtracts (per level too) and floors max at 0; a bad amount is a no-op", () => {
+        const c = addMadFeature(makeCharacter({ levels: levels(3) }), mad("RemoveHitPoints", { amount: "2", perLevel: "true" }));
+        expect(c.health.max).toBe(4);
+
+        const floored = addMadFeature(makeCharacter(), mad("RemoveHitPoints", { amount: "99" }));
+        expect(floored.health.max).toBe(0);
+
+        const bad = addMadFeature(makeCharacter(), mad("AddHitPoints", { amount: "lots" }));
+        expect(bad.health.max).toBe(10);
+    });
+});
+
+describe("AddSpeed modes", () => {
+    it("mode=set sets the walking speed instead of adding", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSpeed", { speed: "30", mode: "set" }));
+        expect(c.Speed).toBe(30);
+    });
+
+    it("default mode still adds", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSpeed", { speed: "10" }));
+        expect(c.Speed).toBe(40);
+    });
+
+    it("RemoveSpeed with mode=set is a no-op; plain remove subtracts", () => {
+        const noop = addMadFeature(makeCharacter(), mad("RemoveSpeed", { speed: "30", mode: "set" }));
+        expect(noop.Speed).toBe(30);
+
+        const c = addMadFeature(makeCharacter(), mad("RemoveSpeed", { speed: "10" }));
+        expect(c.Speed).toBe(20);
     });
 });

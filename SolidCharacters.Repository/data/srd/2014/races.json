@@ -19,7 +19,21 @@
     "details": {
      "id": "3a30ff21-84b3-553a-a52e-de01d3c77fda",
      "name": "Darkvision",
-     "description": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+     "description": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "dfb8c36e-bcd2-40b6-94fb-83d8874ec911"
@@ -114,7 +128,21 @@
     "details": {
      "id": "a29d6382-18ed-58de-bf9d-512c6d558fb8",
      "name": "Darkvision",
-     "description": "Accustomed to twilit forests and the night sky, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+     "description": "Accustomed to twilit forests and the night sky, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "4c0cc62c-d0e6-4ac3-9787-5fa905becc76"
@@ -407,7 +435,21 @@
     "details": {
      "id": "e30924b8-c5c8-5406-bb52-a2fda1c54d8c",
      "name": "Darkvision",
-     "description": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+     "description": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "cdc67898-658e-4f13-baa7-32c036145d89"
@@ -535,7 +577,21 @@
     "details": {
      "id": "c2ca371c-c4c8-5b11-bdc9-ea2183b06f98",
      "name": "Darkvision",
-     "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+     "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "25367630-37c3-431e-93a3-c7a937074fa5"
@@ -607,7 +663,21 @@
     "details": {
      "id": "af357d8a-b011-5821-b7f6-3a7c7c844ea2",
      "name": "Darkvision",
-     "description": "Thanks to your orc blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+     "description": "Thanks to your orc blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "69c07e1a-0e90-47ff-817c-18b84b2c1c37"
@@ -700,7 +770,21 @@
     "details": {
      "id": "b570eb83-6afa-5e0c-9ee0-ab569d92ef94",
      "name": "Darkvision",
-     "description": "Thanks to your infernal heritage, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+     "description": "Thanks to your infernal heritage, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "60"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "b65e39c8-e853-442d-b4ba-b897807022cb"

@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import type { FeatureDetail } from "../../../models/generated";
-import { Character } from "../../../models/character.model";
+import { Character, MovementType } from "../../../models/character.model";
 
 // Same import-time mocks as useMadCharacters.test.ts — keep the suite off IndexedDB/network.
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
@@ -43,6 +43,7 @@ describe("generated SRD data through the mads runtime (2014)", () => {
         expect(applied.attacksPerAction).toBe(2);
         expect(applied.resistances.map(r => r.type)).toContain("Poison");
         expect(applied.rollAdvantages.length).toBeGreaterThan(0);
+        expect(applied.senses?.darkvision).toBe(60); // Dwarf Darkvision trait
     });
 
     it("holds choice-form ASI pending until picked, then applies the pick", () => {
@@ -69,6 +70,7 @@ describe("generated SRD data through the mads runtime (2014)", () => {
 
 describe("generated SRD data through the mads runtime (2024)", () => {
     const magicItems = read("2024/magic_items.json");
+    const classes2024 = read("2024/classes.json");
 
     it("Headband of Intellect sets Intelligence to 19 via mode=set", () => {
         const headband = magicItems.find((m: { name: string }) => m.name === "Headband of Intellect");
@@ -79,5 +81,32 @@ describe("generated SRD data through the mads runtime (2024)", () => {
         // item mads don't auto-apply yet (equip/attune wiring is a follow-up) — apply directly
         const applied = useMadCharacters(structuredClone(c), headband.metadata.mads);
         expect(applied.stats.int).toBe(19);
+    });
+
+    it("Ranger Roving grants +10 speed plus climb and swim modes at the walking speed", () => {
+        const ranger = classes2024.find((c: { name: string }) => c.name === "Ranger");
+        const c = new Character();
+        c.Speed = 30;
+        for (let lvl = 1; lvl <= 6; lvl++) {
+            c.levels.push({ class: "Ranger", level: lvl, hitDie: 10, features: ranger.features[String(lvl)] ?? [] });
+        }
+
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.Speed).toBe(40);
+        expect(applied.movementTypes).toContain(MovementType.Climb);
+        expect(applied.movementTypes).toContain(MovementType.Swim);
+        // no explicit speeds — both modes move at the walking Speed
+        expect(applied.movementSpeeds?.climb).toBeUndefined();
+        expect(applied.movementSpeeds?.swim).toBeUndefined();
+    });
+
+    it("Boots of Striding and Springing set the walking speed to 30", () => {
+        const boots = magicItems.find((m: { name: string }) => m.name === "Boots of Striding and Springing");
+        expect(boots?.metadata?.mads?.length).toBeGreaterThan(0);
+
+        const c = new Character();
+        c.Speed = 25;
+        const applied = useMadCharacters(structuredClone(c), boots.metadata.mads);
+        expect(applied.Speed).toBe(30);
     });
 });

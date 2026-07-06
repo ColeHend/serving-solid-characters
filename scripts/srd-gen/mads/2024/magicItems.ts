@@ -13,8 +13,13 @@ import type { MadMap } from "../spec.ts";
  *  - Ring of Protection, Cloak of Protection, Scarab of Protection (+1 AC), Ring of Warmth (reduces Cold
  *    damage by 2d8, not full Resistance), +N Armor/Shield/Weapon/Ammunition — a flat AC/attack bonus or
  *    partial reduction has no catalog category.
- *  - Potions (Giant Strength, Resistance, Healing, ...) — consumable/temporary, no permanent effect.
+ *  - Potions (Giant Strength, Resistance, Healing, Climbing, ...) — consumable/temporary, no permanent effect.
  *  - Immunity to a spell's damage (Brooch of Shielding's Magic Missile immunity) — not a damage TYPE.
+ *  - Winged Boots (charge-activated 1-hour flight) / Wings of Flying (Magic-action wings) — activated,
+ *    temporary flight; Broom of Flying (the broom flies, not you); Boots of Speed (double speed — a
+ *    multiplier, and click-heel activated) — not representable.
+ *  - Eyes of Minute Seeing — Darkvision within 1 FOOT (a close-inspection gimmick; putting a 1-ft
+ *    sense on the sheet would mislead) — only the Investigation advantage is encoded.
  */
 export const map: MadMap = {
     // ---- Ability-score SETTERS ("Your <ability> is 19 while you wear this") ----
@@ -49,13 +54,41 @@ export const map: MadMap = {
     ],
 
     // Belt of Dwarvenkind — Con +2, Poison Resistance, poison-save Advantage, Persuasion Advantage vs
-    // dwarves, and knows Dwarvish. (Non-dwarves also gain Darkvision — no category.)
+    // dwarves, and knows Dwarvish. Darkvision 60 sits in the same "if you aren't a dwarf or duergar"
+    // block as the already-encoded Resilience benefits, so it is encoded the same way.
     "Belt of Dwarvenkind": [
         { type: "Add", category: "Stats", value: { stat: "con", statValue: "2" } },
         { type: "Add", category: "Resistances", value: { damageType: "Poison" } },
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "avoid or end the Poisoned condition" } },
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", stat: "cha", condition: "Charisma (Persuasion) checks made to interact with dwarves and duergar" } },
         { type: "Add", category: "Languages", value: { name: "Dwarvish" } },
+        { type: "Add", category: "Senses", value: { sense: "darkvision", range: "60" } },
+    ],
+
+    // ---- Movement modes (permanent while worn) ----
+    // "your Speed becomes 30 feet" — the "unless your Speed is higher" carve-out isn't representable.
+    "Boots of Striding and Springing": [
+        { type: "Add", category: "Speed", value: { speed: "30", mode: "set" } },
+    ],
+    "Ring of Swimming": [
+        { type: "Add", category: "Movement", value: { movementType: "swim", speed: "40" } },
+    ],
+    "Cloak of the Manta Ray": [
+        { type: "Add", category: "Movement", value: { movementType: "swim", speed: "60" } },
+    ],
+    "Slippers of Spider Climbing": [
+        { type: "Add", category: "Movement", value: { movementType: "climb" } },
+    ],
+    // "you have a Climb Speed and a Swim Speed equal to your Speed" (+5 to Athletics for
+    // climbing/swimming is a flat check bonus — no category).
+    "Gloves of Swimming and Climbing": [
+        { type: "Add", category: "Movement", value: { movementType: "climb" } },
+        { type: "Add", category: "Movement", value: { movementType: "swim" } },
+    ],
+
+    // ---- Senses (permanent while worn) ----
+    "Goggles of Night": [
+        { type: "Add", category: "Senses", value: { sense: "darkvision", range: "60" } },
     ],
 
     // ---- Fixed-type damage Resistance (while worn/held) ----
@@ -70,8 +103,10 @@ export const map: MadMap = {
     "Brooch of Shielding": [
         { type: "Add", category: "Resistances", value: { damageType: "Force" } },
     ],
+    // (also "Spider Climb. You have a Climb Speed equal to your Speed...")
     "Cloak of Arachnida": [
         { type: "Add", category: "Resistances", value: { damageType: "Poison" } },
+        { type: "Add", category: "Movement", value: { movementType: "climb" } },
     ],
     "Frost Brand": [
         { type: "Add", category: "Resistances", value: { damageType: "Fire" } },
@@ -99,8 +134,11 @@ export const map: MadMap = {
     "Eyes of the Eagle": [
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", condition: "Wisdom (Perception) checks that rely on sight" } },
     ],
+    // (also "Special Senses. You have Darkvision and Truesight, both with a range of 120 feet.")
     "Robe of Eyes": [
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", condition: "Wisdom (Perception) checks that rely on sight" } },
+        { type: "Add", category: "Senses", value: { sense: "darkvision", range: "120" } },
+        { type: "Add", category: "Senses", value: { sense: "truesight", range: "120" } },
     ],
     "Eyes of Minute Seeing": [
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", condition: "Intelligence (Investigation) checks made to examine something within 1 foot" } },

@@ -14,8 +14,9 @@ import type { MadMap } from "../spec.ts";
  *  - Fighting Style feats: Archery (+2 to ranged attack rolls) and Defense (+1 AC in armor) have no
  *    flat-bonus category; Great Weapon Fighting / Two-Weapon Fighting are situational damage tweaks.
  *  - Epic Boon situational riders (Peerless Aim, Blink Steps, Improve Fate, Overcome/Overwhelming,
- *    Free Casting, Merge with Shadows, Truesight) and Boon of the Night Spirit's "Resistance to all
+ *    Free Casting, Merge with Shadows) and Boon of the Night Spirit's "Resistance to all
  *    damage except Psychic and Radiant" (no fixed damage-type list) — only the ability increase is kept.
+ *    (Boon of Truesight's permanent Truesight IS encoded — see its entry.)
  *
  * NOTE: the "+2 max" / "+1 max" caps and the epic-boon max-30 caps are not representable; the Stats
  * command just adds. Ability Score Improvement is an approximation — see its comment.
@@ -46,8 +47,10 @@ export const map: MadMap = {
     "Boon of the Night Spirit": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1" } },
     ],
+    // "Truesight. You have Truesight with a range of 60 feet."
     "Boon of Truesight": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1" } },
+        { type: "Add", category: "Senses", value: { sense: "truesight", range: "60" } },
     ],
 
     // Boon of Irresistible Offense — "Increase your Strength or Dexterity score by 1, to a maximum of 30."

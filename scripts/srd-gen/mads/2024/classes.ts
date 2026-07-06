@@ -37,6 +37,10 @@ const spell = (name: string): CommandSpecInput => add("Spells", {}, name);
 const extraAttack = (): CommandSpecInput => add("Attacks", { amount: "1" });
 const ac = (bonus: string, stats: string): CommandSpecInput => add("ArmorClass", { bonus, stats });
 const speed = (feet: string): CommandSpecInput => add("Speed", { speed: feet });
+// a movement mode; omit feet when the text says "equal to your Speed"
+const movement = (movementType: string, feet?: string): CommandSpecInput =>
+    add("Movement", { movementType, ...(feet ? { speed: feet } : {}) });
+const senses = (sense: string, range: string): CommandSpecInput => add("Senses", { sense, range });
 const raiseStat = (stat: string, statValue: string): CommandSpecInput => add("Stats", { stat, statValue });
 const savingThrow = (stat: string): CommandSpecInput => add("SavingThrows", { stat });
 const language = (name: string): CommandSpecInput => add("Languages", { name });
@@ -126,12 +130,15 @@ export const map: MadMap = {
     // ============================================================ Ranger
     "Ranger/Favored Enemy": [spell("Hunter's Mark"), uses("2", "Long Rest")], // free Hunter's Mark casts
     "Ranger/Extra Attack": [extraAttack()],
-    "Ranger/Roving": [speed("10")],
+    // Roving: +10 ft, "You also have a Climb Speed and a Swim Speed equal to your Speed."
+    "Ranger/Roving": [speed("10"), movement("climb"), movement("swim")],
     "Ranger/Nature's Veil": [uses("1", "Long Rest")], // uses = Wisdom modifier (min 1) — approximated as 1
+    // "grants you Blindsight with a range of 30 feet"
+    "Ranger/Feral Senses": [senses("blindsight", "30")],
     "Ranger/Ability Score Improvement": [asi()],
     // skip: Weapon Mastery, Deft Explorer (expertise/language choice), Fighting Style (choice),
     //       Expertise (skill choice), Tireless (temp HP), Relentless Hunter, Precise Hunter (situational
-    //       adv), Feral Senses (blindsight), Foe Slayer, Epic Boon.
+    //       adv), Foe Slayer, Epic Boon.
 
     // ============================================================ Rogue
     "Rogue/Thieves' Cant": [language("Thieves' Cant")], // the "one other language of your choice" → skip

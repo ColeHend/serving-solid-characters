@@ -10,7 +10,7 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
  *
  * Same conventions as classes.ts (Uses.recharge = the rest that fully resets; modifier-based use
  * counts approximated to their minimum "1"). Subclasses with no encodable mechanics are omitted:
- *  College of Lore, Circle of the Land, Hunter, Thief, Evoker
+ *  College of Lore, Circle of the Land, Hunter, Evoker
  *  (their features are reactions, riders, condition immunities, or choice-dependent grants).
  */
 
@@ -55,6 +55,11 @@ export const map: MadMap = {
     "Warrior of the Open Hand/Wholeness of Body": [uses("1", "Long Rest")], // uses = Wisdom modifier (min 1) — approx
     // skip: Open Hand Technique (rider), Fleet Step, Quivering Palm (Focus-Point spend).
 
+    // =============================================== Rogue: Thief
+    // "Climber. You gain a Climb Speed equal to your Speed." (Jumper has no category.)
+    "Thief/Second-Story Work": [add("Movement", { movementType: "climb" })],
+    // skip: Fast Hands, Supreme Sneak (Cunning Strike option), Use Magic Device, Thief's Reflexes.
+
     // =============================================== Paladin: Oath of Devotion
     "Oath of Devotion/Oath of Devotion Spells": spells(
         "Protection from Evil and Good", "Shield of Faith",
@@ -68,13 +73,21 @@ export const map: MadMap = {
     //       Smite of Protection (Half Cover rider).
 
     // =============================================== Sorcerer: Draconic Sorcery
-    "Draconic Sorcery/Draconic Resilience": [ac("10", "dex,cha")], // +HP-per-level part has no category → skip
+    // AC 10 + Dex + Cha unarmored, and "Your Hit Point maximum increases by 3, and it increases by 1
+    // whenever you gain another Sorcerer level" — +1/level equals the total exactly for single-class
+    // sorcerers (3 at level 3, +1 each level after).
+    "Draconic Sorcery/Draconic Resilience": [
+        ac("10", "dex,cha"),
+        add("HitPoints", { amount: "1", perLevel: "true" }),
+    ],
     "Draconic Sorcery/Draconic Spells": spells(
         "Alter Self", "Chromatic Orb", "Command", "Dragon's Breath",
         "Fear", "Fly",
         "Arcane Eye", "Charm Monster",
         "Legend Lore", "Summon Dragon",
     ),
+    // Dragon Wings is a 10-minute, once-per-Long-Rest flight (Fly Speed 60) — temporary, so only the
+    // use is tracked; no Movement command (same precedent as Goliath Large Form's temporary +10 speed).
     "Draconic Sorcery/Dragon Wings": [uses("1", "Long Rest")], // or restore for 3 Sorcery Points
     "Draconic Sorcery/Dragon Companion": [uses("1", "Long Rest")], // free Summon Dragon cast (already granted at lvl 9)
     // skip: Elemental Affinity (resistance to a CHOSEN damage type).

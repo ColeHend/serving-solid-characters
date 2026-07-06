@@ -398,6 +398,16 @@
       "type": 0,
       "prerequisites": [],
       "group": 0
+     },
+     {
+      "command": "AddSenses",
+      "value": {
+       "sense": "truesight",
+       "range": "60"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
      }
     ]
    }

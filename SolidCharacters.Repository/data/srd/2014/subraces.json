@@ -17,7 +17,21 @@
     "details": {
      "id": "a666ce70-2a15-5262-aa54-02f2e552caa6",
      "name": "Dwarven Toughness",
-     "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
+     "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddHitPoints",
+        "value": {
+         "amount": "1",
+         "perLevel": "true"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "2d173845-ed27-4633-9176-1bb125facb97"

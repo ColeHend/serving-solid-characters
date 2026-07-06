@@ -17,18 +17,20 @@ import { MadFeature, MadType } from "../../../models/generated";
  * resolve to KNOWN options is dropped entirely rather than attached as a sheet-corrupting no-op.
  */
 
-/** The 20 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
+/** The 23 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
 export type MadCategory =
     | "Spells" | "Items" | "Proficiencies" | "Features" | "Currency" | "ArmorClass"
     | "Expertise" | "Feats" | "Languages" | "Resistances" | "Vulnerabilities"
     | "Immunities" | "SavingThrows" | "Stats" | "Speed" | "AllProficiencies"
-    | "ClassFeature" | "Advantage" | "Attacks" | "Uses";
+    | "ClassFeature" | "Advantage" | "Attacks" | "Uses"
+    | "Movement" | "Senses" | "HitPoints";
 
 export const MAD_CATEGORIES: MadCategory[] = [
     "Spells", "Items", "Proficiencies", "Features", "Currency", "ArmorClass",
     "Expertise", "Feats", "Languages", "Resistances", "Vulnerabilities",
     "Immunities", "SavingThrows", "Stats", "Speed", "AllProficiencies",
     "ClassFeature", "Advantage", "Attacks", "Uses",
+    "Movement", "Senses", "HitPoints",
 ];
 
 /** Catalog entities a command can reference by name (resolved to the entity's `.id`). */
@@ -90,6 +92,18 @@ export const ADV_MODES = ["advantage", "disadvantage"] as const;
 /** Recharge cadences for limited-use (Uses) commands. */
 export const RECHARGE_TYPES = ["Short Rest", "Long Rest"] as const;
 
+/** Movement modes a Movement command can grant (matches the MovementType enum on the character model). */
+export const MOVEMENT_TYPES = ["walk", "fly", "swim", "climb", "burrow"] as const;
+
+/** Loose movement phrasings → canonical MOVEMENT_TYPES entry (keys are lowercased, non-alpha stripped). */
+const MOVEMENT_ALIASES: Record<string, string> = {
+    walking: "walk", flying: "fly", flight: "fly", hover: "fly",
+    swimming: "swim", climbing: "climb", burrowing: "burrow",
+};
+
+/** Special senses a Senses command can grant (stored lowercase in character.senses). */
+export const SENSE_TYPES = ["darkvision", "blindsight", "tremorsense", "truesight"] as const;
+
 /** Loose roll-type phrasings → canonical ROLL_TYPES entry (keys are lowercased, non-alpha stripped). */
 const ROLL_TYPE_ALIASES: Record<string, string> = {
     save: "SavingThrow", saves: "SavingThrow", savingthrow: "SavingThrow", savingthrows: "SavingThrow",
@@ -103,7 +117,7 @@ const ROLL_TYPE_ALIASES: Record<string, string> = {
 
 // ---- field specs ----
 
-type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge" | "statMode";
+type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag";
 
 interface FieldSpec {
     /** The value-object key this field writes (e.g. "bonus", "damageType", "ID"). */
@@ -144,8 +158,46 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Speed: {
         category: "Speed", idBased: false,
-        addFields: [{ key: "speed", type: "number", required: true }], removeFields: [{ key: "speed", type: "number", required: true }],
-        hint: "changes walking speed by a number of feet; speed = number",
+        labelKeys: ["speed", "mode"],
+        addFields: [
+            { key: "speed", type: "number", required: true },
+            { key: "mode", type: "statMode", required: false },
+        ],
+        removeFields: [{ key: "speed", type: "number", required: true }],
+        hint: "changes WALKING speed by a number of feet; speed = number. For 'your walking speed becomes N' effects use mode = set (default mode is increase). " +
+            "A flying/swimming/climbing/burrowing speed is NEVER Speed — that is Movement.",
+    },
+    Movement: {
+        category: "Movement", idBased: false,
+        addFields: [
+            { key: "movementType", type: "movementType", required: true },
+            { key: "speed", type: "number", required: false },
+        ],
+        removeFields: [{ key: "movementType", type: "movementType", required: true }],
+        hint: "grants a movement mode; movementType = fly/swim/climb/burrow, speed = its speed in feet — OMIT speed when the text says it equals your walking speed " +
+            "(use for 'you have a flying speed of 60 feet' / 'a climbing speed equal to your walking speed'; a plain walking-speed change is Speed, not Movement)",
+    },
+    Senses: {
+        category: "Senses", idBased: false,
+        addFields: [
+            { key: "sense", type: "sense", required: true },
+            { key: "range", type: "number", required: true },
+        ],
+        removeFields: [{ key: "sense", type: "sense", required: true }],
+        hint: "grants a special sense; sense = darkvision/blindsight/tremorsense/truesight, range = number of feet (use for 'you have darkvision out to a range of 60 feet' style traits)",
+    },
+    HitPoints: {
+        category: "HitPoints", idBased: false,
+        addFields: [
+            { key: "amount", type: "number", required: true },
+            { key: "perLevel", type: "flag", required: false },
+        ],
+        removeFields: [
+            { key: "amount", type: "number", required: true },
+            { key: "perLevel", type: "flag", required: false },
+        ],
+        hint: "raises the hit point MAXIMUM; amount = number, perLevel = true when it scales with level " +
+            "('your hit point maximum increases by 1, and again every time you gain a level' → amount 1, perLevel true; healing and temporary hit points have NO command)",
     },
     Stats: {
         category: "Stats", idBased: false,
@@ -272,6 +324,12 @@ export const COMMAND_COMMON_MISTAKES =
     "- \"proficiency in Dexterity saving throws\" → SavingThrows {\"stat\":\"dex\"} (Proficiencies is for SKILLS only)\n" +
     "- \"increase one ability score of your choice by 1\" → Stats {\"stat\":\"choice\",\"options\":\"str,dex,con,int,wis,cha\",\"statValue\":\"1\"}\n" +
     "- \"your Intelligence is 19 while wearing this\" → Stats {\"stat\":\"int\",\"statValue\":\"19\",\"mode\":\"set\"}\n" +
+    "- \"you have a flying speed of 60 feet\" → Movement {\"movementType\":\"fly\",\"speed\":\"60\"} (a fly/swim/climb/burrow speed is NEVER Speed)\n" +
+    "- \"a climbing speed equal to your walking speed\" → Movement {\"movementType\":\"climb\"} (omit speed when it equals walking speed)\n" +
+    "- \"your speed increases by 10 feet\" → Speed {\"speed\":\"10\"} (a plain walking-speed change is NEVER Movement)\n" +
+    "- \"your walking speed becomes 30 feet\" → Speed {\"speed\":\"30\",\"mode\":\"set\"}\n" +
+    "- \"you have darkvision out to a range of 60 feet\" → Senses {\"sense\":\"darkvision\",\"range\":\"60\"}\n" +
+    "- \"your hit point maximum increases by 1 every time you gain a level\" → HitPoints {\"amount\":\"1\",\"perLevel\":\"true\"}\n" +
     "- \"advantage on Stealth checks\" / \"once per long rest…\" → no command (advantage and temporary or situational effects have no category)";
 
 // ---- pure coercion ----
@@ -300,6 +358,13 @@ const CATEGORY_ALIASES: Record<string, MadCategory> = {
     advantage: "Advantage", disadvantage: "Advantage", advantages: "Advantage",
     attack: "Attacks", extraattack: "Attacks", extraattacks: "Attacks",
     use: "Uses", limiteduse: "Uses", limiteduses: "Uses",
+    movement: "Movement", movements: "Movement", movementtype: "Movement", movementtypes: "Movement",
+    movementmode: "Movement", flyspeed: "Movement", flyingspeed: "Movement", swimspeed: "Movement",
+    swimmingspeed: "Movement", climbspeed: "Movement", climbingspeed: "Movement", burrowspeed: "Movement",
+    sense: "Senses", vision: "Senses", darkvision: "Senses", blindsight: "Senses",
+    tremorsense: "Senses", truesight: "Senses",
+    hitpoint: "HitPoints", hitpoints: "HitPoints", hp: "HitPoints", maxhp: "HitPoints",
+    hitpointmaximum: "HitPoints", hitpointmax: "HitPoints", maxhitpoints: "HitPoints", health: "HitPoints",
     classfeature: "ClassFeature", classfeatures: "ClassFeature",
     invocation: "ClassFeature", invocations: "ClassFeature",
     eldritchinvocation: "ClassFeature", eldritchinvocations: "ClassFeature",
@@ -365,6 +430,21 @@ function coerceRecharge(raw: string): string | null {
     return null;
 }
 
+function coerceMovementType(raw: string): string | null {
+    if (!raw) return null;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    if ((MOVEMENT_TYPES as readonly string[]).includes(key)) return key;
+    return MOVEMENT_ALIASES[key] ?? null;
+}
+
+function coerceSense(raw: string): string | null {
+    if (!raw) return null;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    if ((SENSE_TYPES as readonly string[]).includes(key)) return key;
+    if (key === "trueseeing") return "truesight";
+    return null;
+}
+
 /** Coerce CSV input against an option mapper; returns the canonical comma-joined list, or null if empty. */
 function coerceCsv(raw: string, map: (s: string) => string | null): string | null {
     const parts = raw.split(",").map(s => s.trim()).filter(Boolean).map(map).filter((x): x is string => !!x);
@@ -393,6 +473,13 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
             if (lc.startsWith("set")) return "set";
             if (lc.startsWith("inc") || lc.startsWith("add")) return "increase";
             return null;
+        }
+        case "movementType": return coerceMovementType(value);
+        case "sense": return coerceSense(value);
+        case "flag": {
+            const lc = value.toLowerCase();
+            if (lc === "true" || lc === "yes" || lc === "1") return "true";
+            return null; // absence means false — a falsy optional flag is simply dropped
         }
         case "skill": return matchOption(value, SKILL_KEYS);
         case "skillCsv": return coerceCsv(value, s => matchOption(s, SKILL_KEYS));

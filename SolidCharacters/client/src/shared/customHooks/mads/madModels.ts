@@ -35,7 +35,10 @@ export type MadCommands = AddRemove<'Spells'> |
     AddRemove<'ClassFeature'> |
     AddRemove<'Advantage'> |
     AddRemove<'Attacks'> |
-    AddRemove<'Uses'>;
+    AddRemove<'Uses'> |
+    AddRemove<'Movement'> |
+    AddRemove<'Senses'> |
+    AddRemove<'HitPoints'>;
 
 export interface MadFeature {
     command: MadCommands;

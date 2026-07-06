@@ -3596,6 +3596,24 @@
         "type": 0,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddMovement",
+        "value": {
+         "movementType": "climb"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddMovement",
+        "value": {
+         "movementType": "swim"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -3741,7 +3759,21 @@
     {
      "id": "6af2634a-059e-57e2-9d9c-e4d2b6395c37",
      "name": "Feral Senses",
-     "description": "Your connection to the forces of nature grants you Blindsight with a range of 30 feet."
+     "description": "Your connection to the forces of nature grants you Blindsight with a range of 30 feet.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "blindsight",
+         "range": "30"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "19": [

@@ -170,7 +170,10 @@ const KEYWORD_CATEGORIES: { re: RegExp; cats: MadCategory[] }[] = [
     { re: /expertise/i, cats: ["Expertise"] },
     { re: /proficien/i, cats: ["Proficiencies", "SavingThrows"] },
     { re: /saving throw|\bsaves?\b/i, cats: ["SavingThrows"] },
-    { re: /speed/i, cats: ["Speed"] },
+    { re: /speed/i, cats: ["Speed", "Movement"] },
+    { re: /\bfly(?:ing)?\b|\bswim(?:ming)?\b|\bclimb(?:ing)?\b|\bburrow(?:ing)?\b|\bhover\b/i, cats: ["Movement"] },
+    { re: /darkvision|blindsight|tremorsense|truesight/i, cats: ["Senses"] },
+    { re: /hit point maximum|hit points? (?:maximum )?increase/i, cats: ["HitPoints"] },
     { re: /armou?r class|\bac\b/i, cats: ["ArmorClass"] },
     { re: /language/i, cats: ["Languages"] },
     { re: /\+\s*\d|ability score|increases? by|score increases/i, cats: ["Stats"] },
@@ -204,9 +207,13 @@ const SINGLE_FEATURE_EXAMPLES =
     "- \"You gain proficiency in Stealth\" → {\"type\":\"Add\",\"category\":\"Proficiencies\",\"value\":{\"proficiency\":\"Stealth\"}}\n" +
     "- \"Your walking speed increases by 10 feet\" → {\"type\":\"Add\",\"category\":\"Speed\",\"value\":{\"speed\":\"10\"}}\n" +
     "- \"You have advantage on saving throws against being frightened\" → {\"type\":\"Add\",\"category\":\"Advantage\",\"value\":{\"rollType\":\"SavingThrow\",\"mode\":\"advantage\",\"condition\":\"against being frightened\"}}\n" +
-    "- \"You can use this feature twice, regaining all uses on a long rest\" → {\"type\":\"Add\",\"category\":\"Uses\",\"value\":{\"amount\":\"2\",\"recharge\":\"Long Rest\"}}";
+    "- \"You can use this feature twice, regaining all uses on a long rest\" → {\"type\":\"Add\",\"category\":\"Uses\",\"value\":{\"amount\":\"2\",\"recharge\":\"Long Rest\"}}\n" +
     "- \"While unarmored, your AC equals 13 + your Dexterity modifier\" → {\"type\":\"Add\",\"category\":\"ArmorClass\",\"value\":{\"bonus\":\"13\",\"stats\":\"dex\"}}\n" +
-    "- \"You gain proficiency in Wisdom saving throws\" → {\"type\":\"Add\",\"category\":\"SavingThrows\",\"value\":{\"stat\":\"wis\"}}";
+    "- \"You gain proficiency in Wisdom saving throws\" → {\"type\":\"Add\",\"category\":\"SavingThrows\",\"value\":{\"stat\":\"wis\"}}\n" +
+    "- \"You have a flying speed of 60 feet\" → {\"type\":\"Add\",\"category\":\"Movement\",\"value\":{\"movementType\":\"fly\",\"speed\":\"60\"}}\n" +
+    "- \"You have a climbing speed equal to your walking speed\" → {\"type\":\"Add\",\"category\":\"Movement\",\"value\":{\"movementType\":\"climb\"}}\n" +
+    "- \"You have darkvision out to a range of 60 feet\" → {\"type\":\"Add\",\"category\":\"Senses\",\"value\":{\"sense\":\"darkvision\",\"range\":\"60\"}}\n" +
+    "- \"Your hit point maximum increases by 1 every time you gain a level\" → {\"type\":\"Add\",\"category\":\"HitPoints\",\"value\":{\"amount\":\"1\",\"perLevel\":\"true\"}}";
 
 /** Focused, few-shot message for the per-feature gap-fill pass (ONE feature, trimmed cheat sheet). */
 function buildSingleFeatureMessage(preview: HomebrewPreview, feature: FeatureDetail): string {

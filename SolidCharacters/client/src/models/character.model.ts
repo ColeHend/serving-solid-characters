@@ -15,6 +15,10 @@ export class Character {
   public ArmorClass: number = 0;
   public Speed: number = 0;
   public movementTypes: MovementType[] = [MovementType.Walk];
+  /** Distinct speeds (feet) for non-walking modes; a mode in movementTypes with no entry here moves at the walking Speed. */
+  public movementSpeeds: MovementSpeeds = {};
+  /** Special senses and their ranges in feet (darkvision 60, ...). */
+  public senses: CharacterSenses = {};
   public className: string = '';
   public subclass: string[] = [];
   public background: string = '';
@@ -164,3 +168,10 @@ export enum MovementType {
   Climb,
   Burrow
 }
+
+/** movementSpeeds keys — walking speed lives on Character.Speed, so Walk has no entry. */
+export type MovementSpeedKey = "fly" | "swim" | "climb" | "burrow";
+export type MovementSpeeds = Partial<Record<MovementSpeedKey, number>>;
+
+export type SenseKey = "darkvision" | "blindsight" | "tremorsense" | "truesight";
+export type CharacterSenses = Partial<Record<SenseKey, number>>;

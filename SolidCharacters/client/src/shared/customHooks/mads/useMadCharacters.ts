@@ -10,10 +10,13 @@ import { AddFeat, RemoveFeat } from "./commands/useFeat";
 import { AddFeature ,RemoveFeature } from "./commands/useFeatures";
 import { addImmunities, removeImmunities } from "./commands/useImmunitiesFeature";
 import { AddItemFeature, RemoveItemFeature } from "./commands/useItemFeature";
+import { addHitPointsFeature, removeHitPointsFeature } from "./commands/useHitPointsFeature";
 import { addLanguageFeature, removeLanguageFeature } from "./commands/useLanguagesFeature";
+import { addMovementFeature, removeMovementFeature } from "./commands/useMovementFeature";
 import { addProficienciesFeature, RemoveProficienciesFeature } from "./commands/useProficienciesFeature";
 import { addResistanceFeature, removeResistanceFeature } from "./commands/useResistanceFeature";
 import { addSavingThrowFeature, removeSavingThrowFeature } from "./commands/useSavingThrowFeature";
+import { addSensesFeature, removeSensesFeature } from "./commands/useSensesFeature";
 import { addSpeedFeature, removeSpeedFeature } from "./commands/useSpeedFeature";
 import { AddSpellFeature, RemoveSpellFeature } from "./commands/useSpellFeature";
 import { addStatFeature, removeStatFeature } from "./commands/useStatFeature";
@@ -153,6 +156,24 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
             break;
         case "RemoveUses":
             character = removeUsesFeature(character, feature);
+            break;
+        case "AddMovement":
+            character = addMovementFeature(character, feature);
+            break;
+        case "RemoveMovement":
+            character = removeMovementFeature(character, feature);
+            break;
+        case "AddSenses":
+            character = addSensesFeature(character, feature);
+            break;
+        case "RemoveSenses":
+            character = removeSensesFeature(character, feature);
+            break;
+        case "AddHitPoints":
+            character = addHitPointsFeature(character, feature);
+            break;
+        case "RemoveHitPoints":
+            character = removeHitPointsFeature(character, feature);
             break;
         default:
             break;

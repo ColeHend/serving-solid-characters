@@ -8,7 +8,7 @@ import type { MadMap } from "../spec.ts";
  * Deliberately SKIPPED (no catalog category can express them, or they are choice/situational):
  *  - Every "Ability Score Increase" trait — racial ability bonuses live in the structured
  *    `abilityBonuses` field; AddStats on a race/subrace trait is a hard lint error (see mads/apply.ts).
- *  - Darkvision, Trance, Halfling Nimbleness / Naturally Stealthy, mixed movement — no category.
+ *  - Trance, Halfling Nimbleness / Naturally Stealthy — no category.
  *  - Lucky (reroll a natural 1) and Savage Attacks (extra crit die) — not advantage, no category.
  *  - Stonecunning / Artificer's Lore — situational double-proficiency on a narrow check, not flat Expertise.
  *  - Dwarven Combat Training / "High Elf/Elf Weapon Training" / Tinker / Tool Proficiency — grant WEAPON or
@@ -17,14 +17,23 @@ import type { MadMap } from "../spec.ts";
  *    "extra language of your choice" traits are choices — no Languages command is emitted.
  *  - Draconic Ancestry / Damage Resistance (Dragonborn): the resisted damage type is CHOICE-dependent
  *    (picked from the Draconic Ancestry table), so no fixed Resistances command can be authored.
- *  - Infernal Legacy, Cantrip, Extra Language, Dwarven Toughness (HP-max) — spell choices / HP max, no category.
+ *  - Infernal Legacy, Cantrip, Extra Language — spell/language choices.
  */
+
+/** "You can see in dim light within 60 feet of you..." — every 5.1 Darkvision trait is 60 ft. */
+const DARKVISION_60 = { type: "Add", category: "Senses", value: { sense: "darkvision", range: "60" } } as const;
 export const map: MadMap = {
     // Dwarf — "advantage on saving throws against poison, and resistance against poison damage".
     // 5.1 does not name a specific ability for the poison save → omit `stat`, use a condition.
     "Dwarf/Dwarven Resilience": [
         { type: "Add", category: "Resistances", value: { damageType: "Poison" } },
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against poison" } },
+    ],
+    "Dwarf/Darkvision": [DARKVISION_60],
+
+    // Hill Dwarf — "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
+    "Hill Dwarf/Dwarven Toughness": [
+        { type: "Add", category: "HitPoints", value: { amount: "1", perLevel: "true" } },
     ],
 
     // Dragonborn — "After you use your breath weapon, you can't use it again until you complete a
@@ -41,11 +50,13 @@ export const map: MadMap = {
     "Elf/Fey Ancestry": [
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against being charmed" } },
     ],
+    "Elf/Darkvision": [DARKVISION_60],
 
     // Half-Elf shares Fey Ancestry verbatim.
     "Half-Elf/Fey Ancestry": [
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against being charmed" } },
     ],
+    "Half-Elf/Darkvision": [DARKVISION_60],
 
     // Halfling — "You have advantage on saving throws against being frightened."
     "Halfling/Brave": [
@@ -59,6 +70,7 @@ export const map: MadMap = {
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "wis", condition: "against magic" } },
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "cha", condition: "against magic" } },
     ],
+    "Gnome/Darkvision": [DARKVISION_60],
 
     // Half-Orc — "You gain proficiency in the Intimidation skill."
     "Half-Orc/Menacing": [
@@ -68,9 +80,11 @@ export const map: MadMap = {
     "Half-Orc/Relentless Endurance": [
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
     ],
+    "Half-Orc/Darkvision": [DARKVISION_60],
 
     // Tiefling — "You have resistance to fire damage."
     "Tiefling/Hellish Resistance": [
         { type: "Add", category: "Resistances", value: { damageType: "Fire" } },
     ],
+    "Tiefling/Darkvision": [DARKVISION_60],
 };

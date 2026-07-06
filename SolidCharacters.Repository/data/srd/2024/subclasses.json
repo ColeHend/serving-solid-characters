@@ -669,7 +669,20 @@
     {
      "id": "ac369357-3798-408b-93fa-194714e60f86",
      "name": "Second-Story Work",
-     "description": "You've trained to get into especially hard-to-reach places, granting you these benefits.\n\n**Climber.** You gain a Climb Speed equal to your Speed.\n\n**Jumper.** You can determine your jump distance using your Dexterity rather than your Strength."
+     "description": "You've trained to get into especially hard-to-reach places, granting you these benefits.\n\n**Climber.** You gain a Climb Speed equal to your Speed.\n\n**Jumper.** You can determine your jump distance using your Dexterity rather than your Strength.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddMovement",
+        "value": {
+         "movementType": "climb"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "9": [
@@ -715,6 +728,16 @@
         "value": {
          "bonus": "10",
          "stats": "dex,cha"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddHitPoints",
+        "value": {
+         "amount": "1",
+         "perLevel": "true"
         },
         "type": 0,
         "prerequisites": [],

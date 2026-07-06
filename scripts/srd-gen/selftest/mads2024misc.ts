@@ -82,6 +82,28 @@ check("Dwarven Resilience adv", races["Dwarf/Dwarven Resilience"][1], "AddAdvant
     { rollType: "SavingThrow", mode: "advantage" });
 // Robe of the Archmagi unarmored-defense AC formula
 check("Robe AC formula", magicItems["Robe of the Archmagi"][0], "AddArmorClass", { bonus: "15", stats: "dex" });
+// Movement with an explicit speed (Ring of Swimming: swim 40)
+check("Ring of Swimming movement", magicItems["Ring of Swimming"][0], "AddMovement",
+    { movementType: "swim", speed: "40" });
+// Movement without a speed = "equal to your walking speed" (no speed key emitted)
+const glovesClimb = coerceCommand(
+    magicItems["Gloves of Swimming and Climbing"][0].type,
+    magicItems["Gloves of Swimming and Climbing"][0].category,
+    magicItems["Gloves of Swimming and Climbing"][0].value,
+    undefined, stubResolve as any);
+if (!glovesClimb || glovesClimb.command !== "AddMovement" || glovesClimb.value["movementType"] !== "climb") {
+    fail("Gloves climb: expected AddMovement climb");
+} else if ("speed" in glovesClimb.value) {
+    fail(`Gloves climb: speed key should be absent, got "${glovesClimb.value["speed"]}"`);
+}
+// Senses (species darkvision — Dwarf sees 120 ft in 2024)
+check("Dwarf darkvision 120", races["Dwarf/Darkvision"][0], "AddSenses", { sense: "darkvision", range: "120" });
+// HitPoints per-level (Dwarven Toughness)
+check("Dwarven Toughness HP", races["Dwarf/Dwarven Toughness"][0], "AddHitPoints",
+    { amount: "1", perLevel: "true" });
+// Speed mode:"set" survives coercion (walking-speed SETTER)
+check("Boots speed set 30", magicItems["Boots of Striding and Springing"][0], "AddSpeed",
+    { speed: "30", mode: "set" });
 
 console.log(allGood ? "\nALL CHECKS PASSED" : "\nSOME CHECKS FAILED");
 process.exit(allGood ? 0 : 1);

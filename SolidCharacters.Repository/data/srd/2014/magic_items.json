@@ -375,7 +375,21 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddSpeed",
+     "value": {
+      "speed": "30",
+      "mode": "set"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "a86d697e-3723-50db-adc1-01fd51231b4b",
@@ -595,6 +609,15 @@
      "type": 0,
      "prerequisites": [],
      "group": 0
+    },
+    {
+     "command": "AddMovement",
+     "value": {
+      "movementType": "climb"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
     }
    ]
   }
@@ -691,7 +714,21 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddMovement",
+     "value": {
+      "movementType": "swim",
+      "speed": "60"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "97c8fd2a-7ecd-5c2a-8a62-932e89681085",
@@ -1258,7 +1295,21 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddSenses",
+     "value": {
+      "sense": "darkvision",
+      "range": "60"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "57ea6972-af2f-5fa9-929d-09560b85bda9",
@@ -2411,7 +2462,21 @@
   "category": "Ring",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddMovement",
+     "value": {
+      "movementType": "swim",
+      "speed": "40"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "0b98d9ad-e40d-5c3e-af76-5fad7fc16477",
@@ -2526,6 +2591,16 @@
       "rollType": "AbilityCheck",
       "mode": "advantage",
       "condition": "Wisdom (Perception) checks that rely on sight"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddSenses",
+     "value": {
+      "sense": "darkvision",
+      "range": "120"
      },
      "type": 0,
      "prerequisites": [],
@@ -2812,7 +2887,20 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddMovement",
+     "value": {
+      "movementType": "climb"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "e1372809-ee91-5573-b729-3cf2c7544fae",
@@ -3567,7 +3655,20 @@
    "attunement": "Requires attunement",
    "effect": "The boots regain 2 hours of flying capability for every 12 hours they aren't in use."
   },
-  "legacy": true
+  "legacy": true,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddMovement",
+     "value": {
+      "movementType": "fly"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "01af5e4b-3f26-5759-91bf-a78ac08bc0e4",
