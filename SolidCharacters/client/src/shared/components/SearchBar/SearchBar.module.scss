@@ -5,24 +5,13 @@
     flex-direction: row;
     background-color: white;
     border-radius: 30px;
-    padding: 1%;
+    padding: 2%;
+    color: #000 !important;
+
     
     input {
-        margin: auto 0;
-        font-size: large;
-        height: 80%;
-        margin-left: 20px;
-        min-width: 70%;
-        width: 100%;
-        border: none;
-        background-color: inherit;
-        color: black !important;
-        
+        background: transparent;
 
-        &:focus {
-            outline: none;
-        }
-        
     }
 
     
