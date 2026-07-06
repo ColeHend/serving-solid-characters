@@ -15,7 +15,7 @@ vi.mock("../../customHooks/dndInfo/info/all/feats", () => ({ useDnDFeats: () => 
 vi.mock("../../customHooks/dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../providers/providerFactory", () => ({ buildProvider: () => ({ streamChat: async function* () { /* none */ } }) }));
 
-import { validateStoredCommand } from "./madCommandCatalog";
+import { coerceCommand, validateStoredCommand } from "./madCommandCatalog";
 import { featuresMissingMads, stripInvalidMads, validateMads } from "./validateMads";
 
 const mad = (over: Partial<MadFeature>): MadFeature =>
@@ -68,6 +68,38 @@ describe("validateStoredCommand", () => {
     it("flags a stored Advantage with a bogus rollType and a Uses with a non-numeric amount", () => {
         expect(validateStoredCommand(mad({ command: "AddAdvantage", value: { rollType: "Nonsense", mode: "advantage" } }))).not.toEqual([]);
         expect(validateStoredCommand(mad({ command: "AddUses", value: { amount: "some" }, type: MadType.Info }))).not.toEqual([]);
+    });
+});
+
+describe("Stats choice/set form", () => {
+    const noRef = () => null;
+
+    it("coerces a fixed increase unchanged", () => {
+        const m = coerceCommand("Add", "Stats", { stat: "con", statValue: "1" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddStats", value: { stat: "con", statValue: "1" } });
+    });
+
+    it("coerces the choice form with an options list", () => {
+        const m = coerceCommand("Add", "Stats", { stat: "choice", options: "str, DEX", statValue: "1" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddStats", value: { stat: "choice", options: "str,dex", statValue: "1" } });
+    });
+
+    it("drops a choice-form command with no options", () => {
+        expect(coerceCommand("Add", "Stats", { stat: "choice", statValue: "1" }, undefined, noRef)).toBeNull();
+    });
+
+    it("coerces mode=set and ignores an invalid mode", () => {
+        const set = coerceCommand("Add", "Stats", { stat: "int", statValue: "19", mode: "set" }, undefined, noRef);
+        expect(set?.value).toMatchObject({ stat: "int", statValue: "19", mode: "set" });
+
+        const junk = coerceCommand("Add", "Stats", { stat: "int", statValue: "19", mode: "sideways" }, undefined, noRef);
+        expect(junk?.value["mode"]).toBeUndefined();
+    });
+
+    it("validateStoredCommand accepts choice+options and rejects choice without options", () => {
+        expect(validateStoredCommand(mad({ command: "AddStats", value: { stat: "choice", options: "str,dex", statValue: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddStats", value: { stat: "choice", statValue: "1" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddStats", value: { stat: "int", statValue: "19", mode: "set" } }))).toEqual([]);
     });
 });
 

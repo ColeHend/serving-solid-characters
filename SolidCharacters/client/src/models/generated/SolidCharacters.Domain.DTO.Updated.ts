@@ -133,6 +133,7 @@ export interface MagicItem {
   category: string;
   weight: string;
   properties: MagicItemProperties;
+  metadata?: FeatureMetadata;
 }
 
 export interface MagicItemProperties {

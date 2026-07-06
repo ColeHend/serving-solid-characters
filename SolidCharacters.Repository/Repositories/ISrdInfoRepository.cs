@@ -59,7 +59,7 @@ public interface ISrdInfoRepository
   /// Get all the magic items
   /// </summary>
   /// <returns>magic items</returns>
-  List<MagicItem> GetMagicItems();
+  List<MagicItem> GetMagicItems(string version = "2024");
 
   /// <summary>
   /// Get all the weapon masteries

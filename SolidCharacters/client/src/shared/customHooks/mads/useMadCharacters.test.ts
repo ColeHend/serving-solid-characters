@@ -7,7 +7,7 @@ import type { FeatureDetail, MadFeature as StoredMad } from "../../../models/gen
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, useMadCharacters } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
 
@@ -193,6 +193,61 @@ describe("Uses (Info command)", () => {
 
         const afterLong = resetFeatureUses(c, LONG_REST, limited);
         expect(afterLong.featureUses).toEqual({});
+    });
+});
+
+describe("AddStats set mode and choice form", () => {
+    it("mode=set sets the score instead of adding", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddStats", { stat: "int", statValue: "19", mode: "set" }));
+        expect(c.stats.int).toBe(19);
+    });
+
+    it("default mode still adds", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddStats", { stat: "con", statValue: "2" }));
+        expect(c.stats.con).toBe(12);
+    });
+
+    it("an unresolved choice-form command reaching the handler is a no-op", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddStats", { stat: "choice", options: "str,dex", statValue: "1" }));
+        expect(c.stats).toEqual(makeCharacter().stats);
+    });
+
+    it("collectMadFeatures excludes unresolved choice mads and substitutes the pick when resolved", () => {
+        const choice = mad("AddStats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" });
+        const feature: FeatureDetail = { id: "asi-4", name: "Ability Score Improvement", description: "", metadata: { mads: stored(choice) } };
+        const base = makeCharacter({
+            levels: [{ class: "Fighter", level: 4, hitDie: 10, features: [feature] }],
+        });
+
+        // no pick yet → excluded, listed as pending
+        expect(collectMadFeatures(base)).toEqual([]);
+        expect(pendingStatChoices(base, feature)).toHaveLength(1);
+        expect(choiceStatMads(feature)).toHaveLength(1);
+
+        // picked (keyed by feature id) → substituted concrete stat
+        const picked = makeCharacter({ ...base, statChoices: { "asi-4": "con" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected).toHaveLength(1);
+        expect(collected[0].value["stat"]).toBe("con");
+        expect(pendingStatChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.stats.con).toBe(12);
+    });
+
+    it("a pick outside the options list does not apply", () => {
+        const choice = mad("AddStats", { stat: "choice", options: "str,dex", statValue: "1" });
+        const feature: FeatureDetail = { id: "half-feat", name: "Athlete", description: "", metadata: { mads: stored(choice) } };
+        const c = makeCharacter({
+            features: [feature],
+            statChoices: { "half-feat": "cha" },
+        });
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+
+    it("statChoiceKey prefers the id and falls back to the name", () => {
+        expect(statChoiceKey({ id: "abc", name: "ASI" })).toBe("abc");
+        expect(statChoiceKey({ id: "", name: "ASI" })).toBe("ASI");
     });
 });
 

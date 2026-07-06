@@ -1,484 +1,740 @@
 [
-  {
-    "id": "3e97a7b0-060d-467e-9780-bb2c0ee22d1c",
-    "name": "Dwarf",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [
-      "Common",
-      "Dwarvish"
-    ],
-    "abilityBonuses": [
-      {
-        "stat": 2,
-        "value": 2
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Darkvision",
-          "description": "You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray."
-        },
-        "prerequisites": [],
-        "id": "dfb8c36e-bcd2-40b6-94fb-83d8874ec911"
-      },
-      {
-        "details": {
-          "name": "Dwarven Resilience",
-          "description": "You have advantage on saving throws against poison, and you have resistance against poison damage."
-        },
-        "prerequisites": [],
-        "id": "375b417d-2072-43a7-99aa-7ad5f0521ba3"
-      },
-      {
-        "details": {
-          "name": "Stonecunning",
-          "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus."
-        },
-        "prerequisites": [],
-        "id": "cde2c318-032a-4627-9873-e7e86979c102"
-      }
-    ],
-    "descriptions": {
-      "alignment": "Most dwarves are lawful, believing firmly in the benefits of a well-ordered society. They tend toward good as well, with a strong sense of fair play and a belief that everyone deserves to share in the benefits of a just order.",
-      "age": "Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
-      "sizeDescription": "Dwarves stand between 4 and 5 feet tall and average about 150 pounds. Your size is Medium.",
-      "languageDescription": "You can speak, read, and write Common and Dwarvish. Dwarvish is full of hard consonants and guttural sounds, and those characteristics spill over into whatever other language a dwarf might speak."
-    }
-  },
-  {
-    "id": "16c1428d-41e5-4d0c-a25e-169eb22bb7e8",
-    "name": "Elf",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [
-      "Common",
-      "Elvish"
-    ],
-    "abilityBonuses": [
-      {
-        "stat": 1,
-        "value": 2
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Darkvision",
-          "description": "You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray."
-        },
-        "prerequisites": [],
-        "id": "4c0cc62c-d0e6-4ac3-9787-5fa905becc76"
-      },
-      {
-        "details": {
-          "name": "Fey Ancestry",
-          "description": "You have advantage on saving throws against being charmed, and magic cannot put you to sleep."
-        },
-        "prerequisites": [],
-        "id": "5f3cbab3-dd8c-4582-b995-e2e51bcad23f"
-      },
-      {
-        "details": {
-          "name": "Trance",
-          "description": "Elves do not need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is \"trance.\") While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting this way, you gain the same benefit that a human does from 8 hours of sleep."
-        },
-        "prerequisites": [],
-        "id": "6a280955-119f-4c84-90f1-3323ea7bc09c"
-      }
-    ],
-    "descriptions": {
-      "alignment": "Elves love freedom, variety, and self-expression, so they lean strongly toward the gentler aspects of chaos. They value and protect others' freedom as well as their own, and they are more often good than not. The drow are an exception; their exile has made them vicious and dangerous. Drow are more often evil than not.",
-      "age": "Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth to encompass worldly experience. An elf typically claims adulthood and an adult name around the age of 100 and can live to be 750 years old.",
-      "sizeDescription": "Elves range from under 5 to over 6 feet tall and have slender builds. Your size is Medium.",
-      "languageDescription": "You can speak, read, and write Common and Elvish. Elvish is fluid, with subtle intonations and intricate grammar. Elven literature is rich and varied, and their songs and poems are famous among other races. Many bards learn their language so they can add Elvish ballads to their repertoires."
-    }
-  },
-  {
-    "id": "212324d1-3bb9-4afe-8750-a8e945146203",
-    "name": "Halfling",
-    "size": "Small",
-    "speed": 25,
-    "languages": [
-      "Common",
-      "Halfling"
-    ],
-    "abilityBonuses": [
-      {
-        "stat": 1,
-        "value": 2
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Lucky",
-          "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."
-        },
-        "prerequisites": [],
-        "id": "361a4755-8e20-4468-b2d1-359e8a69c970"
-      },
-      {
-        "details": {
-          "name": "Brave",
-          "description": "You have advantage on saving throw against being frightened."
-        },
-        "prerequisites": [],
-        "id": "40ffa5a0-7891-45a6-b3a3-8c82501cc1e3"
-      },
-      {
-        "details": {
-          "name": "Halfling Nimbleness",
-          "description": "You can move through the space of any creature that is of a size larger than yours."
-        },
-        "prerequisites": [],
-        "id": "02af47f7-b36f-425e-af04-e214b7a3ccdb"
-      }
-    ],
-    "descriptions": {
-      "alignment": "Most halflings are lawful good. As a rule, they are good-hearted and kind, hate to see others in pain, and have no tolerance for oppression. They are also very orderly and traditional, leaning heavily on the support of their community and the comfort of their old ways.",
-      "age": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
-      "sizeDescription": "Halflings average about 3 feet tall and weigh about 40 pounds. Your size is Small.",
-      "languageDescription": "You can speak, read, and write Common and Halfling. The Halfling language isn't secret, but halflings are loath to share it with others. They write very little, so they don't have a rich body of literature. Their oral tradition, however, is very strong. Almost all halflings speak Common to converse with the people in whose lands they dwell or through which they are traveling."
-    }
-  },
-  {
-    "id": "70319114-2407-420b-ab81-dfe43b4e2724",
-    "name": "Human",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [
-      "Common"
-    ],
-    "languageChoice": {
-      "options": [
-        "Dwarvish",
-        "Elvish",
-        "Giant",
-        "Gnomish",
-        "Goblin",
-        "Halfling",
-        "Orc",
-        "Abyssal",
-        "Celestial",
-        "Draconic",
-        "Deep Speech",
-        "Infernal",
-        "Primordial",
-        "Sylvan",
-        "Undercommon"
-      ],
-      "amount": 1
+ {
+  "id": "3e97a7b0-060d-467e-9780-bb2c0ee22d1c",
+  "name": "Dwarf",
+  "size": "Medium",
+  "speed": 25,
+  "languages": [
+   "Common",
+   "Dwarvish"
+  ],
+  "abilityBonuses": [
+   {
+    "stat": 2,
+    "value": 2
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "3a30ff21-84b3-553a-a52e-de01d3c77fda",
+     "name": "Darkvision",
+     "description": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
     },
-    "abilityBonuses": [
-      {
-        "stat": 0,
-        "value": 1
-      },
-      {
-        "stat": 1,
-        "value": 1
-      },
-      {
-        "stat": 2,
-        "value": 1
-      },
-      {
-        "stat": 3,
-        "value": 1
-      },
-      {
-        "stat": 4,
-        "value": 1
-      },
-      {
-        "stat": 5,
-        "value": 1
-      }
-    ],
-    "traits": [],
-    "descriptions": {
-      "alignment": "Humans tend toward no particular alignment. The best and the worst are found among them.",
-      "age": "Humans reach adulthood in their late teens and live less than a century.",
-      "sizeDescription": "Humans vary widely in height and build, from barely 5 feet to well over 6 feet tall. Regardless of your position in that range, your size is Medium.",
-      "languageDescription": "You can speak, read, and write Common and one extra language of your choice. Humans typically learn the languages of other peoples they deal with, including obscure dialects. They are fond of sprinkling their speech with words borrowed from other tongues: Orc curses, Elvish musical expressions, Dwarvish military phrases, and so on."
-    }
-  },
-  {
-    "id": "0613a6c6-4658-4df8-b328-6b5a9927dea9",
-    "name": "Dragonborn",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [
-      "Common",
-      "Draconic"
-    ],
-    "abilityBonuses": [
-      {
-        "stat": 0,
-        "value": 2
-      },
-      {
-        "stat": 5,
-        "value": 1
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Draconic Ancestry",
-          "description": "You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type, as shown in the table."
+    "prerequisites": [],
+    "id": "dfb8c36e-bcd2-40b6-94fb-83d8874ec911"
+   },
+   {
+    "details": {
+     "id": "734bc9fb-8b5d-5137-976c-2cfa8be56540",
+     "name": "Dwarven Resilience",
+     "description": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "Poison"
         },
+        "type": 0,
         "prerequisites": [],
-        "id": "abef1abf-9330-4571-89eb-7f2f3147bc39"
-      },
-      {
-        "details": {
-          "name": "Breath Weapon",
-          "description": "You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation.\nWhen you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 2d6 at 6th level, 3d6 at 11th level, and 5d6 at 16th level.\nAfter you use your breath weapon, you cannot use it again until you complete a short or long rest."
+        "group": 0
+       },
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "condition": "against poison"
         },
+        "type": 0,
         "prerequisites": [],
-        "id": "8dd17038-f858-4dde-912d-a771eb0d66d2"
-      },
-      {
-        "details": {
-          "name": "Damage Resistance",
-          "description": "You have resistance to the damage type associated with your draconic ancestry."
-        },
-        "prerequisites": [],
-        "id": "6b0041be-7be4-4b37-99a9-add0cf1f217f"
-      }
-    ],
-    "traitChoice": {
-      "amount": 1,
-      "choices": []
-    },
-    "descriptions": {
-      "alignment": " Dragonborn tend to extremes, making a conscious choice for one side or the other in the cosmic war between good and evil. Most dragonborn are good, but those who side with evil can be terrible villains.",
-      "age": "Young dragonborn grow quickly. They walk hours after hatching, attain the size and development of a 10-year-old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
-      "sizeDescription": "Dragonborn are taller and heavier than humans, standing well over 6 feet tall and averaging almost 250 pounds. Your size is Medium.",
-      "languageDescription": "You can speak, read, and write Common and Draconic. Draconic is thought to be one of the oldest languages and is often used in the study of magic. The language sounds harsh to most other creatures and includes numerous hard consonants and sibilants."
-    }
-  },
-  {
-    "id": "46e5c14f-d096-4ceb-99f0-d959623ebfcc",
-    "name": "Gnome",
-    "size": "Small",
-    "speed": 25,
-    "languages": [
-      "Common",
-      "Gnomish"
-    ],
-    "abilityBonuses": [
-      {
-        "stat": 3,
-        "value": 2
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Darkvision",
-          "description": "You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray."
-        },
-        "prerequisites": [],
-        "id": "cdc67898-658e-4f13-baa7-32c036145d89"
-      },
-      {
-        "details": {
-          "name": "Gnome Cunning",
-          "description": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic."
-        },
-        "prerequisites": [],
-        "id": "92268737-a991-4f26-be07-518d6b157604"
-      }
-    ],
-    "descriptions": {
-      "alignment": "Gnomes are most often good. Those who tend toward law are sages, engineers, researchers, scholars, investigators, or inventors. Those who tend toward chaos are minstrels, tricksters, wanderers, or fanciful jewelers. Gnomes are good-hearted, and even the tricksters among them are more playful than vicious.",
-      "age": " Gnomes mature at the same rate humans do, and most are expected to settle down into an adult life by around age 40. They can live 350 to almost 500 years.",
-      "sizeDescription": "Gnomes are between 3 and 4 feet tall and average about 40 pounds. Your size is Small.",
-      "languageDescription": "You can speak, read, and write Common and Gnomish. The Gnomish language, which uses the Dwarvish script, is renowned for its technical treatises and its catalogs of knowledge about the natural world."
-    }
-  },
-  {
-    "id": "75d9a918-620e-4166-ae8d-c06e11c6c98b",
-    "name": "Half-Elf",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [
-      "Common",
-      "Elvish"
-    ],
-    "languageChoice": {
-      "options": [
-        "Dwarvish",
-        "Giant",
-        "Gnomish",
-        "Goblin",
-        "Halfling",
-        "Orc",
-        "Abyssal",
-        "Celestial",
-        "Draconic",
-        "Deep Speech",
-        "Infernal",
-        "Primordial",
-        "Sylvan",
-        "Undercommon"
-      ],
-      "amount": 1
-    },
-    "abilityBonuses": [
-      {
-        "stat": 5,
-        "value": 2
-      }
-    ],
-    "abilityBonusChoice": {
-      "amount": 2,
-      "choices": [
-        {
-          "stat": 0,
-          "value": 1
-        },
-        {
-          "stat": 1,
-          "value": 1
-        },
-        {
-          "stat": 2,
-          "value": 1
-        },
-        {
-          "stat": 3,
-          "value": 1
-        },
-        {
-          "stat": 4,
-          "value": 1
-        }
+        "group": 0
+       }
       ]
+     }
     },
-    "traits": [
-      {
-        "details": {
-          "name": "Darkvision",
-          "description": "You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray."
-        },
-        "prerequisites": [],
-        "id": "25367630-37c3-431e-93a3-c7a937074fa5"
-      },
-      {
-        "details": {
-          "name": "Fey Ancestry",
-          "description": "You have advantage on saving throws against being charmed, and magic cannot put you to sleep."
-        },
-        "prerequisites": [],
-        "id": "635a2760-389e-4e77-82bf-f9f61139aeff"
-      },
-      {
-        "details": {
-          "name": "Skill Versatility",
-          "description": "You gain proficiency in two skills of your choice."
-        },
-        "prerequisites": [],
-        "id": "23f36c55-f206-4499-8a18-a069f465baba"
-      }
-    ],
-    "descriptions": {
-      "alignment": "Half-elves share the chaotic bent of their elven heritage. They value both personal freedom and creative expression, demonstrating neither love of leaders nor desire for followers. They chafe at rules, resent others' demands, and sometimes prove unreliable, or at least unpredictable.",
-      "age": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
-      "sizeDescription": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
-      "languageDescription": "You can speak, read, and write Common, Elvish, and one extra language of your choice."
-    }
-  },
-  {
-    "id": "b809ace3-d8b9-4ba7-8509-cfcf11a2f75e",
-    "name": "Half-Orc",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [
-      "Common",
-      "Orcish"
-    ],
-    "abilityBonuses": [
-      {
-        "stat": 0,
-        "value": 2
-      },
-      {
-        "stat": 2,
-        "value": 1
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Darkvision",
-          "description": "You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray."
-        },
-        "prerequisites": [],
-        "id": "69c07e1a-0e90-47ff-817c-18b84b2c1c37"
-      },
-      {
-        "details": {
-          "name": "Savage Attacks",
-          "description": "When you score a critical hit with a melee weapon attack, you can roll one of the weapon's damage dice one additional time and add it to the extra damage of the critical hit."
-        },
-        "prerequisites": [],
-        "id": "7d7dcf5e-8927-4921-8bef-4b8705a0d886"
-      }
-    ],
-    "descriptions": {
-      "alignment": " Half-orcs inherit a tendency toward chaos from their orc parents and are not strongly inclined toward good. Half-orcs raised among orcs and willing to live out their lives among them are usually evil.",
-      "age": "Half-orcs mature a little faster than humans, reaching adulthood around age 14. They age noticeably faster and rarely live longer than 75 years.",
-      "sizeDescription": "Half-orcs are somewhat larger and bulkier than humans, and they range from 5 to well over 6 feet tall. Your size is Medium.",
-      "languageDescription": "You can speak, read, and write Common and Orc. Orc is a harsh, grating language with hard consonants. It has no script of its own but is written in the Dwarvish script."
-    }
-  },
-  {
-    "id": "e56f8b9e-e95b-4485-8236-6f1cbed06194",
-    "name": "Tiefling",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [
-      "Common",
-      "Infernal"
-    ],
-    "abilityBonuses": [
-      {
-        "stat": 3,
-        "value": 1
-      },
-      {
-        "stat": 5,
-        "value": 2
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Darkvision",
-          "description": "You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray."
-        },
-        "prerequisites": [],
-        "id": "b65e39c8-e853-442d-b4ba-b897807022cb"
-      },
-      {
-        "details": {
-          "name": "Hellish Resistance",
-          "description": "You have resistance to fire damage."
-        },
-        "prerequisites": [],
-        "id": "9de4b549-4783-4dab-8d13-26ea832b0a83"
-      }
-    ],
-    "descriptions": {
-      "alignment": "Tieflings might not have an innate tendency toward evil, but many of them end up there. Evil or not, an independent nature inclines many tieflings toward a chaotic alignment.",
-      "age": "Tieflings mature at the same rate as humans but live a few years longer.",
-      "sizeDescription": "Tieflings are about the same size and build as humans. Your size is Medium.",
-      "languageDescription": "You can speak, read, and write Common and Infernal."
-    }
+    "prerequisites": [],
+    "id": "375b417d-2072-43a7-99aa-7ad5f0521ba3"
+   },
+   {
+    "details": {
+     "id": "a708dbd3-24ae-5311-96e2-d0d9c103e5b4",
+     "name": "Dwarven Combat Training",
+     "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
+    },
+    "prerequisites": [],
+    "id": "54f8b041-e8f6-579e-ab11-902725a6b36a"
+   },
+   {
+    "details": {
+     "id": "4f568a43-725d-589e-995d-0c6a18655f27",
+     "name": "Tool Proficiency",
+     "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools."
+    },
+    "prerequisites": [],
+    "id": "dc353234-257a-53df-9cca-23f673c5b43c"
+   },
+   {
+    "details": {
+     "id": "94151611-def7-5d7a-a3cb-29a33da716d7",
+     "name": "Stonecunning",
+     "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus."
+    },
+    "prerequisites": [],
+    "id": "cde2c318-032a-4627-9873-e7e86979c102"
+   }
+  ],
+  "descriptions": {
+   "description": "Your dwarf character has an assortment of inborn abilities, part and parcel of dwarven nature.",
+   "alignment": "Most dwarves are lawful, believing firmly in the benefits of a well-ordered society. They tend toward good as well, with a strong sense of fair play and a belief that everyone deserves to share in the benefits of a just order.",
+   "age": "Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
+   "sizeDescription": "Dwarves stand between 4 and 5 feet tall and average about 150 pounds. Your size is Medium.",
+   "languageDescription": "You can speak, read, and write Common and Dwarvish. Dwarvish is full of hard consonants and guttural sounds, and those characteristics spill over into whatever other language a dwarf might speak."
   }
+ },
+ {
+  "id": "16c1428d-41e5-4d0c-a25e-169eb22bb7e8",
+  "name": "Elf",
+  "size": "Medium",
+  "speed": 30,
+  "languages": [
+   "Common",
+   "Elvish"
+  ],
+  "abilityBonuses": [
+   {
+    "stat": 1,
+    "value": 2
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "a29d6382-18ed-58de-bf9d-512c6d558fb8",
+     "name": "Darkvision",
+     "description": "Accustomed to twilit forests and the night sky, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+    },
+    "prerequisites": [],
+    "id": "4c0cc62c-d0e6-4ac3-9787-5fa905becc76"
+   },
+   {
+    "details": {
+     "id": "6e072c90-e0a3-503b-85fd-34fa120840e7",
+     "name": "Keen Senses",
+     "description": "You have proficiency in the Perception skill.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddProficiencies",
+        "value": {
+         "proficiency": "Perception"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "cdde10ab-5603-5f5e-9838-bf1861b1bdb8"
+   },
+   {
+    "details": {
+     "id": "ae9d049f-fb16-5ba1-b665-0cf288118b46",
+     "name": "Fey Ancestry",
+     "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "condition": "against being charmed"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "5f3cbab3-dd8c-4582-b995-e2e51bcad23f"
+   },
+   {
+    "details": {
+     "id": "53dc3945-b544-5292-95ed-882f50107e49",
+     "name": "Trance",
+     "description": "Elves don't need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is \"trance.\") While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice.\nAfter resting in this way, you gain the same benefit that a human does from 8 hours of sleep."
+    },
+    "prerequisites": [],
+    "id": "6a280955-119f-4c84-90f1-3323ea7bc09c"
+   }
+  ],
+  "descriptions": {
+   "description": "Your elf character has a variety of natural abilities, the result of thousands of years of elven refinement.",
+   "alignment": "Elves love freedom, variety, and self- expression, so they lean strongly toward the gentler aspects of chaos. They value and protect others' freedom as well as their own, and they are more often good than not. The drow are an exception; their exile has made them vicious and dangerous. Drow are more often evil than not.",
+   "age": "Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth to encompass worldly experience. An elf typically claims adulthood and an adult name around the age of 100 and can live to be 750 years old.",
+   "sizeDescription": "Elves range from under 5 to over 6 feet tall and have slender builds. Your size is Medium.",
+   "languageDescription": "You can speak, read, and write Common and Elvish. Elvish is fluid, with subtle intonations and intricate grammar. Elven literature is rich and varied, and their songs and poems are famous among other races. Many bards learn their language so they can add Elvish ballads to their repertoires."
+  }
+ },
+ {
+  "id": "212324d1-3bb9-4afe-8750-a8e945146203",
+  "name": "Halfling",
+  "size": "Small",
+  "speed": 25,
+  "languages": [
+   "Common",
+   "Halfling"
+  ],
+  "abilityBonuses": [
+   {
+    "stat": 1,
+    "value": 2
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "1a959951-e90c-58dc-ba79-946d7bf1a453",
+     "name": "Lucky",
+     "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."
+    },
+    "prerequisites": [],
+    "id": "361a4755-8e20-4468-b2d1-359e8a69c970"
+   },
+   {
+    "details": {
+     "id": "731323c6-287d-552a-a31d-226d0c6106c3",
+     "name": "Brave",
+     "description": "You have advantage on saving throws against being frightened.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "condition": "against being frightened"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "40ffa5a0-7891-45a6-b3a3-8c82501cc1e3"
+   },
+   {
+    "details": {
+     "id": "73e716ba-29b0-5f47-868f-d3abf384324c",
+     "name": "Halfling Nimbleness",
+     "description": "You can move through the space of any creature that is of a size larger than yours."
+    },
+    "prerequisites": [],
+    "id": "02af47f7-b36f-425e-af04-e214b7a3ccdb"
+   }
+  ],
+  "descriptions": {
+   "description": "Your halfling character has a number of traits in common with all other halflings.",
+   "alignment": "Most halflings are lawful good. As a rule, they are good-hearted and kind, hate to see others in pain, and have no tolerance for oppression. They are also very orderly and traditional, leaning heavily on the support of their community and the comfort of their old ways.",
+   "age": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
+   "sizeDescription": "Halflings average about 3 feet tall and weigh about 40 pounds. Your size is Small.",
+   "languageDescription": "You can speak, read, and write Common and Halfling. The Halfling language isn't secret, but halflings are loath to share it with others. They write very little, so they don't have a rich body of literature. Their oral tradition, however, is very strong. Almost all halflings speak Common to converse with the people in whose lands they dwell or through which they are traveling."
+  }
+ },
+ {
+  "id": "70319114-2407-420b-ab81-dfe43b4e2724",
+  "name": "Human",
+  "size": "Medium",
+  "speed": 30,
+  "languages": [
+   "Common"
+  ],
+  "languageChoice": {
+   "options": [
+    "Dwarvish",
+    "Elvish",
+    "Giant",
+    "Gnomish",
+    "Goblin",
+    "Halfling",
+    "Orc",
+    "Abyssal",
+    "Celestial",
+    "Draconic",
+    "Deep Speech",
+    "Infernal",
+    "Primordial",
+    "Sylvan",
+    "Undercommon"
+   ],
+   "amount": 1
+  },
+  "abilityBonuses": [
+   {
+    "stat": 0,
+    "value": 1
+   },
+   {
+    "stat": 1,
+    "value": 1
+   },
+   {
+    "stat": 2,
+    "value": 1
+   },
+   {
+    "stat": 3,
+    "value": 1
+   },
+   {
+    "stat": 4,
+    "value": 1
+   },
+   {
+    "stat": 5,
+    "value": 1
+   }
+  ],
+  "traits": [],
+  "descriptions": {
+   "description": "It's hard to make generalizations about humans, but your human character has these traits.",
+   "alignment": "Humans tend toward no particular alignment. The best and the worst are found among them.",
+   "age": "Humans reach adulthood in their late teens and live less than a century.",
+   "sizeDescription": "Humans vary widely in height and build, from barely 5 feet to well over 6 feet tall. Regardless of your position in that range, your size is Medium.",
+   "languageDescription": "You can speak, read, and write Common and one extra language of your choice. Humans typically learn the languages of other peoples they deal with, including obscure dialects. They are fond of sprinkling their speech with words borrowed from other tongues: Orc curses, Elvish musical expressions, Dwarvish military phrases, and so on."
+  }
+ },
+ {
+  "id": "0613a6c6-4658-4df8-b328-6b5a9927dea9",
+  "name": "Dragonborn",
+  "size": "Medium",
+  "speed": 30,
+  "languages": [
+   "Common",
+   "Draconic"
+  ],
+  "abilityBonuses": [
+   {
+    "stat": 0,
+    "value": 2
+   },
+   {
+    "stat": 5,
+    "value": 1
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "59404571-12fb-5e68-bc7b-2cd332e2c4df",
+     "name": "Draconic Ancestry",
+     "description": "You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type, as shown in the table."
+    },
+    "prerequisites": [],
+    "id": "abef1abf-9330-4571-89eb-7f2f3147bc39"
+   },
+   {
+    "details": {
+     "id": "6adb83c3-0a1c-58d6-9cc1-a03cb494aaa4",
+     "name": "Breath Weapon",
+     "description": "You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation.\nWhen you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level.\nAfter you use your breath weapon, you can't use it again until you complete a short or long rest.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Short Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "8dd17038-f858-4dde-912d-a771eb0d66d2"
+   },
+   {
+    "details": {
+     "id": "696946cc-2bd3-5c42-8a79-c1b85d1ecf54",
+     "name": "Damage Resistance",
+     "description": "You have resistance to the damage type associated with your draconic ancestry."
+    },
+    "prerequisites": [],
+    "id": "6b0041be-7be4-4b37-99a9-add0cf1f217f"
+   }
+  ],
+  "descriptions": {
+   "description": "Your draconic heritage manifests in a variety of traits you share with other dragonborn.",
+   "alignment": "Dragonborn tend to extremes, making a conscious choice for one side or the other in the cosmic war between good and evil. Most dragonborn are good, but those who side with evil can be terrible villains.",
+   "age": "Young dragonborn grow quickly. They walk hours after hatching, attain the size and development of a 10-year-old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
+   "sizeDescription": "Dragonborn are taller and heavier than humans, standing well over 6 feet tall and averaging almost 250 pounds. Your size is Medium.",
+   "languageDescription": "You can speak, read, and write Common and Draconic. Draconic is thought to be one of the oldest languages and is often used in the study of magic. The language sounds harsh to most other creatures and includes numerous hard consonants and sibilants."
+  }
+ },
+ {
+  "id": "46e5c14f-d096-4ceb-99f0-d959623ebfcc",
+  "name": "Gnome",
+  "size": "Small",
+  "speed": 25,
+  "languages": [
+   "Common",
+   "Gnomish"
+  ],
+  "abilityBonuses": [
+   {
+    "stat": 3,
+    "value": 2
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "e30924b8-c5c8-5406-bb52-a2fda1c54d8c",
+     "name": "Darkvision",
+     "description": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+    },
+    "prerequisites": [],
+    "id": "cdc67898-658e-4f13-baa7-32c036145d89"
+   },
+   {
+    "details": {
+     "id": "bbd14a61-b67c-5e49-9833-da799f1a64a9",
+     "name": "Gnome Cunning",
+     "description": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "stat": "int",
+         "condition": "against magic"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "stat": "wis",
+         "condition": "against magic"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "stat": "cha",
+         "condition": "against magic"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "92268737-a991-4f26-be07-518d6b157604"
+   }
+  ],
+  "descriptions": {
+   "description": "Your gnome character has certain characteristics in common with all other gnomes.",
+   "alignment": "Gnomes are most often good. Those who tend toward law are sages, engineers, researchers, scholars, investigators, or inventors. Those who tend toward chaos are minstrels, tricksters, wanderers, or fanciful jewelers. Gnomes are good-hearted, and even the tricksters among them are more playful than vicious.",
+   "age": "Gnomes mature at the same rate humans do, and most are expected to settle down into an adult life by around age 40. They can live 350 to almost 500 years.",
+   "sizeDescription": "Gnomes are between 3 and 4 feet tall and average about 40 pounds. Your size is Small.",
+   "languageDescription": "You can speak, read, and write Common and Gnomish. The Gnomish language, which uses the Dwarvish script, is renowned for its technical treatises and its catalogs of knowledge about the natural world."
+  }
+ },
+ {
+  "id": "75d9a918-620e-4166-ae8d-c06e11c6c98b",
+  "name": "Half-Elf",
+  "size": "Medium",
+  "speed": 30,
+  "languages": [
+   "Common",
+   "Elvish"
+  ],
+  "languageChoice": {
+   "options": [
+    "Dwarvish",
+    "Giant",
+    "Gnomish",
+    "Goblin",
+    "Halfling",
+    "Orc",
+    "Abyssal",
+    "Celestial",
+    "Draconic",
+    "Deep Speech",
+    "Infernal",
+    "Primordial",
+    "Sylvan",
+    "Undercommon"
+   ],
+   "amount": 1
+  },
+  "abilityBonuses": [
+   {
+    "stat": 5,
+    "value": 2
+   }
+  ],
+  "abilityBonusChoice": {
+   "amount": 2,
+   "choices": [
+    {
+     "stat": 0,
+     "value": 1
+    },
+    {
+     "stat": 1,
+     "value": 1
+    },
+    {
+     "stat": 2,
+     "value": 1
+    },
+    {
+     "stat": 3,
+     "value": 1
+    },
+    {
+     "stat": 4,
+     "value": 1
+    }
+   ]
+  },
+  "traits": [
+   {
+    "details": {
+     "id": "c2ca371c-c4c8-5b11-bdc9-ea2183b06f98",
+     "name": "Darkvision",
+     "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+    },
+    "prerequisites": [],
+    "id": "25367630-37c3-431e-93a3-c7a937074fa5"
+   },
+   {
+    "details": {
+     "id": "8e608c75-a8b7-5bbe-b9dd-000b91d27467",
+     "name": "Fey Ancestry",
+     "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "condition": "against being charmed"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "635a2760-389e-4e77-82bf-f9f61139aeff"
+   },
+   {
+    "details": {
+     "id": "010f28aa-9e9c-59ba-8406-a8c84f8741bf",
+     "name": "Skill Versatility",
+     "description": "You gain proficiency in two skills of your choice."
+    },
+    "prerequisites": [],
+    "id": "23f36c55-f206-4499-8a18-a069f465baba"
+   }
+  ],
+  "descriptions": {
+   "description": "Your half-elf character has some qualities in common with elves and some that are unique to half-elves.",
+   "alignment": "Half-elves share the chaotic bent of their elven heritage. They value both personal freedom and creative expression, demonstrating neither love of leaders nor desire for followers. They chafe at rules, resent others' demands, and sometimes prove unreliable, or at least unpredictable.",
+   "age": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
+   "sizeDescription": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
+   "languageDescription": "You can speak, read, and write Common, Elvish, and one extra language of your choice."
+  }
+ },
+ {
+  "id": "b809ace3-d8b9-4ba7-8509-cfcf11a2f75e",
+  "name": "Half-Orc",
+  "size": "Medium",
+  "speed": 30,
+  "languages": [
+   "Common",
+   "Orc"
+  ],
+  "abilityBonuses": [
+   {
+    "stat": 0,
+    "value": 2
+   },
+   {
+    "stat": 2,
+    "value": 1
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "af357d8a-b011-5821-b7f6-3a7c7c844ea2",
+     "name": "Darkvision",
+     "description": "Thanks to your orc blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+    },
+    "prerequisites": [],
+    "id": "69c07e1a-0e90-47ff-817c-18b84b2c1c37"
+   },
+   {
+    "details": {
+     "id": "28c9f700-48eb-5430-b91d-d200642b69ec",
+     "name": "Menacing",
+     "description": "You gain proficiency in the Intimidation skill.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddProficiencies",
+        "value": {
+         "proficiency": "Intimidation"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "a13a02d6-d227-570f-9704-a515be98385a"
+   },
+   {
+    "details": {
+     "id": "198d3846-6cd1-504f-818b-15dcf354ad64",
+     "name": "Relentless Endurance",
+     "description": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. You can't use this feature again until you finish a long rest.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "e6de7d7d-a207-5e06-b815-08d30cc92628"
+   },
+   {
+    "details": {
+     "id": "ed161ade-60f8-5743-a171-da2d1c41b0f9",
+     "name": "Savage Attacks",
+     "description": "When you score a critical hit with a melee weapon attack, you can roll one of the weapon's damage dice one additional time and add it to the extra damage of the critical hit."
+    },
+    "prerequisites": [],
+    "id": "7d7dcf5e-8927-4921-8bef-4b8705a0d886"
+   }
+  ],
+  "descriptions": {
+   "description": "Your half-orc character has certain traits deriving from your orc ancestry.",
+   "alignment": "Half-orcs inherit a tendency toward chaos from their orc parents and are not strongly inclined toward good. Half-orcs raised among orcs and willing to live out their lives among them are usually evil.",
+   "age": "Half-orcs mature a little faster than humans, reaching adulthood around age 14. They age noticeably faster and rarely live longer than 75 years.",
+   "sizeDescription": "Half-orcs are somewhat larger and bulkier than humans, and they range from 5 to well over 6 feet tall. Your size is Medium.",
+   "languageDescription": "You can speak, read, and write Common and Orc. Orc is a harsh, grating language with hard consonants. It has no script of its own but is written in the Dwarvish script."
+  }
+ },
+ {
+  "id": "e56f8b9e-e95b-4485-8236-6f1cbed06194",
+  "name": "Tiefling",
+  "size": "Medium",
+  "speed": 30,
+  "languages": [
+   "Common",
+   "Infernal"
+  ],
+  "abilityBonuses": [
+   {
+    "stat": 3,
+    "value": 1
+   },
+   {
+    "stat": 5,
+    "value": 2
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "b570eb83-6afa-5e0c-9ee0-ab569d92ef94",
+     "name": "Darkvision",
+     "description": "Thanks to your infernal heritage, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray."
+    },
+    "prerequisites": [],
+    "id": "b65e39c8-e853-442d-b4ba-b897807022cb"
+   },
+   {
+    "details": {
+     "id": "61adb44a-04b7-5aa2-8c03-aeda99b3fc30",
+     "name": "Hellish Resistance",
+     "description": "You have resistance to fire damage.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "Fire"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
+    },
+    "prerequisites": [],
+    "id": "9de4b549-4783-4dab-8d13-26ea832b0a83"
+   },
+   {
+    "details": {
+     "id": "2c7be24e-5fb8-5938-a2d9-33660ec314ba",
+     "name": "Infernal Legacy",
+     "description": "You know the *thaumaturgy* cantrip. When you reach 3rd level, you can cast the *hellish rebuke* spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the *darkness* spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells."
+    },
+    "prerequisites": [],
+    "id": "e484bbd5-d7f7-5be2-a356-4aa25b3ca54b"
+   }
+  ],
+  "descriptions": {
+   "description": "Tieflings share certain racial traits as a result of their infernal descent.",
+   "alignment": "Tieflings might not have an innate tendency toward evil, but many of them end up there. Evil or not, an independent nature inclines many tieflings toward a chaotic alignment.",
+   "age": "Tieflings mature at the same rate as humans but live a few years longer.",
+   "sizeDescription": "Tieflings are about the same size and build as humans. Your size is Medium.",
+   "languageDescription": "You can speak, read, and write Common and Infernal."
+  }
+ }
 ]

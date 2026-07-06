@@ -97,6 +97,8 @@ public class MagicItem
   public string Category { get; set; } = null!;
   public string Weight { get; set; } = null!;
   public MagicItemProperties Properties { get; set; } = new();
+  /// <summary>Machine-readable mechanics (mads commands) for items that change the sheet, e.g. stat-setting or resistance items.</summary>
+  [JsonProperty("metadata")] public FeatureMetadata? Metadata { get; set; }
 }
 
 public class MagicItemProperties
@@ -115,10 +117,44 @@ public class Item
   public double Weight { get; set; }
   public string Cost { get; set; } = null!;
   // Some item JSON entries have mixed value types (string vs array) under properties (e.g. "Properties": ["Light"]).
-  // Use object to tolerate strings, numbers, arrays without custom converters.
+  // Newtonsoft reads untyped values as JToken (JArray/JValue), which System.Text.Json then re-serializes
+  // as empty garbage over HTTP ("Properties": [[]]) — the converter materializes plain CLR values instead.
   [JsonProperty("properties")]
+  [Newtonsoft.Json.JsonConverter(typeof(PrimitiveDictionaryConverter))]
   [JsonPropertyName("properties")]
   public Dictionary<string, object> Properties { get; set; } = new();
+}
+
+/// <summary>
+/// Reads an untyped JSON object into CLR primitives (string/number/bool) and List&lt;string&gt; for arrays,
+/// so the dictionary survives the Newtonsoft-read → System.Text.Json-write round trip the API performs.
+/// </summary>
+public class PrimitiveDictionaryConverter : Newtonsoft.Json.JsonConverter<Dictionary<string, object>>
+{
+  public override Dictionary<string, object>? ReadJson(JsonReader reader, Type objectType, Dictionary<string, object>? existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
+  {
+    if (reader.TokenType == JsonToken.Null) return new Dictionary<string, object>();
+    var token = Newtonsoft.Json.Linq.JToken.Load(reader);
+    if (token is not Newtonsoft.Json.Linq.JObject obj) return new Dictionary<string, object>();
+    var dict = new Dictionary<string, object>();
+    foreach (var prop in obj.Properties())
+    {
+      dict[prop.Name] = prop.Value.Type switch
+      {
+        Newtonsoft.Json.Linq.JTokenType.Array => prop.Value.Select(t => t.ToString()).ToList(),
+        Newtonsoft.Json.Linq.JTokenType.Integer => (object)prop.Value.ToObject<long>(),
+        Newtonsoft.Json.Linq.JTokenType.Float => prop.Value.ToObject<double>(),
+        Newtonsoft.Json.Linq.JTokenType.Boolean => prop.Value.ToObject<bool>(),
+        _ => prop.Value.ToString(),
+      };
+    }
+    return dict;
+  }
+
+  public override void WriteJson(JsonWriter writer, Dictionary<string, object>? value, Newtonsoft.Json.JsonSerializer serializer)
+  {
+    serializer.Serialize(writer, value);
+  }
 }
 // Removed ItemProperties wrapper to prevent nested path like properties.Properties during deserialization
 

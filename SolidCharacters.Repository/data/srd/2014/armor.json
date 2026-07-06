@@ -1,184 +1,184 @@
 [
-  {
-    "id": "4b2299ba-17c9-407d-8333-bf33139ab98e",
-    "name": "Padded",
-    "desc": "",
-    "type": 1,
-    "weight": 8,
-    "cost": "5 Gp",
-    "properties": {
-      "ArmorCategory": "Light",
-      "AC": "11 + Dex modifier",
-      "Stealth": "Disadvantage",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "3e311f20-6a4b-496a-a3cc-25d7007e04e1",
-    "name": "Leather",
-    "desc": "",
-    "type": 1,
-    "weight": 10,
-    "cost": "10 Gp",
-    "properties": {
-      "ArmorCategory": "Light",
-      "AC": "11 + Dex modifier",
-      "Stealth": "Normal",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "4e93dfa9-b472-41bd-a03a-2d68bb4d242a",
-    "name": "Studded Leather",
-    "desc": "",
-    "type": 1,
-    "weight": 13,
-    "cost": "45 Gp",
-    "properties": {
-      "ArmorCategory": "Light",
-      "AC": "12 + Dex modifier",
-      "Stealth": "Normal",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "a28d6770-114c-4bf8-b438-bb377c381e13",
-    "name": "Hide",
-    "desc": "",
-    "type": 1,
-    "weight": 12,
-    "cost": "10 Gp",
-    "properties": {
-      "ArmorCategory": "Medium",
-      "AC": "12 + Dex modifier (max 2)",
-      "Stealth": "Normal",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "dab4e5d1-f066-4b4a-a6fd-53d6310c51c6",
-    "name": "Chain Shirt",
-    "desc": "",
-    "type": 1,
-    "weight": 20,
-    "cost": "50 Gp",
-    "properties": {
-      "ArmorCategory": "Medium",
-      "AC": "13 + Dex modifier (max 2)",
-      "Stealth": "Normal",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "2662ca29-0866-45a6-824e-4d249ccc3e1a",
-    "name": "Scale Mail",
-    "desc": "",
-    "type": 1,
-    "weight": 45,
-    "cost": "50 Gp",
-    "properties": {
-      "ArmorCategory": "Medium",
-      "AC": "14 + Dex modifier (max 2)",
-      "Stealth": "Disadvantage",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "f7e439f8-44ea-4c00-812c-67f5b95ac64c",
-    "name": "Breastplate",
-    "desc": "",
-    "type": 1,
-    "weight": 20,
-    "cost": "400 Gp",
-    "properties": {
-      "ArmorCategory": "Medium",
-      "AC": "14 + Dex modifier (max 2)",
-      "Stealth": "Normal",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "ead4b4c6-888e-4a07-a034-065c1ef8024b",
-    "name": "Half Plate",
-    "desc": "",
-    "type": 1,
-    "weight": 40,
-    "cost": "750 Gp",
-    "properties": {
-      "ArmorCategory": "Medium",
-      "AC": "15 + Dex modifier (max 2)",
-      "Stealth": "Disadvantage",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "2e78b891-2714-4a88-9696-79bebee99298",
-    "name": "Ring Mail",
-    "desc": "",
-    "type": 1,
-    "weight": 40,
-    "cost": "30 Gp",
-    "properties": {
-      "ArmorCategory": "Heavy",
-      "AC": "14",
-      "Stealth": "Disadvantage",
-      "StrengthReq": "0"
-    }
-  },
-  {
-    "id": "3ac0a624-aa8b-4dde-b866-eb0cd9bc0973",
-    "name": "Chain Mail",
-    "desc": "",
-    "type": 1,
-    "weight": 55,
-    "cost": "75 Gp",
-    "properties": {
-      "ArmorCategory": "Heavy",
-      "AC": "16",
-      "Stealth": "Disadvantage",
-      "StrengthReq": "13"
-    }
-  },
-  {
-    "id": "9da0c5f4-9ada-42cd-9150-0b8f46d45a4a",
-    "name": "Splint",
-    "desc": "",
-    "type": 1,
-    "weight": 60,
-    "cost": "200 Gp",
-    "properties": {
-      "ArmorCategory": "Heavy",
-      "AC": "17",
-      "Stealth": "Disadvantage",
-      "StrengthReq": "15"
-    }
-  },
-  {
-    "id": "ab79ef22-b8e3-44cc-8da5-362579b9e885",
-    "name": "Plate",
-    "desc": "",
-    "type": 1,
-    "weight": 65,
-    "cost": "1500 Gp",
-    "properties": {
-      "ArmorCategory": "Heavy",
-      "AC": "18",
-      "Stealth": "Disadvantage",
-      "StrengthReq": "15"
-    }
-  },
-  {
-    "id": "7e873dbb-cd8b-4517-ba1f-745f82a38b8c",
-    "name": "Shield",
-    "desc": "",
-    "type": 1,
-    "weight": 6,
-    "cost": "10 Gp",
-    "properties": {
-      "ArmorCategory": "Shield",
-      "AC": "+2",
-      "Stealth": "Normal",
-      "StrengthReq": "0"
-    }
+ {
+  "id": "4b2299ba-17c9-407d-8333-bf33139ab98e",
+  "name": "Padded",
+  "desc": "Padded armor consists of quilted layers of cloth and batting.",
+  "type": 1,
+  "weight": 8,
+  "cost": "5 Gp",
+  "properties": {
+   "ArmorCategory": "Light",
+   "AC": "11 + Dex modifier",
+   "Stealth": "Disadvantage",
+   "StrengthReq": "0"
   }
+ },
+ {
+  "id": "3e311f20-6a4b-496a-a3cc-25d7007e04e1",
+  "name": "Leather",
+  "desc": "The breastplate and shoulder protectors of this armor are made of leather that has been stiffened by being boiled in oil. The rest of the armor is made of softer and more flexible materials.",
+  "type": 1,
+  "weight": 10,
+  "cost": "10 Gp",
+  "properties": {
+   "ArmorCategory": "Light",
+   "AC": "11 + Dex modifier",
+   "Stealth": "Normal",
+   "StrengthReq": "0"
+  }
+ },
+ {
+  "id": "4e93dfa9-b472-41bd-a03a-2d68bb4d242a",
+  "name": "Studded Leather",
+  "desc": "Made from tough but flexible leather, studded leather is reinforced with close-set rivets or spikes.",
+  "type": 1,
+  "weight": 13,
+  "cost": "45 Gp",
+  "properties": {
+   "ArmorCategory": "Light",
+   "AC": "12 + Dex modifier",
+   "Stealth": "Normal",
+   "StrengthReq": "0"
+  }
+ },
+ {
+  "id": "a28d6770-114c-4bf8-b438-bb377c381e13",
+  "name": "Hide",
+  "desc": "This crude armor consists of thick furs and pelts. It is commonly worn by barbarian tribes, evil humanoids, and other folk who lack access to the tools and materials needed to create better armor.",
+  "type": 1,
+  "weight": 12,
+  "cost": "10 Gp",
+  "properties": {
+   "ArmorCategory": "Medium",
+   "AC": "12 + Dex modifier (max 2)",
+   "Stealth": "Normal",
+   "StrengthReq": "0"
+  }
+ },
+ {
+  "id": "dab4e5d1-f066-4b4a-a6fd-53d6310c51c6",
+  "name": "Chain Shirt",
+  "desc": "Made of interlocking metal rings, a chain shirt is worn between layers of clothing or leather. This armor offers modest protection to the wearer's upper body and allows the sound of the rings rubbing against one another to be muffled by outer layers.",
+  "type": 1,
+  "weight": 20,
+  "cost": "50 Gp",
+  "properties": {
+   "ArmorCategory": "Medium",
+   "AC": "13 + Dex modifier (max 2)",
+   "Stealth": "Normal",
+   "StrengthReq": "0"
+  }
+ },
+ {
+  "id": "2662ca29-0866-45a6-824e-4d249ccc3e1a",
+  "name": "Scale Mail",
+  "desc": "This armor consists of a coat and leggings (and perhaps a separate skirt) of leather covered with overlapping pieces of metal, much like the scales of a fish. The suit includes gauntlets.",
+  "type": 1,
+  "weight": 45,
+  "cost": "50 Gp",
+  "properties": {
+   "ArmorCategory": "Medium",
+   "AC": "14 + Dex modifier (max 2)",
+   "Stealth": "Disadvantage",
+   "StrengthReq": "0"
+  }
+ },
+ {
+  "id": "f7e439f8-44ea-4c00-812c-67f5b95ac64c",
+  "name": "Breastplate",
+  "desc": "This armor consists of a fitted metal chest piece worn with supple leather. Although it leaves the legs and arms relatively unprotected, this armor provides good protection for the wearer's vital organs while leaving the wearer relatively unencumbered.",
+  "type": 1,
+  "weight": 20,
+  "cost": "400 Gp",
+  "properties": {
+   "ArmorCategory": "Medium",
+   "AC": "14 + Dex modifier (max 2)",
+   "Stealth": "Normal",
+   "StrengthReq": "0"
+  }
+ },
+ {
+  "id": "ead4b4c6-888e-4a07-a034-065c1ef8024b",
+  "name": "Half Plate",
+  "desc": "Half plate consists of shaped metal plates that cover most of the wearer's body. It does not include leg protection beyond simple greaves that are attached with leather straps.",
+  "type": 1,
+  "weight": 40,
+  "cost": "750 Gp",
+  "properties": {
+   "ArmorCategory": "Medium",
+   "AC": "15 + Dex modifier (max 2)",
+   "Stealth": "Disadvantage",
+   "StrengthReq": "0"
+  }
+ },
+ {
+  "id": "2e78b891-2714-4a88-9696-79bebee99298",
+  "name": "Ring Mail",
+  "desc": "This armor is leather armor with heavy rings sewn into it. The rings help reinforce the armor against blows from swords and axes. Ring mail is inferior to chain mail, and it's usually worn only by those who can't afford better armor.",
+  "type": 1,
+  "weight": 40,
+  "cost": "30 Gp",
+  "properties": {
+   "ArmorCategory": "Heavy",
+   "AC": "14",
+   "Stealth": "Disadvantage",
+   "StrengthReq": "0"
+  }
+ },
+ {
+  "id": "3ac0a624-aa8b-4dde-b866-eb0cd9bc0973",
+  "name": "Chain Mail",
+  "desc": "Made of interlocking metal rings, chain mail includes a layer of quilted fabric worn underneath the mail to prevent chafing and to cushion the impact of blows. The suit includes gauntlets.",
+  "type": 1,
+  "weight": 55,
+  "cost": "75 Gp",
+  "properties": {
+   "ArmorCategory": "Heavy",
+   "AC": "16",
+   "Stealth": "Disadvantage",
+   "StrengthReq": "13"
+  }
+ },
+ {
+  "id": "9da0c5f4-9ada-42cd-9150-0b8f46d45a4a",
+  "name": "Splint",
+  "desc": "This armor is made of narrow vertical strips of metal riveted to a backing of leather that is worn over cloth padding. Flexible chain mail protects the joints.",
+  "type": 1,
+  "weight": 60,
+  "cost": "200 Gp",
+  "properties": {
+   "ArmorCategory": "Heavy",
+   "AC": "17",
+   "Stealth": "Disadvantage",
+   "StrengthReq": "15"
+  }
+ },
+ {
+  "id": "ab79ef22-b8e3-44cc-8da5-362579b9e885",
+  "name": "Plate",
+  "desc": "Plate consists of shaped, interlocking metal plates to cover the entire body. A suit of plate includes gauntlets, heavy leather boots, a visored helmet, and thick layers of padding underneath the armor. Buckles and straps distribute the weight over the body.",
+  "type": 1,
+  "weight": 65,
+  "cost": "1500 Gp",
+  "properties": {
+   "ArmorCategory": "Heavy",
+   "AC": "18",
+   "Stealth": "Disadvantage",
+   "StrengthReq": "15"
+  }
+ },
+ {
+  "id": "7e873dbb-cd8b-4517-ba1f-745f82a38b8c",
+  "name": "Shield",
+  "desc": "A shield is made from wood or metal and is carried in one hand. Wielding a shield increases your Armor Class by 2. You can benefit from only one shield at a time.",
+  "type": 1,
+  "weight": 6,
+  "cost": "10 Gp",
+  "properties": {
+   "ArmorCategory": "Shield",
+   "AC": "+2",
+   "Stealth": "Normal",
+   "StrengthReq": "0"
+  }
+ }
 ]

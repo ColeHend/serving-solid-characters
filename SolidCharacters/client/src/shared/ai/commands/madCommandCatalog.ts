@@ -103,7 +103,7 @@ const ROLL_TYPE_ALIASES: Record<string, string> = {
 
 // ---- field specs ----
 
-type FieldType = "number" | "ability" | "abilityCsv" | "skill" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge";
+type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge" | "statMode";
 
 interface FieldSpec {
     /** The value-object key this field writes (e.g. "bonus", "damageType", "ID"). */
@@ -149,9 +149,22 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Stats: {
         category: "Stats", idBased: false,
-        addFields: [{ key: "stat", type: "ability", required: true }, { key: "statValue", type: "number", required: true }],
-        removeFields: [{ key: "stat", type: "ability", required: true }, { key: "statValue", type: "number", required: true }],
-        hint: "changes an ability score; stat = str/dex/con/int/wis/cha, statValue = number (for '+1 Con' style increases — never for AC formulas or skill bonuses)",
+        labelKeys: ["stat", "statValue", "mode"],
+        addFields: [
+            { key: "stat", type: "abilityOrChoice", required: true },
+            { key: "statValue", type: "number", required: true },
+            { key: "options", type: "abilityCsv", required: false },
+            { key: "mode", type: "statMode", required: false },
+        ],
+        removeFields: [
+            { key: "stat", type: "abilityOrChoice", required: true },
+            { key: "statValue", type: "number", required: true },
+            { key: "options", type: "abilityCsv", required: false },
+            { key: "mode", type: "statMode", required: false },
+        ],
+        hint: "changes an ability score; stat = str/dex/con/int/wis/cha, statValue = number (for '+1 Con' style increases — never for AC formulas or skill bonuses). " +
+            "For 'increase an ability of your choice' use stat = choice with options = comma-separated allowed abilities (the player picks on the sheet). " +
+            "For 'your score IS N' effects use mode = set (default mode is increase).",
     },
     SavingThrows: {
         category: "SavingThrows", idBased: false,
@@ -257,6 +270,8 @@ export const COMMAND_COMMON_MISTAKES =
     "- \"unarmored defense: AC 10 + Dex + Con\" → ArmorClass {\"bonus\":\"10\",\"stats\":\"dex,con\"}\n" +
     "- \"your Constitution score increases by 1\" → Stats {\"stat\":\"con\",\"statValue\":\"1\"} (an ability increase is NEVER ArmorClass)\n" +
     "- \"proficiency in Dexterity saving throws\" → SavingThrows {\"stat\":\"dex\"} (Proficiencies is for SKILLS only)\n" +
+    "- \"increase one ability score of your choice by 1\" → Stats {\"stat\":\"choice\",\"options\":\"str,dex,con,int,wis,cha\",\"statValue\":\"1\"}\n" +
+    "- \"your Intelligence is 19 while wearing this\" → Stats {\"stat\":\"int\",\"statValue\":\"19\",\"mode\":\"set\"}\n" +
     "- \"advantage on Stealth checks\" / \"once per long rest…\" → no command (advantage and temporary or situational effects have no category)";
 
 // ---- pure coercion ----
@@ -371,7 +386,14 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
             return String(Number(value));
         }
         case "ability": return coerceAbility(value);
+        case "abilityOrChoice": return value.toLowerCase() === "choice" ? "choice" : coerceAbility(value);
         case "abilityCsv": return coerceCsv(value, coerceAbility);
+        case "statMode": {
+            const lc = value.toLowerCase();
+            if (lc.startsWith("set")) return "set";
+            if (lc.startsWith("inc") || lc.startsWith("add")) return "increase";
+            return null;
+        }
         case "skill": return matchOption(value, SKILL_KEYS);
         case "skillCsv": return coerceCsv(value, s => matchOption(s, SKILL_KEYS));
         case "damageType": return matchOption(value, DAMAGE_TYPES);
@@ -411,6 +433,8 @@ export function coerceCommand(
         }
         value[field.key] = coerced;
     }
+    // choice-form Stats needs the allowed-options list or the sheet can never resolve the pick
+    if (category === "Stats" && value["stat"] === "choice" && !value["options"]) return null;
     return { command: `${t}${category}`, value, type: spec.madType ?? MadType.Character, prerequisites: [], group: 0 };
 }
 
@@ -462,6 +486,10 @@ export function validateStoredCommand(mad: MadFeature): string[] {
         if (coerced === null) {
             errors.push(`${prettyCommand(command)} has an invalid ${field.key} ("${String(value[field.key] ?? "")}")`);
         }
+    }
+    if (category === "Stats" && String(value["stat"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "abilityCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses stat "choice" but has no valid options list`);
     }
     return errors;
 }

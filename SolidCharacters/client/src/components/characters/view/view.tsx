@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { Component, For, Show, createMemo, createSignal, onCleanup, onMount, runWithOwner } from "solid-js";
 import styles from "./view.module.scss";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
@@ -14,7 +14,7 @@ import SpellModal from "../../../shared/components/modals/spellModal/spellModal.
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { characterManager, Clone } from "../../../shared";
-import { collectMadFeatures, useMadCharacters } from "../../../shared/customHooks/mads/useMadCharacters";
+import { collectMadFeatures, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey } from "../../../shared/customHooks/mads/useMadCharacters";
 import { featureUsage, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
 import UsesTracker from "./usesTracker/usesTracker";
 import { SpellTable } from "./SpellTable/SpellTable";
@@ -118,6 +118,19 @@ const CharacterView: Component = () => {
     const updated = Clone(base);
     updated.featureUses = { ...(updated.featureUses ?? {}), [featureName]: spent };
     persistCharacter(updated);
+  };
+
+  const chooseStat = (featureName: string, statKey: string) => {
+    const base = currentCharacter();
+    if (!base) return;
+    const updated = Clone(base);
+    updated.statChoices = { ...(updated.statChoices ?? {}), [featureName]: statKey };
+    persistCharacter(updated);
+  };
+
+  const STAT_LABELS: Record<string, string> = {
+    str: "Strength", dex: "Dexterity", con: "Constitution",
+    int: "Intelligence", wis: "Wisdom", cha: "Charisma",
   };
 
   const takeRest = (rest: RechargeType) => {
@@ -509,6 +522,23 @@ const CharacterView: Component = () => {
                           onChange={(spent) => spendUses(feature.name, spent)}
                         />
                       </Show>
+                      <For each={choiceStatMads(feature)}>
+                        {(mad) => (
+                          <div class={`${styles.featureTitle}`}>
+                            <span>{`${mad.value?.["mode"] === "set" ? "Set" : "+"}${mad.value?.["statValue"] ?? ""} to an ability of your choice:`}</span>
+                            <Select
+                              value={currentCharacter()?.statChoices?.[statChoiceKey(feature)] ?? ""}
+                              onChange={(val: string) => runWithOwner(null, () => {
+                                if (val && val !== currentCharacter()?.statChoices?.[statChoiceKey(feature)]) chooseStat(statChoiceKey(feature), val);
+                              })}
+                            >
+                              <For each={statChoiceOptions(mad)}>
+                                {(key) => <Option value={key}>{STAT_LABELS[key] ?? key}</Option>}
+                              </For>
+                            </Select>
+                          </div>
+                        )}
+                      </For>
                     </div>
                   );
                 }}

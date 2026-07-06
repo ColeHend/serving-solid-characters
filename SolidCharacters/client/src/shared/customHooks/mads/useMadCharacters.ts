@@ -160,10 +160,52 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
     return character;
 }
 
+/** True for a choice-form Stats command ("increase an ability of your choice") that needs a player pick. */
+function isChoiceStatMad(m: MadFeature): boolean {
+    return (m.command === "AddStats" || m.command === "RemoveStats") && m.value?.["stat"] === "choice";
+}
+
+/** The abilities a choice-form Stats command allows ("str,dex" → ["str","dex"]). */
+export function statChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/**
+ * The character.statChoices key for a feature. Prefer the feature id — repeated features
+ * (Ability Score Improvement at levels 4/8/12...) have distinct ids, so each instance gets
+ * its own pick. Homebrew features often have id "" — fall back to the name.
+ */
+export function statChoiceKey(feature: { id?: string; name: string }): string {
+    return feature.id || feature.name;
+}
+
+/**
+ * A choice-form Stats command with the player's pick (character.statChoices, keyed by
+ * statChoiceKey) substituted in — or null while the pick is missing/invalid, in which
+ * case the command must NOT apply.
+ */
+function resolveChoiceStatMad(character: Character, choiceKey: string, m: MadFeature): MadFeature | null {
+    const pick = character.statChoices?.[choiceKey] ?? "";
+    if (!pick || !statChoiceOptions(m).includes(pick)) return null;
+    return { ...m, value: { ...m.value, stat: pick } };
+}
+
+/** All choice-form stat commands on a feature (for the sheet's chooser UI). */
+export function choiceStatMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceStatMad);
+}
+
+/** Choice-form stat commands on a feature that still need a pick (for the sheet's chooser UI). */
+export function pendingStatChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceStatMads(feature).filter(m => !resolveChoiceStatMad(character, statChoiceKey(feature), m));
+}
+
 /**
  * Every Character-type mad across all of a character's feature sources
  * (class levels, race, and top-level features), ready to feed useMadCharacters.
  * Info-type mads (like Uses) describe their owning feature and are excluded.
+ * Choice-form Stats commands are resolved against character.statChoices (keyed by
+ * feature name); unresolved ones are excluded until the player picks.
  */
 export function collectMadFeatures(character: Character): MadFeature[] {
     const feats = [
@@ -172,8 +214,16 @@ export function collectMadFeatures(character: Character): MadFeature[] {
         ...(character.features ?? []),
     ];
 
-    return feats.flatMap(f => (f.metadata?.mads ?? []) as MadFeature[])
-                .filter(m => m.type === MadType.Character);
+    return feats.flatMap(f =>
+        ((f.metadata?.mads ?? []) as MadFeature[]).flatMap(m => {
+            if (m.type !== MadType.Character) return [];
+            if (isChoiceStatMad(m)) {
+                const resolved = resolveChoiceStatMad(character, statChoiceKey(f), m);
+                return resolved ? [resolved] : [];
+            }
+            return [m];
+        }),
+    );
 }
 
 

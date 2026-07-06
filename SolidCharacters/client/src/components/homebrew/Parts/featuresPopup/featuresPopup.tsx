@@ -649,15 +649,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     />
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddStats" || getMaDCommand(i())?.() === "RemoveStats"}>
-                                                    <StatFeature 
-                                                        toggleValue={(stat, value) => {
-                                                            const old = getMadValue(i())?.();
-                                                            
-                                                            if (old?.["stat"] === stat) {
-                                                                setMadFeature("value", i(), {"stat": "", "statValue": ""})
-                                                            } else {
-                                                                setMadFeature("value", i(), {"stat": stat, "statValue": value.toString()})
-                                                            }
+                                                    <StatFeature
+                                                        toggleValue={(stat, value, extra) => {
+                                                            const next: Record<string, string> = {"stat": stat, "statValue": value.toString()};
+                                                            if (extra?.options) next["options"] = extra.options;
+                                                            if (extra?.mode) next["mode"] = extra.mode;
+                                                            setMadFeature("value", i(), next);
                                                             setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             setCard(false);
                                                         }}

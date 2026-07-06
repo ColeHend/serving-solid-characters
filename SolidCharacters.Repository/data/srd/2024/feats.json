@@ -1,310 +1,396 @@
 [
-  {
-    "details": {
-      "name": "Alert",
-      "description": "Always on the lookout for danger, you gain the following benefits: **Initiative Proficiency.** You add your proficiency bonus to your initiative rolls, allowing you to react faster in combat. **Initiative Swap.** When initiative is rolled, after seeing your roll, you can choose to swap your initiative result with that of one willing ally in the same combat. You cannot do so if you or the ally is incapacitated.",
-      "metadata": {
-        "category": "Origin Feat"
-      }
-    },
-    "prerequisites": [],
-    "id": "a91d1498-8170-4843-b833-2b75a1b8ccf7"
+ {
+  "id": "a91d1498-8170-4843-b833-2b75a1b8ccf7",
+  "details": {
+   "id": "5fadaf0c-3fbe-56d0-81ca-7f2a02b1836e",
+   "name": "Alert",
+   "description": "You gain the following benefits.\n\n**Initiative Proficiency.** When you roll Initiative, you can add your Proficiency Bonus to the roll.\n\n**Initiative Swap.** Immediately after you roll Initiative, you can swap your Initiative with the Initiative of one willing ally in the same combat. You can't make this swap if you or the ally has the Incapacitated condition.",
+   "metadata": {
+    "category": "Origin Feat"
+   }
   },
-  {
-    "details": {
-      "name": "Magic Initiate",
-      "description": "You have dabbled in magic outside your class. Choose one spellcasting class’s spell list (Cleric, Druid, or Wizard). You learn two cantrips of your choice from that class’s list. You also learn one 1st-level spell from the same list. You can cast that 1st-level spell once at its lowest level without expending a spell slot, and you regain this ability after a Long Rest. You can also cast it using any spell slots you have. The spell’s spellcasting ability is the one chosen when you take this feat (Intelligence for Wizard spells, Wisdom for Cleric/Druid spells, etc.). **Spell Change.** Whenever you gain a level, you can replace one of the cantrips chosen for this feat with another cantrip from the chosen class’s list. **Repeatable:** You can take this feat multiple times, each time selecting a different class’s spell list for the cantrips and spell.",
-      "metadata": {
-        "category": "Origin Feat"
-      }
-    },
-    "prerequisites": [],
-    "id": "86f24b1d-af3c-48e8-a02f-bf088d83c67f"
+  "prerequisites": []
+ },
+ {
+  "id": "86f24b1d-af3c-48e8-a02f-bf088d83c67f",
+  "details": {
+   "id": "7acbbdb9-d3c8-58b0-89e5-be6492240c97",
+   "name": "Magic Initiate",
+   "description": "You gain the following benefits.\n\n**Two Cantrips.** You learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list. Intelligence, Wisdom, or Charisma is your spellcasting ability for this feat's spells (choose when you select this feat).\n\n**Level 1 Spell.** Choose a level 1 spell from the same list you selected for this feat's cantrips. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have.\n\n**Spell Change.** Whenever you gain a new level, you can replace one of the spells you chose for this feat with a different spell of the same level from the chosen spell list.\n\n**Repeatable.** You can take this feat more than once, but you must choose a different spell list each time.",
+   "metadata": {
+    "category": "Origin Feat"
+   }
   },
-  {
-    "details": {
-      "name": "Savage Attacker",
-      "description": "You have learned to deliver particularly ferocious strikes. Once per turn when you roll damage for a melee weapon attack, you can roll the weapon’s damage dice twice and use either total for the damage of that attac. This allows you to potentially deal higher damage with a single brutal hit.",
-      "metadata": {
-        "category": "Origin Feat"
-      }
-    },
-    "prerequisites": [],
-    "id": "c90997d3-468c-4253-aa12-12ba35d5efb8"
+  "prerequisites": []
+ },
+ {
+  "id": "c90997d3-468c-4253-aa12-12ba35d5efb8",
+  "details": {
+   "id": "66bd83d4-ee21-5334-8bca-c48bd4bbdf99",
+   "name": "Savage Attacker",
+   "description": "You've trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the weapon's damage dice twice and use either roll against the target.",
+   "metadata": {
+    "category": "Origin Feat"
+   }
   },
-  {
-    "details": {
-      "name": "Skilled",
-      "description": "You have broadened your range of talents. You gain proficiency in any **three** skills or tools of your choic (in any combination). **Repeatable:** You can take this feat multiple times, choosing three different proficiencies each time.",
-      "metadata": {
-        "category": "Origin Feat"
-      }
-    },
-    "prerequisites": [],
-    "id": "5fcc2e61-e9a8-4097-aac1-efc02b8a1051"
+  "prerequisites": []
+ },
+ {
+  "id": "5fcc2e61-e9a8-4097-aac1-efc02b8a1051",
+  "details": {
+   "id": "7d24d3c1-3651-5be2-9b46-8b80a2275059",
+   "name": "Skilled",
+   "description": "You gain proficiency in any combination of three skills or tools of your choice.\n\n**Repeatable.** You can take this feat more than once.",
+   "metadata": {
+    "category": "Origin Feat"
+   }
   },
-  {
-    "details": {
-      "name": "Ability Score Improvement",
-      "description": "Through training or experience, you’ve honed your physical or mental capabilities. Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1 (you can’t raise any score above 20 this way. **Repeatable:** You can gain this feat multiple times (typically at class ASI levels), each time improving scores up to the maximum.",
-      "metadata": {
-        "category": "General Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "4"
-      }
-    ],
-    "id": "530fc83b-75ba-4c4e-9860-f43f6e589b28"
-  },
-  {
-    "details": {
-      "name": "Grappler",
-      "description": "You’ve developed superior grappling technique. You gain the following benefits: **Ability Score Increase.** Increase your Strength or Dexterity by 1, to a maximum of 20. **Punch and Grab.** When you hit a creature with an Unarmed Strike as part of the Attack action on your turn, you can deal damage and also initiate a grapple on that target as part of the same attack. (You can use this benefit once per turn.) **Attack Advantage.** You have advantage on attack rolls against a creature you are grappling. **Fast Wrestler.** Moving a creature you’ve grappled (if it is your size or smaller) does not halve your speed; you can drag or carry them at full speed.",
-      "metadata": {
-        "category": "General Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "4"
+  "prerequisites": []
+ },
+ {
+  "id": "530fc83b-75ba-4c4e-9860-f43f6e589b28",
+  "details": {
+   "id": "78f18592-997f-515f-9097-c12d90ffc634",
+   "name": "Ability Score Improvement",
+   "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can't increase an ability score above 20.\n\n**Repeatable.** You can take this feat more than once.",
+   "metadata": {
+    "category": "General Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "2",
+       "options": "str,dex,con,int,wis,cha"
       },
-      {
-        "type": 7,
-        "value": "DEX:13"
-      }
-    ],
-    "id": "7bd5ef9d-18d4-425d-8ed4-664d05b6128e"
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
   },
-  {
-    "details": {
-      "name": "Lucky",
-      "description": "You have inexplicable luck that seems to kick in at just the right moment. You gain **3 Luck Points**. Whenever you make an attack roll, ability check, or saving throw, or when an attack roll is made against you, you can spend one Luck Point to roll an additional d20. You choose which of the d20s is used for the roll (you can choose after you see the original roll). You can use this ability once per roll. You regain your expended Luck Points when you finish a Long Rest.",
-      "metadata": {
-        "category": "General Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "4"
-      }
-    ],
-    "id": "f6955481-1409-4aaa-b348-682e1d4119eb"
-  },
-  {
-    "details": {
-      "name": "Tough",
-      "description": "Your hit point maximum increases by an amount equal to twice your character level when you gain this feat. Whenever you gain a level thereafter, your hit point maximum increases by an additional 2 hit points. This reflects your superior hardiness and stamina.",
-      "metadata": {
-        "category": "General Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "4"
-      }
-    ],
-    "id": "797c0b79-1d4c-49ee-9dbf-7efd52c82d34"
-  },
-  {
-    "details": {
-      "name": "Weapon Master",
-      "description": "You have trained extensively with weapons. **Ability Score Increase.** Increase your Strength or Dexterity by 1, to a maximum of 2. **Mastery Training.** Choose one kind of simple or martial weapon (such as longswords or longbows) with which you are proficient. You gain the ability to use that weapon’s Mastery property (if it has one). Whenever you finish a Long Rest, you can change your choice of weapon for this benefit to a different eligible weapon. (This feat effectively grants one Weapon Mastery slot to a character who has proficiency, even if their class normally wouldn’t have Weapon Mastery.)",
-      "metadata": {
-        "category": "General Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "4"
-      }
-    ],
-    "id": "5d0059f2-2255-463d-87e7-8bf631869d6c"
-  },
-  {
-    "details": {
-      "name": "Archery",
-      "description": "You are an expert with ranged weapons. You gain a +2 bonus to attack rolls you make with ranged weapon. (If you have multiple Fighting Style feats, you can’t apply more than one to the same attack.)",
-      "metadata": {
-        "category": "Fighting Style Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 0,
-        "value": "Fighting Style feature"
-      }
-    ],
-    "id": "14a44b0d-0a9c-4316-8e1c-db46003179cf"
-  },
-  {
-    "details": {
-      "name": "Defense",
-      "description": "Focused on wearing armor effectively, you gain a +1 bonus to Armor Class while you are wearing armo.",
-      "metadata": {
-        "category": "Fighting Style Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 0,
-        "value": "Fighting Style feature"
-      }
-    ],
-    "id": "d282513c-d2ea-4e40-a8ae-b580f821ad14"
-  },
-  {
-    "details": {
-      "name": "Great Weapon Fighting",
-      "description": "You have learned to make the most of heavy two-handed weapons. When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can treat the die as if it had rolled a 3 instea. The weapon must have the Two-Handed or Versatile property for you to gain this benefit.",
-      "metadata": {
-        "category": "Fighting Style Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 0,
-        "value": "Fighting Style feature"
-      }
-    ],
-    "id": "c23078e7-0d00-41bc-aea1-edba7bc76602"
-  },
-  {
-    "details": {
-      "name": "Two-Weapon Fighting",
-      "description": "You are skilled at fighting with two light weapons. When you engage in two-weapon fighting (making an extra attack as a Bonus Action with a Light weapon in your off-hand), you can add your ability modifier to the damage of the Bonus Action attac (normally you would not add it).",
-      "metadata": {
-        "category": "Fighting Style Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 0,
-        "value": "Fighting Style feature"
-      }
-    ],
-    "id": "d870455b-835e-490a-88f2-f377064dc66a"
-  },
-  {
-    "details": {
-      "name": "Boon of Irresistible Offense",
-      "description": "Your physical attacks carry overwhelming powe. **Ability Score Increase.** Increase your Strength or Dexterity by 1, to a maximum of 30. **Overcome Defenses.** Damage you deal with weapon attacks (bludgeoning, piercing, slashing) ignores resistance. **Overwhelming Strike.** When you roll a 20 on an attack roll (critical hit) with a weapon or unarmed strike, you deal extra damage equal to the ability score increased by this feat (e.g., +30 Str mod would add +30 damage.",
-      "metadata": {
-        "category": "Epic Boon Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "19"
-      }
-    ],
-    "id": "cf04ee02-6913-4ccb-a4cf-f160bf8e81e5"
-  },
-  {
-    "details": {
-      "name": "Boon of Spell Recall",
-      "description": "You can draw on wellsprings of magic to cast spells freel. **Ability Score Increase.** Increase your Intelligence, Wisdom, or Charisma by 1, to a maximum of 30. **Free Casting.** Whenever you cast a spell using a 1st–4th level spell slot, roll a d4. If you roll a number on the die equal to the spell’s level, the spell slot is **not expended** on casting. (For example, if you cast a 3rd-level spell and roll a 3 on the d4, you don’t expend the slot.)",
-      "metadata": {
-        "category": "Epic Boon Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "19"
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "4"
+   }
+  ]
+ },
+ {
+  "id": "7bd5ef9d-18d4-425d-8ed4-664d05b6128e",
+  "details": {
+   "id": "e4d33ed2-18af-5b21-bbc7-39ef005a2614",
+   "name": "Grappler",
+   "description": "You gain the following benefits.\n\n**Ability Score Increase.** Increase your Strength or Dexterity score by 1, to a maximum of 20.\n\n**Punch and Grab.** When you hit a creature with an Unarmed Strike as part of the Attack action on your turn, you can use both the Damage and the Grapple option. You can use this benefit only once per turn.\n\n**Attack Advantage.** You have Advantage on attack rolls against a creature Grappled by you.\n\n**Fast Wrestler.** You don't have to spend extra movement to move a creature Grappled by you if the creature is your size or smaller.",
+   "metadata": {
+    "category": "General Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "str,dex"
       },
-      {
-        "type": 0,
-        "value": "Spellcasting feature"
-      }
-    ],
-    "id": "89b69d9b-9bc4-45cb-9af9-f6209bbd1d05"
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
   },
-  {
-    "details": {
-      "name": "Boon of the Night Spirit",
-      "description": "You become one with the shadow. **Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30. **Merge with Shadows.** While you are in Dim Light or Darkness, you can use a Bonus Action to become Invisible. This invisibility lasts until immediately after you take an action or a reaction. **Shadowy Form.** While in Dim Light or Darkness, you have resistance to all damage except psychic and radiant.",
-      "metadata": {
-        "category": "Epic Boon Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "19"
-      }
-    ],
-    "id": "6db560f7-e2e5-4bbc-85fd-d0b6ccafd1a2"
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "4"
+   },
+   {
+    "type": 7,
+    "value": "STR:13 or DEX:13"
+   }
+  ]
+ },
+ {
+  "id": "14a44b0d-0a9c-4316-8e1c-db46003179cf",
+  "details": {
+   "id": "c87411ea-5d96-5ef8-8498-c296be9ec684",
+   "name": "Archery",
+   "description": "You gain a +2 bonus to attack rolls you make with Ranged weapons.",
+   "metadata": {
+    "category": "Fighting Style Feat"
+   }
   },
-  {
-    "details": {
-      "name": "Boon of Truesight",
-      "description": "Your eyes become ever-watchful and pierce through illusion. **Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30. **Truesight.** You gain Truesight out to a range of 60 feet. This allows you to see in normal and magical darkness, see invisible creatures and objects, automatically detect visual illusions, and perceive the original form of shapechangers or creatures transformed by magic.",
-      "metadata": {
-        "category": "Epic Boon Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "19"
-      }
-    ],
-    "id": "cc01400d-55e1-4f00-96a8-990f91599d0e"
+  "prerequisites": [
+   {
+    "type": 0,
+    "value": "Fighting Style feature"
+   }
+  ]
+ },
+ {
+  "id": "d282513c-d2ea-4e40-a8ae-b580f821ad14",
+  "details": {
+   "id": "dd4b6f6d-8673-57b2-baca-4fce69d13336",
+   "name": "Defense",
+   "description": "While you're wearing Light, Medium, or Heavy armor, you gain a +1 bonus to Armor Class.",
+   "metadata": {
+    "category": "Fighting Style Feat"
+   }
   },
-  {
-    "details": {
-      "name": "Boon of Combat Prowess",
-      "description": "Your martial prowess is unmatche. **Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30. **Peerless Aim.** Once per turn when you miss with an attack roll, you can choose to hit instead. After you use this benefit, you must wait until the start of your next turn to use it again.",
-      "metadata": {
-        "category": "Epic Boon Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "19"
-      }
-    ],
-    "id": "85910dd5-44ac-4eed-9fa5-7ecf8505816a"
+  "prerequisites": [
+   {
+    "type": 0,
+    "value": "Fighting Style feature"
+   }
+  ]
+ },
+ {
+  "id": "c23078e7-0d00-41bc-aea1-edba7bc76602",
+  "details": {
+   "id": "4a5e096d-6b55-5d8a-b0a6-af9a7028c076",
+   "name": "Great Weapon Fighting",
+   "description": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit.",
+   "metadata": {
+    "category": "Fighting Style Feat"
+   }
   },
-  {
-    "details": {
-      "name": "Boon of Dimensional Travel",
-      "description": "You can step through dimensions in the blink of an ey. **Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30. **Blink Steps.** Immediately after you take the Attack action or the Magic action on your turn, you can teleport up to 30 feet to an unoccupied space you can see. This ability to teleport lets you reposition freely in combat.",
-      "metadata": {
-        "category": "Epic Boon Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "19"
-      }
-    ],
-    "id": "ae1b4f15-faa1-4ed2-8fe1-9f3f5f78f520"
+  "prerequisites": [
+   {
+    "type": 0,
+    "value": "Fighting Style feature"
+   }
+  ]
+ },
+ {
+  "id": "d870455b-835e-490a-88f2-f377064dc66a",
+  "details": {
+   "id": "1f61977a-8ba7-56ff-9155-ad0d9f4bf235",
+   "name": "Two-Weapon Fighting",
+   "description": "When you make an extra attack as a result of using a weapon that has the Light property, you can add your ability modifier to the damage of that attack if you aren't already adding it to the damage.",
+   "metadata": {
+    "category": "Fighting Style Feat"
+   }
   },
-  {
-    "details": {
-      "name": "Boon of Fate",
-      "description": "You can manipulate the threads of fate for good or il. **Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30. **Improve Fate.** When you or a creature within 60 feet succeeds on or fails a d20 Test (attack roll, ability check, or save), you can use your reaction to roll 2d4 and add the total to the roll (as a bonus on a failure or a penalty on a success). Once you use this feature, you can’t use it again until you roll initiative or finish a Short or Long Rest.",
-      "metadata": {
-        "category": "Epic Boon Feat"
-      }
-    },
-    "prerequisites": [
-      {
-        "type": 1,
-        "value": "19"
-      }
-    ],
-    "id": "f0f18ad7-9d09-477a-9b77-b6853c8a2d65"
-  }
+  "prerequisites": [
+   {
+    "type": 0,
+    "value": "Fighting Style feature"
+   }
+  ]
+ },
+ {
+  "id": "85910dd5-44ac-4eed-9fa5-7ecf8505816a",
+  "details": {
+   "id": "375845e0-5657-5ccd-ae71-d7bacdf2c0b3",
+   "name": "Boon of Combat Prowess",
+   "description": "You gain the following benefits.\n\n**Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30.\n\n**Peerless Aim.** When you miss with an attack roll, you can hit instead. Once you use this benefit, you can't use it again until the start of your next turn.",
+   "metadata": {
+    "category": "Epic Boon Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "str,dex,con,int,wis,cha"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
+  },
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "19"
+   }
+  ]
+ },
+ {
+  "id": "ae1b4f15-faa1-4ed2-8fe1-9f3f5f78f520",
+  "details": {
+   "id": "22ca141e-ba9d-57ab-9e6b-c83beddd0dfc",
+   "name": "Boon of Dimensional Travel",
+   "description": "You gain the following benefits.\n\n**Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30.\n\n**Blink Steps.** Immediately after you take the Attack action or the Magic action, you can teleport up to 30 feet to an unoccupied space you can see.",
+   "metadata": {
+    "category": "Epic Boon Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "str,dex,con,int,wis,cha"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
+  },
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "19"
+   }
+  ]
+ },
+ {
+  "id": "f0f18ad7-9d09-477a-9b77-b6853c8a2d65",
+  "details": {
+   "id": "35ad8df6-7612-533a-bc59-6c8845a4c2f1",
+   "name": "Boon of Fate",
+   "description": "You gain the following benefits.\n\n**Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30.\n\n**Improve Fate.** When you or another creature within 60 feet of you succeeds on or fails a D20 Test, you can roll 2d4 and apply the total rolled as a bonus or penalty to the d20 roll. Once you use this benefit, you can't use it again until you roll Initiative or finish a Short or Long Rest.",
+   "metadata": {
+    "category": "Epic Boon Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "str,dex,con,int,wis,cha"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
+  },
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "19"
+   }
+  ]
+ },
+ {
+  "id": "cf04ee02-6913-4ccb-a4cf-f160bf8e81e5",
+  "details": {
+   "id": "89b8b189-adf4-501d-9d5d-20bc63a1a6b4",
+   "name": "Boon of Irresistible Offense",
+   "description": "You gain the following benefits.\n\n**Ability Score Increase.** Increase your Strength or Dexterity score by 1, to a maximum of 30.\n\n**Overcome Defenses.** The Bludgeoning, Piercing, and Slashing damage you deal always ignores Resistance.\n\n**Overwhelming Strike.** When you roll a 20 on the d20 for an attack roll, you can deal extra damage to the target equal to the ability score increased by this feat. The extra damage's type is the same as the attack's type.",
+   "metadata": {
+    "category": "Epic Boon Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "str,dex"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
+  },
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "19"
+   }
+  ]
+ },
+ {
+  "id": "89b69d9b-9bc4-45cb-9af9-f6209bbd1d05",
+  "details": {
+   "id": "9ac81a9c-8717-59f9-a92d-d05046f93f18",
+   "name": "Boon of Spell Recall",
+   "description": "You gain the following benefits.\n\n**Ability Score Increase.** Increase your Intelligence, Wisdom, or Charisma score by 1, to a maximum of 30.\n\n**Free Casting.** Whenever you cast a spell with a level 1–4 spell slot, roll 1d4. If the number you roll is the same as the slot's level, the slot isn't expended.",
+   "metadata": {
+    "category": "Epic Boon Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "int,wis,cha"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
+  },
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "19"
+   },
+   {
+    "type": 0,
+    "value": "Spellcasting feature"
+   }
+  ]
+ },
+ {
+  "id": "6db560f7-e2e5-4bbc-85fd-d0b6ccafd1a2",
+  "details": {
+   "id": "4961d830-830d-584e-b4d4-68e0eef2341f",
+   "name": "Boon of the Night Spirit",
+   "description": "You gain the following benefits.\n\n**Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30.\n\n**Merge with Shadows.** While within Dim Light or Darkness, you can give yourself the Invisible condition as a Bonus Action. The condition ends on you immediately after you take an action, a Bonus Action, or a Reaction.\n\n**Shadowy Form.** While within Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant.",
+   "metadata": {
+    "category": "Epic Boon Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "str,dex,con,int,wis,cha"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
+  },
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "19"
+   }
+  ]
+ },
+ {
+  "id": "cc01400d-55e1-4f00-96a8-990f91599d0e",
+  "details": {
+   "id": "713533c2-bcfb-5b85-9974-199abe014c1c",
+   "name": "Boon of Truesight",
+   "description": "You gain the following benefits.\n\n**Ability Score Increase.** Increase one ability score of your choice by 1, to a maximum of 30.\n\n**Truesight.** You have Truesight with a range of 60 feet.",
+   "metadata": {
+    "category": "Epic Boon Feat",
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "str,dex,con,int,wis,cha"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
+  },
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "19"
+   }
+  ]
+ }
 ]

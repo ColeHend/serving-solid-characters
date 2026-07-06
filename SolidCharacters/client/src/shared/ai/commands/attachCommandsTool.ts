@@ -40,7 +40,8 @@ export const ATTACH_COMMANDS_TOOL: AiToolDef = {
                                     category: { type: "string", enum: [...MAD_CATEGORIES], description: "The kind of change." },
                                     value: {
                                         type: "object",
-                                        description: "The fields for this category (string values), e.g. {\"damageType\":\"Fire\"} or {\"bonus\":\"13\",\"stats\":\"dex\"} or {\"stat\":\"con\",\"statValue\":\"1\"}.",
+                                        description: "The fields for this category (string values), e.g. {\"damageType\":\"Fire\"} or {\"bonus\":\"13\",\"stats\":\"dex\"} or {\"stat\":\"con\",\"statValue\":\"1\"}. " +
+                                            "For 'ability of your choice' stat increases use {\"stat\":\"choice\",\"options\":\"str,dex\",\"statValue\":\"1\"}; for 'your score IS N' effects add \"mode\":\"set\".",
                                         additionalProperties: { type: "string" },
                                     },
                                     target: { type: "string", description: "For Spells/Items/Features/Feats only: the exact name of the referenced entity." },

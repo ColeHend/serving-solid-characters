@@ -14,6 +14,7 @@ export class Character {
   }
   public ArmorClass: number = 0;
   public Speed: number = 0;
+  public movementTypes: MovementType[] = [MovementType.Walk];
   public className: string = '';
   public subclass: string[] = [];
   public background: string = '';
@@ -28,6 +29,8 @@ export class Character {
   public attacksPerAction: number = 1;
   /** Spent use counts per limited-use feature, keyed by feature name (feature ids are often empty). */
   public featureUses: Record<string, number> = {};
+  /** Resolved picks for choice-form AddStats commands, keyed by feature name → ability key ("str".."cha"). */
+  public statChoices: Record<string, string> = {};
   public resistances: DamageAffinity[] = [];
   public vulnerabilities: DamageAffinity[] = [];
   public immunities: DamageAffinity[] = [];
@@ -152,4 +155,12 @@ export interface CharacterForm extends halfCharacter {
   backgrndItemChoice: string|null;
   classItemChoice: string|null;
   BackgrndFeat: string;
+}
+
+export enum MovementType {
+  Walk,
+  Fly,
+  Swim,
+  Climb,
+  Burrow
 }
