@@ -84,11 +84,12 @@ const ItemsViewTab:Component = () => {
 
   return <Body class={`${styles.body}`}>
     <h1 class={`${styles.title}`}>Items</h1>
-    
+    <span class={`${styles.carouselOverwrite}`}>
     <Carousel 
       startingIndex={startingIndex()} 
       currentIndex={[itemIndex,setItemIndex]} 
       elements={elementMemo()} />
+    </span>
   </Body>
 }
 export {normalizeCost,costToCopper}

@@ -4,6 +4,7 @@ import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { MoreVert } from "coles-solid-library/icons";
 import { homebrewManager } from "../../../../../shared";
+import styles from "./itemMenu.module.scss";
 
 
 interface menuProps {
@@ -26,7 +27,7 @@ export const ItemsMenu:Component<menuProps> = (props) => {
     }
 
     return <>
-        <Button ref={setAnchorEl} onClick={()=>setShowMenu(old=>!old)}>
+        <Button id={`${styles.buttonOverwrite}`} ref={setAnchorEl} onClick={()=>setShowMenu(old=>!old)}>
             <Icon icon={MoreVert}/>
         </Button>
 
