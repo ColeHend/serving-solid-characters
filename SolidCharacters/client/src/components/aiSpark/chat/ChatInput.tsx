@@ -1,5 +1,5 @@
 import { Component, For, Show, createSignal, onCleanup } from "solid-js";
-import { addSnackbar, Button, Icon, TextArea } from "coles-solid-library";
+import { addSnackbar, Button, FormField, Icon, TextArea } from "coles-solid-library";
 import { AudioFile, Close, Image, Mic, Send, Stop } from "coles-solid-library/icons";
 import { aiAssistant } from "../../../shared/customHooks/aiAssistant";
 import { ACCEPTED_IMAGE_TYPES, dataUrlOf, filesToAiImages } from "../../../shared/ai/imageAttach";
@@ -226,14 +226,15 @@ const ChatInput: Component = () => {
                         </Show>
                     </Show>
                 </div>
-                <TextArea
-                    text={text}
-                    setText={aiAssistant.setDraft}
-                    placeholder={aiAssistant.mode() === "homebrew" ? "Describe the homebrew to generate…" : "Ask Grimoire…"}
-                    rows={1}
-                    onKeyDown={onKeyDown}
-                    onPaste={onPaste}
-                />
+                <FormField name={aiAssistant.mode() === "homebrew" ? "Describe the homebrew to generate…" : "Ask Grimoire…"} variant="outlined">
+                    <TextArea
+                        text={text}
+                        setText={aiAssistant.setDraft}
+                        rows={1}
+                        onKeyDown={onKeyDown}
+                        onPaste={onPaste}
+                    />
+                </FormField>
                 <Button
                     theme="primary"
                     title="Send"
