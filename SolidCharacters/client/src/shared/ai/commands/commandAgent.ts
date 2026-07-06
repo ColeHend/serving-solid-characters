@@ -191,6 +191,9 @@ const KEYWORD_CATEGORIES: { re: RegExp; cats: MadCategory[] }[] = [
     { re: /extra attack|attack twice|additional attack|number of attacks/i, cats: ["Attacks"] },
     { re: /invocation|fighting style|weapon mastery|maneuver|metamagic/i, cats: ["ClassFeature"] },
     { re: /\buses?\b|per (?:short|long) rest|regain(?:s|ing)? (?:all|expended)|expended use/i, cats: ["Uses"] },
+    // Activated abilities — "as a Bonus Action, you can..." grants a new action, not a passive bonus.
+    { re: /as an? (?:bonus action|action|reaction|magic action)|you can take the .{0,30}\baction\b|you can use (?:your|an) action/i, cats: ["Actions"] },
+    { re: /(?:cantrips?|spells?) of your choice/i, cats: ["Spells"] },
 ];
 
 /** A cheat sheet trimmed to only the categories the feature's text hints at (falls back to all). */

@@ -31,7 +31,43 @@
    "name": "Magic Initiate",
    "description": "You gain the following benefits.\n\n**Two Cantrips.** You learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list. Intelligence, Wisdom, or Charisma is your spellcasting ability for this feat's spells (choose when you select this feat).\n\n**Level 1 Spell.** Choose a level 1 spell from the same list you selected for this feat's cantrips. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have.\n\n**Spell Change.** Whenever you gain a new level, you can replace one of the spells you chose for this feat with a different spell of the same level from the chosen spell list.\n\n**Repeatable.** You can take this feat more than once, but you must choose a different spell list each time.",
    "metadata": {
-    "category": "Origin Feat"
+    "category": "Origin Feat",
+    "mads": [
+     {
+      "command": "AddSpells",
+      "value": {
+       "ID": "choice",
+       "options": "855d96e5-f521-4c16-bcab-4030e7ef09d4,35d85a31-1dea-4052-acf4-1d48642aa0cd,3ebca789-1a72-47ed-9937-9d472d911743,cac42d57-94ad-4a49-b6f4-4bfc5b185cc6,fef46bf7-2e30-4901-92a3-e1c873a4c88a,5f378821-e3fb-4cd9-bac7-4dca04e80dd4,d1424687-4958-4407-ae6c-2ad9fce858aa,b93c0aeb-0495-4078-aac8-785ed81f4e66,5b2a60a7-c2f9-4e1b-a7ce-f8e3512a2cd3,7f0857e2-3005-40d7-89a9-43b651a8a367,119acc13-4297-41b1-9a24-28a6728090e5,b0a0227a-2289-4e3e-983e-bc438693a7b3,84b4aa30-4351-4353-ac5b-ff186d4518ec,a62948bb-3fbc-48d4-90ff-54a5e06fed52,e600d61b-6564-4045-8c3b-ee89d8d2d802,321f0aa2-57ca-4a03-9a56-8da1a4de30e9,83b62b3a-8260-4316-8150-d139fcc2db80,b37c68d4-abdf-415f-9b83-c9504594c791,81367204-30a2-44db-bd7d-5302ff966a52,7dc21188-c7e1-4e98-950c-3f589f7eb22a,2e1f8fb1-f2fe-469c-bf8b-d3c1a43b7dbd,23e6ebc2-5504-4bde-95c6-a15d370c0ce2,3ad133a3-37e5-4f89-a12a-907201bcf0ae,23cd2844-cdd3-4546-94da-2ac341f79537",
+       "count": "2",
+       "spellLevel": "0"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     },
+     {
+      "command": "AddSpells",
+      "value": {
+       "ID": "choice",
+       "options": "a789db0f-7609-4b2d-bf81-54b4d394f431,cb9d4113-47d5-4148-b57e-71efb76664f1,e1e2bb1d-e3d9-4f80-965c-d14140a8240b,a670802e-0fcb-4ec6-9cf3-cdf76217238b,73ba42a1-dcd2-4bb4-8256-444d2da3859b,8aee54a5-4798-44be-8a0e-611f1d68a38d,dc977faf-abff-44f2-9840-970627944908,6572dc35-a6bd-4149-8db6-467363887737,43653572-1775-4c02-9146-2d987a34f73b,237d1ba7-1ecb-4ace-94ac-10d871d761f4,3461b9b1-b00e-42aa-9850-7cc0244d8a04,988e64fc-8598-49af-9b0d-dddd07faed71,52597251-55ba-499b-b193-63ed0b1573c9,2bd0e570-fdce-4084-99d7-1f538738c9ce,fb62003f-84d1-47ef-a892-e0558adc4f59,9c237757-894a-4f3f-9b77-e65a9ec80266,ea026a5c-aaa6-4fdc-b906-cd8337fafa56,2c4e6b37-6b33-4443-b577-5a070f57f7e3,3dbe5c49-e0ac-4f60-9ffb-e20ebfb95451,249d0cae-85b8-41ca-8881-6a59491fc982,4410220a-b2a0-44d0-9944-e8e850b094e1,058cfaaa-8dae-4dc0-a3e4-ee2840ac3abf,71cffd84-5cc5-4649-a99c-8b18adab1f30,81cf1c01-18a7-4bb9-84d0-a50f96cec766,576ed095-90ee-4ddc-953a-1f5ebff42a92,5a00f162-b570-49fb-bfac-38950ee3e4ae,47982b84-7ce9-4262-8b4e-7517d93c8aa1,f0bb1f29-9035-4f27-8a99-08cedf2c6082,9661d5cc-bfa3-4721-ad2c-b892821b0505,b98a8cc4-fa44-4365-903b-cca8b037f05a,7a1fcc7b-d4be-4adb-9897-b885371f97a1,2c49c25f-82df-4323-9fca-ecc31d20b220,73822599-c15f-462f-80e2-231eb654a5fc,1d6aab21-157d-489b-8e6a-39539f9f4b72,202674a3-0c2d-440d-bab3-6a759709ad0b,34307856-8a38-4c64-b04e-2b591a59c24a,670f452e-8c92-4fd9-891d-78d1b32e72ac,bb875917-ea05-414f-b97b-a5a7e01858a6,18b702af-19fd-4a49-b5b8-c0f896608014,1af4304f-bfe5-41d4-a3f9-d8526d6301cc,9536c0bc-f796-4a17-a5ba-ad036c204a83,dec9c958-de81-490a-9ba4-7743dad7ca66,db5f306b-16c3-4818-8a55-160e4cc77ac6,bd46b3a5-9bc3-4273-9791-6111fd870774,d45f68e9-0c82-43cf-9fbb-5f1ffe853004,28b8d668-980d-4dd3-815a-f6fa01a352cd,d9d089dc-ba06-4d0b-b507-68d5a5770511,be7fa8f5-5c09-4d04-97fe-65d03a1a21b7",
+       "count": "1",
+       "spellLevel": "1"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     },
+     {
+      "command": "AddUses",
+      "value": {
+       "amount": "1",
+       "recharge": "Long Rest"
+      },
+      "type": 1,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
    }
   },
   "prerequisites": [],
@@ -413,6 +449,17 @@
        "stat": "choice",
        "statValue": "1",
        "options": "str,dex,con,int,wis,cha"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     },
+     {
+      "command": "AddActions",
+      "value": {
+       "name": "Merge with Shadows",
+       "actionType": "bonusAction",
+       "source": "Boon of the Night Spirit"
       },
       "type": 0,
       "prerequisites": [],

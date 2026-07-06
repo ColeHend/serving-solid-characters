@@ -8,7 +8,7 @@ import type { FeatureDetail, MadFeature as StoredMad } from "../../../models/gen
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
 import { rollBonusAmount } from "./commands/useRollBonusFeature";
@@ -510,5 +510,130 @@ describe("AddSpeed modes", () => {
 
         const c = addMadFeature(makeCharacter(), mad("RemoveSpeed", { speed: "10" }));
         expect(c.Speed).toBe(20);
+    });
+});
+
+describe("AddActions / RemoveActions", () => {
+    it("initializes grantedActions on old-shape characters and stores all fields", () => {
+        const old = makeCharacter();
+        delete (old as Partial<Character>).grantedActions;
+
+        const c = addMadFeature(old, mad("AddActions", {
+            name: "Second Wind", actionType: "bonusAction", description: "regain 1d10 + level HP", source: "Second Wind",
+        }));
+
+        expect(c.grantedActions).toEqual([{
+            name: "Second Wind", actionType: "bonusAction", description: "regain 1d10 + level HP", source: "Second Wind",
+        }]);
+    });
+
+    it("dedupes by case-insensitive name + actionType and drops invalid input", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddActions", { name: "Rage", actionType: "bonusAction" }));
+        c = addMadFeature(c, mad("AddActions", { name: "RAGE", actionType: "bonusAction" }));
+        c = addMadFeature(c, mad("AddActions", { name: "   ", actionType: "bonusAction" }));
+        c = addMadFeature(c, mad("AddActions", { name: "Dodge Roll", actionType: "somersault" }));
+
+        expect(c.grantedActions).toHaveLength(1);
+    });
+
+    it("the same name with a different actionType is a distinct grant; remove matches name + type", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddActions", { name: "Wild Shape", actionType: "action" }));
+        c = addMadFeature(c, mad("AddActions", { name: "Wild Shape", actionType: "bonusAction" }));
+
+        expect(c.grantedActions).toHaveLength(2);
+
+        c = addMadFeature(c, mad("RemoveActions", { name: "wild shape", actionType: "action" }));
+
+        expect(c.grantedActions).toEqual([{
+            name: "Wild Shape", actionType: "bonusAction", description: undefined, source: undefined,
+        }]);
+    });
+});
+
+describe("useMadCharacters returnActions flag", () => {
+    const grants = () => [
+        mad("AddActions", { name: "Channel Divinity", actionType: "action" }),
+        mad("AddActions", { name: "Retaliation", actionType: "reaction" }),
+        mad("AddSpeed", { speed: "10" }),
+    ];
+
+    it("the two-arg call still returns the character", () => {
+        const c = useMadCharacters(makeCharacter(), grants());
+        expect(c.Speed).toBe(40);
+        expect(c.grantedActions).toHaveLength(2);
+    });
+
+    it("returnActions returns only the mads-granted actions instead of the character", () => {
+        const actions = useMadCharacters(makeCharacter(), grants(), { returnActions: true });
+        expect(actions.map(a => a.name).sort()).toEqual(["Channel Divinity", "Retaliation"]);
+        expect(actions.every(a => ["action", "bonusAction", "reaction"].includes(a.actionType))).toBe(true);
+    });
+
+    it("returnActions on a character with no action grants is an empty list, not defaults", () => {
+        const actions = useMadCharacters(makeCharacter(), [mad("AddSpeed", { speed: "10" })], { returnActions: true });
+        expect(actions).toEqual([]);
+    });
+});
+
+describe("AddSpells choice form", () => {
+    it("an unresolved choice reaching the handler is a no-op", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSpells", { ID: "choice", options: "sp-1,sp-2", count: "1" }));
+        expect(c.spells).toEqual([]);
+    });
+
+    it("collectMadFeatures excludes unresolved choices and expands complete picks into concrete grants", () => {
+        const cantrips = mad("AddSpells", { ID: "choice", options: "sp-a,sp-b,sp-c", count: "2", spellLevel: "0" });
+        const feature: FeatureDetail = { id: "mi-1", name: "Magic Initiate", description: "", metadata: { mads: stored(cantrips) } };
+        const base = makeCharacter({ features: [feature] });
+
+        // no picks yet → excluded, listed as pending
+        expect(collectMadFeatures(base)).toEqual([]);
+        expect(pendingSpellChoices(base, feature)).toHaveLength(1);
+        expect(choiceSpellMads(feature)).toHaveLength(1);
+        expect(spellChoiceOptions(cantrips)).toEqual(["sp-a", "sp-b", "sp-c"]);
+        expect(spellChoiceCount(cantrips)).toBe(2);
+        expect(spellChoiceKey(feature, cantrips)).toBe("mi-1::0");
+
+        // incomplete picks (1 of 2) stay pending
+        const partial = makeCharacter({ ...base, spellChoices: { "mi-1::0": "sp-a" } });
+        expect(collectMadFeatures(partial)).toEqual([]);
+
+        // complete picks → one concrete AddSpells per spell, and they apply
+        const picked = makeCharacter({ ...base, spellChoices: { "mi-1::0": "sp-a,sp-c" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected).toHaveLength(2);
+        expect(collected.map(m => m.value["ID"]).sort()).toEqual(["sp-a", "sp-c"]);
+        expect(pendingSpellChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.spells.map(s => s.name).sort()).toEqual(["sp-a", "sp-c"]);
+    });
+
+    it("two choice commands on one feature resolve independently via distinct spellLevel keys", () => {
+        const cantrips = mad("AddSpells", { ID: "choice", options: "c-1,c-2", count: "1", spellLevel: "0" });
+        const level1 = mad("AddSpells", { ID: "choice", options: "l-1,l-2", count: "1", spellLevel: "1" });
+        const feature: FeatureDetail = { id: "mi-2", name: "Magic Initiate", description: "", metadata: { mads: stored(cantrips, level1) } };
+
+        // only the cantrip picked → the level-1 choice stays pending
+        const half = makeCharacter({ features: [feature], spellChoices: { "mi-2::0": "c-1" } });
+        expect(collectMadFeatures(half).map(m => m.value["ID"])).toEqual(["c-1"]);
+        expect(pendingSpellChoices(half, feature)).toHaveLength(1);
+
+        // both picked → both resolve
+        const full = makeCharacter({ features: [feature], spellChoices: { "mi-2::0": "c-1", "mi-2::1": "l-2" } });
+        expect(collectMadFeatures(full).map(m => m.value["ID"]).sort()).toEqual(["c-1", "l-2"]);
+        expect(pendingSpellChoices(full, feature)).toHaveLength(0);
+    });
+
+    it("a pick outside the options list does not apply", () => {
+        const choice = mad("AddSpells", { ID: "choice", options: "sp-a,sp-b", count: "1", spellLevel: "1" });
+        const feature: FeatureDetail = { id: "mi-3", name: "Magic Initiate", description: "", metadata: { mads: stored(choice) } };
+        const c = makeCharacter({ features: [feature], spellChoices: { "mi-3::1": "sp-z" } });
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+
+    it("fixed-form AddSpells still applies unchanged", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSpells", { ID: "spell-123" }));
+        expect(c.spells).toEqual([{ name: "spell-123", prepared: false }]);
     });
 });

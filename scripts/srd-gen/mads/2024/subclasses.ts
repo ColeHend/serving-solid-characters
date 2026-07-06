@@ -10,7 +10,7 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
  *
  * Same conventions as classes.ts (Uses.recharge = the rest that fully resets; modifier-based use
  * counts approximated to their minimum "1"). Subclasses with no encodable mechanics are omitted:
- *  Circle of the Land, Hunter, Evoker
+ *  Hunter, Evoker
  *  (their features are reactions, riders, condition immunities, or choice-dependent grants).
  */
 
@@ -25,12 +25,21 @@ const adv = (rollType: string, extra: Record<string, string> = {}): CommandSpecI
     add("Advantage", { rollType, mode: "advantage", ...extra });
 // Always-prepared subclass spell list → one AddSpells per spell on the granting feature.
 const spells = (...names: string[]): CommandSpecInput[] => names.map(spell);
+// an activated ability: a new action/bonusAction/reaction on the sheet; source (defaults to the
+// action's name) = the feature whose featureUses counter it spends (e.g. "Channel Divinity")
+const action = (name: string, actionType: string, source?: string): CommandSpecInput =>
+    add("Actions", { name, actionType, source: source ?? name });
 
 export const map: MadMap = {
     // =============================================== Barbarian: Path of the Berserker
     "Path of the Berserker/Intimidating Presence": [uses("1", "Long Rest")], // or restore by expending a Rage
+    // Retaliation — "When you take damage from a creature that is within 5 feet of you, you can take
+    // a Reaction to make one melee attack against that creature."
+    "Path of the Berserker/Retaliation": [
+        add("Actions", { name: "Retaliation", actionType: "reaction", description: "when you take damage from a creature within 5 feet of you: make one melee attack against it" }),
+    ],
     // skip: Frenzy (damage rider), Mindless Rage (Charmed/Frightened immunity is a condition, not a
-    //       damage type), Retaliation (reaction attack).
+    //       damage type).
 
     // =============================================== Bard: College of Lore
     // "You gain proficiency with three skills of your choice."
@@ -49,8 +58,10 @@ export const map: MadMap = {
         "Aura of Life", "Death Ward",
         "Greater Restoration", "Mass Cure Wounds",
     ),
-    // skip: Disciple of Life / Blessed Healer / Supreme Healing (healing riders), Preserve Life
-    //       (a Channel Divinity effect — no new use of its own).
+    // Preserve Life — "As a Magic action, you present your Holy Symbol and expend a use of your
+    // Channel Divinity" — a new named action spending the class's Channel Divinity uses.
+    "Life Domain/Preserve Life": [action("Preserve Life", "action", "Channel Divinity")],
+    // skip: Disciple of Life / Blessed Healer / Supreme Healing (healing riders).
 
     // =============================================== Fighter: Champion
     "Champion/Remarkable Athlete": [
@@ -65,10 +76,19 @@ export const map: MadMap = {
     "Warrior of the Open Hand/Wholeness of Body": [uses("1", "Long Rest")], // uses = Wisdom modifier (min 1) — approx
     // skip: Open Hand Technique (rider), Fleet Step, Quivering Palm (Focus-Point spend).
 
+    // =============================================== Druid: Circle of the Land
+    // Both are "As a Magic action, you can expend a use of your Wild Shape..."
+    "Circle of the Land/Land's Aid": [action("Land's Aid", "action", "Wild Shape")],
+    "Circle of the Land/Nature's Sanctuary": [action("Nature's Sanctuary", "action", "Wild Shape")],
+    // skip: Circle of the Land Spells / Natural Recovery (choice-dependent), Nature's Ward (condition
+    //       immunity + land-choice resistance).
+
     // =============================================== Rogue: Thief
     // "Climber. You gain a Climb Speed equal to your Speed." (Jumper has no category.)
     "Thief/Second-Story Work": [add("Movement", { movementType: "climb" })],
-    // skip: Fast Hands, Supreme Sneak (Cunning Strike option), Use Magic Device, Thief's Reflexes.
+    // Fast Hands — "As a Bonus Action, you can do one of the following: Sleight of Hand / Use an Object."
+    "Thief/Fast Hands": [action("Fast Hands", "bonusAction")],
+    // skip: Supreme Sneak (Cunning Strike option), Use Magic Device, Thief's Reflexes.
 
     // =============================================== Paladin: Oath of Devotion
     "Oath of Devotion/Oath of Devotion Spells": spells(

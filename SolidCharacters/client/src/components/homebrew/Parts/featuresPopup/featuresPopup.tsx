@@ -30,6 +30,7 @@ import { FeaturePrerequisites } from "./parts/featurePrerequisites/featurePrereq
 import { ClassFeature } from "./parts/classFeature/classFeature";
 import { AdvantageFeature } from "./parts/advantageFeature/advantageFeature";
 import { RollBonusFeature } from "./parts/rollBonusFeature/rollBonusFeature";
+import { ActionsFeature } from "./parts/actionsFeature/actionsFeature";
 import { AttacksFeature } from "./parts/attacksFeature/attacksFeature";
 import { UsesFeature } from "./parts/usesFeature/usesFeature";
 
@@ -213,6 +214,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         'Senses',
         'HitPoints',
         'RollBonus',
+        'Actions',
     ]
 
     const getMadType = (index: number) => {
@@ -754,6 +756,18 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                             if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
                                                             if (stat) next["stat"] = stat;
                                                             if (condition) next["condition"] = condition;
+                                                            setMadFeature("value", i(), next);
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddActions" || getMaDCommand(i())?.() === "RemoveActions"}>
+                                                    <ActionsFeature
+                                                        toggleValue={(name, actionType, description) => {
+                                                            const next: Record<string, string> = {"name": name, "actionType": actionType};
+                                                            if (description) next["description"] = description;
                                                             setMadFeature("value", i(), next);
                                                             setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             setCard(false);

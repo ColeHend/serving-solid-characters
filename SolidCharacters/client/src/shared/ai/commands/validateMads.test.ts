@@ -158,6 +158,61 @@ describe("Proficiencies choice form", () => {
     });
 });
 
+describe("Spells choice form", () => {
+    // A tiny spell "catalog": Fire Bolt / Light / Shield resolve, anything else doesn't.
+    const ids: Record<string, string> = { "fire bolt": "sp-firebolt", "light": "sp-light", "shield": "sp-shield" };
+    const ref = (_kind: string, name: string) => ids[name.toLowerCase()] ?? null;
+
+    it("still coerces the fixed form from a target name", () => {
+        const m = coerceCommand("Add", "Spells", {}, "Fire Bolt", ref);
+        expect(m).toMatchObject({ command: "AddSpells", value: { ID: "sp-firebolt" } });
+    });
+
+    it("coerces the choice form, resolving each option name to its id and dropping unknowns", () => {
+        const m = coerceCommand("Add", "Spells", { ID: "choice", options: "Fire Bolt, Light, Wishful Thinking", count: "2", spellLevel: "0" }, undefined, ref);
+        expect(m).toMatchObject({ command: "AddSpells", value: { ID: "choice", options: "sp-firebolt,sp-light", count: "2", spellLevel: "0" } });
+    });
+
+    it("drops a choice-form command with no options, or whose options all fail to resolve", () => {
+        expect(coerceCommand("Add", "Spells", { ID: "choice", count: "2" }, undefined, ref)).toBeNull();
+        expect(coerceCommand("Add", "Spells", { ID: "choice", options: "Wishful Thinking", count: "1" }, undefined, ref)).toBeNull();
+    });
+
+    it("validateStoredCommand accepts choice+options and rejects choice without options", () => {
+        expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "choice", options: "sp-firebolt,sp-light", count: "2", spellLevel: "0" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "choice", count: "2" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "sp-firebolt" } }))).toEqual([]);
+    });
+});
+
+describe("Actions", () => {
+    const noRef = () => null;
+
+    it("coerces a well-formed grant and normalizes loose actionType phrasings", () => {
+        const m = coerceCommand("Add", "Actions", { name: "Rage", actionType: "Bonus Action", source: "Rage" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddActions", value: { name: "Rage", actionType: "bonusAction", source: "Rage" } });
+
+        const magic = coerceCommand("Add", "Actions", { name: "Turn Undead", actionType: "Magic action" }, undefined, noRef);
+        expect(magic?.value["actionType"]).toBe("action");
+    });
+
+    it("drops a grant with a missing name or unknown actionType", () => {
+        expect(coerceCommand("Add", "Actions", { actionType: "action" }, undefined, noRef)).toBeNull();
+        expect(coerceCommand("Add", "Actions", { name: "Dodge Roll", actionType: "somersault" }, undefined, noRef)).toBeNull();
+    });
+
+    it("resolves loose category names to Actions", () => {
+        const m = coerceCommand("Add", "bonus action", { name: "Second Wind", actionType: "bonus" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddActions", value: { name: "Second Wind", actionType: "bonusAction" } });
+    });
+
+    it("validateStoredCommand accepts a stored grant and flags a bogus actionType", () => {
+        expect(validateStoredCommand(mad({ command: "AddActions", value: { name: "Channel Divinity", actionType: "action" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddActions", value: { name: "Channel Divinity", actionType: "somersault" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddActions", value: { actionType: "action" } }))).not.toEqual([]);
+    });
+});
+
 describe("ArmorClass flat bonus", () => {
     const noRef = () => null;
 

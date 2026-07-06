@@ -17,20 +17,20 @@ import { MadFeature, MadType } from "../../../models/generated";
  * resolve to KNOWN options is dropped entirely rather than attached as a sheet-corrupting no-op.
  */
 
-/** The 24 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
+/** The 25 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
 export type MadCategory =
     | "Spells" | "Items" | "Proficiencies" | "Features" | "Currency" | "ArmorClass"
     | "Expertise" | "Feats" | "Languages" | "Resistances" | "Vulnerabilities"
     | "Immunities" | "SavingThrows" | "Stats" | "Speed" | "AllProficiencies"
     | "ClassFeature" | "Advantage" | "Attacks" | "Uses"
-    | "Movement" | "Senses" | "HitPoints" | "RollBonus";
+    | "Movement" | "Senses" | "HitPoints" | "RollBonus" | "Actions";
 
 export const MAD_CATEGORIES: MadCategory[] = [
     "Spells", "Items", "Proficiencies", "Features", "Currency", "ArmorClass",
     "Expertise", "Feats", "Languages", "Resistances", "Vulnerabilities",
     "Immunities", "SavingThrows", "Stats", "Speed", "AllProficiencies",
     "ClassFeature", "Advantage", "Attacks", "Uses",
-    "Movement", "Senses", "HitPoints", "RollBonus",
+    "Movement", "Senses", "HitPoints", "RollBonus", "Actions",
 ];
 
 /** Catalog entities a command can reference by name (resolved to the entity's `.id`). */
@@ -104,6 +104,9 @@ const MOVEMENT_ALIASES: Record<string, string> = {
 /** Special senses a Senses command can grant (stored lowercase in character.senses). */
 export const SENSE_TYPES = ["darkvision", "blindsight", "tremorsense", "truesight"] as const;
 
+/** Action-economy slots an Actions command can grant (matches ActionType on the character model). */
+export const ACTION_TYPES = ["action", "bonusAction", "reaction"] as const;
+
 /** Loose roll-type phrasings → canonical ROLL_TYPES entry (keys are lowercased, non-alpha stripped). */
 const ROLL_TYPE_ALIASES: Record<string, string> = {
     save: "SavingThrow", saves: "SavingThrow", savingthrow: "SavingThrow", savingthrows: "SavingThrow",
@@ -117,7 +120,7 @@ const ROLL_TYPE_ALIASES: Record<string, string> = {
 
 // ---- field specs ----
 
-type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillOrChoice" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag";
+type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillOrChoice" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "refOrChoice" | "refCsv" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag" | "actionType";
 
 interface FieldSpec {
     /** The value-object key this field writes (e.g. "bonus", "damageType", "ID"). */
@@ -146,7 +149,20 @@ interface CommandSpec {
 const REF = (key: string): FieldSpec => ({ key, type: "ref", required: true });
 
 export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
-    Spells: { category: "Spells", idBased: true, refKind: "spell", addFields: [REF("ID")], removeFields: [REF("ID")], hint: "grants/removes a spell — target = exact spell name" },
+    Spells: {
+        category: "Spells", idBased: true, refKind: "spell",
+        labelKeys: ["count", "spellLevel"],
+        addFields: [
+            { key: "ID", type: "refOrChoice", required: true },
+            { key: "options", type: "refCsv", required: false },
+            { key: "count", type: "number", required: false },
+            { key: "spellLevel", type: "number", required: false },
+        ],
+        removeFields: [{ key: "ID", type: "refOrChoice", required: true }],
+        hint: "grants/removes a spell — target = exact spell name. " +
+            "For 'choose N spells/cantrips of your choice from a list' use ID = choice with options = comma-separated allowed spell names, " +
+            "count = how many the player picks, spellLevel = the spell level (0 = cantrip; the player picks on the sheet).",
+    },
     Items: { category: "Items", idBased: true, refKind: "item", addFields: [REF("ID")], removeFields: [REF("name")], hint: "grants/removes an item — target = exact item name" },
     Features: { category: "Features", idBased: true, refKind: "feature", addFields: [REF("ID")], removeFields: [REF("ID")], hint: "grants/removes another existing feature — target = exact feature name" },
     Feats: { category: "Feats", idBased: true, refKind: "feat", addFields: [REF("featID")], removeFields: [REF("featID")], hint: "grants/removes a feat — target = exact feat name" },
@@ -347,6 +363,24 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         removeFields: [{ key: "amount", type: "number", required: true }],
         hint: "marks THIS feature as limited-use (e.g. 'you can use this twice, regaining all uses on a long rest'); amount = number of uses, recharge = Short Rest or Long Rest",
     },
+    Actions: {
+        category: "Actions", idBased: false,
+        labelKeys: ["name", "actionType"],
+        addFields: [
+            { key: "name", type: "text", required: true },
+            { key: "actionType", type: "actionType", required: true },
+            { key: "description", type: "text", required: false },
+            { key: "source", type: "text", required: false },
+        ],
+        removeFields: [
+            { key: "name", type: "text", required: true },
+            { key: "actionType", type: "actionType", required: true },
+        ],
+        hint: "grants a new Action, Bonus Action, or Reaction the character can take (Channel Divinity, Second Wind, Rage...); " +
+            "name = the action's name, actionType = action/bonusAction/reaction, description (optional) = its rules text, " +
+            "source (optional) = the granting feature's name. This is for an ACTIVATED ability the character chooses to use — " +
+            "NOT a passive bonus, resistance, or always-on trait; pair with Uses when it is limited-use.",
+    },
 };
 
 /**
@@ -376,6 +410,8 @@ export const COMMAND_COMMON_MISTAKES =
     "- \"+1 bonus to Armor Class\" → ArmorClass {\"bonus\":\"1\"} (a flat AC bonus omits stats; AC is not a roll, so it is NEVER RollBonus)\n" +
     "- \"proficiency in three skills of your choice\" → Proficiencies {\"proficiency\":\"choice\",\"options\":\"<comma-separated allowed skills>\",\"count\":\"3\"}\n" +
     "- \"advantage on Stealth checks\" → Advantage {\"rollType\":\"AbilityCheck\",\"mode\":\"advantage\",\"stat\":\"dex\",\"condition\":\"Stealth checks\"} (state WHEN it applies in condition)\n" +
+    "- \"As a Bonus Action, you can enter a Rage\" → Actions {\"name\":\"Rage\",\"actionType\":\"bonusAction\"} (an activated ability the character uses — NOT a passive bonus)\n" +
+    "- \"you learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list\" → Spells {\"ID\":\"choice\",\"options\":\"<comma-separated allowed spell names>\",\"count\":\"2\",\"spellLevel\":\"0\"}\n" +
     "- \"once per long rest…\" → Uses (temporary effects, healing, and damage bonuses/rerolls have no category)";
 
 // ---- pure coercion ----
@@ -414,6 +450,8 @@ const CATEGORY_ALIASES: Record<string, MadCategory> = {
     rollbonus: "RollBonus", rollbonuses: "RollBonus", flatbonus: "RollBonus",
     initiativebonus: "RollBonus", attackbonus: "RollBonus", savebonus: "RollBonus",
     savingthrowbonus: "RollBonus", spellattackbonus: "RollBonus",
+    action: "Actions", newaction: "Actions", bonusaction: "Actions", bonusactions: "Actions",
+    reaction: "Actions", reactions: "Actions", grantedaction: "Actions", grantedactions: "Actions",
     classfeature: "ClassFeature", classfeatures: "ClassFeature",
     invocation: "ClassFeature", invocations: "ClassFeature",
     eldritchinvocation: "ClassFeature", eldritchinvocations: "ClassFeature",
@@ -494,6 +532,15 @@ function coerceSense(raw: string): string | null {
     return null;
 }
 
+function coerceActionType(raw: string): string | null {
+    if (!raw) return null;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    if (key === "action" || key === "actions" || key === "anaction" || key === "magicaction") return "action";
+    if (key === "bonusaction" || key === "bonusactions" || key === "bonus") return "bonusAction";
+    if (key === "reaction" || key === "reactions") return "reaction";
+    return null;
+}
+
 /** Coerce CSV input against an option mapper; returns the canonical comma-joined list, or null if empty. */
 function coerceCsv(raw: string, map: (s: string) => string | null): string | null {
     const parts = raw.split(",").map(s => s.trim()).filter(Boolean).map(map).filter((x): x is string => !!x);
@@ -503,10 +550,18 @@ function coerceCsv(raw: string, map: (s: string) => string | null): string | nul
 
 /** Coerce one field's raw value to its canonical stored string, or null if it doesn't resolve. */
 function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: (refKind: RefKind, name: string) => string | null, refKind: RefKind | undefined): string | null {
-    if (spec.type === "ref") {
+    if (spec.type === "ref" || spec.type === "refOrChoice") {
         const name = norm(raw) || target;
+        if (spec.type === "refOrChoice" && name.toLowerCase() === "choice") return "choice";
         if (!name || !refKind) return null;
         return resolveRef(refKind, name);
+    }
+    if (spec.type === "refCsv") {
+        if (!refKind) return null;
+        const ids = norm(raw).split(",").map(s => s.trim()).filter(Boolean)
+            .map(n => resolveRef(refKind, n)).filter((x): x is string => !!x);
+        const unique = [...new Set(ids)];
+        return unique.length ? unique.join(",") : null;
     }
     const value = norm(raw);
     switch (spec.type) {
@@ -539,6 +594,7 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
         case "rollType": return coerceRollType(value);
         case "advMode": return coerceAdvMode(value);
         case "recharge": return coerceRecharge(value);
+        case "actionType": return coerceActionType(value);
         case "text": return value || null;
         default: return null;
     }
@@ -574,6 +630,8 @@ export function coerceCommand(
     if (category === "Stats" && value["stat"] === "choice" && !value["options"]) return null;
     // choice-form Proficiencies likewise needs its allowed-skills list
     if (category === "Proficiencies" && value["proficiency"] === "choice" && !value["options"]) return null;
+    // choice-form Spells likewise needs its allowed-spells list
+    if (category === "Spells" && value["ID"] === "choice" && !value["options"]) return null;
     // a RollBonus with neither a flat bonus nor a PB fraction would be a no-op badge
     if (category === "RollBonus" && !value["bonus"] && !value["proficiencyBonus"]) return null;
     return { command: `${t}${category}`, value, type: spec.madType ?? MadType.Character, prerequisites: [], group: 0 };
@@ -616,8 +674,9 @@ export function validateStoredCommand(mad: MadFeature): string[] {
     const value = (mad.value ?? {}) as Record<string, unknown>;
     for (const field of fields) {
         if (!field.required) continue;
-        if (field.type === "ref") {
-            // Opaque id post-enrichment — the resolved name is gone, so just require a non-empty string.
+        if (field.type === "ref" || field.type === "refOrChoice") {
+            // Opaque id post-enrichment — the resolved name is gone, so just require a non-empty string
+            // (the "choice" sentinel is a non-empty string too, so the choice form passes here).
             const id = typeof value[field.key] === "string" ? (value[field.key] as string).trim() : "";
             if (!id) errors.push(`${prettyCommand(command)} is missing its ${field.key}`);
             continue;
@@ -635,6 +694,11 @@ export function validateStoredCommand(mad: MadFeature): string[] {
     if (category === "Proficiencies" && isAdd && String(value["proficiency"] ?? "") === "choice") {
         const opts = coerceField({ key: "options", type: "skillCsv", required: true }, value["options"], "", () => null, undefined);
         if (!opts) errors.push(`${prettyCommand(command)} uses proficiency "choice" but has no valid options list`);
+    }
+    if (category === "Spells" && isAdd && String(value["ID"] ?? "") === "choice") {
+        // Options hold opaque spell ids post-enrichment — only require the list to be non-empty.
+        const opts = typeof value["options"] === "string" ? (value["options"] as string).trim() : "";
+        if (!opts) errors.push(`${prettyCommand(command)} uses ID "choice" but has no options list`);
     }
     if (category === "RollBonus") {
         const bonus = coerceField({ key: "bonus", type: "number", required: false }, value["bonus"], "", () => null, undefined);

@@ -8,7 +8,7 @@ import { Character, MovementType } from "../../../models/character.model";
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { collectMadFeatures, useMadCharacters, pendingStatChoices, pendingProficiencyChoices, statChoiceKey } from "./useMadCharacters";
+import { collectMadFeatures, useMadCharacters, pendingStatChoices, pendingProficiencyChoices, statChoiceKey, pendingSpellChoices, spellChoiceKey, spellChoiceOptions } from "./useMadCharacters";
 
 /**
  * Integration gate: the GENERATED server SRD JSON (SolidCharacters.Repository/data/srd)
@@ -65,6 +65,26 @@ describe("generated SRD data through the mads runtime (2014)", () => {
         const uses = rage.metadata?.mads?.find((m: { command: string }) => m.command === "AddUses");
         expect(uses).toBeDefined();
         expect(uses!.type).toBe(1);
+    });
+
+    it("the returnActions flag surfaces Rage as a granted bonus action", () => {
+        const c = level5Barbarian();
+        const actions = useMadCharacters(structuredClone(c), collectMadFeatures(c), { returnActions: true });
+        expect(actions).toEqual(expect.arrayContaining([
+            expect.objectContaining({ name: "Rage", actionType: "bonusAction" }),
+        ]));
+    });
+
+    it("a level 2 Cleric gains Turn Undead from Channel Divinity (1/rest)", () => {
+        const cleric = read("2014/classes.json").find((cl: { name: string }) => cl.name === "Cleric");
+        const c = new Character();
+        for (let lvl = 1; lvl <= 2; lvl++) {
+            c.levels.push({ class: "Cleric", level: lvl, hitDie: 8, features: cleric.features[String(lvl)] ?? [] });
+        }
+        const actions = useMadCharacters(structuredClone(c), collectMadFeatures(c), { returnActions: true });
+        expect(actions).toEqual(expect.arrayContaining([
+            expect.objectContaining({ name: "Turn Undead", actionType: "action", source: "Channel Divinity (1/rest)" }),
+        ]));
     });
 });
 
@@ -177,5 +197,67 @@ describe("generated SRD data through the mads runtime (2024)", () => {
         const choice = primal.metadata?.mads?.find((m: { command: string }) => m.command === "AddProficiencies");
         expect(choice?.value).toMatchObject({ proficiency: "choice", count: "1" });
         expect(choice?.value["options"]).toContain("Athletics");
+    });
+
+    it("a level 2 Cleric gains Channel Divinity's Magic actions via the returnActions flag", () => {
+        const cleric = classes2024.find((cl: { name: string }) => cl.name === "Cleric");
+        const c = new Character();
+        for (let lvl = 1; lvl <= 2; lvl++) {
+            c.levels.push({ class: "Cleric", level: lvl, hitDie: 8, features: cleric.features[String(lvl)] ?? [] });
+        }
+        const actions = useMadCharacters(structuredClone(c), collectMadFeatures(c), { returnActions: true });
+        expect(actions).toEqual(expect.arrayContaining([
+            expect.objectContaining({ name: "Divine Spark", actionType: "action", source: "Channel Divinity" }),
+            expect.objectContaining({ name: "Turn Undead", actionType: "action", source: "Channel Divinity" }),
+        ]));
+    });
+
+    it("a level 1 Fighter gains Second Wind as a bonus action", () => {
+        const fighter = classes2024.find((cl: { name: string }) => cl.name === "Fighter");
+        const c = new Character();
+        c.levels.push({ class: "Fighter", level: 1, hitDie: 10, features: fighter.features["1"] ?? [] });
+        const actions = useMadCharacters(structuredClone(c), collectMadFeatures(c), { returnActions: true });
+        expect(actions).toEqual(expect.arrayContaining([
+            expect.objectContaining({ name: "Second Wind", actionType: "bonusAction" }),
+        ]));
+    });
+
+    it("Magic Initiate holds its two spell choices pending, then grants the picked spells", () => {
+        const mi = findFeat("Magic Initiate");
+        expect(mi?.metadata?.mads?.length).toBeGreaterThan(0);
+
+        const c = new Character();
+        c.features = [mi];
+
+        // two choice commands (2 cantrips + 1 level-1 spell), both pending — nothing applies yet
+        const pending = pendingSpellChoices(c, mi);
+        expect(pending).toHaveLength(2);
+        expect(collectMadFeatures(c)).toEqual([]);
+
+        const cantrips = pending.find(m => m.value["spellLevel"] === "0")!;
+        const level1 = pending.find(m => m.value["spellLevel"] === "1")!;
+        expect(spellChoiceOptions(cantrips).length).toBeGreaterThan(20); // Cleric∪Druid∪Wizard cantrips
+        expect(spellChoiceOptions(level1).length).toBeGreaterThan(40);
+
+        const cantripPicks = spellChoiceOptions(cantrips).slice(0, 2);
+        const spellPick = spellChoiceOptions(level1)[0];
+        c.spellChoices = {
+            [spellChoiceKey(mi, cantrips)]: cantripPicks.join(","),
+            [spellChoiceKey(mi, level1)]: spellPick,
+        };
+
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.spells.map(s => s.name).sort()).toEqual([...cantripPicks, spellPick].sort());
+        expect(pendingSpellChoices(c, mi)).toHaveLength(0);
+    });
+
+    it("Boon of the Night Spirit grants Merge with Shadows as a bonus action", () => {
+        const boon = findFeat("Boon of the Night Spirit");
+        const c = new Character();
+        c.features = [boon];
+        const actions = useMadCharacters(structuredClone(c), collectMadFeatures(c), { returnActions: true });
+        expect(actions).toEqual(expect.arrayContaining([
+            expect.objectContaining({ name: "Merge with Shadows", actionType: "bonusAction", source: "Boon of the Night Spirit" }),
+        ]));
     });
 });

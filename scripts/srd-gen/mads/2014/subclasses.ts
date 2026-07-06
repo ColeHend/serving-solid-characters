@@ -96,9 +96,21 @@ export const map: MadMap = {
     // skipped (Draconic): Elemental Affinity (damage + situational resistance), Draconic Presence
     //   (once/rest fear/charm aura).
 
+    // ----- Berserker (Barbarian, Path of the Berserker) -----
+    // Frenzy — "you can make a single melee weapon attack as a bonus action on each of your turns"
+    // while in a frenzied rage (the exhaustion cost when the rage ends stays in the text).
+    "Berserker/Frenzy": [
+        { type: "Add", category: "Actions", value: { name: "Frenzy Attack", actionType: "bonusAction", source: "Frenzy", description: "while in a frenzied rage: one melee weapon attack as a bonus action on each of your turns" } },
+    ],
+    // Retaliation — "when you take damage from a creature that is within 5 feet of you, you can use
+    // your reaction to make a melee weapon attack against that creature."
+    "Berserker/Retaliation": [
+        { type: "Add", category: "Actions", value: { name: "Retaliation", actionType: "reaction", description: "when you take damage from a creature within 5 feet of you: make a melee weapon attack against it" } },
+    ],
+
     // ----- No-command subclasses -----
-    // Berserker: Frenzy/Retaliation (extra attacks — situational), Mindless Rage (charm/fright
-    //   immunity only while raging), Intimidating Presence (frighten action).
+    // Berserker (rest): Mindless Rage (charm/fright immunity only while raging), Intimidating
+    //   Presence (frighten action).
     // Champion: Improved/Superior Critical (crit-range riders), Remarkable Athlete (half PB to raw
     //   STR/DEX/CON checks — not an enumerable skill set), Additional Fighting Style (player-choice),
     //   Survivor (per-turn healing).

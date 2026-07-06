@@ -57,6 +57,11 @@ function coerceSpecs(
             errors.push(`"${key}": choice-form ${mad.command} is missing its options list`);
             continue;
         }
+        // likewise a choice-form AddSpells needs its resolved options list (refCsv drops unresolvable names)
+        if (spec.category.toLowerCase().startsWith("spell") && mad.value["ID"] === "choice" && !mad.value["options"]) {
+            errors.push(`"${key}": choice-form ${mad.command} is missing its options list`);
+            continue;
+        }
         out.push(mad as unknown as MadFeatureJson);
     }
     return out;

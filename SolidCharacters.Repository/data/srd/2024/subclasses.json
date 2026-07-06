@@ -23,7 +23,22 @@
     {
      "id": "46900b21-d4ef-4cf3-a690-6efc95183c64",
      "name": "Retaliation",
-     "description": "When you take damage from a creature that is within 5 feet of you, you can take a Reaction to make one melee attack against that creature, using a weapon or an Unarmed Strike."
+     "description": "When you take damage from a creature that is within 5 feet of you, you can take a Reaction to make one melee attack against that creature, using a weapon or an Unarmed Strike.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Retaliation",
+         "actionType": "reaction",
+         "description": "when you take damage from a creature within 5 feet of you: make one melee attack against it"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "14": [
@@ -228,7 +243,22 @@
     {
      "id": "c1cd5782-e135-5637-8989-6aeb12ae6414",
      "name": "Preserve Life",
-     "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to evoke healing energy that can restore a number of Hit Points equal to five times your Cleric level. Choose Bloodied creatures within 30 feet of yourself (which can include you), and divide those Hit Points among them. This feature can restore a creature to no more than half its Hit Point maximum."
+     "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to evoke healing energy that can restore a number of Hit Points equal to five times your Cleric level. Choose Bloodied creatures within 30 feet of yourself (which can include you), and divide those Hit Points among them. This feature can restore a creature to no more than half its Hit Point maximum.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Preserve Life",
+         "actionType": "action",
+         "source": "Channel Divinity"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "6": [
@@ -292,7 +322,22 @@
     {
      "id": "f52cb861-f112-45c0-a05e-9c191b0ee22b",
      "name": "Land's Aid",
-     "description": "As a Magic action, you can expend a use of your Wild Shape and choose a point within 60 feet of yourself. Vitality-giving flowers and life-draining thorns appear for a moment in a 10-foot-radius Sphere centered on that point. Each creature of your choice in the Sphere must make a Constitution saving throw against your spell save DC, taking 2d6 Necrotic damage on a failed save or half as much damage on a successful one. One creature of your choice in that area regains 2d6 Hit Points.\n\nThe damage and healing increase by 1d6 when you reach Druid levels 10 (3d6) and 14 (4d6)."
+     "description": "As a Magic action, you can expend a use of your Wild Shape and choose a point within 60 feet of yourself. Vitality-giving flowers and life-draining thorns appear for a moment in a 10-foot-radius Sphere centered on that point. Each creature of your choice in the Sphere must make a Constitution saving throw against your spell save DC, taking 2d6 Necrotic damage on a failed save or half as much damage on a successful one. One creature of your choice in that area regains 2d6 Hit Points.\n\nThe damage and healing increase by 1d6 when you reach Druid levels 10 (3d6) and 14 (4d6).",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Land's Aid",
+         "actionType": "action",
+         "source": "Wild Shape"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "6": [
@@ -313,7 +358,22 @@
     {
      "id": "0ea6bdbc-d7bc-4c11-b435-785593304e14",
      "name": "Nature's Sanctuary",
-     "description": "As a Magic action, you can expend a use of your Wild Shape and cause spectral trees and vines to appear in a 15-foot Cube on the ground within 120 feet of yourself. They last there for 1 minute or until you have the Incapacitated condition or die. You and your allies have Half Cover while in that area, and your allies gain the current Resistance of your Nature's Ward while there.\n\nAs a Bonus Action, you can move the Cube up to 60 feet to ground within 120 feet of yourself."
+     "description": "As a Magic action, you can expend a use of your Wild Shape and cause spectral trees and vines to appear in a 15-foot Cube on the ground within 120 feet of yourself. They last there for 1 minute or until you have the Incapacitated condition or die. You and your allies have Half Cover while in that area, and your allies gain the current Resistance of your Nature's Ward while there.\n\nAs a Bonus Action, you can move the Cube up to 60 feet to ground within 120 feet of yourself.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Nature's Sanctuary",
+         "actionType": "action",
+         "source": "Wild Shape"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ]
   },
@@ -679,7 +739,22 @@
     {
      "id": "d1afddf8-b614-4826-8a9d-2e164102fd9e",
      "name": "Fast Hands",
-     "description": "As a Bonus Action, you can do one of the following.\n\n**Sleight of Hand.** Make a Dexterity (Sleight of Hand) check to pick a lock or disarm a trap with Thieves' Tools or to pick a pocket.\n\n**Use an Object.** Take the Utilize action, or take the Magic action to use a magic item that requires that action."
+     "description": "As a Bonus Action, you can do one of the following.\n\n**Sleight of Hand.** Make a Dexterity (Sleight of Hand) check to pick a lock or disarm a trap with Thieves' Tools or to pick a pocket.\n\n**Use an Object.** Take the Utilize action, or take the Magic action to use a magic item that requires that action.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Fast Hands",
+         "actionType": "bonusAction",
+         "source": "Fast Hands"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "ac369357-3798-408b-93fa-194714e60f86",

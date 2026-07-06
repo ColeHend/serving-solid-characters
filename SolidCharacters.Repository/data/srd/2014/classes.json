@@ -53,6 +53,17 @@
         "type": 1,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Rage",
+         "actionType": "bonusAction",
+         "source": "Rage"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -726,6 +737,17 @@
         "type": 1,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Bardic Inspiration",
+         "actionType": "bonusAction",
+         "source": "Bardic Inspiration (d6)"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -1256,6 +1278,17 @@
         "type": 1,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Turn Undead",
+         "actionType": "action",
+         "source": "Channel Divinity (1/rest)"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -1771,6 +1804,17 @@
         "type": 1,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Wild Shape",
+         "actionType": "action",
+         "source": "Wild Shape"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -2034,6 +2078,17 @@
          "recharge": "Short Rest"
         },
         "type": 1,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Second Wind",
+         "actionType": "bonusAction",
+         "source": "Second Wind"
+        },
+        "type": 0,
         "prerequisites": [],
         "group": 0
        }
@@ -2454,14 +2509,70 @@
     {
      "id": "6772ae11-cfa5-4885-b4ab-016e644272a5",
      "name": "Martial Arts",
-     "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don't have the two- handed or heavy property.\n\nYou gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield:\n\n- You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.\n- You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of the Monk table.\n- When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.\n\nCertain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon."
+     "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don't have the two- handed or heavy property.\n\nYou gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield:\n\n- You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.\n- You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of the Monk table.\n- When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.\n\nCertain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Unarmed Strike",
+         "actionType": "bonusAction",
+         "description": "after you take the Attack action with an unarmed strike or a monk weapon",
+         "source": "Martial Arts"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "2": [
     {
      "id": "3a500779-2025-4e2d-a609-5206c4f329ad",
      "name": "Ki",
-     "description": "Starting at 2nd level, your training allows you to harness the mystic energy of ki. Your access to this energy is represented by a number of ki points. Your monk level determines the number of points you have, as shown in the Ki Points column of the Monk table.\n\nYou can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class.\n\nWhen you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points.\n\nSome of your ki features require your target to make a saving throw to resist the feature's effects. The saving throw DC is calculated as follows:\n\n**Ki save DC** = 8 + your proficiency bonus + your Wisdom modifier\nFlurry of Blows. Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action.\nPatient Defense. You can spend 1 ki point to take the Dodge action as a bonus action on your turn.\nStep of the Wind. You can spend 1 ki point to take the Disengage or Dash action as a bonus action on your turn, and your jump distance is doubled for the turn."
+     "description": "Starting at 2nd level, your training allows you to harness the mystic energy of ki. Your access to this energy is represented by a number of ki points. Your monk level determines the number of points you have, as shown in the Ki Points column of the Monk table.\n\nYou can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class.\n\nWhen you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points.\n\nSome of your ki features require your target to make a saving throw to resist the feature's effects. The saving throw DC is calculated as follows:\n\n**Ki save DC** = 8 + your proficiency bonus + your Wisdom modifier\nFlurry of Blows. Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action.\nPatient Defense. You can spend 1 ki point to take the Dodge action as a bonus action on your turn.\nStep of the Wind. You can spend 1 ki point to take the Disengage or Dash action as a bonus action on your turn, and your jump distance is doubled for the turn.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Flurry of Blows",
+         "actionType": "bonusAction",
+         "description": "spend 1 ki point immediately after you take the Attack action: two unarmed strikes",
+         "source": "Ki"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Patient Defense",
+         "actionType": "bonusAction",
+         "description": "spend 1 ki point: take the Dodge action",
+         "source": "Ki"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Step of the Wind",
+         "actionType": "bonusAction",
+         "description": "spend 1 ki point: Disengage or Dash, and your jump distance is doubled for the turn",
+         "source": "Ki"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "d948a7a4-6f80-4e35-a0fd-f7356a5b074e",
@@ -3055,6 +3166,17 @@
         "type": 1,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Divine Sense",
+         "actionType": "action",
+         "source": "Divine Sense"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -3062,7 +3184,22 @@
     {
      "id": "76e82e03-b56c-412e-a02a-415764b970dc",
      "name": "Lay on Hands",
-     "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level × 5.\n\nAs an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.\n\nAlternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.\n\nThis feature has no effect on undead and constructs."
+     "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level × 5.\n\nAs an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.\n\nAlternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.\n\nThis feature has no effect on undead and constructs.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Lay on Hands",
+         "actionType": "action",
+         "source": "Lay on Hands"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "2": [
@@ -3715,7 +3852,23 @@
     {
      "id": "c1a1bc75-2d94-4e5b-a08e-d3a4a33be317",
      "name": "Vanish",
-     "description": "Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can't be tracked by nonmagical means, unless you choose to leave a trail."
+     "description": "Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can't be tracked by nonmagical means, unless you choose to leave a trail.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Vanish",
+         "actionType": "bonusAction",
+         "description": "use the Hide action as a bonus action",
+         "source": "Vanish"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "15": [
@@ -3900,7 +4053,23 @@
     {
      "id": "4ac16908-2a34-415c-bdb6-2a617dc4fac4",
      "name": "Cunning Action",
-     "description": "Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action."
+     "description": "Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Cunning Action",
+         "actionType": "bonusAction",
+         "description": "Dash, Disengage, or Hide",
+         "source": "Cunning Action"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "3": [
@@ -4450,7 +4619,23 @@
     {
      "id": "a49995f0-0b09-40fd-b8b4-20f2df3d00c5",
      "name": "Font of Magic",
-     "description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects.\nSorcery Points. You have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest.\nFlexible Casting. You can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points. You learn other ways to use your sorcery points as you reach higher levels. Any spell slot you create with this feature vanishes when you finish a long rest.\n\n***Creating Spell Slots***. You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th.\n\nAny spell slot you create with this feature vanishes when you finish a long rest.\n\n**Table- Creating Spell Slots**\n\n| Spell Slot Level | Sorcery Point Cost |\n|------------------|--------------------|\n| 1st | 2 |\n| 2nd | 3 |\n| 3rd | 5 |\n| 4th | 6 |\n| 5th | 7 |\n| | |\n\n***Converting a Spell Slot to Sorcery Points***. As a bonus action on your turn, you can expend one spell slot and gain a number of sorcery points equal to the slot's level."
+     "description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects.\nSorcery Points. You have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest.\nFlexible Casting. You can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points. You learn other ways to use your sorcery points as you reach higher levels. Any spell slot you create with this feature vanishes when you finish a long rest.\n\n***Creating Spell Slots***. You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th.\n\nAny spell slot you create with this feature vanishes when you finish a long rest.\n\n**Table- Creating Spell Slots**\n\n| Spell Slot Level | Sorcery Point Cost |\n|------------------|--------------------|\n| 1st | 2 |\n| 2nd | 3 |\n| 3rd | 5 |\n| 4th | 6 |\n| 5th | 7 |\n| | |\n\n***Converting a Spell Slot to Sorcery Points***. As a bonus action on your turn, you can expend one spell slot and gain a number of sorcery points equal to the slot's level.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Flexible Casting",
+         "actionType": "bonusAction",
+         "description": "convert sorcery points into a spell slot, or a spell slot into sorcery points",
+         "source": "Font of Magic"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "3": [

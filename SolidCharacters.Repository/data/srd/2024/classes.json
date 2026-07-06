@@ -45,6 +45,17 @@
         "type": 1,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Rage",
+         "actionType": "bonusAction",
+         "source": "Rage"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -752,6 +763,17 @@
         "type": 1,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Bardic Inspiration",
+         "actionType": "bonusAction",
+         "source": "Bardic Inspiration"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -1234,6 +1256,28 @@
          "recharge": "Long Rest"
         },
         "type": 1,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Divine Spark",
+         "actionType": "action",
+         "source": "Channel Divinity"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Turn Undead",
+         "actionType": "action",
+         "source": "Channel Divinity"
+        },
+        "type": 0,
         "prerequisites": [],
         "group": 0
        }
@@ -1723,6 +1767,17 @@
         "type": 1,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Wild Shape",
+         "actionType": "bonusAction",
+         "source": "Wild Shape"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -1730,7 +1785,23 @@
     {
      "id": "aacefc17-451e-4a59-87f8-3502f6cdd2bc",
      "name": "Wild Companion",
-     "description": "You can summon a nature spirit that assumes an animal form to aid you. As a Magic action, you can expend a spell slot or a use of Wild Shape to cast the *Find Familiar* spell without Material components.\n\nWhen you cast the spell in this way, the familiar is Fey and disappears when you finish a Long Rest."
+     "description": "You can summon a nature spirit that assumes an animal form to aid you. As a Magic action, you can expend a spell slot or a use of Wild Shape to cast the *Find Familiar* spell without Material components.\n\nWhen you cast the spell in this way, the familiar is Fey and disappears when you finish a Long Rest.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Wild Companion",
+         "actionType": "action",
+         "description": "expend a spell slot or a use of Wild Shape to cast Find Familiar without Material components",
+         "source": "Wild Companion"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "3": [
@@ -1992,6 +2063,17 @@
          "recharge": "Long Rest"
         },
         "type": 1,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Second Wind",
+         "actionType": "bonusAction",
+         "source": "Second Wind"
+        },
+        "type": 0,
         "prerequisites": [],
         "group": 0
        }
@@ -2443,7 +2525,22 @@
     {
      "id": "72a5b0f5-c46a-4808-a77a-9e5051882eea",
      "name": "Martial Arts",
-     "description": "Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons, which are the following:\n\n- Simple Melee weapons\n- Martial Melee weapons that have the Light property\n\nYou gain the following benefits while you are unarmed or wielding only Monk weapons and you aren't wearing armor or wielding a Shield.\n\n**Bonus Unarmed Strike.** You can make an Unarmed Strike as a Bonus Action.\n\n**Martial Arts Die.** You can roll 1d6 in place of the normal damage of your Unarmed Strike or Monk weapons. This die changes as you gain Monk levels, as shown in the Martial Arts column of the Monk Features table.\n\n**Dexterous Attacks.** You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC."
+     "description": "Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons, which are the following:\n\n- Simple Melee weapons\n- Martial Melee weapons that have the Light property\n\nYou gain the following benefits while you are unarmed or wielding only Monk weapons and you aren't wearing armor or wielding a Shield.\n\n**Bonus Unarmed Strike.** You can make an Unarmed Strike as a Bonus Action.\n\n**Martial Arts Die.** You can roll 1d6 in place of the normal damage of your Unarmed Strike or Monk weapons. This die changes as you gain Monk levels, as shown in the Martial Arts column of the Monk Features table.\n\n**Dexterous Attacks.** You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Unarmed Strike",
+         "actionType": "bonusAction",
+         "source": "Martial Arts"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "f333321e-d541-4d83-bc61-52a785ca985b",
@@ -3066,7 +3163,22 @@
     {
      "id": "9d0d53a0-35fa-4b37-b56b-56940b4cfc5d",
      "name": "Lay On Hands",
-     "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level.\n\nAs a Bonus Action, you can touch a creature (which could be yourself) and draw power from the pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool.\n\nYou can also expend 5 Hit Points from the pool of healing power to remove the Poisoned condition from the creature; those points don't also restore Hit Points to the creature."
+     "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level.\n\nAs a Bonus Action, you can touch a creature (which could be yourself) and draw power from the pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool.\n\nYou can also expend 5 Hit Points from the pool of healing power to remove the Poisoned condition from the creature; those points don't also restore Hit Points to the creature.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Lay On Hands",
+         "actionType": "bonusAction",
+         "source": "Lay On Hands"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "c25555c3-9409-4c5e-acdd-931c36866758",
@@ -3130,6 +3242,17 @@
          "recharge": "Long Rest"
         },
         "type": 1,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Divine Sense",
+         "actionType": "bonusAction",
+         "source": "Channel Divinity"
+        },
+        "type": 0,
         "prerequisites": [],
         "group": 0
        }
@@ -3252,7 +3375,22 @@
     {
      "id": "565f91c3-72ca-4067-a002-eb5a8c3cdd0d",
      "name": "Abjure Foes",
-     "description": "As a Magic action, you can expend one use of this class's Channel Divinity to overwhelm foes with awe. As you present your Holy Symbol or weapon, you can target a number of creatures equal to your Charisma modifier (minimum of one creature) that you can see within 60 feet of yourself. Each target must succeed on a Wisdom saving throw or have the Frightened condition for 1 minute or until it takes any damage. While Frightened in this way, a target can do only one of the following on its turns: move, take an action, or take a Bonus Action."
+     "description": "As a Magic action, you can expend one use of this class's Channel Divinity to overwhelm foes with awe. As you present your Holy Symbol or weapon, you can target a number of creatures equal to your Charisma modifier (minimum of one creature) that you can see within 60 feet of yourself. Each target must succeed on a Wisdom saving throw or have the Frightened condition for 1 minute or until it takes any damage. While Frightened in this way, a target can do only one of the following on its turns: move, take an action, or take a Bonus Action.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Abjure Foes",
+         "actionType": "action",
+         "source": "Channel Divinity"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "10": [
@@ -3993,7 +4131,23 @@
     {
      "id": "92108adc-43ce-41c8-acac-893681c798a8",
      "name": "Cunning Action",
-     "description": "Your quick thinking and agility allow you to move and act quickly. On your turn, you can take one of the following actions as a Bonus Action: Dash, Disengage, or Hide."
+     "description": "Your quick thinking and agility allow you to move and act quickly. On your turn, you can take one of the following actions as a Bonus Action: Dash, Disengage, or Hide.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Cunning Action",
+         "actionType": "bonusAction",
+         "description": "Dash, Disengage, or Hide",
+         "source": "Cunning Action"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "3": [

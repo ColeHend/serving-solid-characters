@@ -9,7 +9,23 @@
     {
      "id": "2412b711-f507-4b19-81fb-094d82ed4c2c",
      "name": "Frenzy",
-     "description": "Starting when you choose this path at 3rd level, you can go into a frenzy when you rage. If you do so, for the duration of your rage you can make a single melee weapon attack as a bonus action on each of your turns after this one. When your rage ends, you suffer one level of exhaustion (as described in appendix A)."
+     "description": "Starting when you choose this path at 3rd level, you can go into a frenzy when you rage. If you do so, for the duration of your rage you can make a single melee weapon attack as a bonus action on each of your turns after this one. When your rage ends, you suffer one level of exhaustion (as described in appendix A).",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Frenzy Attack",
+         "actionType": "bonusAction",
+         "description": "while in a frenzied rage: one melee weapon attack as a bonus action on each of your turns",
+         "source": "Frenzy"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "6": [
@@ -30,7 +46,22 @@
     {
      "id": "c727c7a1-0d27-4808-ae7b-5fc517da0a91",
      "name": "Retaliation",
-     "description": "Starting at 14th level, when you take damage from a creature that is within 5 feet of you, you can use your reaction to make a melee weapon attack against that creature."
+     "description": "Starting at 14th level, when you take damage from a creature that is within 5 feet of you, you can use your reaction to make a melee weapon attack against that creature.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddActions",
+        "value": {
+         "name": "Retaliation",
+         "actionType": "reaction",
+         "description": "when you take damage from a creature within 5 feet of you: make a melee weapon attack against it"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ]
   },

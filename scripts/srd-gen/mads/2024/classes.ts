@@ -46,12 +46,17 @@ const savingThrow = (stat: string): CommandSpecInput => add("SavingThrows", { st
 const language = (name: string): CommandSpecInput => add("Languages", { name });
 const adv = (rollType: string, extra: Record<string, string> = {}): CommandSpecInput =>
     add("Advantage", { rollType, mode: "advantage", ...extra });
+// an activated ability: a new action/bonusAction/reaction on the sheet; source (defaults to the
+// action's name) = the granting feature's EXACT name, linking to its featureUses counter;
+// description = a short cost/condition qualifier when the grant isn't unconditional
+const action = (name: string, actionType: string, source?: string, description?: string): CommandSpecInput =>
+    add("Actions", { name, actionType, source: source ?? name, ...(description ? { description } : {}) });
 // 2024 ASI feat: +2 to one ability of the player's choice (the +1/+1 option isn't representable).
 const asi = (): CommandSpecInput => add("Stats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" });
 
 export const map: MadMap = {
     // ============================================================ Barbarian
-    "Barbarian/Rage": [uses("2", "Long Rest")], // B/P/S resistance is only "while raging" → situational, skip
+    "Barbarian/Rage": [uses("2", "Long Rest"), action("Rage", "bonusAction")], // B/P/S resistance is only "while raging" → situational, skip
     "Barbarian/Unarmored Defense": [ac("10", "dex,con")],
     "Barbarian/Danger Sense": [adv("SavingThrow", { stat: "dex", condition: "unless Incapacitated" })],
     "Barbarian/Ability Score Improvement": [asi()],
@@ -69,14 +74,19 @@ export const map: MadMap = {
     //       (Persistent Rage is encoded in the sweep block below — its once-per-Long-Rest refresh is a Uses counter.)
 
     // ============================================================ Bard
-    "Bard/Bardic Inspiration": [uses("1", "Long Rest")], // uses = Charisma modifier (min 1) — approximated as 1
+    "Bard/Bardic Inspiration": [uses("1", "Long Rest"), action("Bardic Inspiration", "bonusAction")], // uses = Charisma modifier (min 1) — approximated as 1
     "Bard/Ability Score Improvement": [asi()],
     "Bard/Words of Creation": [spell("Power Word Heal"), spell("Power Word Kill")],
     // skip: Expertise (skill choice), Jack of All Trades, Font of Inspiration (recharge change),
     //       Countercharm, Magical Secrets, Superior Inspiration, Epic Boon.
 
     // ============================================================ Cleric
-    "Cleric/Channel Divinity": [uses("2", "Long Rest")], // one use back on a Short Rest, all on a Long Rest
+    // Channel Divinity's two effects are both "As a Magic action" — granted as named actions.
+    "Cleric/Channel Divinity": [
+        uses("2", "Long Rest"), // one use back on a Short Rest, all on a Long Rest
+        action("Divine Spark", "action", "Channel Divinity"),
+        action("Turn Undead", "action", "Channel Divinity"),
+    ],
     "Cleric/Divine Intervention": [uses("1", "Long Rest")],
     "Cleric/Ability Score Improvement": [asi()],
     // skip: Divine Order (choice), Sear Undead (rider), Blessed Strikes / Improved Blessed Strikes
@@ -85,13 +95,15 @@ export const map: MadMap = {
     // ============================================================ Druid
     // Druidic: grants the Druidic language and always-prepared Speak with Animals.
     "Druid/Druidic": [language("Druidic"), spell("Speak with Animals")],
-    "Druid/Wild Shape": [uses("2", "Long Rest")], // one use back on a Short Rest, all on a Long Rest
+    "Druid/Wild Shape": [uses("2", "Long Rest"), action("Wild Shape", "bonusAction")], // one use back on a Short Rest, all on a Long Rest
+    // "As a Magic action, you can expend a spell slot or a use of Wild Shape to cast Find Familiar"
+    "Druid/Wild Companion": [action("Wild Companion", "action", undefined, "expend a spell slot or a use of Wild Shape to cast Find Familiar without Material components")],
     "Druid/Ability Score Improvement": [asi()],
-    // skip: Primal Order (choice), Wild Companion, Wild Resurgence (slot/shape conversion),
+    // skip: Primal Order (choice), Wild Resurgence (slot/shape conversion),
     //       Elemental Fury / Improved Elemental Fury (choice + rider), Beast Spells, Archdruid, Epic Boon.
 
     // ============================================================ Fighter
-    "Fighter/Second Wind": [uses("2", "Long Rest")],
+    "Fighter/Second Wind": [uses("2", "Long Rest"), action("Second Wind", "bonusAction")],
     "Fighter/Action Surge (one use)": [uses("1", "Short Rest")],
     "Fighter/Extra Attack": [extraAttack()], // total 2
     "Fighter/Indomitable (one use)": [uses("1", "Long Rest")],
@@ -104,6 +116,8 @@ export const map: MadMap = {
     //       (Studied Attacks is encoded in the sweep block below as conditional Advantage.)
 
     // ============================================================ Monk
+    // Martial Arts' Bonus Action Unarmed Strike is unconditional in 2024 (the die stays in the table).
+    "Monk/Martial Arts": [action("Unarmed Strike", "bonusAction", "Martial Arts")],
     "Monk/Unarmored Defense": [ac("10", "dex,wis")],
     "Monk/Monk's Focus": [uses("2", "Short Rest")], // Focus Points: all regained on a Short or Long Rest
     "Monk/Unarmored Movement": [speed("10")], // +10 ft base; +15/+20/+25/+30 scaling stays in the table
@@ -117,18 +131,24 @@ export const map: MadMap = {
     // Body and Mind: Dexterity & Wisdom increase by 4 (max 25 not representable).
     "Monk/Body and Mind": [raiseStat("dex", "4"), raiseStat("wis", "4")],
     "Monk/Ability Score Improvement": [asi()],
-    // skip: Martial Arts (unarmed-strike die), Slow Fall, Stunning Strike (rider), Empowered Strikes,
+    // skip: Martial Arts' die/dex-substitution (only the Bonus Action strike is encoded above),
+    //       Slow Fall, Stunning Strike (rider), Empowered Strikes,
     //       Evasion, Acrobatic Movement, Heightened Focus, Self-Restoration, Deflect Attacks/Energy,
     //       Perfect Focus, Superior Defense (situational resistance), Epic Boon.
 
     // ============================================================ Paladin
     "Paladin/Paladin's Smite": [spell("Divine Smite"), uses("1", "Long Rest")], // free cast once per Long Rest
-    "Paladin/Channel Divinity": [uses("2", "Long Rest")],
+    // Channel Divinity's SRD effect is Divine Sense — "As a Bonus Action, you can open your awareness..."
+    "Paladin/Channel Divinity": [uses("2", "Long Rest"), action("Divine Sense", "bonusAction", "Channel Divinity")],
     "Paladin/Extra Attack": [extraAttack()],
     "Paladin/Faithful Steed": [spell("Find Steed"), uses("1", "Long Rest")], // free cast once per Long Rest
+    // Lay On Hands — the healing POOL still has no category; the Bonus Action to spend from it is encoded.
+    "Paladin/Lay On Hands": [action("Lay On Hands", "bonusAction")],
+    // "As a Magic action, you can expend one use of this class's Channel Divinity..."
+    "Paladin/Abjure Foes": [action("Abjure Foes", "action", "Channel Divinity")],
     "Paladin/Ability Score Improvement": [asi()],
-    // skip: Lay On Hands (HP pool, no category), Weapon Mastery, Fighting Style (choice),
-    //       Aura of Protection (flat +CHA to saves, not proficiency/advantage), Abjure Foes (channel),
+    // skip: Lay On Hands' HP pool (no category), Weapon Mastery, Fighting Style (choice),
+    //       Aura of Protection (flat +CHA to saves, not proficiency/advantage),
     //       Aura of Courage (Frightened-immunity is a condition, not a damage type), Radiant Strikes
     //       (rider), Restoring Touch, Aura Expansion, Epic Boon.
 
@@ -147,10 +167,12 @@ export const map: MadMap = {
 
     // ============================================================ Rogue
     "Rogue/Thieves' Cant": [language("Thieves' Cant")], // the "one other language of your choice" → skip
+    // "On your turn, you can take one of the following actions as a Bonus Action: Dash, Disengage, or Hide."
+    "Rogue/Cunning Action": [action("Cunning Action", "bonusAction", undefined, "Dash, Disengage, or Hide")],
     "Rogue/Slippery Mind": [savingThrow("wis"), savingThrow("cha")],
     "Rogue/Stroke of Luck": [uses("1", "Short Rest")],
     "Rogue/Ability Score Improvement": [asi()],
-    // skip: Expertise (skill choice), Sneak Attack (rider), Weapon Mastery, Cunning Action, Steady Aim
+    // skip: Expertise (skill choice), Sneak Attack (rider), Weapon Mastery, Steady Aim
     //       (situational adv), Cunning Strike / Improved Cunning Strike / Devious Strikes (riders),
     //       Uncanny Dodge, Evasion, Reliable Talent, Elusive, Epic Boon.
 

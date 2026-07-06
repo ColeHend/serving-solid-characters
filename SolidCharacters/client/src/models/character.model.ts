@@ -31,6 +31,7 @@ export class Character {
   public savingThrows: CharacterSavingThrow[] = [];
   public rollAdvantages: RollAdvantage[] = [];
   public rollBonuses: RollBonus[] = [];
+  public grantedActions: GrantedAction[] = [];
   public attacksPerAction: number = 1;
   /** Spent use counts per limited-use feature, keyed by feature name (feature ids are often empty). */
   public featureUses: Record<string, number> = {};
@@ -38,6 +39,8 @@ export class Character {
   public statChoices: Record<string, string> = {};
   /** Resolved picks for choice-form AddProficiencies commands, keyed like statChoices → CSV of skill names. */
   public proficiencyChoices: Record<string, string> = {};
+  /** Resolved picks for choice-form AddSpells commands, keyed by spellChoiceKey → CSV of spell ids. */
+  public spellChoices: Record<string, string> = {};
   public resistances: DamageAffinity[] = [];
   public vulnerabilities: DamageAffinity[] = [];
   public immunities: DamageAffinity[] = [];
@@ -160,9 +163,21 @@ export interface RollBonus {
   source?: string;
 }
 
+export type ActionType = "action" | "bonusAction" | "reaction";
+
+/** An action/bonus action/reaction a mad granted the character (Channel Divinity, Second Wind, ...). */
+export interface GrantedAction {
+  name: string;
+  actionType: ActionType;
+  /** Rules text for the action, when it differs from the granting feature's description. */
+  description?: string;
+  /** Name of the granting feature — links to featureUses (keyed by feature name) for uses tracking. */
+  source?: string;
+}
+
 // -- Character Form Models --
 
-type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"|"rollAdvantages"|"rollBonuses"|"attacksPerAction"|"featureUses">
+type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"|"rollAdvantages"|"rollBonuses"|"grantedActions"|"attacksPerAction"|"featureUses">
 
 export interface CharacterForm extends halfCharacter {
   race: string;

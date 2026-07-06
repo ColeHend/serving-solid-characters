@@ -13,6 +13,13 @@ import { checkPrerequisites } from "../checkPreReqs";
  */
 const AddSpellFeature = (character: Character, feature: MadFeature): Character => {
     const spellName = feature.value?.['ID'] ?? '';
+
+    // A choice-form command must be resolved to a concrete pick (collectMadFeatures) before it applies.
+    if (spellName === 'choice') {
+        DebugConsole.warn("Unresolved choice-form AddSpells command reached the handler — skipping");
+        return character;
+    }
+
     const preReqs = feature.prerequisites ?? [];
     const preReqsMet = checkPrerequisites(character, preReqs);
 

@@ -1,4 +1,4 @@
-import type { MadMap } from "../spec.ts";
+import type { CommandSpecInput, MadMap } from "../spec.ts";
 
 /**
  * Curated MADS commands for the SRD 5.1 (2014) CLASS features. Keys per mads/spec.ts:
@@ -15,11 +15,19 @@ import type { MadMap } from "../spec.ts";
  * Ability Score Improvement is modeled as a single +2 to a chosen ability — the SRD "+2 to one OR
  * +1/+1 to two" split isn't representable, so every ASI is an APPROXIMATION (+2, player picks one).
  */
+
+// an activated ability: a new action/bonusAction/reaction on the sheet; source (defaults to the
+// action's name) = the granting feature's EXACT name, linking to its featureUses counter;
+// description = a short cost/condition qualifier when the grant isn't unconditional
+const action = (name: string, actionType: string, source?: string, description?: string): CommandSpecInput =>
+    ({ type: "Add", category: "Actions", value: { name, actionType, source: source ?? name, ...(description ? { description } : {}) } });
+
 export const map: MadMap = {
     // ----- Barbarian -----
     "Barbarian/Rage": [
         // base 2 rages/long rest; scaling (3/4/5/unlimited) stays in classSpecific "Rages"
         { type: "Add", category: "Uses", value: { amount: "2", recharge: "Long Rest" } },
+        action("Rage", "bonusAction"), // "you can enter a rage as a bonus action"
     ],
     "Barbarian/Unarmored Defense": [
         { type: "Add", category: "ArmorClass", value: { bonus: "10", stats: "dex,con" } },
@@ -55,6 +63,7 @@ export const map: MadMap = {
     "Bard/Bardic Inspiration (d6)": [
         // approximation: uses = Charisma modifier (min 1); die/recharge upgrades are separate features
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+        action("Bardic Inspiration", "bonusAction", "Bardic Inspiration (d6)"), // "you use a bonus action on your turn"
     ],
     "Bard/Ability Score Improvement": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
@@ -72,6 +81,7 @@ export const map: MadMap = {
     // apply.ts splits map keys on the FIRST "/" only, so the "/" inside the feature name is fine.
     "Cleric/Channel Divinity (1/rest)": [
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Short Rest" } },
+        action("Turn Undead", "action", "Channel Divinity (1/rest)"), // "As an action, you present your holy symbol"
     ],
     // skipped: Channel Divinity (2/rest)/(3/rest) (scaling of the use count), Destroy Undead
     //   (enhances Turn Undead — situational), Divine Intervention (+ improvement) (DM adjudication),
@@ -83,6 +93,7 @@ export const map: MadMap = {
     ],
     "Druid/Wild Shape": [
         { type: "Add", category: "Uses", value: { amount: "2", recharge: "Short Rest" } },
+        action("Wild Shape", "action"), // "you can use your action to magically assume the shape"
     ],
     "Druid/Ability Score Improvement": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
@@ -93,6 +104,7 @@ export const map: MadMap = {
     // ----- Fighter -----
     "Fighter/Second Wind": [
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Short Rest" } },
+        action("Second Wind", "bonusAction"), // "you can use a bonus action to regain hit points"
     ],
     "Fighter/Action Surge (one use)": [
         // base 1 use/short rest; "Action Surge (two uses)" at L17 is a separate scaling feature
@@ -123,6 +135,16 @@ export const map: MadMap = {
     "Monk/Unarmored Defense": [
         { type: "Add", category: "ArmorClass", value: { bonus: "10", stats: "dex,wis" } },
     ],
+    // Martial Arts' bonus-action strike is conditional on the Attack action — carried in description.
+    "Monk/Martial Arts": [
+        action("Unarmed Strike", "bonusAction", "Martial Arts", "after you take the Attack action with an unarmed strike or a monk weapon"),
+    ],
+    // Ki's three named bonus actions (the ki-point resource itself stays unrepresented).
+    "Monk/Ki": [
+        action("Flurry of Blows", "bonusAction", "Ki", "spend 1 ki point immediately after you take the Attack action: two unarmed strikes"),
+        action("Patient Defense", "bonusAction", "Ki", "spend 1 ki point: take the Dodge action"),
+        action("Step of the Wind", "bonusAction", "Ki", "spend 1 ki point: Disengage or Dash, and your jump distance is doubled for the turn"),
+    ],
     "Monk/Unarmored Movement": [
         // base +10 ft; scaling stays in classSpecific "Unarmored Movement"
         { type: "Add", category: "Speed", value: { speed: "10" } },
@@ -146,7 +168,8 @@ export const map: MadMap = {
         { type: "Add", category: "SavingThrows", value: { stat: "wis" } },
         { type: "Add", category: "SavingThrows", value: { stat: "cha" } },
     ],
-    // skipped: Martial Arts (unarmed die/weapon rules), Ki (points resource), Deflect Missiles,
+    // skipped: Martial Arts' die/dex-substitution (only the bonus-action strike is encoded above),
+    //   Ki's point resource (only its three bonus actions are encoded above), Deflect Missiles,
     //   Slow Fall, Stunning Strike, Ki-Empowered Strikes (magical strikes — no category), Evasion,
     //   Stillness of Mind, Unarmored Movement improvement (scaling), Tongue of the Sun and Moon
     //   (understand all languages — not a specific language), Timeless Body, Empty Body (temporary
@@ -156,6 +179,11 @@ export const map: MadMap = {
     "Paladin/Divine Sense": [
         // approximation: uses = 1 + Charisma modifier
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+        action("Divine Sense", "action"), // "As an action, you can open your awareness"
+    ],
+    // Lay on Hands — the healing POOL still has no category; the action to spend from it is encoded.
+    "Paladin/Lay on Hands": [
+        action("Lay on Hands", "action"), // "As an action, you can touch a creature"
     ],
     "Paladin/Ability Score Improvement": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
@@ -167,7 +195,7 @@ export const map: MadMap = {
         // approximation: uses = Charisma modifier (min 1)
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
     ],
-    // skipped: Lay on Hands (HP pool, not a use count), Divine Smite / Improved Divine Smite
+    // skipped: Lay on Hands' HP pool (not a use count), Divine Smite / Improved Divine Smite
     //   (radiant damage riders), Divine Health (immune to disease — no category), Aura of Protection
     //   (numeric save bonus — no category), Aura of Courage (can't be frightened — condition, no
     //   category), Aura improvements (range scaling), Fighting Style (player-choice), Spellcasting,
@@ -180,15 +208,23 @@ export const map: MadMap = {
     "Ranger/Extra Attack": [
         { type: "Add", category: "Attacks", value: { amount: "1" } },
     ],
+    // "you can use the Hide action as a bonus action on your turn"
+    "Ranger/Vanish": [
+        action("Vanish", "bonusAction", undefined, "use the Hide action as a bonus action"),
+    ],
     // skipped: Favored Enemy (advantage only when tracking/recalling that enemy + player-choice
     //   language — situational), Natural Explorer (doubled PB only in favored terrain), Fighting
     //   Style (player-choice), Primeval Awareness, Land's Stride (advantage vs impeding plants —
-    //   conditional), Hide in Plain Sight (conditional Stealth bonus), Vanish, Feral Senses, Foe
-    //   Slayer (situational), Ranger Archetype (subclass).
+    //   conditional), Hide in Plain Sight (conditional Stealth bonus), Vanish's untrackable rider,
+    //   Feral Senses, Foe Slayer (situational), Ranger Archetype (subclass).
 
     // ----- Rogue -----
     "Rogue/Thieves' Cant": [
         { type: "Add", category: "Languages", value: { name: "Thieves' Cant" } },
+    ],
+    // "You can take a bonus action on each of your turns ... only to take the Dash, Disengage, or Hide action."
+    "Rogue/Cunning Action": [
+        action("Cunning Action", "bonusAction", undefined, "Dash, Disengage, or Hide"),
     ],
     "Rogue/Ability Score Improvement": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
@@ -196,8 +232,8 @@ export const map: MadMap = {
     "Rogue/Slippery Mind": [
         { type: "Add", category: "SavingThrows", value: { stat: "wis" } },
     ],
-    // skipped: Expertise (player chooses two proficiencies), Sneak Attack (damage rider), Cunning
-    //   Action, Uncanny Dodge, Evasion, Reliable Talent, Blindsense, Elusive (denies enemies
+    // skipped: Expertise (player chooses two proficiencies), Sneak Attack (damage rider),
+    //   Uncanny Dodge, Evasion, Reliable Talent, Blindsense, Elusive (denies enemies
     //   advantage — no category), Stroke of Luck (miss→hit / treat check as 20 — DM adjudication),
     //   Roguish Archetype (subclass).
 
@@ -205,8 +241,13 @@ export const map: MadMap = {
     "Sorcerer/Ability Score Improvement": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
     ],
-    // skipped: Font of Magic (sorcery-point resource), Metamagic (player-choice options),
-    //   Sorcerous Restoration (resource regen), Sorcerous Origin (subclass), Spellcasting.
+    // Font of Magic's bonus-action conversions (the sorcery-point resource itself stays unrepresented).
+    "Sorcerer/Font of Magic": [
+        action("Flexible Casting", "bonusAction", "Font of Magic", "convert sorcery points into a spell slot, or a spell slot into sorcery points"),
+    ],
+    // skipped: Font of Magic's sorcery-point resource (only Flexible Casting is encoded above),
+    //   Metamagic (player-choice options), Sorcerous Restoration (resource regen),
+    //   Sorcerous Origin (subclass), Spellcasting.
 
     // ----- Warlock -----
     "Warlock/Ability Score Improvement": [
