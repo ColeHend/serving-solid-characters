@@ -230,7 +230,6 @@ const ChatInput: Component = () => {
                     <TextArea
                         text={text}
                         setText={aiAssistant.setDraft}
-                        placeholder={""}
                         rows={1}
                         onKeyDown={onKeyDown}
                         onPaste={onPaste}
