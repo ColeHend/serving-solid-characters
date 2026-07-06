@@ -5,7 +5,8 @@ import { Stats } from "../../dndInfo/useCharacters";
 
 const addACFeature = (character: Character, feature: MadFeature): Character => {
     const acBonus = feature.value?.['bonus'] ?? '';
-    const stats = feature.value?.['stats'].split(',') ?? [];
+    // stats is optional — a flat "+1 to AC" command carries only a bonus
+    const stats = (feature.value?.['stats'] ?? '').split(',').map(s => s.trim()).filter(Boolean);
 
     let totalBonus = 0;
 
@@ -28,7 +29,7 @@ const addACFeature = (character: Character, feature: MadFeature): Character => {
 
 const removeACFeature = (character: Character, feature: MadFeature): Character => {
     const acBonus = feature.value?.['bonus'] ?? '';
-    const stats = feature.value?.['stats'].split(',') ?? [];
+    const stats = (feature.value?.['stats'] ?? '').split(',').map(s => s.trim()).filter(Boolean);
 
     let totalBonus = 0;
 

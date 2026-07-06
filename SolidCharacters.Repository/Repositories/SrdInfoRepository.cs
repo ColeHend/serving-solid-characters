@@ -103,9 +103,10 @@ public class SrdInfoRepository : ISrdInfoRepository
     return json.ToList();
   }
 
-  public List<MagicItem> GetMagicItems()
+  public List<MagicItem> GetMagicItems(string version = "2024")
   {
-    var json = jsonService.GetJson<MagicItem[]>($"srd/2024/magic_items");
+    int versionInt = ParseVersion(version);
+    var json = jsonService.GetJson<MagicItem[]>($"srd/{versionInt}/magic_items");
     json ??= Array.Empty<MagicItem>();
     return json.ToList();
   }

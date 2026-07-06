@@ -1,163 +1,208 @@
 [
-  {
-    "id": "f58190ff-2410-4982-9a81-5a8fe2613455",
-    "name": "Hill Dwarf",
-    "parentRace": "3e97a7b0-060d-467e-9780-bb2c0ee22d1c",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [],
-    "abilityBonuses": [
-      {
-        "stat": 4,
-        "value": 1
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Dwarven Toughness",
-          "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
+ {
+  "id": "f58190ff-2410-4982-9a81-5a8fe2613455",
+  "name": "Hill Dwarf",
+  "parentRace": "3e97a7b0-060d-467e-9780-bb2c0ee22d1c",
+  "size": "Medium",
+  "speed": 25,
+  "languages": [],
+  "abilityBonuses": [
+   {
+    "stat": 4,
+    "value": 1
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "a666ce70-2a15-5262-aa54-02f2e552caa6",
+     "name": "Dwarven Toughness",
+     "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddHitPoints",
+        "value": {
+         "amount": "1",
+         "perLevel": "true"
         },
+        "type": 0,
         "prerequisites": [],
-        "id": "2d173845-ed27-4633-9176-1bb125facb97"
-      }
-    ],
-    "descriptions": {
-      "description": "As a hill dwarf, you have keen senses, deep intuition, and remarkable resilience.",
-      "alignment": "",
-      "age": "",
-      "sizeDescription": ""
-    }
-  },
-  {
-    "id": "f0066dd5-405a-4200-83c5-de318c0ce540",
-    "name": "High Elf",
-    "parentRace": "16c1428d-41e5-4d0c-a25e-169eb22bb7e8",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [],
-    "languageChoice": {
-      "options": [
-        "Dwarvish",
-        "Giant",
-        "Gnomish",
-        "Goblin",
-        "Halfling",
-        "Orc",
-        "Abyssal",
-        "Celestial",
-        "Draconic",
-        "Deep Speech",
-        "Infernal",
-        "Primordial",
-        "Sylvan",
-        "Undercommon"
-      ],
-      "amount": 1
+        "group": 0
+       }
+      ]
+     }
     },
-    "abilityBonuses": [
-      {
-        "stat": 3,
-        "value": 1
-      }
-    ],
-    "traits": [],
-    "traitChoice": {
-      "amount": 1,
-      "choices": []
+    "prerequisites": [],
+    "id": "2d173845-ed27-4633-9176-1bb125facb97"
+   }
+  ],
+  "descriptions": {
+   "description": "As a hill dwarf, you have keen senses, deep intuition, and remarkable resilience.",
+   "alignment": "",
+   "age": "",
+   "sizeDescription": ""
+  },
+  "legacy": true
+ },
+ {
+  "id": "f0066dd5-405a-4200-83c5-de318c0ce540",
+  "name": "High Elf",
+  "parentRace": "16c1428d-41e5-4d0c-a25e-169eb22bb7e8",
+  "size": "Medium",
+  "speed": 30,
+  "languages": [],
+  "languageChoice": {
+   "options": [
+    "Dwarvish",
+    "Giant",
+    "Gnomish",
+    "Goblin",
+    "Halfling",
+    "Orc",
+    "Abyssal",
+    "Celestial",
+    "Draconic",
+    "Deep Speech",
+    "Infernal",
+    "Primordial",
+    "Sylvan",
+    "Undercommon"
+   ],
+   "amount": 1
+  },
+  "abilityBonuses": [
+   {
+    "stat": 3,
+    "value": 1
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "becd947f-c0a9-58f2-9320-84030a88e350",
+     "name": "Elf Weapon Training",
+     "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow."
     },
-    "descriptions": {
-      "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic. In many fantasy gaming worlds, there are two kinds of high elves. One type is haughty and reclusive, believing themselves to be superior to non-elves and even other elves. The other type is more common and more friendly, and often encountered among humans and other races.",
-      "alignment": "",
-      "age": "",
-      "sizeDescription": ""
-    }
+    "prerequisites": [],
+    "id": "b7272c65-0e16-5a00-abe5-8a799e052c02"
+   },
+   {
+    "details": {
+     "id": "b0a80079-5acf-5c9d-8520-72038394c563",
+     "name": "Cantrip",
+     "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."
+    },
+    "prerequisites": [],
+    "id": "5a305ee5-d02e-549b-9751-5968fa3fb6a9"
+   }
+  ],
+  "descriptions": {
+   "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic. In many fantasy gaming worlds, there are two kinds of high elves. One type is haughty and reclusive, believing themselves to be superior to non-elves and even other elves. The other type is more common and more friendly, and often encountered among humans and other races.",
+   "alignment": "",
+   "age": "",
+   "sizeDescription": ""
   },
-  {
-    "id": "894705bb-587e-40cb-85ea-0cc01f8faaf4",
-    "name": "Lightfoot Halfling",
-    "parentRace": "212324d1-3bb9-4afe-8750-a8e945146203",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [],
-    "abilityBonuses": [
-      {
-        "stat": 5,
-        "value": 1
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Naturally Stealthy",
-          "description": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."
-        },
-        "prerequisites": [],
-        "id": "eae37d85-7d80-4611-ac13-22dfd6509103"
-      }
-    ],
-    "descriptions": {
-      "description": "As a lightfoot halfling, you can easily hide from notice, even using other people as cover. You're inclined to be affable and get along well with others. Lightfoots are more prone to wanderlust than other halflings, and often dwell alongside other races or take up a nomadic life.",
-      "alignment": "",
-      "age": "",
-      "sizeDescription": ""
-    }
+  "legacy": true
+ },
+ {
+  "id": "894705bb-587e-40cb-85ea-0cc01f8faaf4",
+  "name": "Lightfoot Halfling",
+  "parentRace": "212324d1-3bb9-4afe-8750-a8e945146203",
+  "size": "Small",
+  "speed": 25,
+  "languages": [],
+  "abilityBonuses": [
+   {
+    "stat": 5,
+    "value": 1
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "612b7da4-6f76-5f07-813c-87bc11aea07a",
+     "name": "Naturally Stealthy",
+     "description": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."
+    },
+    "prerequisites": [],
+    "id": "eae37d85-7d80-4611-ac13-22dfd6509103"
+   }
+  ],
+  "descriptions": {
+   "description": "As a lightfoot halfling, you can easily hide from notice, even using other people as cover. You're inclined to be affable and get along well with others. Lightfoots are more prone to wanderlust than other halflings, and often dwell alongside other races or take up a nomadic life.",
+   "alignment": "",
+   "age": "",
+   "sizeDescription": ""
   },
-  {
-    "id": "be15b450-a00b-4daa-ba63-460f23952e43",
-    "name": "Rock Gnome",
-    "parentRace": "46e5c14f-d096-4ceb-99f0-d959623ebfcc",
-    "size": "Medium",
-    "speed": 30,
-    "languages": [
-      "Common",
-      "Gnomish"
-    ],
-    "abilityBonuses": [
-      {
-        "stat": 2,
-        "value": 1
-      }
-    ],
-    "traits": [
-      {
-        "details": {
-          "name": "Darkvision",
-          "description": "You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray."
-        },
-        "prerequisites": [],
-        "id": "11e9da96-820a-43e2-a557-180e9371463d"
-      },
-      {
-        "details": {
-          "name": "Gnome Cunning",
-          "description": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic."
-        },
-        "prerequisites": [],
-        "id": "f4bd3642-161f-43fd-a594-7f2e1323c1e6"
-      },
-      {
-        "details": {
-          "name": "Artificer's Lore",
-          "description": "Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus, instead of any proficiency bonus you normally apply."
-        },
-        "prerequisites": [],
-        "id": "2323e4e1-7c50-4fb3-a58c-47da4d6fc70b"
-      },
-      {
-        "details": {
-          "name": "Tinker",
-          "description": "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time.\nWhen you create a device, choose one of the following options:\nClockwork Toy: This toy is a clockwork animal, monster, or person, such as a frog, mouse, bird, dragon, or soldier. When placed on the ground, the toy moves 5 feet across the ground on each of your turns in a random direction. It makes noises as appropriate to the creature it represents.\nFire Starter: The device produces a miniature flame, which you can use to light a candle, torch, or campfire. Using the device requires your action.\nMusic Box: When opened, this music box plays a single song at a moderate volume. The box stops playing when it reaches the song's end or when it is closed."
-        },
-        "prerequisites": [],
-        "id": "9d0938d7-9276-40b8-99f6-c465b4a8d93b"
-      }
-    ],
-    "descriptions": {
-      "description": "As a rock gnome, you have a natural inventiveness and hardiness beyond that of other gnomes.",
-      "alignment": "",
-      "age": "",
-      "sizeDescription": ""
-    }
-  }
+  "legacy": true
+ },
+ {
+  "id": "be15b450-a00b-4daa-ba63-460f23952e43",
+  "name": "Rock Gnome",
+  "parentRace": "46e5c14f-d096-4ceb-99f0-d959623ebfcc",
+  "size": "Small",
+  "speed": 25,
+  "languages": [],
+  "abilityBonuses": [
+   {
+    "stat": 2,
+    "value": 1
+   }
+  ],
+  "traits": [
+   {
+    "details": {
+     "id": "fe24cbca-c0b7-569b-ab7a-d7e92cd2aaf1",
+     "name": "Artificer's Lore",
+     "description": "Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus, instead of any proficiency bonus you normally apply."
+    },
+    "prerequisites": [],
+    "id": "2323e4e1-7c50-4fb3-a58c-47da4d6fc70b"
+   },
+   {
+    "details": {
+     "id": "e0896c8e-60aa-5d32-b956-1cc51dacbdb0",
+     "name": "Tinker",
+     "description": "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time.\nWhen you create a device, choose one of the following options:"
+    },
+    "prerequisites": [],
+    "id": "9d0938d7-9276-40b8-99f6-c465b4a8d93b"
+   },
+   {
+    "details": {
+     "id": "405e03c1-db03-589c-bda4-0505e2d5d747",
+     "name": "Clockwork Toy",
+     "description": "This toy is a clockwork animal, monster, or person, such as a frog, mouse, bird, dragon, or soldier. When placed on the ground, the toy moves 5 feet across the ground on each of your turns in a random direction. It makes noises as appropriate to the creature it represents."
+    },
+    "prerequisites": [],
+    "id": "d078814f-1806-5f34-a823-5755666a8f4a"
+   },
+   {
+    "details": {
+     "id": "8d7d1d8d-54f3-53ff-b6bf-a71ebb6e2316",
+     "name": "Fire Starter",
+     "description": "The device produces a miniature flame, which you can use to light a candle, torch, or campfire. Using the device requires your action."
+    },
+    "prerequisites": [],
+    "id": "af350a08-8b96-5e9a-80e1-6654f142c86f"
+   },
+   {
+    "details": {
+     "id": "a98afd5b-8783-55f0-867b-0b26a9acc908",
+     "name": "Music Box",
+     "description": "When opened, this music box plays a single song at a moderate volume. The box stops playing when it reaches the song's end or when it is closed."
+    },
+    "prerequisites": [],
+    "id": "ad7c2ddb-66b2-5019-8fde-0aaf8b8e30a2"
+   }
+  ],
+  "descriptions": {
+   "description": "As a rock gnome, you have a natural inventiveness and hardiness beyond that of other gnomes.",
+   "alignment": "",
+   "age": "",
+   "sizeDescription": ""
+  },
+  "legacy": true
+ }
 ]

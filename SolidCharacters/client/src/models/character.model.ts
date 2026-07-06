@@ -14,6 +14,11 @@ export class Character {
   }
   public ArmorClass: number = 0;
   public Speed: number = 0;
+  public movementTypes: MovementType[] = [MovementType.Walk];
+  /** Distinct speeds (feet) for non-walking modes; a mode in movementTypes with no entry here moves at the walking Speed. */
+  public movementSpeeds: MovementSpeeds = {};
+  /** Special senses and their ranges in feet (darkvision 60, ...). */
+  public senses: CharacterSenses = {};
   public className: string = '';
   public subclass: string[] = [];
   public background: string = '';
@@ -25,9 +30,17 @@ export class Character {
   };
   public savingThrows: CharacterSavingThrow[] = [];
   public rollAdvantages: RollAdvantage[] = [];
+  public rollBonuses: RollBonus[] = [];
+  public grantedActions: GrantedAction[] = [];
   public attacksPerAction: number = 1;
   /** Spent use counts per limited-use feature, keyed by feature name (feature ids are often empty). */
   public featureUses: Record<string, number> = {};
+  /** Resolved picks for choice-form AddStats commands, keyed by feature name → ability key ("str".."cha"). */
+  public statChoices: Record<string, string> = {};
+  /** Resolved picks for choice-form AddProficiencies commands, keyed like statChoices → CSV of skill names. */
+  public proficiencyChoices: Record<string, string> = {};
+  /** Resolved picks for choice-form AddSpells commands, keyed by spellChoiceKey → CSV of spell ids. */
+  public spellChoices: Record<string, string> = {};
   public resistances: DamageAffinity[] = [];
   public vulnerabilities: DamageAffinity[] = [];
   public immunities: DamageAffinity[] = [];
@@ -132,9 +145,39 @@ export interface RollAdvantage {
   source?: string;
 }
 
+/** Fractions of the proficiency bonus a RollBonus can grant (matches PB_CHOICES in the command catalog). */
+export type PbFraction = "Third PB" | "Half PB" | "Full PB";
+
+/** A flat or proficiency-bonus modifier to a d20 roll (AddRollBonus) — distinct from advantage. */
+export interface RollBonus {
+  rollType: AdvantageRollType;
+  /** Fixed modifier (Archery's +2). Absent when proficiencyBonus drives the value. */
+  bonus?: number;
+  /** The bonus equals this fraction of the character's proficiency bonus (Alert's PB to Initiative). */
+  proficiencyBonus?: PbFraction;
+  /** Only meaningful for SavingThrow / AbilityCheck; absent = all stats. */
+  stat?: keyof Stats;
+  /** Free-text qualifier, e.g. "with Ranged weapons". */
+  condition?: string;
+  /** Name of the feature that granted it. */
+  source?: string;
+}
+
+export type ActionType = "action" | "bonusAction" | "reaction";
+
+/** An action/bonus action/reaction a mad granted the character (Channel Divinity, Second Wind, ...). */
+export interface GrantedAction {
+  name: string;
+  actionType: ActionType;
+  /** Rules text for the action, when it differs from the granting feature's description. */
+  description?: string;
+  /** Name of the granting feature — links to featureUses (keyed by feature name) for uses tracking. */
+  source?: string;
+}
+
 // -- Character Form Models --
 
-type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"|"rollAdvantages"|"attacksPerAction"|"featureUses">
+type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"|"rollAdvantages"|"rollBonuses"|"grantedActions"|"attacksPerAction"|"featureUses">
 
 export interface CharacterForm extends halfCharacter {
   race: string;
@@ -153,3 +196,18 @@ export interface CharacterForm extends halfCharacter {
   classItemChoice: string|null;
   BackgrndFeat: string;
 }
+
+export enum MovementType {
+  Walk,
+  Fly,
+  Swim,
+  Climb,
+  Burrow
+}
+
+/** movementSpeeds keys — walking speed lives on Character.Speed, so Walk has no entry. */
+export type MovementSpeedKey = "fly" | "swim" | "climb" | "burrow";
+export type MovementSpeeds = Partial<Record<MovementSpeedKey, number>>;
+
+export type SenseKey = "darkvision" | "blindsight" | "tremorsense" | "truesight";
+export type CharacterSenses = Partial<Record<SenseKey, number>>;

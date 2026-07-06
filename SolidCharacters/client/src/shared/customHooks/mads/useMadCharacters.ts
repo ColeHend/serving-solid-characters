@@ -1,5 +1,6 @@
-import { Character } from "../../../models/character.model";
+import { Character, GrantedAction } from "../../../models/character.model";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
+import { addActionsFeature, removeActionsFeature } from "./commands/useActionsFeature";
 import { addAdvantageFeature, removeAdvantageFeature } from "./commands/useAdvantageFeature";
 import { addAllProficiencyFeature ,removeAllProficiencyFeature } from "./commands/useAllProficiencyFeature";
 import { addAttacksFeature, removeAttacksFeature } from "./commands/useAttacksFeature";
@@ -10,10 +11,14 @@ import { AddFeat, RemoveFeat } from "./commands/useFeat";
 import { AddFeature ,RemoveFeature } from "./commands/useFeatures";
 import { addImmunities, removeImmunities } from "./commands/useImmunitiesFeature";
 import { AddItemFeature, RemoveItemFeature } from "./commands/useItemFeature";
+import { addHitPointsFeature, removeHitPointsFeature } from "./commands/useHitPointsFeature";
 import { addLanguageFeature, removeLanguageFeature } from "./commands/useLanguagesFeature";
+import { addMovementFeature, removeMovementFeature } from "./commands/useMovementFeature";
 import { addProficienciesFeature, RemoveProficienciesFeature } from "./commands/useProficienciesFeature";
 import { addResistanceFeature, removeResistanceFeature } from "./commands/useResistanceFeature";
+import { addRollBonusFeature, removeRollBonusFeature } from "./commands/useRollBonusFeature";
 import { addSavingThrowFeature, removeSavingThrowFeature } from "./commands/useSavingThrowFeature";
+import { addSensesFeature, removeSensesFeature } from "./commands/useSensesFeature";
 import { addSpeedFeature, removeSpeedFeature } from "./commands/useSpeedFeature";
 import { AddSpellFeature, RemoveSpellFeature } from "./commands/useSpellFeature";
 import { addStatFeature, removeStatFeature } from "./commands/useStatFeature";
@@ -22,8 +27,15 @@ import { addVulnerabilityFeature, removeVulnerabilityFeature } from "./commands/
 import { MadFeature, MadType } from "./madModels";
 
 // this hook should return a character with its MAD attributes applied, so that the character sheet can be rendered with the MAD features included. It should also be memoized to prevent unnecessary recalculations when the character or MAD features haven't changed.
-export function useMadCharacters(character: Character, madFeatures: MadFeature[]): Character {
-   return madFeatures.reduce((updatedCharacter, feature) => addMadFeature(updatedCharacter, feature), character);
+export function useMadCharacters(character: Character, madFeatures: MadFeature[]): Character;
+export function useMadCharacters(character: Character, madFeatures: MadFeature[], opts: { returnActions: true }): GrantedAction[];
+export function useMadCharacters(
+    character: Character,
+    madFeatures: MadFeature[],
+    opts?: { returnActions?: boolean },
+): Character | GrantedAction[] {
+    const applied = madFeatures.reduce((updatedCharacter, feature) => addMadFeature(updatedCharacter, feature), character);
+    return opts?.returnActions ? (applied.grantedActions ?? []) : applied;
 }
 
 /**
@@ -154,16 +166,173 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
         case "RemoveUses":
             character = removeUsesFeature(character, feature);
             break;
+        case "AddMovement":
+            character = addMovementFeature(character, feature);
+            break;
+        case "RemoveMovement":
+            character = removeMovementFeature(character, feature);
+            break;
+        case "AddSenses":
+            character = addSensesFeature(character, feature);
+            break;
+        case "RemoveSenses":
+            character = removeSensesFeature(character, feature);
+            break;
+        case "AddHitPoints":
+            character = addHitPointsFeature(character, feature);
+            break;
+        case "RemoveHitPoints":
+            character = removeHitPointsFeature(character, feature);
+            break;
+        case "AddRollBonus":
+            character = addRollBonusFeature(character, feature);
+            break;
+        case "RemoveRollBonus":
+            character = removeRollBonusFeature(character, feature);
+            break;
+        case "AddActions":
+            character = addActionsFeature(character, feature);
+            break;
+        case "RemoveActions":
+            character = removeActionsFeature(character, feature);
+            break;
         default:
             break;
     }
     return character;
 }
 
+/** True for a choice-form Stats command ("increase an ability of your choice") that needs a player pick. */
+function isChoiceStatMad(m: MadFeature): boolean {
+    return (m.command === "AddStats" || m.command === "RemoveStats") && m.value?.["stat"] === "choice";
+}
+
+/** The abilities a choice-form Stats command allows ("str,dex" → ["str","dex"]). */
+export function statChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/**
+ * The character.statChoices key for a feature. Prefer the feature id — repeated features
+ * (Ability Score Improvement at levels 4/8/12...) have distinct ids, so each instance gets
+ * its own pick. Homebrew features often have id "" — fall back to the name.
+ */
+export function statChoiceKey(feature: { id?: string; name: string }): string {
+    return feature.id || feature.name;
+}
+
+/**
+ * A choice-form Stats command with the player's pick (character.statChoices, keyed by
+ * statChoiceKey) substituted in — or null while the pick is missing/invalid, in which
+ * case the command must NOT apply.
+ */
+function resolveChoiceStatMad(character: Character, choiceKey: string, m: MadFeature): MadFeature | null {
+    const pick = character.statChoices?.[choiceKey] ?? "";
+    if (!pick || !statChoiceOptions(m).includes(pick)) return null;
+    return { ...m, value: { ...m.value, stat: pick } };
+}
+
+/** All choice-form stat commands on a feature (for the sheet's chooser UI). */
+export function choiceStatMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceStatMad);
+}
+
+/** Choice-form stat commands on a feature that still need a pick (for the sheet's chooser UI). */
+export function pendingStatChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceStatMads(feature).filter(m => !resolveChoiceStatMad(character, statChoiceKey(feature), m));
+}
+
+/** True for a choice-form Proficiencies command ("proficiency in N skills of your choice") that needs player picks. */
+function isChoiceProficiencyMad(m: MadFeature): boolean {
+    return (m.command === "AddProficiencies" || m.command === "RemoveProficiencies") && m.value?.["proficiency"] === "choice";
+}
+
+/** The skills a choice-form Proficiencies command allows ("Athletics,Stealth" → ["Athletics","Stealth"]). */
+export function proficiencyChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/** How many skills the player picks (defaults to 1). */
+export function proficiencyChoiceCount(m: MadFeature): number {
+    const n = Number(m.value?.["count"] ?? "1");
+    return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+/**
+ * A choice-form Proficiencies command EXPANDED into one concrete command per picked skill
+ * (character.proficiencyChoices holds a CSV of picks, keyed by statChoiceKey) — or null while
+ * the picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ */
+function resolveChoiceProficiencyMads(character: Character, choiceKey: string, m: MadFeature): MadFeature[] | null {
+    const picks = (character.proficiencyChoices?.[choiceKey] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    const options = proficiencyChoiceOptions(m);
+    if (picks.length !== proficiencyChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    return picks.map(pick => ({ ...m, value: { ...m.value, proficiency: pick } }));
+}
+
+/** All choice-form Proficiencies commands on a feature (for the sheet's chooser UI). */
+export function choiceProficiencyMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceProficiencyMad);
+}
+
+/** Choice-form Proficiencies commands on a feature that still need picks (for the sheet's chooser UI). */
+export function pendingProficiencyChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceProficiencyMads(feature).filter(m => !resolveChoiceProficiencyMads(character, statChoiceKey(feature), m));
+}
+
+/** True for a choice-form Spells command ("choose N spells from a list") that needs player picks. */
+function isChoiceSpellMad(m: MadFeature): boolean {
+    return (m.command === "AddSpells" || m.command === "RemoveSpells") && m.value?.["ID"] === "choice";
+}
+
+/** The spell ids a choice-form Spells command allows ("id1,id2" → ["id1","id2"]). */
+export function spellChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/** How many spells the player picks (defaults to 1). */
+export function spellChoiceCount(m: MadFeature): number {
+    const n = Number(m.value?.["count"] ?? "1");
+    return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+/**
+ * The character.spellChoices key for one choice-form Spells command. Keyed per feature AND per spell
+ * level — one feature can carry several choice commands (Magic Initiate: two cantrips + a level-1
+ * spell), and the spell level is what tells them apart.
+ */
+export function spellChoiceKey(feature: { id?: string; name: string }, m: MadFeature): string {
+    return `${statChoiceKey(feature)}::${m.value?.["spellLevel"] ?? "0"}`;
+}
+
+/**
+ * A choice-form Spells command EXPANDED into one concrete command per picked spell
+ * (character.spellChoices holds a CSV of picked spell ids, keyed by spellChoiceKey) — or null while
+ * the picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ */
+function resolveChoiceSpellMads(character: Character, feature: { id?: string; name: string }, m: MadFeature): MadFeature[] | null {
+    const picks = (character.spellChoices?.[spellChoiceKey(feature, m)] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    const options = spellChoiceOptions(m);
+    if (picks.length !== spellChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    return picks.map(pick => ({ ...m, value: { ...m.value, ID: pick } }));
+}
+
+/** All choice-form Spells commands on a feature (for the sheet's chooser UI). */
+export function choiceSpellMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceSpellMad);
+}
+
+/** Choice-form Spells commands on a feature that still need picks (for the sheet's chooser UI). */
+export function pendingSpellChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceSpellMads(feature).filter(m => !resolveChoiceSpellMads(character, feature, m));
+}
+
 /**
  * Every Character-type mad across all of a character's feature sources
  * (class levels, race, and top-level features), ready to feed useMadCharacters.
  * Info-type mads (like Uses) describe their owning feature and are excluded.
+ * Choice-form Stats commands are resolved against character.statChoices (keyed by
+ * feature name); unresolved ones are excluded until the player picks.
  */
 export function collectMadFeatures(character: Character): MadFeature[] {
     const feats = [
@@ -172,8 +341,22 @@ export function collectMadFeatures(character: Character): MadFeature[] {
         ...(character.features ?? []),
     ];
 
-    return feats.flatMap(f => (f.metadata?.mads ?? []) as MadFeature[])
-                .filter(m => m.type === MadType.Character);
+    return feats.flatMap(f =>
+        ((f.metadata?.mads ?? []) as MadFeature[]).flatMap(m => {
+            if (m.type !== MadType.Character) return [];
+            if (isChoiceStatMad(m)) {
+                const resolved = resolveChoiceStatMad(character, statChoiceKey(f), m);
+                return resolved ? [resolved] : [];
+            }
+            if (isChoiceProficiencyMad(m)) {
+                return resolveChoiceProficiencyMads(character, statChoiceKey(f), m) ?? [];
+            }
+            if (isChoiceSpellMad(m)) {
+                return resolveChoiceSpellMads(character, f, m) ?? [];
+            }
+            return [m];
+        }),
+    );
 }
 
 

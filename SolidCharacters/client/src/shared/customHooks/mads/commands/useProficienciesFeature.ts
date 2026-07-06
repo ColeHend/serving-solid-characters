@@ -7,7 +7,15 @@ const addProficienciesFeature = (character: Character, feature: MadFeature) => {
 
     if (newProficiency === "") {
         DebugConsole.error("No proficiency provided for AddProficiencies command");
-        
+
+        return character;
+    }
+
+    // choice-form commands are resolved to concrete skills in collectMadFeatures; an
+    // unresolved "choice" must never index the skills record (there is no such skill)
+    if (newProficiency === "choice") {
+        DebugConsole.warn("Unresolved choice-form AddProficiencies reached the handler; skipping");
+
         return character;
     }
 
@@ -29,7 +37,13 @@ const RemoveProficienciesFeature = (character: Character, feature: MadFeature) =
 
     if (newProficiency === "") {
         DebugConsole.error("No proficiency provided for AddProficiencies command");
-        
+
+        return character;
+    }
+
+    if (newProficiency === "choice") {
+        DebugConsole.warn("Unresolved choice-form RemoveProficiencies reached the handler; skipping");
+
         return character;
     }
 

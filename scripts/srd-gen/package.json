@@ -1,0 +1,15 @@
+{
+  "name": "srd-gen",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Generates the server-served SRD JSON (2014/5.1 and 2024/5.2) from the markdown sources in Docs/, including curated MADS commands.",
+  "scripts": {
+    "gen": "tsx index.ts",
+    "gen:dry": "tsx index.ts --dry-run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2"
+  }
+}

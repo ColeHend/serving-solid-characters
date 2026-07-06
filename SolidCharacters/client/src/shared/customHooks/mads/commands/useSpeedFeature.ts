@@ -3,17 +3,40 @@ import { MadFeature, MadType } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addSpeedFeature = (character: Character, feature: MadFeature): Character => {
-    const speedIncrease = feature.value?.['speed'];
+    const speedValue = +(feature.value?.['speed'] ?? "");
+    const mode = feature.value?.['mode']?.trim().toLowerCase() ?? "increase";
 
-    character.Speed += +speedIncrease;
+    if (isNaN(speedValue)) {
+        DebugConsole.error("Invalid or missing speed value for AddSpeed command");
+        return character;
+    }
+
+    // "your walking speed becomes N" → set; the default increases it
+    if (mode === "set") {
+        character.Speed = speedValue;
+    } else {
+        character.Speed += speedValue;
+    }
 
     return character;
 }
 
 const removeSpeedFeature = (character: Character, feature: MadFeature): Character => {
-    const speedIncrease = feature.value?.['speed'];
+    const speedValue = +(feature.value?.['speed'] ?? "");
+    const mode = feature.value?.['mode']?.trim().toLowerCase() ?? "increase";
 
-    character.Speed -= +speedIncrease;
+    if (isNaN(speedValue)) {
+        DebugConsole.error("Invalid or missing speed value for RemoveSpeed command");
+        return character;
+    }
+
+    // a "set" can't be meaningfully subtracted — revoking one is out of scope for Remove
+    if (mode === "set") {
+        DebugConsole.warn("RemoveSpeed with mode=set is not supported. Skipping.");
+        return character;
+    }
+
+    character.Speed -= speedValue;
 
     return character;
 }

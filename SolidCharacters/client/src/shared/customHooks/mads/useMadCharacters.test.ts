@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Character } from "../../../models/character.model";
+import { MovementType } from "../../../models/character.model";
 import type { FeatureDetail, MadFeature as StoredMad } from "../../../models/generated";
 
 // These handler modules resolve data hooks at import time; mock them so the
@@ -7,9 +8,10 @@ import type { FeatureDetail, MadFeature as StoredMad } from "../../../models/gen
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, useMadCharacters } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
+import { rollBonusAmount } from "./commands/useRollBonusFeature";
 
 function makeCharacter(overrides: Partial<Character> = {}): Character {
     return {
@@ -196,6 +198,61 @@ describe("Uses (Info command)", () => {
     });
 });
 
+describe("AddStats set mode and choice form", () => {
+    it("mode=set sets the score instead of adding", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddStats", { stat: "int", statValue: "19", mode: "set" }));
+        expect(c.stats.int).toBe(19);
+    });
+
+    it("default mode still adds", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddStats", { stat: "con", statValue: "2" }));
+        expect(c.stats.con).toBe(12);
+    });
+
+    it("an unresolved choice-form command reaching the handler is a no-op", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddStats", { stat: "choice", options: "str,dex", statValue: "1" }));
+        expect(c.stats).toEqual(makeCharacter().stats);
+    });
+
+    it("collectMadFeatures excludes unresolved choice mads and substitutes the pick when resolved", () => {
+        const choice = mad("AddStats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" });
+        const feature: FeatureDetail = { id: "asi-4", name: "Ability Score Improvement", description: "", metadata: { mads: stored(choice) } };
+        const base = makeCharacter({
+            levels: [{ class: "Fighter", level: 4, hitDie: 10, features: [feature] }],
+        });
+
+        // no pick yet → excluded, listed as pending
+        expect(collectMadFeatures(base)).toEqual([]);
+        expect(pendingStatChoices(base, feature)).toHaveLength(1);
+        expect(choiceStatMads(feature)).toHaveLength(1);
+
+        // picked (keyed by feature id) → substituted concrete stat
+        const picked = makeCharacter({ ...base, statChoices: { "asi-4": "con" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected).toHaveLength(1);
+        expect(collected[0].value["stat"]).toBe("con");
+        expect(pendingStatChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.stats.con).toBe(12);
+    });
+
+    it("a pick outside the options list does not apply", () => {
+        const choice = mad("AddStats", { stat: "choice", options: "str,dex", statValue: "1" });
+        const feature: FeatureDetail = { id: "half-feat", name: "Athlete", description: "", metadata: { mads: stored(choice) } };
+        const c = makeCharacter({
+            features: [feature],
+            statChoices: { "half-feat": "cha" },
+        });
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+
+    it("statChoiceKey prefers the id and falls back to the name", () => {
+        expect(statChoiceKey({ id: "abc", name: "ASI" })).toBe("abc");
+        expect(statChoiceKey({ id: "", name: "ASI" })).toBe("ASI");
+    });
+});
+
 describe("collectMadFeatures", () => {
     it("gathers Character-type mads from levels, race, and top-level features and skips Info", () => {
         const speed = mad("AddSpeed", { speed: "10" });
@@ -237,5 +294,346 @@ describe("collectMadFeatures", () => {
         expect(first.Speed).toBe(40);
         expect(base.attacksPerAction).toBe(1);
         expect(base.Speed).toBe(30);
+    });
+});
+
+describe("AddMovement / RemoveMovement", () => {
+    it("initializes movementTypes on old-shape characters and stores an explicit speed", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "fly", speed: "60" }));
+        expect(c.movementTypes).toContain(MovementType.Fly);
+        expect(c.movementSpeeds?.fly).toBe(60);
+    });
+
+    it("a mode without a speed moves at the walking speed (no movementSpeeds entry)", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "climb" }));
+        expect(c.movementTypes).toContain(MovementType.Climb);
+        expect(c.movementSpeeds?.climb).toBeUndefined();
+    });
+
+    it("dedupes modes and keeps the best explicit speed", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "swim", speed: "40" }));
+        c = addMadFeature(c, mad("AddMovement", { movementType: "swim", speed: "30" }));
+        expect(c.movementTypes.filter(t => t === MovementType.Swim)).toHaveLength(1);
+        expect(c.movementSpeeds?.swim).toBe(40);
+    });
+
+    it("remove drops the mode and its speed; an unknown movementType is a no-op", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "fly", speed: "60" }));
+        c = addMadFeature(c, mad("RemoveMovement", { movementType: "fly" }));
+        expect(c.movementTypes).not.toContain(MovementType.Fly);
+        expect(c.movementSpeeds?.fly).toBeUndefined();
+
+        const untouched = addMadFeature(makeCharacter(), mad("AddMovement", { movementType: "teleport" }));
+        expect(untouched.movementTypes ?? []).not.toContain(undefined);
+        expect(untouched.movementSpeeds ?? {}).toEqual({});
+    });
+});
+
+describe("AddSenses / RemoveSenses", () => {
+    it("adds a sense with its range and keeps the longest range on overlapping grants", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddSenses", { sense: "darkvision", range: "60" }));
+        c = addMadFeature(c, mad("AddSenses", { sense: "darkvision", range: "120" }));
+        c = addMadFeature(c, mad("AddSenses", { sense: "darkvision", range: "60" }));
+        expect(c.senses?.darkvision).toBe(120);
+    });
+
+    it("remove deletes the sense; invalid sense or range is a no-op", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddSenses", { sense: "blindsight", range: "30" }));
+        c = addMadFeature(c, mad("RemoveSenses", { sense: "blindsight" }));
+        expect(c.senses?.blindsight).toBeUndefined();
+
+        const invalid = addMadFeature(makeCharacter(), mad("AddSenses", { sense: "x-ray", range: "60" }));
+        expect(invalid.senses ?? {}).toEqual({});
+        const noRange = addMadFeature(makeCharacter(), mad("AddSenses", { sense: "truesight", range: "" }));
+        expect(noRange.senses ?? {}).toEqual({});
+    });
+});
+
+describe("AddHitPoints / RemoveHitPoints", () => {
+    const levels = (n: number) =>
+        Array.from({ length: n }, (_, i) => ({ class: "Fighter", level: i + 1, hitDie: 10, features: [] }));
+
+    it("adds a flat amount to health.max", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddHitPoints", { amount: "5" }));
+        expect(c.health.max).toBe(15);
+    });
+
+    it("perLevel scales by the number of levels, treating a level-less character as level 1", () => {
+        const c5 = addMadFeature(makeCharacter({ levels: levels(5) }), mad("AddHitPoints", { amount: "1", perLevel: "true" }));
+        expect(c5.health.max).toBe(15);
+
+        const c0 = addMadFeature(makeCharacter(), mad("AddHitPoints", { amount: "1", perLevel: "true" }));
+        expect(c0.health.max).toBe(11);
+    });
+
+    it("remove subtracts (per level too) and floors max at 0; a bad amount is a no-op", () => {
+        const c = addMadFeature(makeCharacter({ levels: levels(3) }), mad("RemoveHitPoints", { amount: "2", perLevel: "true" }));
+        expect(c.health.max).toBe(4);
+
+        const floored = addMadFeature(makeCharacter(), mad("RemoveHitPoints", { amount: "99" }));
+        expect(floored.health.max).toBe(0);
+
+        const bad = addMadFeature(makeCharacter(), mad("AddHitPoints", { amount: "lots" }));
+        expect(bad.health.max).toBe(10);
+    });
+});
+
+describe("AddRollBonus / RemoveRollBonus", () => {
+    it("initializes rollBonuses on old-shape characters and appends", () => {
+        const old = makeCharacter();
+        delete (old as Partial<Character>).rollBonuses;
+
+        const c = addMadFeature(old, mad("AddRollBonus", { rollType: "Initiative", proficiencyBonus: "Full PB" }));
+
+        expect(c.rollBonuses).toEqual([{
+            rollType: "Initiative", bonus: undefined, proficiencyBonus: "Full PB", stat: undefined, condition: undefined,
+        }]);
+    });
+
+    it("dedupes identical grants and drops invalid or empty bonuses", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddRollBonus", { rollType: "WeaponAttack", bonus: "2" }));
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "WeaponAttack", bonus: "2" }));
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "Nonsense", bonus: "2" }));
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "WeaponAttack" }));
+
+        expect(c.rollBonuses).toHaveLength(1);
+    });
+
+    it("keeps differently-valued bonuses separate and remove narrows by stat/condition", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddRollBonus", { rollType: "SavingThrow", bonus: "1" }));
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "SavingThrow", bonus: "1", stat: "dex", condition: "against traps" }));
+        expect(c.rollBonuses).toHaveLength(2);
+
+        c = addMadFeature(c, mad("RemoveRollBonus", { rollType: "SavingThrow", bonus: "1", stat: "dex" }));
+        expect(c.rollBonuses).toHaveLength(1);
+        expect(c.rollBonuses[0].stat).toBeUndefined();
+    });
+
+    it("rollBonusAmount resolves flat and PB-fraction values (rounding down)", () => {
+        expect(rollBonusAmount({ rollType: "WeaponAttack", bonus: 2 }, 3)).toBe(2);
+        expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Full PB" }, 3)).toBe(3);
+        expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Half PB" }, 3)).toBe(1);
+        expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Third PB" }, 5)).toBe(1);
+    });
+});
+
+describe("AddProficiencies choice form", () => {
+    const skill = (stat: "str" | "dex" | "con" | "int" | "wis" | "cha") =>
+        ({ stat, value: 0, proficient: false, expertise: false });
+    const skillSet = () => ({
+        "Athletics": skill("str"), "Stealth": skill("dex"), "Perception": skill("wis"),
+    });
+
+    it("an unresolved choice-form command reaching the handler is a no-op", () => {
+        const c = addMadFeature(makeCharacter({ proficiencies: { skills: skillSet(), other: {} } }),
+            mad("AddProficiencies", { proficiency: "choice", options: "Athletics,Stealth", count: "1" }));
+        expect(Object.values(c.proficiencies.skills).some(s => s.proficient)).toBe(false);
+    });
+
+    it("collectMadFeatures excludes unresolved choices and expands complete picks into concrete commands", () => {
+        const choice = mad("AddProficiencies", { proficiency: "choice", options: "Athletics,Stealth,Perception", count: "2" });
+        const feature: FeatureDetail = { id: "skilled-1", name: "Skilled", description: "", metadata: { mads: stored(choice) } };
+        const base = makeCharacter({
+            features: [feature],
+            proficiencies: { skills: skillSet(), other: {} },
+        });
+
+        // no picks yet → excluded, listed as pending
+        expect(collectMadFeatures(base)).toEqual([]);
+        expect(pendingProficiencyChoices(base, feature)).toHaveLength(1);
+        expect(choiceProficiencyMads(feature)).toHaveLength(1);
+        expect(proficiencyChoiceOptions(choice)).toEqual(["Athletics", "Stealth", "Perception"]);
+        expect(proficiencyChoiceCount(choice)).toBe(2);
+
+        // incomplete picks (1 of 2) stay pending
+        const partial = makeCharacter({ ...base, proficiencyChoices: { "skilled-1": "Athletics" } });
+        expect(collectMadFeatures(partial)).toEqual([]);
+
+        // complete picks → one concrete AddProficiencies per skill, and they apply
+        const picked = makeCharacter({ ...base, proficiencyChoices: { "skilled-1": "Athletics,Stealth" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected).toHaveLength(2);
+        expect(collected.map(m => m.value["proficiency"]).sort()).toEqual(["Athletics", "Stealth"]);
+        expect(pendingProficiencyChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.proficiencies.skills["Athletics"].proficient).toBe(true);
+        expect(applied.proficiencies.skills["Stealth"].proficient).toBe(true);
+        expect(applied.proficiencies.skills["Perception"].proficient).toBe(false);
+    });
+
+    it("a pick outside the options list does not apply", () => {
+        const choice = mad("AddProficiencies", { proficiency: "choice", options: "Athletics,Stealth", count: "1" });
+        const feature: FeatureDetail = { id: "p1", name: "Primal Knowledge", description: "", metadata: { mads: stored(choice) } };
+        const c = makeCharacter({
+            features: [feature],
+            proficiencyChoices: { "p1": "Perception" },
+        });
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+});
+
+describe("AddArmorClass flat bonus", () => {
+    it("a bonus-only command adds flat AC (no stats field)", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddArmorClass", { bonus: "1" }));
+        expect(c.ArmorClass).toBe(11);
+    });
+
+    it("the formula form still adds ability modifiers", () => {
+        const c = addMadFeature(makeCharacter({ stats: { str: 10, dex: 14, con: 12, int: 10, wis: 10, cha: 10 } }),
+            mad("AddArmorClass", { bonus: "10", stats: "dex,con" }));
+        // 10 (base) + 10 (bonus) + 2 (dex) + 1 (con)
+        expect(c.ArmorClass).toBe(23);
+    });
+
+    it("remove subtracts the flat bonus symmetrically", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddArmorClass", { bonus: "2" }));
+        c = addMadFeature(c, mad("RemoveArmorClass", { bonus: "2" }));
+        expect(c.ArmorClass).toBe(10);
+    });
+});
+
+describe("AddSpeed modes", () => {
+    it("mode=set sets the walking speed instead of adding", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSpeed", { speed: "30", mode: "set" }));
+        expect(c.Speed).toBe(30);
+    });
+
+    it("default mode still adds", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSpeed", { speed: "10" }));
+        expect(c.Speed).toBe(40);
+    });
+
+    it("RemoveSpeed with mode=set is a no-op; plain remove subtracts", () => {
+        const noop = addMadFeature(makeCharacter(), mad("RemoveSpeed", { speed: "30", mode: "set" }));
+        expect(noop.Speed).toBe(30);
+
+        const c = addMadFeature(makeCharacter(), mad("RemoveSpeed", { speed: "10" }));
+        expect(c.Speed).toBe(20);
+    });
+});
+
+describe("AddActions / RemoveActions", () => {
+    it("initializes grantedActions on old-shape characters and stores all fields", () => {
+        const old = makeCharacter();
+        delete (old as Partial<Character>).grantedActions;
+
+        const c = addMadFeature(old, mad("AddActions", {
+            name: "Second Wind", actionType: "bonusAction", description: "regain 1d10 + level HP", source: "Second Wind",
+        }));
+
+        expect(c.grantedActions).toEqual([{
+            name: "Second Wind", actionType: "bonusAction", description: "regain 1d10 + level HP", source: "Second Wind",
+        }]);
+    });
+
+    it("dedupes by case-insensitive name + actionType and drops invalid input", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddActions", { name: "Rage", actionType: "bonusAction" }));
+        c = addMadFeature(c, mad("AddActions", { name: "RAGE", actionType: "bonusAction" }));
+        c = addMadFeature(c, mad("AddActions", { name: "   ", actionType: "bonusAction" }));
+        c = addMadFeature(c, mad("AddActions", { name: "Dodge Roll", actionType: "somersault" }));
+
+        expect(c.grantedActions).toHaveLength(1);
+    });
+
+    it("the same name with a different actionType is a distinct grant; remove matches name + type", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddActions", { name: "Wild Shape", actionType: "action" }));
+        c = addMadFeature(c, mad("AddActions", { name: "Wild Shape", actionType: "bonusAction" }));
+
+        expect(c.grantedActions).toHaveLength(2);
+
+        c = addMadFeature(c, mad("RemoveActions", { name: "wild shape", actionType: "action" }));
+
+        expect(c.grantedActions).toEqual([{
+            name: "Wild Shape", actionType: "bonusAction", description: undefined, source: undefined,
+        }]);
+    });
+});
+
+describe("useMadCharacters returnActions flag", () => {
+    const grants = () => [
+        mad("AddActions", { name: "Channel Divinity", actionType: "action" }),
+        mad("AddActions", { name: "Retaliation", actionType: "reaction" }),
+        mad("AddSpeed", { speed: "10" }),
+    ];
+
+    it("the two-arg call still returns the character", () => {
+        const c = useMadCharacters(makeCharacter(), grants());
+        expect(c.Speed).toBe(40);
+        expect(c.grantedActions).toHaveLength(2);
+    });
+
+    it("returnActions returns only the mads-granted actions instead of the character", () => {
+        const actions = useMadCharacters(makeCharacter(), grants(), { returnActions: true });
+        expect(actions.map(a => a.name).sort()).toEqual(["Channel Divinity", "Retaliation"]);
+        expect(actions.every(a => ["action", "bonusAction", "reaction"].includes(a.actionType))).toBe(true);
+    });
+
+    it("returnActions on a character with no action grants is an empty list, not defaults", () => {
+        const actions = useMadCharacters(makeCharacter(), [mad("AddSpeed", { speed: "10" })], { returnActions: true });
+        expect(actions).toEqual([]);
+    });
+});
+
+describe("AddSpells choice form", () => {
+    it("an unresolved choice reaching the handler is a no-op", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSpells", { ID: "choice", options: "sp-1,sp-2", count: "1" }));
+        expect(c.spells).toEqual([]);
+    });
+
+    it("collectMadFeatures excludes unresolved choices and expands complete picks into concrete grants", () => {
+        const cantrips = mad("AddSpells", { ID: "choice", options: "sp-a,sp-b,sp-c", count: "2", spellLevel: "0" });
+        const feature: FeatureDetail = { id: "mi-1", name: "Magic Initiate", description: "", metadata: { mads: stored(cantrips) } };
+        const base = makeCharacter({ features: [feature] });
+
+        // no picks yet → excluded, listed as pending
+        expect(collectMadFeatures(base)).toEqual([]);
+        expect(pendingSpellChoices(base, feature)).toHaveLength(1);
+        expect(choiceSpellMads(feature)).toHaveLength(1);
+        expect(spellChoiceOptions(cantrips)).toEqual(["sp-a", "sp-b", "sp-c"]);
+        expect(spellChoiceCount(cantrips)).toBe(2);
+        expect(spellChoiceKey(feature, cantrips)).toBe("mi-1::0");
+
+        // incomplete picks (1 of 2) stay pending
+        const partial = makeCharacter({ ...base, spellChoices: { "mi-1::0": "sp-a" } });
+        expect(collectMadFeatures(partial)).toEqual([]);
+
+        // complete picks → one concrete AddSpells per spell, and they apply
+        const picked = makeCharacter({ ...base, spellChoices: { "mi-1::0": "sp-a,sp-c" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected).toHaveLength(2);
+        expect(collected.map(m => m.value["ID"]).sort()).toEqual(["sp-a", "sp-c"]);
+        expect(pendingSpellChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.spells.map(s => s.name).sort()).toEqual(["sp-a", "sp-c"]);
+    });
+
+    it("two choice commands on one feature resolve independently via distinct spellLevel keys", () => {
+        const cantrips = mad("AddSpells", { ID: "choice", options: "c-1,c-2", count: "1", spellLevel: "0" });
+        const level1 = mad("AddSpells", { ID: "choice", options: "l-1,l-2", count: "1", spellLevel: "1" });
+        const feature: FeatureDetail = { id: "mi-2", name: "Magic Initiate", description: "", metadata: { mads: stored(cantrips, level1) } };
+
+        // only the cantrip picked → the level-1 choice stays pending
+        const half = makeCharacter({ features: [feature], spellChoices: { "mi-2::0": "c-1" } });
+        expect(collectMadFeatures(half).map(m => m.value["ID"])).toEqual(["c-1"]);
+        expect(pendingSpellChoices(half, feature)).toHaveLength(1);
+
+        // both picked → both resolve
+        const full = makeCharacter({ features: [feature], spellChoices: { "mi-2::0": "c-1", "mi-2::1": "l-2" } });
+        expect(collectMadFeatures(full).map(m => m.value["ID"]).sort()).toEqual(["c-1", "l-2"]);
+        expect(pendingSpellChoices(full, feature)).toHaveLength(0);
+    });
+
+    it("a pick outside the options list does not apply", () => {
+        const choice = mad("AddSpells", { ID: "choice", options: "sp-a,sp-b", count: "1", spellLevel: "1" });
+        const feature: FeatureDetail = { id: "mi-3", name: "Magic Initiate", description: "", metadata: { mads: stored(choice) } };
+        const c = makeCharacter({ features: [feature], spellChoices: { "mi-3::1": "sp-z" } });
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+
+    it("fixed-form AddSpells still applies unchanged", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSpells", { ID: "spell-123" }));
+        expect(c.spells).toEqual([{ name: "spell-123", prepared: false }]);
     });
 });
