@@ -1,6 +1,7 @@
 import {
   Accessor,
   Component,
+  createEffect,
   createMemo,
   createSignal,
   For,
@@ -38,21 +39,21 @@ const ClassModal: Component<props> = (props) => {
   const [activeTab,setActiveTab] = createSignal<number>(0);
   const allSubclasses = props.subclasses;
   
-  const starting_equipment = createMemo(() => props.currentClass().startingEquipment || []);
-  const startingItemsOptionKeys = createMemo(()=>starting_equipment().flatMap(x=>x.optionKeys || []));
-  const startItems = createMemo(()=>starting_equipment().flatMap(x=>x.items || []));
-  const classLevels = createMemo(() => Object.keys(props.currentClass().features || {}));
-  const features = createMemo(() => props.currentClass().features || []);
-  const choices = createMemo(() => props.currentClass().choices || {});
+  const starting_equipment = createMemo(() => props?.currentClass()?.startingEquipment || []);
+  const startingItemsOptionKeys = createMemo(()=>starting_equipment()?.flatMap(x=>x?.optionKeys || []));
+  const startItems = createMemo(()=>starting_equipment()?.flatMap(x=>x?.items || []));
+  const classLevels = createMemo(() => Object.keys(props?.currentClass()?.features || {}));
+  const features = createMemo(() => props?.currentClass()?.features || []);
+  const choices = createMemo(() => props?.currentClass()?.choices || {});
   const currentSubclasses = createMemo<Subclass[]>(() => {
-    return allSubclasses().filter(s => s.parentClass === props.currentClass().name);
+    return allSubclasses()?.filter(s => (s?.parentClass ?? "") === (props?.currentClass()?.name ?? ""));
   });
 
-  const armorChoiceKey = createMemo(()=>props.currentClass().startChoices?.armor ?? "");
-  const equipChoiceKey = createMemo(()=>props.currentClass().startChoices?.equipment ?? "");
-  const skillChoiceKey = createMemo(()=>props.currentClass().startChoices?.skills ?? "");
-  const toolChoiceKey = createMemo(()=>props.currentClass().startChoices?.tools ?? "");
-  const weaponChoiceKey = createMemo(()=>props.currentClass().startChoices?.weapon ?? "");
+  const armorChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.armor ?? "");
+  const equipChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.equipment ?? "");
+  const skillChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.skills ?? "");
+  const toolChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.tools ?? "");
+  const weaponChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.weapon ?? "");
   const itemOptions = createMemo(() => choices()?.[equipChoiceKey()]?.options ?? []);
 
   const getItemOptionKey = () => {
@@ -77,13 +78,32 @@ const ClassModal: Component<props> = (props) => {
     return optionsLetters;
   }
 
+  const [menuRef, setMenuRef] = createSignal<HTMLElement|null>(null);
+
+  createEffect(() => {
+    const ref = menuRef();
+
+    if (!ref) {
+
+      return;
+    }
+
+    const firstParent = ref?.parentElement;
+
+    const second = firstParent?.parentElement;
+
+    if (second) {
+      second.style.paddingBottom = "0"
+    }
+  })
+
   return (
     <Modal
       title={props.currentClass().name}
       show={[props.boolean, props.booleanSetter]}
       noHeader
     >
-      <div class={`${stylin()?.primary} ${styles.CenterPage}`}>
+      <div class={`${stylin()?.primary} ${styles.CenterPage}`} ref={setMenuRef}>
         <DndDialogHeader onClose={()=>props.booleanSetter(false)}>
           <div class={`${styles.styledHeader}`}>
             Class <span>·</span> {props?.currentClass().hitDie ?? ""} Hit Die

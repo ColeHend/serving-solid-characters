@@ -5,11 +5,11 @@ $mobile: 768px;
 .body {
     display: flex;
     flex-direction: column;
-
     justify-content: center;
     align-items: center;
     background-color: vars.$color-surface;
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+    width: 35%;
 
     button {
         background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
@@ -21,7 +21,7 @@ $mobile: 768px;
 .classesTable {
     overflow-y: scroll;
     height: 49vh;
-    width: 35%;
+    width: 100%;
     
     table {
         margin: 0 auto;
@@ -39,7 +39,7 @@ $mobile: 768px;
 }
 
 .searchBar {
-    width: 35%; 
+    width: 55%; 
     height: 3vh;
     margin-bottom: 1vh;
 
@@ -49,10 +49,11 @@ $mobile: 768px;
 
     
     @media screen and (max-width: $mobile) {
-        width: 100%;
+        width: 92%;
     }
 }
 
 .headerBar {
-    width: 100%;
+    // width: 100%;
+    margin: 0 auto;
 }
