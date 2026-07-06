@@ -65,8 +65,11 @@ describe("coerceCommand — value-based categories", () => {
         expect(coerceCommand("Add", "Speed", { speed: "10" }, undefined, noRef)?.value).toEqual({ speed: "10" });
     });
 
-    it("requires at least one valid ability for ArmorClass (avoids a NaN sheet)", () => {
-        expect(coerceCommand("Add", "ArmorClass", { bonus: "13" }, undefined, noRef)).toBeNull();
+    it("keeps a stats-less ArmorClass as a flat bonus and canonicalizes ability lists", () => {
+        // stats is optional since the flat-AC form ("+1 bonus to Armor Class") landed;
+        // the handler parses a missing stats field safely.
+        expect(coerceCommand("Add", "ArmorClass", { bonus: "13" }, undefined, noRef)?.value)
+            .toEqual({ bonus: "13" });
         expect(coerceCommand("Add", "ArmorClass", { bonus: "13", stats: "Dex, bogus" }, undefined, noRef)?.value)
             .toEqual({ bonus: "13", stats: "dex" });
     });

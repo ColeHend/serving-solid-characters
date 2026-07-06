@@ -3,7 +3,8 @@ import { Chip } from "coles-solid-library";
 import useStyles from "../../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./stat.module.scss";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
-import { CharacterSkillProficiency, RollAdvantage } from "../../../../../models/character.model";
+import { CharacterSkillProficiency, RollAdvantage, RollBonus } from "../../../../../models/character.model";
+import { rollBonusAmount } from "../../../../../shared/customHooks/mads/commands/useRollBonusFeature";
 
 type Props = {
   stat: number;
@@ -12,6 +13,8 @@ type Props = {
   proficientMod: number;
   /** Save/check advantages that apply to this ability (renders nothing when absent). */
   advantages?: RollAdvantage[];
+  /** Save/check flat bonuses that apply to this ability (renders nothing when absent). */
+  bonuses?: RollBonus[];
 };
 
 const StatBlock: Component<Props> = (props) => {
@@ -75,6 +78,15 @@ const StatBlock: Component<Props> = (props) => {
                   `${adv.mode === "advantage" ? "ADV" : "DIS"}` +
                   `${adv.rollType === "AbilityCheck" ? " (checks)" : ""}` +
                   `${adv.condition ? ` · ${adv.condition}` : ""}`
+                } />
+              )}
+            </For>
+            <For each={props.bonuses ?? []}>
+              {(rb) => (
+                <Chip value={
+                  `+${rollBonusAmount(rb, props.proficientMod)}` +
+                  `${rb.rollType === "AbilityCheck" ? " (checks)" : ""}` +
+                  `${rb.condition ? ` · ${rb.condition}` : ""}`
                 } />
               )}
             </For>

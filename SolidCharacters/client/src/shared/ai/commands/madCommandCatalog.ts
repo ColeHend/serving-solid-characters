@@ -17,18 +17,20 @@ import { MadFeature, MadType } from "../../../models/generated";
  * resolve to KNOWN options is dropped entirely rather than attached as a sheet-corrupting no-op.
  */
 
-/** The 20 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
+/** The 25 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
 export type MadCategory =
     | "Spells" | "Items" | "Proficiencies" | "Features" | "Currency" | "ArmorClass"
     | "Expertise" | "Feats" | "Languages" | "Resistances" | "Vulnerabilities"
     | "Immunities" | "SavingThrows" | "Stats" | "Speed" | "AllProficiencies"
-    | "ClassFeature" | "Advantage" | "Attacks" | "Uses";
+    | "ClassFeature" | "Advantage" | "Attacks" | "Uses"
+    | "Movement" | "Senses" | "HitPoints" | "RollBonus" | "Actions";
 
 export const MAD_CATEGORIES: MadCategory[] = [
     "Spells", "Items", "Proficiencies", "Features", "Currency", "ArmorClass",
     "Expertise", "Feats", "Languages", "Resistances", "Vulnerabilities",
     "Immunities", "SavingThrows", "Stats", "Speed", "AllProficiencies",
     "ClassFeature", "Advantage", "Attacks", "Uses",
+    "Movement", "Senses", "HitPoints", "RollBonus", "Actions",
 ];
 
 /** Catalog entities a command can reference by name (resolved to the entity's `.id`). */
@@ -90,6 +92,21 @@ export const ADV_MODES = ["advantage", "disadvantage"] as const;
 /** Recharge cadences for limited-use (Uses) commands. */
 export const RECHARGE_TYPES = ["Short Rest", "Long Rest"] as const;
 
+/** Movement modes a Movement command can grant (matches the MovementType enum on the character model). */
+export const MOVEMENT_TYPES = ["walk", "fly", "swim", "climb", "burrow"] as const;
+
+/** Loose movement phrasings → canonical MOVEMENT_TYPES entry (keys are lowercased, non-alpha stripped). */
+const MOVEMENT_ALIASES: Record<string, string> = {
+    walking: "walk", flying: "fly", flight: "fly", hover: "fly",
+    swimming: "swim", climbing: "climb", burrowing: "burrow",
+};
+
+/** Special senses a Senses command can grant (stored lowercase in character.senses). */
+export const SENSE_TYPES = ["darkvision", "blindsight", "tremorsense", "truesight"] as const;
+
+/** Action-economy slots an Actions command can grant (matches ActionType on the character model). */
+export const ACTION_TYPES = ["action", "bonusAction", "reaction"] as const;
+
 /** Loose roll-type phrasings → canonical ROLL_TYPES entry (keys are lowercased, non-alpha stripped). */
 const ROLL_TYPE_ALIASES: Record<string, string> = {
     save: "SavingThrow", saves: "SavingThrow", savingthrow: "SavingThrow", savingthrows: "SavingThrow",
@@ -103,7 +120,7 @@ const ROLL_TYPE_ALIASES: Record<string, string> = {
 
 // ---- field specs ----
 
-type FieldType = "number" | "ability" | "abilityCsv" | "skill" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge";
+type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillOrChoice" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "refOrChoice" | "refCsv" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag" | "actionType";
 
 interface FieldSpec {
     /** The value-object key this field writes (e.g. "bonus", "damageType", "ID"). */
@@ -132,26 +149,100 @@ interface CommandSpec {
 const REF = (key: string): FieldSpec => ({ key, type: "ref", required: true });
 
 export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
-    Spells: { category: "Spells", idBased: true, refKind: "spell", addFields: [REF("ID")], removeFields: [REF("ID")], hint: "grants/removes a spell — target = exact spell name" },
+    Spells: {
+        category: "Spells", idBased: true, refKind: "spell",
+        labelKeys: ["count", "spellLevel"],
+        addFields: [
+            { key: "ID", type: "refOrChoice", required: true },
+            { key: "options", type: "refCsv", required: false },
+            { key: "count", type: "number", required: false },
+            { key: "spellLevel", type: "number", required: false },
+        ],
+        removeFields: [{ key: "ID", type: "refOrChoice", required: true }],
+        hint: "grants/removes a spell — target = exact spell name. " +
+            "For 'choose N spells/cantrips of your choice from a list' use ID = choice with options = comma-separated allowed spell names, " +
+            "count = how many the player picks, spellLevel = the spell level (0 = cantrip; the player picks on the sheet).",
+    },
     Items: { category: "Items", idBased: true, refKind: "item", addFields: [REF("ID")], removeFields: [REF("name")], hint: "grants/removes an item — target = exact item name" },
     Features: { category: "Features", idBased: true, refKind: "feature", addFields: [REF("ID")], removeFields: [REF("ID")], hint: "grants/removes another existing feature — target = exact feature name" },
     Feats: { category: "Feats", idBased: true, refKind: "feat", addFields: [REF("featID")], removeFields: [REF("featID")], hint: "grants/removes a feat — target = exact feat name" },
     ArmorClass: {
         category: "ArmorClass", idBased: false,
-        addFields: [{ key: "bonus", type: "number", required: true }, { key: "stats", type: "abilityCsv", required: true }],
-        removeFields: [{ key: "bonus", type: "number", required: true }, { key: "stats", type: "abilityCsv", required: true }],
-        hint: "sets AC = bonus + listed ability modifier(s); bonus = number, stats = one or more of str,dex,con,int,wis,cha (use for 'AC equals 13 + Dex' style traits — an AC formula is NEVER Stats)",
+        labelKeys: ["bonus", "stats", "condition"],
+        addFields: [
+            { key: "bonus", type: "number", required: true },
+            { key: "stats", type: "abilityCsv", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        removeFields: [
+            { key: "bonus", type: "number", required: true },
+            { key: "stats", type: "abilityCsv", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        hint: "changes AC; bonus = number, stats = one or more of str,dex,con,int,wis,cha for 'AC equals 13 + Dex' style FORMULAS (an AC formula is NEVER Stats). " +
+            "For a flat '+1 bonus to Armor Class' OMIT stats entirely; condition (optional) = qualifier like 'while wearing armor'",
     },
     Speed: {
         category: "Speed", idBased: false,
-        addFields: [{ key: "speed", type: "number", required: true }], removeFields: [{ key: "speed", type: "number", required: true }],
-        hint: "changes walking speed by a number of feet; speed = number",
+        labelKeys: ["speed", "mode"],
+        addFields: [
+            { key: "speed", type: "number", required: true },
+            { key: "mode", type: "statMode", required: false },
+        ],
+        removeFields: [{ key: "speed", type: "number", required: true }],
+        hint: "changes WALKING speed by a number of feet; speed = number. For 'your walking speed becomes N' effects use mode = set (default mode is increase). " +
+            "A flying/swimming/climbing/burrowing speed is NEVER Speed — that is Movement.",
+    },
+    Movement: {
+        category: "Movement", idBased: false,
+        addFields: [
+            { key: "movementType", type: "movementType", required: true },
+            { key: "speed", type: "number", required: false },
+        ],
+        removeFields: [{ key: "movementType", type: "movementType", required: true }],
+        hint: "grants a movement mode; movementType = fly/swim/climb/burrow, speed = its speed in feet — OMIT speed when the text says it equals your walking speed " +
+            "(use for 'you have a flying speed of 60 feet' / 'a climbing speed equal to your walking speed'; a plain walking-speed change is Speed, not Movement)",
+    },
+    Senses: {
+        category: "Senses", idBased: false,
+        addFields: [
+            { key: "sense", type: "sense", required: true },
+            { key: "range", type: "number", required: true },
+        ],
+        removeFields: [{ key: "sense", type: "sense", required: true }],
+        hint: "grants a special sense; sense = darkvision/blindsight/tremorsense/truesight, range = number of feet (use for 'you have darkvision out to a range of 60 feet' style traits)",
+    },
+    HitPoints: {
+        category: "HitPoints", idBased: false,
+        addFields: [
+            { key: "amount", type: "number", required: true },
+            { key: "perLevel", type: "flag", required: false },
+        ],
+        removeFields: [
+            { key: "amount", type: "number", required: true },
+            { key: "perLevel", type: "flag", required: false },
+        ],
+        hint: "raises the hit point MAXIMUM; amount = number, perLevel = true when it scales with level " +
+            "('your hit point maximum increases by 1, and again every time you gain a level' → amount 1, perLevel true; healing and temporary hit points have NO command)",
     },
     Stats: {
         category: "Stats", idBased: false,
-        addFields: [{ key: "stat", type: "ability", required: true }, { key: "statValue", type: "number", required: true }],
-        removeFields: [{ key: "stat", type: "ability", required: true }, { key: "statValue", type: "number", required: true }],
-        hint: "changes an ability score; stat = str/dex/con/int/wis/cha, statValue = number (for '+1 Con' style increases — never for AC formulas or skill bonuses)",
+        labelKeys: ["stat", "statValue", "mode"],
+        addFields: [
+            { key: "stat", type: "abilityOrChoice", required: true },
+            { key: "statValue", type: "number", required: true },
+            { key: "options", type: "abilityCsv", required: false },
+            { key: "mode", type: "statMode", required: false },
+        ],
+        removeFields: [
+            { key: "stat", type: "abilityOrChoice", required: true },
+            { key: "statValue", type: "number", required: true },
+            { key: "options", type: "abilityCsv", required: false },
+            { key: "mode", type: "statMode", required: false },
+        ],
+        hint: "changes an ability score; stat = str/dex/con/int/wis/cha, statValue = number (for '+1 Con' style increases — never for AC formulas or skill bonuses). " +
+            "For 'increase an ability of your choice' use stat = choice with options = comma-separated allowed abilities (the player picks on the sheet). " +
+            "For 'your score IS N' effects use mode = set (default mode is increase).",
     },
     SavingThrows: {
         category: "SavingThrows", idBased: false,
@@ -160,8 +251,15 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Proficiencies: {
         category: "Proficiencies", idBased: false,
-        addFields: [{ key: "proficiency", type: "skill", required: true }], removeFields: [{ key: "proficiency", type: "skill", required: true }],
-        hint: "grants proficiency in one skill; proficiency = a skill name (skills only — saving-throw proficiency is SavingThrows)",
+        labelKeys: ["proficiency", "count"],
+        addFields: [
+            { key: "proficiency", type: "skillOrChoice", required: true },
+            { key: "options", type: "skillCsv", required: false },
+            { key: "count", type: "number", required: false },
+        ],
+        removeFields: [{ key: "proficiency", type: "skillOrChoice", required: true }],
+        hint: "grants proficiency in one skill; proficiency = a skill name (skills only — saving-throw proficiency is SavingThrows). " +
+            "For 'proficiency in N skills of your choice' use proficiency = choice with options = comma-separated allowed skills and count = how many the player picks (the player picks on the sheet).",
     },
     Expertise: {
         category: "Expertise", idBased: false,
@@ -233,6 +331,29 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         removeFields: [{ key: "amount", type: "number", required: true }],
         hint: "grants extra attacks per Attack action (Extra Attack = amount 1); amount = number of additional attacks",
     },
+    RollBonus: {
+        category: "RollBonus", idBased: false,
+        labelKeys: ["rollType", "bonus", "proficiencyBonus", "stat", "condition"],
+        addFields: [
+            { key: "rollType", type: "rollType", required: true },
+            { key: "bonus", type: "number", required: false },
+            { key: "proficiencyBonus", type: "pbChoice", required: false },
+            { key: "stat", type: "ability", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        removeFields: [
+            { key: "rollType", type: "rollType", required: true },
+            { key: "bonus", type: "number", required: false },
+            { key: "proficiencyBonus", type: "pbChoice", required: false },
+            { key: "stat", type: "ability", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        hint: "adds a flat or proficiency-bonus modifier to a d20 roll — this is NOT advantage; " +
+            "rollType = SavingThrow/WeaponAttack/SpellAttack/Initiative/AbilityCheck, bonus = a fixed number ('+2 bonus to attack rolls' → bonus 2), " +
+            "proficiencyBonus = 'Third PB'/'Half PB'/'Full PB' when the bonus IS the proficiency bonus ('add your Proficiency Bonus to Initiative' → Full PB), " +
+            "stat (optional) narrows saves/checks, condition (optional) = qualifier like 'with Ranged weapons'. Provide bonus OR proficiencyBonus. " +
+            "An AC change is NEVER RollBonus (AC is not a roll — use ArmorClass); damage bonuses have no command.",
+    },
     Uses: {
         category: "Uses", idBased: false, madType: MadType.Info,
         addFields: [
@@ -241,6 +362,24 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         ],
         removeFields: [{ key: "amount", type: "number", required: true }],
         hint: "marks THIS feature as limited-use (e.g. 'you can use this twice, regaining all uses on a long rest'); amount = number of uses, recharge = Short Rest or Long Rest",
+    },
+    Actions: {
+        category: "Actions", idBased: false,
+        labelKeys: ["name", "actionType"],
+        addFields: [
+            { key: "name", type: "text", required: true },
+            { key: "actionType", type: "actionType", required: true },
+            { key: "description", type: "text", required: false },
+            { key: "source", type: "text", required: false },
+        ],
+        removeFields: [
+            { key: "name", type: "text", required: true },
+            { key: "actionType", type: "actionType", required: true },
+        ],
+        hint: "grants a new Action, Bonus Action, or Reaction the character can take (Channel Divinity, Second Wind, Rage...); " +
+            "name = the action's name, actionType = action/bonusAction/reaction, description (optional) = its rules text, " +
+            "source (optional) = the granting feature's name. This is for an ACTIVATED ability the character chooses to use — " +
+            "NOT a passive bonus, resistance, or always-on trait; pair with Uses when it is limited-use.",
     },
 };
 
@@ -257,7 +396,23 @@ export const COMMAND_COMMON_MISTAKES =
     "- \"unarmored defense: AC 10 + Dex + Con\" → ArmorClass {\"bonus\":\"10\",\"stats\":\"dex,con\"}\n" +
     "- \"your Constitution score increases by 1\" → Stats {\"stat\":\"con\",\"statValue\":\"1\"} (an ability increase is NEVER ArmorClass)\n" +
     "- \"proficiency in Dexterity saving throws\" → SavingThrows {\"stat\":\"dex\"} (Proficiencies is for SKILLS only)\n" +
-    "- \"advantage on Stealth checks\" / \"once per long rest…\" → no command (advantage and temporary or situational effects have no category)";
+    "- \"increase one ability score of your choice by 1\" → Stats {\"stat\":\"choice\",\"options\":\"str,dex,con,int,wis,cha\",\"statValue\":\"1\"}\n" +
+    "- \"your Intelligence is 19 while wearing this\" → Stats {\"stat\":\"int\",\"statValue\":\"19\",\"mode\":\"set\"}\n" +
+    "- \"you have a flying speed of 60 feet\" → Movement {\"movementType\":\"fly\",\"speed\":\"60\"} (a fly/swim/climb/burrow speed is NEVER Speed)\n" +
+    "- \"a climbing speed equal to your walking speed\" → Movement {\"movementType\":\"climb\"} (omit speed when it equals walking speed)\n" +
+    "- \"your speed increases by 10 feet\" → Speed {\"speed\":\"10\"} (a plain walking-speed change is NEVER Movement)\n" +
+    "- \"your walking speed becomes 30 feet\" → Speed {\"speed\":\"30\",\"mode\":\"set\"}\n" +
+    "- \"you have darkvision out to a range of 60 feet\" → Senses {\"sense\":\"darkvision\",\"range\":\"60\"}\n" +
+    "- \"your hit point maximum increases by 1 every time you gain a level\" → HitPoints {\"amount\":\"1\",\"perLevel\":\"true\"}\n" +
+    "- \"add your Proficiency Bonus to your Initiative rolls\" → RollBonus {\"rollType\":\"Initiative\",\"proficiencyBonus\":\"Full PB\"} (a flat/PB modifier to a roll is NEVER Advantage)\n" +
+    "- \"+2 bonus to attack rolls with Ranged weapons\" → RollBonus {\"rollType\":\"WeaponAttack\",\"bonus\":\"2\",\"condition\":\"with Ranged weapons\"}\n" +
+    "- \"+1 bonus to saving throws\" → RollBonus {\"rollType\":\"SavingThrow\",\"bonus\":\"1\"}\n" +
+    "- \"+1 bonus to Armor Class\" → ArmorClass {\"bonus\":\"1\"} (a flat AC bonus omits stats; AC is not a roll, so it is NEVER RollBonus)\n" +
+    "- \"proficiency in three skills of your choice\" → Proficiencies {\"proficiency\":\"choice\",\"options\":\"<comma-separated allowed skills>\",\"count\":\"3\"}\n" +
+    "- \"advantage on Stealth checks\" → Advantage {\"rollType\":\"AbilityCheck\",\"mode\":\"advantage\",\"stat\":\"dex\",\"condition\":\"Stealth checks\"} (state WHEN it applies in condition)\n" +
+    "- \"As a Bonus Action, you can enter a Rage\" → Actions {\"name\":\"Rage\",\"actionType\":\"bonusAction\"} (an activated ability the character uses — NOT a passive bonus)\n" +
+    "- \"you learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list\" → Spells {\"ID\":\"choice\",\"options\":\"<comma-separated allowed spell names>\",\"count\":\"2\",\"spellLevel\":\"0\"}\n" +
+    "- \"once per long rest…\" → Uses (temporary effects, healing, and damage bonuses/rerolls have no category)";
 
 // ---- pure coercion ----
 
@@ -285,6 +440,18 @@ const CATEGORY_ALIASES: Record<string, MadCategory> = {
     advantage: "Advantage", disadvantage: "Advantage", advantages: "Advantage",
     attack: "Attacks", extraattack: "Attacks", extraattacks: "Attacks",
     use: "Uses", limiteduse: "Uses", limiteduses: "Uses",
+    movement: "Movement", movements: "Movement", movementtype: "Movement", movementtypes: "Movement",
+    movementmode: "Movement", flyspeed: "Movement", flyingspeed: "Movement", swimspeed: "Movement",
+    swimmingspeed: "Movement", climbspeed: "Movement", climbingspeed: "Movement", burrowspeed: "Movement",
+    sense: "Senses", vision: "Senses", darkvision: "Senses", blindsight: "Senses",
+    tremorsense: "Senses", truesight: "Senses",
+    hitpoint: "HitPoints", hitpoints: "HitPoints", hp: "HitPoints", maxhp: "HitPoints",
+    hitpointmaximum: "HitPoints", hitpointmax: "HitPoints", maxhitpoints: "HitPoints", health: "HitPoints",
+    rollbonus: "RollBonus", rollbonuses: "RollBonus", flatbonus: "RollBonus",
+    initiativebonus: "RollBonus", attackbonus: "RollBonus", savebonus: "RollBonus",
+    savingthrowbonus: "RollBonus", spellattackbonus: "RollBonus",
+    action: "Actions", newaction: "Actions", bonusaction: "Actions", bonusactions: "Actions",
+    reaction: "Actions", reactions: "Actions", grantedaction: "Actions", grantedactions: "Actions",
     classfeature: "ClassFeature", classfeatures: "ClassFeature",
     invocation: "ClassFeature", invocations: "ClassFeature",
     eldritchinvocation: "ClassFeature", eldritchinvocations: "ClassFeature",
@@ -350,6 +517,30 @@ function coerceRecharge(raw: string): string | null {
     return null;
 }
 
+function coerceMovementType(raw: string): string | null {
+    if (!raw) return null;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    if ((MOVEMENT_TYPES as readonly string[]).includes(key)) return key;
+    return MOVEMENT_ALIASES[key] ?? null;
+}
+
+function coerceSense(raw: string): string | null {
+    if (!raw) return null;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    if ((SENSE_TYPES as readonly string[]).includes(key)) return key;
+    if (key === "trueseeing") return "truesight";
+    return null;
+}
+
+function coerceActionType(raw: string): string | null {
+    if (!raw) return null;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    if (key === "action" || key === "actions" || key === "anaction" || key === "magicaction") return "action";
+    if (key === "bonusaction" || key === "bonusactions" || key === "bonus") return "bonusAction";
+    if (key === "reaction" || key === "reactions") return "reaction";
+    return null;
+}
+
 /** Coerce CSV input against an option mapper; returns the canonical comma-joined list, or null if empty. */
 function coerceCsv(raw: string, map: (s: string) => string | null): string | null {
     const parts = raw.split(",").map(s => s.trim()).filter(Boolean).map(map).filter((x): x is string => !!x);
@@ -359,10 +550,18 @@ function coerceCsv(raw: string, map: (s: string) => string | null): string | nul
 
 /** Coerce one field's raw value to its canonical stored string, or null if it doesn't resolve. */
 function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: (refKind: RefKind, name: string) => string | null, refKind: RefKind | undefined): string | null {
-    if (spec.type === "ref") {
+    if (spec.type === "ref" || spec.type === "refOrChoice") {
         const name = norm(raw) || target;
+        if (spec.type === "refOrChoice" && name.toLowerCase() === "choice") return "choice";
         if (!name || !refKind) return null;
         return resolveRef(refKind, name);
+    }
+    if (spec.type === "refCsv") {
+        if (!refKind) return null;
+        const ids = norm(raw).split(",").map(s => s.trim()).filter(Boolean)
+            .map(n => resolveRef(refKind, n)).filter((x): x is string => !!x);
+        const unique = [...new Set(ids)];
+        return unique.length ? unique.join(",") : null;
     }
     const value = norm(raw);
     switch (spec.type) {
@@ -371,8 +570,23 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
             return String(Number(value));
         }
         case "ability": return coerceAbility(value);
+        case "abilityOrChoice": return value.toLowerCase() === "choice" ? "choice" : coerceAbility(value);
         case "abilityCsv": return coerceCsv(value, coerceAbility);
+        case "statMode": {
+            const lc = value.toLowerCase();
+            if (lc.startsWith("set")) return "set";
+            if (lc.startsWith("inc") || lc.startsWith("add")) return "increase";
+            return null;
+        }
+        case "movementType": return coerceMovementType(value);
+        case "sense": return coerceSense(value);
+        case "flag": {
+            const lc = value.toLowerCase();
+            if (lc === "true" || lc === "yes" || lc === "1") return "true";
+            return null; // absence means false — a falsy optional flag is simply dropped
+        }
         case "skill": return matchOption(value, SKILL_KEYS);
+        case "skillOrChoice": return value.toLowerCase() === "choice" ? "choice" : matchOption(value, SKILL_KEYS);
         case "skillCsv": return coerceCsv(value, s => matchOption(s, SKILL_KEYS));
         case "damageType": return matchOption(value, DAMAGE_TYPES);
         case "currency": return coerceCurrency(value);
@@ -380,6 +594,7 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
         case "rollType": return coerceRollType(value);
         case "advMode": return coerceAdvMode(value);
         case "recharge": return coerceRecharge(value);
+        case "actionType": return coerceActionType(value);
         case "text": return value || null;
         default: return null;
     }
@@ -411,6 +626,14 @@ export function coerceCommand(
         }
         value[field.key] = coerced;
     }
+    // choice-form Stats needs the allowed-options list or the sheet can never resolve the pick
+    if (category === "Stats" && value["stat"] === "choice" && !value["options"]) return null;
+    // choice-form Proficiencies likewise needs its allowed-skills list
+    if (category === "Proficiencies" && value["proficiency"] === "choice" && !value["options"]) return null;
+    // choice-form Spells likewise needs its allowed-spells list
+    if (category === "Spells" && value["ID"] === "choice" && !value["options"]) return null;
+    // a RollBonus with neither a flat bonus nor a PB fraction would be a no-op badge
+    if (category === "RollBonus" && !value["bonus"] && !value["proficiencyBonus"]) return null;
     return { command: `${t}${category}`, value, type: spec.madType ?? MadType.Character, prerequisites: [], group: 0 };
 }
 
@@ -451,8 +674,9 @@ export function validateStoredCommand(mad: MadFeature): string[] {
     const value = (mad.value ?? {}) as Record<string, unknown>;
     for (const field of fields) {
         if (!field.required) continue;
-        if (field.type === "ref") {
-            // Opaque id post-enrichment — the resolved name is gone, so just require a non-empty string.
+        if (field.type === "ref" || field.type === "refOrChoice") {
+            // Opaque id post-enrichment — the resolved name is gone, so just require a non-empty string
+            // (the "choice" sentinel is a non-empty string too, so the choice form passes here).
             const id = typeof value[field.key] === "string" ? (value[field.key] as string).trim() : "";
             if (!id) errors.push(`${prettyCommand(command)} is missing its ${field.key}`);
             continue;
@@ -462,6 +686,24 @@ export function validateStoredCommand(mad: MadFeature): string[] {
         if (coerced === null) {
             errors.push(`${prettyCommand(command)} has an invalid ${field.key} ("${String(value[field.key] ?? "")}")`);
         }
+    }
+    if (category === "Stats" && String(value["stat"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "abilityCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses stat "choice" but has no valid options list`);
+    }
+    if (category === "Proficiencies" && isAdd && String(value["proficiency"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "skillCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses proficiency "choice" but has no valid options list`);
+    }
+    if (category === "Spells" && isAdd && String(value["ID"] ?? "") === "choice") {
+        // Options hold opaque spell ids post-enrichment — only require the list to be non-empty.
+        const opts = typeof value["options"] === "string" ? (value["options"] as string).trim() : "";
+        if (!opts) errors.push(`${prettyCommand(command)} uses ID "choice" but has no options list`);
+    }
+    if (category === "RollBonus") {
+        const bonus = coerceField({ key: "bonus", type: "number", required: false }, value["bonus"], "", () => null, undefined);
+        const pb = coerceField({ key: "proficiencyBonus", type: "pbChoice", required: false }, value["proficiencyBonus"], "", () => null, undefined);
+        if (!bonus && !pb) errors.push(`${prettyCommand(command)} needs a bonus or a proficiencyBonus`);
     }
     return errors;
 }

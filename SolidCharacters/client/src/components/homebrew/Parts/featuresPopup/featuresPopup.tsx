@@ -20,12 +20,17 @@ import { ResistanceFeature } from "./parts/resistanceFeature/resistanceFeature";
 import { SavingThrow } from "./parts/savingThrow/savingThrow";
 import { StatFeature } from "./parts/statFeature/StatFeature";
 import { SpeedFeature } from "./parts/speedFeature/speedFeature";
+import { MovementFeature } from "./parts/movementFeature/movementFeature";
+import { SensesFeature } from "./parts/sensesFeature/sensesFeature";
+import { HitPointsFeature } from "./parts/hitPointsFeature/hitPointsFeature";
 import { AllProfsFeature } from "./parts/allProfsFeature/allProfsFeature";
 import { FeatFeature } from "./parts/featFeature/featFeature";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import { FeaturePrerequisites } from "./parts/featurePrerequisites/featurePrerequisites";
 import { ClassFeature } from "./parts/classFeature/classFeature";
 import { AdvantageFeature } from "./parts/advantageFeature/advantageFeature";
+import { RollBonusFeature } from "./parts/rollBonusFeature/rollBonusFeature";
+import { ActionsFeature } from "./parts/actionsFeature/actionsFeature";
 import { AttacksFeature } from "./parts/attacksFeature/attacksFeature";
 import { UsesFeature } from "./parts/usesFeature/usesFeature";
 
@@ -205,6 +210,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         'Advantage',
         'Attacks',
         'Uses',
+        'Movement',
+        'Senses',
+        'HitPoints',
+        'RollBonus',
+        'Actions',
     ]
 
     const getMadType = (index: number) => {
@@ -564,20 +574,29 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     }}/>
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddArmorClass" || getMaDCommand(i())?.() === "RemoveArmorClass"}>
-                                                    <ACFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleAC={(bonus, stats)=>{
-                                                        setMadFeature("value", i(), {"bonus": bonus.toString(), "stats": stats.join(",")});
+                                                    <ACFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleAC={(bonus, stats, condition)=>{
+                                                        const next: Record<string, string> = {"bonus": bonus.toString()};
+                                                        if (stats.length) next["stats"] = stats.join(",");
+                                                        if (condition) next["condition"] = condition;
+                                                        setMadFeature("value", i(), next);
                                                         setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }} />
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddProficiencies" || getMaDCommand(i())?.() === "RemoveProficiencies" || getMaDCommand(i())?.() === "AddExpertise" || getMaDCommand(i())?.() === "RemoveExpertise"} >
-                                                    <ProficienciesFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleProf={(prof) => {
-                                                        // const old = getMadValue(i())?.();
-
-                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
-                                                        setMadFeature("value", i(), {"proficiency": prof});
-                                                        setCard(false);
-                                                    }}/>
+                                                    <ProficienciesFeature
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                        allowChoice={getMaDCommand(i())?.() === "AddProficiencies"}
+                                                        toggleProf={(prof, extra) => {
+                                                            const next: Record<string, string> = {"proficiency": prof};
+                                                            if (prof === "choice" && extra?.options) {
+                                                                next["options"] = extra.options;
+                                                                next["count"] = extra.count ?? "1";
+                                                            }
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setMadFeature("value", i(), next);
+                                                            setCard(false);
+                                                        }}/>
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddFeatures" || getMaDCommand(i())?.() === "RemoveFeatures"}>
                                                     <ExistingFeature 
@@ -649,15 +668,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     />
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddStats" || getMaDCommand(i())?.() === "RemoveStats"}>
-                                                    <StatFeature 
-                                                        toggleValue={(stat, value) => {
-                                                            const old = getMadValue(i())?.();
-                                                            
-                                                            if (old?.["stat"] === stat) {
-                                                                setMadFeature("value", i(), {"stat": "", "statValue": ""})
-                                                            } else {
-                                                                setMadFeature("value", i(), {"stat": stat, "statValue": value.toString()})
-                                                            }
+                                                    <StatFeature
+                                                        toggleValue={(stat, value, extra) => {
+                                                            const next: Record<string, string> = {"stat": stat, "statValue": value.toString()};
+                                                            if (extra?.options) next["options"] = extra.options;
+                                                            if (extra?.mode) next["mode"] = extra.mode;
+                                                            setMadFeature("value", i(), next);
                                                             setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             setCard(false);
                                                         }}
@@ -666,15 +682,11 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     />
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddSpeed" || getMaDCommand(i())?.() === "RemoveSpeed"}>
-                                                    <SpeedFeature 
-                                                        toggleValue={(speed) => {
-                                                            const old = getMadValue(i())?.();
-                                                            
-                                                            if (old?.["speed"] === speed.toString()) {
-                                                                setMadFeature("value", i(), {"speed": ""})
-                                                            } else {
-                                                                setMadFeature("value", i(), {"speed": speed.toString()})
-                                                            }
+                                                    <SpeedFeature
+                                                        toggleValue={(speed, mode) => {
+                                                            const next: Record<string, string> = {"speed": speed.toString()};
+                                                            if (mode === "set") next["mode"] = "set";
+                                                            setMadFeature("value", i(), next);
                                                             setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             setCard(false);
                                                         }}
@@ -736,6 +748,33 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                         getValue={getMadValue?.(i()) ?? (() => undefined)}
                                                     />
                                                 </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddRollBonus" || getMaDCommand(i())?.() === "RemoveRollBonus"}>
+                                                    <RollBonusFeature
+                                                        toggleValue={(rollType, bonus, proficiencyBonus, stat, condition) => {
+                                                            const next: Record<string, string> = {"rollType": rollType};
+                                                            if (bonus) next["bonus"] = bonus;
+                                                            if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
+                                                            if (stat) next["stat"] = stat;
+                                                            if (condition) next["condition"] = condition;
+                                                            setMadFeature("value", i(), next);
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddActions" || getMaDCommand(i())?.() === "RemoveActions"}>
+                                                    <ActionsFeature
+                                                        toggleValue={(name, actionType, description) => {
+                                                            const next: Record<string, string> = {"name": name, "actionType": actionType};
+                                                            if (description) next["description"] = description;
+                                                            setMadFeature("value", i(), next);
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddAttacks" || getMaDCommand(i())?.() === "RemoveAttacks"}>
                                                     <AttacksFeature
                                                         toggleValue={(amount) => {
@@ -753,6 +792,40 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                             setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             // Uses describes its owning feature (uses/recharge), not a sheet change.
                                                             setMadFeature("type", i(), MadType.Info);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddMovement" || getMaDCommand(i())?.() === "RemoveMovement"}>
+                                                    <MovementFeature
+                                                        toggleValue={(movementType, speed) => {
+                                                            const next: Record<string, string> = {"movementType": movementType};
+                                                            if (speed !== undefined) next["speed"] = speed.toString();
+                                                            setMadFeature("value", i(), next);
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddSenses" || getMaDCommand(i())?.() === "RemoveSenses"}>
+                                                    <SensesFeature
+                                                        toggleValue={(sense, range) => {
+                                                            setMadFeature("value", i(), {"sense": sense, "range": range.toString()});
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddHitPoints" || getMaDCommand(i())?.() === "RemoveHitPoints"}>
+                                                    <HitPointsFeature
+                                                        toggleValue={(amount, perLevel) => {
+                                                            const next: Record<string, string> = {"amount": amount.toString()};
+                                                            if (perLevel) next["perLevel"] = "true";
+                                                            setMadFeature("value", i(), next);
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             setCard(false);
                                                         }}
                                                         getValue={getMadValue?.(i()) ?? (() => undefined)}

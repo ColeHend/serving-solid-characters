@@ -132,4 +132,19 @@ public class DnD2014Controller : ControllerBase
         return StatusCode(500, "Internal server error");
       }
     }
+
+    [HttpGet("MagicItems")]
+    public ActionResult<List<MagicItem>> MagicItems()
+    {
+      try
+      {
+        var magicItems = srdInfoRepository.GetMagicItems("2014");
+        return Ok(magicItems);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error retrieving magic items: " + ex.Message);
+        return StatusCode(500, "Internal server error");
+      }
+    }
 }

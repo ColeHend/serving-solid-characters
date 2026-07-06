@@ -3,12 +3,13 @@ import { Stats,
 } from "../../../../shared/customHooks/dndInfo/useCharacters";
 import styles from "./statBar.module.scss";
 import StatBlock from "./stat/stat";
-import { Character, RollAdvantage } from "../../../../models/character.model";
+import { Character, RollAdvantage, RollBonus } from "../../../../models/character.model";
 
 type Props = {
   fullStats: Accessor<Stats>;
   currentCharacter: Accessor<Character>;
   rollAdvantages?: Accessor<RollAdvantage[]>;
+  rollBonuses?: Accessor<RollBonus[]>;
 };
 
 const STAT_KEYS: Record<string, keyof Stats> = {
@@ -25,6 +26,12 @@ const StatBar: Component<Props> = (props) => {
       (a.rollType === "SavingThrow" || a.rollType === "AbilityCheck") &&
       (!a.stat || a.stat === STAT_KEYS[name]));
 
+  // Save/check flat bonuses that apply to this ability (same narrowing rule as advantages).
+  const bonusesFor = (name: string) =>
+    (props.rollBonuses?.() ?? []).filter(b =>
+      (b.rollType === "SavingThrow" || b.rollType === "AbilityCheck") &&
+      (!b.stat || b.stat === STAT_KEYS[name]));
+
   return (
     <div class={`${styles.statBlocks}`}>
       <StatBlock
@@ -33,6 +40,7 @@ const StatBar: Component<Props> = (props) => {
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Strength")}
+        bonuses={bonusesFor("Strength")}
       />
       <StatBlock
         stat={props.fullStats().dex}
@@ -40,6 +48,7 @@ const StatBar: Component<Props> = (props) => {
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Dexterity")}
+        bonuses={bonusesFor("Dexterity")}
       />
       <StatBlock
         stat={props.fullStats().con}
@@ -47,6 +56,7 @@ const StatBar: Component<Props> = (props) => {
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Constitution")}
+        bonuses={bonusesFor("Constitution")}
       />
       <StatBlock
         stat={props.fullStats().int}
@@ -54,6 +64,7 @@ const StatBar: Component<Props> = (props) => {
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Intelligence")}
+        bonuses={bonusesFor("Intelligence")}
       />
       <StatBlock
         stat={props.fullStats().wis}
@@ -61,6 +72,7 @@ const StatBar: Component<Props> = (props) => {
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Wisdom")}
+        bonuses={bonusesFor("Wisdom")}
       />
       <StatBlock
         stat={props.fullStats().cha}
@@ -68,6 +80,7 @@ const StatBar: Component<Props> = (props) => {
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Charisma")}
+        bonuses={bonusesFor("Charisma")}
       />
     </div>
   );

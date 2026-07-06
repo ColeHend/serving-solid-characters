@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { Component, For, Show, createMemo, createSignal, onCleanup, onMount, runWithOwner } from "solid-js";
 import styles from "./view.module.scss";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
@@ -7,15 +7,17 @@ import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, Chip } from "coles-solid-library";
-import { AdvantageRollType, Character, RollAdvantage } from "../../../models/character.model";
+import { AdvantageRollType, Character, MovementSpeedKey, MovementType, RollAdvantage, RollBonus } from "../../../models/character.model";
 import { Spell } from "../../../models/generated";
 import { srdItem } from "../../../models/data/generated";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { characterManager, Clone } from "../../../shared";
-import { collectMadFeatures, useMadCharacters } from "../../../shared/customHooks/mads/useMadCharacters";
+import { collectMadFeatures, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount } from "../../../shared/customHooks/mads/useMadCharacters";
 import { featureUsage, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
+import { rollBonusAmount } from "../../../shared/customHooks/mads/commands/useRollBonusFeature";
+import { movementTypeName } from "../../../shared/customHooks/mads/commands/useMovementFeature";
 import UsesTracker from "./usesTracker/usesTracker";
 import { SpellTable } from "./SpellTable/SpellTable";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
@@ -95,6 +97,35 @@ const CharacterView: Component = () => {
   const advLabel = (adv: RollAdvantage) =>
     `${adv.mode === "advantage" ? "ADV" : "DIS"}${adv.stat ? ` · ${adv.stat.toUpperCase()}` : ""}${adv.condition ? ` · ${adv.condition}` : ""}`;
 
+  const rollBonuses = createMemo(() => displayCharacter()?.rollBonuses ?? []);
+  const bonusesFor = (rollType: AdvantageRollType) => rollBonuses().filter(b => b.rollType === rollType);
+  const profBonus = () => Math.ceil((displayCharacter()?.level ?? 1) / 4) + 1;
+  const bonusLabel = (rb: RollBonus) =>
+    `+${rollBonusAmount(rb, profBonus())}${rb.stat ? ` · ${rb.stat.toUpperCase()}` : ""}${rb.condition ? ` · ${rb.condition}` : ""}`;
+
+  const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+  // Non-walking movement modes as "Fly 60 ft" chips; a mode without its own speed moves at the walking Speed.
+  const movementChips = createMemo(() => {
+    const c = displayCharacter();
+    if (!c) return [];
+    return (c.movementTypes ?? [])
+      .filter(t => t !== MovementType.Walk)
+      .map(t => {
+        const name = movementTypeName(t);
+        const speed = c.movementSpeeds?.[name as MovementSpeedKey] ?? c.Speed;
+        return `${capitalize(name)} ${speed} ft`;
+      });
+  });
+
+  // Special senses as "Darkvision 60 ft" chips.
+  const senseChips = createMemo(() => {
+    const senses = displayCharacter()?.senses ?? {};
+    return Object.entries(senses)
+      .filter(([, range]) => typeof range === "number" && range > 0)
+      .map(([sense, range]) => `${capitalize(sense)} ${range} ft`);
+  });
+
   // Every feature source, mads applied: class levels, race, and top-level features
   // (mads-granted picks like invocations land on the top-level array).
   const allFeatures = createMemo(() => {
@@ -118,6 +149,35 @@ const CharacterView: Component = () => {
     const updated = Clone(base);
     updated.featureUses = { ...(updated.featureUses ?? {}), [featureName]: spent };
     persistCharacter(updated);
+  };
+
+  const chooseStat = (featureName: string, statKey: string) => {
+    const base = currentCharacter();
+    if (!base) return;
+    const updated = Clone(base);
+    updated.statChoices = { ...(updated.statChoices ?? {}), [featureName]: statKey };
+    persistCharacter(updated);
+  };
+
+  const proficiencyPicks = (featureKey: string): string[] =>
+    (currentCharacter()?.proficiencyChoices?.[featureKey] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+
+  const toggleProficiencyPick = (featureKey: string, skill: string, count: number) => {
+    const picks = proficiencyPicks(featureKey);
+    const next = picks.includes(skill)
+      ? picks.filter(p => p !== skill)
+      : picks.length < count ? [...picks, skill] : picks;
+    if (next.join(",") === picks.join(",")) return;
+    const base = currentCharacter();
+    if (!base) return;
+    const updated = Clone(base);
+    updated.proficiencyChoices = { ...(updated.proficiencyChoices ?? {}), [featureKey]: next.join(",") };
+    persistCharacter(updated);
+  };
+
+  const STAT_LABELS: Record<string, string> = {
+    str: "Strength", dex: "Dexterity", con: "Constitution",
+    int: "Intelligence", wis: "Wisdom", cha: "Charisma",
   };
 
   const takeRest = (rest: RechargeType) => {
@@ -247,9 +307,10 @@ const CharacterView: Component = () => {
                   <Input transparent />
                   <hr />
                   <span>Initiative</span>
-                  <Show when={advantagesFor("Initiative").length}>
+                  <Show when={advantagesFor("Initiative").length || bonusesFor("Initiative").length}>
                     <div class={`${styles.advChips}`}>
                       <For each={advantagesFor("Initiative")}>{(adv) => <Chip value={advLabel(adv)} />}</For>
+                      <For each={bonusesFor("Initiative")}>{(rb) => <Chip value={bonusLabel(rb)} />}</For>
                     </div>
                   </Show>
                 </div>
@@ -257,12 +318,23 @@ const CharacterView: Component = () => {
                   <Input transparent value={displayCharacter()?.Speed ? `${displayCharacter()?.Speed}` : ""} />
                   <hr />
                   <span>Speed</span>
+                  <Show when={movementChips().length}>
+                    <div class={`${styles.advChips}`}>
+                      <For each={movementChips()}>{(label) => <Chip value={label} />}</For>
+                    </div>
+                  </Show>
                 </div>
               </div>
+              <Show when={senseChips().length}>
+                <div class={`${styles.advChips}`}>
+                  <For each={senseChips()}>{(label) => <Chip value={label} />}</For>
+                </div>
+              </Show>
               <div class={`${styles.baseCharInfoBox}  ${styles.infoBoxRow}`}>
                 <div class={`${styles.hpMaxTemp}`}>
                   <div>
-                    <span>{currentCharacter()?.health?.current} / {currentCharacter()?.health?.max}</span>
+                    {/* current HP is the stored value; the max shows HitPoints commands applied */}
+                    <span>{currentCharacter()?.health?.current} / {displayCharacter()?.health?.max}</span>
                     <hr />
                     <span>HP / MaxHP</span>
                   </div>
@@ -314,7 +386,7 @@ const CharacterView: Component = () => {
 
           <Show when={showStats()}>
             <span >
-              <StatBar fullStats={fullStats} currentCharacter={displayCharacter} rollAdvantages={rollAdvantages} />
+              <StatBar fullStats={fullStats} currentCharacter={displayCharacter} rollAdvantages={rollAdvantages} rollBonuses={rollBonuses} />
             </span>
           </Show>
 
@@ -325,6 +397,8 @@ const CharacterView: Component = () => {
                 <span>Attacks per Action: {displayCharacter()?.attacksPerAction ?? 1}</span>
                 <For each={advantagesFor("WeaponAttack")}>{(adv) => <Chip value={`${advLabel(adv)} · weapon attacks`} />}</For>
                 <For each={advantagesFor("SpellAttack")}>{(adv) => <Chip value={`${advLabel(adv)} · spell attacks`} />}</For>
+                <For each={bonusesFor("WeaponAttack")}>{(rb) => <Chip value={`${bonusLabel(rb)} · weapon attacks`} />}</For>
+                <For each={bonusesFor("SpellAttack")}>{(rb) => <Chip value={`${bonusLabel(rb)} · spell attacks`} />}</For>
               </div>
               <div class={`${styles.actionTable}`}>
                 <Table data={actionTableData} columns={["name", "damage", "range"]}>
@@ -509,6 +583,44 @@ const CharacterView: Component = () => {
                           onChange={(spent) => spendUses(feature.name, spent)}
                         />
                       </Show>
+                      <For each={choiceStatMads(feature)}>
+                        {(mad) => (
+                          <div class={`${styles.featureTitle}`}>
+                            <span>{`${mad.value?.["mode"] === "set" ? "Set" : "+"}${mad.value?.["statValue"] ?? ""} to an ability of your choice:`}</span>
+                            <Select
+                              value={currentCharacter()?.statChoices?.[statChoiceKey(feature)] ?? ""}
+                              onChange={(val: string) => runWithOwner(null, () => {
+                                if (val && val !== currentCharacter()?.statChoices?.[statChoiceKey(feature)]) chooseStat(statChoiceKey(feature), val);
+                              })}
+                            >
+                              <For each={statChoiceOptions(mad)}>
+                                {(key) => <Option value={key}>{STAT_LABELS[key] ?? key}</Option>}
+                              </For>
+                            </Select>
+                          </div>
+                        )}
+                      </For>
+                      <For each={choiceProficiencyMads(feature)}>
+                        {(mad) => {
+                          const count = proficiencyChoiceCount(mad);
+                          return (
+                            <div>
+                              <span>{`Skill proficiency — choose ${count} (${proficiencyPicks(statChoiceKey(feature)).length}/${count} picked):`}</span>
+                              <div class={`${styles.advChips}`}>
+                                <For each={proficiencyChoiceOptions(mad)}>
+                                  {(skill) => (
+                                    <Checkbox
+                                      label={skill}
+                                      checked={proficiencyPicks(statChoiceKey(feature)).includes(skill)}
+                                      onChange={() => runWithOwner(null, () => toggleProficiencyPick(statChoiceKey(feature), skill, count))}
+                                    />
+                                  )}
+                                </For>
+                              </div>
+                            </div>
+                          );
+                        }}
+                      </For>
                     </div>
                   );
                 }}

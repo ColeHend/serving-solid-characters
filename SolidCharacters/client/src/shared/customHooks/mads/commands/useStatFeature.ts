@@ -5,9 +5,17 @@ import { DebugConsole } from "../../DebugConsole";
 const addStatFeature = (character: Character, feature: MadFeature) => {
     const statName = feature.value?.["stat"]?.trim() ?? "";
     const statValue = +feature.value?.["statValue"];
+    const mode = feature.value?.["mode"]?.trim() ?? "increase";
 
     if (!statName) {
         DebugConsole.error("No stat name provided for AddStats command");
+        return character;
+    }
+
+    // choice-form commands are resolved to a concrete stat in collectMadFeatures;
+    // an unresolved one reaching here means the player hasn't picked yet — do nothing.
+    if (statName === "choice") {
+        DebugConsole.warn("Unresolved choice-form AddStats reached the handler. Skipping.");
         return character;
     }
 
@@ -17,22 +25,38 @@ const addStatFeature = (character: Character, feature: MadFeature) => {
     }
 
     if (character.stats?.[statName as keyof Character["stats"]] !== undefined) {
-        character.stats[statName as keyof Character["stats"]] += statValue;
+        if (mode === "set") {
+            character.stats[statName as keyof Character["stats"]] = statValue;
+        } else {
+            character.stats[statName as keyof Character["stats"]] += statValue;
+        }
 
         return character;
     } else {
         DebugConsole.warn(`Stat ${statName} does not exist on character. Skipping AddStats command.`);
         return character;
     }
-    
+
 }
 
 const removeStatFeature = (character: Character, feature: MadFeature) => {
     const statName = feature.value?.["stat"]?.trim() ?? "";
     const statValue = +feature.value?.["statValue"];
+    const mode = feature.value?.["mode"]?.trim() ?? "increase";
 
     if (!statName) {
         DebugConsole.error("No stat name provided for RemoveStats command");
+        return character;
+    }
+
+    if (statName === "choice") {
+        DebugConsole.warn("Unresolved choice-form RemoveStats reached the handler. Skipping.");
+        return character;
+    }
+
+    // a "set" can't be meaningfully subtracted — revoking one is out of scope for Remove
+    if (mode === "set") {
+        DebugConsole.warn("RemoveStats with mode=set is not supported. Skipping.");
         return character;
     }
 

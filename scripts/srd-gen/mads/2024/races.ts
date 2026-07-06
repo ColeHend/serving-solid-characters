@@ -1,0 +1,137 @@
+import type { MadMap } from "../spec.ts";
+
+/**
+ * Curated MADS commands for SRD 5.2 (2024) species.
+ * Keys are "<Species Name>/<Trait Name>", where the trait name is the **bold-run label** printed in
+ * the Character Species section of 04_CharacterOrigins.md. Only effects the trait text LITERALLY
+ * states are encoded. Per mads/apply.ts, AddStats/RemoveStats on a species trait is a hard lint error
+ * (2024 species grant NO ability increases — those live on the background), so none appear here.
+ *
+ * Deliberately SKIPPED (choice-dependent, PB-scaling, or no catalog category can express them):
+ *  - Trance, Halfling Nimbleness / Luck / Naturally Stealthy, Human Resourceful
+ *    (Heroic Inspiration) / Versatile (origin feat of choice) — no category.
+ *  - Dragonborn Draconic Ancestry / Damage Resistance — the resisted type is CHOICE-dependent
+ *    (picked from the Draconic Ancestors table), so no fixed Resistances command can be authored.
+ *  - Tiefling Fiendish Legacy / Otherworldly Presence, Elf Elven Lineage, Gnome Gnomish Lineage
+ *    (Forest/Rock Gnome) — the resistance/cantrip/spells depend on the legacy/lineage CHOICE.
+ *  - Goliath Giant Ancestry — the boon is a CHOICE from seven options (and its uses scale with PB).
+ *  - Human Skillful — "one skill of your choice"; Elf Keen Senses — "Insight, Perception, or
+ *    Survival" (a CHOICE in 2024, unlike 5.1's fixed Perception) — no fixed Proficiencies command.
+ *  - Goliath Speed (35 ft) — a species Speed lives in the structured `speed` field, not a command.
+ *  - PB-SCALING limited uses (Uses needs a fixed `amount`, PB is not a constant): Dragonborn Breath
+ *    Weapon, Dwarf Stonecunning, Orc Adrenaline Rush — "a number of times equal to your Proficiency
+ *    Bonus". Left uncoded rather than pinned to a wrong fixed count. (Stonecunning's Tremorsense is
+ *    also a 10-minute bonus-action effect — temporary, so no Senses command either.)
+ */
+
+/** "You have Darkvision with a range of N feet." */
+const darkvision = (range: string) =>
+    ({ type: "Add", category: "Senses", value: { sense: "darkvision", range } } as const);
+
+export const map: MadMap = {
+    // Darkvision — fixed, always-on ranges stated per species.
+    "Dragonborn/Darkvision": [darkvision("60")],
+    "Dwarf/Darkvision": [darkvision("120")],
+    "Elf/Darkvision": [darkvision("60")],
+    "Gnome/Darkvision": [darkvision("60")],
+    "Orc/Darkvision": [darkvision("120")],
+    "Tiefling/Darkvision": [darkvision("60")],
+
+    // Dwarf — "Your Hit Point maximum increases by 1, and it increases by 1 again whenever you gain a level."
+    "Dwarf/Dwarven Toughness": [
+        { type: "Add", category: "HitPoints", value: { amount: "1", perLevel: "true" } },
+    ],
+
+    // Dwarf — "You have Resistance to Poison damage. You also have Advantage on saving throws you make
+    // to avoid or end the Poisoned condition."
+    "Dwarf/Dwarven Resilience": [
+        { type: "Add", category: "Resistances", value: { damageType: "Poison" } },
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "avoid or end the Poisoned condition" } },
+    ],
+
+    // Elf — "You have Advantage on saving throws you make to avoid or end the Charmed condition."
+    "Elf/Fey Ancestry": [
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "avoid or end the Charmed condition" } },
+    ],
+
+    // Gnome — "You have Advantage on Intelligence, Wisdom, and Charisma saving throws."
+    // One Advantage command per named ability (no condition in 2024 — the "against magic" qualifier is gone).
+    "Gnome/Gnomish Cunning": [
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "int" } },
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "wis" } },
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "cha" } },
+    ],
+
+    // Halfling — "You have Advantage on saving throws you make to avoid or end the Frightened condition."
+    "Halfling/Brave": [
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "avoid or end the Frightened condition" } },
+    ],
+
+    // Orc — "Once you use this trait, you can't do so again until you finish a Long Rest."
+    "Orc/Relentless Endurance": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+
+    // Dragonborn — "Once you use this trait, you can't use it again until you finish a Long Rest."
+    "Dragonborn/Draconic Flight": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+
+    // Goliath — "Once you use this trait, you can't use it again until you finish a Long Rest."
+    "Goliath/Large Form": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+
+    // Goliath — "You have Advantage on any ability check you make to end the Grappled condition."
+    // (The "count as one size larger for carrying capacity" clause has no category.)
+    "Goliath/Powerful Build": [
+        { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", condition: "end the Grappled condition" } },
+    ],
+
+    // ================================================================
+    // Coverage-gap sweep (July 2026): entries below were proposed and
+    // adversarially verified against the parsed SRD text.
+    // ================================================================
+    // Grounding: "You can use this Breath Weapon a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long  [Uses equal to Proficiency Bonus]
+    "Dragonborn/Breath Weapon": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // The granted Tremorsense is a 10-minute Bonus-Action temporary effect (rule 4: not an always-on Senses grant), so no Senses command. But there is a per [Uses equal to Proficiency Bonus]
+    "Dwarf/Stonecunning": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // Grounding: "You have proficiency in the Insight, Perception, or Survival skill." This is a fixed three-option skill choice, which the Proficiencies ch
+    "Elf/Keen Senses": [
+        { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: "Insight,Perception,Survival", count: "1" } },
+    ],
+    // Forest Gnome is a discrete lineage-branch trait (separate row from Rock Gnome), so its grants are literal once the branch is selected. Grounding: "You [Uses equal to Proficiency Bonus (Speak with Animals)]
+    "Gnome/Forest Gnome": [
+        { type: "Add", category: "Spells", value: {  }, target: "Minor Illusion" },
+        { type: "Add", category: "Spells", value: {  }, target: "Speak with Animals" },
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // The chosen boon is one of seven options (teleport, damage riders, Prone, damage-reduction Reaction, etc.) — none encodable and all choice-dependent. B [Uses equal to Proficiency Bonus]
+    "Goliath/Giant Ancestry": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // Grounding: "You gain proficiency in one skill of your choice." Proficiencies choice form over all 18 canonical skills, count 1 (rule 6). Existing race
+    "Human/Skillful": [
+        { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival", count: "1" } },
+    ],
+    // Grounding: "You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Short or Long [Uses equal to Proficiency Bonus]
+    "Orc/Adrenaline Rush": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Short Rest" } },
+    ],
+    // Grounding: "You know the Thaumaturgy cantrip." This is a fixed, non-choice cantrip grant (independent of which Fiendish Legacy is chosen — that only s
+    "Tiefling/Otherworldly Presence": [
+        { type: "Add", category: "Spells", value: {  }, target: "Thaumaturgy" },
+    ],
+};
+
+/*
+ * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
+ * deliberately out of scope per the decision rules):
+ *  - Dragonborn/Damage Resistance: Grounding: "You have Resistance to the damage type determined by your Draconic Ancestry trait." The resisted type is chosen from the Draconic Ancestor
+ *  - Elf/Elven Lineage: Every benefit is lineage-choice-dependent: Wood Elf "Your Speed increases to 35 feet", Drow "range of your Darkvision increases to 120 feet", each wit
+ *  - Tiefling/Fiendish Legacy: The level-1 resistance is legacy-choice-dependent: Abyssal=Poison, Chthonic=Necrotic, Infernal=Fire, each also granting a different cantrip and level-
+ */
