@@ -26,7 +26,19 @@
      "name": "Breath Weapon",
      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 plus your Constitution modifier and Proficiency Bonus). On a failed save, a creature takes 1d10 damage of the type determined by your Draconic Ancestry trait. On a successful save, a creature takes half as much damage. This damage increases by 1d10 when you reach character levels 5 (2d10), 11 (3d10), and 17 (4d10).\n\nYou can use this Breath Weapon a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
      "metadata": {
-      "recharge": "long"
+      "recharge": "long",
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
      }
     },
     "prerequisites": []
@@ -220,7 +232,19 @@
      "name": "Stonecunning",
      "description": "As a Bonus Action, you gain Tremorsense with a range of 60 feet for 10 minutes. You must be on a stone surface or touching a stone surface to use this Tremorsense. The stone can be natural or worked.\n\nYou can use this Bonus Action a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.",
      "metadata": {
-      "recharge": "long"
+      "recharge": "long",
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
      }
     },
     "prerequisites": []
@@ -333,7 +357,22 @@
     "details": {
      "id": "b7c3cccf-58b9-5129-86ac-7cd370edcd81",
      "name": "Keen Senses",
-     "description": "You have proficiency in the Insight, Perception, or Survival skill."
+     "description": "You have proficiency in the Insight, Perception, or Survival skill.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddProficiencies",
+        "value": {
+         "proficiency": "choice",
+         "options": "Insight,Perception,Survival",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -478,7 +517,37 @@
      "name": "Forest Gnome",
      "description": "You know the *Minor Illusion* cantrip. You also always have the *Speak with Animals* spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. You can also use any spell slots you have to cast the spell.",
      "metadata": {
-      "recharge": "long"
+      "recharge": "long",
+      "mads": [
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "b0a0227a-2289-4e3e-983e-bc438693a7b3"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "28b8d668-980d-4dd3-815a-f6fa01a352cd"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
      }
     },
     "prerequisites": []
@@ -546,7 +615,19 @@
      "name": "Giant Ancestry",
      "description": "You are descended from Giants. Choose one of the following benefits—a supernatural boon from your ancestry; you can use the chosen benefit a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest:",
      "metadata": {
-      "recharge": "long"
+      "recharge": "long",
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
      }
     },
     "prerequisites": []
@@ -811,7 +892,22 @@
     "details": {
      "id": "bce2e530-6eab-552e-9d4b-4bf3b3d0745f",
      "name": "Skillful",
-     "description": "You gain proficiency in one skill of your choice."
+     "description": "You gain proficiency in one skill of your choice.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddProficiencies",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -884,7 +980,19 @@
      "name": "Adrenaline Rush",
      "description": "You can take the Dash action as a Bonus Action. When you do so, you gain a number of Temporary Hit Points equal to your Proficiency Bonus.\n\nYou can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Short or Long Rest.",
      "metadata": {
-      "recharge": "short"
+      "recharge": "short",
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Short Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
      }
     },
     "prerequisites": []
@@ -1020,7 +1128,20 @@
     "details": {
      "id": "682e9b9e-cc46-50b7-b7ce-e57476702429",
      "name": "Otherworldly Presence",
-     "description": "You know the *Thaumaturgy* cantrip. When you cast it with this trait, the spell uses the same spellcasting ability you use for your Fiendish Legacy trait."
+     "description": "You know the *Thaumaturgy* cantrip. When you cast it with this trait, the spell uses the same spellcasting ability you use for your Fiendish Legacy trait.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "3ad133a3-37e5-4f89-a12a-907201bcf0ae"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    }

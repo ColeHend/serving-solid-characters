@@ -17,20 +17,20 @@ import { MadFeature, MadType } from "../../../models/generated";
  * resolve to KNOWN options is dropped entirely rather than attached as a sheet-corrupting no-op.
  */
 
-/** The 23 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
+/** The 24 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
 export type MadCategory =
     | "Spells" | "Items" | "Proficiencies" | "Features" | "Currency" | "ArmorClass"
     | "Expertise" | "Feats" | "Languages" | "Resistances" | "Vulnerabilities"
     | "Immunities" | "SavingThrows" | "Stats" | "Speed" | "AllProficiencies"
     | "ClassFeature" | "Advantage" | "Attacks" | "Uses"
-    | "Movement" | "Senses" | "HitPoints";
+    | "Movement" | "Senses" | "HitPoints" | "RollBonus";
 
 export const MAD_CATEGORIES: MadCategory[] = [
     "Spells", "Items", "Proficiencies", "Features", "Currency", "ArmorClass",
     "Expertise", "Feats", "Languages", "Resistances", "Vulnerabilities",
     "Immunities", "SavingThrows", "Stats", "Speed", "AllProficiencies",
     "ClassFeature", "Advantage", "Attacks", "Uses",
-    "Movement", "Senses", "HitPoints",
+    "Movement", "Senses", "HitPoints", "RollBonus",
 ];
 
 /** Catalog entities a command can reference by name (resolved to the entity's `.id`). */
@@ -117,7 +117,7 @@ const ROLL_TYPE_ALIASES: Record<string, string> = {
 
 // ---- field specs ----
 
-type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag";
+type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillOrChoice" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag";
 
 interface FieldSpec {
     /** The value-object key this field writes (e.g. "bonus", "damageType", "ID"). */
@@ -152,9 +152,19 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     Feats: { category: "Feats", idBased: true, refKind: "feat", addFields: [REF("featID")], removeFields: [REF("featID")], hint: "grants/removes a feat — target = exact feat name" },
     ArmorClass: {
         category: "ArmorClass", idBased: false,
-        addFields: [{ key: "bonus", type: "number", required: true }, { key: "stats", type: "abilityCsv", required: true }],
-        removeFields: [{ key: "bonus", type: "number", required: true }, { key: "stats", type: "abilityCsv", required: true }],
-        hint: "sets AC = bonus + listed ability modifier(s); bonus = number, stats = one or more of str,dex,con,int,wis,cha (use for 'AC equals 13 + Dex' style traits — an AC formula is NEVER Stats)",
+        labelKeys: ["bonus", "stats", "condition"],
+        addFields: [
+            { key: "bonus", type: "number", required: true },
+            { key: "stats", type: "abilityCsv", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        removeFields: [
+            { key: "bonus", type: "number", required: true },
+            { key: "stats", type: "abilityCsv", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        hint: "changes AC; bonus = number, stats = one or more of str,dex,con,int,wis,cha for 'AC equals 13 + Dex' style FORMULAS (an AC formula is NEVER Stats). " +
+            "For a flat '+1 bonus to Armor Class' OMIT stats entirely; condition (optional) = qualifier like 'while wearing armor'",
     },
     Speed: {
         category: "Speed", idBased: false,
@@ -225,8 +235,15 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Proficiencies: {
         category: "Proficiencies", idBased: false,
-        addFields: [{ key: "proficiency", type: "skill", required: true }], removeFields: [{ key: "proficiency", type: "skill", required: true }],
-        hint: "grants proficiency in one skill; proficiency = a skill name (skills only — saving-throw proficiency is SavingThrows)",
+        labelKeys: ["proficiency", "count"],
+        addFields: [
+            { key: "proficiency", type: "skillOrChoice", required: true },
+            { key: "options", type: "skillCsv", required: false },
+            { key: "count", type: "number", required: false },
+        ],
+        removeFields: [{ key: "proficiency", type: "skillOrChoice", required: true }],
+        hint: "grants proficiency in one skill; proficiency = a skill name (skills only — saving-throw proficiency is SavingThrows). " +
+            "For 'proficiency in N skills of your choice' use proficiency = choice with options = comma-separated allowed skills and count = how many the player picks (the player picks on the sheet).",
     },
     Expertise: {
         category: "Expertise", idBased: false,
@@ -298,6 +315,29 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         removeFields: [{ key: "amount", type: "number", required: true }],
         hint: "grants extra attacks per Attack action (Extra Attack = amount 1); amount = number of additional attacks",
     },
+    RollBonus: {
+        category: "RollBonus", idBased: false,
+        labelKeys: ["rollType", "bonus", "proficiencyBonus", "stat", "condition"],
+        addFields: [
+            { key: "rollType", type: "rollType", required: true },
+            { key: "bonus", type: "number", required: false },
+            { key: "proficiencyBonus", type: "pbChoice", required: false },
+            { key: "stat", type: "ability", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        removeFields: [
+            { key: "rollType", type: "rollType", required: true },
+            { key: "bonus", type: "number", required: false },
+            { key: "proficiencyBonus", type: "pbChoice", required: false },
+            { key: "stat", type: "ability", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        hint: "adds a flat or proficiency-bonus modifier to a d20 roll — this is NOT advantage; " +
+            "rollType = SavingThrow/WeaponAttack/SpellAttack/Initiative/AbilityCheck, bonus = a fixed number ('+2 bonus to attack rolls' → bonus 2), " +
+            "proficiencyBonus = 'Third PB'/'Half PB'/'Full PB' when the bonus IS the proficiency bonus ('add your Proficiency Bonus to Initiative' → Full PB), " +
+            "stat (optional) narrows saves/checks, condition (optional) = qualifier like 'with Ranged weapons'. Provide bonus OR proficiencyBonus. " +
+            "An AC change is NEVER RollBonus (AC is not a roll — use ArmorClass); damage bonuses have no command.",
+    },
     Uses: {
         category: "Uses", idBased: false, madType: MadType.Info,
         addFields: [
@@ -330,7 +370,13 @@ export const COMMAND_COMMON_MISTAKES =
     "- \"your walking speed becomes 30 feet\" → Speed {\"speed\":\"30\",\"mode\":\"set\"}\n" +
     "- \"you have darkvision out to a range of 60 feet\" → Senses {\"sense\":\"darkvision\",\"range\":\"60\"}\n" +
     "- \"your hit point maximum increases by 1 every time you gain a level\" → HitPoints {\"amount\":\"1\",\"perLevel\":\"true\"}\n" +
-    "- \"advantage on Stealth checks\" / \"once per long rest…\" → no command (advantage and temporary or situational effects have no category)";
+    "- \"add your Proficiency Bonus to your Initiative rolls\" → RollBonus {\"rollType\":\"Initiative\",\"proficiencyBonus\":\"Full PB\"} (a flat/PB modifier to a roll is NEVER Advantage)\n" +
+    "- \"+2 bonus to attack rolls with Ranged weapons\" → RollBonus {\"rollType\":\"WeaponAttack\",\"bonus\":\"2\",\"condition\":\"with Ranged weapons\"}\n" +
+    "- \"+1 bonus to saving throws\" → RollBonus {\"rollType\":\"SavingThrow\",\"bonus\":\"1\"}\n" +
+    "- \"+1 bonus to Armor Class\" → ArmorClass {\"bonus\":\"1\"} (a flat AC bonus omits stats; AC is not a roll, so it is NEVER RollBonus)\n" +
+    "- \"proficiency in three skills of your choice\" → Proficiencies {\"proficiency\":\"choice\",\"options\":\"<comma-separated allowed skills>\",\"count\":\"3\"}\n" +
+    "- \"advantage on Stealth checks\" → Advantage {\"rollType\":\"AbilityCheck\",\"mode\":\"advantage\",\"stat\":\"dex\",\"condition\":\"Stealth checks\"} (state WHEN it applies in condition)\n" +
+    "- \"once per long rest…\" → Uses (temporary effects, healing, and damage bonuses/rerolls have no category)";
 
 // ---- pure coercion ----
 
@@ -365,6 +411,9 @@ const CATEGORY_ALIASES: Record<string, MadCategory> = {
     tremorsense: "Senses", truesight: "Senses",
     hitpoint: "HitPoints", hitpoints: "HitPoints", hp: "HitPoints", maxhp: "HitPoints",
     hitpointmaximum: "HitPoints", hitpointmax: "HitPoints", maxhitpoints: "HitPoints", health: "HitPoints",
+    rollbonus: "RollBonus", rollbonuses: "RollBonus", flatbonus: "RollBonus",
+    initiativebonus: "RollBonus", attackbonus: "RollBonus", savebonus: "RollBonus",
+    savingthrowbonus: "RollBonus", spellattackbonus: "RollBonus",
     classfeature: "ClassFeature", classfeatures: "ClassFeature",
     invocation: "ClassFeature", invocations: "ClassFeature",
     eldritchinvocation: "ClassFeature", eldritchinvocations: "ClassFeature",
@@ -482,6 +531,7 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
             return null; // absence means false — a falsy optional flag is simply dropped
         }
         case "skill": return matchOption(value, SKILL_KEYS);
+        case "skillOrChoice": return value.toLowerCase() === "choice" ? "choice" : matchOption(value, SKILL_KEYS);
         case "skillCsv": return coerceCsv(value, s => matchOption(s, SKILL_KEYS));
         case "damageType": return matchOption(value, DAMAGE_TYPES);
         case "currency": return coerceCurrency(value);
@@ -522,6 +572,10 @@ export function coerceCommand(
     }
     // choice-form Stats needs the allowed-options list or the sheet can never resolve the pick
     if (category === "Stats" && value["stat"] === "choice" && !value["options"]) return null;
+    // choice-form Proficiencies likewise needs its allowed-skills list
+    if (category === "Proficiencies" && value["proficiency"] === "choice" && !value["options"]) return null;
+    // a RollBonus with neither a flat bonus nor a PB fraction would be a no-op badge
+    if (category === "RollBonus" && !value["bonus"] && !value["proficiencyBonus"]) return null;
     return { command: `${t}${category}`, value, type: spec.madType ?? MadType.Character, prerequisites: [], group: 0 };
 }
 
@@ -577,6 +631,15 @@ export function validateStoredCommand(mad: MadFeature): string[] {
     if (category === "Stats" && String(value["stat"] ?? "") === "choice") {
         const opts = coerceField({ key: "options", type: "abilityCsv", required: true }, value["options"], "", () => null, undefined);
         if (!opts) errors.push(`${prettyCommand(command)} uses stat "choice" but has no valid options list`);
+    }
+    if (category === "Proficiencies" && isAdd && String(value["proficiency"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "skillCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses proficiency "choice" but has no valid options list`);
+    }
+    if (category === "RollBonus") {
+        const bonus = coerceField({ key: "bonus", type: "number", required: false }, value["bonus"], "", () => null, undefined);
+        const pb = coerceField({ key: "proficiencyBonus", type: "pbChoice", required: false }, value["proficiencyBonus"], "", () => null, undefined);
+        if (!bonus && !pb) errors.push(`${prettyCommand(command)} needs a bonus or a proficiencyBonus`);
     }
     return errors;
 }

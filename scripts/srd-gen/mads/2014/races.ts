@@ -87,4 +87,30 @@ export const map: MadMap = {
         { type: "Add", category: "Resistances", value: { damageType: "Fire" } },
     ],
     "Tiefling/Darkvision": [DARKVISION_60],
+
+    // ================================================================
+    // Coverage-gap sweep (July 2026): entries below were proposed and
+    // adversarially verified against the parsed SRD text.
+    // ================================================================
+    // 'You gain proficiency in two skills of your choice' → rule 6 choice-form Proficiencies, all 18 canonical skills as options, count 2 (mirrors the count
+    "Half-Elf/Skill Versatility": [
+        { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: "Acrobatics,Animal Handling,Arcana,History,Athletics,Deception,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival", count: "2" } },
+    ],
+    // Encode intent is correct: verified the text grants FIXED named spells (thaumaturgy cantrip known; hellish rebuke at 3rd level; darkness at 5th level) 
+    "Tiefling/Infernal Legacy": [
+        { type: "Add", category: "Spells", value: {  }, target: "thaumaturgy" },
+        { type: "Add", category: "Spells", value: {  }, target: "hellish rebuke" },
+        { type: "Add", category: "Spells", value: {  }, target: "darkness" },
+    ],
 };
+
+/*
+ * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
+ * deliberately out of scope per the decision rules):
+ *  - Dwarf/Dwarven Combat Training: Grants WEAPON proficiency ('proficiency with the battleaxe, handaxe, light hammer, and warhammer'); the Proficiencies category covers SKILLS only and 
+ *  - Dwarf/Tool Proficiency: Grants a CHOICE of artisan's TOOL proficiency ('smith's tools, brewer's supplies, or mason's tools'); Proficiencies is skills-only and no tool-profici
+ *  - Dwarf/Stonecunning: Situational double-proficiency: 'you are considered proficient in the History skill and add double your proficiency bonus' only for Int(History) check
+ *  - Dragonborn/Damage Resistance: 'resistance to the damage type associated with your draconic ancestry' — the resisted type is CHOICE-dependent (picked from the Draconic Ancestry tabl
+ *  - High Elf/Elf Weapon Training: Text: "You have proficiency with the longsword, shortsword, shortbow, and longbow." These are WEAPON proficiencies; the Proficiencies category covers 
+ *  - Rock Gnome/Tinker: Text: "You have proficiency with artisan's tools (tinker's tools)..." plus a temporary clockwork-device construction ability. Tool proficiency has no 
+ */

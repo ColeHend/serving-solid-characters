@@ -32,6 +32,11 @@ const TRIGGERS: [RegExp, string][] = [
     [/\byou know the .{1,40} (spell|cantrip)\b|\byou learn the .{1,40} spell\b/i, "spell grant"],
     [/\byou can speak, read, and write\b/i, "language"],
     [/\bexpertise\b/i, "expertise"],
+    [/\b(proficiency )?bonus to (your )?initiative\b/i, "initiative bonus"],
+    [/\+\s*\d+\s*(bonus )?to (attack|spell attack|ranged attack|saving throw|ability check)/i, "flat roll bonus"],
+    [/\bbonus to attack rolls\b|\bbonus to saving throws\b|\bbonus to spell attack\b/i, "flat roll bonus"],
+    [/\+\s*\d+\s*(bonus )?to (your )?(armou?r class|AC)\b/i, "flat AC bonus"],
+    [/\bskills? of your choice\b/i, "proficiency choice"],
 ];
 
 function firstTrigger(text: string): string | null {

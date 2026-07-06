@@ -222,4 +222,62 @@ export const map: MadMap = {
     ],
     // skipped: Arcane Recovery (slot recovery), Spell Mastery / Signature Spell (player-choice
     //   spells), Arcane Tradition (subclass), Spellcasting.
+
+    // ================================================================
+    // Coverage-gap sweep (July 2026): entries below were proposed and
+    // adversarially verified against the parsed SRD text.
+    // ================================================================
+    // SRD: 'gives you advantage on melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next tu
+    "Barbarian/Reckless Attack": [
+        { type: "Add", category: "Advantage", value: { rollType: "WeaponAttack", mode: "advantage", stat: "str", condition: "when attacking recklessly (melee Str attacks; attack rolls against you also have Advantage until your next turn)" } },
+    ],
+    // SRD: 'you and any friendly creatures within 30 feet of you have advantage on saving throws against being frightened or charmed.' Self-activated condit
+    "Bard/Countercharm": [
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "while performing Countercharm (an action, until end of your next turn) against being frightened or charmed; you and friendly creatures within 30 ft must be able to hear you" } },
+    ],
+    // "You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them." Pe
+    "Ranger/Favored Enemy": [
+        { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", stat: "wis", condition: "on Wisdom (Survival) checks to track your favored enemies" } },
+        { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", stat: "int", condition: "on Intelligence checks to recall information about your favored enemies" } },
+    ],
+    // "you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle s
+    "Ranger/Land's Stride": [
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against plants magically created or manipulated to impede movement (e.g. entangle)" } },
+    ],
 };
+
+/*
+ * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
+ * deliberately out of scope per the decision rules):
+ *  - Bard/Spellcasting: Cantrips and Spells Known are all 'of your choice from the bard spell list' — no fixed spell to grant, and Spells has no list-choice form (rule 6). Sp
+ *  - Bard/Expertise: 'choose two of your skill proficiencies' — Expertise takes fixed skills only and has no choice form, so skip per the Expertise catalog note and rule 6
+ *  - Bard/Bardic Inspiration (d8): Die-upgrade tier: description is identical to the base feature, only 'the die becomes a d8 at 5th level'. Base Bardic Inspiration (d6) already carries
+ *  - Bard/Bardic Inspiration (d10): Die-upgrade tier: identical description, only 'the die becomes a d10 at 10th level'. Base Bardic Inspiration (d6) already carries the Uses command; a 
+ *  - Bard/Expertise: 10th-level tier of the same feature: 'choose another two skill proficiencies' — Expertise has no choice form (fixed skills only), so skip per the cata
+ *  - Bard/Bardic Inspiration (d12): Die-upgrade tier: identical description, only 'the die becomes a d12 at 15th level'. Base Bardic Inspiration (d6) already carries the Uses command; a 
+ *  - Cleric/Channel Divinity (2/rest): Use-count scaling: 'Beginning at 6th level, you can use your Channel Divinity twice between rests.' Base Channel Divinity (1/rest) already carries the
+ *  - Cleric/Channel Divinity (3/rest): Use-count scaling: 'beginning at 18th level, you can use it three times between rests.' Base Channel Divinity (1/rest) already carries the Uses comman
+ *  - Druid/Wild Shape Improvement: Raises the beast-form pool only (Beast Shapes table: max CR 1/4->1/2->1, removing the 'No swimming'/'No flying speed' limits). Any fly/swim speed come
+ *  - Druid/Wild Shape Improvement: Same feature, higher tier: it only widens which beasts you may assume (removing the flying-speed limit at 8th). Fly/swim speed is a property of the te
+ *  - Fighter/Fighting Style: Player-choice pick ("Choose one of the following options") — catalog says choice-of-fighting-style is skipped. The "disadvantage" trigger is Protectio
+ *  - Monk/Ki-Empowered Strikes: "your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage" — this overcomes an ENE
+ *  - Monk/Unarmored Movement improvement: Description repeats the base "your speed increases by 10 feet" which is already encoded on Monk/Unarmored Movement; the +15/+20/etc. scaling stays in 
+ *  - Monk/Empty Body: Temporary activated effect: "spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force da
+ *  - Paladin/Fighting Style: Player-choice pick ("Choose one of the following options"). The "disadvantage" trigger is Protection's "impose disadvantage on the attack roll" — impo
+ *  - Paladin/Divine Health: "the divine magic flowing through you makes you immune to disease" — disease immunity has no damage-type category (catalog: disease/condition immunity
+ *  - Ranger/Natural Explorer: "your proficiency bonus is doubled if you are using a skill that you're proficient in" applies only to Int/Wis checks related to your player-chosen fa
+ *  - Ranger/Fighting Style: Player-choice pick ("Choose one of the following options"). Archery's "+2 bonus to attack rolls you make with ranged weapons" (the flat-roll-bonus tri
+ *  - Ranger/Spellcasting: "You know two 1st-level spells of your choice from the ranger spell list" — player-choice spells from a list, not a fixed grant. The Spells command is
+ *  - Ranger/Favored Enemy and Natural Explorer improvements: L6/L14 improvement row ("You choose one additional favored enemy... at 6th and 14th level") granting additional player-chosen enemies/terrains. Its ad
+ *  - Ranger/Natural Explorer improvement: "your proficiency bonus is doubled if you are using a skill that you're proficient in" applies only in a player-chosen favored terrain and only to ski
+ *  - Ranger/Favored Enemy improvement: L6/L14 upgrade tier of base Favored Enemy. The conditional advantage ("advantage on Wisdom (Survival) checks to track your favored enemies, as well as
+ *  - Ranger/Feral Senses: "your inability to see it doesn't impose disadvantage on your attack rolls" negates a normally-applied disadvantage — there is no "cancel disadvantage
+ *  - Rogue/Expertise: L1 Expertise: "choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools" — player-choice; E
+ *  - Rogue/Sneak Attack: Damage rider ("deal an extra 1d6 damage") — no damage category (rule 5). The "if you have advantage on the attack roll" clause is a precondition for t
+ *  - Rogue/Expertise: L6 Expertise tier ("choose two more of your proficiencies... to gain this benefit") — still player-choice; Expertise has no choice form, so skip.
+ *  - Sorcerer/Spellcasting: All grants are player-choice from the sorcerer list ("four cantrips of your choice", "two 1st-level spells of your choice"); no fixed always-known spe
+ *  - Sorcerer/Metamagic: L3 Metamagic: player-choice options ("two of the following Metamagic options of your choice") — no choice form. The disadvantage trigger is Heightened
+ *  - Sorcerer/Metamagic: L10 row grants one additional player-choice Metamagic option (tier); same non-encodable content as L3 — player-choice options, and Heightened Spell's 
+ *  - Sorcerer/Metamagic: L17 row grants one additional player-choice Metamagic option (tier); same non-encodable content as L3 — player-choice options, and Heightened Spell's 
+ *  - Warlock/Pact Boon: Player-choice feature ("one of the following features of your choice"). The "immunity" trigger is Pact of the Blade's weapon "counts as magical for th
+ */

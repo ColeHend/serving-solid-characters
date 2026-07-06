@@ -103,6 +103,78 @@ describe("Stats choice/set form", () => {
     });
 });
 
+describe("RollBonus", () => {
+    const noRef = () => null;
+
+    it("coerces a flat bonus with rollType, condition and stat", () => {
+        const m = coerceCommand("Add", "RollBonus", { rollType: "WeaponAttack", bonus: "2", condition: "with Ranged weapons" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddRollBonus", value: { rollType: "WeaponAttack", bonus: "2", condition: "with Ranged weapons" } });
+    });
+
+    it("coerces a proficiency-bonus fraction (Alert)", () => {
+        const m = coerceCommand("Add", "RollBonus", { rollType: "Initiative", proficiencyBonus: "Full PB" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddRollBonus", value: { rollType: "Initiative", proficiencyBonus: "Full PB" } });
+    });
+
+    it("drops a RollBonus with neither bonus nor proficiencyBonus, or a bogus rollType", () => {
+        expect(coerceCommand("Add", "RollBonus", { rollType: "Initiative" }, undefined, noRef)).toBeNull();
+        expect(coerceCommand("Add", "RollBonus", { rollType: "Nonsense", bonus: "1" }, undefined, noRef)).toBeNull();
+    });
+
+    it("resolves loose aliases to RollBonus", () => {
+        const m = coerceCommand("Add", "initiative bonus", { rollType: "Initiative", bonus: "2" }, undefined, noRef);
+        expect(m?.command).toBe("AddRollBonus");
+    });
+
+    it("validateStoredCommand accepts valid forms and rejects a bonus-less command", () => {
+        expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "SavingThrow", bonus: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "Initiative", proficiencyBonus: "Full PB" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "Initiative" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "Nope", bonus: "1" } }))).not.toEqual([]);
+    });
+});
+
+describe("Proficiencies choice form", () => {
+    const noRef = () => null;
+
+    it("coerces a fixed skill unchanged", () => {
+        const m = coerceCommand("Add", "Proficiencies", { proficiency: "Stealth" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddProficiencies", value: { proficiency: "Stealth" } });
+    });
+
+    it("coerces the choice form with canonical options and a count", () => {
+        const m = coerceCommand("Add", "Proficiencies", { proficiency: "choice", options: "athletics, STEALTH", count: "3" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddProficiencies", value: { proficiency: "choice", options: "Athletics,Stealth", count: "3" } });
+    });
+
+    it("drops a choice-form command with no options", () => {
+        expect(coerceCommand("Add", "Proficiencies", { proficiency: "choice", count: "3" }, undefined, noRef)).toBeNull();
+    });
+
+    it("validateStoredCommand accepts choice+options and rejects choice without options", () => {
+        expect(validateStoredCommand(mad({ command: "AddProficiencies", value: { proficiency: "choice", options: "Athletics,Stealth", count: "2" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddProficiencies", value: { proficiency: "choice", count: "2" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddProficiencies", value: { proficiency: "Stealth" } }))).toEqual([]);
+    });
+});
+
+describe("ArmorClass flat bonus", () => {
+    const noRef = () => null;
+
+    it("coerces a bonus-only command (flat +1 AC) with optional condition", () => {
+        const m = coerceCommand("Add", "ArmorClass", { bonus: "1", condition: "while wearing armor" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddArmorClass", value: { bonus: "1", condition: "while wearing armor" } });
+        expect(m?.value["stats"]).toBeUndefined();
+    });
+
+    it("still coerces the formula form and validates both", () => {
+        const formula = coerceCommand("Add", "ArmorClass", { bonus: "13", stats: "dex" }, undefined, noRef);
+        expect(formula).toMatchObject({ command: "AddArmorClass", value: { bonus: "13", stats: "dex" } });
+        expect(validateStoredCommand(mad({ command: "AddArmorClass", value: { bonus: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddArmorClass", value: { bonus: "13", stats: "dex,con" } }))).toEqual([]);
+    });
+});
+
 describe("validateMads", () => {
     it("no-ops on a non-feature entity (spell)", () => {
         const spell = { name: "Firebolt", description: "..." } as unknown as Spell;

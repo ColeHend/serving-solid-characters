@@ -104,6 +104,27 @@ check("Dwarven Toughness HP", races["Dwarf/Dwarven Toughness"][0], "AddHitPoints
 // Speed mode:"set" survives coercion (walking-speed SETTER)
 check("Boots speed set 30", magicItems["Boots of Striding and Springing"][0], "AddSpeed",
     { speed: "30", mode: "set" });
+// RollBonus: Alert's PB-to-Initiative and Archery's flat +2 (conditions survive)
+check("Alert PB initiative", feats["Alert"][0], "AddRollBonus",
+    { rollType: "Initiative", proficiencyBonus: "Full PB" });
+check("Archery +2 ranged", feats["Archery"][0], "AddRollBonus",
+    { rollType: "WeaponAttack", bonus: "2", condition: "with Ranged weapons" });
+// choice-form Proficiencies keeps the options list and count (Skilled: any 3 skills)
+check("Skilled choice 3", feats["Skilled"][0], "AddProficiencies",
+    { proficiency: "choice", count: "3" });
+// flat AC bonus without a stats key (Defense feat / Ring of Protection / split "+1" armor)
+check("Defense flat AC", feats["Defense"][0], "AddArmorClass", { bonus: "1" });
+check("Ring of Protection AC", magicItems["Ring of Protection"][0], "AddArmorClass", { bonus: "1" });
+check("Ring of Protection saves", magicItems["Ring of Protection"][1], "AddRollBonus",
+    { rollType: "SavingThrow", bonus: "1" });
+// split-variant entries: exact per-item values
+check("Weapon +2 attack", magicItems["Weapon, +2"][0], "AddRollBonus",
+    { rollType: "WeaponAttack", bonus: "2" });
+check("Armor +3 flat AC", magicItems["Armor, +3"][0], "AddArmorClass", { bonus: "3" });
+check("Belt (Storm) set 29", magicItems["Belt of Giant Strength (Storm)"][0], "AddStats",
+    { stat: "str", statValue: "29", mode: "set" });
+check("Ring of Resistance (Fire)", magicItems["Ring of Resistance (Fire)"][0], "AddResistances",
+    { damageType: "Fire" });
 
 console.log(allGood ? "\nALL CHECKS PASSED" : "\nSOME CHECKS FAILED");
 process.exit(allGood ? 0 : 1);

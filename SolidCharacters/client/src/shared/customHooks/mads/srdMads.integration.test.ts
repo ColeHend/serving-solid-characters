@@ -8,7 +8,7 @@ import { Character, MovementType } from "../../../models/character.model";
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { collectMadFeatures, useMadCharacters, pendingStatChoices, statChoiceKey } from "./useMadCharacters";
+import { collectMadFeatures, useMadCharacters, pendingStatChoices, pendingProficiencyChoices, statChoiceKey } from "./useMadCharacters";
 
 /**
  * Integration gate: the GENERATED server SRD JSON (SolidCharacters.Repository/data/srd)
@@ -108,5 +108,74 @@ describe("generated SRD data through the mads runtime (2024)", () => {
         c.Speed = 25;
         const applied = useMadCharacters(structuredClone(c), boots.metadata.mads);
         expect(applied.Speed).toBe(30);
+    });
+
+    const feats2024 = read("2024/feats.json");
+    const findFeat = (name: string) => feats2024.find((f: { details: { name: string } }) => f.details?.name === name)?.details;
+
+    it("Alert carries a PB-to-Initiative RollBonus that lands on rollBonuses", () => {
+        const alert = findFeat("Alert");
+        expect(alert?.metadata?.mads?.length).toBeGreaterThan(0);
+
+        const c = new Character();
+        c.features = [alert];
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.rollBonuses).toEqual([expect.objectContaining({ rollType: "Initiative", proficiencyBonus: "Full PB" })]);
+    });
+
+    it("Archery grants +2 to ranged weapon attacks", () => {
+        const archery = findFeat("Archery");
+        const c = new Character();
+        c.features = [archery];
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.rollBonuses).toEqual([expect.objectContaining({ rollType: "WeaponAttack", bonus: 2 })]);
+    });
+
+    it("Skilled holds its 3-skill choice pending, then grants the picked proficiencies", () => {
+        const skilled = findFeat("Skilled");
+        expect(skilled?.metadata?.mads?.length).toBeGreaterThan(0);
+
+        const c = new Character();
+        c.features = [skilled];
+        c.proficiencies.skills = {
+            "Athletics": { stat: "str", value: 0, proficient: false, expertise: false },
+            "Stealth": { stat: "dex", value: 0, proficient: false, expertise: false },
+            "Perception": { stat: "wis", value: 0, proficient: false, expertise: false },
+        };
+        expect(pendingProficiencyChoices(c, skilled)).toHaveLength(1);
+        expect(collectMadFeatures(c)).toEqual([]);
+
+        c.proficiencyChoices = { [statChoiceKey(skilled)]: "Athletics,Stealth,Perception" };
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.proficiencies.skills["Athletics"].proficient).toBe(true);
+        expect(applied.proficiencies.skills["Stealth"].proficient).toBe(true);
+        expect(applied.proficiencies.skills["Perception"].proficient).toBe(true);
+    });
+
+    it("Ring of Protection carries a flat +1 AC and +1 saves; split '+1' items carry exact bonuses", () => {
+        const ring = magicItems.find((m: { name: string }) => m.name === "Ring of Protection");
+        expect(ring?.metadata?.mads).toHaveLength(2);
+
+        const c = new Character();
+        c.ArmorClass = 15;
+        const applied = useMadCharacters(structuredClone(c), ring.metadata.mads);
+        expect(applied.ArmorClass).toBe(16);
+        expect(applied.rollBonuses).toEqual([expect.objectContaining({ rollType: "SavingThrow", bonus: 1 })]);
+
+        // the variant pass split the combined "+1, +2, or +3" entries into concrete items
+        const weaponPlus2 = magicItems.find((m: { name: string }) => m.name === "Weapon, +2");
+        expect(weaponPlus2?.metadata?.mads).toEqual([expect.objectContaining({ command: "AddRollBonus" })]);
+        const gauntlets = magicItems.find((m: { name: string }) => m.name === "Belt of Giant Strength (Hill)");
+        expect(gauntlets?.metadata?.mads).toEqual([expect.objectContaining({ command: "AddStats", value: expect.objectContaining({ stat: "str", statValue: "21", mode: "set" }) })]);
+        expect(magicItems.find((m: { name: string }) => m.name === "Weapon, +1, +2, or +3")).toBeUndefined();
+    });
+
+    it("Barbarian Primal Knowledge offers a 1-skill choice from the barbarian list", () => {
+        const barb2024 = classes2024.find((c: { name: string }) => c.name === "Barbarian");
+        const primal = Object.values(barb2024.features as Record<string, FeatureDetail[]>).flat()
+            .find(f => f.name === "Primal Knowledge")!;
+        const choice = primal.metadata?.mads?.find((m: { command: string }) => m.command === "AddProficiencies");
+        expect(choice?.value).toMatchObject({ proficiency: "choice", count: "1" });
+        expect(choice?.value["options"]).toContain("Athletics");
     });
 });

@@ -58,11 +58,15 @@ export const map: MadMap = {
     "Barbarian/Extra Attack": [extraAttack()],
     "Barbarian/Fast Movement": [speed("10")],
     "Barbarian/Feral Instinct": [adv("Initiative")],
+    // Reckless Attack — self-elected Advantage; the trade-off lives in the condition text.
+    "Barbarian/Reckless Attack": [adv("WeaponAttack", { stat: "str", condition: "when attacking recklessly (melee Str attacks; attack rolls against you also have Advantage until your next turn)" })],
+    // Primal Knowledge — one more skill from the Barbarian level-1 list (the Rage Str-check rider is situational → skip).
+    "Barbarian/Primal Knowledge": [add("Proficiencies", { proficiency: "choice", options: "Animal Handling,Athletics,Intimidation,Nature,Perception,Survival", count: "1" })],
     // Primal Champion: Strength & Constitution increase by 4 (max 25 not representable).
     "Barbarian/Primal Champion": [raiseStat("str", "4"), raiseStat("con", "4")],
-    // skip: Weapon Mastery, Reckless Attack (situational adv), Primal Knowledge (skill choice),
-    //       Brutal Strike / Improved Brutal Strike (damage rider), Relentless Rage & Persistent Rage
+    // skip: Weapon Mastery, Brutal Strike / Improved Brutal Strike (damage rider), Relentless Rage
     //       (situational), Indomitable Might (score-as-total), Instinctive Pounce, Epic Boon.
+    //       (Persistent Rage is encoded in the sweep block below — its once-per-Long-Rest refresh is a Uses counter.)
 
     // ============================================================ Bard
     "Bard/Bardic Inspiration": [uses("1", "Long Rest")], // uses = Charisma modifier (min 1) — approximated as 1
@@ -94,9 +98,10 @@ export const map: MadMap = {
     "Fighter/Two Extra Attacks": [extraAttack()], // +1 over Extra Attack → total 3
     "Fighter/Three Extra Attacks": [extraAttack()], // +1 over Two Extra Attacks → total 4
     "Fighter/Ability Score Improvement": [asi()],
-    // skip: Fighting Style (feat choice), Weapon Mastery, Tactical Mind/Shift/Master, Studied Attacks,
+    // skip: Fighting Style (feat choice), Weapon Mastery, Tactical Mind/Shift/Master,
     //       "Action Surge (two uses)" & "Indomitable (two/three uses)" (extra uses are scaling of the
     //       same resource — the base grant already carries the Uses command), Epic Boon.
+    //       (Studied Attacks is encoded in the sweep block below as conditional Advantage.)
 
     // ============================================================ Monk
     "Monk/Unarmored Defense": [ac("10", "dex,wis")],
@@ -169,4 +174,50 @@ export const map: MadMap = {
     "Wizard/Ability Score Improvement": [asi()],
     // skip: Ritual Adept, Scholar (expertise choice), Memorize Spell, Spell Mastery / Signature Spells
     //       (chosen spells), Epic Boon.
+
+    // ================================================================
+    // Coverage-gap sweep (July 2026): entries below were proposed and
+    // adversarially verified against the parsed SRD text.
+    // ================================================================
+    // 'you can regain all expended uses of Rage ... you can't do so again until you finish a Long Rest' is a genuine once-per-Long-Rest resource refresh, st
+    "Barbarian/Persistent Rage": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // 'If you make an attack roll against a creature and miss, you have Advantage on your next attack roll against that creature before the end of your next
+    "Fighter/Studied Attacks": [
+        { type: "Add", category: "Advantage", value: { rollType: "WeaponAttack", mode: "advantage", condition: "on your next attack roll against a creature you missed with an attack roll, before the end of your next turn" } },
+    ],
+    // "You can use this action a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Re
+    "Ranger/Tireless": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // "You have Advantage on attack rolls against the creature currently marked by your Hunter's Mark" — conditional advantage, encoded per the Advantage po
+    "Ranger/Precise Hunter": [
+        { type: "Add", category: "Advantage", value: { rollType: "WeaponAttack", mode: "advantage", condition: "against the creature currently marked by your Hunter's Mark" } },
+    ],
+    // "As a Bonus Action, you give yourself Advantage on your next attack roll on the current turn" — self-activated advantage, encoded per the Advantage po
+    "Rogue/Steady Aim": [
+        { type: "Add", category: "Advantage", value: { rollType: "WeaponAttack", mode: "advantage", condition: "as a Bonus Action, gives Advantage on your next attack roll this turn; usable only if you haven't moved this turn, and your Speed becomes 0 until the end of the turn" } },
+    ],
 };
+
+/*
+ * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
+ * deliberately out of scope per the decision rules):
+ *  - Barbarian/Brutal Strike: You 'forgo any Advantage' (grant nothing) for 'an extra 1d10 damage' plus Forceful/Hamstring Blow positioning effects on the target; a damage rider ha
+ *  - Barbarian/Improved Brutal Strike: Adds Staggering Blow ('target has Disadvantage on the next saving throw it makes') and Sundering Blow ('next attack roll made by another creature ... 
+ *  - Bard/Expertise: 'You gain Expertise ... in two of your skill proficiencies of your choice' — the Expertise command takes fixed named skills only and has no choice for
+ *  - Bard/Expertise: Level-9 grant is again 'Expertise in two more of your skill proficiencies of your choice' — no fixed skills; Expertise has no choice form. Catalog Exp
+ *  - Cleric/Divine Order: A role choice: Protector gives 'proficiency with Martial weapons and training with Heavy armor' (weapon/armor, not a canonical skill, so outside the s
+ *  - Druid/Primal Order: Role choice mirroring Divine Order: Warden gives 'proficiency with Martial weapons and training with Medium armor' (not skill proficiencies) or Magici
+ *  - Monk/Superior Defense: 'expend 3 Focus Points to bolster yourself ... for 1 minute ... you have Resistance to all damage except Force damage' — a temporary activated buff pa
+ *  - Paladin/Aura of Protection: 'you and your allies in the aura gain a bonus to saving throws equal to your Charisma modifier (minimum bonus of +1)' — the bonus is an ability modifi
+ *  - Paladin/Aura of Courage: 'You and your allies have Immunity to the Frightened condition' — Immunities is damage-type-only; the Frightened condition has no category. Matches cu
+ *  - Paladin/Epic Boon: 'You gain an Epic Boon feat ... or another feat of your choice' — a choice of feat; the Truesight-granting Boon of Truesight is only 'recommended', no
+ *  - Ranger/Deft Explorer: Both benefits are player-choice with no fixed grant: "Choose one of your skill proficiencies with which you lack Expertise. You gain Expertise in that
+ *  - Ranger/Expertise: "Choose two of your skill proficiencies with which you lack Expertise. You gain Expertise in those skills" — expertise in skills of your choice has no
+ *  - Rogue/Expertise: "You gain Expertise in two of your skill proficiencies of your choice" — expertise in skills of your choice has no choice form (Expertise is fixed-ski
+ *  - Rogue/Sneak Attack: "you can deal an extra 1d6 damage ... if you have Advantage on the roll" — this is a damage rider (no damage-rider category), and the Advantage refere
+ *  - Rogue/Expertise: Level-6 Expertise row: "You gain Expertise in two of your skill proficiencies of your choice" — same player-choice expertise as the level-1 grant, no 
+ *  - Wizard/Scholar: "Choose one of the following skills in which you have proficiency: Arcana, History, Investigation, Medicine, Nature, or Religion. You have Expertise i
+ */

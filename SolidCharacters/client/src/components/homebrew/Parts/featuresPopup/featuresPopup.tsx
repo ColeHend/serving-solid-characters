@@ -29,6 +29,7 @@ import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/fea
 import { FeaturePrerequisites } from "./parts/featurePrerequisites/featurePrerequisites";
 import { ClassFeature } from "./parts/classFeature/classFeature";
 import { AdvantageFeature } from "./parts/advantageFeature/advantageFeature";
+import { RollBonusFeature } from "./parts/rollBonusFeature/rollBonusFeature";
 import { AttacksFeature } from "./parts/attacksFeature/attacksFeature";
 import { UsesFeature } from "./parts/usesFeature/usesFeature";
 
@@ -211,6 +212,7 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         'Movement',
         'Senses',
         'HitPoints',
+        'RollBonus',
     ]
 
     const getMadType = (index: number) => {
@@ -570,20 +572,29 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     }}/>
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddArmorClass" || getMaDCommand(i())?.() === "RemoveArmorClass"}>
-                                                    <ACFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleAC={(bonus, stats)=>{
-                                                        setMadFeature("value", i(), {"bonus": bonus.toString(), "stats": stats.join(",")});
+                                                    <ACFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleAC={(bonus, stats, condition)=>{
+                                                        const next: Record<string, string> = {"bonus": bonus.toString()};
+                                                        if (stats.length) next["stats"] = stats.join(",");
+                                                        if (condition) next["condition"] = condition;
+                                                        setMadFeature("value", i(), next);
                                                         setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                         setCard(false);
                                                     }} />
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddProficiencies" || getMaDCommand(i())?.() === "RemoveProficiencies" || getMaDCommand(i())?.() === "AddExpertise" || getMaDCommand(i())?.() === "RemoveExpertise"} >
-                                                    <ProficienciesFeature getValue={getMadValue?.(i()) ?? (() => undefined)} toggleProf={(prof) => {
-                                                        // const old = getMadValue(i())?.();
-
-                                                        setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
-                                                        setMadFeature("value", i(), {"proficiency": prof});
-                                                        setCard(false);
-                                                    }}/>
+                                                    <ProficienciesFeature
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                        allowChoice={getMaDCommand(i())?.() === "AddProficiencies"}
+                                                        toggleProf={(prof, extra) => {
+                                                            const next: Record<string, string> = {"proficiency": prof};
+                                                            if (prof === "choice" && extra?.options) {
+                                                                next["options"] = extra.options;
+                                                                next["count"] = extra.count ?? "1";
+                                                            }
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setMadFeature("value", i(), next);
+                                                            setCard(false);
+                                                        }}/>
                                                 </Match>
                                                 <Match when={getMaDCommand(i())?.() === "AddFeatures" || getMaDCommand(i())?.() === "RemoveFeatures"}>
                                                     <ExistingFeature 
@@ -729,6 +740,21 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                                                     <AdvantageFeature
                                                         toggleValue={(rollType, mode, stat, condition) => {
                                                             setMadFeature("value", i(), {"rollType": rollType, "mode": mode, "stat": stat, "condition": condition});
+                                                            setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
+                                                            setCard(false);
+                                                        }}
+                                                        getValue={getMadValue?.(i()) ?? (() => undefined)}
+                                                    />
+                                                </Match>
+                                                <Match when={getMaDCommand(i())?.() === "AddRollBonus" || getMaDCommand(i())?.() === "RemoveRollBonus"}>
+                                                    <RollBonusFeature
+                                                        toggleValue={(rollType, bonus, proficiencyBonus, stat, condition) => {
+                                                            const next: Record<string, string> = {"rollType": rollType};
+                                                            if (bonus) next["bonus"] = bonus;
+                                                            if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
+                                                            if (stat) next["stat"] = stat;
+                                                            if (condition) next["condition"] = condition;
+                                                            setMadFeature("value", i(), next);
                                                             setMadFeature("command", i(), getMaDCommand(i())?.() as MadCommands);
                                                             setCard(false);
                                                         }}

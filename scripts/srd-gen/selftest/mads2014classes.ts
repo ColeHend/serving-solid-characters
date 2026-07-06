@@ -70,7 +70,10 @@ const unmatchedKeys: string[] = [];
 const unresolvedSpells: string[] = [];
 for (const [label, map] of [["classes", classesMap], ["subclasses", subclassesMap]] as const) {
     for (const [key, specs] of Object.entries(map)) {
-        const nk = key.split("/").map(nameKey).join("/");
+        // split on the FIRST "/" only — feature names may themselves contain one
+        // ("Channel Divinity (1/rest)"); mirrors mads/apply.ts key handling.
+        const slash = key.indexOf("/");
+        const nk = slash >= 0 ? `${nameKey(key.slice(0, slash))}/${nameKey(key.slice(slash + 1))}` : nameKey(key);
         if (!featureKeys.has(nk)) unmatchedKeys.push(`[${label}] "${key}"`);
         for (const spec of specs as CommandSpecInput[]) {
             if (spec.category === "Spells" && spec.target && !spellKeys.has(nameKey(spec.target))) {

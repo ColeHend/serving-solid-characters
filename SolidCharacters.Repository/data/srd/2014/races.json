@@ -624,7 +624,22 @@
     "details": {
      "id": "010f28aa-9e9c-59ba-8406-a8c84f8741bf",
      "name": "Skill Versatility",
-     "description": "You gain proficiency in two skills of your choice."
+     "description": "You gain proficiency in two skills of your choice.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddProficiencies",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,History,Athletics,Deception,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "23f36c55-f206-4499-8a18-a069f465baba"
@@ -815,7 +830,38 @@
     "details": {
      "id": "2c7be24e-5fb8-5938-a2d9-33660ec314ba",
      "name": "Infernal Legacy",
-     "description": "You know the *thaumaturgy* cantrip. When you reach 3rd level, you can cast the *hellish rebuke* spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the *darkness* spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells."
+     "description": "You know the *thaumaturgy* cantrip. When you reach 3rd level, you can cast the *hellish rebuke* spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the *darkness* spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "b40b32d4-3fd3-407b-8939-538d501891a0"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "6a06dae2-7823-41ef-9981-b83782dd1f45"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "37ea62e0-bea1-4890-99b5-5c0e63f35a8c"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "e484bbd5-d7f7-5be2-a356-4aa25b3ca54b"

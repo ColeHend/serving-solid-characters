@@ -61,7 +61,22 @@
     {
      "id": "252a9127-428b-4442-8fb9-e539a5f9ac9a",
      "name": "Bonus Proficiencies",
-     "description": "You gain proficiency with three skills of your choice."
+     "description": "You gain proficiency with three skills of your choice.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddProficiencies",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,History,Athletics,Deception,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "3"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "a146f2c8-f43a-4728-a061-0d966b370219",

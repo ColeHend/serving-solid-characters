@@ -99,7 +99,23 @@
     {
      "id": "3d2d441f-4922-43ac-a1c9-94c6174e41f7",
      "name": "Reckless Attack",
-     "description": "You can throw aside all concern for defense to attack with increased ferocity. When you make your first attack roll on your turn, you can decide to attack recklessly. Doing so gives you Advantage on attack rolls using Strength until the start of your next turn, but attack rolls against you have Advantage during that time."
+     "description": "You can throw aside all concern for defense to attack with increased ferocity. When you make your first attack roll on your turn, you can decide to attack recklessly. Doing so gives you Advantage on attack rolls using Strength until the start of your next turn, but attack rolls against you have Advantage during that time.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "WeaponAttack",
+         "mode": "advantage",
+         "stat": "str",
+         "condition": "when attacking recklessly (melee Str attacks; attack rolls against you also have Advantage until your next turn)"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "3": [
@@ -111,7 +127,22 @@
     {
      "id": "6310c7b7-0b7a-456f-a00a-d90ac90b82bf",
      "name": "Primal Knowledge",
-     "description": "You gain proficiency in another skill of your choice from the skill list available to Barbarians at level 1.\n\nIn addition, while your Rage is active, you can channel primal power when you attempt certain tasks; whenever you make an ability check using one of the following skills, you can make it as a Strength check even if it normally uses a different ability: Acrobatics, Intimidation, Perception, Stealth, or Survival. When you use this ability, your Strength represents primal power coursing through you, honing your agility, bearing, and senses."
+     "description": "You gain proficiency in another skill of your choice from the skill list available to Barbarians at level 1.\n\nIn addition, while your Rage is active, you can channel primal power when you attempt certain tasks; whenever you make an ability check using one of the following skills, you can make it as a Strength check even if it normally uses a different ability: Acrobatics, Intimidation, Perception, Stealth, or Survival. When you use this ability, your Strength represents primal power coursing through you, honing your agility, bearing, and senses.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddProficiencies",
+        "value": {
+         "proficiency": "choice",
+         "options": "Animal Handling,Athletics,Intimidation,Nature,Perception,Survival",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "4": [
@@ -297,7 +328,19 @@
      "description": "When you roll Initiative, you can regain all expended uses of Rage. After you regain uses of Rage in this way, you can't do so again until you finish a Long Rest.\n\nIn addition, your Rage is so fierce that it now lasts for 10 minutes without you needing to do anything to extend it from round to round. Your Rage ends early if you have the Unconscious condition (not just the Incapacitated condition) or don Heavy armor.",
      "metadata": {
       "uses": 2,
-      "recharge": "long"
+      "recharge": "long",
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
      }
     }
    ],
@@ -2178,7 +2221,22 @@
     {
      "id": "0468ca7a-8f6c-4756-8097-2fa9ea19b574",
      "name": "Studied Attacks",
-     "description": "You study your opponents and learn from each attack you make. If you make an attack roll against a creature and miss, you have Advantage on your next attack roll against that creature before the end of your next turn."
+     "description": "You study your opponents and learn from each attack you make. If you make an attack roll against a creature and miss, you have Advantage on your next attack roll against that creature before the end of your next turn.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "WeaponAttack",
+         "mode": "advantage",
+         "condition": "on your next attack roll against a creature you missed with an attack roll, before the end of your next turn"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "14": [
@@ -3659,7 +3717,21 @@
     {
      "id": "c45d552d-b110-586c-9e5e-660a4a3f748a",
      "name": "Tireless",
-     "description": "Primal forces now help fuel you on your journeys, granting you the following benefits.\n\n**Temporary Hit Points.** As a Magic action, you can give yourself a number of Temporary Hit Points equal to 1d8 plus your Wisdom modifier (minimum of 1). You can use this action a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.\n\n**Decrease Exhaustion.** Whenever you finish a Short Rest, your Exhaustion level, if any, decreases by 1."
+     "description": "Primal forces now help fuel you on your journeys, granting you the following benefits.\n\n**Temporary Hit Points.** As a Magic action, you can give yourself a number of Temporary Hit Points equal to 1d8 plus your Wisdom modifier (minimum of 1). You can use this action a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.\n\n**Decrease Exhaustion.** Whenever you finish a Short Rest, your Exhaustion level, if any, decreases by 1.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "11": [
@@ -3752,7 +3824,22 @@
     {
      "id": "e75a18ee-4c79-574c-bae5-042fb480d638",
      "name": "Precise Hunter",
-     "description": "You have Advantage on attack rolls against the creature currently marked by your *Hunter's Mark*."
+     "description": "You have Advantage on attack rolls against the creature currently marked by your *Hunter's Mark*.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "WeaponAttack",
+         "mode": "advantage",
+         "condition": "against the creature currently marked by your Hunter's Mark"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "18": [
@@ -3918,7 +4005,22 @@
     {
      "id": "3bc6119c-b94a-5537-b4e3-9dee2903791e",
      "name": "Steady Aim",
-     "description": "As a Bonus Action, you give yourself Advantage on your next attack roll on the current turn. You can use this feature only if you haven't moved during this turn, and after you use it, your Speed is 0 until the end of the current turn."
+     "description": "As a Bonus Action, you give yourself Advantage on your next attack roll on the current turn. You can use this feature only if you haven't moved during this turn, and after you use it, your Speed is 0 until the end of the current turn.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "WeaponAttack",
+         "mode": "advantage",
+         "condition": "as a Bonus Action, gives Advantage on your next attack roll this turn; usable only if you haven't moved this turn, and your Speed becomes 0 until the end of the turn"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "4": [

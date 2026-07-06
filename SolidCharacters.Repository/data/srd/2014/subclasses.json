@@ -46,7 +46,22 @@
     {
      "id": "0b57e9ff-7e34-4119-b5a6-e23b4bc08ef2",
      "name": "Bonus Proficiencies",
-     "description": "When you join the College of Lore at 3rd level, you gain proficiency with three skills of your choice."
+     "description": "When you join the College of Lore at 3rd level, you gain proficiency with three skills of your choice.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddProficiencies",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,History,Athletics,Deception,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "3"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "481c0924-df7a-4e27-948b-1584df5df310",
@@ -302,7 +317,22 @@
     {
      "id": "63e8af0e-bb6e-41c6-b20d-770ea2dc1020",
      "name": "Land's Stride",
-     "description": "Starting at 6th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.\n\nIn addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the *entangle* spell."
+     "description": "Starting at 6th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.\n\nIn addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the *entangle* spell.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "condition": "against plants that are magically created or manipulated to impede movement, such as those created by the entangle spell"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "10": [
@@ -577,7 +607,21 @@
     {
      "id": "d260f273-fed7-4020-ac4f-26b3e0a2a6e6",
      "name": "Holy Nimbus",
-     "description": "At 20th level, as an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30-foot radius, and dim light shines 30 feet beyond that.\n\nWhenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.\n\nIn addition, for the duration, you have advantage on saving throws against spells cast by fiends or undead.\n\nOnce you use this feature, you can't use it again until you finish a long rest.\n\n>**Breaking Your Oath**\n>\n>A paladin tries to hold to the highest standards of conduct, but even the most virtuous paladin is fallible. Sometimes the right path proves too demanding, sometimes a situation calls for the lesser of two evils, and sometimes the heat of emotion causes a paladin to transgress his or her oath.\n>\n>A paladin who has broken a vow typically seeks absolution from a cleric who shares his or her faith or from another paladin of the same order. The paladin might spend an all- night vigil in prayer as a sign of penitence, or undertake a fast or similar act of self-denial. After a rite of confession and forgiveness, the paladin starts fresh.\n>\n>If a paladin willfully violates his or her oath and shows no sign of repentance, the consequences can be more serious. At the GM's discretion, an impenitent paladin might be forced to abandon this class and adopt another."
+     "description": "At 20th level, as an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30-foot radius, and dim light shines 30 feet beyond that.\n\nWhenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.\n\nIn addition, for the duration, you have advantage on saving throws against spells cast by fiends or undead.\n\nOnce you use this feature, you can't use it again until you finish a long rest.\n\n>**Breaking Your Oath**\n>\n>A paladin tries to hold to the highest standards of conduct, but even the most virtuous paladin is fallible. Sometimes the right path proves too demanding, sometimes a situation calls for the lesser of two evils, and sometimes the heat of emotion causes a paladin to transgress his or her oath.\n>\n>A paladin who has broken a vow typically seeks absolution from a cleric who shares his or her faith or from another paladin of the same order. The paladin might spend an all- night vigil in prayer as a sign of penitence, or undertake a fast or similar act of self-denial. After a rite of confession and forgiveness, the paladin starts fresh.\n>\n>If a paladin willfully violates his or her oath and shows no sign of repentance, the consequences can be more serious. At the GM's discretion, an impenitent paladin might be forced to abandon this class and adopt another.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ]
   },
@@ -642,7 +686,23 @@
     {
      "id": "1b9268db-6e18-41ba-8cc7-71e9512f6354",
      "name": "Supreme Sneak",
-     "description": "Starting at 9th level, you have advantage on a Dexterity (Stealth) check if you move no more than half your speed on the same turn."
+     "description": "Starting at 9th level, you have advantage on a Dexterity (Stealth) check if you move no more than half your speed on the same turn.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "AbilityCheck",
+         "mode": "advantage",
+         "stat": "dex",
+         "condition": "on Dexterity (Stealth) checks when you move no more than half your speed on the same turn"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "13": [

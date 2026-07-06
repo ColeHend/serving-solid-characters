@@ -87,4 +87,51 @@ export const map: MadMap = {
     "Goliath/Powerful Build": [
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", condition: "end the Grappled condition" } },
     ],
+
+    // ================================================================
+    // Coverage-gap sweep (July 2026): entries below were proposed and
+    // adversarially verified against the parsed SRD text.
+    // ================================================================
+    // Grounding: "You can use this Breath Weapon a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long  [Uses equal to Proficiency Bonus]
+    "Dragonborn/Breath Weapon": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // The granted Tremorsense is a 10-minute Bonus-Action temporary effect (rule 4: not an always-on Senses grant), so no Senses command. But there is a per [Uses equal to Proficiency Bonus]
+    "Dwarf/Stonecunning": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // Grounding: "You have proficiency in the Insight, Perception, or Survival skill." This is a fixed three-option skill choice, which the Proficiencies ch
+    "Elf/Keen Senses": [
+        { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: "Insight,Perception,Survival", count: "1" } },
+    ],
+    // Forest Gnome is a discrete lineage-branch trait (separate row from Rock Gnome), so its grants are literal once the branch is selected. Grounding: "You [Uses equal to Proficiency Bonus (Speak with Animals)]
+    "Gnome/Forest Gnome": [
+        { type: "Add", category: "Spells", value: {  }, target: "Minor Illusion" },
+        { type: "Add", category: "Spells", value: {  }, target: "Speak with Animals" },
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // The chosen boon is one of seven options (teleport, damage riders, Prone, damage-reduction Reaction, etc.) — none encodable and all choice-dependent. B [Uses equal to Proficiency Bonus]
+    "Goliath/Giant Ancestry": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // Grounding: "You gain proficiency in one skill of your choice." Proficiencies choice form over all 18 canonical skills, count 1 (rule 6). Existing race
+    "Human/Skillful": [
+        { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival", count: "1" } },
+    ],
+    // Grounding: "You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Short or Long [Uses equal to Proficiency Bonus]
+    "Orc/Adrenaline Rush": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Short Rest" } },
+    ],
+    // Grounding: "You know the Thaumaturgy cantrip." This is a fixed, non-choice cantrip grant (independent of which Fiendish Legacy is chosen — that only s
+    "Tiefling/Otherworldly Presence": [
+        { type: "Add", category: "Spells", value: {  }, target: "Thaumaturgy" },
+    ],
 };
+
+/*
+ * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
+ * deliberately out of scope per the decision rules):
+ *  - Dragonborn/Damage Resistance: Grounding: "You have Resistance to the damage type determined by your Draconic Ancestry trait." The resisted type is chosen from the Draconic Ancestor
+ *  - Elf/Elven Lineage: Every benefit is lineage-choice-dependent: Wood Elf "Your Speed increases to 35 feet", Drow "range of your Darkvision increases to 120 feet", each wit
+ *  - Tiefling/Fiendish Legacy: The level-1 resistance is legacy-choice-dependent: Abyssal=Poison, Chthonic=Necrotic, Infernal=Fire, each also granting a different cantrip and level-
+ */

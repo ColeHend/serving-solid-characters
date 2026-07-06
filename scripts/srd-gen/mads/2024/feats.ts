@@ -6,13 +6,13 @@ import type { MadMap } from "../spec.ts";
  * ability-score bumps are encoded here — in CHOICE form where the text says "of your choice".
  *
  * Deliberately SKIPPED (no catalog category can express them, or they are choices/situational):
- *  - Alert — adds Proficiency Bonus to Initiative + Initiative Swap. A flat bonus to a roll (not
- *    Advantage) has no category; the Advantage command would misstate the benefit.
+ *  - Alert's Initiative Swap (turn-order trade with an ally) — only the PB-to-Initiative RollBonus
+ *    is encoded; Skilled's TOOL proficiencies (the choice form is skill-list only) and its
+ *    Repeatable rider.
  *  - Magic Initiate — two cantrips + one level-1 spell "of your choice" from a class list (a choice,
- *    not a fixed named spell); Skilled — three skills/tools "of your choice"; Savage Attacker — reroll
- *    weapon damage dice. No category / choice-only.
- *  - Fighting Style feats: Archery (+2 to ranged attack rolls) and Defense (+1 AC in armor) have no
- *    flat-bonus category; Great Weapon Fighting / Two-Weapon Fighting are situational damage tweaks.
+ *    not a fixed named spell); Savage Attacker — reroll weapon damage dice.
+ *  - Great Weapon Fighting / Two-Weapon Fighting — damage-dice tweaks (damage is not a d20 roll or
+ *    sheet stat).
  *  - Epic Boon situational riders (Peerless Aim, Blink Steps, Improve Fate, Overcome/Overwhelming,
  *    Free Casting, Merge with Shadows) and Boon of the Night Spirit's "Resistance to all
  *    damage except Psychic and Radiant" (no fixed damage-type list) — only the ability increase is kept.
@@ -20,8 +20,36 @@ import type { MadMap } from "../spec.ts";
  *
  * NOTE: the "+2 max" / "+1 max" caps and the epic-boon max-30 caps are not representable; the Stats
  * command just adds. Ability Score Improvement is an approximation — see its comment.
+ * Defense's +1 AC applies only "while wearing Light, Medium, or Heavy armor" — the sheet applies it
+ * unconditionally, with the qualifier carried in the command's condition text (documented approximation).
  */
+
+const ALL_SKILLS = "Acrobatics,Animal Handling,Arcana,History,Athletics,Deception,Insight," +
+    "Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion," +
+    "Sleight Of Hand,Stealth,Survival";
+
 export const map: MadMap = {
+    // Alert — "add your Proficiency Bonus to your Initiative rolls" (Initiative Swap → skip).
+    "Alert": [
+        { type: "Add", category: "RollBonus", value: { rollType: "Initiative", proficiencyBonus: "Full PB" } },
+    ],
+
+    // Archery — "+2 bonus to attack rolls you make with Ranged weapons."
+    "Archery": [
+        { type: "Add", category: "RollBonus", value: { rollType: "WeaponAttack", bonus: "2", condition: "with Ranged weapons" } },
+    ],
+
+    // Defense — "+1 bonus to Armor Class" while armored (see the header note).
+    "Defense": [
+        { type: "Add", category: "ArmorClass", value: { bonus: "1", condition: "while wearing Light, Medium, or Heavy armor" } },
+    ],
+
+    // Skilled — "proficiency in any combination of three skills or tools of your choice."
+    // Tools aren't representable — the choice list offers the 18 skills (documented approximation).
+    "Skilled": [
+        { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: ALL_SKILLS, count: "3" } },
+    ],
+
     // Ability Score Improvement — "Increase one ability score of your choice by 2, or increase two
     // ability scores of your choice by 1." Only the +2-to-one form is representable; the +1/+1 split
     // can't be expressed by a single command, so this is an APPROXIMATION of the feat's stronger option.
@@ -63,3 +91,9 @@ export const map: MadMap = {
         { type: "Add", category: "Stats", value: { stat: "choice", options: "int,wis,cha", statValue: "1" } },
     ],
 };
+
+/*
+ * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
+ * deliberately out of scope per the decision rules):
+ *  - Two-Weapon Fighting: Text only lets you 'add your ability modifier to the damage of that attack' — a pure damage rider with no d20/AC/sheet-stat category to encode (rules 
+ */

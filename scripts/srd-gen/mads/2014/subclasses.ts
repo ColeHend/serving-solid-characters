@@ -17,6 +17,18 @@ import type { MadMap } from "../spec.ts";
  * or spell-mechanic modifiers with no representable permanent effect. See the trailing note.
  */
 export const map: MadMap = {
+    // ----- Lore (Bard, College of Lore) -----
+    // "you gain proficiency with three skills of your choice."
+    "Lore/Bonus Proficiencies": [
+        { type: "Add", category: "Proficiencies", value: {
+            proficiency: "choice",
+            options: "Acrobatics,Animal Handling,Arcana,History,Athletics,Deception,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+            count: "3",
+        } },
+    ],
+    // skipped (Lore): Cutting Words / Peerless Skill (spend Bardic Inspiration), Additional Magical
+    //   Secrets (player-choice spells).
+
     // ----- Life (Cleric, Life Domain) -----
     // Domain spells are always prepared → grant each. (Heavy-armor proficiency has no armor-prof
     // category and is skipped; the spell list is stamped on this feature by the parser.)
@@ -87,8 +99,6 @@ export const map: MadMap = {
     // ----- No-command subclasses -----
     // Berserker: Frenzy/Retaliation (extra attacks — situational), Mindless Rage (charm/fright
     //   immunity only while raging), Intimidating Presence (frighten action).
-    // Lore: Bonus Proficiencies (player-choice skills), Cutting Words / Peerless Skill (spend Bardic
-    //   Inspiration), Additional Magical Secrets (player-choice spells).
     // Champion: Improved/Superior Critical (crit-range riders), Remarkable Athlete (half PB to raw
     //   STR/DEX/CON checks — not an enumerable skill set), Additional Fighting Style (player-choice),
     //   Survivor (per-turn healing).
@@ -103,4 +113,32 @@ export const map: MadMap = {
     //   (player-chosen resistance that changes each rest), Hurl Through Hell (once/rest damage nova).
     // Evocation: Evocation Savant / Sculpt Spells / Potent Cantrip / Empowered Evocation / Overchannel
     //   — all spell-mechanic modifiers with no character-sheet effect.
+
+    // ================================================================
+    // Coverage-gap sweep (July 2026): entries below were proposed and
+    // adversarially verified against the parsed SRD text.
+    // ================================================================
+    // "you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle s
+    "Land/Land's Stride": [
+        { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against plants that are magically created or manipulated to impede movement, such as those created by the entangle spell" } },
+    ],
+    // "Once you use this feature, you can't use it again until you finish a long rest" — a per-long-rest limited-use feature (rule 4 = Uses-only when a per-
+    "Devotion/Holy Nimbus": [
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    ],
+    // "you have advantage on a Dexterity (Stealth) check if you move no more than half your speed on the same turn." Self-activated conditional advantage (r
+    "Thief/Supreme Sneak": [
+        { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", stat: "dex", condition: "on Dexterity (Stealth) checks when you move no more than half your speed on the same turn" } },
+    ],
 };
+
+/*
+ * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
+ * deliberately out of scope per the decision rules):
+ *  - Lore/Cutting Words: Reaction that spends Bardic Inspiration to subtract the die from an enemy's attack/ability/damage roll; a roll rider, not a character change. "The cre
+ *  - Land/Nature's Sanctuary: Beast/plant attackers must make a Wis save or miss/retarget; "On a successful save, the creature is immune to this effect for 24 hours" is the ENEMY b
+ *  - Hunter/Defensive Tactics: "you gain one of the following features of your choice" — player picks ONE of three (Escape the Horde / Multiattack Defense / Steel Will). The "advant
+ *  - Draconic/Elemental Affinity: "add your Charisma modifier to one damage roll" is a damage rider (rule 5), and "spend 1 sorcery point to gain resistance to that damage type for 1 ho
+ *  - Draconic/Draconic Presence: Activated ability that spends 5 sorcery points to exude a 1-minute charm/fear aura. "A creature that succeeds on this saving throw is immune to your a
+ *  - Fiend/Fiendish Resilience: "you can choose one damage type when you finish a short or long rest. You gain resistance to that damage type until you choose a different one" — resi
+ */

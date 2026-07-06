@@ -30,11 +30,14 @@ export class Character {
   };
   public savingThrows: CharacterSavingThrow[] = [];
   public rollAdvantages: RollAdvantage[] = [];
+  public rollBonuses: RollBonus[] = [];
   public attacksPerAction: number = 1;
   /** Spent use counts per limited-use feature, keyed by feature name (feature ids are often empty). */
   public featureUses: Record<string, number> = {};
   /** Resolved picks for choice-form AddStats commands, keyed by feature name → ability key ("str".."cha"). */
   public statChoices: Record<string, string> = {};
+  /** Resolved picks for choice-form AddProficiencies commands, keyed like statChoices → CSV of skill names. */
+  public proficiencyChoices: Record<string, string> = {};
   public resistances: DamageAffinity[] = [];
   public vulnerabilities: DamageAffinity[] = [];
   public immunities: DamageAffinity[] = [];
@@ -139,9 +142,27 @@ export interface RollAdvantage {
   source?: string;
 }
 
+/** Fractions of the proficiency bonus a RollBonus can grant (matches PB_CHOICES in the command catalog). */
+export type PbFraction = "Third PB" | "Half PB" | "Full PB";
+
+/** A flat or proficiency-bonus modifier to a d20 roll (AddRollBonus) — distinct from advantage. */
+export interface RollBonus {
+  rollType: AdvantageRollType;
+  /** Fixed modifier (Archery's +2). Absent when proficiencyBonus drives the value. */
+  bonus?: number;
+  /** The bonus equals this fraction of the character's proficiency bonus (Alert's PB to Initiative). */
+  proficiencyBonus?: PbFraction;
+  /** Only meaningful for SavingThrow / AbilityCheck; absent = all stats. */
+  stat?: keyof Stats;
+  /** Free-text qualifier, e.g. "with Ranged weapons". */
+  condition?: string;
+  /** Name of the feature that granted it. */
+  source?: string;
+}
+
 // -- Character Form Models --
 
-type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"|"rollAdvantages"|"attacksPerAction"|"featureUses">
+type halfCharacter = Omit<Character,"levels"|"race"|"proficiencies"|"health"|"stats"|"items"|"level"|"spells"|"features"|"savingThrows"|"vulnerabilities"|"immunities"|"resistances"|"rollAdvantages"|"rollBonuses"|"attacksPerAction"|"featureUses">
 
 export interface CharacterForm extends halfCharacter {
   race: string;

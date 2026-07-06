@@ -10,7 +10,7 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
  *
  * Same conventions as classes.ts (Uses.recharge = the rest that fully resets; modifier-based use
  * counts approximated to their minimum "1"). Subclasses with no encodable mechanics are omitted:
- *  College of Lore, Circle of the Land, Hunter, Evoker
+ *  Circle of the Land, Hunter, Evoker
  *  (their features are reactions, riders, condition immunities, or choice-dependent grants).
  */
 
@@ -31,6 +31,16 @@ export const map: MadMap = {
     "Path of the Berserker/Intimidating Presence": [uses("1", "Long Rest")], // or restore by expending a Rage
     // skip: Frenzy (damage rider), Mindless Rage (Charmed/Frightened immunity is a condition, not a
     //       damage type), Retaliation (reaction attack).
+
+    // =============================================== Bard: College of Lore
+    // "You gain proficiency with three skills of your choice."
+    "College of Lore/Bonus Proficiencies": [add("Proficiencies", {
+        proficiency: "choice",
+        options: "Acrobatics,Animal Handling,Arcana,History,Athletics,Deception,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+        count: "3",
+    })],
+    // skip: Cutting Words (reaction rider), Magical Discoveries (spell choice), Peerless Skill
+    //       (Bardic Inspiration rider on own checks).
 
     // =============================================== Cleric: Life Domain
     "Life Domain/Life Domain Spells": spells(
@@ -103,3 +113,15 @@ export const map: MadMap = {
     "Fiend Patron/Hurl Through Hell": [uses("1", "Long Rest")], // or restore by expending a Pact Magic slot
     // skip: Dark One's Blessing (temp HP), Fiendish Resilience (resistance to a CHOSEN damage type).
 };
+
+/*
+ * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
+ * deliberately out of scope per the decision rules):
+ *  - Path of the Berserker/Mindless Rage: "Immunity to the Charmed and Frightened conditions" — Immunities category takes damage types ONLY; condition immunity has no category. Matches existin
+ *  - Circle of the Land/Nature's Ward: "immune to the Poisoned condition" is a condition (no category), and the "Resistance to a damage type associated with your current land choice" (Arid→
+ *  - Oath of Devotion/Aura of Devotion: "You and your allies have Immunity to the Charmed condition" — Charmed is a condition, and Immunities category is damage types only (no category for c
+ *  - Hunter/Defensive Tactics: Choice between two options, both of which impose Disadvantage on the ENEMY's attack rolls against you ("Opportunity Attacks have Disadvantage against 
+ *  - Hunter/Superior Hunter's Defense: "take a Reaction to give yourself Resistance to that damage ... until the end of the current turn" — activated/temporary reaction whose damage type is
+ *  - Draconic Sorcery/Elemental Affinity: "Choose one of those types: Acid, Cold, Fire, Lightning, or Poison. You have Resistance to that damage type" — resistance to a CHOSEN damage type; Res
+ *  - Fiend Patron/Fiendish Resilience: "Choose one damage type, other than Force ... You have Resistance to that damage type until you choose a different one" — resistance to a CHOSEN (re-s
+ */

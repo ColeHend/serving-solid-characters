@@ -2,7 +2,7 @@ import { Button, FormField, Input, Option, Select } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
 
 interface props {
-    toggleAC: (bonus: number, stats: string[]) => void;
+    toggleAC: (bonus: number, stats: string[], condition?: string) => void;
     getValue: Accessor<Record<string, string> | undefined>;
 }
 
@@ -15,10 +15,11 @@ export const ACFeature: Component<props> = (props) => {
     };
 
     const currBouns = createMemo(() => getMadValue("bonus") ?? "");
-    const currStats = createMemo(() => getMadValue("stats")?.split(",") ?? []);
+    const currStats = createMemo(() => getMadValue("stats")?.split(",").filter(Boolean) ?? []);
 
     const [bonus, setBonus] = createSignal<number>(+currBouns());
     const [selectedStats, setSelectedStats] = createSignal<string[]>(currStats());
+    const [condition, setCondition] = createSignal<string>(getMadValue("condition") ?? "");
 
     const stats = [
         "str",
@@ -42,10 +43,21 @@ export const ACFeature: Component<props> = (props) => {
             </Select>
         </FormField>
 
+        <FormField name="Condition (optional)">
+            <Input
+                value={condition()}
+                onInput={(e)=>setCondition(e.currentTarget.value)}
+                placeholder="e.g. while wearing armor"
+            />
+        </FormField>
+
         <p>
-            AC = {bonus()} <Show when={selectedStats().length > 0}>+ {selectedStats().map(stat => ` ${stat} mod`).join(" + ")}</Show>
+            <Show when={selectedStats().length > 0} fallback={<>AC bonus: +{bonus()}</>}>
+                AC = {bonus()} + {selectedStats().map(stat => ` ${stat} mod`).join(" + ")}
+            </Show>
+            <Show when={condition().trim()}> ({condition().trim()})</Show>
         </p>
 
-        <Button onClick={()=>props.toggleAC(bonus(), selectedStats())}>Set Change</Button>
+        <Button onClick={()=>props.toggleAC(bonus(), selectedStats(), condition().trim())}>Set Change</Button>
     </div>
 }

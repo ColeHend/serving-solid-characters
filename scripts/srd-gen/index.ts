@@ -14,6 +14,7 @@ import type { Ruleset, RulesetData } from "./types.ts";
 import { IdStore, assignIds } from "./ids/idStore.ts";
 import { buildResolver } from "./mads/resolver.ts";
 import { applyMads } from "./mads/apply.ts";
+import { expandMagicItemVariants } from "./mads/variants.ts";
 import { coverageGaps, choiceWordingLint } from "./mads/coverage.ts";
 import { filePlan, writeFiles, cleanupBackups } from "./emit/writers.ts";
 import { stampLegacy } from "./emit/stampLegacy.ts";
@@ -94,6 +95,7 @@ for (const ruleset of rulesets) {
     const outDir = ruleset === "2014" ? OUT_2014 : OUT_2024;
     console.log(`\n=== ${ruleset} ===`);
     const data = collect(ruleset);
+    const variantReport = expandMagicItemVariants(ruleset, data); // split combined items BEFORE ids/mads
     stampLegacy(ruleset, data); // filePlan shares these object references, so this reaches the written files
 
     const store = new IdStore(ruleset, outDir);
@@ -113,6 +115,7 @@ for (const ruleset of rulesets) {
         errors.push(...r.errors);
         warnings.push(...r.warnings);
     }
+    errors.push(...variantReport.errors);
     errors.push(...madReport.errors.map(e => `mads: ${e}`));
     errors.push(...madReport.unmatchedKeys.map(k => `mads: curated key matched nothing: ${k}`));
     errors.push(...choiceWordingLint(data).map(e => `mads-lint: ${e}`));
@@ -121,6 +124,7 @@ for (const ruleset of rulesets) {
     const counts = Object.fromEntries(Object.entries(plan).map(([k, v]) => [k, v.length]));
     console.log("counts:", JSON.stringify(counts));
     console.log(`ids: preserved ${store.preserved}, minted ${store.minted}`);
+    console.log(`variants: ${variantReport.expanded} concrete items from split combined entries`);
     console.log(`mads: ${madReport.attached} commands on ${madReport.featuresWithMads} features/items; coverage gaps: ${gaps.length}`);
     if (warnings.length) console.log(`warnings (${warnings.length}):\n  - ` + warnings.slice(0, 15).join("\n  - ") + (warnings.length > 15 ? `\n  ... +${warnings.length - 15} more` : ""));
     if (errors.length) {

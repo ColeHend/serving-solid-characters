@@ -15,6 +15,7 @@ import { addLanguageFeature, removeLanguageFeature } from "./commands/useLanguag
 import { addMovementFeature, removeMovementFeature } from "./commands/useMovementFeature";
 import { addProficienciesFeature, RemoveProficienciesFeature } from "./commands/useProficienciesFeature";
 import { addResistanceFeature, removeResistanceFeature } from "./commands/useResistanceFeature";
+import { addRollBonusFeature, removeRollBonusFeature } from "./commands/useRollBonusFeature";
 import { addSavingThrowFeature, removeSavingThrowFeature } from "./commands/useSavingThrowFeature";
 import { addSensesFeature, removeSensesFeature } from "./commands/useSensesFeature";
 import { addSpeedFeature, removeSpeedFeature } from "./commands/useSpeedFeature";
@@ -175,6 +176,12 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
         case "RemoveHitPoints":
             character = removeHitPointsFeature(character, feature);
             break;
+        case "AddRollBonus":
+            character = addRollBonusFeature(character, feature);
+            break;
+        case "RemoveRollBonus":
+            character = removeRollBonusFeature(character, feature);
+            break;
         default:
             break;
     }
@@ -221,6 +228,44 @@ export function pendingStatChoices(character: Character, feature: { id?: string;
     return choiceStatMads(feature).filter(m => !resolveChoiceStatMad(character, statChoiceKey(feature), m));
 }
 
+/** True for a choice-form Proficiencies command ("proficiency in N skills of your choice") that needs player picks. */
+function isChoiceProficiencyMad(m: MadFeature): boolean {
+    return (m.command === "AddProficiencies" || m.command === "RemoveProficiencies") && m.value?.["proficiency"] === "choice";
+}
+
+/** The skills a choice-form Proficiencies command allows ("Athletics,Stealth" → ["Athletics","Stealth"]). */
+export function proficiencyChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/** How many skills the player picks (defaults to 1). */
+export function proficiencyChoiceCount(m: MadFeature): number {
+    const n = Number(m.value?.["count"] ?? "1");
+    return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+/**
+ * A choice-form Proficiencies command EXPANDED into one concrete command per picked skill
+ * (character.proficiencyChoices holds a CSV of picks, keyed by statChoiceKey) — or null while
+ * the picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ */
+function resolveChoiceProficiencyMads(character: Character, choiceKey: string, m: MadFeature): MadFeature[] | null {
+    const picks = (character.proficiencyChoices?.[choiceKey] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    const options = proficiencyChoiceOptions(m);
+    if (picks.length !== proficiencyChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    return picks.map(pick => ({ ...m, value: { ...m.value, proficiency: pick } }));
+}
+
+/** All choice-form Proficiencies commands on a feature (for the sheet's chooser UI). */
+export function choiceProficiencyMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceProficiencyMad);
+}
+
+/** Choice-form Proficiencies commands on a feature that still need picks (for the sheet's chooser UI). */
+export function pendingProficiencyChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceProficiencyMads(feature).filter(m => !resolveChoiceProficiencyMads(character, statChoiceKey(feature), m));
+}
+
 /**
  * Every Character-type mad across all of a character's feature sources
  * (class levels, race, and top-level features), ready to feed useMadCharacters.
@@ -241,6 +286,9 @@ export function collectMadFeatures(character: Character): MadFeature[] {
             if (isChoiceStatMad(m)) {
                 const resolved = resolveChoiceStatMad(character, statChoiceKey(f), m);
                 return resolved ? [resolved] : [];
+            }
+            if (isChoiceProficiencyMad(m)) {
+                return resolveChoiceProficiencyMads(character, statChoiceKey(f), m) ?? [];
             }
             return [m];
         }),

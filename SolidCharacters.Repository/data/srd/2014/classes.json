@@ -81,7 +81,23 @@
     {
      "id": "9246822c-f4c9-4f13-be7b-916fe6bb964f",
      "name": "Reckless Attack",
-     "description": "Starting at 2nd level, you can throw aside all concern for defense to attack with fierce desperation. When you make your first attack on your turn, you can decide to attack recklessly. Doing so gives you advantage on melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next turn."
+     "description": "Starting at 2nd level, you can throw aside all concern for defense to attack with fierce desperation. When you make your first attack on your turn, you can decide to attack recklessly. Doing so gives you advantage on melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next turn.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "WeaponAttack",
+         "mode": "advantage",
+         "stat": "str",
+         "condition": "when attacking recklessly (melee Str attacks; attack rolls against you also have Advantage until your next turn)"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "03292967-f3ae-40cd-a8a6-f0de25b4df63",
@@ -777,7 +793,22 @@
     {
      "id": "f164a581-f0f5-4c8d-ad66-971c8e431368",
      "name": "Countercharm",
-     "description": "At 6th level, you gain the ability to use musical notes or words of power to disrupt mind-influencing effects. As an action, you can start a performance that lasts until the end of your next turn. During that time, you and any friendly creatures within 30 feet of you have advantage on saving throws against being frightened or charmed. A creature must be able to hear you to gain this benefit. The performance ends early if you are incapacitated or silenced or if you voluntarily end it (no action required)."
+     "description": "At 6th level, you gain the ability to use musical notes or words of power to disrupt mind-influencing effects. As an action, you can start a performance that lasts until the end of your next turn. During that time, you and any friendly creatures within 30 feet of you have advantage on saving throws against being frightened or charmed. A creature must be able to hear you to gain this benefit. The performance ends early if you are incapacitated or silenced or if you voluntarily end it (no action required).",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "condition": "while performing Countercharm (an action, until end of your next turn) against being frightened or charmed; you and friendly creatures within 30 ft must be able to hear you"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "11364ebe-54b6-5bf9-8883-9bca354b647b",
@@ -3474,7 +3505,35 @@
     {
      "id": "ff1ee138-281d-55b3-b9e2-24d14025bd4a",
      "name": "Favored Enemy",
-     "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+     "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "AbilityCheck",
+         "mode": "advantage",
+         "stat": "wis",
+         "condition": "on Wisdom (Survival) checks to track your favored enemies"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "AbilityCheck",
+         "mode": "advantage",
+         "stat": "int",
+         "condition": "on Intelligence checks to recall information about your favored enemies"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "84140ef0-33db-5328-819b-f41e05fed71b",
@@ -3586,7 +3645,22 @@
     {
      "id": "d13b816c-02ec-4687-938e-bd14ed0b8bb9",
      "name": "Land's Stride",
-     "description": "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.\n\nIn addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the *entangle* spell."
+     "description": "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.\n\nIn addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the *entangle* spell.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddAdvantage",
+        "value": {
+         "rollType": "SavingThrow",
+         "mode": "advantage",
+         "condition": "against plants magically created or manipulated to impede movement (e.g. entangle)"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "9": [],

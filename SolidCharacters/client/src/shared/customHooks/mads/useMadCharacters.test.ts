@@ -8,9 +8,10 @@ import type { FeatureDetail, MadFeature as StoredMad } from "../../../models/gen
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
+import { rollBonusAmount } from "./commands/useRollBonusFeature";
 
 function makeCharacter(overrides: Partial<Character> = {}): Character {
     return {
@@ -374,6 +375,121 @@ describe("AddHitPoints / RemoveHitPoints", () => {
 
         const bad = addMadFeature(makeCharacter(), mad("AddHitPoints", { amount: "lots" }));
         expect(bad.health.max).toBe(10);
+    });
+});
+
+describe("AddRollBonus / RemoveRollBonus", () => {
+    it("initializes rollBonuses on old-shape characters and appends", () => {
+        const old = makeCharacter();
+        delete (old as Partial<Character>).rollBonuses;
+
+        const c = addMadFeature(old, mad("AddRollBonus", { rollType: "Initiative", proficiencyBonus: "Full PB" }));
+
+        expect(c.rollBonuses).toEqual([{
+            rollType: "Initiative", bonus: undefined, proficiencyBonus: "Full PB", stat: undefined, condition: undefined,
+        }]);
+    });
+
+    it("dedupes identical grants and drops invalid or empty bonuses", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddRollBonus", { rollType: "WeaponAttack", bonus: "2" }));
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "WeaponAttack", bonus: "2" }));
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "Nonsense", bonus: "2" }));
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "WeaponAttack" }));
+
+        expect(c.rollBonuses).toHaveLength(1);
+    });
+
+    it("keeps differently-valued bonuses separate and remove narrows by stat/condition", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddRollBonus", { rollType: "SavingThrow", bonus: "1" }));
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "SavingThrow", bonus: "1", stat: "dex", condition: "against traps" }));
+        expect(c.rollBonuses).toHaveLength(2);
+
+        c = addMadFeature(c, mad("RemoveRollBonus", { rollType: "SavingThrow", bonus: "1", stat: "dex" }));
+        expect(c.rollBonuses).toHaveLength(1);
+        expect(c.rollBonuses[0].stat).toBeUndefined();
+    });
+
+    it("rollBonusAmount resolves flat and PB-fraction values (rounding down)", () => {
+        expect(rollBonusAmount({ rollType: "WeaponAttack", bonus: 2 }, 3)).toBe(2);
+        expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Full PB" }, 3)).toBe(3);
+        expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Half PB" }, 3)).toBe(1);
+        expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Third PB" }, 5)).toBe(1);
+    });
+});
+
+describe("AddProficiencies choice form", () => {
+    const skill = (stat: "str" | "dex" | "con" | "int" | "wis" | "cha") =>
+        ({ stat, value: 0, proficient: false, expertise: false });
+    const skillSet = () => ({
+        "Athletics": skill("str"), "Stealth": skill("dex"), "Perception": skill("wis"),
+    });
+
+    it("an unresolved choice-form command reaching the handler is a no-op", () => {
+        const c = addMadFeature(makeCharacter({ proficiencies: { skills: skillSet(), other: {} } }),
+            mad("AddProficiencies", { proficiency: "choice", options: "Athletics,Stealth", count: "1" }));
+        expect(Object.values(c.proficiencies.skills).some(s => s.proficient)).toBe(false);
+    });
+
+    it("collectMadFeatures excludes unresolved choices and expands complete picks into concrete commands", () => {
+        const choice = mad("AddProficiencies", { proficiency: "choice", options: "Athletics,Stealth,Perception", count: "2" });
+        const feature: FeatureDetail = { id: "skilled-1", name: "Skilled", description: "", metadata: { mads: stored(choice) } };
+        const base = makeCharacter({
+            features: [feature],
+            proficiencies: { skills: skillSet(), other: {} },
+        });
+
+        // no picks yet → excluded, listed as pending
+        expect(collectMadFeatures(base)).toEqual([]);
+        expect(pendingProficiencyChoices(base, feature)).toHaveLength(1);
+        expect(choiceProficiencyMads(feature)).toHaveLength(1);
+        expect(proficiencyChoiceOptions(choice)).toEqual(["Athletics", "Stealth", "Perception"]);
+        expect(proficiencyChoiceCount(choice)).toBe(2);
+
+        // incomplete picks (1 of 2) stay pending
+        const partial = makeCharacter({ ...base, proficiencyChoices: { "skilled-1": "Athletics" } });
+        expect(collectMadFeatures(partial)).toEqual([]);
+
+        // complete picks → one concrete AddProficiencies per skill, and they apply
+        const picked = makeCharacter({ ...base, proficiencyChoices: { "skilled-1": "Athletics,Stealth" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected).toHaveLength(2);
+        expect(collected.map(m => m.value["proficiency"]).sort()).toEqual(["Athletics", "Stealth"]);
+        expect(pendingProficiencyChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.proficiencies.skills["Athletics"].proficient).toBe(true);
+        expect(applied.proficiencies.skills["Stealth"].proficient).toBe(true);
+        expect(applied.proficiencies.skills["Perception"].proficient).toBe(false);
+    });
+
+    it("a pick outside the options list does not apply", () => {
+        const choice = mad("AddProficiencies", { proficiency: "choice", options: "Athletics,Stealth", count: "1" });
+        const feature: FeatureDetail = { id: "p1", name: "Primal Knowledge", description: "", metadata: { mads: stored(choice) } };
+        const c = makeCharacter({
+            features: [feature],
+            proficiencyChoices: { "p1": "Perception" },
+        });
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+});
+
+describe("AddArmorClass flat bonus", () => {
+    it("a bonus-only command adds flat AC (no stats field)", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddArmorClass", { bonus: "1" }));
+        expect(c.ArmorClass).toBe(11);
+    });
+
+    it("the formula form still adds ability modifiers", () => {
+        const c = addMadFeature(makeCharacter({ stats: { str: 10, dex: 14, con: 12, int: 10, wis: 10, cha: 10 } }),
+            mad("AddArmorClass", { bonus: "10", stats: "dex,con" }));
+        // 10 (base) + 10 (bonus) + 2 (dex) + 1 (con)
+        expect(c.ArmorClass).toBe(23);
+    });
+
+    it("remove subtracts the flat bonus symmetrically", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddArmorClass", { bonus: "2" }));
+        c = addMadFeature(c, mad("RemoveArmorClass", { bonus: "2" }));
+        expect(c.ArmorClass).toBe(10);
     });
 });
 

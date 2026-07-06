@@ -11,15 +11,79 @@
   "legacy": false
  },
  {
-  "id": "9e8ec9b4-ae16-5bde-b979-fd5a07946680",
-  "name": "Ammunition, +1, +2, or +3",
+  "id": "718e8850-0f72-50f9-b977-48f8c62cfbbb",
+  "name": "Ammunition, +1",
   "desc": "You have a bonus to attack rolls and damage rolls made with this piece of magic ammunition. The bonus is determined by the rarity of the ammunition. Once it hits a target, the ammunition is no longer magical.\n\nThis ammunition is typically found or sold in quantities of ten or twenty pieces. Ten pieces of this ammunition are equivalent in value to a potion of the same rarity.",
-  "rarity": "Uncommon (+1), Rare (+2), or Very Rare (+3)",
+  "rarity": "Uncommon",
   "cost": "",
   "category": "Weapon (Any Ammunition)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "a0d1a92d-250e-599c-8ad2-0af6815082e3",
+  "name": "Ammunition, +2",
+  "desc": "You have a bonus to attack rolls and damage rolls made with this piece of magic ammunition. The bonus is determined by the rarity of the ammunition. Once it hits a target, the ammunition is no longer magical.\n\nThis ammunition is typically found or sold in quantities of ten or twenty pieces. Ten pieces of this ammunition are equivalent in value to a potion of the same rarity.",
+  "rarity": "Rare",
+  "cost": "",
+  "category": "Weapon (Any Ammunition)",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "32860441-2afd-508c-a07a-324d21f99a40",
+  "name": "Ammunition, +3",
+  "desc": "You have a bonus to attack rolls and damage rolls made with this piece of magic ammunition. The bonus is determined by the rarity of the ammunition. Once it hits a target, the ammunition is no longer magical.\n\nThis ammunition is typically found or sold in quantities of ten or twenty pieces. Ten pieces of this ammunition are equivalent in value to a potion of the same rarity.",
+  "rarity": "Very Rare",
+  "cost": "",
+  "category": "Weapon (Any Ammunition)",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "a8d899d3-7058-5c6b-aef6-dd215864a346",
@@ -111,15 +175,76 @@
   "legacy": false
  },
  {
-  "id": "c2d8d0c6-dd68-5bd9-a8f7-059399aa3556",
-  "name": "Armor, +1, +2, or +3",
+  "id": "9d24ec41-e8c9-579a-8166-c54fe3d645bc",
+  "name": "Armor, +1",
   "desc": "You have a bonus to Armor Class while wearing this armor. The bonus is determined by its rarity.",
-  "rarity": "Rare (+1), Very Rare (+2), or Legendary (+3)",
+  "rarity": "Rare",
   "cost": "",
   "category": "Armor (Any Light, Medium, or Heavy)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "da4576b0-a62d-56e1-9568-1874fd04a399",
+  "name": "Armor, +2",
+  "desc": "You have a bonus to Armor Class while wearing this armor. The bonus is determined by its rarity.",
+  "rarity": "Very Rare",
+  "cost": "",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "b4632460-3f91-58b3-bd07-b7f873170964",
+  "name": "Armor, +3",
+  "desc": "You have a bonus to Armor Class while wearing this armor. The bonus is determined by its rarity.",
+  "rarity": "Legendary",
+  "cost": "",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "9ac27ddd-ccc4-594a-89fe-718f164f40a0",
@@ -166,8 +291,8 @@
   }
  },
  {
-  "id": "893515ed-f8dc-5bad-9a7f-55cee8495e80",
-  "name": "Armor of Resistance",
+  "id": "b31bc832-b304-5376-99dd-5ae3ef218613",
+  "name": "Armor of Resistance (Acid)",
   "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
   "rarity": "Rare",
   "cost": "4,000 GP",
@@ -176,7 +301,254 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Acid"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "01045938-e60a-5502-930b-c69e6823d4a5",
+  "name": "Armor of Resistance (Cold)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Cold"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "913cddd8-e36c-5cfe-83fc-61cd3e1ce6b5",
+  "name": "Armor of Resistance (Fire)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Fire"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "ce86f82e-e6f2-528e-bd50-cea03b7e7e17",
+  "name": "Armor of Resistance (Force)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Force"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "14ba0821-96f7-51e4-bd33-0bc85e149892",
+  "name": "Armor of Resistance (Lightning)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Lightning"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "b1fa2349-836a-5c5e-a040-68721e97e3dd",
+  "name": "Armor of Resistance (Necrotic)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Necrotic"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "9dff16d6-bedf-5014-82cb-48b372c0712e",
+  "name": "Armor of Resistance (Poison)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Poison"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "affacac5-cf26-5c03-887e-91f23345fbe0",
+  "name": "Armor of Resistance (Psychic)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Psychic"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "24b1081d-31f0-50c1-a86a-1b1886d5397f",
+  "name": "Armor of Resistance (Radiant)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Radiant"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "0212f23c-8bd5-5a90-afcc-cec012d5fd76",
+  "name": "Armor of Resistance (Thunder)",
+  "desc": "You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.\n\n| 1d10 | Damage Type |\n|------|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Armor (Any Light, Medium, or Heavy)",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Thunder"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "db927c40-6c9d-5843-94bb-30f3b0652169",
@@ -202,7 +574,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "2",
+      "condition": "against ranged attack rolls"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "b7ad9389-1539-592a-b8bf-419a1617c5c5",
@@ -338,17 +724,172 @@
   }
  },
  {
-  "id": "9e887a38-719d-5b7b-a653-c2542908b2fa",
-  "name": "Belt of Giant Strength",
+  "id": "fd1087eb-b34a-5fd9-b4ec-912300771720",
+  "name": "Belt of Giant Strength (Hill)",
   "desc": "While wearing this belt, your Strength changes to a score granted by the belt. The type of giant determines the score (see the table below). The item has no effect on you if your Strength without the belt is equal to or greater than the belt's score.\n\n| Belt | Str. | Rarity |\n|-----------------------------------------|------|-----------|\n| Belt of Giant Strength (hill) | 21 | Rare |\n| Belt of Giant Strength (frost or stone) | 23 | Very Rare |\n| Belt of Giant Strength (fire) | 25 | Very Rare |\n| Belt of Giant Strength (cloud) | 27 | Legendary |\n| Belt of Giant Strength (storm) | 29 | Legendary |",
-  "rarity": "Rarity Varies",
+  "rarity": "Rare",
   "cost": "",
   "category": "Wondrous Item",
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddStats",
+     "value": {
+      "stat": "str",
+      "statValue": "21",
+      "mode": "set"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "821d1016-6ae9-5dec-aff0-ad4f29d0bd0d",
+  "name": "Belt of Giant Strength (Stone)",
+  "desc": "While wearing this belt, your Strength changes to a score granted by the belt. The type of giant determines the score (see the table below). The item has no effect on you if your Strength without the belt is equal to or greater than the belt's score.\n\n| Belt | Str. | Rarity |\n|-----------------------------------------|------|-----------|\n| Belt of Giant Strength (hill) | 21 | Rare |\n| Belt of Giant Strength (frost or stone) | 23 | Very Rare |\n| Belt of Giant Strength (fire) | 25 | Very Rare |\n| Belt of Giant Strength (cloud) | 27 | Legendary |\n| Belt of Giant Strength (storm) | 29 | Legendary |",
+  "rarity": "Very Rare",
+  "cost": "",
+  "category": "Wondrous Item",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddStats",
+     "value": {
+      "stat": "str",
+      "statValue": "23",
+      "mode": "set"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "91d3bf3d-fae4-5c19-b68f-799a27051fc3",
+  "name": "Belt of Giant Strength (Frost)",
+  "desc": "While wearing this belt, your Strength changes to a score granted by the belt. The type of giant determines the score (see the table below). The item has no effect on you if your Strength without the belt is equal to or greater than the belt's score.\n\n| Belt | Str. | Rarity |\n|-----------------------------------------|------|-----------|\n| Belt of Giant Strength (hill) | 21 | Rare |\n| Belt of Giant Strength (frost or stone) | 23 | Very Rare |\n| Belt of Giant Strength (fire) | 25 | Very Rare |\n| Belt of Giant Strength (cloud) | 27 | Legendary |\n| Belt of Giant Strength (storm) | 29 | Legendary |",
+  "rarity": "Very Rare",
+  "cost": "",
+  "category": "Wondrous Item",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddStats",
+     "value": {
+      "stat": "str",
+      "statValue": "23",
+      "mode": "set"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "5c537018-438a-5b2b-ac4c-9f43f5d5110e",
+  "name": "Belt of Giant Strength (Fire)",
+  "desc": "While wearing this belt, your Strength changes to a score granted by the belt. The type of giant determines the score (see the table below). The item has no effect on you if your Strength without the belt is equal to or greater than the belt's score.\n\n| Belt | Str. | Rarity |\n|-----------------------------------------|------|-----------|\n| Belt of Giant Strength (hill) | 21 | Rare |\n| Belt of Giant Strength (frost or stone) | 23 | Very Rare |\n| Belt of Giant Strength (fire) | 25 | Very Rare |\n| Belt of Giant Strength (cloud) | 27 | Legendary |\n| Belt of Giant Strength (storm) | 29 | Legendary |",
+  "rarity": "Very Rare",
+  "cost": "",
+  "category": "Wondrous Item",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddStats",
+     "value": {
+      "stat": "str",
+      "statValue": "25",
+      "mode": "set"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "df6e7b7e-ebd1-5033-95a7-3128fa492081",
+  "name": "Belt of Giant Strength (Cloud)",
+  "desc": "While wearing this belt, your Strength changes to a score granted by the belt. The type of giant determines the score (see the table below). The item has no effect on you if your Strength without the belt is equal to or greater than the belt's score.\n\n| Belt | Str. | Rarity |\n|-----------------------------------------|------|-----------|\n| Belt of Giant Strength (hill) | 21 | Rare |\n| Belt of Giant Strength (frost or stone) | 23 | Very Rare |\n| Belt of Giant Strength (fire) | 25 | Very Rare |\n| Belt of Giant Strength (cloud) | 27 | Legendary |\n| Belt of Giant Strength (storm) | 29 | Legendary |",
+  "rarity": "Legendary",
+  "cost": "",
+  "category": "Wondrous Item",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddStats",
+     "value": {
+      "stat": "str",
+      "statValue": "27",
+      "mode": "set"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "219a3578-462b-570e-bfbb-8a5d82534a29",
+  "name": "Belt of Giant Strength (Storm)",
+  "desc": "While wearing this belt, your Strength changes to a score granted by the belt. The type of giant determines the score (see the table below). The item has no effect on you if your Strength without the belt is equal to or greater than the belt's score.\n\n| Belt | Str. | Rarity |\n|-----------------------------------------|------|-----------|\n| Belt of Giant Strength (hill) | 21 | Rare |\n| Belt of Giant Strength (frost or stone) | 23 | Very Rare |\n| Belt of Giant Strength (fire) | 25 | Very Rare |\n| Belt of Giant Strength (cloud) | 27 | Legendary |\n| Belt of Giant Strength (storm) | 29 | Legendary |",
+  "rarity": "Legendary",
+  "cost": "",
+  "category": "Wondrous Item",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddStats",
+     "value": {
+      "stat": "str",
+      "statValue": "29",
+      "mode": "set"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "311c9a5c-c5aa-5b46-a4ce-5b2614a33cbc",
@@ -361,7 +902,42 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddHitPoints",
+     "value": {
+      "amount": "1",
+      "perLevel": "true"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddAdvantage",
+     "value": {
+      "rollType": "WeaponAttack",
+      "mode": "disadvantage",
+      "condition": "on attack rolls with weapons other than this one (curse; applies while attuned)"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "769bf54c-df4a-4eb3-b35e-740b99f85c23",
@@ -503,7 +1079,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "2",
+      "condition": "while wearing no armor and using no Shield"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "53271167-24b3-50f7-b286-5f4941821407",
@@ -710,7 +1300,30 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SavingThrow",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "ea48546c-65c6-55d2-b72d-ca209fcd3235",
@@ -852,7 +1465,21 @@
   "category": "Weapon (Dagger)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "13e408b7-0dfa-529d-b720-81886753e0bd",
@@ -900,7 +1527,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "341c4f99-fda4-50a2-a46b-c52b95152013",
@@ -913,7 +1554,62 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddLanguages",
+     "value": {
+      "name": "Abyssal"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1",
+      "condition": "with Unarmed Strikes"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddAdvantage",
+     "value": {
+      "rollType": "WeaponAttack",
+      "mode": "disadvantage",
+      "condition": "attack rolls against demons (also applies to spell attacks per the text)"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddAdvantage",
+     "value": {
+      "rollType": "SavingThrow",
+      "mode": "disadvantage",
+      "condition": "against demons' spells and special abilities"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "bf2f9c99-cc67-5ee7-9ffd-197375de56aa",
@@ -954,6 +1650,15 @@
   "metadata": {
    "mads": [
     {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
      "command": "AddAdvantage",
      "value": {
       "rollType": "SavingThrow",
@@ -976,7 +1681,21 @@
   "category": "Weapon (Any Simple or Martial)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "1b2f3eca-a085-5d15-99a9-72ac7bc6ebc1",
@@ -1020,7 +1739,20 @@
   "category": "Armor (Half Plate Armor or Plate Armor)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "efffed75-0c27-5aff-8667-f7600bd925ff",
@@ -1033,7 +1765,21 @@
   "properties": {
    "attunement": "Requires Attunement by a Dwarf or a Creature Attuned to a Belt of Dwarvenkind"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "46fd8282-dc4e-53c2-9368-d0e1ba8f2048",
@@ -1077,7 +1823,20 @@
   "category": "Armor (Chain Mail or Chain Shirt)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "c63a74cb-aa02-5b34-a418-580b8e5b70ba",
@@ -1291,7 +2050,21 @@
   "category": "Weapon (Any Simple or Martial)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "ba182c15-4f36-55c4-b467-6bea5c661574",
@@ -1302,7 +2075,20 @@
   "category": "Armor (Studded Leather Armor)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "d0b392f8-38d7-5725-aeec-90ba9f5235c5",
@@ -1388,7 +2174,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "1c7367df-aea8-587d-bbcb-a51ddd367842",
@@ -1453,7 +2253,20 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Fire"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "24ee93ac-cb6d-50dc-8c5e-dd2604913b89",
@@ -1507,6 +2320,16 @@
   "legacy": false,
   "metadata": {
    "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
     {
      "command": "AddAdvantage",
      "value": {
@@ -1658,7 +2481,31 @@
    "attunement": "Requires Attunement",
    "charges": "this property if it has no charges."
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SavingThrow",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "80aff2ee-3a1e-5b30-a4cc-82a447c461e6",
@@ -1682,7 +2529,21 @@
   "category": "Weapon (Mace)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "a33144b8-a74a-5b57-b7bc-8c29c327986b",
@@ -1932,7 +2793,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "08971e2f-c202-589e-807e-44874a604b3c",
@@ -1945,7 +2820,33 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddAdvantage",
+     "value": {
+      "rollType": "WeaponAttack",
+      "mode": "advantage",
+      "condition": "on ranged attack rolls against your sworn enemy"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddAdvantage",
+     "value": {
+      "rollType": "WeaponAttack",
+      "mode": "disadvantage",
+      "condition": "on attack rolls with all other weapons while your sworn enemy lives"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "02b85d0d-015f-5e9a-b8fa-09ff6b22c2f3",
@@ -2332,7 +3233,33 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddAdvantage",
+     "value": {
+      "rollType": "WeaponAttack",
+      "mode": "advantage",
+      "condition": "attack rolls against Elementals"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddAdvantage",
+     "value": {
+      "rollType": "SpellAttack",
+      "mode": "advantage",
+      "condition": "attack rolls against Elementals"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "9f53ce4e-0700-519b-a807-ca8f379909e2",
@@ -2424,7 +3351,30 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SavingThrow",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "70af721d-411f-5403-82a8-3294b4d088ee",
@@ -2440,15 +3390,244 @@
   "legacy": false
  },
  {
-  "id": "fb1b5ad3-5c02-5f1f-a57b-e63d2f843d6a",
-  "name": "Ring of Resistance",
+  "id": "eac05f5f-d604-53e6-bf83-e9c16dd5beb7",
+  "name": "Ring of Resistance (Acid)",
   "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
   "rarity": "Rare",
   "cost": "4,000 GP",
   "category": "Ring",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Acid"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "9542b41e-0d71-5742-b9b8-58cdf02b7ca5",
+  "name": "Ring of Resistance (Cold)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Cold"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "87ad703e-18ec-5425-9e05-ac9e3b1e9fcd",
+  "name": "Ring of Resistance (Fire)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Fire"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "6b42c948-3201-57ab-8a1a-b813e5f72897",
+  "name": "Ring of Resistance (Force)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Force"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "7935bd71-6e94-563f-ac03-bdd823c6da46",
+  "name": "Ring of Resistance (Lightning)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Lightning"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "26cd5629-a5ee-592b-944f-a077705b65f2",
+  "name": "Ring of Resistance (Necrotic)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Necrotic"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "b3a559ef-89cb-57a4-a113-99ae6d0cda44",
+  "name": "Ring of Resistance (Poison)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Poison"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "6f586374-3832-58de-853f-77d126b7cb13",
+  "name": "Ring of Resistance (Psychic)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Psychic"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "469b9e20-d56f-545f-b24d-92f97768ce35",
+  "name": "Ring of Resistance (Radiant)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Radiant"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "fff4b57f-68fe-51e8-94f0-9e0f8243b44c",
+  "name": "Ring of Resistance (Thunder)",
+  "desc": "You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.\n\n| 1d10 | Damage Type | Gemstone |\n|------|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |",
+  "rarity": "Rare",
+  "cost": "4,000 GP",
+  "category": "Ring",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddResistances",
+     "value": {
+      "damageType": "Thunder"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "11e0c154-6d4a-58e9-b838-45baf01dcd35",
@@ -2677,7 +3856,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SavingThrow",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "f7bdca52-0120-5831-9f6b-cd5cf3909293",
@@ -2790,7 +3983,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "4c3a562a-9659-588d-aba2-b4451b89a756",
@@ -2853,6 +4060,15 @@
   "metadata": {
    "mads": [
     {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
      "command": "AddAdvantage",
      "value": {
       "rollType": "SavingThrow",
@@ -2877,18 +4093,93 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
-  "id": "0d9da9fb-9202-57f5-bd89-a36f8f34def0",
-  "name": "Shield, +1, +2, or +3",
+  "id": "f28df3d1-749e-5d60-871b-940948bad366",
+  "name": "Shield, +1",
   "desc": "While holding this Shield, you have a bonus to Armor Class determined by the Shield's rarity, in addition to the Shield's normal bonus to AC.",
-  "rarity": "Uncommon (+1), Rare (+2), or Very Rare (+3)",
+  "rarity": "Uncommon",
   "cost": "",
   "category": "Armor (Shield)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "aabc131d-4653-5fae-85f2-17f1de1f167a",
+  "name": "Shield, +2",
+  "desc": "While holding this Shield, you have a bonus to Armor Class determined by the Shield's rarity, in addition to the Shield's normal bonus to AC.",
+  "rarity": "Rare",
+  "cost": "",
+  "category": "Armor (Shield)",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "8c78a29a-fec9-5ace-a5b7-5471fe6d6be4",
+  "name": "Shield, +3",
+  "desc": "While holding this Shield, you have a bonus to Armor Class determined by the Shield's rarity, in addition to the Shield's normal bonus to AC.",
+  "rarity": "Very Rare",
+  "cost": "",
+  "category": "Armor (Shield)",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "379d3bdb-0cfd-5765-8ddf-203e6fbcd61a",
@@ -3084,7 +4375,51 @@
    "attunement": "Requires Attunement by a Sorcerer, Warlock, or Wizard",
    "charges": "Regaining Charges. The staff regains 2d8 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff retains its +2 bonus to attack rolls and damage rolls but loses all other properties. On a 20, the staff regains 1d8 + 2 charges."
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2",
+      "condition": "when wielded as a Quarterstaff"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddArmorClass",
+     "value": {
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SavingThrow",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SpellAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "bbcf1b21-2d16-5876-b4a1-306b5ff98aa2",
@@ -3098,7 +4433,22 @@
    "attunement": "Requires Attunement",
    "charges": "Regaining Charges. The staff regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff becomes a nonmagical Quarterstaff."
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "3",
+      "condition": "when wielded as a Quarterstaff"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "65bd474b-1b29-5a28-b274-ec4c5f539c9c",
@@ -3129,6 +4479,27 @@
   "legacy": false,
   "metadata": {
    "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2",
+      "condition": "when wielded as a Quarterstaff"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SpellAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
     {
      "command": "AddAdvantage",
      "value": {
@@ -3168,7 +4539,32 @@
    "attunement": "Requires Attunement by a Druid",
    "charges": "Regaining Charges. The staff regains 1d6 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff loses its properties and becomes a nonmagical Quarterstaff."
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2",
+      "condition": "when wielded as a Quarterstaff"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SpellAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "e118acbd-fe87-525c-bced-f29fe466514f",
@@ -3181,7 +4577,22 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2",
+      "condition": "when wielded as a Quarterstaff"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "a33d4ad5-4b44-5591-88e2-46c213c889d1",
@@ -3219,7 +4630,31 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "AbilityCheck",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    },
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SavingThrow",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "67c0cbe9-4c77-52db-a807-0fd536ab3a45",
@@ -3232,7 +4667,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "dcb76324-7dbe-51f0-a367-c6a184d61861",
@@ -3284,7 +4733,21 @@
   "properties": {
    "attunement": "Requires Attunement by a Cleric or Paladin"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SpellAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "abded85e-91f7-5266-9065-805e29aff9e1",
@@ -3297,7 +4760,23 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddAdvantage",
+     "value": {
+      "rollType": "AbilityCheck",
+      "mode": "advantage",
+      "stat": "int",
+      "condition": "Intelligence (Arcana) checks made to control a Sphere of Annihilation"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "716f4d93-a370-51a9-b08a-2d7dbb229032",
@@ -3310,7 +4789,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SpellAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "cc127bbd-4c9a-538d-9c08-64f5952df7bd",
@@ -3434,7 +4927,21 @@
   "properties": {
    "attunement": "Requires Attunement"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "0f64791c-d75a-54d2-b1ac-9667ee809d44",
@@ -3574,17 +5081,85 @@
   "legacy": false
  },
  {
-  "id": "25dc3bd5-7615-5478-9104-6b04c55cdcf8",
-  "name": "Wand of the War Mage, +1, +2, or +3",
+  "id": "b0a6afd7-b80d-5a60-95f3-46b60cb6dbb7",
+  "name": "Wand of the War Mage, +1",
   "desc": "While holding this wand, you gain a bonus to spell attack rolls determined by the wand's rarity. In addition, you ignore Half Cover when making a spell attack roll.",
-  "rarity": "Uncommon (+1), Rare (+2), or Very Rare (+3)",
+  "rarity": "Uncommon",
   "cost": "",
   "category": "Wand",
   "weight": "",
   "properties": {
    "attunement": "Requires Attunement by a Spellcaster"
   },
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SpellAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "ca859759-db68-59fd-a9c6-1ee1c9f00a4f",
+  "name": "Wand of the War Mage, +2",
+  "desc": "While holding this wand, you gain a bonus to spell attack rolls determined by the wand's rarity. In addition, you ignore Half Cover when making a spell attack roll.",
+  "rarity": "Rare",
+  "cost": "",
+  "category": "Wand",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement by a Spellcaster"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SpellAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "cc1813d7-9a52-5f9f-9a5e-42fb7850d6dc",
+  "name": "Wand of the War Mage, +3",
+  "desc": "While holding this wand, you gain a bonus to spell attack rolls determined by the wand's rarity. In addition, you ignore Half Cover when making a spell attack roll.",
+  "rarity": "Very Rare",
+  "cost": "",
+  "category": "Wand",
+  "weight": "",
+  "properties": {
+   "attunement": "Requires Attunement by a Spellcaster"
+  },
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "SpellAttack",
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "8eae4a43-254f-5385-baf0-01f237825cc8",
@@ -3615,15 +5190,79 @@
   "legacy": false
  },
  {
-  "id": "a4fe73c9-02ff-5def-8826-928dc9280fc9",
-  "name": "Weapon, +1, +2, or +3",
+  "id": "6a0242f1-2d8b-5bb9-a48f-448ff70977d2",
+  "name": "Weapon, +1",
   "desc": "You have a bonus to attack rolls and damage rolls made with this magic weapon. The bonus is determined by the weapon's rarity.",
-  "rarity": "Uncommon (+1), Rare (+2), or Very Rare (+3)",
+  "rarity": "Uncommon",
   "cost": "",
   "category": "Weapon (Any Simple or Martial)",
   "weight": "",
   "properties": {},
-  "legacy": false
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "1"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "f8dc4b67-b0ee-5f91-a763-6230cfd6689a",
+  "name": "Weapon, +2",
+  "desc": "You have a bonus to attack rolls and damage rolls made with this magic weapon. The bonus is determined by the weapon's rarity.",
+  "rarity": "Rare",
+  "cost": "",
+  "category": "Weapon (Any Simple or Martial)",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "2"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
+ },
+ {
+  "id": "0c7cf787-cb98-5a23-8e81-5895d2a32b1b",
+  "name": "Weapon, +3",
+  "desc": "You have a bonus to attack rolls and damage rolls made with this magic weapon. The bonus is determined by the weapon's rarity.",
+  "rarity": "Very Rare",
+  "cost": "",
+  "category": "Weapon (Any Simple or Martial)",
+  "weight": "",
+  "properties": {},
+  "legacy": false,
+  "metadata": {
+   "mads": [
+    {
+     "command": "AddRollBonus",
+     "value": {
+      "rollType": "WeaponAttack",
+      "bonus": "3"
+     },
+     "type": 0,
+     "prerequisites": [],
+     "group": 0
+    }
+   ]
+  }
  },
  {
   "id": "fec6335c-d79e-5234-8ad9-b7756067346e",
