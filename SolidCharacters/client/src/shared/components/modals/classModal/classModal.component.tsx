@@ -12,10 +12,12 @@ import { Class5E, Subclass } from "../../../../models/generated";
 import getUserSettings from "../../../customHooks/userSettings";
 import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";
-import { Modal,TabBar } from "coles-solid-library";
+import { FlatCard, Modal,TabBar } from "coles-solid-library";
 import { useDnDSubclasses } from "../../../customHooks/dndInfo/info/all/subclasses";
 import { incrementString } from "../../../customHooks/utility/tools/incrementChar";
 import { ChoiceCard } from "../../choiceCard/choiceCard";
+import Markdown from "../../MarkDown/MarkDown";
+import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
 
 type props = {
   currentClass: Accessor<Class5E>;
@@ -79,8 +81,16 @@ const ClassModal: Component<props> = (props) => {
     <Modal
       title={props.currentClass().name}
       show={[props.boolean, props.booleanSetter]}
+      noHeader
     >
       <div class={`${stylin()?.primary} ${styles.CenterPage}`}>
+        <DndDialogHeader onClose={()=>props.booleanSetter(false)}>
+          <div class={`${styles.styledHeader}`}>
+            Class <span>·</span> {props?.currentClass().hitDie ?? ""} Hit Die
+
+            <h1>{props?.currentClass().name ?? ""}</h1>
+          </div>
+        </DndDialogHeader>
         <div class={`${styles.eachPage}`}>
 
         <div class={`${styles.table}`}>
@@ -147,7 +157,7 @@ const ClassModal: Component<props> = (props) => {
                   </span>
                 </div>
               </Show>
-            </span>
+        </span>
 
           <div class={`${styles.tabBar}`}>
             <TabBar 
@@ -164,9 +174,7 @@ const ClassModal: Component<props> = (props) => {
             <Show when={activeTab() === ClassModalTabs.Items}>
               <span>
                 <For each={startItems()}>
-                    { (item,i) => <span>
-                      {startingItemsOptionKeys()[i()]}: {item}
-                    </span>}
+                    { (item,i) => <ChoiceCard ChoiceKey="" text={item} />}
                 </For>
               </span>
 
@@ -271,14 +279,13 @@ const ClassModal: Component<props> = (props) => {
                 <For each={classLevels()}>
                   { (level) => <Show when={features()?.[+level]?.length}>
                     <span>
-                    <h2 class={`${styles.flankedLable}`}>level {level} features</h2>
-                    <For each={features()?.[+level]}>
-                      { (feature) => <span class={`${styles.feature}`}>
-                        <strong>{feature.name} (level {level}). </strong>
-                        {`${feature.description}`}
-                        {/* <span>  </span> */}
-                      </span>}
-                    </For>
+                      <h2 class={`${styles.flankedLable}`}>level {level} features</h2>
+                      <For each={features()?.[+level]}>
+                        { (feature) => <span class={`${styles.feature}`}>
+                          <strong>{feature.name} (level {level}). </strong>
+                          <Markdown text={feature.description} />
+                        </span>}
+                      </For>
 
                     </span>
                   </Show>}
@@ -287,7 +294,27 @@ const ClassModal: Component<props> = (props) => {
             </Show>
 
             <Show when={activeTab() === ClassModalTabs.Subclasses}>
-              <For each={currentSubclasses()}>{(subclass)=><></>}</For>
+              <For each={currentSubclasses()}>{(subclass)=><FlatCard header={<h2>{subclass.name}</h2>} transparent class={`${styles.subclassCard}`}>
+                <div class={`${styles.subclassDesc}`}>
+                  <Markdown text={subclass.description} />
+                </div>
+                  
+                <For each={classLevels()}>
+                  { (level) => <Show when={features()?.[+level]?.length}>
+                    <span>
+                      
+                      <For each={subclass?.features?.[+level]}>
+                        { (feature) => <span class={`${styles.feature}`}>
+                          <strong>{feature.name} (level {level}). </strong>
+                          <Markdown text={feature.description} />
+                        </span>}
+                      </For>
+
+                    </span>
+                  </Show>}
+                </For>
+
+              </FlatCard>}</For>
               
             </Show>
            

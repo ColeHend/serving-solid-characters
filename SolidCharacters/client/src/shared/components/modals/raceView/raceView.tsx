@@ -6,7 +6,7 @@ import { useDnDSubraces } from "../../../customHooks/dndInfo/info/all/subraces";
 import Markdown from "../../MarkDown/MarkDown";
 import { Description } from "./description/description";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
-import { FlatCard } from "../../flatCard/flatCard";
+import { FlatCard } from "coles-solid-library";
 
 interface props {
   currentRace: Accessor<Race>;

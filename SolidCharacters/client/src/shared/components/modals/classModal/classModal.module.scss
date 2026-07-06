@@ -1,6 +1,7 @@
 @use "../../../../index.scss" as *;
 
 $mobile: 768px;
+$margin: 5%;
 
 .CenterPage {
     // padding: 0;
@@ -56,7 +57,7 @@ $mobile: 768px;
 	flex-direction: column;
 	justify-content: center;
 	gap: 10px;
-    margin-top: 5%;
+    margin-top: 15%;
 
     @media screen and (max-width:$mobile)  {
         font-size: .8em;
@@ -191,11 +192,13 @@ $mobile: 768px;
     display: flex;
     flex-direction: column;
     width: 75%;
+    margin-left: $margin;
 
     flex-wrap: wrap;
 
     h3 {
         min-width: 230px;
+$margin: 5%;
     }
 
     div {
@@ -218,8 +221,8 @@ $mobile: 768px;
 
 }
 
+
 .ChoiceCards {
-    $margin: 5%;
     margin-left: $margin;
     margin-right: $margin;
 
@@ -233,20 +236,57 @@ $mobile: 768px;
 
 .feature {
     display: block;
-    // flex-direction: row;
-    // justify-items: left;
+    // flex-wrap: wrap;
     text-align: left;
     margin-top: 2%;
+    margin-left: $margin !important;
+    margin-right: $margin !important;
 
     strong {
         font-weight: bold !important;
         color: #7c2718 !important;
         text-transform: capitalize;
+        display: inline;
         
         @include flavorText;
     }
+        
+    
+    p {
 
-    span { 
         @include styledDndText;
     }
+}
+
+.subclassCard {
+    border-color: #7c2718 !important;
+
+    &::before {
+        background: #7c2718 !important;
+    }
+
+    div {
+        border-color: #7c2718 !important;
+    }
+
+    button {
+        background: linear-gradient(177deg, rgb(112, 40, 23), rgb(81, 26, 13) 92%) !important;
+
+        svg {
+            fill: #f6ecd2 !important;
+        }
+    }
+}
+
+.subclassDesc {
+
+    @include flavorText;
+}
+
+.styledHeader {
+    text-align: baseline;
+    h1 {
+        font-size: 28px;
+    }
+    @include styledDndHeader;
 }
