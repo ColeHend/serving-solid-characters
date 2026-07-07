@@ -8,6 +8,7 @@ import { Class5E } from "../../../../models/generated";
 
 interface menuProps {
     dndClass: Class5E;
+    openDialog: (e: Event) => void;
 }
 
 export const ClassMenu: Component<menuProps> = (props) => {
@@ -23,7 +24,10 @@ export const ClassMenu: Component<menuProps> = (props) => {
   };
 
   return <>
-    <Button ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>
+    <Button ref={setAnchorEl} onClick={(e)=>{
+      e.stopPropagation()
+      setShowMenu((old)=>!old)
+    }}>
       <Icon icon={MoreVert} size={"medium"}/>
     </Button>
 
@@ -35,6 +39,7 @@ export const ClassMenu: Component<menuProps> = (props) => {
       }}>
         {checkForHomebrew(props.dndClass)?"Edit":"Clone and Edit"}
       </MenuItem>
+      <MenuItem onClick={props.openDialog}>View</MenuItem>
     </Menu>
   </>
 }

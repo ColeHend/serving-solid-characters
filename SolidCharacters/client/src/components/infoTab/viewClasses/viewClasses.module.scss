@@ -19,12 +19,12 @@ $mobile: 768px;
 
 
 .classesTable {
-    overflow-y: scroll;
-    height: 49vh;
     width: 100%;
+    margin-top: 1%;
     
     table {
-        margin: 0 auto;
+        // margin: 0 auto;
+        width: 100% !important;
     }
 
     span:hover {
@@ -38,10 +38,13 @@ $mobile: 768px;
     }
 }
 
+
+
 .searchBar {
     width: 55%; 
     height: 3vh;
     margin-bottom: 1vh;
+    z-index: 1;
 
     button {
         background: transparent !important;
@@ -56,4 +59,30 @@ $mobile: 768px;
 .headerBar {
     // width: 100%;
     margin: 0 auto;
+}
+
+.nameCol {
+    width: 40%;
+}
+
+.legacyCol {
+    width: 30%;
+    text-align: center;
+}
+
+.menuCol {
+    width: 10%;
+}
+
+.chip {
+    margin: 0 auto !important;
+}
+
+.scrollable {
+    overflow-y: scroll;
+    height: 49vh;
+}
+
+.nameCol2024 {
+    width: 10%;
 }

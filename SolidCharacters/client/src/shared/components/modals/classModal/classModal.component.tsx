@@ -5,8 +5,10 @@ import {
   createMemo,
   createSignal,
   For,
+  Match,
   Setter,
   Show,
+  Switch,
 } from "solid-js";
 import FeatureTable from "./featureTable/featureTable";
 import { Class5E, Subclass } from "../../../../models/generated";
@@ -14,11 +16,11 @@ import getUserSettings from "../../../customHooks/userSettings";
 import useStyles from "../../../../shared/customHooks/utility/style/styleHook";
 import styles from "./classModal.module.scss";
 import { FlatCard, Modal,TabBar } from "coles-solid-library";
-import { useDnDSubclasses } from "../../../customHooks/dndInfo/info/all/subclasses";
 import { incrementString } from "../../../customHooks/utility/tools/incrementChar";
 import { ChoiceCard } from "../../choiceCard/choiceCard";
 import Markdown from "../../MarkDown/MarkDown";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { Clone } from "../../..";
 
 type props = {
   currentClass: Accessor<Class5E>;
@@ -38,23 +40,26 @@ const ClassModal: Component<props> = (props) => {
   const stylin = createMemo(() => useStyles(userSettings().theme));
   const [activeTab,setActiveTab] = createSignal<number>(0);
   const allSubclasses = props.subclasses;
-  
+
+  const legacy = createMemo(() => (props?.currentClass()?.legacy ?? false) !== false);
+
   const starting_equipment = createMemo(() => props?.currentClass()?.startingEquipment || []);
   const startingItemsOptionKeys = createMemo(()=>starting_equipment()?.flatMap(x=>x?.optionKeys || []));
-  const startItems = createMemo(()=>starting_equipment()?.flatMap(x=>x?.items || []));
   const classLevels = createMemo(() => Object.keys(props?.currentClass()?.features || {}));
   const features = createMemo(() => props?.currentClass()?.features || []);
   const choices = createMemo(() => props?.currentClass()?.choices || {});
   const currentSubclasses = createMemo<Subclass[]>(() => {
-    return allSubclasses()?.filter(s => (s?.parentClass ?? "") === (props?.currentClass()?.name ?? ""));
+    return allSubclasses()?.filter(s => (s?.parentClass ?? "") === (props?.currentClass()?.name ?? "")).filter(s => s.legacy === legacy());
   });
 
   const armorChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.armor ?? "");
   const equipChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.equipment ?? "");
-  const skillChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.skills ?? "");
   const toolChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.tools ?? "");
   const weaponChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.weapon ?? "");
   const itemOptions = createMemo(() => choices()?.[equipChoiceKey()]?.options ?? []);
+
+  const allStartChoiceKeys = createMemo(() => [armorChoiceKey(), equipChoiceKey(), "skills", toolChoiceKey(), weaponChoiceKey(), ...startingItemsOptionKeys()].filter(key => key !== ""));
+
 
   const getItemOptionKey = () => {
     const optionsLetters:string[] = [];
@@ -87,6 +92,7 @@ const ClassModal: Component<props> = (props) => {
 
       return;
     }
+    
 
     const firstParent = ref?.parentElement;
 
@@ -97,6 +103,7 @@ const ClassModal: Component<props> = (props) => {
     }
   })
 
+
   return (
     <Modal
       title={props.currentClass().name}
@@ -106,7 +113,7 @@ const ClassModal: Component<props> = (props) => {
       <div class={`${stylin()?.primary} ${styles.CenterPage}`} ref={setMenuRef}>
         <DndDialogHeader onClose={()=>props.booleanSetter(false)}>
           <div class={`${styles.styledHeader}`}>
-            Class <span>·</span> {props?.currentClass().hitDie ?? ""} Hit Die
+            Class <span>·</span> <Show when={legacy()}>d</Show>{props?.currentClass().hitDie ?? ""} hit die <Show when={legacy()}><span>·</span> legacy</Show>
 
             <h1>{props?.currentClass().name ?? ""}</h1>
           </div>
@@ -192,105 +199,57 @@ const ClassModal: Component<props> = (props) => {
             />
 
             <Show when={activeTab() === ClassModalTabs.Items}>
-              <span>
+              {/* <span>
                 <For each={startItems()}>
                     { (item,i) => <ChoiceCard ChoiceKey="" text={item} />}
                 </For>
-              </span>
+              </span> */}
 
-              <Show when={choices()[armorChoiceKey()]}>
-                <h3 class={`${styles.flankedLable }`}>
-                  Armor
-                </h3>
+              <Show when={allStartChoiceKeys().length > 0}>
+                <For each={allStartChoiceKeys()}>
+                  {(key) => <div>
+                    <h3 class={`${styles.flankedLable }`}>
+                      {key.replaceAll("_", " ")}
+                    </h3> 
 
-                <h4>Choose: 
-                  <span>
-                    { choices()[armorChoiceKey()]?.amount }
-                  </span>
-                </h4>
+                     <Switch fallback={
+                      <>
+                        <h4>Choose: 
+                          <span>
+                            { choices()[key]?.amount }
+                          </span>
+                        </h4>
 
-                <div>
-                  { choices()[armorChoiceKey()]?.options?.join(", ") }
-                </div>
-              </Show>
+                        <div class={`${styles.ChoiceCards}`}>
+                          <ChoiceCard ChoiceKey={`${choices()[key]?.amount}`} text={choices()[key]?.options?.join(", ")} />  
+                        </div>
+                      </>
+                    }>
+                      <Match when={key === "Equipment"}>
+                        <h4>Choose: 
+                          <span>
+                            <For each={getItemOptionKey()}>
+                              { (key, i) => <>
+                                <span>{key}</span>
 
-              <Show when={choices()[equipChoiceKey()]}>
-                <h3 class={`${styles.flankedLable }`}>
-                  Equipment
-                </h3>
+                                <Show when={i() !== getItemOptionKey().length - 1}>
+                                  <span> or </span>
+                                </Show>
+                              </>}
+                            </For>
+                          </span>
+                        </h4>
 
-                <h4>Choose: 
-                  <span>
-                    <For each={getItemOptionKey()}>
-                      { (key, i) => <>
-                        <span>{key}</span>
-
-                        <Show when={i() !== getItemOptionKey().length - 1}>
-                          <span> or </span>
-                        </Show>
-                      </>}
-                    </For>
-                  </span>
-                </h4>
-
-                <div class={`${styles.ChoiceCards}`}>
-                    <For each={choices()?.[equipChoiceKey()]?.options ?? []}>
-                      { (itemOption, i) => <ChoiceCard ChoiceKey={getItemOptionKey()?.[i()]} text={itemOption} /> }
-                    </For>
-                  {/* <ul class={`${styles.itemList}`}>
-
-                  </ul> */}
-                </div>
-              </Show>
-
-              <Show when={choices()[skillChoiceKey()]}>
-                  <h3 class={`${styles.flankedLable }`}>
-                    Skills
-                  </h3>
-
-                  <h4>Choose: 
-                    <span>
-                      { choices()[skillChoiceKey()]?.amount }
-                    </span>
-                  </h4>
-
-                  <div class={`${styles.ChoiceCards}`}>
-                    <ChoiceCard ChoiceKey={`${choices()[skillChoiceKey()]?.amount}`} text={choices()[skillChoiceKey()]?.options?.join(", ")} />
-                    
-                  </div>
-                {/*  */}
-              </Show>
-
-              <Show when={choices()[toolChoiceKey()]}>
-                <h3 class={`${styles.flankedLable }`}>
-                  Tools
-                </h3>
-
-                <h4>Choose: 
-                  <span>
-                    { choices()[toolChoiceKey()]?.amount }
-                  </span>
-                </h4>
-
-                <div class={`${styles.ChoiceCards}`}>
-                  <ChoiceCard ChoiceKey={`${choices()[toolChoiceKey()]?.amount}`} text={choices()[toolChoiceKey()]?.options?.join(", ")} />
-                </div>
-              </Show>
-
-              <Show when={choices()[weaponChoiceKey()]}>
-                <h3>
-                  Weapons
-                </h3>
-
-                <h4>Choose: 
-                  <span>
-                    { choices()[weaponChoiceKey()]?.amount }
-                  </span>
-                </h4>
-
-                <div class={`${styles.ChoiceCards}`}>
-                  <ChoiceCard ChoiceKey={`${choices()[weaponChoiceKey()]?.amount}`} text={choices()[weaponChoiceKey()]?.options?.join(", ")} />
-                </div>
+                        <div class={`${styles.ChoiceCards}`}>
+                            <For each={choices()?.[key]?.options ?? []}>
+                              { (itemOption, i) => <ChoiceCard ChoiceKey={getItemOptionKey()?.[i()]} text={itemOption} /> }
+                            </For>
+                        </div>
+                      </Match>
+                      
+                    </Switch>
+                  </div>}
+                </For>
               </Show>
             </Show>
 
