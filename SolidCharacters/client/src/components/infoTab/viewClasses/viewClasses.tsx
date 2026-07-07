@@ -12,13 +12,14 @@ import { useSearchParams } from "@solidjs/router";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
-import { Paginator } from "../../../shared";
+import { Clone, Paginator } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { 
   Body, 
-  Cell, 
+  Cell,
   Column, 
   Header, 
+  Row, 
   Table 
 } from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
@@ -39,9 +40,57 @@ const viewClasses: Component = () => {
   const [results, setResults] = createSignal<Class5E[]>([]);
   const [tableData, setTableData] = createSignal<Class5E[]>([]);
 
+  const [currentSort, setCurrentSort] = createSignal<{
+    sortKey: string;
+    isAsc: boolean;
+  }>({ sortKey: "level", isAsc: true });
+
+  const system = createMemo(() => userSettings().dndSystem);
+
+  const is2014 = createMemo(() => system() === "2014" || system() === "both");
+
   const searchResults = createMemo(() =>
     results().length > 0 ? results() : srdClasses()
-  )
+  );
+
+  const dataSort = (sortBy: keyof Class5E) => {
+      setCurrentSort((old) => {
+        if (old.sortKey === sortBy) {
+          return Clone({ sortKey: sortBy as string, isAsc: !old.isAsc });
+        } else {
+          return Clone({ sortKey: sortBy as string, isAsc: old.isAsc });
+        }
+      });
+      setTableData((old) => {
+        const currentSorting = currentSort();
+        const shouldAce = currentSorting.isAsc;
+  
+        const sorted = Clone(
+          old.sort((a, b) => {
+            const aSort =
+              typeof a?.[sortBy] === "string"
+                ? a?.[sortBy].replaceAll(" ", "")
+                : a?.[sortBy];
+            const bSort =
+              typeof b?.[sortBy] === "string"
+                ? b?.[sortBy].replaceAll(" ", "")
+                : b?.[sortBy];
+  
+            if (aSort === undefined || bSort === undefined) {
+              return 0;
+            }
+  
+            if (aSort < bSort) return shouldAce ? 1 : -1;
+            if (aSort > bSort) return shouldAce ? -1 : 1;
+            return 0;
+          })
+        );
+  
+        setResults(sorted);
+  
+        return sorted;
+      });
+    };
 
   createEffect(() => {
     const list = srdClasses();
@@ -51,7 +100,7 @@ const viewClasses: Component = () => {
     if (!found) {
       setSearchParam({ name: list[0].name });
     }
-  })
+  });
 
   const selectedClass = createMemo(() => {
     const list = srdClasses();
@@ -59,7 +108,7 @@ const viewClasses: Component = () => {
     if (list.length === 0) return undefined;
     const target = (param || list[0].name).toLowerCase();
     return list.find(c => c.name.toLowerCase() === target) || list[0];
-  })
+  });
 
   createEffect(() => {
     const sel = selectedClass();
@@ -91,6 +140,11 @@ const viewClasses: Component = () => {
     setTableData(list);    
   })
     
+  const columns = createMemo(() =>
+    is2014() ? ["name", "legacy", "menu"] : ["name", "menu"]
+  );
+
+
   return (
     <Body class={`${stylin()?.primary}  ${styles.body}`}>
       <div class={`${styles.headerBar}`}>
@@ -107,23 +161,62 @@ const viewClasses: Component = () => {
           />
       </div>
 
+     
+
       <div class={`${styles.classesTable}`}>
-        <Table data={paginatedClasses} columns={["name","menu"]}>
-          <Column name="name">
-            <Header><span></span></Header>
-            <Cell<Class5E>>{(x) => <span onClick={() => {
-              setCurrentClass(x);
-              setSearchParam({ name: x.name });
-              setShowClass(old => !old);
-            }}>{x.name}</span>}</Cell>
-          </Column>
-          <Column name="menu">
-            <Header><></></Header>
-            <Cell<Class5E>>
-              {(dndClass) => <ClassMenu dndClass={dndClass} />}
-            </Cell>
-          </Column>
-        </Table>
+        <Show fallback={<></>} when={columns()} keyed>
+          {cols => (
+            <>
+              <Table data={paginatedClasses} columns={columns()}>
+                <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
+                  <Header>Name</Header>
+                </Column>
+                <Column name="legacy" class={`${styles.legacyCol}`}>
+                  <Header onClick={()=>dataSort("legacy")}>
+                    Legacy
+                    <Show when={currentSort().sortKey === "legacy"}>
+                      <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+                    </Show>
+                  </Header>
+                </Column>
+                <Column name="menu" class={`${styles.menuCol}`}>
+                  <Header><></></Header>
+                </Column>
+              </Table>
+
+              <div class={`${styles.scrollable}`}>
+                <Table data={paginatedClasses} columns={columns()}>
+                  <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
+                    <Cell<Class5E>>{(x) => <span onClick={(e) => {
+                      setCurrentClass(x);
+                      setSearchParam({ name: x.name });
+                      setShowClass(old => !old);
+                    }}>{x.name}</span>}</Cell>
+                  </Column>
+                  <Column name="legacy" class={`${styles.legacyCol}`}>
+                    <Cell<Class5E>>
+                      {(dndClass) => <Show fallback={<span></span>} when={dndClass.legacy === true}><span onClick={() => {
+                      setCurrentClass(dndClass);
+                      setSearchParam({ name: dndClass.name });
+                      setShowClass(old => !old);
+                    }}>Legacy</span></Show>}
+                    </Cell>
+                  </Column>
+                  <Column name="menu" class={`${styles.menuCol}`}>
+                    <Cell<Class5E>>
+                      {(dndClass) => <ClassMenu dndClass={dndClass} openDialog={() => {
+                        setCurrentClass(dndClass);
+                        setSearchParam({ name: dndClass.name });
+                        setShowClass(old => true);
+                      }} />}
+                    </Cell>
+                  </Column>
+
+                </Table>
+              </div>
+            </>
+          )}
+        </Show>
       </div>
 
       <div class={`${styles.paginator}`}>
