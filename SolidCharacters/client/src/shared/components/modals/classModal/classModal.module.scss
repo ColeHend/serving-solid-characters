@@ -289,3 +289,7 @@ $margin: 5%;
     }
     @include styledDndHeader;
 }
+
+.dot {
+    @include dot;
+}
