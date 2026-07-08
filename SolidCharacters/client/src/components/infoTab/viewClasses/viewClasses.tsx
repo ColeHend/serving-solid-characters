@@ -42,7 +42,6 @@ const viewClasses: Component = () => {
   const { currentSort, dataSort } = createTableSort<Class5E>({
     data: [tableData, setTableData],
     syncSetters: [setResults],
-    initial: { sortKey: "level", isAsc: true },
   });
 
   const system = createMemo(() => userSettings().dndSystem);

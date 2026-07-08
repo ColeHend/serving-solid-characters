@@ -24,6 +24,10 @@ $mobile: 768px;
   table {
     margin: 0 auto;
     width: 100%;
+
+    tbody tr td span {
+      cursor: pointer;
+    }
   }
   fill: var(--on-background-color);
 
@@ -62,23 +66,27 @@ $mobile: 768px;
 
 
 .nameCol {
-    width: 40%;
+  width: 40%;
 }
 
 .nameCol2024 {
-    width: 10%;
+  width: 10%;
 }
 
 .legacyCol {
-    width: 30%;
-    text-align: center;
+  width: 30%;
+  text-align: center;
 }
 
 .menuCol {
-    width: 10%;
+  width: 10%;
 }
 
 .scrollable {
-    overflow-y: scroll;
-    height: 49vh;
+  overflow-y: scroll;
+  height: 49vh;
+}
+
+.clickyHeader {
+  cursor: pointer !important;
 }

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createSignal } from 'solid-js';
 import { createTableSort } from './tableSort';
+import { costToCopper } from '../../../../components/infoTab/items/item';
 
 interface TestRow {
   name: string;
@@ -95,12 +96,13 @@ describe('createTableSort', () => {
     expect(rows.map(r => r.level)).toEqual([3, 1, 2]);
   });
 
-  it('compares string values with spaces stripped', () => {
-    const spaced: TestRow[] = [
-      { name: 'a c', level: 1 }, // "ac" without spaces
-      { name: 'ab', level: 2 },
+  it('compares numeric strings numerically, not lexicographically', () => {
+    const numeric: TestRow[] = [
+      { name: '10', level: 1 },
+      { name: '2', level: 2 },
+      { name: '1', level: 3 },
     ];
-    const [tableData, setTableData] = createSignal<TestRow[]>(spaced);
+    const [tableData, setTableData] = createSignal<TestRow[]>(numeric);
     const { dataSort } = createTableSort<TestRow>({
       data: [tableData, setTableData],
       initial: { sortKey: 'level', isAsc: true },
@@ -108,16 +110,63 @@ describe('createTableSort', () => {
 
     dataSort('name');
 
-    // "ab" < "ac" once spaces are stripped; with spaces "a c" < "ab"
-    expect(tableData().map(r => r.name)).toEqual(['ab', 'a c']);
+    // lexicographic order would be '1', '10', '2'
+    expect(tableData().map(r => r.name)).toEqual(['1', '2', '10']);
   });
 
-  it('treats undefined values as equal, leaving their relative order alone', () => {
+  it('sorts rows with missing values to the end regardless of direction', () => {
     const { tableData, dataSort } = setup();
 
     dataSort('cost'); // Mace has no cost
+    expect(tableData().map(r => r.name)).toEqual(['Axe', 'Wand of Webs', 'Mace']);
 
-    expect(tableData()).toHaveLength(3);
-    expect(tableData().some(r => r.name === 'Mace')).toBe(true);
+    dataSort('cost'); // descending
+    expect(tableData().map(r => r.name)).toEqual(['Wand of Webs', 'Axe', 'Mace']);
+  });
+
+  it('sorts comma-grouped costs correctly through costToCopper', () => {
+    const priced: TestRow[] = [
+      { name: 'Apparatus', level: 1, cost: '1,500 gp' },
+      { name: 'Rope', level: 2, cost: '1 gp' },
+      { name: 'Torch', level: 3, cost: '1 cp' },
+      { name: 'Mystery', level: 4, cost: '' },
+    ];
+    const [tableData, setTableData] = createSignal<TestRow[]>(priced);
+    const { dataSort } = createTableSort<TestRow>({
+      data: [tableData, setTableData],
+      valueSelectors: { cost: (row) => costToCopper(row.cost ?? '') },
+    });
+
+    dataSort('cost');
+    expect(tableData().map(r => r.name)).toEqual(['Torch', 'Rope', 'Apparatus', 'Mystery']);
+
+    dataSort('cost'); // descending: unparseable cost still last
+    expect(tableData().map(r => r.name)).toEqual(['Apparatus', 'Rope', 'Torch', 'Mystery']);
+  });
+});
+
+describe('costToCopper', () => {
+  it('converts each coin type to copper', () => {
+    expect(costToCopper('1 cp')).toBe(1);
+    expect(costToCopper('2 sp')).toBe(20);
+    expect(costToCopper('5 ep')).toBe(250);
+    expect(costToCopper('15 gp')).toBe(1500);
+    expect(costToCopper('10 pp')).toBe(10000);
+  });
+
+  it('parses comma-grouped values', () => {
+    expect(costToCopper('1,500 GP')).toBe(150000);
+    expect(costToCopper('200,000 gp')).toBe(20000000);
+  });
+
+  it('tolerates missing spaces, stray commas and trailing text', () => {
+    expect(costToCopper('300gp')).toBe(30000);
+    expect(costToCopper('16, sp')).toBe(160);
+    expect(costToCopper('15 gp (per flask)')).toBe(1500);
+  });
+
+  it('returns undefined for unparseable costs', () => {
+    expect(costToCopper('')).toBeUndefined();
+    expect(costToCopper('priceless')).toBeUndefined();
   });
 });

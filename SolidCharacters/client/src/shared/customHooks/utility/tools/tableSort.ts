@@ -17,12 +17,16 @@ export interface TableSortConfig<T> {
   valueSelectors?: Partial<Record<keyof T & string, (item: T) => string | number | boolean | undefined>>;
 }
 
+/** Natural string comparison so numeric strings order numerically ("2" < "10"). */
+const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+
 /**
  * Creates table-header sorting state and a sort trigger for a data table.
  *
  * Clicking a new column sorts it ascending; clicking the same column again
  * flips the direction. The sorted array is written back to the `data` signal
- * and pushed into every `syncSetters` entry.
+ * and pushed into every `syncSetters` entry. Missing values (null/undefined/"")
+ * always sort to the end.
  *
  * @example
  * const { currentSort, dataSort } = createTableSort<Background>({
@@ -44,22 +48,25 @@ export function createTableSort<T>(config: TableSortConfig<T>) {
     setCurrentSort(next);
 
     const selector = config.valueSelectors?.[sortBy];
-    const getValue = (item: T) => {
-      if (selector) return selector(item);
-      const raw = item?.[sortBy];
-      return typeof raw === "string" ? raw.replaceAll(" ", "") : raw;
-    };
+    const getValue = (item: T) => (selector ? selector(item) : item?.[sortBy]);
 
     const [tableData, setTableData] = config.data;
     const sorted = Clone(tableData()).sort((a, b) => {
       const aVal = getValue(a);
       const bVal = getValue(b);
 
-      if (aVal === undefined || aVal === null || bVal === undefined || bVal === null) return 0;
+      // Missing values always sort last, regardless of direction
+      const aMissing = aVal === undefined || aVal === null || aVal === "";
+      const bMissing = bVal === undefined || bVal === null || bVal === "";
+      if (aMissing && bMissing) return 0;
+      if (aMissing) return 1;
+      if (bMissing) return -1;
 
-      if (aVal < bVal) return next.isAsc ? -1 : 1;
-      if (aVal > bVal) return next.isAsc ? 1 : -1;
-      return 0;
+      const cmp =
+        typeof aVal === "string" && typeof bVal === "string"
+          ? collator.compare(aVal, bVal)
+          : aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      return next.isAsc ? cmp : -cmp;
     });
 
     setTableData(() => sorted);

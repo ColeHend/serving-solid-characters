@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Component,
   Show,
@@ -65,7 +66,6 @@ const masterSpells: Component = () => {
   const { currentSort, dataSort } = createTableSort<Spell>({
     data: [tableData, setTableData],
     syncSetters: [setSearchResults],
-    initial: { sortKey: "level", isAsc: true },
   });
 
   const paginateItems = createMemo(() =>
@@ -110,7 +110,7 @@ const masterSpells: Component = () => {
           data={() => paginatedSpells()}
           columns={["name","school","level","menu"]}>
           <Column name="name" class={`${styles.SpellName}`}>
-            <Header onClick={()=>dataSort("name")}>
+            <Header onClick={()=>dataSort("name")} class={`${styles.clickyHeader}`}>
               Name
               <Show when={currentSort().sortKey === "name"}>
                 <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -119,7 +119,7 @@ const masterSpells: Component = () => {
           </Column>
 
            <Column name="school" class={`${styles.SpellSchool}`}>
-            <Header onClick={()=>dataSort("school")}>
+            <Header onClick={()=>dataSort("school")} class={`${styles.clickyHeader}`}>
               School
               <Show when={currentSort().sortKey === "school"}>
                 <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -128,7 +128,7 @@ const masterSpells: Component = () => {
           </Column>
 
           <Column name="level" class={`${styles.SpellLevel}`}>
-            <Header onClick={()=>dataSort("level")}>
+            <Header onClick={()=>dataSort("level")} class={`${styles.clickyHeader}`}>
               Level
               <Show when={currentSort().sortKey === "level"}>
                 <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -146,30 +146,20 @@ const masterSpells: Component = () => {
             data={() => paginatedSpells()} 
             columns={["name","school","level","menu"]}> 
             <Column name="name" class={`${styles.SpellName}`}>
-              <Header onClick={()=>dataSort("name")}>
-                <></>
-              </Header>
               <Cell<Spell> rowNumber={1}>{(spell) => <span>
                 {spell.name}
               </span>}</Cell>
             </Column>
 
             <Column name="school" class={`${styles.SpellSchool}`}>
-              <Header onClick={()=>dataSort("school")}>
-                <></>
-              </Header>
               <Cell<Spell>>{(spell) => spell.school }</Cell>
             </Column>
 
             <Column name="level" class={`${styles.SpellLevel}`}>
-              <Header onClick={()=>dataSort("level")}>
-                <></>
-              </Header>
               <Cell<Spell>>{(spell) => spell.level }</Cell>
             </Column>
 
             <Column name="menu" class={`${styles.SpellActions}`}>
-              <Header><></></Header>
               <Cell<Spell> onClick={(e)=>{
                 e.stopPropagation()
               }}>{(spell) => <>

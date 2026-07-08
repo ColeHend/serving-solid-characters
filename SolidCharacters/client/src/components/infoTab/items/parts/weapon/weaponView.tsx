@@ -40,7 +40,6 @@ export const WeaponsView:Component<viewProps> = (props) => {
     const { currentSort, dataSort } = createTableSort<Item>({
         data: [tabledata, setTableData],
         syncSetters: [setSearchResults],
-        initial: { sortKey: "cost", isAsc: false },
         valueSelectors: {
             cost: (item) => costToCopper(item?.cost),
             properties: (item) => String(item?.properties?.Damage ?? ""),

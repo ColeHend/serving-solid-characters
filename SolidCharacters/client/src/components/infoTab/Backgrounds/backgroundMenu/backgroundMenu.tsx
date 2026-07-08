@@ -4,9 +4,11 @@ import { MoreVert } from "coles-solid-library/icons";
 import { Component, createSignal } from "solid-js";
 import { Background } from "../../../../models/generated";
 import { homebrewManager } from "../../../../shared";
+import styles from "./backgroundMenu.module.scss";
 
 interface menuProps {
-    background: Background;
+  background: Background;
+  openDialog: (e:Event) => void;
 }
 
 export const BackgroundMenu: Component<menuProps> = (props) => {
@@ -28,7 +30,7 @@ export const BackgroundMenu: Component<menuProps> = (props) => {
   }
 
   return <>
-    <Button ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>
+    <Button ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)} class={`${styles.menu}`}>
       <Icon icon={MoreVert} />
     </Button>
 
@@ -37,6 +39,9 @@ export const BackgroundMenu: Component<menuProps> = (props) => {
         () => {navigate(`/homebrew/create/backgrounds?name=${props.background.name}`)}
       }>
         {checkForHomebrew(props.background) ? "Edit" :"Clone and Edit"}
+      </MenuItem>
+      <MenuItem onClick={props.openDialog}>
+        View
       </MenuItem>
     </Menu>
   </>

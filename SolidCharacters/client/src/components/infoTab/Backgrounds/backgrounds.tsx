@@ -20,7 +20,6 @@ const Viewbackgrounds: Component = () => {
   const { currentSort, dataSort } = createTableSort<Background>({
     data: [tableData, setTableData],
     syncSetters: [setSearchResult],
-    initial: { sortKey: "legacy", isAsc: true },
   });
 
   const [searchParam, setSearchParam] = useSearchParams();
@@ -101,7 +100,7 @@ const Viewbackgrounds: Component = () => {
         <>
           <Table data={() => paginatedBackgrounds()} columns={columns()}>
               <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
-                <Header onClick={()=>dataSort("name")}>
+                <Header onClick={()=>dataSort("name")} class={`${styles.clickyHeader}`}>
                   Name
                   <Show when={currentSort().sortKey === "name"}>
                     <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -110,7 +109,7 @@ const Viewbackgrounds: Component = () => {
               </Column>
 
               <Column name="legacy" class={`${styles.legacyCol}`}>
-                <Header onClick={()=>dataSort("legacy")}>
+                <Header onClick={()=>dataSort("legacy")} class={`${styles.clickyHeader}`}>
                   Legacy
                   <Show when={currentSort().sortKey === "legacy"}>
                     <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -149,7 +148,10 @@ const Viewbackgrounds: Component = () => {
               <Column name="menu" class={`${styles.menuCol}`}>
 
                 <Cell<Background>>
-                  { (background) => <BackgroundMenu background={background} />}
+                  { (background) => <BackgroundMenu openDialog={()=>{
+                    setCurrentBackground(background);
+                    setShowTheBackground(!showTheBackground());
+                  }} background={background} />}
                 </Cell>
               </Column>
             </Table>

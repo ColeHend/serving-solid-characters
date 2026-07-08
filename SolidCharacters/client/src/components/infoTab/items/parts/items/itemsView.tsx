@@ -26,7 +26,7 @@ export const ItemsView:Component<viewProps> = (props) => {
   const { currentSort, dataSort } = createTableSort<srdItem>({
     data: [tableData, setTableData],
     syncSetters: [setSearchResult],
-    initial: { sortKey: "cost", isAsc: false },
+    initial: { sortKey: "cost", isAsc: true },
     valueSelectors: { cost: (item) => costToCopper(item?.cost) },
   });
 
