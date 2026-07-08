@@ -379,6 +379,32 @@ code {
   color: #5a3414;
 }
 
+@mixin styleFlatCard {
+  border-color: #7c2718 !important;
+
+  &::before {
+      background: #7c2718 !important;
+  }
+
+  div {
+      border-color: #7c2718 !important;
+  }
+
+  button {
+      background: linear-gradient(177deg, rgb(112, 40, 23), rgb(81, 26, 13) 92%) !important;
+
+      svg {
+          fill: #f6ecd2 !important;
+      }
+  }
+}
+
+@mixin dot { 
+  padding: 0 0.35em; 
+  display: inline-block;
+  transform: translateY(0.07em)
+} 
+
 /* 
  * Load fonts asynchronously with font-display: swap 
  * to prevent font loading from blocking rendering

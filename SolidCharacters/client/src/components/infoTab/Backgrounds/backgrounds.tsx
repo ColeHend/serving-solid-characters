@@ -4,7 +4,7 @@ import styles from "./backgrounds.module.scss";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models/generated";
-import { Paginator } from "../../../shared";
+import { createTableSort, getUserSettings, Paginator } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
 import { Body, Table, Cell, Column, Header } from "coles-solid-library";
 import { BackgroundMenu } from "./backgroundMenu/backgroundMenu";
@@ -17,12 +17,27 @@ const Viewbackgrounds: Component = () => {
   const [searchResult, setSearchResult] = createSignal<Background[]>([]);
   const [tableData, setTableData] = createSignal<Background[]>([]);
   
+  const { currentSort, dataSort } = createTableSort<Background>({
+    data: [tableData, setTableData],
+    syncSetters: [setSearchResult],
+    initial: { sortKey: "legacy", isAsc: true },
+  });
+
   const [searchParam, setSearchParam] = useSearchParams();
+  const [userSettings] = getUserSettings();
   const srdbackgrounds = useDnDBackgrounds();
 
   const displayResults = createMemo(()=>{
     return searchResult().length <= 0 ? srdbackgrounds() : searchResult()
   })
+
+  const system = createMemo(() => userSettings().dndSystem);
+
+  const is2014 = createMemo(() => system() === "2014" || system() === "both");
+
+  const columns = createMemo(() =>
+    is2014() ? ["name", "legacy", "menu"] : ["name", "menu"]
+  );
 
   // Ensure we always have a valid name param once backgrounds load (or version changes)
   createEffect(() => {
@@ -82,28 +97,65 @@ const Viewbackgrounds: Component = () => {
         }}/>
     </div>
     <div class={`${styles.backgroundsDiv}`} >
-      <Table data={() => paginatedBackgrounds()} columns={["name","options"]}>
-        <Column name="name">
-          <Header><></></Header>
+      <Show when={columns()} keyed>
+        <>
+          <Table data={() => paginatedBackgrounds()} columns={columns()}>
+              <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
+                <Header onClick={()=>dataSort("name")}>
+                  Name
+                  <Show when={currentSort().sortKey === "name"}>
+                    <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+                  </Show>
+                </Header>
+              </Column>
 
-          <Cell<Background>>
-            { (background) => <span onClick={()=>{
-              setCurrentBackground(background);
-              setShowTheBackground(!showTheBackground());
-            }}>
-              {background.name}    
-            </span>}
-          </Cell>
-        </Column>
+              <Column name="legacy" class={`${styles.legacyCol}`}>
+                <Header onClick={()=>dataSort("legacy")}>
+                  Legacy
+                  <Show when={currentSort().sortKey === "legacy"}>
+                    <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+                  </Show>
+                </Header>
+              </Column>
 
-        <Column name="options">
-          <Header><></></Header>
+              <Column name="menu" class={`${styles.menuCol}`}>
+                <Header><></></Header>
+              </Column>
+            </Table>
 
-          <Cell<Background>>
-            { (background) => <BackgroundMenu background={background} />}
-          </Cell>
-        </Column>
-      </Table>
+          <div class={`${styles.scrollable}`}>
+            <Table data={() => paginatedBackgrounds()} columns={columns()}>
+              <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
+                <Cell<Background>>
+                  { (background) => <span onClick={()=>{
+                    setCurrentBackground(background);
+                    setShowTheBackground(!showTheBackground());
+                  }}>
+                    {background.name}    
+                  </span>}
+                </Cell>
+              </Column>
+
+              <Column name="legacy" class={`${styles.legacyCol}`}>
+                  <Cell<Background>>
+                    {(background) => <Show when={background.legacy === true}>
+                      <span>
+                        legacy
+                      </span>  
+                    </Show>}
+                  </Cell>
+              </Column>
+
+              <Column name="menu" class={`${styles.menuCol}`}>
+
+                <Cell<Background>>
+                  { (background) => <BackgroundMenu background={background} />}
+                </Cell>
+              </Column>
+            </Table>
+          </div>
+        </>
+      </Show>
     </div> 
 
     <Show when={showTheBackground()}>

@@ -1,6 +1,6 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { Background } from "../../../../models/generated";
-import { Modal } from "coles-solid-library";
+import { FlatCard, Modal } from "coles-solid-library";
 import styles from "./backgroundView.module.scss"
 import Markdown from "../../MarkDown/MarkDown";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
@@ -43,7 +43,9 @@ const BackgroundView: Component<props> = (props) => {
   const proficiencies = createMemo(() => currentBackground()?.proficiencies || []);
   const feat = createMemo(() => currentBackground()?.feat || "");
   const startEquipmentKeys = createMemo(() => currentBackground()?.startEquipment?.flatMap(x => x?.optionKeys?.join(", ") ?? ""))
-  const startEquipment = createMemo(() => currentBackground()?.startEquipment ?? [])
+  const startEquipment = createMemo(() => currentBackground()?.startEquipment ?? []);
+
+  const legacy = createMemo(() => currentBackground().legacy !== false);
 
   createEffect(() => {
     const ref = menuref();
@@ -62,9 +64,12 @@ const BackgroundView: Component<props> = (props) => {
       <div class={`${styles.wrapper}`} ref={setMenuRef}>
         <DndDialogHeader onClose={()=>setShowMenu(false)}>
           <div class={`${styles.styledHeader}`}>
-            Background 
+            <div>
+              <div class={`${styles.eyebrow}`}>Background <Show when={legacy()}><span class={`${styles.dot}`}>·</span> legacy</Show></div>
 
-            <h1>{currentBackground()?.name}</h1>
+            </div>
+
+            <h1 class={`${styles.title}`}>{currentBackground()?.name}</h1>
           </div>
         </DndDialogHeader>
 
@@ -139,9 +144,13 @@ const BackgroundView: Component<props> = (props) => {
         <Show when={features().length >= 1}>
           <h4 class={`${styles.styledLabel}`}>Feature</h4>
 
-          <div>
+          <div class={`${styles.features}`}>
             <For each={features()}>
-              {(feature, i) => <ChoiceCard ChoiceKey={`${i() + 1}`} text={feature?.name ?? ""} />}
+              {(feature) => <FlatCard header={<h2>{feature.name}</h2>} transparent class={`${styles.dndFlatcard}`}>
+                <div>
+                  <span><Markdown text={feature.description}/></span>
+                </div> 
+              </FlatCard>}
             </For>
           </div>
         </Show>

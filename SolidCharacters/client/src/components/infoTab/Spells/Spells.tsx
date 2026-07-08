@@ -11,7 +11,7 @@ import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
 import { useSearchParams } from "@solidjs/router";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
-import { Clone } from "../../../shared";
+import { createTableSort } from "../../../shared";
 import { Body, Table, Column, Cell, Header, Row } from "coles-solid-library";
 import { SpellMenu } from "./spellMenu/spellMenu";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
@@ -59,56 +59,18 @@ const masterSpells: Component = () => {
   const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
   const [searchResults, setSearchResults] = createSignal<Spell[]>([]);
   const [showSpell, setShowSpell] = createSignal(false);
-  const [currentSort, setCurrentSort] = createSignal<{
-    sortKey: string;
-    isAsc: boolean;
-  }>({ sortKey: "level", isAsc: true });
   const [tableData, setTableData] = createSignal<Spell[]>([]);
   const [lastChar, setLastChar] = createSignal<string>("");
 
+  const { currentSort, dataSort } = createTableSort<Spell>({
+    data: [tableData, setTableData],
+    syncSetters: [setSearchResults],
+    initial: { sortKey: "level", isAsc: true },
+  });
 
   const paginateItems = createMemo(() =>
     searchResults().length > 0 ? searchResults() : dndSrdSpells()
   );
-						
-  const dataSort = (sortBy: keyof Spell) => {
-    setCurrentSort((old) => {
-      if (old.sortKey === sortBy) {
-        return Clone({ sortKey: sortBy as string, isAsc: !old.isAsc });
-      } else {
-        return Clone({ sortKey: sortBy as string, isAsc: old.isAsc });
-      }
-    });
-    setTableData((old) => {
-      const currentSorting = currentSort();
-      const shouldAce = currentSorting.isAsc;
-
-      const sorted = Clone(
-        old.sort((a, b) => {
-          const aSort =
-            typeof a?.[sortBy] === "string"
-              ? a?.[sortBy].replaceAll(" ", "")
-              : a?.[sortBy];
-          const bSort =
-            typeof b?.[sortBy] === "string"
-              ? b?.[sortBy].replaceAll(" ", "")
-              : b?.[sortBy];
-
-          if (aSort === undefined || bSort === undefined) {
-            return 0;
-          }
-
-          if (aSort < bSort) return shouldAce ? 1 : -1;
-          if (aSort > bSort) return shouldAce ? -1 : 1;
-          return 0;
-        })
-      );
-
-      setSearchResults(sorted);
-
-      return sorted;
-    });
-  };
 
   createEffect(() => {
     const cur = currentSpell();

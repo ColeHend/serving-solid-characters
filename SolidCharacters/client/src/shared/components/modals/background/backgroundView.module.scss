@@ -109,3 +109,28 @@ $choiceWidth: 85%;
     flex-direction: column;
     gap: 10px;
 }
+
+.features {
+    width: $choiceWidth;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dndFlatcard {
+
+    @include indexsheet.styleFlatCard;
+}
+
+.eyebrow {
+    font-size: 13px; letter-spacing: 0.12em; color: #e8b96a;
+}
+
+.dot { 
+    @include indexsheet.dot;
+} 
+
+.title {
+    text-align: left;
+}

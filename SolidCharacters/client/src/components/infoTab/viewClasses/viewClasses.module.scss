@@ -43,7 +43,6 @@ $mobile: 768px;
 .searchBar {
     width: 55%; 
     height: 3vh;
-    margin-bottom: 1vh;
     z-index: 1;
 
     button {
@@ -85,4 +84,8 @@ $mobile: 768px;
 
 .nameCol2024 {
     width: 10%;
+}
+
+.clickyHeader {
+    cursor: pointer;
 }

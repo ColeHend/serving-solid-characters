@@ -16,7 +16,7 @@ import {
     Table 
 } from "coles-solid-library";
 import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
-import { Clone, Paginator } from "../../../../../shared";
+import { createTableSort, Paginator } from "../../../../../shared";
 import { useSearchParams } from "@solidjs/router";
 import { Item } from "../../../../../models/generated";
 import { srdItem } from "../../../../../models/data/generated";
@@ -37,10 +37,15 @@ export const WeaponsView:Component<viewProps> = (props) => {
     const [paginatedItems,setPaginatedItems] = createSignal<Item[]>([]);
     const [currentItem, setCurrentItem] = createSignal<Item | undefined>(undefined);
     const [showItem,setShowItem] = createSignal<boolean>(false);
-    const [currentSort,setCurrentSort] = createSignal<{
-        sortKey: string;
-        isAsc: boolean;
-    }>({ sortKey: "cost", isAsc: false});
+    const { currentSort, dataSort } = createTableSort<Item>({
+        data: [tabledata, setTableData],
+        syncSetters: [setSearchResults],
+        initial: { sortKey: "cost", isAsc: false },
+        valueSelectors: {
+            cost: (item) => costToCopper(item?.cost),
+            properties: (item) => String(item?.properties?.Damage ?? ""),
+        },
+    });
 
     const searchResult$ = createMemo(() => searchResults()?.length > 0 ? searchResults() : props?.items());
     
@@ -90,54 +95,6 @@ export const WeaponsView:Component<viewProps> = (props) => {
     });
 
 
-
-    const dataSort = (sortBy: keyof srdItem) => {
-        setCurrentSort(old => {
-          if (old.sortKey === sortBy) {
-            return Clone({ sortKey: sortBy as string, isAsc: !old?.isAsc });
-          } else {
-            return Clone({ sortKey: sortBy as string, isAsc: old?.isAsc });
-          }
-        });
-        setTableData((old) => {
-          const currentSorting = currentSort();
-          const shouldAsc = currentSorting?.isAsc;
-    
-          const sorted = Clone(
-            old.sort((a, b) => {
-              let aSort: any, bSort: any;
-    
-              if (sortBy === "cost") {
-                aSort = costToCopper(a?.cost);
-                bSort = costToCopper(b?.cost);
-              } else if (sortBy === "properties") {
-                aSort = a?.properties?.Damage ?? "";
-                bSort = b?.properties?.Damage ?? "";
-              } else {
-                  aSort = typeof a?.[sortBy] === "string"
-                        ? a?.[sortBy]?.replaceAll(" ", "")
-                        : a?.[sortBy];
-                  bSort = typeof b?.[sortBy] === "string"
-                        ? b?.[sortBy]?.replaceAll(" ", "")
-                        : b?.[sortBy];
-              }
-
-              if (aSort === undefined || bSort === undefined) {
-                return 0;
-              }
-    
-              if (aSort < bSort) return shouldAsc ? 1 : -1;
-              if (aSort > bSort) return shouldAsc ? -1 : 1;
-              return 0;
-            })
-          );
-    
-          // Also update paginatedItems to trigger UI update
-          setSearchResults(() => sorted);
-    
-          return sorted;
-        });
-    }; 
 
     return <Body class={`${styles.itemsBody}`}>
         <div class={`${styles.searchBar}`}>

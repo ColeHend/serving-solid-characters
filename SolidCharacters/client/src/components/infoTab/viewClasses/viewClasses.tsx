@@ -12,14 +12,13 @@ import { useSearchParams } from "@solidjs/router";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
-import { Clone, Paginator } from "../../../shared";
+import { createTableSort, Paginator } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { 
   Body, 
   Cell,
   Column, 
-  Header, 
-  Row, 
+  Header,
   Table 
 } from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
@@ -40,10 +39,11 @@ const viewClasses: Component = () => {
   const [results, setResults] = createSignal<Class5E[]>([]);
   const [tableData, setTableData] = createSignal<Class5E[]>([]);
 
-  const [currentSort, setCurrentSort] = createSignal<{
-    sortKey: string;
-    isAsc: boolean;
-  }>({ sortKey: "level", isAsc: true });
+  const { currentSort, dataSort } = createTableSort<Class5E>({
+    data: [tableData, setTableData],
+    syncSetters: [setResults],
+    initial: { sortKey: "level", isAsc: true },
+  });
 
   const system = createMemo(() => userSettings().dndSystem);
 
@@ -52,45 +52,6 @@ const viewClasses: Component = () => {
   const searchResults = createMemo(() =>
     results().length > 0 ? results() : srdClasses()
   );
-
-  const dataSort = (sortBy: keyof Class5E) => {
-      setCurrentSort((old) => {
-        if (old.sortKey === sortBy) {
-          return Clone({ sortKey: sortBy as string, isAsc: !old.isAsc });
-        } else {
-          return Clone({ sortKey: sortBy as string, isAsc: old.isAsc });
-        }
-      });
-      setTableData((old) => {
-        const currentSorting = currentSort();
-        const shouldAce = currentSorting.isAsc;
-  
-        const sorted = Clone(
-          old.sort((a, b) => {
-            const aSort =
-              typeof a?.[sortBy] === "string"
-                ? a?.[sortBy].replaceAll(" ", "")
-                : a?.[sortBy];
-            const bSort =
-              typeof b?.[sortBy] === "string"
-                ? b?.[sortBy].replaceAll(" ", "")
-                : b?.[sortBy];
-  
-            if (aSort === undefined || bSort === undefined) {
-              return 0;
-            }
-  
-            if (aSort < bSort) return shouldAce ? 1 : -1;
-            if (aSort > bSort) return shouldAce ? -1 : 1;
-            return 0;
-          })
-        );
-  
-        setResults(sorted);
-  
-        return sorted;
-      });
-    };
 
   createEffect(() => {
     const list = srdClasses();
@@ -165,14 +126,18 @@ const viewClasses: Component = () => {
 
       <div class={`${styles.classesTable}`}>
         <Show fallback={<></>} when={columns()} keyed>
-          {cols => (
             <>
               <Table data={paginatedClasses} columns={columns()}>
                 <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
-                  <Header>Name</Header>
+                  <Header class={`${styles.clickyHeader}`} onClick={()=>dataSort("name")}>
+                    Name
+                    <Show when={currentSort().sortKey === "name"}>
+                      <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+                    </Show>
+                  </Header>
                 </Column>
                 <Column name="legacy" class={`${styles.legacyCol}`}>
-                  <Header onClick={()=>dataSort("legacy")}>
+                  <Header class={`${styles.clickyHeader}`} onClick={()=>dataSort("legacy")}>
                     Legacy
                     <Show when={currentSort().sortKey === "legacy"}>
                       <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -187,7 +152,7 @@ const viewClasses: Component = () => {
               <div class={`${styles.scrollable}`}>
                 <Table data={paginatedClasses} columns={columns()}>
                   <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
-                    <Cell<Class5E>>{(x) => <span onClick={(e) => {
+                    <Cell<Class5E>>{(x) => <span onClick={() => {
                       setCurrentClass(x);
                       setSearchParam({ name: x.name });
                       setShowClass(old => !old);
@@ -207,7 +172,7 @@ const viewClasses: Component = () => {
                       {(dndClass) => <ClassMenu dndClass={dndClass} openDialog={() => {
                         setCurrentClass(dndClass);
                         setSearchParam({ name: dndClass.name });
-                        setShowClass(old => true);
+                        setShowClass(true);
                       }} />}
                     </Cell>
                   </Column>
@@ -215,7 +180,6 @@ const viewClasses: Component = () => {
                 </Table>
               </div>
             </>
-          )}
         </Show>
       </div>
 
