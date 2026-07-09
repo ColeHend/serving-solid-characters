@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createMemo, createSignal, Show } from "solid-js";
 import { srdItem } from "../../../../../models/data/generated";
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
@@ -9,9 +9,12 @@ import styles from "./itemMenu.module.scss";
 
 interface menuProps {
     item: srdItem;
+    openDialog?: (e: Event) => void;
 }
 
 export const ItemsMenu:Component<menuProps> = (props) => {
+
+    const hasFunc = createMemo(() => "openDialog" in props && props.openDialog !== undefined);
 
     const [anchorEl, setAnchorEl] = createSignal<HTMLElement | undefined>();
     const [showMenu, setShowMenu] = createSignal<boolean>(false);
@@ -35,6 +38,11 @@ export const ItemsMenu:Component<menuProps> = (props) => {
             <MenuItem onClick={()=>navigate(`/homebrew/create/items?name=${props?.item?.name}`)}>
               {checkForHomebrew(props?.item?.name) ? "Edit" : "Clone & Edit"}
             </MenuItem>
+            <Show when={hasFunc()} keyed>
+                {keyed => (<MenuItem onClick={keyed ? props.openDialog : () => {}}>
+                    view
+                </MenuItem>)}
+            </Show>
         </Menu>
     </>
 }

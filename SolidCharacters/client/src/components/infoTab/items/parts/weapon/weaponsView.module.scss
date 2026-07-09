@@ -1,17 +1,12 @@
+@use "coles-solid-library/themes/variables" as *;
+@use "../../../../../index.scss" as *;
+
 .itemsBody {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     background: transparent !important;
 }
 
 .table {
-    width: 100%;
-
-    table {
-        width: 100% !important;
-    }
+    @include viewPageTable;
 }
 
 .searchBar {
@@ -26,6 +21,7 @@
 
     @media screen and (max-width: 768px) {
         width: 92%;
+        margin: 10px;
     }
 }
 
@@ -48,4 +44,8 @@
 
 .actionColumn {
     width: 10%;
+}
+
+.noClicky {
+  cursor: default !important;
 }

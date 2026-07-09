@@ -1,5 +1,7 @@
 @use 'coles-solid-library/themes/variables' as vars;
 
+$mobile: 768px;
+
 .body {
   background-color: vars.$color-surface;
   background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
@@ -7,6 +9,11 @@
   
   button {
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+  }
+
+  @media screen and (max-width: $mobile) {
+    width: 100%;
+    padding: 0;
   }
 }
 

@@ -6,7 +6,7 @@ import { useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models/generated";
 import { createTableSort, getUserSettings, Paginator } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
-import { Body, Table, Cell, Column, Header } from "coles-solid-library";
+import { Body, Table, Cell, Column, Header, Row } from "coles-solid-library";
 import { BackgroundMenu } from "./backgroundMenu/backgroundMenu";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
 
@@ -100,7 +100,7 @@ const Viewbackgrounds: Component = () => {
         <>
           <Table data={() => paginatedBackgrounds()} columns={columns()}>
               <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
-                <Header onClick={()=>dataSort("name")} class={`${styles.clickyHeader}`}>
+                <Header onClick={()=>dataSort("name")}>
                   Name
                   <Show when={currentSort().sortKey === "name"}>
                     <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -109,7 +109,7 @@ const Viewbackgrounds: Component = () => {
               </Column>
 
               <Column name="legacy" class={`${styles.legacyCol}`}>
-                <Header onClick={()=>dataSort("legacy")} class={`${styles.clickyHeader}`}>
+                <Header onClick={()=>dataSort("legacy")}>
                   Legacy
                   <Show when={currentSort().sortKey === "legacy"}>
                     <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -118,7 +118,7 @@ const Viewbackgrounds: Component = () => {
               </Column>
 
               <Column name="menu" class={`${styles.menuCol}`}>
-                <Header><></></Header>
+                <Header class={`${styles.noClicky}`}><></></Header>
               </Column>
             </Table>
 
@@ -126,10 +126,7 @@ const Viewbackgrounds: Component = () => {
             <Table data={() => paginatedBackgrounds()} columns={columns()}>
               <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
                 <Cell<Background>>
-                  { (background) => <span onClick={()=>{
-                    setCurrentBackground(background);
-                    setShowTheBackground(!showTheBackground());
-                  }}>
+                  { (background) => <span>
                     {background.name}    
                   </span>}
                 </Cell>
@@ -147,13 +144,18 @@ const Viewbackgrounds: Component = () => {
 
               <Column name="menu" class={`${styles.menuCol}`}>
 
-                <Cell<Background>>
+                <Cell<Background> onClick={(e)=>e.stopPropagation()}>
                   { (background) => <BackgroundMenu openDialog={()=>{
                     setCurrentBackground(background);
                     setShowTheBackground(!showTheBackground());
                   }} background={background} />}
                 </Cell>
               </Column>
+
+              <Row onClick={(e ,background)=>{
+                setCurrentBackground(background);
+                setShowTheBackground(!showTheBackground());
+              }}/>
             </Table>
           </div>
         </>

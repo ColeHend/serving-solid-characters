@@ -180,15 +180,6 @@ code {
     monospace;
 }
 
-@mixin sideNav() {
-  display: flex;
-  flex-direction: row;
-}
-
-.body {
-  @include sideNav();
-}
-
 .openFirst {
   width: 90vw;
   max-width: 90%;
@@ -404,6 +395,34 @@ code {
   display: inline-block;
   transform: translateY(0.07em)
 } 
+
+// view tab mixins \\
+
+@mixin viewPageTable {
+  width: 100%;
+
+  table {
+    width: 100%;
+    margin: 0 auto;
+
+    thead tr th {
+        cursor: pointer;
+    }
+
+    tbody tr {
+
+        &:hover {
+            background-color: color-mix(in srgb, colesVars.$color-surface-variant 40%, transparent);
+        }
+
+        td {
+            text-align: center;
+            cursor: pointer;
+        
+        }
+    }
+  }
+}
 
 /* 
  * Load fonts asynchronously with font-display: swap 
