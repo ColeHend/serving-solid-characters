@@ -1,4 +1,4 @@
-import { Accessor, Component, createEffect, createSignal, JSX, Setter, splitProps } from "solid-js";
+import { Accessor, createSignal, Setter, splitProps } from "solid-js";
 import style from "./SearchBar.module.scss";
 import { Clone } from "../../customHooks";
 import { Button, Icon, Input, addSnackbar } from "coles-solid-library";
@@ -13,7 +13,7 @@ interface Props<T> {
 }
 const SearchBar = <T,>(props: Props<T>) => {
   const [searchValue, setSearchValue] = createSignal<string>("");
-  const [local, other] = splitProps(props, ['wrapClass', 'tooltip'])
+  const [local,] = splitProps(props, ['wrapClass', 'tooltip'])
   
   
   const searchClick = () => setTimeout(() => {
@@ -45,9 +45,9 @@ const SearchBar = <T,>(props: Props<T>) => {
 
   let searchTimeout:NodeJS.Timeout;
 
-  createEffect(()=>{
-    props.setResults(props.dataSource());
-  })
+  // createEffect(()=>{
+  //   props.setResults(props.dataSource());
+  // })
   return (
     <div class={`${style.searchBar}`}>
       <Input

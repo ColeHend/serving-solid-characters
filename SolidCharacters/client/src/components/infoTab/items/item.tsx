@@ -15,28 +15,32 @@ import { WeaponsView } from "./parts/weapon/weaponView";
 import { ArmorView } from "./parts/armor/armorView";
 import styles from "./item.module.scss";
 import { srdItem } from "../../../models/data/generated";
+import { AllItems } from "./parts/allItems/allItem";
 
-// Normalize cost string: keep only the first number + coin type (CP|SP|GP), ignore trailing text
+// Normalize cost string: keep only the first number (commas stripped) + coin type, ignore trailing text
 const normalizeCost = (cost: string): string => {
-  const match = cost.match(/^(\d+)\s*(CP|SP|GP)/i);
-  return match ? `${match[1]} ${match[2].toUpperCase()}` : cost;
+  const match = cost.match(/^\s*(\d[\d,]*)\s*(CP|SP|EP|GP|PP)/i);
+  return match ? `${match[1].replaceAll(",", "")} ${match[2].toUpperCase()}` : cost;
 }
 
-const costToCopper = (cost: string): number => {
-  const normalized = normalizeCost(cost);
-  const match = normalized.match(/^(\d+)\s*(CP|SP|GP)$/i);
-  if (!match) return 0;
+// Cost in copper pieces, or undefined when unparseable so those rows sort last instead of as free
+const costToCopper = (cost: string): number | undefined => {
+  const match = normalizeCost(cost).match(/^(\d+)\s*(CP|SP|EP|GP|PP)$/i);
+  if (!match) return undefined;
   const value = parseInt(match[1], 10);
-  const unit = match[2].toUpperCase();
-  switch (unit) {
+  switch (match[2].toUpperCase()) {
+    case "PP":
+      return value * 1000;
     case "GP":
       return value * 100;
+    case "EP":
+      return value * 50;
     case "SP":
       return value * 10;
     case "CP":
       return value;
     default:
-      return 0;
+      return undefined;
   }
 }
 
@@ -55,20 +59,21 @@ const ItemsViewTab:Component = () => {
   const elementMemo = createMemo<CarouselElement[]>(()=>([
     {name: "Equipment", element: <ItemsView items={srdEquipment} /> },
     {name: "Weapons", element:  <WeaponsView items={srdWeapons} />  },
-    {name: "Armor", element: <ArmorView items={srdArmors} />}
+    {name: "Armor", element: <ArmorView items={srdArmors} />},
+    {name: "All", element: <AllItems srdItems={SrdItems} />}
   ]));
   
-  if (!searchParam.itemType) setSearchParam({itemType: elementMemo()[0].name })
+  if (!searchParam.itemType) setSearchParam({itemType: elementMemo()[3].name })
 
-  const startingIndex = createMemo(()=>{
-    const param = typeof searchParam.itemType === "string" ? searchParam.itemType : searchParam.itemType?.join(" ");
-    const target = elementMemo().findIndex((x)=>x.name.toLowerCase() === param?.toLowerCase());
+  // const startingIndex = createMemo(()=>{
+  //   const param = typeof searchParam.itemType === "string" ? searchParam.itemType : searchParam.itemType?.join(" ");
+  //   const target = elementMemo().findIndex((x)=>x.name.toLowerCase() === param?.toLowerCase());
     
-    if (target === -1) return 0;
-    return target;
-  });
+  //   if (target === -1) return 0;
+  //   return target;
+  // });
 
-  const [itemIndex,setItemIndex] = createSignal<number>(startingIndex() ?? 0);
+  const [itemIndex,setItemIndex] = createSignal<number>(3);
 
   createEffect(()=>{
     setSearchParam({itemType: elementMemo()[itemIndex()]?.name})
@@ -86,7 +91,7 @@ const ItemsViewTab:Component = () => {
     <h1 class={`${styles.title}`}>Items</h1>
     <span class={`${styles.carouselOverwrite}`}>
     <Carousel 
-      startingIndex={startingIndex()} 
+      startingIndex={3} 
       currentIndex={[itemIndex,setItemIndex]} 
       elements={elementMemo()} />
     </span>

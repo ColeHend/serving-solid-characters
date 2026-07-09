@@ -19,6 +19,7 @@ import {
   Cell,
   Column, 
   Header,
+  Row,
   Table 
 } from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
@@ -42,7 +43,6 @@ const viewClasses: Component = () => {
   const { currentSort, dataSort } = createTableSort<Class5E>({
     data: [tableData, setTableData],
     syncSetters: [setResults],
-    initial: { sortKey: "level", isAsc: true },
   });
 
   const system = createMemo(() => userSettings().dndSystem);
@@ -109,7 +109,7 @@ const viewClasses: Component = () => {
   return (
     <Body class={`${stylin()?.primary}  ${styles.body}`}>
       <div class={`${styles.headerBar}`}>
-        <h1>Classes</h1>
+        <h1 class={`${styles.Title}`}>Classes</h1>
       </div>
 
       <div class={`${styles.searchBar}`}>
@@ -129,7 +129,7 @@ const viewClasses: Component = () => {
             <>
               <Table data={paginatedClasses} columns={columns()}>
                 <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
-                  <Header class={`${styles.clickyHeader}`} onClick={()=>dataSort("name")}>
+                  <Header onClick={()=>dataSort("name")}>
                     Name
                     <Show when={currentSort().sortKey === "name"}>
                       <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -137,7 +137,7 @@ const viewClasses: Component = () => {
                   </Header>
                 </Column>
                 <Column name="legacy" class={`${styles.legacyCol}`}>
-                  <Header class={`${styles.clickyHeader}`} onClick={()=>dataSort("legacy")}>
+                  <Header onClick={()=>dataSort("legacy")}>
                     Legacy
                     <Show when={currentSort().sortKey === "legacy"}>
                       <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
@@ -145,30 +145,22 @@ const viewClasses: Component = () => {
                   </Header>
                 </Column>
                 <Column name="menu" class={`${styles.menuCol}`}>
-                  <Header><></></Header>
+                  <Header class={`${styles.noClicky}`}><></></Header>
                 </Column>
               </Table>
 
               <div class={`${styles.scrollable}`}>
                 <Table data={paginatedClasses} columns={columns()}>
                   <Column name="name" class={`${is2014() ? styles.nameCol : styles.nameCol2024}`}>
-                    <Cell<Class5E>>{(x) => <span onClick={() => {
-                      setCurrentClass(x);
-                      setSearchParam({ name: x.name });
-                      setShowClass(old => !old);
-                    }}>{x.name}</span>}</Cell>
+                    <Cell<Class5E>>{(x) => <span>{x.name}</span>}</Cell>
                   </Column>
                   <Column name="legacy" class={`${styles.legacyCol}`}>
                     <Cell<Class5E>>
-                      {(dndClass) => <Show fallback={<span></span>} when={dndClass.legacy === true}><span onClick={() => {
-                      setCurrentClass(dndClass);
-                      setSearchParam({ name: dndClass.name });
-                      setShowClass(old => !old);
-                    }}>Legacy</span></Show>}
+                      {(dndClass) => <Show fallback={<span></span>} when={dndClass.legacy === true}><span>Legacy</span></Show>}
                     </Cell>
                   </Column>
                   <Column name="menu" class={`${styles.menuCol}`}>
-                    <Cell<Class5E>>
+                    <Cell<Class5E> onClick={(e)=>e.stopPropagation()}>
                       {(dndClass) => <ClassMenu dndClass={dndClass} openDialog={() => {
                         setCurrentClass(dndClass);
                         setSearchParam({ name: dndClass.name });
@@ -177,6 +169,11 @@ const viewClasses: Component = () => {
                     </Cell>
                   </Column>
 
+                  <Row onClick={(e ,dndClass) => {
+                    setCurrentClass(dndClass);
+                    setSearchParam({ name: dndClass.name });
+                    setShowClass(old => !old);
+                  }}/>
                 </Table>
               </div>
             </>

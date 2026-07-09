@@ -10,6 +10,11 @@ $mobile: 768px;
     button {
         background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
     }
+
+    @media screen and (max-width: $mobile) {
+        width: 100%;
+        padding: 0;
+    }
 }
 
 .searchBar {

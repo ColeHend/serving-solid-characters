@@ -5,6 +5,7 @@ import { Component, createSignal } from "solid-js";
 import { homebrewManager } from "../../../../shared";
 // import { DnDClass } from "../../../../models";
 import { Class5E } from "../../../../models/generated";
+import style from "./classMenu.module.scss";
 
 interface menuProps {
     dndClass: Class5E;
@@ -27,7 +28,7 @@ export const ClassMenu: Component<menuProps> = (props) => {
     <Button ref={setAnchorEl} onClick={(e)=>{
       e.stopPropagation()
       setShowMenu((old)=>!old)
-    }}>
+    }} class={`${style.menu}`}>
       <Icon icon={MoreVert} size={"medium"}/>
     </Button>
 

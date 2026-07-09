@@ -1,4 +1,5 @@
 @use "coles-solid-library/themes/variables" as vars;
+@use "../../../index.scss" as *;
 
 $mobile: 768px;
 
@@ -18,18 +19,15 @@ $mobile: 768px;
 
 .backgroundsDiv {
   margin: 0 auto;
-  width: 100%;
   margin-top: 1%;
 
-  table {
-    margin: 0 auto;
-    width: 100%;
-  }
   fill: var(--on-background-color);
-
+  
   @media screen and (max-width: $mobile) {
     width: 100%;
   }
+
+  @include viewPageTable;
 }
 
 .searchBar {
@@ -43,6 +41,7 @@ $mobile: 768px;
 
   @media screen and (max-width: $mobile) {
     width: 92%;
+    margin: 0;
   }
 }
 .paginator {
@@ -52,8 +51,6 @@ $mobile: 768px;
 
 .menuBtn {
   background: inherit;
-
-  
 }
 
 .Title {
@@ -62,23 +59,27 @@ $mobile: 768px;
 
 
 .nameCol {
-    width: 40%;
+  width: 40%;
 }
 
 .nameCol2024 {
-    width: 10%;
+  width: 10%;
 }
 
 .legacyCol {
-    width: 30%;
-    text-align: center;
+  width: 30%;
+  text-align: center;
 }
 
 .menuCol {
-    width: 10%;
+  width: 10%;
 }
 
 .scrollable {
-    overflow-y: scroll;
-    height: 49vh;
+  overflow-y: scroll;
+  height: 49vh;
+}
+
+.noClicky {
+  cursor: default !important;
 }

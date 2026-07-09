@@ -1,6 +1,11 @@
+@use 'coles-solid-library/themes/variables' as *;
+
 .spellMenu {
     fill: var(--on-background-color) !important;
     width: fit-content;
+    background-color: $color-surface !important;
+
+    opacity: 0.7;
 
     svg {
         fill: var(--on-background-color) !important;

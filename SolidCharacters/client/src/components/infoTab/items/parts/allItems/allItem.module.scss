@@ -1,0 +1,65 @@
+@use "coles-solid-library/themes/variables" as *;
+@use "../../../../../index.scss" as *;
+
+$mobile: 768px;
+
+.searchBar {
+    margin: 0 auto;
+    width: 75%; 
+    height: 3vh;
+
+    button {
+        background: transparent !important;
+    }
+
+    @media screen and (max-width: $mobile) {
+      width: 92%;
+      margin: 10px;
+    }
+}
+
+.allItemsTable {
+    margin-top: 2% !important;
+    margin: 0 auto;
+
+
+    @include viewPageTable;
+}
+
+.scrollable {
+    overflow-y: scroll;
+    height: 49vh;
+}
+
+.nameCol {
+  width: 35%;
+}
+
+.nameCol2024 {
+  width: 21%;
+}
+
+.costCol {
+  width: 20%;
+}
+
+.legacyCol {
+  width: 20%;
+
+  @media screen and (max-width: $mobile) {
+    width: 25%;
+  }
+}
+
+.menuCol {
+  width: 12%;
+}
+
+.body {
+    height: 100% !important;
+    background-color: transparent !important;
+}
+
+.noClicky {
+  cursor: default !important;
+}

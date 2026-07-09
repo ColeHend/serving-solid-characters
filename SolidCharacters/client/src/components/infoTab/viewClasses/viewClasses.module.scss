@@ -1,12 +1,9 @@
 @use 'coles-solid-library/themes/variables' as vars;
+@use '../../../index.scss' as *;
 
 $mobile: 768px;
 
 .body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     background-color: vars.$color-surface;
     background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
     width: 35%;
@@ -15,27 +12,20 @@ $mobile: 768px;
         background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
     }
 
+    @media screen and (max-width: $mobile) {
+        width: 100%;
+        padding: 0;
+    }
 }
 
 
 .classesTable {
-    width: 100%;
+    margin: 0 auto;
     margin-top: 1%;
     
-    table {
-        // margin: 0 auto;
-        width: 100% !important;
-    }
-
-    span:hover {
-        cursor: pointer;
-    }
+    @include viewPageTable;
 
     fill: var(--on-background-color);
-
-    @media screen and (max-width: $mobile) {
-        width: 100%;
-    }
 }
 
 
@@ -44,19 +34,19 @@ $mobile: 768px;
     width: 55%; 
     height: 3vh;
     z-index: 1;
+    margin: 0 auto;
 
     button {
         background: transparent !important;
     }
-
     
     @media screen and (max-width: $mobile) {
         width: 92%;
+        margin: 10px;
     }
 }
 
 .headerBar {
-    // width: 100%;
     margin: 0 auto;
 }
 
@@ -86,6 +76,15 @@ $mobile: 768px;
     width: 10%;
 }
 
-.clickyHeader {
-    cursor: pointer;
+.noClicky {
+    cursor: default !important;
+}
+
+.paginator {
+    margin: 0 auto !important;
+    width: min-content;
+}
+
+.Title {
+  text-align: center;
 }

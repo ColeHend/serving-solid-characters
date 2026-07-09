@@ -33,7 +33,8 @@ $mobile: 768px;
     }
 
     @media screen and (max-width: $mobile) {
-        width: 95%;
+        width: 100%;
+        padding: 0;
     }
 }
 
@@ -78,6 +79,7 @@ $mobile: 768px;
 
     @media screen and (max-width: 768px) {
         width: 92%;
+        margin: 0;
     }
 }
 
@@ -102,4 +104,8 @@ $mobile: 768px;
 
 .SpellActions {
     width: 20% !important;
+}
+
+.clickyHeader {
+    cursor: pointer;
 }
