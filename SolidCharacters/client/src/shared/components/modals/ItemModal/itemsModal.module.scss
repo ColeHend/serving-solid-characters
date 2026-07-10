@@ -21,7 +21,6 @@ $marginLeft: 5%;
     margin-left: $marginLeft;
 
     h3 {
-        // color: #241405 !important;
 
         @include styledDndTitle;
     }
