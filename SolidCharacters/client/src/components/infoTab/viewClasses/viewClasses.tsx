@@ -40,7 +40,7 @@ const viewClasses: Component = () => {
   const [results, setResults] = createSignal<Class5E[]>([]);
   const [tableData, setTableData] = createSignal<Class5E[]>([]);
 
-  const { currentSort, dataSort } = createTableSort<Class5E>({
+  const { currentSort, dataSort, applySort } = createTableSort<Class5E>({
     data: [tableData, setTableData],
     syncSetters: [setResults],
   });
@@ -98,7 +98,7 @@ const viewClasses: Component = () => {
 
   createEffect(() => {
     const list = srdClasses();
-    setTableData(list);    
+    applySort(list);    
   })
     
   const columns = createMemo(() =>

@@ -32,9 +32,10 @@ export const WeaponsView: Component<viewProps> = (props) => {
     undefined,
   );
   const [showItem, setShowItem] = createSignal<boolean>(false);
-  const { currentSort, dataSort } = createTableSort<Item>({
+  const { currentSort, dataSort, applySort } = createTableSort<Item>({
     data: [tabledata, setTableData],
     syncSetters: [setSearchResults],
+    initial: {sortKey: "cost", isAsc: false},
     valueSelectors: {
       cost: (item) => costToCopper(item?.cost),
       properties: (item) => String(item?.properties?.Damage ?? ""),
@@ -91,15 +92,10 @@ export const WeaponsView: Component<viewProps> = (props) => {
     }
   });
 
-  // createEffect(()=>{
-  //     const list = props?.items();
-  //     const tableData = tabledata();
-
-  //     if (tableData.length === 0) {
-  //         setTableData(list);
-  //     }
-
-  // });
+  createEffect(()=>{
+    const list = props?.items();
+    applySort(list);
+  });
 
   return (
     <Body class={`${styles.itemsBody}`}>
@@ -116,15 +112,6 @@ export const WeaponsView: Component<viewProps> = (props) => {
             <Header onClick={() => dataSort("name")}>
               Name
               <Show when={currentSort()?.sortKey === "name"}>
-                <span>{currentSort()?.isAsc ? " ▲" : " ▼"}</span>
-              </Show>
-            </Header>
-          </Column>
-
-          <Column name="dmg" class={`${styles.propsColumn}`}>
-            <Header onClick={() => dataSort("properties")}>
-              Dmg
-              <Show when={currentSort()?.sortKey === "properties"}>
                 <span>{currentSort()?.isAsc ? " ▲" : " ▼"}</span>
               </Show>
             </Header>
@@ -153,12 +140,6 @@ export const WeaponsView: Component<viewProps> = (props) => {
           >
             <Column name="name" class={`${styles.nameColumn}`}>
               <Cell<srdItem>>{(item) => <span>{item?.name}</span>}</Cell>
-            </Column>
-
-            <Column name="dmg" class={`${styles.propsColumn}`}>
-              <Cell<srdItem>>
-                {(item) => <span>{item?.properties?.Damage ?? ""}</span>}
-              </Cell>
             </Column>
 
             <Column name="cost" class={`${styles.costColumn}`}>

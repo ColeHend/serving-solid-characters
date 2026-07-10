@@ -5,6 +5,7 @@ import { homebrewManager } from "../../../../shared";
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { MoreVert } from "coles-solid-library/icons";
+import styles from "./raceMenu.module.scss";
 
 interface menuProps {
   race: Race
@@ -29,7 +30,7 @@ export const RaceMenu:Component<menuProps> = (props) => {
   }
 
   return <>
-    <Button ref={setAnchorEl} onclick={()=>setShowMenu((old)=>!old)}>
+    <Button class={`${styles.raceMenu}`} ref={setAnchorEl} onclick={()=>setShowMenu((old)=>!old)}>
       <Icon icon={MoreVert} />
     </Button>
 

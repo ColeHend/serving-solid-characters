@@ -21,7 +21,7 @@ $marginLeft: 5%;
     margin-left: $marginLeft;
 
     h3 {
-        color: #241405 !important;
+        // color: #241405 !important;
 
         @include styledDndTitle;
     }
@@ -78,4 +78,8 @@ $marginLeft: 5%;
     @media screen and (max-width: 768px) {
         margin-top: 38%;
     }
+}
+
+.dot {
+    @include dot;
 }

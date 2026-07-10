@@ -47,6 +47,7 @@ export default defineConfig({
       // real generated barrel rather than the mock. Must precede the base alias (most-specific first).
       'coles-solid-library/icons': path.resolve(__dirname, 'node_modules/coles-solid-library/dist/generated/outlined.js'),
       'coles-solid-library/dist/components/Form/formHelp/models': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/dist/components/Form/formHelp/models.ts'),
+      'coles-solid-library/dist/tools/tools.js': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/dist/tools/tools.ts'),
       'coles-solid-library': path.resolve(__dirname, 'src/test/mocks/coles-solid-library/index.tsx'),
     }
   },

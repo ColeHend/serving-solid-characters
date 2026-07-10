@@ -124,6 +124,25 @@ describe('createTableSort', () => {
     expect(tableData().map(r => r.name)).toEqual(['Wand of Webs', 'Axe', 'Mace']);
   });
 
+  it('applySort sorts incoming data by the initial sort state and pushes to syncSetters', () => {
+    const { tableData, results, applySort } = setup({ initial: { sortKey: 'name', isAsc: true } });
+
+    applySort(rows);
+
+    expect(tableData().map(r => r.name)).toEqual(['Axe', 'Mace', 'Wand of Webs']);
+    expect(results()).toEqual(tableData());
+  });
+
+  it('applySort respects the direction set by prior dataSort clicks', () => {
+    const { tableData, dataSort, applySort } = setup();
+
+    dataSort('level');
+    dataSort('level'); // now descending
+
+    applySort(rows);
+    expect(tableData().map(r => r.level)).toEqual([3, 2, 1]);
+  });
+
   it('sorts comma-grouped costs correctly through costToCopper', () => {
     const priced: TestRow[] = [
       { name: 'Apparatus', level: 1, cost: '1,500 gp' },

@@ -46,9 +46,10 @@ export const AllItems: Component<props> = (props) => {
 
     const searchResult$ = createMemo(() => searchResults()?.length > 0 ? searchResults() : allItems());
     
-    const { currentSort, dataSort } = createTableSort<srdItem>({
+    const { currentSort, dataSort, applySort } = createTableSort<srdItem>({
         data: [tabledata,setTabledata],
         syncSetters: [setSearchResults],
+        initial: {sortKey: "name", isAsc: true},
         valueSelectors: {
             type: (item) => ItemType[item.type],
         }
@@ -90,6 +91,11 @@ export const AllItems: Component<props> = (props) => {
             })
         }
     })
+
+    createEffect(() => {
+        const list = props?.srdItems();
+        applySort(list);
+    });
 
     return <Body class={`${style.body}`}>
         <div class={`${style.searchBar}`}>
