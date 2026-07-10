@@ -17,7 +17,7 @@ import { createTableSort, Paginator } from "../../../../../shared";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
 import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
 import { ItemsMenu } from "../itemsMenu/itemsMenu";
-import userSettings, { getUserSettings } from "../../../../../shared/customHooks/userSettings";
+import { getUserSettings } from "../../../../../shared/customHooks/userSettings";
 import { isMobile } from "coles-solid-library/dist/tools/tools.js";
 
 interface viewProps {
@@ -34,7 +34,7 @@ export const ArmorView: Component<viewProps> = (props) => {
     undefined,
   );
   const [showItem, setShowItem] = createSignal<boolean>(false);
-  const { currentSort, dataSort } = createTableSort<srdItem>({
+  const { currentSort, dataSort, applySort } = createTableSort<srdItem>({
     data: [tableData, setTableData],
     syncSetters: [setSearchResult],
     initial: { sortKey: "cost", isAsc: false },
@@ -112,6 +112,11 @@ export const ArmorView: Component<viewProps> = (props) => {
     }
   });
 
+  createEffect(() => {
+    const list = props?.items();
+    applySort(list);
+  });
+
   return (
     <Body class={`${style.itemsBody}`}>
       <div class={`${style.searchBar}`}>
@@ -138,10 +143,10 @@ export const ArmorView: Component<viewProps> = (props) => {
             </Header>
           </Column>
 
-          <Column name="props" class={`${style.propsColumn}`}>
-            <Header onClick={() => dataSort("properties")}>
-              AC
-              <Show when={currentSort()?.sortKey === "properties"}>
+          <Column name="legacy" class={`${style.legacyColumn}`}>
+            <Header onClick={() => dataSort("legacy")}>
+              Legacy
+              <Show when={currentSort()?.sortKey === "legacy"}>
                 <span>{currentSort()?.isAsc ? " ▲" : " ▼"}</span>
               </Show>
             </Header>
@@ -168,32 +173,26 @@ export const ArmorView: Component<viewProps> = (props) => {
             data={() => paginatedItems()}
           >
             <Column name="name" class={`${style.nameColumn}`}>
-              <Header>
-                <></>
-              </Header>
-              <Cell<Item>>{(item) => <span>{item.name}</span>}</Cell>
+              <Cell<Item>>
+                {(item) => <span>{item.name}</span>}
+              </Cell>
             </Column>
 
-            <Column name="props" class={`${style.propsColumn}`}>
-              <Header>
-                <></>
-              </Header>
+            <Column name="legacy" class={`${style.legacyColumn}`}>
               <Cell<srdItem>>
-                {(item) => <span>{item?.properties?.AC}</span>}
+                {(item) => <span>
+                  <Show when={item.legacy === true}>Legacy</Show>  
+                </span>}
               </Cell>
             </Column>
 
             <Column name="cost" class={`${style.costColumn}`}>
-              <Header>
-                <></>
-              </Header>
-              <Cell<srdItem>>{(item) => <span>{item?.cost}</span>}</Cell>
+              <Cell<srdItem>>
+                {(item) => <span>{item?.cost}</span>}
+              </Cell>
             </Column>
 
             <Column name="menu" class={`${style.actionColumn}`}>
-              <Header>
-                <></>
-              </Header>
               <Cell<srdItem> onClick={(e) => e.stopPropagation()}>
                 {(item) => (
                   <ItemsMenu

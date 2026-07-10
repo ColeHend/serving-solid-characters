@@ -28,14 +28,12 @@ export const ItemsView: Component<viewProps> = (props) => {
   const [tableData, setTableData] = createSignal<srdItem[]>([]);
   const [searchResult, setSearchResult] = createSignal<srdItem[]>([]);
   const [paginatedItems, setPaginatedItems] = createSignal<srdItem[]>([]);
-  const [currentItem, setCurrentItem] = createSignal<srdItem | undefined>(
-    undefined,
-  );
+  const [currentItem, setCurrentItem] = createSignal<srdItem | undefined>(undefined);
   const [showItem, setShowItem] = createSignal<boolean>(false);
-  const { currentSort, dataSort } = createTableSort<srdItem>({
+  const { currentSort, dataSort, applySort } = createTableSort<srdItem>({
     data: [tableData, setTableData],
     syncSetters: [setSearchResult],
-    initial: { sortKey: "cost", isAsc: true },
+    initial: { sortKey: "cost", isAsc: false },
     valueSelectors: { cost: (item) => costToCopper(item?.cost) },
   });
 
@@ -90,7 +88,7 @@ export const ItemsView: Component<viewProps> = (props) => {
 
   createEffect(() => {
     const list = props?.items();
-    setTableData(list);
+    applySort(list);
   });
 
   return (

@@ -62,7 +62,7 @@ const RaceView: Component<props> = (props) => {
     <div class={`${styles.raceWrapper}`} ref={setMenuRef}>
       <DndDialogHeader onClose={()=>setShow(old => !old)}>
         <div class={`${styles.styledHeader}`}>
-          Species
+          Species<Show when={race().legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show>
 
           <h1>{race()?.name ?? ""}</h1>
         </div>
@@ -131,10 +131,10 @@ const RaceView: Component<props> = (props) => {
         <div class={`${styles.subraceContainer}`}>
           <For each={currentSubraces()}>
             {(subRace,i) => <FlatCard 
-                getRidOfBottomBorder={
+                hideBottomBorder={
                   currentSubraces().length > 1 && i() !== currentSubraces().length - 1
                 } 
-                headerName={<span class={`${styles.header}`}>
+                header={<span class={`${styles.header}`}>
                   {subRace?.name ?? ''}
                 </span>} 
                 class={`${styles.subraceCard}`} 

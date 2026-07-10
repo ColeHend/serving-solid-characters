@@ -1,4 +1,4 @@
-import { Accessor, Setter, createSignal } from "solid-js";
+import { Accessor, Setter, createSignal, untrack } from "solid-js";
 import { Clone } from "./Tools";
 
 export interface SortState {
@@ -41,17 +41,12 @@ export function createTableSort<T>(config: TableSortConfig<T>) {
     config.initial ?? { sortKey: "name", isAsc: true }
   );
 
-  const dataSort = (sortBy: keyof T & string) => {
-    const next = currentSort().sortKey === sortBy
-      ? { sortKey: sortBy as string, isAsc: !currentSort().isAsc }
-      : { sortKey: sortBy as string, isAsc: true };
-    setCurrentSort(next);
-
+  const sortAndWrite = (data: T[], state: SortState) => {
+    const sortBy = state.sortKey as keyof T & string;
     const selector = config.valueSelectors?.[sortBy];
     const getValue = (item: T) => (selector ? selector(item) : item?.[sortBy]);
 
-    const [tableData, setTableData] = config.data;
-    const sorted = Clone(tableData()).sort((a, b) => {
+    const sorted = Clone(data).sort((a, b) => {
       const aVal = getValue(a);
       const bVal = getValue(b);
 
@@ -66,12 +61,31 @@ export function createTableSort<T>(config: TableSortConfig<T>) {
         typeof aVal === "string" && typeof bVal === "string"
           ? collator.compare(aVal, bVal)
           : aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-      return next.isAsc ? cmp : -cmp;
+      return state.isAsc ? cmp : -cmp;
     });
 
+    const [, setTableData] = config.data;
     setTableData(() => sorted);
     config.syncSetters?.forEach((set) => set(() => sorted));
   };
 
-  return { currentSort, dataSort };
+  const dataSort = (sortBy: keyof T & string) => {
+    const next = currentSort().sortKey === sortBy
+      ? { sortKey: sortBy as string, isAsc: !currentSort().isAsc }
+      : { sortKey: sortBy as string, isAsc: true };
+    setCurrentSort(next);
+
+    const [tableData] = config.data;
+    sortAndWrite(tableData(), next);
+  };
+
+  /**
+   * Sorts `data` by the current sort state and writes it to the data signal
+   * and every `syncSetters` entry. Call from an effect when async source data
+   * arrives so the table content matches the sort indicator. Reads the sort
+   * state untracked, so such an effect only re-runs when the source changes.
+   */
+  const applySort = (data: T[]) => sortAndWrite(data, untrack(currentSort));
+
+  return { currentSort, dataSort, applySort };
 }

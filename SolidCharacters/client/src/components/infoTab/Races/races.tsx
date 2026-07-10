@@ -12,10 +12,11 @@ import {
   Table,
   Cell, 
   Column, 
-  Header, 
+  Header,
+  Row, 
 } from "coles-solid-library";
 import { useSearchParams } from "@solidjs/router";
-import { Paginator } from "../../../shared";
+import { createTableSort, getUserSettings, Paginator } from "../../../shared";
 import { Race } from "../../../models/generated";
 import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races";
 import { RaceMenu } from "./raceMenu/raceMenu";
@@ -33,8 +34,20 @@ const races: Component = () => {
   
   const srdRaces = useDnDRaces();
   const [searchParam,setSearchParam] = useSearchParams();
+  const [userSettings] = getUserSettings();
 
-  const displayResults = createMemo(()=>results().length > 0?results():srdRaces())
+  const system = createMemo(() => userSettings().dndSystem);
+
+  const is2014 = createMemo(() => system() === "2014" || system() === "both");
+
+  const columns = createMemo(() => is2014() ? ["name","legacy","options"] : ["name","options"])
+
+  const displayResults = createMemo(()=>results().length > 0 ? results() : srdRaces());
+
+  const {currentSort, dataSort, applySort} = createTableSort<Race>({
+    data: [tableData, setTableData],
+    syncSetters: [setResults],
+  })
 
   createEffect(() => {
     const list = srdRaces();
@@ -63,7 +76,7 @@ const races: Component = () => {
     const cur = currentRace();
 
     if (showRace() && cur?.name) {
-      setSearchParam({ name: cur.name})
+      setSearchParam({ name: cur?.name ?? ''})
     } else if (!showRace()) {
       setSearchParam({ name: ""})
     }
@@ -71,7 +84,7 @@ const races: Component = () => {
 
   createEffect(() => {
     const list = srdRaces();
-    setTableData(list);
+    applySort(list);
   })
 
   onMount(()=>{
@@ -95,30 +108,74 @@ const races: Component = () => {
     </div>
 
     <div class={`${styles.racesTable}`}>
-      <Table  data={paginatedRaces} columns={["name","options"]}  >
-          
-        <Column name="name">
-          <Header><></></Header>
+      <Show when={columns()} keyed>
+        <>
+          <Table  data={paginatedRaces} columns={columns()}  >
+                
+            <Column name="name" class={`${styles.nameCol}`}>
+              <Header onClick={() => dataSort("name")}>
+                Name
+                
+                <Show when={currentSort().sortKey === "name"}>
+                    <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+                  </Show>
+              </Header>
+            </Column>
 
-          <Cell<Race>>
-            { (race) => <span onClick={()=>{
-              setCurrentRace(race);
-              setShowRace(!showRace());
-            }}>
-              {race.name}
-            </span>}
-          </Cell>
-        </Column>
+            <Column name="legacy" class={`${styles.legacyCol}`}>
+              <Header onClick={() => dataSort("legacy")}>
+                Legacy
 
-        <Column name="options">
-          <Header><></></Header>
+                <Show when={currentSort().sortKey === "legacy"}>
+                  <span>{currentSort().isAsc ? " ▲" : " ▼"}</span>
+                </Show>
+              </Header>
+            </Column>
 
-          <Cell<Race>>
-            { (race) => <RaceMenu race={race} />}
-          </Cell>
-        </Column>
+            <Column name="options" class={`${styles.optionsCol}`}>
+              <Header><></></Header>
+            </Column>
 
-      </Table>
+          </Table>
+
+          <div class={`${styles.scrollable}`}>
+            <Table  data={paginatedRaces} columns={columns()}  >
+                
+              <Column name="name" class={`${styles.nameCol}`}>
+
+                <Cell<Race>>
+                  { (race) => <span>
+                    {race.name}
+                  </span>}
+                </Cell>
+              </Column>
+
+              <Column name="legacy" class={`${styles.legacyCol}`}>
+
+                <Cell<Race>>
+                  { (race) => <Show when={race.legacy === true}>
+                    <span>
+                      Legacy
+                    </span>
+                </Show>}
+                </Cell>
+              </Column>
+
+              <Column name="options" class={`${styles.optionsCol}`}>
+
+                <Cell<Race> onClick={(e)=>e.stopPropagation()}>
+                  { (race) => <RaceMenu race={race} />}
+                </Cell>
+              </Column>
+
+              <Row onClick={(e, race)=>{
+                setCurrentRace(race);
+                setShowRace(!showRace());
+              }}/>
+            </Table>
+          </div>
+        </>
+      </Show>
     </div>
 
     <Show when={showRace()}>

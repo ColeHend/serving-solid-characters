@@ -34,6 +34,8 @@ $margin: 5%;
     text-align: left;
 
     @include styledDndText;
+
+    @include styledDndTable;
 }
 
 .startingProfsRow {
@@ -41,6 +43,7 @@ $margin: 5%;
     flex-direction: row;
     flex-wrap: wrap;
     height: 25%; 
+    gap: 2%;
     
     
     span {
@@ -133,4 +136,8 @@ $margin: 5%;
             fill: #f6ecd2 !important;
         }
     }
+}
+
+.dot {
+    @include dot;
 }

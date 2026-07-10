@@ -1,4 +1,5 @@
 @use 'coles-solid-library/themes/variables' as vars;
+@use '../../../index.scss' as *;
 
 $mobile: 768px;
 
@@ -34,23 +35,15 @@ $mobile: 768px;
 
 .racesTable {
     margin: 0 auto;
-    width: 100%;
-    overflow-y: scroll;
-    height: 49vh;
 
     fill: var(--on-background-color);
 
-    table {
-        margin: 0 auto;
-    }
-
-    span:hover {
-        cursor: pointer;
-    }
-
+    
     @media screen and (max-width:$mobile) {
         width: 100%;
     }
+
+    @include viewPageTable;
 }
 
 .paginator {
@@ -65,4 +58,22 @@ $mobile: 768px;
 
 .title {
     text-align: center;
+}
+
+.scrollable {
+    overflow-y: scroll;
+    height: 49vh;
+}
+
+
+.nameCol {
+    width: 40%;
+}
+
+.legacyCol {
+    width: 30%;
+}
+
+.optionsCol {
+    width: 11%;
 }

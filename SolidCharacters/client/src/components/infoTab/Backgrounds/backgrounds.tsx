@@ -17,7 +17,7 @@ const Viewbackgrounds: Component = () => {
   const [searchResult, setSearchResult] = createSignal<Background[]>([]);
   const [tableData, setTableData] = createSignal<Background[]>([]);
   
-  const { currentSort, dataSort } = createTableSort<Background>({
+  const { currentSort, dataSort, applySort } = createTableSort<Background>({
     data: [tableData, setTableData],
     syncSetters: [setSearchResult],
   });
@@ -74,7 +74,7 @@ const Viewbackgrounds: Component = () => {
 
   createEffect(() => {
     const list = srdbackgrounds();
-    setTableData(list);
+    applySort(list);
   })
 
   onMount(() => {

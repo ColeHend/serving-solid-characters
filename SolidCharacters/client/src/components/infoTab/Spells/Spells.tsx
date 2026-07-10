@@ -63,9 +63,10 @@ const masterSpells: Component = () => {
   const [tableData, setTableData] = createSignal<Spell[]>([]);
   const [lastChar, setLastChar] = createSignal<string>("");
 
-  const { currentSort, dataSort } = createTableSort<Spell>({
+  const { currentSort, dataSort, applySort } = createTableSort<Spell>({
     data: [tableData, setTableData],
     syncSetters: [setSearchResults],
+    initial: {sortKey: "level", isAsc: true}
   });
 
   const paginateItems = createMemo(() =>
@@ -92,7 +93,7 @@ const masterSpells: Component = () => {
   createEffect(() => {
     const allSpells = dndSrdSpells();
 
-    setTableData(allSpells);
+    applySort(allSpells);
   });
 
   return (
