@@ -1,0 +1,61 @@
+@use '../../../index.scss' as vars;
+
+.view {
+    box-sizing: border-box;
+    @include vars.parchementBG;
+    height: 100%;
+    text-wrap: wrap;
+    text-align: left;
+    overflow-y: auto;
+    z-index: 0;
+    padding: 0 0 18px;
+    margin: 0;
+
+    h1 {
+        font-family: 'Mr_Eaves_Small_Caps';
+        font-weight: 100;
+        font-size: 1.8em;
+        text-wrap: wrap;
+        z-index: 2;
+        padding: 0;
+        margin: 0;
+    }
+
+    span,
+    label {
+        @include vars.styledDndText;
+        font-size: 15px;
+        text-wrap: wrap;
+    }
+}
+
+.dndStyledHeader {
+    @include vars.styledDndHeader;
+}
+
+.sectionLabel {
+    @include vars.FlankedLabel;
+    font-weight: 700;
+    font-size: 13.5px;
+    letter-spacing: .12em;
+    margin: 14px 20px 6px;
+}
+
+.section {
+    margin: 0 20px;
+}
+
+.sortRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    margin: 18px 20px 0;
+}

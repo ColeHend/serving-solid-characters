@@ -12,13 +12,29 @@ import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
 import { useSearchParams } from "@solidjs/router";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
-import { createTableSort } from "../../../shared";
-import { Body, Table, Column, Cell, Header, Row } from "coles-solid-library";
+import { createTableSort, createTableFilter, FilterFieldConfig, SortState } from "../../../shared";
+import { Body, Table, Column, Cell, Header, Row, Chip, Button, Icon } from "coles-solid-library";
+import { FilterAlt } from "coles-solid-library/icons";
 import { SpellMenu } from "./spellMenu/spellMenu";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { Spell } from "../../../models/generated";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import { FilterDialog } from "../../../shared/components/filterDialog/filterDialog";
+import { FilterChips } from "../../../shared/components/filterDialog/filterChips";
 
+const SPELL_INITIAL_SORT: SortState = { sortKey: "level", isAsc: true };
+
+const yesNo = (value: string) => (value === "true" ? "Yes" : "No");
+
+const spellFilterFields: FilterFieldConfig<Spell>[] = [
+  { key: "level", label: "Level" },
+  { key: "school", label: "School" },
+  { key: "castingTime", label: "Casting time" },
+  { key: "damageType", label: "Damage type" },
+  { key: "concentration", label: "Concentration", format: yesNo },
+  { key: "ritual", label: "Ritual", format: yesNo },
+  { key: "classes", label: "Class", getValues: (spell) => spell.classes },
+];
 
 const masterSpells: Component = () => {
   const dndSrdSpells = useDnDSpells();
@@ -60,17 +76,35 @@ const masterSpells: Component = () => {
   const [paginatedSpells, setPaginatedSpells] = createSignal<Spell[]>([]);
   const [searchResults, setSearchResults] = createSignal<Spell[]>([]);
   const [showSpell, setShowSpell] = createSignal(false);
+  const [showFilter, setShowFilter] = createSignal(false);
   const [tableData, setTableData] = createSignal<Spell[]>([]);
   const [lastChar, setLastChar] = createSignal<string>("");
 
-  const { currentSort, dataSort, applySort } = createTableSort<Spell>({
+  const { currentSort, dataSort, applySort, setSort } = createTableSort<Spell>({
     data: [tableData, setTableData],
     syncSetters: [setSearchResults],
-    initial: {sortKey: "level", isAsc: true}
+    initial: SPELL_INITIAL_SORT
+  });
+
+  const filter = createTableFilter<Spell>({
+    source: dndSrdSpells,
+    fields: spellFilterFields,
+    legacy: { getValue: (spell) => spell.legacy },
+    sort: {
+      currentSort,
+      setSort,
+      initial: SPELL_INITIAL_SORT,
+      options: [
+        { key: "name", label: "Name" },
+        { key: "school", label: "School" },
+        { key: "level", label: "Level" },
+        { key: "castingTime", label: "Casting time" },
+      ],
+    },
   });
 
   const paginateItems = createMemo(() =>
-    searchResults().length > 0 ? searchResults() : dndSrdSpells()
+    searchResults().length > 0 ? searchResults() : tableData()
   );
 
   createEffect(() => {
@@ -91,21 +125,23 @@ const masterSpells: Component = () => {
   })
 
   createEffect(() => {
-    const allSpells = dndSrdSpells();
-
-    applySort(allSpells);
+    applySort(filter.filteredData());
   });
 
   return (
     <Body class={`${styles.body}`}>
       <h1 class={`${styles.bodyTitle}`}>Spells</h1>
       <div class={`${styles.searchBar}`}>
-        <SearchBar 
+        <SearchBar
           setResults={setSearchResults}
           dataSource={tableData}
           searchFunction={(spell,search)=> spell.name.toLowerCase().trim().includes(search.toLowerCase().trim())}
         />
+        <Button onClick={() => setShowFilter(true)} title="Filter & sort">
+          <Icon icon={FilterAlt} size="medium" />
+        </Button>
       </div>
+      <FilterChips filter={filter} class={`${styles.filterChips}`} />
       <div class={`${styles.spellsBody}`}>
         <Table
           data={() => paginatedSpells()}
@@ -147,8 +183,8 @@ const masterSpells: Component = () => {
             data={() => paginatedSpells()} 
             columns={["name","school","level","menu"]}> 
             <Column name="name" class={`${styles.SpellName}`}>
-              <Cell<Spell> rowNumber={1}>{(spell) => <span>
-                {spell.name}
+              <Cell<Spell> rowNumber={1}>{(spell) => <span class={`${styles.spellTitle}`}>
+                <span>{spell.name}</span> <Show when={spell.legacy === true}> <Chip value="Legacy" /> </Show>
               </span>}</Cell>
             </Column>
 
@@ -181,6 +217,10 @@ const masterSpells: Component = () => {
 
       <Show when={showSpell() && currentSpell()}>
         <SpellModal spell={currentSpell as any} backgroundClick={[showSpell,setShowSpell]} />
+      </Show>
+
+      <Show when={showFilter()}>
+        <FilterDialog title="Spells" show={[showFilter, setShowFilter]} filter={filter} />
       </Show>
 
       

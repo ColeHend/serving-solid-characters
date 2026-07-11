@@ -87,5 +87,20 @@ export function createTableSort<T>(config: TableSortConfig<T>) {
    */
   const applySort = (data: T[]) => sortAndWrite(data, untrack(currentSort));
 
-  return { currentSort, dataSort, applySort };
+  /**
+   * Sets an exact sort state (key + direction) and re-sorts the current table
+   * data, unlike `dataSort` which toggles. Used by controls that pick a full
+   * sort state, e.g. a filter dialog's sort picker or a sort-chip reset.
+   * No-ops on an unchanged state so controls that echo their value from a
+   * tracked effect (e.g. the library Select) cannot loop.
+   */
+  const setSort = (next: SortState) => {
+    const current = untrack(currentSort);
+    if (current.sortKey === next.sortKey && current.isAsc === next.isAsc) return;
+    setCurrentSort(next);
+    const [tableData] = config.data;
+    sortAndWrite(tableData(), next);
+  };
+
+  return { currentSort, dataSort, applySort, setSort };
 }

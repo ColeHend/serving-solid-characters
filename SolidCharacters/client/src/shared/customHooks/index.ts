@@ -16,6 +16,7 @@ export * from "./utility/tools/httpClient";
 export * from "./utility/tools/mobileCheck";
 export * from "./utility/tools/stringsHelper";
 export * from "./utility/tools/tableSort";
+export * from "./utility/tools/tableFilter";
 export * from "./utility/localDB/userSettingDB";
 export * from "./utility/tools/tabBar";
 export * from "./utility/tools/imageToText";
