@@ -46,7 +46,9 @@ vi.mock('coles-solid-library', () => ({
   Checkbox: (p: any) => <label><input type="checkbox" checked={p.checked} onChange={()=>p.onChange?.(!p.checked)} />{p.label}</label>,
   Button: (p: any) => <button disabled={p.disabled} onClick={()=>p.onClick?.()}>{p.children || 'Button'}</button>,
   Chip: (p: any) => <span>{p.value}<button onClick={()=>p.remove?.()}>x</button></span>,
-  FormField: (p: any) => <label>{p.name}{p.children}</label>
+  FormField: (p: any) => <label>{p.name}{p.children}</label>,
+  Container: (p: any) => <div>{p.children}</div>,
+  Icon: () => <i />
 }));
 
 // Section stubs
@@ -131,7 +133,7 @@ describe('Subclasses behavior (unified save/update)', () => {
 
   it('prefills fields when existing subclass selected', async () => {
     mockSubclasses = [];
-    mockSubclasses.push({ name: 'Echo', parent_class: 'Wizard', description: 'echo desc', features: { 3:[{ name:'Echo Step', description:'Teleport a short distance'}]}, storage_key: 'wizard__echo', spellcasting: null });
+    mockSubclasses.push({ name: 'Echo', parentClass: 'Wizard', description: 'echo desc', features: { 3:[{ name:'Echo Step', description:'Teleport a short distance'}]}, storage_key: 'wizard__echo', spellcasting: null });
     setup();
     const chooser = document.querySelectorAll('select')[0] as HTMLSelectElement;
     fireEvent.change(chooser, { target: { value: 'wizard__echo' }, currentTarget: { value: 'wizard__echo' } });
@@ -176,7 +178,7 @@ describe('Subclasses behavior (unified save/update)', () => {
 
   it('prefills subclass lacking explicit storage_key (fallback derived)', async () => {
     mockSubclasses = [];
-    mockSubclasses.push({ name: 'NoKey', parent_class: 'Wizard', description: 'nokey desc', features: {}, spellcasting: null });
+    mockSubclasses.push({ name: 'NoKey', parentClass: 'Wizard', description: 'nokey desc', features: {}, spellcasting: null });
     setup();
     const chooser = document.querySelectorAll('select')[0] as HTMLSelectElement;
     fireEvent.change(chooser, { target: { value: 'wizard__nokey' }, currentTarget: { value: 'wizard__nokey' } });
@@ -190,7 +192,7 @@ describe('Subclasses behavior (unified save/update)', () => {
 
   it('reset changes restores original values and disables update', async () => {
     mockSubclasses = [];
-    mockSubclasses.push({ name: 'ResetMe', parent_class: 'Wizard', description: 'orig desc', features: {}, storage_key: 'wizard__resetme', spellcasting: null });
+    mockSubclasses.push({ name: 'ResetMe', parentClass: 'Wizard', description: 'orig desc', features: {}, storage_key: 'wizard__resetme', spellcasting: null });
     setup();
     const chooser = document.querySelectorAll('select')[0] as HTMLSelectElement;
     fireEvent.change(chooser, { target: { value: 'wizard__resetme' }, currentTarget: { value: 'wizard__resetme' } });

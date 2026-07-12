@@ -81,6 +81,7 @@ const EquipmentSection: Component<Props> = (p) => {
     clearPending();
   };
   return (
+    <>
     <FlatCard
       icon={HomeRepairService}
       headerName="Equipment"
@@ -132,6 +133,9 @@ const EquipmentSection: Component<Props> = (p) => {
           </Show>
         </div>
       </div>
+    </FlatCard>
+    {/* Modals sit outside FlatCard so the header Edit button works while the card is collapsed
+        (FlatCard unmounts its children when closed) */}
       <Modal title="Edit Equipment Groups" show={[show, setShow]}>
         <FormField name="Option Keys (comma sep)">
           <Input
@@ -236,7 +240,7 @@ const EquipmentSection: Component<Props> = (p) => {
           </div>
         </Modal>
       </Modal>
-    </FlatCard>
+    </>
   );
 };
 export default EquipmentSection;
