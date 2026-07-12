@@ -62,7 +62,7 @@ describe('homebrewManager (5E internal types)', () => {
     await homebrewManager.addClass(sampleClass());
     await homebrewManager.updateClass({ ...sampleClass(), primaryAbility: 'INT' });
     const updated = homebrewManager.classes().find(c => c.name === 'TestClass');
-    expect(updated?.primary_ability).toBe('INT');
+    expect(updated?.primaryAbility).toBe('INT');
   });
 
   it('adds & updates an item', async () => {
@@ -107,9 +107,10 @@ describe('homebrewManager (5E internal types)', () => {
   });
 
   it('adds, updates & removes a background', async () => {
-    await homebrewManager.addBackground(sampleBackground());
+    const background = sampleBackground();
+    await homebrewManager.addBackground(background);
     expect(homebrewManager.backgrounds().some(b => b.name === 'Sailor')).toBe(true);
-    await homebrewManager.updateBackground({ ...sampleBackground(), desc: 'Sea life veteran' } as any);
+    await homebrewManager.updateBackground({ ...background, desc: 'Sea life veteran' } as any);
     expect(homebrewManager.backgrounds().find(b => b.name === 'Sailor')?.desc).toContain('veteran');
     await homebrewManager.removeBackground('Sailor');
     expect(homebrewManager.backgrounds().some(b => b.name === 'Sailor')).toBe(false);

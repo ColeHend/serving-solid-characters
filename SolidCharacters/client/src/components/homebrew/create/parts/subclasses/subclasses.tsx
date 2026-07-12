@@ -132,7 +132,7 @@ const Subclasses: Component = () => {
     const dataSpellcasting = buildDataSpellcasting(uiSpellcasting as unknown as UISpellcastingState, SubclassFormGroup.get('spellsKnownPerLevel') || []);
     return {
       name: subclassName(),
-      parent_class: subclassClass(),
+      parentClass: subclassClass(),
       description: SubclassFormGroup.get('description') || '',
       features,
       spellcasting: dataSpellcasting,

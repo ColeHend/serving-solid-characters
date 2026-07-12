@@ -200,12 +200,14 @@ export const Classes: Component = () => {
     // Basic fields
     setField('name', cls.name || '');
     // No description field in Class5E currently; leave blank
-    const dieNum = typeof cls.hitDie === 'string' ? parseInt(cls.hitDie.replace(/^[dD]/, '') || '0') : (cls as any).hitDie || 0;
+    // Persisted / SRD class data is snake_case (see toClass5E in classAdapter.ts); fall back to camelCase
+    const hitDieRaw = (cls as any).hit_die ?? cls.hitDie;
+    const dieNum = typeof hitDieRaw === 'string' ? parseInt(hitDieRaw.replace(/^[dD]/, '') || '0') : hitDieRaw || 0;
     setField('hitDie', dieNum);
     // Map string stats (e.g. 'INT') to Stat enum values expected by form controls
     const statMap: Record<string, Stat> = { 'STR': Stat.STR, 'DEX': Stat.DEX, 'CON': Stat.CON, 'INT': Stat.INT, 'WIS': Stat.WIS, 'CHA': Stat.CHA };
     // Primary ability can be a comma separated list in source -> map each to Stat enum
-    const primaryRaw = (cls.primaryAbility || (cls as any).primaryAbility || '').toUpperCase();
+    const primaryRaw = ((cls as any).primary_ability || cls.primaryAbility || '').toUpperCase();
     if (primaryRaw) {
       const parts: string[] = primaryRaw.split(',').map((p: string) => p.trim().slice(0, 3)).filter(Boolean);
       const mapped: Stat[] = parts.map((p: string) => statMap[p]).filter((v: Stat | undefined): v is Stat => v !== undefined);
@@ -213,7 +215,7 @@ export const Classes: Component = () => {
       
       if (mapped.length) setField('primaryStat', mapped);
     }
-    const saves = cls.savingThrows || (cls as any).savingThrows || [];
+    const saves: string[] = (cls as any).saving_throws || cls.savingThrows || [];
     const savingThrowEnums = saves.map(st => statMap[st.toUpperCase()] ?? st).filter(v => v !== undefined);
     setField('savingThrows', savingThrowEnums);
 
@@ -232,7 +234,10 @@ export const Classes: Component = () => {
     ClassFormGroup.set('skills', (profs.skills || []) as any);
 
     // Starting equipment (attempt to pull names)
-  const startingEquipNames = (cls.startingEquipment || []).map((e: any) => e?.item?.name || e?.name || '').filter(Boolean);
+  const startingEquip: any[] = (cls as any).starting_equipment || cls.startingEquipment || [];
+  const startingEquipNames = startingEquip.flatMap((e: any) =>
+    Array.isArray(e?.items) ? e.items.map((i: any) => i?.name ?? i) : [e?.item?.name || e?.name]
+  ).filter(Boolean);
   // The UI displays weaponStart / armorStart / itemStart; without item classification, default all to itemStart
   setField('itemStart', startingEquipNames);
   // Keep legacy field in case other code reads it
