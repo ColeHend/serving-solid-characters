@@ -50,6 +50,21 @@ export const ExpansionPanel = passthrough('ExpansionPanel');
 export const FormField = passthrough('FormField');
 export const FieldError = passthrough('FieldError');
 export const Checkbox: Component<AnyProps> = (p) => <input type="checkbox" data-mock="Checkbox" {...p} />;
+export const RadioGroup: Component<AnyProps> = (p) => {
+  const [local, rest] = splitProps(p, ['children', 'onChange', 'value', 'label', 'name']);
+  return (
+    <div data-mock="RadioGroup" role="radiogroup" data-value={local.value} {...rest}>
+      {local.label}
+      {local.children}
+    </div>
+  );
+};
+export const Radio: Component<AnyProps> = (p) => (
+  <label data-mock="Radio">
+    <input type="radio" value={p.value} disabled={p.disabled} onChange={() => p.onChange?.(p.value)} />
+    {p.label}
+  </label>
+);
 export const Select: Component<AnyProps> = (p) => {
   const [local, rest] = splitProps(p, ['children', 'onChange', 'onSelect', 'value']);
   return (

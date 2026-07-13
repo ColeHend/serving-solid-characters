@@ -143,6 +143,32 @@ describe('createTableSort', () => {
     expect(tableData().map(r => r.level)).toEqual([3, 2, 1]);
   });
 
+  it('setSort applies an exact key and direction and pushes to syncSetters', () => {
+    const { tableData, results, currentSort, setSort, dataSort } = setup();
+
+    setSort({ sortKey: 'name', isAsc: false });
+
+    expect(currentSort()).toEqual({ sortKey: 'name', isAsc: false });
+    expect(tableData().map(r => r.name)).toEqual(['Wand of Webs', 'Mace', 'Axe']);
+    expect(results()).toEqual(tableData());
+
+    // a subsequent header click toggles from the state setSort established
+    dataSort('name');
+    expect(currentSort()).toEqual({ sortKey: 'name', isAsc: true });
+    expect(tableData().map(r => r.name)).toEqual(['Axe', 'Mace', 'Wand of Webs']);
+  });
+
+  it('setSort is a no-op when the state is unchanged (Select echo safety)', () => {
+    const { tableData, results, setSort } = setup({ initial: { sortKey: 'level', isAsc: true } });
+    const dataBefore = tableData();
+    const resultsBefore = results();
+
+    setSort({ sortKey: 'level', isAsc: true });
+
+    expect(tableData()).toBe(dataBefore);
+    expect(results()).toBe(resultsBefore);
+  });
+
   it('sorts comma-grouped costs correctly through costToCopper', () => {
     const priced: TestRow[] = [
       { name: 'Apparatus', level: 1, cost: '1,500 gp' },

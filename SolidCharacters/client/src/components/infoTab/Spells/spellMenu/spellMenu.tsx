@@ -11,7 +11,8 @@ import { AddSpell } from "../../../../shared/customHooks/utility/tools/addSpellT
 
 interface SpellMenuProps {
   spell: Spell;
-  lastChar: [Accessor<string>, Setter<string>]
+  lastChar: [Accessor<string>, Setter<string>];
+  onView: (e:Event) => void;
 }
 
 export const SpellMenu: Component<SpellMenuProps> = (props) => {
@@ -44,6 +45,9 @@ export const SpellMenu: Component<SpellMenuProps> = (props) => {
           () => navigate(`/homebrew/create/spells?name=${props.spell.name}`)
         }>
         {checkForHomebrew(props.spell)?"Edit":"Clone & Edit"}
+      </MenuItem>
+      <MenuItem onClick={props.onView}>
+        view
       </MenuItem>
       <MenuItem onClick={()=>setShowAddSpell(old => !old)}>
         Add to Character
