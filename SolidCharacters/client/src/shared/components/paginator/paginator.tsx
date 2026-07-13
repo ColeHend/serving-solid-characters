@@ -54,8 +54,8 @@ const Paginator = <T,>(props: Props<T[]>) => {
     
   return (
     <div class={`${stylin()?.tertiary} ${style.paginator} `}>
-      <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(1)} class={is_trannsparent() ? style.transparent : ""}>←←</Button>
-      <Button disabled={currentPage() === 1} onClick={()=>setCurrentPage(currentPage() - 1)} class={is_trannsparent() ? style.transparent : ""}>←</Button>
+      <Button disabled={currentPage() <= 1} onClick={()=>setCurrentPage(1)} class={is_trannsparent() ? style.transparent : ""}>←←</Button>
+      <Button disabled={currentPage() <= 1} onClick={()=>setCurrentPage(currentPage() - 1)} class={is_trannsparent() ? style.transparent : ""}>←</Button>
       <Select value={itemsPerPage()} onChange={(e)=>setItemsPerPage(e)} class={is_trannsparent() ? style.transparent : ""}>
         <For each={ItemsPerPageArr}>
           {(item) => 

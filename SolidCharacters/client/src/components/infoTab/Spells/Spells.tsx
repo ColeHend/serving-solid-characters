@@ -202,7 +202,11 @@ const masterSpells: Component = () => {
               }}>{(spell) => <>
                 <SpellMenu 
                   spell={spell}
-                  lastChar={[lastChar, setLastChar]}/>
+                  lastChar={[lastChar, setLastChar]}
+                  onView={()=>{
+                    setCurrentSpell(spell);
+                    setShowSpell((old)=>!old);
+                  }}/>
               </> }</Cell>
             </Column>
 

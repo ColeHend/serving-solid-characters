@@ -1,4 +1,5 @@
-import { Accessor, For, Setter, Show, createEffect, createSignal } from "solid-js";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Accessor, For, Setter, Show, createEffect, createMemo, createSignal } from "solid-js";
 import { Modal, Select, Option, RadioGroup, Radio } from "coles-solid-library";
 import styles from "./filterDialog.module.scss";
 import { DndDialogHeader } from "../dndDialogHeader/dndDialogHeader";
@@ -16,6 +17,8 @@ interface FilterDialogProps<T> {
 export function FilterDialog<T>(props: FilterDialogProps<T>) {
   const [viewRef, setViewRef] = createSignal<HTMLElement | null>(null);
 
+  const sort = createMemo(() => props?.filter?.sort);
+
   // The library Modal is a fixed-height dark surface; percentage heights don't
   // resolve through its body wrapper, so a short parchment view leaves a dark
   // gap. Make the wrapper a flex column (the view fills via flex: 1) and paint
@@ -25,9 +28,16 @@ export function FilterDialog<T>(props: FilterDialogProps<T>) {
     if (!ref) return;
     const modalBody = ref.parentElement;
     
+    if (modalBody) {
+      modalBody.style.position = "absolute";
+      modalBody.style.width = "100%"
+
+    }
+
     const dialog = modalBody?.parentElement;
     if (dialog) {
       dialog.style.paddingBottom = "0";
+      
     }
   });
 
@@ -46,26 +56,26 @@ export function FilterDialog<T>(props: FilterDialogProps<T>) {
           </div>
         </DndDialogHeader>
 
-        <Show when={props.filter.sort} keyed>
-          {(sort) => (
+        <Show when={props.filter.sort !== undefined} keyed>
+          {(_) => (
             <>
               <h4 class={`${styles.sectionLabel}`}>Sort</h4>
               <div class={`${styles.section} ${styles.sortRow}`}>
                 <Select
-                  value={sort.currentSort().sortKey}
+                  value={props?.filter?.sort?.currentSort().sortKey}
                   onChange={(key: string) =>
-                    sort.setSort({ sortKey: key, isAsc: sort.currentSort().isAsc })
+                    sort()?.setSort({ sortKey: key, isAsc: sort()?.currentSort().isAsc ?? false })
                   }
                 >
-                  <For each={sort.options}>
+                  <For each={sort()?.options}>
                     {(o) => <Option value={o.key}>{o.label}</Option>}
                   </For>
                 </Select>
                 <RadioGroup
                   name="filterSortDirection"
-                  value={sort.currentSort().isAsc ? "asc" : "desc"}
+                  value={sort()?.currentSort().isAsc ? "asc" : "desc"}
                   onChange={(v) =>
-                    sort.setSort({ sortKey: sort.currentSort().sortKey, isAsc: v === "asc" })
+                    sort()?.setSort({ sortKey: sort()?.currentSort().sortKey ?? "", isAsc: v === "asc" })
                   }
                 >
                   <Radio value="asc" label="Ascending ▲" />
