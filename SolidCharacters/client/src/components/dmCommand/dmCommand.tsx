@@ -1,27 +1,32 @@
-import { Component, For, createSignal, onMount, onCleanup, createEffect, createMemo } from "solid-js";
-import { Body, Button, Icon, Menu, Modal } from "coles-solid-library";
+import { Component, For, createSignal, onMount, onCleanup, createEffect, createMemo, Show } from "solid-js";
+import { Body, Button, Icon, Menu, Modal, Select, Option } from "coles-solid-library";
 import { isMobile } from "coles-solid-library/dist/tools/tools.js";
+import { Add, FilterAlt } from "coles-solid-library/icons";
 import GetTileElement, { tiles, getTileMetadata, TileData } from "./tileList";
 import style from "./dmCommand.module.scss";
-import { FilterAlt } from "coles-solid-library/icons";
 import { JSX } from "solid-js";
+import { useActiveEvents } from "./hooks/activeEvents";
 
 const GAP = 10;
 
 const DmCommand: Component = () => {
     const maxColumns = isMobile() ? 3 : 6;
-    // Filter Settings
-    const [showFilterSettings, setShowFilterSettings] = createSignal<boolean>(false);
-    const [filterModal, setFilterModal] = createSignal<Element>()
-    const [filterSettings, setFilterSettings] = createSignal<Record<string, string>>({});
+    // Set Campaign And Session
+    const [campaignSelected, setCampaignSelected] = createSignal<string>(); 
+    const [sessionSelected, setSessionSelected] = createSignal<string>();
+    
+    // Add Session Settings
+    const [showSessionSettings, setShowSessionSettings] = createSignal<boolean>(false);
+    const [sessionModal, setSessionModal] = createSignal<Element>()
     
     // Tiles stuff
+    const { getActiveEvents, selectActiveEvent } = useActiveEvents();
     const [tileList, setTileList] = createSignal<tiles[]>([
-        'main',
+        'activeEvent',
     ]);
     const completeTileList = createMemo(()=>{
         return tileList().map((key)=>[
-            GetTileElement(key),
+            GetTileElement(key, campaignSelected() ?? '', sessionSelected() ?? ''),
             getTileMetadata(key),
         ]);
     });
@@ -29,9 +34,29 @@ const DmCommand: Component = () => {
         // Filter logic goes here
         return completeTileList().filter(([element, data])=> true) as Array<[JSX.Element, TileData]>;
     });
+    const Capitalize = (input: string) => input.slice(0,1).toUpperCase() + input.slice(1)
     
     const [cellSize, setCellSize] = createSignal(0);
     let gridRef: HTMLDivElement | undefined;
+    const activeButtonBorderColor = createMemo(()=>{
+        const actEvents = getActiveEvents();
+        return actEvents.map((ev)=>{
+            switch(ev.type) {
+                case 'combat':
+                    return 'rgb(149, 0, 0)';
+                case 'exploration':
+                    return 'rgb(0, 88, 221)';
+                case 'social':
+                    return 'rgb(136, 4, 185)';
+                case 'scene':
+                    return  'rgb(13, 140, 149)';
+                case 'travel':
+                    return 'rgb(4, 88, 22)';
+                default:
+                    return '#fff';
+            }
+        });
+    })
 
     onMount(() => {
         document.body.classList.add("character-view-bg");
@@ -51,7 +76,7 @@ const DmCommand: Component = () => {
 
     // Add class to modal
     createEffect(()=>{
-        const modal = filterModal();
+        const modal = sessionModal();
         if (modal) {
             modal.classList.add(`${style.modal}`);
         }
@@ -59,19 +84,49 @@ const DmCommand: Component = () => {
 
     return (
         <Body class={`${style.mainBody}`}>
-            <div class={`${style.header}`}>
-                <h1>DM Command</h1>
-                <Button transparent onClick={()=>{
-                    setShowFilterSettings(true);
-                }}><Icon icon={FilterAlt} /></Button>
-                <Modal 
-                    title="Filter Settings" 
-                    show={[showFilterSettings, setShowFilterSettings]}
-                    width={isMobile() ? '' : '20vw'}
-                    height={'30vh'}
-                    ref={setFilterModal}>
+            <div class={`${style.headerWrap}`}>
+                <div class={`${style.header}`}>
+                    <h1>DM Command</h1>
+                    <span>
+                        <Select
+                        placeholder="Select Campaign..."
+                        value={campaignSelected()} 
+                        onChange={(v)=>setCampaignSelected(v)}>
+                            <Option value="">None</Option>
+                        </Select>
+                    </span>
+                    <span>
+                        <Select
+                        placeholder="Select Session..."
+                        value={sessionSelected()} 
+                        onChange={(v)=>setSessionSelected(v)}>
+                            <Option value=''>None</Option>
+                        </Select>
+                    </span>
+                    <Button transparent onClick={()=>{
+                        setShowSessionSettings(true);
+                    }}><span><Icon icon={Add} /> Session</span></Button>
+                    <Modal 
+                        title="Add Session" 
+                        show={[showSessionSettings, setShowSessionSettings]}
+                        width={isMobile() ? '' : '20vw'}
+                        height={'30vh'}
+                        ref={setSessionModal}>
 
-                </Modal>
+                    </Modal>
+                </div>
+                <Show when={getActiveEvents().length > 0}>
+                    <div class={`${style.activeBar}`}>
+                        <For each={getActiveEvents()}>{(activeEvent, i)=>
+                            <Button class={style.activeButtonOuter} style={{'border-color': activeButtonBorderColor()[i()]}} onClick={()=>selectActiveEvent(activeEvent.id)}>
+                                <span class={style.activeButton}>
+                                    <span>{Capitalize(activeEvent.type)}</span>
+                                    <span>{activeEvent.name}</span>
+                                </span>
+                            </Button>
+                        }</For>
+                    </div>
+                </Show>
             </div>
             <div class={`${style.body}`}>
                 <div ref={gridRef} style={{

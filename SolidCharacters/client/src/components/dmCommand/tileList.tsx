@@ -1,5 +1,6 @@
-import { JSX } from "solid-js";
+import { JSX, Match, Switch } from "solid-js";
 import styles from './tileList.module.scss';
+import { ActiveEvent } from "./tiles/activeEvent/activeEvent";
 
 export interface TileData {
     width: number;
@@ -18,21 +19,34 @@ interface TileMetadata {
     tags?: string[];
 }
 
-export type tiles = 'main' | string;
+export type tiles = 'activeEvent' | string;
 
 /// keep it to a max width of 3 for mobile;
 const tileSizes: Record<tiles, TileData> = {
+    'activeEvent': {
+        width: 3,
+        height: 2,
+        info: {
+            type: 'campaign',
+            metadata: {}
+        }
+    }
 };
 
-export default function GetTileElement(tile: tiles): JSX.Element {
-    switch (tile) {
-        default:
-            return <div class={`${styles.mainBody}`} style={{
-                width: '100%',
-                height: '100%',
-                'text-align': 'center',
-            }}>Unknown Tile</div>;
-    }
+export default function GetTileElement(tile: tiles, campaign: string, session: string): JSX.Element {
+
+    return <div class={`${styles.mainBody}`}>
+                <Switch 
+                    fallback={
+                        <div class={`${styles.mainBody}`}>
+                            Unknown Tile
+                        </div>
+                    }>
+                    <Match when={tile === 'activeEvent'}>
+                        <ActiveEvent campaign={campaign} session={session}/>
+                    </Match>
+                </Switch>
+            </div>
 }
 
 export function getTileMetadata(tile: tiles): TileData {

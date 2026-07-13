@@ -4,18 +4,45 @@ $mobile: 768px;
     background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
     min-height: 80vh;
 }
+
+.headerWrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.activeButtonOuter {
+    padding: 5px 11px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    border: 1px solid;
+}
+.activeButton {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    :nth-child(1) {
+        font-size: smaller;
+        font-weight: 400;
+    }
+}
+
 .header {
     display: flex;
     flex-direction: row;
-    max-width: 30%;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 55%;
     @media screen and (max-width: $mobile) {
         max-width: 100%;
     }
-    h1 {
-        flex-grow: 1;
-    }
     
 }
+
+.activeBar {
+    display: flex;
+    flex-direction: row;
+}
+
 .body {
     margin: 0px;
     padding: 0px;
