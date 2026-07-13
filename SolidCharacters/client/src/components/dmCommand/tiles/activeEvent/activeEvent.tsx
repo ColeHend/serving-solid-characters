@@ -14,6 +14,7 @@ import { RestEvent } from "./events/rest/rest";
 import { SceneEvent } from "./events/scene/scene";
 import { CustomEvent } from "./events/custom/custom";
 import styles from './activeEvent.module.scss';
+import { isMobile } from "coles-solid-library/dist/tools/tools.js";
 
 interface ActiveEventProps {
     campaign: string;
@@ -58,14 +59,18 @@ export const ActiveEvent: Component<ActiveEventProps> = (props) => {
                             value={event().name}
                             onChange={(e) => renameActiveEvent(event().id, e.currentTarget.value)} />
                     </Show>
-                    <span class={styles.headerSpacer} />
-                    <Button transparent
-                        class={`${styles.resolveBtn} ${event().resolved ? styles.resolved : ''}`}
-                        onClick={() => toggleResolved(event().id)}>
-                        {event().resolved ? 'Resolved ✓' : 'Mark resolved'}
-                    </Button>
-                    <Button transparent class={styles.closeBtn}
-                        onClick={() => removeActiveEvent(event().id)}>✕</Button>
+                    <Show when={!isMobile()}>
+                        <span class={styles.headerSpacer} />
+                    </Show>
+                    <span class={styles.resolvedBtnGroup}>
+                        <Button transparent
+                            class={`${styles.resolveBtn} ${event().resolved ? styles.resolved : ''}`}
+                            onClick={() => toggleResolved(event().id)}>
+                            {event().resolved ? 'Resolved ✓' : 'Mark resolved'}
+                        </Button>
+                        <Button transparent class={styles.closeBtn}
+                            onClick={() => removeActiveEvent(event().id)}>✕</Button>
+                    </span>
                 </div>
                 <EventNav onOpenTimeline={() => setShowTimeline(true)} />
                 <div class={styles.eventBody}>

@@ -18,6 +18,27 @@
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+    @media screen and (max-width: dm.$mobile) {
+        flex-wrap: nowrap;
+        overflow-x: hidden;
+        button {
+            font-size: 11px;
+        }
+    }
+}
+.resolvedBtnGroup {
+    display: flex;
+    flex-direction: row;
+    :first-child {
+        font-size: 9px !important;
+        button {
+            padding: 2px;
+        }
+    }
+    :last-child {
+        margin: 0px;
+        margin-left: 3px;
+    }
 }
 
 .eventName {
@@ -26,6 +47,9 @@
     font-size: 26px;
     font-weight: 400;
     letter-spacing: 0.04em;
+    @media screen and (max-width: dm.$mobile) {
+        font-size: 20px;
+    }
 }
 
 .eventNameInput {
