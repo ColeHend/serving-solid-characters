@@ -38,16 +38,16 @@ const DmCommand: Component = () => {
     
     const [cellSize, setCellSize] = createSignal(0);
     let gridRef: HTMLDivElement | undefined;
-    const activeButtonBorderColor = createMemo(()=>{
+    const activeButtonColor = createMemo(()=>{
         const actEvents = getActiveEvents();
         return actEvents.map((ev)=>{
             switch(ev.type) {
                 case 'combat':
-                    return 'rgb(149, 0, 0)';
+                    return 'rgb(173, 5, 5)';
                 case 'exploration':
                     return 'rgb(0, 88, 221)';
                 case 'social':
-                    return 'rgb(136, 4, 185)';
+                    return 'rgb(160, 12, 213)';
                 case 'scene':
                     return  'rgb(13, 140, 149)';
                 case 'travel':
@@ -118,9 +118,12 @@ const DmCommand: Component = () => {
                 <Show when={getActiveEvents().length > 0}>
                     <div class={`${style.activeBar}`}>
                         <For each={getActiveEvents()}>{(activeEvent, i)=>
-                            <Button class={style.activeButtonOuter} style={{'border-color': activeButtonBorderColor()[i()]}} onClick={()=>selectActiveEvent(activeEvent.id)}>
+                            <Button 
+                            class={style.activeButtonOuter} 
+                            style={{'border-color': activeButtonColor()[i()]}} 
+                            onClick={()=>selectActiveEvent(activeEvent.id)}>
                                 <span class={style.activeButton}>
-                                    <span>{Capitalize(activeEvent.type)}</span>
+                                    <span style={{color: activeButtonColor()[i()]}}>{Capitalize(activeEvent.type)}</span>
                                     <span>{activeEvent.name}</span>
                                 </span>
                             </Button>
