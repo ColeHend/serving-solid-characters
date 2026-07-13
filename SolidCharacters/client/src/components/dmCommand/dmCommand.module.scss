@@ -18,7 +18,11 @@
     --dm-hp-high: #4caf6a;
     --dm-hp-mid: #d8a53a;
     --dm-hp-low: #cf5050;
-    --text-color: #fff;
+    :global(input),
+    :global(textarea),
+    :global(.coles-solid-selectControl) {
+        color: var(--on-container-color);
+    }
 }
 
 // Darker, more saturated variants so dots/labels stay legible on light surfaces.
@@ -35,7 +39,6 @@
     --dm-hp-high: #2e7d46;
     --dm-hp-mid: #9c7410;
     --dm-hp-low: #b03325;
-    --text-color: #000;
 }
 
 .headerWrap {
