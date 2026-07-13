@@ -1,0 +1,126 @@
+@use '../../../../shared/dmMixins' as dm;
+
+.exploration {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.countersRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.counter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.counterLabel {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.65;
+}
+
+.counterControls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.tickBtn {
+    min-width: 22px;
+    padding: 0 6px !important;
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 22%, transparent) !important;
+    border-radius: 6px;
+}
+
+.tick {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--on-surface-color) 35%, transparent);
+}
+
+.tickSuccess {
+    background-color: var(--dm-hp-high);
+    border-color: var(--dm-hp-high);
+}
+
+.tickFailure {
+    background-color: var(--dm-hp-low);
+    border-color: var(--dm-hp-low);
+}
+
+.spacer {
+    flex: 1;
+}
+
+.statusPill {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 12px;
+    border-radius: 999px;
+    color: var(--dm-accent);
+    border: 1px solid color-mix(in srgb, var(--dm-accent) 55%, transparent);
+    background-color: color-mix(in srgb, var(--dm-accent) 10%, transparent);
+}
+
+.addCheckBtn {
+    font-size: 12px;
+    padding: 2px 10px !important;
+    border: 1px dashed color-mix(in srgb, var(--on-surface-color) 35%, transparent) !important;
+    border-radius: 8px;
+}
+
+.checks {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.checkRow {
+    @include dm.addRow;
+}
+
+.dcLabel {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.55;
+}
+
+.dcInput {
+    width: 56px;
+
+    input {
+        text-align: center;
+    }
+}
+
+.removeBtn {
+    min-width: 24px;
+    padding: 0 6px !important;
+    opacity: 0.5;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.notes {
+    width: 100%;
+    min-height: 72px;
+    box-sizing: border-box;
+}

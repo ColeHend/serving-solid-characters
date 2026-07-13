@@ -1,0 +1,78 @@
+@use '../../../../shared/dmMixins' as dm;
+
+.travel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fieldsRow {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 110px;
+}
+
+.fieldLabel {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.65;
+}
+
+.chanceWrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    width: 80px;
+
+    input {
+        text-align: center;
+    }
+}
+
+.percent {
+    opacity: 0.6;
+}
+
+.rollWrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.rollBtn {
+    @include dm.accentButton;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 4px 14px;
+}
+
+.rollResult {
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.rollHit {
+    color: var(--dm-hp-low);
+    font-weight: 700;
+    opacity: 1;
+}
+
+.notes {
+    width: 100%;
+    min-height: 72px;
+    box-sizing: border-box;
+}

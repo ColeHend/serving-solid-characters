@@ -1,0 +1,47 @@
+.stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 130px;
+    flex: 1;
+}
+
+.controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.stepBtn {
+    min-width: 22px;
+    padding: 0 6px !important;
+    font-size: 15px;
+    line-height: 1.2;
+    border-radius: 6px;
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 22%, transparent) !important;
+}
+
+.minus {
+    color: var(--dm-hp-low) !important;
+}
+
+.plus {
+    color: var(--dm-hp-high) !important;
+}
+
+.valueWrap {
+    width: 52px;
+
+    input {
+        text-align: center;
+        padding: 2px 4px;
+        font-weight: 700;
+    }
+}
+
+.max {
+    font-size: 12px;
+    opacity: 0.65;
+    white-space: nowrap;
+}

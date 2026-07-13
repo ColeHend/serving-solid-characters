@@ -1,0 +1,17 @@
+@use '../dmMixins' as dm;
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 6px 0;
+}
+
+.label {
+    @include dm.sectionLabel;
+    flex: 1;
+}
+
+.action {
+    flex: none;
+}

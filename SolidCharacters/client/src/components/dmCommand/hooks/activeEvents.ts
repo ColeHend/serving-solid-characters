@@ -1,14 +1,23 @@
 import { createSignal } from "solid-js";
 import { Clone } from "../../../shared";
 import { createNewId } from "../../../shared/customHooks/utility/tools/idGen";
+import { EventType } from "../shared/eventTypes.shared";
 
-export type ActiveEventType = 'combat' | 'social' | 'travel' | 'exploration' | 'scene';
+export type ActiveEventType = EventType;
 
 export interface ActiveEvent {
     id: string;
     name: string;
     type: ActiveEventType;
     isActive: boolean;
+    resolved: boolean;
+    /** Combat-only: boss fights get a legendary / lair actions section. */
+    isBoss?: boolean;
+}
+
+interface AddEventOptions {
+    isBoss?: boolean;
+    resolved?: boolean;
 }
 
 const [getActiveEvents, setActiveEvents] = createSignal<Array<ActiveEvent>>([]);
@@ -30,7 +39,7 @@ export function useActiveEvents(defaultEvents?: Array<ActiveEvent>) {
         setActiveEvents((old) => Clone(old.filter(e=> e.id !== name)));
     }
 
-    const addActiveEvent = (name:string, type: ActiveEventType, isActive: boolean = false) => {
+    const addActiveEvent = (name:string, type: ActiveEventType, isActive: boolean = false, options?: AddEventOptions) => {
         const newID = createNewId();
         setActiveEvents((old) => getUniqueEventsArray([
             ...old,
@@ -38,7 +47,9 @@ export function useActiveEvents(defaultEvents?: Array<ActiveEvent>) {
                 id: newID,
                 name,
                 type,
-                isActive: false
+                isActive: false,
+                resolved: options?.resolved ?? false,
+                isBoss: options?.isBoss,
             }
         ]));
         if (isActive) {
@@ -46,11 +57,47 @@ export function useActiveEvents(defaultEvents?: Array<ActiveEvent>) {
         }
     }
 
+    const toggleResolved = (id: string) => {
+        setActiveEvents((old) => Clone(old
+            .map((ev) => ev.id === id ? {...ev, resolved: !ev.resolved} : ev)
+        ));
+    }
+
+    const renameActiveEvent = (id: string, name: string) => {
+        setActiveEvents((old) => Clone(old
+            .map((ev) => ev.id === id ? {...ev, name} : ev)
+        ));
+    }
+
+    const activeIndex = () => getActiveEvents().findIndex(ev => ev.isActive);
+
+    /**
+     * Move the active selection by offset. Stepping past the last event lands on
+     * the "end of timeline" state (nothing active); stepping back from there
+     * returns to the last event.
+     */
+    const stepActiveEvent = (offset: number) => {
+        const events = getActiveEvents();
+        if (events.length === 0) return;
+        const idx = activeIndex();
+        const next = (idx === -1 ? events.length : idx) + offset;
+        if (next < 0) return;
+        if (next >= events.length) {
+            setActiveEvents((old) => Clone(old.map((ev) => ({...ev, isActive: false}))));
+            return;
+        }
+        selectActiveEvent(events[next].id);
+    }
+
     return {
         getActiveEvents,
         addActiveEvent,
         removeActiveEvent,
-        selectActiveEvent
+        selectActiveEvent,
+        toggleResolved,
+        renameActiveEvent,
+        activeIndex,
+        stepActiveEvent
     };
 };
 

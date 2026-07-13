@@ -1,8 +1,41 @@
 @use 'coles-solid-library/themes/variables' as vars;
-$mobile: 768px;
+@use './shared/dmMixins' as dm;
+
 .mainBody {
     background-color: color-mix(in srgb, vars.$color-surface 80%, transparent) !important;
     min-height: 80vh;
+
+    // DM Command palette — event-type colors + accents (dark-theme defaults).
+    --dm-accent: #e7b96a;
+    --dm-type-combat: #d05a4a;
+    --dm-type-social: #e0b03a;
+    --dm-type-travel: #3fb7ad;
+    --dm-type-explore: #58b872;
+    --dm-type-puzzle: #a689e0;
+    --dm-type-rest: #6b9bd8;
+    --dm-type-scene: #3aa7b8;
+    --dm-type-custom: #9aa1ab;
+    --dm-hp-high: #4caf6a;
+    --dm-hp-mid: #d8a53a;
+    --dm-hp-low: #cf5050;
+    --text-color: #fff;
+}
+
+// Darker, more saturated variants so dots/labels stay legible on light surfaces.
+:global([data-theme='light']) .mainBody {
+    --dm-accent: #9c6b1f;
+    --dm-type-combat: #b03325;
+    --dm-type-social: #9c7410;
+    --dm-type-travel: #12756d;
+    --dm-type-explore: #2e7d46;
+    --dm-type-puzzle: #6c4bb8;
+    --dm-type-rest: #2f5f9e;
+    --dm-type-scene: #1a7a8a;
+    --dm-type-custom: #5c6470;
+    --dm-hp-high: #2e7d46;
+    --dm-hp-mid: #9c7410;
+    --dm-hp-low: #b03325;
+    --text-color: #000;
 }
 
 .headerWrap {
@@ -10,46 +43,9 @@ $mobile: 768px;
     flex-direction: column;
     width: 100%;
 }
-.activeButtonOuter {
-    padding: 5px 11px;
-    margin-left: 5px;
-    margin-bottom: 5px;
-    border: 1px solid;
-}
-.activeButton {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    :nth-child(1) {
-        font-size: smaller;
-        font-weight: 400;
-    }
-}
-
-.header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 55%;
-    @media screen and (max-width: $mobile) {
-        max-width: 100%;
-    }
-    
-}
-
-.activeBar {
-    display: flex;
-    flex-direction: row;
-}
 
 .body {
     margin: 0px;
     padding: 0px;
     width: 100%;
-}
-.modal {
-    @media screen and (max-width: $mobile) {
-        margin-top: 30vh;
-    }
 }
