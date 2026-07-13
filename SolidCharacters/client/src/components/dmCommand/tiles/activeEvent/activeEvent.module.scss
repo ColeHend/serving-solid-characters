@@ -29,10 +29,12 @@
 .resolvedBtnGroup {
     display: flex;
     flex-direction: row;
-    :first-child {
-        font-size: 9px !important;
-        button {
-            padding: 2px;
+    @media screen and (max-width: dm.$mobile) {
+        :first-child {
+            font-size: 9px !important;
+            button {
+                padding: 2px;
+            }
         }
     }
     :last-child {
