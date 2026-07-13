@@ -1,8 +1,13 @@
+@use '../../shared/dmMixins' as dm;
+
 .stepper {
     display: flex;
     flex-direction: column;
     gap: 4px;
     min-width: 130px;
+    @media screen and (max-width: 600px) {
+        min-width: 95px;
+    }
     flex: 1;
 }
 
@@ -32,11 +37,17 @@
 
 .valueWrap {
     width: 52px;
+    @media screen and (max-width: dm.$mobile) {
+        width: 33px;
+    }
 
     input {
         text-align: center;
         padding: 2px 4px;
         font-weight: 700;
+        @media screen and (max-width: dm.$mobile) {
+            font-size: 12px;
+        }
     }
 }
 

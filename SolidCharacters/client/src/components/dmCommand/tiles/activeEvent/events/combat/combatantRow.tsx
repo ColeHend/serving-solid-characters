@@ -3,6 +3,7 @@ import { Button, Chip } from "coles-solid-library";
 import { Combatant } from "../../../../hooks/combatants";
 import { HpStepper } from "../../../../shared/hpStepper/hpStepper";
 import styles from './combat.module.scss';
+import { isMobile } from "coles-solid-library/dist/tools/tools.js";
 
 interface CombatantRowProps {
     combatant: Combatant;
@@ -22,7 +23,7 @@ export const CombatantRow: Component<CombatantRowProps> = (props) => {
                     <span class={styles.allyTag}>Ally</span>
                 </Show>
             </span>
-            <Show when={props.combatant.conditions.length > 0}>
+            <Show when={props.combatant.conditions.length > 0 && !isMobile()}>
                 <span class={styles.conditions}>
                     <For each={props.combatant.conditions}>{(condition) =>
                         <Chip value={condition} remove={() => props.onRemoveCondition(condition)} />
@@ -36,5 +37,14 @@ export const CombatantRow: Component<CombatantRowProps> = (props) => {
             onChange={props.onHpChange} />
         <span class={styles.ac}>{props.combatant.ac}</span>
         <Button transparent class={styles.removeBtn} onClick={props.onRemove}>✕</Button>
+        <Show when={isMobile()}>
+            <Show when={props.combatant.conditions.length > 0}>
+                <span class={styles.conditions}>
+                    <For each={props.combatant.conditions}>{(condition) =>
+                        <Chip value={condition} remove={() => props.onRemoveCondition(condition)} />
+                    }</For>
+                </span>
+            </Show>
+        </Show>
     </div>;
 };
