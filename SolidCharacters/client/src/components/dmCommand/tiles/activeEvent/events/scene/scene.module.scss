@@ -1,0 +1,14 @@
+.scene {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.readAloud {
+    width: 100%;
+    min-height: 160px;
+    box-sizing: border-box;
+    font-family: 'Bookinsanity', serif;
+    font-size: 15px;
+    line-height: 1.5;
+}

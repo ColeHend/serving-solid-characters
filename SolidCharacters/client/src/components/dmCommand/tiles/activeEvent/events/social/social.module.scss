@@ -1,0 +1,184 @@
+@use '../../../../shared/dmMixins' as dm;
+
+.social {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ghostAdd {
+    font-size: 12px;
+    padding: 2px 10px !important;
+    border: 1px dashed color-mix(in srgb, var(--on-surface-color) 35%, transparent) !important;
+    border-radius: 8px;
+}
+
+.npcCard {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+    background-color: color-mix(in srgb, var(--on-surface-color) 4%, transparent);
+}
+
+.npcHead {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.npcAvatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-family: 'Nodesto_Caps_Condensed', serif;
+    font-size: 18px;
+    color: var(--dm-accent);
+    border: 1.5px solid color-mix(in srgb, var(--dm-accent) 60%, transparent);
+    background-color: color-mix(in srgb, var(--dm-accent) 10%, transparent);
+}
+
+.npcName {
+    font-weight: 700;
+}
+
+.npcSpacer {
+    flex: 1;
+}
+
+.dispositionTag {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+
+.dispositionFriendly {
+    color: var(--dm-hp-high);
+    border: 1px solid color-mix(in srgb, var(--dm-hp-high) 55%, transparent);
+}
+
+.dispositionNeutral {
+    color: var(--dm-type-custom);
+    border: 1px solid color-mix(in srgb, var(--dm-type-custom) 55%, transparent);
+}
+
+.dispositionHostile {
+    color: var(--dm-hp-low);
+    border: 1px solid color-mix(in srgb, var(--dm-hp-low) 55%, transparent);
+}
+
+.secrets {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.secretRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+}
+
+.secretTag {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: var(--dm-type-puzzle);
+    border: 1px solid color-mix(in srgb, var(--dm-type-puzzle) 55%, transparent);
+    background-color: color-mix(in srgb, var(--dm-type-puzzle) 12%, transparent);
+}
+
+.secretShown {
+    color: var(--dm-hp-high);
+    border-color: color-mix(in srgb, var(--dm-hp-high) 55%, transparent);
+    background-color: color-mix(in srgb, var(--dm-hp-high) 12%, transparent);
+}
+
+.secretText {
+    flex: 1;
+}
+
+.removeBtn {
+    min-width: 24px;
+    padding: 0 6px !important;
+    opacity: 0.5;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.bottomSplit {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+
+    @media screen and (max-width: dm.$mobile) {
+        flex-direction: column;
+    }
+}
+
+.dcColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.outcomeColumn {
+    flex: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dcRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.dcSkill {
+    flex: 1;
+    font-weight: 600;
+}
+
+.dcLabel {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.55;
+}
+
+.dcInput {
+    width: 56px;
+
+    input {
+        text-align: center;
+    }
+}
+
+.outcome {
+    width: 100%;
+    min-height: 64px;
+    box-sizing: border-box;
+}

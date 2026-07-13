@@ -1,0 +1,228 @@
+@use '../../../../shared/dmMixins' as dm;
+
+.combat {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.turnRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.nextTurnBtn {
+    @include dm.accentButton;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 8px;
+}
+
+.roundInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.roundLabel {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.turnName {
+    font-size: 12px;
+    opacity: 0.65;
+}
+
+.turnSpacer {
+    flex: 1;
+}
+
+.difficulty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.difficultyLabel {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.difficultyPill {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 999px;
+    color: var(--dm-accent);
+    border: 1px solid color-mix(in srgb, var(--dm-accent) 50%, transparent);
+    background-color: color-mix(in srgb, var(--dm-accent) 10%, transparent);
+}
+
+.columnHeads {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 0 8px;
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.55;
+}
+
+.headInit {
+    width: 34px;
+}
+
+.headName {
+    flex: 1.2;
+}
+
+.headHp {
+    flex: 1;
+    min-width: 130px;
+    @media screen and (max-width: dm.$mobile) {
+        min-width: 100px;
+    }
+}
+
+.headAc {
+    width: 56px;
+    text-align: right;
+}
+
+.rows {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+    background-color: color-mix(in srgb, var(--on-surface-color) 4%, transparent);
+}
+
+.rowTurn {
+    border-color: var(--dm-accent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--dm-accent) 65%, transparent);
+}
+
+.init {
+    width: 34px;
+    font-family: 'Nodesto_Caps_Condensed', serif;
+    font-size: 24px;
+    text-align: center;
+    opacity: 0.85;
+}
+
+.nameCol {
+    flex: 0.9;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 100px;
+    @media screen and (max-width: dm.$mobile) {
+        min-width: 65px;
+    }
+}
+
+.nameLine {
+    display: flex;
+    @media screen and (max-width: dm.$mobile) {
+        flex-direction: column;
+        gap: 2px;
+        font-size: 13px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    align-items: center;
+    gap: 8px;
+}
+
+.name {
+    font-weight: 700;
+}
+
+.allyTag {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dm-hp-high);
+}
+
+.conditions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: 11px;
+}
+
+.ac {
+    width: 56px;
+    text-align: right;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    @media screen and (max-width: dm.$mobile) {
+        width: 40px;
+    }
+}
+
+.removeBtn {
+    min-width: 24px;
+    padding: 0 6px !important;
+    opacity: 0.5;
+    @media screen and (max-width: dm.$mobile) {
+        min-width: 20px;
+        padding: 0 4px !important;
+    }
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.addRow {
+    @include dm.addRow;
+    margin-top: 2px;
+}
+
+.addNum {
+    width: 64px;
+
+    input {
+        text-align: center;
+    }
+}
+
+.addBtn {
+    @include dm.accentButton;
+    border-radius: 8px;
+}
+
+.legendary {
+    width: 100%;
+    min-height: 64px;
+    box-sizing: border-box;
+}

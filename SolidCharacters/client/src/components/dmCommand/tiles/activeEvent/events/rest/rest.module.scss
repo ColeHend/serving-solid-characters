@@ -1,0 +1,37 @@
+@use '../../../../shared/dmMixins' as dm;
+
+.rest {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.typeRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.typeBtn {
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 25%, transparent) !important;
+    border-radius: 8px;
+}
+
+.typeActive {
+    @include dm.accentButton;
+    font-weight: 700;
+}
+
+.hint {
+    font-size: 12px;
+    opacity: 0.65;
+    font-style: italic;
+}
+
+.notes {
+    width: 100%;
+    min-height: 72px;
+    box-sizing: border-box;
+}

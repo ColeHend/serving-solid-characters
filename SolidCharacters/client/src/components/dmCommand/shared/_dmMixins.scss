@@ -1,0 +1,78 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
+$mobile: 768px;
+$dm-gold: #e7b96a;
+$dm-red: #7c2718;
+
+/// Translucent surface panel used by every DM tile — floats over the route art.
+@mixin dmTile {
+    background-color: color-mix(in srgb, vars.$color-surface 88%, transparent);
+    border: 1px solid color-mix(in srgb, vars.$color-surface-variant 55%, transparent);
+    border-radius: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 12px 14px;
+    @media screen and (max-width: $mobile) {
+        padding: 6px 7px;
+    }
+    overflow: auto;
+    text-align: left;
+}
+
+/// Small-caps flanked section heading (PARTY, BESTIARY, AVAILABLE CHECKS...).
+@mixin sectionLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--on-surface-color) 62%, $dm-gold);
+
+    &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: color-mix(in srgb, var(--on-surface-color) 18%, transparent);
+    }
+}
+
+/// Rounded stat box with tiny label + big value (GOLD 180, DETECT DC 15...).
+@mixin statBox {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+    min-width: 72px;
+    border-radius: var(--border-radius-md, 8px);
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 14%, transparent);
+    background-color: color-mix(in srgb, vars.$color-surface-variant 30%, transparent);
+}
+
+/// Flex row of inputs ending in an accent Add button.
+@mixin addRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    input {
+        color: var(--text-color);
+    }
+
+    > :first-child {
+        flex: 1;
+    }
+    button {
+        padding: 3px;
+    }
+}
+
+/// Gold-accent primary action button override.
+@mixin accentButton {
+    border: 1px solid var(--dm-accent) !important;
+    color: var(--dm-accent) !important;
+    background: color-mix(in srgb, var(--dm-accent) 12%, transparent) !important;
+}
