@@ -38,6 +38,8 @@ namespace SolidCharacters.HostedServices
             converter.AddType<WeaponMastery>();
             converter.AddType<MagicItem>();
             converter.AddType<Background>();
+            converter.AddType<Monster>();
+            converter.AddType<Rule>();
 
             converter.WriteToDirectory("./client/src/models/generated");
             Console.WriteLine("TypeScript generation completed.");

@@ -67,6 +67,31 @@ export interface ClassStartChoices {
   equipment?: string;
 }
 
+export interface CreatureProficiency {
+  skills: Record<string, SkillProficiency>;
+  other: Record<string, boolean>;
+}
+
+export interface CreatureSenses {
+  darkvision?: number;
+  blindsight?: number;
+  tremorsense?: number;
+  truesight?: number;
+  passivePerception?: number;
+}
+
+export interface DamageAffinity {
+  type: string;
+  value: boolean;
+}
+
+export interface DamageEntry {
+  dice: string;
+  type: string;
+  addAbilityModifier: boolean;
+  bonus?: number;
+}
+
 export interface Feat {
   id: string;
   legacy?: boolean;
@@ -88,6 +113,19 @@ export interface FeatureMetadata {
   spells?: string[];
   category?: string;
   mads?: MadFeature[];
+}
+
+export interface GrantedAction {
+  name: string;
+  actionType: string;
+  description?: string;
+  source?: string;
+}
+
+export interface Health {
+  max: number;
+  current: number;
+  temp: number;
 }
 
 export interface Item {
@@ -147,6 +185,76 @@ export interface MagicItemProperties {
   charges?: string;
 }
 
+export interface Monster {
+  id: string;
+  legacy?: boolean;
+  name: string;
+  size: string;
+  type: string;
+  subtype?: string;
+  alignment?: string;
+  stats: Stats;
+  armorClass: number;
+  armorDesc?: string;
+  health: Health;
+  hitDice?: string;
+  speed: number;
+  movementSpeeds: MovementSpeeds;
+  senses: CreatureSenses;
+  savingThrows: SavingThrow[];
+  proficiencies: CreatureProficiency;
+  resistances: DamageAffinity[];
+  vulnerabilities: DamageAffinity[];
+  immunities: DamageAffinity[];
+  conditionImmunities: string[];
+  languages: string[];
+  features: FeatureDetail[];
+  grantedActions: GrantedAction[];
+  rollAdvantages: RollAdvantage[];
+  rollBonuses: RollBonus[];
+  attacks: MonsterAttack[];
+  attacksPerAction: number;
+  legendaryActions?: MonsterAttack[];
+  legendaryActionCount?: number;
+  challengeRating: string;
+  proficiencyBonus?: number;
+  xp?: number;
+}
+
+export interface MonsterAttack {
+  name: string;
+  actionType: string;
+  description?: string;
+  attackType?: string;
+  ability?: string;
+  proficient: boolean;
+  toHitOverride?: number;
+  critThreshold?: number;
+  reach?: string;
+  range?: string;
+  save?: MonsterSave;
+  targetCount?: number;
+  damage: DamageEntry[];
+  count?: number;
+  recharge?: string;
+  uses?: string;
+}
+
+export interface MonsterSave {
+  targetAbility: string;
+  dcAbility?: string;
+  dcOverride?: number;
+  type: string;
+}
+
+export interface MovementSpeeds {
+  fly?: number;
+  swim?: number;
+  climb?: number;
+  burrow?: number;
+  hover?: boolean;
+}
+
 export interface Prerequisite {
   type: PrerequisiteType;
   value: string;
@@ -183,6 +291,46 @@ export interface Race {
   traits: Feat[];
   traitChoice?: TraitChoice;
   descriptions?: Record<string, string>;
+}
+
+export interface RollAdvantage {
+  rollType: string;
+  mode: string;
+  stat?: string;
+  condition?: string;
+  source?: string;
+}
+
+export interface RollBonus {
+  rollType: string;
+  bonus?: number;
+  proficiencyBonus?: string;
+  stat?: string;
+  condition?: string;
+  source?: string;
+}
+
+export interface Rule {
+  id: string;
+  legacy?: boolean;
+  name: string;
+  description: string;
+  category?: string;
+  tags: string[];
+  related?: string[];
+  page?: string;
+}
+
+export interface SavingThrow {
+  stat: string;
+  proficient: boolean;
+}
+
+export interface SkillProficiency {
+  stat: string;
+  value: number;
+  proficient: boolean;
+  expertise: boolean;
 }
 
 export interface Spell {
@@ -259,6 +407,15 @@ export interface StartingEquipment {
 export interface StatBonus {
   stat: AbilityScores;
   value: number;
+}
+
+export interface Stats {
+  str: number;
+  dex: number;
+  con: number;
+  int: number;
+  wis: number;
+  cha: number;
 }
 
 export interface Subclass {

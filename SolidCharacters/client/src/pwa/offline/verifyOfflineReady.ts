@@ -41,6 +41,8 @@ const PER_VERSION_TABLES = [
   "backgrounds",
   "items",
   "subclasses",
+  "monsters",
+  "rules",
 ] as const;
 
 const MIN_PRECACHE_ENTRIES = 20; // keep in sync with scripts/pwa-smoke.mjs

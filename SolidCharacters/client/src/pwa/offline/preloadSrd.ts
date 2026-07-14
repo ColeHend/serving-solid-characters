@@ -10,6 +10,8 @@ import { loadSrdItems } from "../../shared/customHooks/dndInfo/info/srd/items";
 import { loadSrdSubclasses } from "../../shared/customHooks/dndInfo/info/srd/subclasses";
 import { loadSrdMagicItems } from "../../shared/customHooks/dndInfo/info/srd/magicItems";
 import { loadSrdMasteries } from "../../shared/customHooks/dndInfo/info/srd/masteries";
+import { loadSrdMonsters } from "../../shared/customHooks/dndInfo/info/srd/monsters";
+import { loadSrdRules } from "../../shared/customHooks/dndInfo/info/srd/rules";
 import { swReady, verifyOfflineReady, writeNonEmptySnapshot, type OfflineReadyReport } from "./verifyOfflineReady";
 import { OCR_ASSET_URLS } from "./ocrAssets";
 
@@ -39,6 +41,8 @@ function buildTasks(versions: SrdVersion[]): PreloadTask[] {
     tasks.push({ label: `${v} backgrounds`, run: () => loadSrdBackgrounds(v) });
     tasks.push({ label: `${v} items`, run: () => loadSrdItems(v) });
     tasks.push({ label: `${v} subclasses`, run: () => loadSrdSubclasses(v) });
+    tasks.push({ label: `${v} monsters`, run: () => loadSrdMonsters(v) });
+    tasks.push({ label: `${v} rules`, run: () => loadSrdRules(v) });
   }
   // Magic items exist for both rulesets (/api/2014/MagicItems and /api/2024/MagicItems); one task loads both.
   tasks.push({ label: 'magic items', run: () => loadSrdMagicItems() });

@@ -1,5 +1,5 @@
 import { Character } from "../../../../../models/character.model";
-import { Class5E, Subclass, Race, Background, Item, MagicItem, Feat, Spell, WeaponMastery, Subrace } from "../../../../../models/generated";
+import { Class5E, Subclass, Race, Background, Item, MagicItem, Feat, Spell, WeaponMastery, Subrace, Monster, Rule } from "../../../../../models/generated";
 import { srdItem,srdSubclass } from "../../../../../models/data/generated";
 import Dexie from "dexie";
 
@@ -15,6 +15,8 @@ export class LocalDB extends Dexie {
   feats!: Dexie.Table<Feat, 'name'>;
   spells!: Dexie.Table<Spell, 'name'>;
   weaponMasteries!: Dexie.Table<WeaponMastery, 'name'>;
+  monsters!: Dexie.Table<Monster, 'name'>;
+  rules!: Dexie.Table<Rule, 'name'>;
   characters!: Dexie.Table<Character, 'name'>;
   isReady: boolean = false;
   initPromise: Promise<void>;
@@ -81,7 +83,24 @@ export class LocalDB extends Dexie {
           }))).then(() => {
           });
         });
-        
+        // v4: add monsters + rules SRD stores (additive; existing data preserved). Both are keyed by 'name'
+        // like every other SRD table. Applies to SrdDB (dnd_srd) and SrdDB2024 (dnd_srd_2024) alike.
+        this.version(4).stores({
+          spells: 'name',
+          classes: 'name',
+          races: 'name',
+          subraces: 'name',
+          backgrounds: 'name',
+          items: 'name',
+          feats: 'name',
+          magicItems: 'name',
+          subclasses: 'name',
+          weaponMasteries: 'name',
+          monsters: 'name',
+          rules: 'name',
+          characters: 'name'
+        });
+
         // Initialize database with better error handling
         this.initPromise = this.open()
           .then(() => {
