@@ -1,5 +1,5 @@
 import { Component, For, createSignal } from "solid-js";
-import { Button, Input, NumberInput } from "coles-solid-library";
+import { Button, FormField, Input, NumberInput } from "coles-solid-library";
 import { useParty } from "../../hooks/party";
 import { SectionLabel } from "../../shared/sectionLabel/sectionLabel";
 import { PartyMemberRow } from "./partyRow";
@@ -8,12 +8,12 @@ import styles from './party.module.scss';
 export const PartyTile: Component = () => {
     const { getParty, setMemberHp, addMember, removeMember } = useParty();
     const [name, setName] = createSignal('');
-    const [hp, setHp] = createSignal(10);
-    const [ac, setAc] = createSignal(10);
+    const [hp, setHp] = createSignal<number>();
+    const [ac, setAc] = createSignal<number>();
 
     const add = () => {
         if (!name().trim()) return;
-        addMember(name(), hp(), ac());
+        addMember(name(), (hp() ?? 0), (ac() ?? 0));
         setName('');
     };
 
@@ -28,8 +28,10 @@ export const PartyTile: Component = () => {
             }</For>
         </div>
         <div class={styles.addRow}>
-            <Input placeholder="Name" value={name()}
-                onChange={(e) => setName(e.currentTarget.value)} />
+            <FormField name="Name" variant="standard">
+                <Input type="text" class={styles.nameInput} placeholder="Name" value={name()}
+                    onChange={(e) => setName(e.currentTarget.value)} />
+            </FormField>
             <span class={styles.addNum}>
                 <NumberInput hideSteppers placeholder="HP" tooltip="Max hit points" value={hp()}
                     onChange={(e) => setHp(Number(e.currentTarget.value) || 0)} />
