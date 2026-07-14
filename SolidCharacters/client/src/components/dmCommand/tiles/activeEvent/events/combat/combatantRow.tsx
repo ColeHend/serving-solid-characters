@@ -26,7 +26,7 @@ export const CombatantRow: Component<CombatantRowProps> = (props) => {
             <Show when={props.combatant.conditions.length > 0 && !isMobile()}>
                 <span class={styles.conditions}>
                     <For each={props.combatant.conditions}>{(condition) =>
-                        <Chip value={condition} remove={() => props.onRemoveCondition(condition)} />
+                        <Chip class={styles.chip} value={condition} remove={() => props.onRemoveCondition(condition)} />
                     }</For>
                 </span>
             </Show>
