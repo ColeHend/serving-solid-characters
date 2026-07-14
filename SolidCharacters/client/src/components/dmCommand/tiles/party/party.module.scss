@@ -43,6 +43,13 @@
     font-weight: 700;
 }
 
+.nameInput {
+    ::placeholder {
+        color: var(--on-surface-color) !important;
+        opacity: 0.5 !important;
+    }
+}
+
 .stats {
     display: flex;
     gap: 10px;
@@ -77,10 +84,12 @@
 
     input {
         text-align: center;
+        margin-top: 7px;
     }
 }
 
 .addBtn {
     @include dm.accentButton;
     border-radius: 8px;
+    margin-top: 7px;
 }

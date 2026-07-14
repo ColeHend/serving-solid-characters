@@ -72,7 +72,6 @@ export const ActiveEvent: Component<ActiveEventProps> = (props) => {
                             onClick={() => removeActiveEvent(event().id)}>✕</Button>
                     </span>
                 </div>
-                <EventNav onOpenTimeline={() => setShowTimeline(true)} />
                 <div class={styles.eventBody}>
                     <Switch fallback={<span class={styles.unknown}>Unknown event type</span>}>
                         <Match when={event().type === 'combat'}>

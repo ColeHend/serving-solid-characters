@@ -213,6 +213,7 @@
 
     input {
         text-align: center;
+        margin-top: 7px;
     }
 }
 
@@ -225,4 +226,11 @@
     width: 100%;
     min-height: 64px;
     box-sizing: border-box;
+}
+
+.chip {
+    display: flex;
+    align-items: center;
+    padding: 0px 3px;
+    padding-bottom: 1px;
 }
