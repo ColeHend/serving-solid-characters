@@ -11,6 +11,8 @@ import { loadSrdItems } from "../../customHooks/dndInfo/info/srd/items";
 import { loadSrdMagicItems } from "../../customHooks/dndInfo/info/srd/magicItems";
 import { loadSrdSubclasses } from "../../customHooks/dndInfo/info/srd/subclasses";
 import { loadSrdSubraces } from "../../customHooks/dndInfo/info/srd/subraces";
+import { loadSrdMonsters } from "../../customHooks/dndInfo/info/srd/monsters";
+import { loadSrdRules } from "../../customHooks/dndInfo/info/srd/rules";
 import { ensureRaceCatalog, raceNameById } from "../refs/raceRefs";
 
 /**
@@ -24,6 +26,12 @@ import { ensureRaceCatalog, raceNameById } from "../refs/raceRefs";
  * ZERO-PERSONA SURFACE: procedural tool descriptions — keep them neutral, no Grimoire voice.
  */
 
+// lookup_srd also covers read-only SRD reference kinds that have NO homebrew/create equivalent
+// (monsters, rules). Kept as a lookup-only widening of HomebrewKind so they never leak into
+// HOMEBREW_KINDS — which drives the create_* tools, KIND_TO_TOOL, and the permission grids.
+export type LookupSrdKind = HomebrewKind | "monster" | "rule";
+export const LOOKUP_SRD_KINDS: readonly LookupSrdKind[] = [...HOMEBREW_KINDS, "monster", "rule"];
+
 const MAX_DETAILED = 3;       // show full summaries for up to this many matches
 const MAX_NAMES = 25;         // otherwise list up to this many names
 const DESC_CAP = 360;         // per-entity description cap
@@ -33,11 +41,11 @@ const cap = (s: string, n: number): string => (s.length > n ? `${s.slice(0, n)}�
 
 type AnyEntity = Record<string, unknown> & { name?: string; details?: { name?: string; description?: string } };
 
-function nameOf(kind: HomebrewKind, e: AnyEntity): string {
+function nameOf(kind: LookupSrdKind, e: AnyEntity): string {
     return kind === "feat" ? str(e.details?.name) || str(e.name) : str(e.name);
 }
 
-function descOf(kind: HomebrewKind, e: AnyEntity): string {
+function descOf(kind: LookupSrdKind, e: AnyEntity): string {
     if (kind === "feat") return str(e.details?.description);
     // Race-like rows keep their flavor text in the descriptions map, not a top-level field.
     if (kind === "subrace" || kind === "race") {
@@ -48,7 +56,7 @@ function descOf(kind: HomebrewKind, e: AnyEntity): string {
 }
 
 /** A compact, mechanically-relevant one-liner per entity, capped. */
-function summarize(kind: HomebrewKind, e: AnyEntity): string {
+function summarize(kind: LookupSrdKind, e: AnyEntity): string {
     const name = nameOf(kind, e);
     const facts: string[] = [];
     const f = (label: string, v: unknown) => { const s = str(v).trim(); if (s) facts.push(`${label} ${s}`); };
@@ -62,6 +70,8 @@ function summarize(kind: HomebrewKind, e: AnyEntity): string {
         case "subrace": f("parent race", raceNameById(str(e.parentRace)) ?? ""); f("size", e.size); f("speed", e.speed); break;
         case "subclass": f("parent", e.parentClass); break;
         case "class": f("hit die", e.hitDie); f("primary", e.primaryAbility); break;
+        case "monster": f("CR", e.challengeRating); f("type", e.type); f("size", e.size); break;
+        case "rule": f("category", e.category); break;
     }
     const head = facts.length ? `${name} — ${facts.join(", ")}` : name;
     const desc = descOf(kind, e);
@@ -85,7 +95,7 @@ function homebrewRows(kind: HomebrewKind): AnyEntity[] {
     }
 }
 
-async function srdRows(kind: HomebrewKind, version: string): Promise<AnyEntity[]> {
+async function srdRows(kind: LookupSrdKind, version: string): Promise<AnyEntity[]> {
     const editions: ("2014" | "2024")[] = version === "2024" ? ["2024"] : version === "2014" ? ["2014"] : ["2014", "2024"];
     const collect = async (load: (v: "2014" | "2024") => Promise<{ rows: readonly unknown[] }>): Promise<AnyEntity[]> => {
         const out: AnyEntity[] = [];
@@ -102,11 +112,13 @@ async function srdRows(kind: HomebrewKind, version: string): Promise<AnyEntity[]
         case "subrace": return collect(loadSrdSubraces);
         case "subclass": return collect(loadSrdSubclasses);
         case "class": return collect(loadSrdClasses);
+        case "monster": return collect(loadSrdMonsters);
+        case "rule": return collect(loadSrdRules);
     }
 }
 
 /** Filter rows by query: exact-name first, then name/description substring. Empty query → all rows. */
-function matchRows(kind: HomebrewKind, rows: AnyEntity[], query: string): AnyEntity[] {
+function matchRows(kind: LookupSrdKind, rows: AnyEntity[], query: string): AnyEntity[] {
     const q = query.trim().toLowerCase();
     if (!q) return rows;
     const exact = rows.filter(e => nameOf(kind, e).toLowerCase() === q);
@@ -114,7 +126,7 @@ function matchRows(kind: HomebrewKind, rows: AnyEntity[], query: string): AnyEnt
     return rows.filter(e => nameOf(kind, e).toLowerCase().includes(q) || descOf(kind, e).toLowerCase().includes(q));
 }
 
-function formatResults(kind: HomebrewKind, label: string, query: string, rows: AnyEntity[]): string {
+function formatResults(kind: LookupSrdKind, label: string, query: string, rows: AnyEntity[]): string {
     const matches = matchRows(kind, rows, query);
     if (!matches.length) {
         return query
@@ -132,12 +144,12 @@ function formatResults(kind: HomebrewKind, label: string, query: string, rows: A
 export const LOOKUP_TOOLS: AiToolDef[] = [
     {
         name: "lookup_srd",
-        description: "Search official D&D 5e (SRD) content to match real numbers before you invent any. Example: {\"kind\":\"spell\",\"query\":\"fireball\"}. Returns the closest matches with their key stats.",
+        description: "Search official D&D 5e (SRD) content to match real numbers before you invent any. Example: {\"kind\":\"spell\",\"query\":\"fireball\"}. Returns the closest matches with their key stats. Also covers monster statblocks and rules-glossary entries.",
         inputSchema: {
             type: "object",
             additionalProperties: false,
             properties: {
-                kind: { type: "string", enum: [...HOMEBREW_KINDS], description: "What to search: spell, item, magic_item, feat, background, race, subrace, subclass, or class." },
+                kind: { type: "string", enum: [...LOOKUP_SRD_KINDS], description: "What to search: spell, item, magic_item, feat, background, race, subrace, subclass, class, monster, or rule." },
                 query: { type: "string", description: "Name or keyword to search for. An exact name returns full detail; a keyword returns a short list." },
                 version: { type: "string", enum: ["2014", "2024"], description: "Ruleset edition. Omit to search both." },
             },
@@ -162,16 +174,19 @@ export const LOOKUP_TOOLS: AiToolDef[] = [
 /** Execute a lookup tool call. Async (SRD rows may need a load); fails open with a friendly note. */
 export async function runLookupTool(tc: AiToolCall): Promise<{ content: string; isError: boolean }> {
     const i = (tc.input ?? {}) as Record<string, unknown>;
-    const kind = str(i.kind) as HomebrewKind;
+    const kind = str(i.kind) as LookupSrdKind;
     const query = str(i.query);
-    if (!HOMEBREW_KINDS.includes(kind)) {
-        return { content: `Unknown kind "${str(i.kind)}". Use one of: ${HOMEBREW_KINDS.join(", ")}.`, isError: true };
-    }
     const homebrew = tc.name === "lookup_homebrew";
+    // lookup_homebrew is limited to kinds the user can actually author (HOMEBREW_KINDS); only
+    // lookup_srd accepts the read-only monster/rule additions.
+    const validKinds: readonly string[] = homebrew ? HOMEBREW_KINDS : LOOKUP_SRD_KINDS;
+    if (!validKinds.includes(kind)) {
+        return { content: `Unknown kind "${str(i.kind)}". Use one of: ${validKinds.join(", ")}.`, isError: true };
+    }
     try {
         // Subrace summaries render the parent by resolving its stored race ID back to a name.
         if (kind === "subrace") await ensureRaceCatalog();
-        const rows = homebrew ? homebrewRows(kind) : await srdRows(kind, str(i.version));
+        const rows = homebrew ? homebrewRows(kind as HomebrewKind) : await srdRows(kind, str(i.version));
         return { content: formatResults(kind, homebrew ? "homebrew" : "SRD", query, rows), isError: false };
     } catch {
         // Fail open (a lookup hiccup must never break the turn) but be HONEST that this was an infra
