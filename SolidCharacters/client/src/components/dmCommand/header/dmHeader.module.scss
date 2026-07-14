@@ -1,0 +1,107 @@
+@use '../shared/dmMixins' as dm;
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: wrap;
+    padding: 4px 2px;
+}
+
+.wordmark {
+    font-family: 'Nodesto_Caps_Condensed', serif;
+    font-size: 34px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    margin: 0 12px 0 0;
+    color: var(--dm-accent);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.selects {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.addSession {
+    border: 1px dashed color-mix(in srgb, var(--on-surface-color) 35%, transparent) !important;
+    border-radius: 8px;
+}
+
+.addSessionInner {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.timePill {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--dm-accent) 45%, transparent);
+    background-color: color-mix(in srgb, var(--dm-accent) 8%, transparent);
+    white-space: nowrap;
+}
+
+.timeDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--dm-accent);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--dm-accent) 80%, transparent);
+}
+
+.timeLabel {
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.timeValue {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.modal {
+    @media screen and (max-width: dm.$mobile) {
+        margin-top: 30vh;
+    }
+}
+
+.modalBody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+}
+
+.modalHint {
+    font-size: 12px;
+    opacity: 0.65;
+}
+
+@media screen and (max-width: dm.$mobile) {
+    .wordmark {
+        font-size: 26px;
+        width: 100%;
+    }
+
+    .spacer {
+        display: none;
+    }
+}

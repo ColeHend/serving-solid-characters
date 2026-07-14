@@ -51,7 +51,7 @@ beforeEach(() => {
 
 describe('Classes component prefill', () => {
 
-  it('prefills primary stat (INT) and saving throws from existing class (expected failing before fix)', async () => {
+  it('prefills primary stat (INT) and saving throws from existing class', async () => {
     const { container } = render(() => <Classes />);
     const formEl = container.querySelector('[data-testid="class-form"]') as HTMLElement;
     await waitFor(() => {
@@ -61,7 +61,7 @@ describe('Classes component prefill', () => {
     expect(saving).toEqual(expect.arrayContaining([String(Stat.INT), String(Stat.WIS)]));
   });
 
-  it('prefills proficiencies and starting equipment (expected failing before fix)', async () => {
+  it('prefills proficiencies and starting equipment', async () => {
     const { container } = render(() => <Classes />);
     const formEl = container.querySelector('[data-testid="class-form"]') as HTMLElement;
     await waitFor(() => {

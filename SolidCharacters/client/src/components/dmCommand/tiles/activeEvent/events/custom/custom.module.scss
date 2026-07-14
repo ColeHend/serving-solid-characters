@@ -1,0 +1,17 @@
+.custom {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.hint {
+    font-size: 12px;
+    opacity: 0.6;
+    font-style: italic;
+}
+
+.notes {
+    width: 100%;
+    min-height: 140px;
+    box-sizing: border-box;
+}

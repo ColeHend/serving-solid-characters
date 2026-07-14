@@ -96,11 +96,35 @@ public class SrdInfoRepositoryTests
     public void GetSubraces_2014_ReturnsNonEmpty()
     {
         var repo = _fixture.CreateSrdInfoRepository();
-        
+
         var subraces = repo.GetSubraces("2014");
-        
+
         Assert.NotNull(subraces);
         Assert.NotEmpty(subraces);
+    }
+
+    [Fact]
+    public void GetMonsters_2014_ReturnsNonEmpty()
+    {
+        var repo = _fixture.CreateSrdInfoRepository();
+
+        var monsters = repo.GetMonsters("2014");
+
+        Assert.NotNull(monsters);
+        Assert.NotEmpty(monsters);
+        Assert.All(monsters, m => Assert.False(string.IsNullOrWhiteSpace(m.Name)));
+    }
+
+    [Fact]
+    public void GetRules_2014_ReturnsNonEmpty()
+    {
+        var repo = _fixture.CreateSrdInfoRepository();
+
+        var rules = repo.GetRules("2014");
+
+        Assert.NotNull(rules);
+        Assert.NotEmpty(rules);
+        Assert.All(rules, r => Assert.False(string.IsNullOrWhiteSpace(r.Name)));
     }
 
     #endregion
@@ -194,6 +218,30 @@ public class SrdInfoRepositoryTests
         
         Assert.NotNull(subraces);
         // May be empty - that's expected for 2024
+    }
+
+    [Fact]
+    public void GetMonsters_2024_ReturnsNonEmpty()
+    {
+        var repo = _fixture.CreateSrdInfoRepository();
+
+        var monsters = repo.GetMonsters("2024");
+
+        Assert.NotNull(monsters);
+        Assert.NotEmpty(monsters);
+        Assert.All(monsters, m => Assert.False(string.IsNullOrWhiteSpace(m.Name)));
+    }
+
+    [Fact]
+    public void GetRules_2024_ReturnsNonEmpty()
+    {
+        var repo = _fixture.CreateSrdInfoRepository();
+
+        var rules = repo.GetRules("2024");
+
+        Assert.NotNull(rules);
+        Assert.NotEmpty(rules);
+        Assert.All(rules, r => Assert.False(string.IsNullOrWhiteSpace(r.Name)));
     }
 
     #endregion

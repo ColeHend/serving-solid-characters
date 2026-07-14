@@ -3,6 +3,10 @@ import { render, fireEvent, screen, cleanup, waitFor } from '@solidjs/testing-li
 import { createStore } from 'solid-js/store';
 
 // ---- Mocks ----
+// Stub router primitives: component calls useSearchParams for ?name= URL sync, which requires a
+// Route context. Empty params + noop setter keep selection fully driven by the mocked store.
+vi.mock('@solidjs/router', () => ({ useSearchParams: () => [{}, () => {}] }));
+
 // Mock HomebrewManager persistence with mutable list for tests
 vi.mock('../../../../../../shared/customHooks/homebrewManager', () => {
   const hbList: any[] = [];
@@ -141,6 +145,9 @@ import { setHomebrewBackgrounds } from '../../../../../../shared/customHooks/hom
 describe('Backgrounds component behavior', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // homebrew list is module-level in the mock and leaks across tests (hides Save As Homebrew
+    // behind existsInHomebrew) — clear it explicitly
+    setHomebrewBackgrounds([]);
     // manual reset matching initial values
     (storeInstance as any).state.selection.activeName = undefined;
     (storeInstance as any).state.form.abilityChoices = [];

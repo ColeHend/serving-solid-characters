@@ -1,0 +1,96 @@
+@use 'coles-solid-library/themes/variables' as vars;
+@use '../shared/dmMixins' as dm;
+
+.bar {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 2px;
+}
+
+%chipBase {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--on-surface-color);
+    background-color: color-mix(in srgb, vars.$color-surface 88%, transparent);
+    border: 1px solid color-mix(in srgb, var(--on-surface-color) 16%, transparent);
+    transition: border-color 0.15s ease, transform 0.1s ease;
+
+    &:hover {
+        border-color: color-mix(in srgb, var(--dm-accent) 55%, transparent);
+        transform: translateY(-1px);
+    }
+}
+
+.chip {
+    @extend %chipBase;
+}
+
+.chipActive {
+    border-color: var(--dm-accent);
+    box-shadow: 0 0 0 1px var(--dm-accent), 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.chipType {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Mr_Eaves_Small_Caps', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--chip-color);
+}
+
+.chipDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--chip-color);
+}
+
+.chipCheck {
+    color: var(--dm-hp-high);
+    font-size: 11px;
+}
+
+.chipName {
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.addChip {
+    @extend %chipBase;
+    justify-content: center;
+    border-style: dashed;
+    font-size: 14px;
+    opacity: 0.8;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.modal {
+    @media screen and (max-width: dm.$mobile) {
+        margin-top: 30vh;
+    }
+}
+
+.modalBody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+}

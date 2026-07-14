@@ -1,35 +1,34 @@
-import { Component, For, createSignal, onMount, onCleanup, createEffect, createMemo } from "solid-js";
-import { Body, Button, Icon, Menu, Modal } from "coles-solid-library";
+import { Component, For, createSignal, onMount, onCleanup, createMemo } from "solid-js";
+import { Body } from "coles-solid-library";
 import { isMobile } from "coles-solid-library/dist/tools/tools.js";
-import GetTileElement, { tiles, getTileMetadata, TileData } from "./tileList";
+import GetTileElement, { tiles, getTileMetadata } from "./tileList";
+import { DmHeader } from "./header/dmHeader";
+import { EventChipBar } from "./eventChipBar/eventChipBar";
 import style from "./dmCommand.module.scss";
-import { FilterAlt } from "coles-solid-library/icons";
-import { JSX } from "solid-js";
 
 const GAP = 10;
 
 const DmCommand: Component = () => {
     const maxColumns = isMobile() ? 3 : 6;
-    // Filter Settings
-    const [showFilterSettings, setShowFilterSettings] = createSignal<boolean>(false);
-    const [filterModal, setFilterModal] = createSignal<Element>()
-    const [filterSettings, setFilterSettings] = createSignal<Record<string, string>>({});
-    
+    // Set Campaign And Session
+    const [campaignSelected, setCampaignSelected] = createSignal<string>();
+    const [sessionSelected, setSessionSelected] = createSignal<string>();
+
     // Tiles stuff
-    const [tileList, setTileList] = createSignal<tiles[]>([
-        'main',
+    const [tileList] = createSignal<tiles[]>([
+        'activeEvent',
+        'party',
+        'lootXp',
+        'bestiary',
+        'notes',
     ]);
-    const completeTileList = createMemo(()=>{
-        return tileList().map((key)=>[
-            GetTileElement(key),
-            getTileMetadata(key),
-        ]);
+    const completeTileList = createMemo(() => {
+        return tileList().map((key) => ({
+            element: GetTileElement(key, campaignSelected() ?? '', sessionSelected() ?? ''),
+            meta: getTileMetadata(key),
+        }));
     });
-    const filteredTileList = createMemo<Array<[JSX.Element, TileData]>>(() => {
-        // Filter logic goes here
-        return completeTileList().filter(([element, data])=> true) as Array<[JSX.Element, TileData]>;
-    });
-    
+
     const [cellSize, setCellSize] = createSignal(0);
     let gridRef: HTMLDivElement | undefined;
 
@@ -49,29 +48,15 @@ const DmCommand: Component = () => {
         });
     });
 
-    // Add class to modal
-    createEffect(()=>{
-        const modal = filterModal();
-        if (modal) {
-            modal.classList.add(`${style.modal}`);
-        }
-    });
-
     return (
         <Body class={`${style.mainBody}`}>
-            <div class={`${style.header}`}>
-                <h1>DM Command</h1>
-                <Button transparent onClick={()=>{
-                    setShowFilterSettings(true);
-                }}><Icon icon={FilterAlt} /></Button>
-                <Modal 
-                    title="Filter Settings" 
-                    show={[showFilterSettings, setShowFilterSettings]}
-                    width={isMobile() ? '' : '20vw'}
-                    height={'30vh'}
-                    ref={setFilterModal}>
-
-                </Modal>
+            <div class={`${style.headerWrap}`}>
+                <DmHeader
+                    campaign={campaignSelected()}
+                    session={sessionSelected()}
+                    onCampaignChange={setCampaignSelected}
+                    onSessionChange={setSessionSelected} />
+                <EventChipBar />
             </div>
             <div class={`${style.body}`}>
                 <div ref={gridRef} style={{
@@ -81,16 +66,16 @@ const DmCommand: Component = () => {
                     "grid-auto-flow": "row dense",
                     gap: `${GAP}px`,
                 }}>
-                    <For each={filteredTileList()}>{([tile, meta]) => {
+                    <For each={completeTileList()}>{({ element, meta }) => {
                         return (
                             <div style={{
                                 "grid-column": `span ${Math.min(meta.width, maxColumns)}`,
-                                "grid-row": `span ${meta.height}`,
+                                "grid-row": `span ${isMobile() ? meta.height + 1 : meta.height}`,
                                 "box-sizing": "border-box",
                                 overflow: "hidden",
                                 'border-radius': '11px'
                             }}>
-                                {tile}
+                                {element}
                             </div>
                         );
                     }}</For>

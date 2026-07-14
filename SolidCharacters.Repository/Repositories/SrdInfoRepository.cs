@@ -118,6 +118,22 @@ public class SrdInfoRepository : ISrdInfoRepository
     return json.ToList();
   }
 
+  public List<Monster> GetMonsters(string version = "2014")
+  {
+    int versionInt = ParseVersion(version);
+    var json = jsonService.GetJson<Monster[]>($"srd/{versionInt}/monsters");
+    json ??= Array.Empty<Monster>();
+    return json.ToList();
+  }
+
+  public List<Rule> GetRules(string version = "2014")
+  {
+    int versionInt = ParseVersion(version);
+    var json = jsonService.GetJson<Rule[]>($"srd/{versionInt}/rules");
+    json ??= Array.Empty<Rule>();
+    return json.ToList();
+  }
+
   private int ParseVersion(string version)
   {
     int versionInt = int.Parse(version);

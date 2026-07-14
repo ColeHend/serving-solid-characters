@@ -27,12 +27,16 @@ import { parseFeats2014 } from "./parsers/2014/feats.ts";
 import { parseSpells2014 } from "./parsers/2014/spells.ts";
 import { parseItems2014 } from "./parsers/2014/items.ts";
 import { parseMagicItems2014 } from "./parsers/2014/magicItems.ts";
+import { parseRules2014 } from "./parsers/2014/rules.ts";
+import { parseMonsters2014 } from "./parsers/2014/monsters.ts";
 import { parseClasses2024 } from "./parsers/2024/classes.ts";
 import { parseOrigins2024 } from "./parsers/2024/origins.ts";
 import { parseFeats2024 } from "./parsers/2024/feats.ts";
 import { parseSpells2024 } from "./parsers/2024/spells.ts";
 import { parseEquipment2024 } from "./parsers/2024/equipment.ts";
 import { parseMagicItems2024 } from "./parsers/2024/magicItems.ts";
+import { parseRules2024 } from "./parsers/2024/rules.ts";
+import { parseMonsters2024 } from "./parsers/2024/monsters.ts";
 
 import { featureMap as featureMap2014, magicItemMap as magicItemMap2014 } from "./mads/2014/index.ts";
 import { featureMap as featureMap2024, magicItemMap as magicItemMap2024 } from "./mads/2024/index.ts";
@@ -61,6 +65,8 @@ function collect(ruleset: Ruleset): RulesetData {
             spells: parseSpells2014(),
             items, weapons, armor,
             magicItems: parseMagicItems2014(),
+            rules: parseRules2014(),
+            monsters: parseMonsters2014(),
         };
     }
     const { classes, subclasses } = parseClasses2024();
@@ -74,6 +80,8 @@ function collect(ruleset: Ruleset): RulesetData {
         items,
         magicItems: parseMagicItems2024(),
         weaponMasteries,
+        rules: parseRules2024(),
+        monsters: parseMonsters2024(),
     };
 }
 

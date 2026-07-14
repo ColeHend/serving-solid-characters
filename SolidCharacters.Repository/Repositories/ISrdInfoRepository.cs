@@ -67,4 +67,16 @@ public interface ISrdInfoRepository
   /// <returns>masteries</returns>
   List<WeaponMastery> GetWeaponMasteries();
 
+  /// <summary>
+  /// Get all the monsters
+  /// </summary>
+  /// <returns>Monsters</returns>
+  List<Monster> GetMonsters(string version = "2014");
+
+  /// <summary>
+  /// Get all the rules
+  /// </summary>
+  /// <returns>Rules</returns>
+  List<Rule> GetRules(string version = "2014");
+
 }
