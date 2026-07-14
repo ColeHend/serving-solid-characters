@@ -1,6 +1,5 @@
 import { Component, For, createSignal, onMount, onCleanup, createMemo } from "solid-js";
 import { Body } from "coles-solid-library";
-import { isMobile } from "coles-solid-library/dist/tools/tools.js";
 import GetTileElement, { tiles, getTileMetadata } from "./tileList";
 import { DmHeader } from "./header/dmHeader";
 import { EventChipBar } from "./eventChipBar/eventChipBar";
@@ -11,7 +10,8 @@ const GAP = 10;
 
 const DmCommand: Component = () => {
     const { screenSize } = getScreenSize({ medium: 1268 });
-    const maxColumns = createMemo(() => ['small', 'medium'].includes(screenSize()) ? 3 : 6);
+    const isMobile = createMemo(() => ['small', 'medium'].includes(screenSize()));
+    const maxColumns = createMemo(() => isMobile() ? 3 : 6);
     // Set Campaign And Session
     const [campaignSelected, setCampaignSelected] = createSignal<string>();
     const [sessionSelected, setSessionSelected] = createSignal<string>();
@@ -71,7 +71,7 @@ const DmCommand: Component = () => {
                     <For each={completeTileList()}>{({ element, meta }) => {
                         return (
                             <div style={{
-                                "grid-column": `span ${Math.min(meta.width, maxColumns())}`,
+                                "grid-column": `span ${isMobile() ? maxColumns() : Math.min((meta.width), maxColumns())}`,
                                 "grid-row": `span ${isMobile() ? meta.height + 1 : meta.height}`,
                                 "box-sizing": "border-box",
                                 overflow: "hidden",
