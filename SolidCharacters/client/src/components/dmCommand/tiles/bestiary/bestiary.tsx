@@ -1,5 +1,5 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
-import { Input } from "coles-solid-library";
+import { FormField, Input } from "coles-solid-library";
 import { SectionLabel } from "../../shared/sectionLabel/sectionLabel";
 import { DEMO_MONSTERS } from "./bestiary.shared";
 import { MonsterRow } from "./monsterRow";
@@ -15,8 +15,10 @@ export const BestiaryTile: Component = () => {
 
     return <div class={styles.tile}>
         <SectionLabel label="Bestiary" />
-        <Input style={{color: 'color: var(--text-color)'}} placeholder="Search monsters..." value={search()}
-            onChange={(e) => setSearch(e.currentTarget.value)} />
+        <FormField name="Search Monsters.." variant="standard">
+            <Input placeholder="Search monsters..." value={search()}
+                onChange={(e) => setSearch(e.currentTarget.value)} />
+        </FormField>
         <span class={styles.hint}>Open a Combat event to drop these into initiative.</span>
         <div class={styles.rows}>
             <For each={filtered()}>{(monster) =>
