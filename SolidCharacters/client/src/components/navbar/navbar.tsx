@@ -1,11 +1,12 @@
-import { Accessor, Component, Show, createSignal, Setter, splitProps } from "solid-js";
+import { Accessor, Component, Show, createSignal, Setter, splitProps, createMemo } from "solid-js";
 import navStyles from './navbar.module.scss';
 import { A } from "@solidjs/router";
 import { Button, Container, Icon } from "coles-solid-library";
 import DataTransferModal from "../DataTransfering/dataTransferModal";
-import { FileExport, Menu } from "coles-solid-library/icons";
+import { Dictionary, FileExport, Menu } from "coles-solid-library/icons";
 import GrimoireNavButton from "./GrimoireNavButton";
 import { isAiConfigured } from "../../shared/customHooks/userSettings";
+import { RulesDictionary } from "../../shared/components/modals/rulesDictionary/rulesDictionary";
 
 type Props = {
     style?: CSSModuleClasses[string],
@@ -23,6 +24,7 @@ export interface Tab {
 
 const Navbar: Component<Props> = (props) => {
   const [showDataTransfer, setShowDataTransfer] = createSignal(false);
+  const [showRulesDict, setShowRulesDict] = createSignal(false);
   const [local, other] = splitProps(props, ["list"]);
 
   return (
@@ -43,10 +45,17 @@ const Navbar: Component<Props> = (props) => {
             <Calculator />
           </Button> */}
 
+          <Button
+            transparent
+            title='Rules Dictionary'
+            onClick={() => setShowRulesDict(old => !old)}>
+              <Icon icon={Dictionary} size="large"></Icon>
+            </Button>
+
           <Button 
             transparent
             title='Import & Export'  
-            onClick={() => setShowDataTransfer(!showDataTransfer())}>
+            onClick={() => setShowDataTransfer(old => !old)}>
             <Icon icon={FileExport} size="large"></Icon>
           </Button>
 
@@ -61,6 +70,9 @@ const Navbar: Component<Props> = (props) => {
                 
       </div>
 
+      <Show when={showRulesDict()}>
+        <RulesDictionary show={showRulesDict} setShow={setShowRulesDict} />
+      </Show>
       
       <Show when={showDataTransfer()}>
         <DataTransferModal show={[showDataTransfer,setShowDataTransfer]} />
