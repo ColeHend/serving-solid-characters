@@ -147,4 +147,34 @@ public class DnD2014Controller : ControllerBase
         return StatusCode(500, "Internal server error");
       }
     }
+
+    [HttpGet("Monsters")]
+    public ActionResult<List<Monster>> Monsters()
+    {
+      try
+      {
+        var monsters = srdInfoRepository.GetMonsters();
+        return Ok(monsters);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error retrieving monsters: " + ex.Message);
+        return StatusCode(500, "Internal server error");
+      }
+    }
+
+    [HttpGet("Rules")]
+    public ActionResult<List<Rule>> Rules()
+    {
+      try
+      {
+        var rules = srdInfoRepository.GetRules();
+        return Ok(rules);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error retrieving rules: " + ex.Message);
+        return StatusCode(500, "Internal server error");
+      }
+    }
 }

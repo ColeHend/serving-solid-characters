@@ -113,5 +113,15 @@ export function validateStructure(ruleset: Ruleset, data: RulesetData): Validati
         if (!m.rarity) res.warnings.push(`magic_item ${m.name}: empty rarity`);
     }
     for (const w of data.weaponMasteries ?? []) nonEmpty("weapon_mastery", w.name, w.id);
+    for (const r of data.rules) {
+        nonEmpty("rule", r.name, r.id);
+        if (!r.description?.trim()) res.errors.push(`rule ${r.name}: empty description`);
+    }
+    for (const m of data.monsters) {
+        nonEmpty("monster", m.name, m.id);
+        if (!m.challenge_rating) res.errors.push(`monster ${m.name}: empty challenge_rating`);
+        if (!m.stats) res.errors.push(`monster ${m.name}: missing stats`);
+        if (!(m.health?.max > 0)) res.errors.push(`monster ${m.name}: health.max must be > 0`);
+    }
     return res;
 }
