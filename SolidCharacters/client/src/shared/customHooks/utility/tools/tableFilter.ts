@@ -12,6 +12,10 @@ export interface FilterFieldConfig<T> {
   getValues?: (item: T) => FilterPrimitive | FilterPrimitive[];
   /** Display formatting for option/chip labels (e.g. "true" -> "Yes"). */
   format?: (value: string) => string;
+  /** Static option list in given order, replacing derivation from data (e.g. all six stats). */
+  options?: string[];
+  /** Custom match predicate replacing exact value matching (e.g. level thresholds). */
+  matches?: (item: T, selected: string[]) => boolean;
 }
 
 /** Accessors into an existing createTableSort instance so the filter dialog
@@ -71,6 +75,10 @@ export function createTableFilter<T>(config: TableFilterConfig<T>) {
   const distinct = createMemo(() => {
     const map = new Map<string, string[]>();
     for (const field of config.fields) {
+      if (field.options) {
+        map.set(field.key, field.options);
+        continue;
+      }
       const set = new Set<string>();
       for (const item of config.source()) valuesOf(item, field).forEach((v) => set.add(v));
       map.set(field.key, [...set].sort(collator.compare));
@@ -95,6 +103,7 @@ export function createTableFilter<T>(config: TableFilterConfig<T>) {
         if (mode === "legacy" ? !isLegacyItem(item) : isLegacyItem(item)) return false;
       }
       return active.every((f) => {
+        if (f.matches) return f.matches(item, sel[f.key]);
         const values = valuesOf(item, f);
         return sel[f.key].some((s) => values.includes(s));
       });

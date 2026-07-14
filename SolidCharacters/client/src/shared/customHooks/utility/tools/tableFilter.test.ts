@@ -300,3 +300,51 @@ describe('createTableFilter source reactivity', () => {
     expect(filteredData()).toEqual([]);
   });
 });
+
+describe('createTableFilter static options and custom matching', () => {
+  const availableAt: FilterFieldConfig<TestSpell> = {
+    key: 'availLevel',
+    label: 'Level',
+    options: ['1', '2', '3', '4', '5'],
+    // threshold semantics: a row passes when its level is at or below a selected level
+    matches: (s, selected) => selected.some(sel => Number(s.level) <= Number(sel)),
+  };
+
+  it('serves a static options list in given order, ignoring the data', () => {
+    const { optionsFor } = setup({
+      fields: [{ key: 'school', label: 'School', options: ['Necromancy', 'Abjuration', 'Evocation'] }],
+    });
+
+    // not collator-sorted, includes values absent from the rows
+    expect(optionsFor('school').map(o => o.value)).toEqual(['Necromancy', 'Abjuration', 'Evocation']);
+  });
+
+  it('formats static option labels while keeping raw values', () => {
+    const { optionsFor } = setup({
+      fields: [{ ...availableAt, format: (v) => `Level ${v}` }],
+    });
+
+    expect(optionsFor('availLevel')[0]).toEqual({ value: '1', label: 'Level 1' });
+  });
+
+  it('filters through a custom matches predicate instead of exact values', () => {
+    const { filteredData, setFieldValues } = setup({ fields: [availableAt] });
+
+    // no row has level '5'; exact matching would return nothing
+    setFieldValues('availLevel', ['5']);
+
+    expect(filteredData().map(s => s.name)).toEqual(['Fireball', 'Web', 'Guidance']);
+  });
+
+  it('ANDs a matches field with default exact-match fields', () => {
+    const { filteredData, setFieldValues } = setup({
+      fields: [availableAt, { key: 'school', label: 'School' }],
+    });
+
+    setFieldValues('availLevel', ['5']);
+    setFieldValues('school', ['Evocation']);
+
+    // Meteor Storm is Evocation but level 10; Web is level 2 but Conjuration
+    expect(filteredData().map(s => s.name)).toEqual(['Fireball']);
+  });
+});
