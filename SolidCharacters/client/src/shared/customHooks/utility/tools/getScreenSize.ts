@@ -5,8 +5,8 @@ interface ScreenSizeInfo {
     screenSize: Accessor<ScreenSize>;
 }
 interface ScreenSizeThresholds {
-    small: number;
-    medium: number;
+    small?: number;
+    medium?: number;
 }
 /**
  * New utility hook to determine if is mobile

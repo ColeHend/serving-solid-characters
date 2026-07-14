@@ -10,8 +10,8 @@ import { getScreenSize } from "../../shared/customHooks/utility/tools/getScreenS
 const GAP = 10;
 
 const DmCommand: Component = () => {
-    const { screenSize } = getScreenSize({ small: 768, medium: 1920 });
-    const maxColumns = createMemo(() => screenSize() === 'small' ? 3 : 6);
+    const { screenSize } = getScreenSize({ medium: 1268 });
+    const maxColumns = createMemo(() => ['small', 'medium'].includes(screenSize()) ? 3 : 6);
     // Set Campaign And Session
     const [campaignSelected, setCampaignSelected] = createSignal<string>();
     const [sessionSelected, setSessionSelected] = createSignal<string>();
