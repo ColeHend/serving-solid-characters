@@ -1,0 +1,103 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  flex: 1;
+  padding: 0 var(--spacing-2);
+  border-radius: var(--spacing-1);
+  background: var(--surface-color);
+}
+
+.searchInput {
+  flex: 1;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-2);
+}
+
+.editionToggle {
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: var(--spacing-1);
+}
+
+.empty {
+  padding: var(--spacing-3);
+  text-align: center;
+  opacity: 0.6;
+}
+
+/* --- row --- */
+.rowHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.star {
+  display: inline-flex;
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
+.rowName {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customChip {
+  opacity: 0.85;
+}
+
+.rowBody {
+  padding: var(--spacing-1) var(--spacing-2) var(--spacing-2);
+}
+
+.rowActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-2);
+}
+
+/* --- editor --- */
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.editorRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.editorActions {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+}
