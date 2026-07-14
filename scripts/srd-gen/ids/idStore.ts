@@ -38,6 +38,7 @@ export class IdStore {
             ["classes", "class"], ["subclasses", "subclass"], ["races", "race"], ["subraces", "subrace"],
             ["backgrounds", "background"], ["feats", "feat"], ["spells", "spell"], ["items", "item"],
             ["weapons", "item"], ["armor", "item"], ["magic_items", "magic_item"], ["weapon_masteries", "mastery"],
+            ["rules", "rule"], ["monsters", "monster"],
         ];
         for (const [file, kind] of kinds) {
             for (const e of this.loadJson(dataDir, `${file}.json`)) {
@@ -127,6 +128,13 @@ export function assignIds(store: IdStore, data: RulesetData): void {
     }
     for (const m of data.magicItems) if (!m.id) m.id = store.id(`magic_item|${nameKey(m.name)}`);
     for (const w of data.weaponMasteries ?? []) if (!w.id) w.id = store.id(`mastery|${nameKey(w.name)}`);
+    for (const r of data.rules) if (!r.id) r.id = store.id(`rule|${nameKey(r.name)}`);
+    for (const m of data.monsters) {
+        if (!m.id) m.id = store.id(`monster|${nameKey(m.name)}`);
+        for (const f of m.features ?? []) {
+            if (!f.id) f.id = store.id(`feature|monster|${nameKey(m.name)}||${nameKey(f.name)}`);
+        }
+    }
 
     // parentRace: parsers emit the parent race NAME; swap to the parent's id.
     const raceByName = new Map(data.races.map(r => [nameKey(r.name), r.id]));

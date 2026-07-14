@@ -27,6 +27,8 @@ export const COUNT_GATES: Record<string, Record<string, { eq?: number; min?: num
         weapons: { min: 35 },
         armor: { min: 12 },
         magic_items: { min: 230 },
+        rules: { min: 20 },      // curated 2014 set (24 authored)
+        monsters: { min: 310 },  // 318 per-file source; 2 are non-statblock docs (template/NPC-customizing)
     },
     "2024": {
         classes: { eq: 12 },
@@ -39,5 +41,7 @@ export const COUNT_GATES: Record<string, Record<string, { eq?: number; min?: num
         items: { min: 60 },
         magic_items: { min: 200 },
         weapon_masteries: { min: 30 },
+        rules: { min: 140 },     // parsed from 08_RulesGlossary.md (156 entries)
+        monsters: { min: 320 },  // 12_MonstersA-Z.md (235) + 13_Animals.md (94)
     },
 };

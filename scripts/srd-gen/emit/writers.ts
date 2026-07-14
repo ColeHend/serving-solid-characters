@@ -13,6 +13,8 @@ export function filePlan(ruleset: Ruleset, data: RulesetData): Record<string, un
         backgrounds: data.backgrounds,
         feats: data.feats,
         magic_items: data.magicItems,
+        rules: data.rules,
+        monsters: data.monsters,
     };
     if (ruleset === "2014") {
         return { ...common, items: data.items, weapons: data.weapons ?? [], armor: data.armor ?? [] };

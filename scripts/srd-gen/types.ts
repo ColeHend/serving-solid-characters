@@ -214,6 +214,184 @@ export interface WeaponMasteryJson {
     mastery: string;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Rules dictionary + Monster statblock — mirror SolidCharacters.Domain/Models/DTO/StatBlock.cs
+// ([JsonProperty] snake_case). `legacy` optional here (stamped centrally, like every entity).
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** A flat rules-dictionary entry (e.g. "Jumping", "Cover"). Mirrors C# `Rule`. */
+export interface RuleJson {
+    id: string;
+    legacy?: boolean;
+    name: string;
+    description: string;
+    category?: string;
+    tags: string[];
+    related?: string[];
+    page?: string;
+}
+
+/** Ability score block — mirrors C# `Stats`. */
+export interface StatsJson {
+    str: number;
+    dex: number;
+    con: number;
+    int: number;
+    wis: number;
+    cha: number;
+}
+
+/** Mirrors C# `Health`. Max is the listed HP; current/temp are runtime state. */
+export interface HealthJson {
+    max: number;
+    current: number;
+    temp: number;
+}
+
+/** Non-walking speeds in feet — mirrors C# `MovementSpeeds`. */
+export interface MovementSpeedsJson {
+    fly?: number;
+    swim?: number;
+    climb?: number;
+    burrow?: number;
+    hover?: boolean;
+}
+
+/** Special senses + ranges in feet — mirrors C# `CreatureSenses`. */
+export interface CreatureSensesJson {
+    darkvision?: number;
+    blindsight?: number;
+    tremorsense?: number;
+    truesight?: number;
+    passive_perception?: number;
+}
+
+/** Mirrors C# `SavingThrow`. Bonus derives = mod + (proficient ? PB : 0). */
+export interface SavingThrowJson {
+    stat: string; // "str".."cha"
+    proficient: boolean;
+}
+
+/** Mirrors C# `SkillProficiency`. */
+export interface SkillProficiencyJson {
+    stat: string; // governing ability
+    value: number; // computed modifier (statblocks list it)
+    proficient: boolean;
+    expertise: boolean;
+}
+
+/** Mirrors C# `CreatureProficiency`. */
+export interface CreatureProficiencyJson {
+    skills: Record<string, SkillProficiencyJson>;
+    other: Record<string, boolean>;
+}
+
+/** Mirrors C# `DamageAffinity`, used for resistances/vulnerabilities/immunities. */
+export interface DamageAffinityJson {
+    type: string; // "fire", "slashing", ...
+    value: boolean;
+}
+
+/** Mirrors C# `GrantedAction`: a named narrative action (no attack math). */
+export interface GrantedActionJson {
+    name: string;
+    action_type: string; // "action" | "bonusAction" | "reaction"
+    description?: string;
+    source?: string;
+}
+
+/** Mirrors C# `RollAdvantage`. */
+export interface RollAdvantageJson {
+    roll_type: string;
+    mode: string; // "advantage" | "disadvantage"
+    stat?: string;
+    condition?: string;
+    source?: string;
+}
+
+/** Mirrors C# `RollBonus`. */
+export interface RollBonusJson {
+    roll_type: string;
+    bonus?: number;
+    proficiency_bonus?: string; // "Third PB" | "Half PB" | "Full PB"
+    stat?: string;
+    condition?: string;
+    source?: string;
+}
+
+/** One damage component — mirrors C# `DamageEntry`. */
+export interface DamageEntryJson {
+    dice: string; // "2d6"
+    type: string; // "Slashing", "Fire"
+    add_ability_modifier: boolean; // primary weapon damage = true
+    bonus?: number; // flat magic bonus (e.g. +1)
+}
+
+/** Save specifier for save-based attacks (breath weapons) — mirrors C# `MonsterSave`. */
+export interface MonsterSaveJson {
+    target_ability: string; // ability the TARGET rolls, e.g. "dex"
+    dc_ability?: string; // monster ability that sets the DC (derive)
+    dc_override?: number; // escape hatch when non-standard
+    type: string; // "negates" | "half" | "none"
+}
+
+/** A monster's natural attack — mirrors C# `MonsterAttack`. To-hit + primary damage derive. */
+export interface MonsterAttackJson {
+    name: string;
+    action_type: string; // "action" | "bonusAction" | "reaction"
+    description?: string;
+    attack_type?: string; // "melee" | "ranged" | "melee_or_ranged"
+    ability?: string; // "str".."cha": drives derived to-hit + primary damage
+    proficient?: boolean;
+    to_hit_override?: number; // explicit total to-hit (non-standard)
+    crit_threshold?: number;
+    reach?: string;
+    range?: string;
+    save?: MonsterSaveJson; // present for save-based attacks
+    target_count?: number;
+    damage: DamageEntryJson[];
+    count?: number; // times made per turn in a multiattack
+    recharge?: string; // "5-6"
+    uses?: string; // "1/Day"
+}
+
+/** A monster statblock, structured like the character model — mirrors C# `Monster`. */
+export interface MonsterJson {
+    id: string;
+    legacy?: boolean;
+    name: string;
+    size: string; // "Tiny".."Gargantuan"
+    type: string; // creature type: "humanoid", "dragon"
+    subtype?: string;
+    alignment?: string;
+    stats: StatsJson;
+    armor_class: number;
+    armor_desc?: string;
+    health: HealthJson;
+    hit_dice?: string; // "12d10+48"
+    speed: number; // walking speed
+    movement_speeds: MovementSpeedsJson;
+    senses: CreatureSensesJson;
+    saving_throws: SavingThrowJson[];
+    proficiencies: CreatureProficiencyJson;
+    resistances: DamageAffinityJson[];
+    vulnerabilities: DamageAffinityJson[];
+    immunities: DamageAffinityJson[];
+    condition_immunities: string[];
+    languages: string[];
+    features: FeatureDetailJson[]; // passive/triggered traits
+    granted_actions: GrantedActionJson[];
+    roll_advantages: RollAdvantageJson[];
+    roll_bonuses: RollBonusJson[];
+    attacks: MonsterAttackJson[];
+    attacks_per_action: number;
+    legendary_actions?: MonsterAttackJson[];
+    legendary_action_count?: number;
+    challenge_rating: string; // "1/4", "6"
+    proficiency_bonus?: number;
+    xp?: number;
+}
+
 /** Everything produced for one ruleset, pre-ids/pre-mads. */
 export interface RulesetData {
     classes: ClassJson[];
@@ -228,6 +406,8 @@ export interface RulesetData {
     armor?: ItemJson[];   // 2014 only (separate file)
     magicItems: MagicItemJson[];
     weaponMasteries?: WeaponMasteryJson[]; // 2024 only
+    rules: RuleJson[];
+    monsters: MonsterJson[];
 }
 
 export const ABILITY_ENUM: Record<string, number> = {
