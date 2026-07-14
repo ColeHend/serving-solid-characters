@@ -167,4 +167,34 @@ public class DnD2024Controller : ControllerBase
         return StatusCode(500, "Internal server error");
       }
     }
+
+    [HttpGet("Monsters")]
+    public ActionResult<List<Monster>> Monsters()
+    {
+      try
+      {
+        var monsters = srdInfoRepository.GetMonsters("2024");
+        return Ok(monsters);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error retrieving monsters: " + ex.Message);
+        return StatusCode(500, "Internal server error");
+      }
+    }
+
+    [HttpGet("Rules")]
+    public ActionResult<List<Rule>> Rules()
+    {
+      try
+      {
+        var rules = srdInfoRepository.GetRules("2024");
+        return Ok(rules);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error retrieving rules: " + ex.Message);
+        return StatusCode(500, "Internal server error");
+      }
+    }
 }
