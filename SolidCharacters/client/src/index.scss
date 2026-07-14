@@ -1,5 +1,9 @@
 @use 'coles-solid-library/themes/themes.scss';
 @use 'coles-solid-library/themes/variables' as colesVars;
+// Arcane/Parchment variant palettes — compound [data-theme][data-theme-variant] blocks.
+@use './styles/themeVariants';
+// Re-export the gradientHeading mixin so modules that already `@use index.scss as *` get it.
+@forward './styles/gradientText';
 
 // /* Basic CSS reset to ensure elements are visible regardless of font loading */
 // * {
@@ -98,6 +102,12 @@
   --spark-raise:        rgba(0, 0, 0, 0.05);
   --spark-raise-strong: rgba(0, 0, 0, 0.10); // hover
   --spark-hairline:     rgba(0, 0, 0, 0.14); // borders/dividers
+
+  // Gradient "ink" for headings — subtle brand tint on the base themes; the Arcane/Parchment
+  // variant blocks override it. Body-scoped (not :root) per the resolution note above.
+  --on-surface-gradient: linear-gradient(120deg,
+    var(--on-surface-color),
+    color-mix(in srgb, var(--on-surface-color), var(--primary-color) 55%));
 }
 [data-theme="dark"] {
   --spark-text-color: #fff;
@@ -105,6 +115,11 @@
   --spark-raise:        rgba(255, 255, 255, 0.06);
   --spark-raise-strong: rgba(255, 255, 255, 0.11); // hover
   --spark-hairline:     rgba(255, 255, 255, 0.16); // borders/dividers
+
+  // Same heading-gradient default as the light block above.
+  --on-surface-gradient: linear-gradient(120deg,
+    var(--on-surface-color),
+    color-mix(in srgb, var(--on-surface-color), var(--primary-color) 55%));
 }
 //------------------------------------------------------------------
 // Styles

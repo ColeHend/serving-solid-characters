@@ -58,6 +58,7 @@ $mobile: 768px;
 
 .title {
     text-align: center;
+    @include gradientHeading(true);
 }
 
 .scrollable {

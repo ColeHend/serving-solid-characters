@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import themeStyle from './themes/themeStyle.module.scss';
 import { createMemo } from 'solid-js';
+import { getTheme } from './themeRegistry';
 
 // Define a default style to fall back to if there are any issues
 const defaultStyle: Style = {
@@ -19,14 +20,13 @@ export function useStyle(styleType?: string): Style {
   // Adding console logging to help debug style issues
   
   try {
-    // Apply background color based on theme
-    if (styleType === "light") {
-      document.body.style.backgroundColor = "#fff";
+    // Map any theme id (including variants like 'parchment') to its base mode. The body
+    // background itself comes from var(--background-color) — never set it inline here, or it
+    // would override the active palette.
+    if (getTheme(styleType).base === "light") {
       document.body.classList.add("light-theme");
       document.body.classList.remove("dark-theme");
     } else {
-      // Default to dark theme
-      document.body.style.backgroundColor = "#000";
       document.body.classList.add("dark-theme");
       document.body.classList.remove("light-theme");
     }

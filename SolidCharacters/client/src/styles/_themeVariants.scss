@@ -1,0 +1,62 @@
+// Palette overrides for the D&D-flavored theme variants. The base mode still comes from the
+// library's [data-theme] blocks (set by addTheme via applyTheme); applyTheme additionally sets
+// data-theme-variant on <body>. Compound selectors = specificity (0,2,0) so these beat the
+// library's single-attribute blocks even where those get re-emitted later in the bundle
+// (characterCreatePDF.module.scss re-imports the library themes; many modules @use index.scss).
+
+[data-theme="dark"][data-theme-variant="arcane"] {
+  --primary-color: #b18cf0;            // arcane violet
+  --primary-color-varient: #8f63d6;
+  --secondary-color: #e0b95c;          // gold
+  --secondary-color-varient: #c49a3c;
+  --background-color: #131020;
+  --surface-color: #1c1830;
+  --surface-color-variant: #2e2750;
+  --container-color: #241e3e;
+  --error-color: #cf6679;
+  --field-border-color: #58507a;
+  --field-border-color-hover: #7d73a8;
+
+  --header-background-color: #1a1430;
+  --header-on-background-color: #ece6fa;
+  --subheader-background-color: #241e3e;
+  --subheader-on-background-color: #ece6fa;
+
+  --on-primary-color: #1a1030;
+  --on-secondary-color: #201505;
+  --on-background-color: #ece6fa;
+  --on-surface-color: #ece6fa;
+  --on-container-color: #ece6fa;
+  --on-error-color: #000;
+
+  // Headline feature: gradient "ink" for headings (consumed by the gradientHeading mixin).
+  --on-surface-gradient: linear-gradient(120deg, #f0e6c8, #e0b95c 45%, #b18cf0);
+}
+
+[data-theme="light"][data-theme-variant="parchment"] {
+  --primary-color: #7c2718;            // dnd red (matches the book-modal chrome)
+  --primary-color-varient: #581c11;
+  --secondary-color: #8a5a2b;          // aged bronze
+  --secondary-color-varient: #6e4620;
+  --background-color: #e8ddc4;
+  --surface-color: #f3ead2;
+  --surface-color-variant: #d9cba6;
+  --container-color: #faf4e3;
+  --error-color: #b00020;
+  --field-border-color: #8a7a5c;
+  --field-border-color-hover: #5a4a30;
+
+  --header-background-color: #7c2718;
+  --header-on-background-color: #f6ecd2;
+  --subheader-background-color: #581c11;
+  --subheader-on-background-color: #f6ecd2;
+
+  --on-primary-color: #f6ecd2;
+  --on-secondary-color: #fff;
+  --on-background-color: #241405;      // ink
+  --on-surface-color: #2b1c0e;
+  --on-container-color: #2b1c0e;
+  --on-error-color: #fff;
+
+  --on-surface-gradient: linear-gradient(120deg, #7c2718, #a2542e);
+}
