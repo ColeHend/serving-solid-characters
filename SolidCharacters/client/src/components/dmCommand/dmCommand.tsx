@@ -5,11 +5,13 @@ import GetTileElement, { tiles, getTileMetadata } from "./tileList";
 import { DmHeader } from "./header/dmHeader";
 import { EventChipBar } from "./eventChipBar/eventChipBar";
 import style from "./dmCommand.module.scss";
+import { getScreenSize } from "../../shared/customHooks/utility/tools/getScreenSize";
 
 const GAP = 10;
 
 const DmCommand: Component = () => {
-    const maxColumns = isMobile() ? 3 : 6;
+    const { screenSize } = getScreenSize({ small: 768, medium: 1920 });
+    const maxColumns = createMemo(() => screenSize() === 'small' ? 3 : 6);
     // Set Campaign And Session
     const [campaignSelected, setCampaignSelected] = createSignal<string>();
     const [sessionSelected, setSessionSelected] = createSignal<string>();
@@ -37,7 +39,7 @@ const DmCommand: Component = () => {
         if (!gridRef) return;
         const measure = () => {
             const w = gridRef!.clientWidth;
-            setCellSize(Math.max(0, (w - GAP * (maxColumns - 1)) / maxColumns));
+            setCellSize(Math.max(0, (w - GAP * (maxColumns() - 1)) / maxColumns()));
         };
         const observer = new ResizeObserver(measure);
         observer.observe(gridRef);
@@ -61,7 +63,7 @@ const DmCommand: Component = () => {
             <div class={`${style.body}`}>
                 <div ref={gridRef} style={{
                     display: "grid",
-                    "grid-template-columns": `repeat(${maxColumns}, 1fr)`,
+                    "grid-template-columns": `repeat(${maxColumns()}, 1fr)`,
                     "grid-auto-rows": `${cellSize()}px`,
                     "grid-auto-flow": "row dense",
                     gap: `${GAP}px`,
@@ -69,7 +71,7 @@ const DmCommand: Component = () => {
                     <For each={completeTileList()}>{({ element, meta }) => {
                         return (
                             <div style={{
-                                "grid-column": `span ${Math.min(meta.width, maxColumns)}`,
+                                "grid-column": `span ${Math.min(meta.width, maxColumns())}`,
                                 "grid-row": `span ${isMobile() ? meta.height + 1 : meta.height}`,
                                 "box-sizing": "border-box",
                                 overflow: "hidden",
