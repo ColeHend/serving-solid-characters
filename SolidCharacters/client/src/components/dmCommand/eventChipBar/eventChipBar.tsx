@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, For, JSX, onCleanup, onMount, Show } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, For, JSX, onCleanup, onMount, Show } from "solid-js";
 import { useActiveEvents } from "../hooks/activeEvents";
 import { EventChip } from "./eventChip";
 import { AddEventChip } from "./addEventChip";
@@ -32,15 +32,19 @@ export const EventChipBar: Component = () => {
         });
     };
 
-    const setScroll = ()=> {
-        setIsLeftScrolled(innerScrollBar?.scrollLeft === 0);
+    const setScroll = () => {
+        if (!innerScrollBar) return;
+        setIsLeftScrolled(innerScrollBar.scrollLeft === 0);
         setIsRightScrolled(Math.ceil(innerScrollBar.scrollLeft + innerScrollBar.clientWidth) >= innerScrollBar.scrollWidth);
         setScrollWidth();
     }
 
+    createEffect(() => {
+        getActiveEvents();
+        setScroll();
+    });
+
     onMount(() => {
-        setIsLeftScrolled(innerScrollBar?.scrollLeft === 0);
-        setIsRightScrolled(Math.ceil(innerScrollBar.scrollLeft + innerScrollBar.clientWidth) >= innerScrollBar.scrollWidth);
         innerScrollBar?.addEventListener('scroll', setScroll);
     });
 
