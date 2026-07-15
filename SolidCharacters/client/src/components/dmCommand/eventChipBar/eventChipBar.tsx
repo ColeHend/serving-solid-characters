@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, For, JSX, onMount, Show } from "solid-js";
+import { Component, createMemo, createSignal, For, JSX, onCleanup, onMount, Show } from "solid-js";
 import { useActiveEvents } from "../hooks/activeEvents";
 import { EventChip } from "./eventChip";
 import { AddEventChip } from "./addEventChip";
@@ -32,15 +32,21 @@ export const EventChipBar: Component = () => {
         });
     };
 
+    const setScroll = ()=> {
+        setIsLeftScrolled(innerScrollBar?.scrollLeft === 0);
+        setIsRightScrolled(Math.ceil(innerScrollBar.scrollLeft + innerScrollBar.clientWidth) >= innerScrollBar.scrollWidth);
+        setScrollWidth();
+    }
+
     onMount(() => {
         setIsLeftScrolled(innerScrollBar?.scrollLeft === 0);
         setIsRightScrolled(Math.ceil(innerScrollBar.scrollLeft + innerScrollBar.clientWidth) >= innerScrollBar.scrollWidth);
-        innerScrollBar?.addEventListener('scroll', ()=> {
-            setIsLeftScrolled(innerScrollBar?.scrollLeft === 0);
-            setIsRightScrolled(Math.ceil(innerScrollBar.scrollLeft + innerScrollBar.clientWidth) >= innerScrollBar.scrollWidth);
-            setScrollWidth();
-        });
-    })
+        innerScrollBar?.addEventListener('scroll', setScroll);
+    });
+
+    onCleanup(()=>{
+        innerScrollBar?.removeEventListener('scroll', setScroll);
+    });
 
     return <div class={styles.barWrap}>
         <Show when={!isLeftScrolled()}>
