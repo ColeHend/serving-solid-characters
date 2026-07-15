@@ -100,18 +100,43 @@ export const RulesDictionary: Component<RulesDictProps> = (props) => {
     >
       <div class={styles.grimoire}>
         <header class={styles.header}>
-          <span class={styles.diamond} aria-hidden="true">◆</span>
-          <h2 class={styles.headerTitle}>Rules Dictionary</h2>
-          <span class={styles.headerRule} aria-hidden="true" />
-          <SegmentedToggle
-            options={EDITIONS}
-            value={edition()}
-            onChange={(key) => setEdition(key as RuleEdition)}
-            ariaLabel="Edition filter"
-          />
-          <button type="button" class={styles.iconBtn} aria-label="Close" title="Close" onClick={() => props.setShow(false)}>
-            <Icon icon={Close} size="medium" />
-          </button>
+          <Show when={!isMobile()}>
+            <span class={styles.diamond} aria-hidden="true">◆</span>
+            <h2 class={styles.headerTitle}>Rules Dictionary</h2>
+            <span class={styles.headerRule} aria-hidden="true" />
+            <SegmentedToggle
+              options={EDITIONS}
+              value={edition()}
+              onChange={(key) => setEdition(key as RuleEdition)}
+              ariaLabel="Edition filter"
+            />
+            <button type="button" class={styles.iconBtn} aria-label="Close" title="Close" onClick={() => props.setShow(false)}>
+              <Icon icon={Close} size="medium" />
+            </button>
+          </Show>
+          <Show when={isMobile()}>
+            <div style={{
+              display: 'flex',
+              'flex-direction': 'row',
+              'align-items': 'center'
+            }}>
+              <span style={{
+                'margin-right': '11px'
+              }} class={styles.diamond} aria-hidden="true">◆</span>
+              <h2 class={styles.headerTitle}>Rules Dictionary</h2>
+              <button type="button" class={styles.iconBtn} aria-label="Close" title="Close" onClick={() => props.setShow(false)}>
+                <Icon icon={Close} size="medium" />
+              </button>
+            </div>
+            <span class={styles.headerRule} aria-hidden="true" />
+            <SegmentedToggle
+              options={EDITIONS}
+              value={edition()}
+              onChange={(key) => setEdition(key as RuleEdition)}
+              ariaLabel="Edition filter"
+            />
+          </Show>
+
         </header>
 
         <div class={styles.toolbar}>
