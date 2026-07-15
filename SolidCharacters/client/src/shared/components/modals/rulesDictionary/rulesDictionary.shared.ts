@@ -29,12 +29,16 @@ export function mergeRules(srd: Rule[], custom: UserRule[]): Rule[] {
   return [...new Map([...srd, ...custom].map((r) => [r.id, r])).values()];
 }
 
-/** Favorites float to the top; within each group, sort alphabetically by name (case-insensitive). */
-export function sortRules(rules: Rule[], favoriteIds: Set<string>): Rule[] {
-  return [...rules].sort((a, b) => {
-    const aFav = favoriteIds.has(a.id) ? 0 : 1;
-    const bFav = favoriteIds.has(b.id) ? 0 : 1;
-    if (aFav !== bFav) return aFav - bFav;
-    return (a.name ?? "").localeCompare(b.name ?? "", undefined, { sensitivity: "base" });
-  });
+/** Alphabetical by name (case-insensitive). Starred rules sort inline — the index shows the star
+ *  in place and the "Starred" filter covers finding them. */
+export function sortRules(rules: Rule[]): Rule[] {
+  return [...rules].sort((a, b) =>
+    (a.name ?? "").localeCompare(b.name ?? "", undefined, { sensitivity: "base" }),
+  );
+}
+
+/** Which edition badge a rule shows. SRD rules are centrally stamped (2014 → legacy:true,
+ *  2024 → legacy:false); `undefined` means unknown, so no badge rather than a guessed one. */
+export function editionBadge(rule: Rule): "2014" | "2024" | undefined {
+  return rule.legacy === true ? "2014" : rule.legacy === false ? "2024" : undefined;
 }

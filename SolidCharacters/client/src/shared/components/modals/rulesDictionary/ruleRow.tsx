@@ -1,57 +1,58 @@
-import { Component, Show } from "solid-js";
-import { Button, Chip, Icon } from "coles-solid-library";
-import { Star, StarFill, Edit } from "coles-solid-library/icons";
-import { FlatCard } from "../../flatCard/flatCard";
-import Markdown from "../../MarkDown/MarkDown";
+import { Component, For, Show } from "solid-js";
+import { Icon } from "coles-solid-library";
+import { Star, StarFill } from "coles-solid-library/icons";
 import { Rule } from "../../../../models/generated";
 import { starredRuleIds, toggleFavorite } from "../../../customHooks/userRulesManager";
+import { editionBadge } from "./rulesDictionary.shared";
 import styles from "./rulesDictionary.module.scss";
 
 /**
- * One accordion row in the rules dictionary. Header shows a star toggle + name + category chip;
- * expanding reveals the rule's Markdown text. Custom rules also get an Edit affordance. The star
- * lives inside FlatCard's `headerName`; its click stops propagation so it never toggles the panel.
+ * One selectable row in the dictionary index: star toggle + small-caps name + tag chips + edition
+ * badge. Clicking anywhere on the row selects the rule; the star is a nested control whose
+ * click/keys stop propagation so starring never changes the selection. (div+role rather than a
+ * <button> — a nested interactive star inside a real button is invalid HTML.)
  */
-const RuleRow: Component<{ rule: Rule; isCustom: boolean; onEdit: (rule: Rule) => void }> = (props) => {
+const RuleRow: Component<{
+  rule: Rule;
+  isCustom: boolean;
+  selected: boolean;
+  onSelect: (id: string) => void;
+}> = (props) => {
   const starred = () => starredRuleIds().has(props.rule.id);
+  const badge = () => editionBadge(props.rule);
 
   return (
-    <FlatCard
-      transparent
-      getRidOfTopBorder
-      headerName={
-        <span class={styles.rowHeader}>
-          <span
-            class={styles.star}
-            role="button"
-            tabIndex={0}
-            title={starred() ? "Unstar" : "Star"}
-            onClick={(e) => { e.stopPropagation(); void toggleFavorite(props.rule.id); }}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); void toggleFavorite(props.rule.id); } }}
-          >
-            <Icon icon={starred() ? StarFill : Star} size="medium" />
-          </span>
-          <span class={styles.rowName}>{props.rule.name}</span>
-          <Show when={props.rule.category}>
-            <Chip value={props.rule.category!} />
-          </Show>
-          <Show when={props.isCustom}>
-            <Chip value="Custom" class={styles.customChip} />
-          </Show>
-        </span>
-      }
+    <div
+      class={styles.row}
+      role="button"
+      tabIndex={0}
+      data-selected={props.selected}
+      onClick={() => props.onSelect(props.rule.id)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); props.onSelect(props.rule.id); }
+      }}
     >
-      <div class={styles.rowBody}>
-        <Markdown text={props.rule.description ?? ""} />
-        <Show when={props.isCustom}>
-          <div class={styles.rowActions}>
-            <Button transparent title="Edit rule" onClick={() => props.onEdit(props.rule)}>
-              <Icon icon={Edit} size="small" /> Edit
-            </Button>
-          </div>
-        </Show>
-      </div>
-    </FlatCard>
+      <span
+        class={styles.star}
+        classList={{ [styles.starOn]: starred() }}
+        role="button"
+        tabIndex={0}
+        title={starred() ? "Unstar" : "Star"}
+        onClick={(e) => { e.stopPropagation(); void toggleFavorite(props.rule.id); }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); void toggleFavorite(props.rule.id); }
+        }}
+      >
+        <Icon icon={starred() ? StarFill : Star} size="small" />
+      </span>
+      <span class={styles.rowName}>{props.rule.name}</span>
+      <Show when={props.rule.category}><span class={styles.tag}>{props.rule.category}</span></Show>
+      <For each={props.rule.tags ?? []}>{(tag) => <span class={styles.tag}>{tag}</span>}</For>
+      <Show when={props.isCustom}><span class={styles.tag}>Custom</span></Show>
+      <Show when={badge()}>
+        <span class={`${styles.badge} ${badge() === "2014" ? styles.badge2014 : styles.badge2024}`}>{badge()}</span>
+      </Show>
+    </div>
   );
 };
 

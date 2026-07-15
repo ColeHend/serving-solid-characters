@@ -57,7 +57,7 @@ export async function saveCustomRule(
     name: input.name,
     description: input.description,
     tags: input.tags ?? [],
-    legacy: false,
+    legacy: input.legacy ?? false,
     createdAt: input.createdAt ?? now,
     updatedAt: now,
   };

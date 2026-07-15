@@ -36,6 +36,24 @@ describe("userRulesManager (fake-indexeddb)", () => {
     expect(row?.description).toBe("desc2");
   });
 
+  it("saveCustomRule honors an explicit legacy flag and defaults to 2024 (legacy: false)", async () => {
+    const legacyRule = await saveCustomRule({ name: "Flanking", description: "adv", legacy: true });
+    expect((await userRulesDB.rules.get(legacyRule.id))?.legacy).toBe(true);
+
+    const modern = await saveCustomRule({ name: "Burning", description: "1d4 fire" });
+    expect((await userRulesDB.rules.get(modern.id))?.legacy).toBe(false);
+  });
+
+  it("saveCustomRule keeps legacy across edits (the editor always passes it)", async () => {
+    const created = await saveCustomRule({ name: "Old", description: "d", legacy: true });
+    const edited = await saveCustomRule({ id: created.id, createdAt: created.createdAt, name: "Old", description: "d2", legacy: true });
+    expect(edited.legacy).toBe(true);
+    expect((await userRulesDB.rules.get(created.id))?.legacy).toBe(true);
+
+    await saveCustomRule({ id: created.id, createdAt: created.createdAt, name: "Old", description: "d3", legacy: false });
+    expect((await userRulesDB.rules.get(created.id))?.legacy).toBe(false);
+  });
+
   it("toggleFavorite stars then unstars a rule id (SRD or custom)", async () => {
     const id = "srd-rule-123";
     await toggleFavorite(id);
