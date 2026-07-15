@@ -1,13 +1,21 @@
 @use 'coles-solid-library/themes/variables' as vars;
 @use '../shared/dmMixins' as dm;
 
+.barWrap {
+    display: flex;
+    flex-direction: row;
+    button {
+        height: min-content;
+        margin: auto 0px;
+    }
+}
 .bar {
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    flex-wrap: wrap;
     gap: 8px;
-    width: 100%;
+    width: calc(100% - 40px);
+    overflow-x: hidden;
     padding: 8px 2px;
 }
 
