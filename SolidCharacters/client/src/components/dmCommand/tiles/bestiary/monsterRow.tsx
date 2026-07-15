@@ -1,10 +1,10 @@
 import { Component } from "solid-js";
 import { Button } from "coles-solid-library";
-import { BestiaryMonster } from "./bestiary.shared";
 import styles from './bestiary.module.scss';
+import { Monster } from "../../../../shared";
 
 interface MonsterRowProps {
-    monster: BestiaryMonster;
+    monster: Monster;
 }
 
 export const MonsterRow: Component<MonsterRowProps> = (props) => {
@@ -12,7 +12,7 @@ export const MonsterRow: Component<MonsterRowProps> = (props) => {
         <span class={styles.info}>
             <span class={styles.name}>{props.monster.name}</span>
             <span class={styles.statLine}>
-                CR {props.monster.cr} · {props.monster.hp} HP · AC {props.monster.ac}
+                CR {props.monster.challengeRating} · {props.monster.health.max} HP · AC {props.monster.armorClass}
             </span>
         </span>
         <Button transparent class={styles.dropBtn}>⊕</Button>
