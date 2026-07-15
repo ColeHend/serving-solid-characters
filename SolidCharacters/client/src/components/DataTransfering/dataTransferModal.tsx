@@ -11,7 +11,7 @@ interface props {
 const DataTransferModal:Component<props> = (props) => {
   const [activeTab, setActiveTab] = createSignal<number>(1);
 
-  return <Modal title="File Exchange" show={props.show} width="70%">
+  return <Modal title="File Exchange" show={props.show}>
     <div class={`${styles.body}`}>
       <TabBar tabs={["Import","Export"]} activeTab={activeTab()} onTabChange={(label,index)=>setActiveTab(index)}/>
 
