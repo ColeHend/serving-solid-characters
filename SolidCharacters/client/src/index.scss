@@ -5,6 +5,11 @@
 // Re-export the gradientHeading mixin so modules that already `@use index.scss as *` get it.
 @forward './styles/gradientText';
 
+// D&D type stacks. Fallbacks are system faces only (Cinzel/EB Garamond link removed from index.html).
+$font-body:    'Bookinsanity', Georgia, 'Times New Roman', serif;
+$font-heading: 'Mr_Eaves_Small_Caps', 'Trebuchet MS', 'Segoe UI', sans-serif;
+$font-ui:      'Scaly_Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
 // /* Basic CSS reset to ensure elements are visible regardless of font loading */
 // * {
 //   visibility: visible !important;
@@ -125,9 +130,10 @@
 // Styles
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  // Body-scoped --font-family beats the library's :root declaration by inheritance
+  // proximity, even when characterCreatePDF.module.scss re-emits the library themes late.
+  --font-family: #{$font-body};
+  font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
@@ -193,6 +199,36 @@ html {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+// ===== Global D&D type layer =====
+// Headings — element-level (0,0,1): class-scoped component fonts (Nodesto banners,
+// Zatanna table titles, dialog headers) still win on specificity.
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-heading;
+}
+
+// Tables — inherited by th/td; styledDndTable's class-scoped rules still win.
+table {
+  font-family: $font-ui;
+}
+
+// Form controls. !important required: coles-solid-library ships literal
+// font-family: "Roboto, sans-serif" in compiled Button/FormField/NumberInput CSS,
+// styleInject'd after app CSS with selectors up to (0,3,2). The library select is
+// div[is=coles-solid-select]. Future decorative fonts on raw controls must style an
+// inner wrapper (as dndDialogButton does) or also use !important.
+button, input, select, textarea, option,
+[is="coles-solid-select"] {
+  font-family: $font-ui !important;
+}
+
+// Field chrome (floating labels/legends/error text) would otherwise inherit the serif.
+// Non-!important so component rules win. [class*=…] prefix is fragile across library
+// upgrades — re-check if coles-solid-library is bumped.
+label, legend,
+[class*="formfield-module_formField"] {
+  font-family: $font-ui;
 }
 
 .openFirst {

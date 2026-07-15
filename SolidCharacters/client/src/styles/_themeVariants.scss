@@ -29,6 +29,7 @@ body[data-theme="light"] {
 body[data-theme="dark"] {
   --header-background-color: #2a2727;     // swapped with subheader
   --subheader-background-color: #1e1e1e;
+  --secondary-color: rgb(54, 13, 62);
   --header-gradient: linear-gradient(90deg,
     var(--header-background-color),
     color-mix(in srgb, var(--header-background-color), var(--primary-color) 22%) 60%,
@@ -43,7 +44,7 @@ body[data-theme="dark"] {
 [data-theme="dark"][data-theme-variant="arcane"] {
   --primary-color: #b18cf0;            // arcane violet
   --primary-color-varient: #8f63d6;
-  --secondary-color: #e0b95c;          // gold
+  --secondary-color: #4012bdba;          // gold
   --secondary-color-varient: #c49a3c;
   --background-color: #131020;
   --surface-color: #1c1830;
@@ -54,21 +55,24 @@ body[data-theme="dark"] {
   --field-border-color-hover: #7d73a8;
 
   --header-background-color: #241e3e;     // swapped with subheader
-  --header-on-background-color: #ece6fa;
+  --header-on-background-color: #f7ecd0;  // warm gold-cream (also title fallback + focus outline)
   --subheader-background-color: #1a1430;
-  --subheader-on-background-color: #ece6fa;
+  --subheader-on-background-color: #f7ecd0;
 
   --on-primary-color: #1a1030;
   --on-secondary-color: #201505;
-  --on-background-color: #ece6fa;
-  --on-surface-color: #ece6fa;
-  --on-container-color: #ece6fa;
+
+  // "Filament gold" text: luminous gold on the dark violet surfaces (>= 12:1 contrast).
+  --on-background-color: #ffd875;
+  --on-surface-color: #ffd875;
+  --on-container-color: #ffd875;
   --on-error-color: #000;
 
   // Headline feature: gradient "ink" for headings (consumed by the gradientHeading mixin).
-  --on-surface-gradient: linear-gradient(120deg, #f0e6c8, #e0b95c 45%, #b18cf0);
-  // Site-title fill: metallic gold.
-  --header-title-gradient: linear-gradient(100deg, #f6e7b8, #e0b95c 45%, #a97c2c 75%, #f6e7b8);
+  // White-hot filament core fading to deep gold.
+  --on-surface-gradient: linear-gradient(120deg, #fff3c4, #ffd875 45%, #c8922e);
+  // Site-title fill: metallic gold (ends on its starting tone so the hover sheen loops).
+  --header-title-gradient: linear-gradient(100deg, #fff3c4, #ffd875 40%, #c8922e 75%, #fff3c4);
 }
 
 [data-theme="light"][data-theme-variant="parchment"] {
