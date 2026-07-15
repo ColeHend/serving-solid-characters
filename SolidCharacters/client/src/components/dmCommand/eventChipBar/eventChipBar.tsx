@@ -12,8 +12,7 @@ export const EventChipBar: Component = () => {
     const [isRightScrolled, setIsRightScrolled] = createSignal(false);
     let innerScrollBar: HTMLDivElement;
 
-    const scrollBy = (dir: 'left' | 'right') => {
-        const AMNT = 75;
+    const setScrollWidth = () => {
         if (innerScrollBar) {
             if (!isLeftScrolled() && !isRightScrolled()) {
                 innerScrollBar.style.width = 'calc(100% - 80px)';
@@ -23,6 +22,10 @@ export const EventChipBar: Component = () => {
                 innerScrollBar.style.width =  '100%';
             }
         }
+    };
+
+    const scrollBy = (dir: 'left' | 'right') => {
+        const AMNT = 75;
         innerScrollBar?.scrollBy({
             left: dir !== 'left' ? AMNT : -AMNT,
             behavior: 'smooth'
@@ -35,6 +38,7 @@ export const EventChipBar: Component = () => {
         innerScrollBar?.addEventListener('scroll', ()=> {
             setIsLeftScrolled(innerScrollBar?.scrollLeft === 0);
             setIsRightScrolled(Math.ceil(innerScrollBar.scrollLeft + innerScrollBar.clientWidth) >= innerScrollBar.scrollWidth);
+            setScrollWidth();
         });
     })
 
