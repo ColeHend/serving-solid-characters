@@ -30,7 +30,7 @@ const Navbar: Component<Props> = (props) => {
   return (
     <Container theme="header"  class={`${navStyles.navbar}`}>
       <div class={`${other.style ?? ''}`}>
-        <span>
+        <span class={navStyles.siteTitle}>
           <A href="/">
             Arcane Dictionary
           </A>

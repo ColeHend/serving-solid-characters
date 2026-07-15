@@ -1,4 +1,5 @@
 @use 'coles-solid-library/themes/variables.scss' as *;
+@use '../../styles/gradientText' as *;
 .active {
     font-weight: 900;
     font-size: 1.05rem;
@@ -15,6 +16,9 @@
     $mobile: 768px;
     color: $header-on-background-color !important;
     background-color: transparent;
+    // Brand sweep over the Container's solid header color; if the token is ever
+    // missing the Container color simply shows through.
+    background-image: var(--header-gradient);
 
     :nth-child(1) {
         display: flex;
@@ -24,17 +28,44 @@
         @media screen and (max-width: $mobile){
             width: 100%;
         }
-        span {
+        .siteTitle {
             display: inline-block;
-            font-size: 1.3rem;
+            font-family: 'Nodesto_Caps_Condensed', Georgia, serif;
+            font-size: 2rem;
             font-weight: bold;
+            letter-spacing: 0.05em;
+            line-height: 1;
             margin: 15px 5%;
-            width: 12%;
+            width: max-content;
+
             a {
                 width: 100%;
+                text-decoration: none;
+                // Metallic per-theme fill; the fallback pair keeps the title legible on
+                // the header bar (the on-surface pair would vanish against it).
+                @include gradientHeading($gradient-var: --header-title-gradient,
+                                         $fallback-var: --header-on-background-color);
+                // Twice-as-wide fill so the hover sheen has somewhere to sweep.
+                background-size: 200% 100%;
+                background-position: 0 0;
+                // drop-shadow follows the clipped gradient glyphs; text-shadow would
+                // bleed through the transparent fill.
+                filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55));
+                transition: filter 0.2s var(--transition-easing, ease);
+
+                &:hover {
+                    animation: titleSheen 0.9s ease;
+                    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55)) brightness(1.12);
+                }
+
+                &:focus-visible {
+                    outline: 2px solid var(--header-on-background-color);
+                    outline-offset: 4px;
+                }
             }
+
             @media screen and (max-width: $mobile){
-                font-size: 1.2rem;
+                font-size: 1.6rem;
                 margin: 10px 5%;
                 flex-grow: 1;
             }
@@ -130,5 +161,18 @@
 
     &:hover {
         // width: ;
+    }
+}
+
+// One full sweep of the 200%-wide title fill; the gradient starts and ends on the
+// same tone, so the sheen passes across and settles back where it began.
+@keyframes titleSheen {
+    from { background-position: 0 0; }
+    to   { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .siteTitle a {
+        animation: none !important;
     }
 }

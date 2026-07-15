@@ -4,6 +4,42 @@
 // library's single-attribute blocks even where those get re-emitted later in the bundle
 // (characterCreatePDF.module.scss re-imports the library themes; many modules @use index.scss).
 
+// ---- Base-theme palette overrides ----
+// body[data-theme] = specificity (0,1,1): beats the library's plain [data-theme] blocks even
+// where they're re-emitted late in the bundle, while still losing to the (0,2,0) variant
+// blocks below. Header/subheader are swapped vs. the library defaults (subheader is the
+// darker/stronger tone now). --header-gradient is declared per-theme (body-scoped, per the
+// resolution note in index.scss) and its color-mix resolves against whichever header token
+// wins on <body> — so the variant blocks below feed it automatically without overriding it.
+body[data-theme="light"] {
+  --header-background-color: #388E3C;     // swapped with subheader
+  --subheader-background-color: #2E7D32;
+  --header-gradient: linear-gradient(90deg,
+    var(--header-background-color),
+    color-mix(in srgb, var(--header-background-color), var(--primary-color) 22%) 60%,
+    color-mix(in srgb, var(--header-background-color), var(--secondary-color) 30%));
+  // Site-title fill. Slightly diagonal, and it ends on its starting tone so the
+  // 200%-wide hover sheen sweep loops seamlessly. Variants override with metallics.
+  --header-title-gradient: linear-gradient(100deg,
+    var(--header-on-background-color),
+    color-mix(in srgb, var(--header-on-background-color), var(--secondary-color) 45%) 55%,
+    var(--header-on-background-color));
+}
+
+body[data-theme="dark"] {
+  --header-background-color: #2a2727;     // swapped with subheader
+  --subheader-background-color: #1e1e1e;
+  --header-gradient: linear-gradient(90deg,
+    var(--header-background-color),
+    color-mix(in srgb, var(--header-background-color), var(--primary-color) 22%) 60%,
+    color-mix(in srgb, var(--header-background-color), var(--secondary-color) 30%));
+  // Same title-fill recipe as the light block above.
+  --header-title-gradient: linear-gradient(100deg,
+    var(--header-on-background-color),
+    color-mix(in srgb, var(--header-on-background-color), var(--secondary-color) 45%) 55%,
+    var(--header-on-background-color));
+}
+
 [data-theme="dark"][data-theme-variant="arcane"] {
   --primary-color: #b18cf0;            // arcane violet
   --primary-color-varient: #8f63d6;
@@ -17,9 +53,9 @@
   --field-border-color: #58507a;
   --field-border-color-hover: #7d73a8;
 
-  --header-background-color: #1a1430;
+  --header-background-color: #241e3e;     // swapped with subheader
   --header-on-background-color: #ece6fa;
-  --subheader-background-color: #241e3e;
+  --subheader-background-color: #1a1430;
   --subheader-on-background-color: #ece6fa;
 
   --on-primary-color: #1a1030;
@@ -31,6 +67,8 @@
 
   // Headline feature: gradient "ink" for headings (consumed by the gradientHeading mixin).
   --on-surface-gradient: linear-gradient(120deg, #f0e6c8, #e0b95c 45%, #b18cf0);
+  // Site-title fill: metallic gold.
+  --header-title-gradient: linear-gradient(100deg, #f6e7b8, #e0b95c 45%, #a97c2c 75%, #f6e7b8);
 }
 
 [data-theme="light"][data-theme-variant="parchment"] {
@@ -46,9 +84,9 @@
   --field-border-color: #8a7a5c;
   --field-border-color-hover: #5a4a30;
 
-  --header-background-color: #7c2718;
+  --header-background-color: #581c11;     // swapped with subheader
   --header-on-background-color: #f6ecd2;
-  --subheader-background-color: #581c11;
+  --subheader-background-color: #7c2718;
   --subheader-on-background-color: #f6ecd2;
 
   --on-primary-color: #f6ecd2;
@@ -59,4 +97,6 @@
   --on-error-color: #fff;
 
   --on-surface-gradient: linear-gradient(120deg, #7c2718, #a2542e);
+  // Site-title fill: parchment-cream aging into gold, on the dark-red header.
+  --header-title-gradient: linear-gradient(100deg, #fdf6df, #f6ecd2 45%, #d9b56a 75%, #fdf6df);
 }
