@@ -1,21 +1,27 @@
 import { Component, For, createMemo, createSignal } from "solid-js";
 import { FormField, Input } from "coles-solid-library";
 import { SectionLabel } from "../../shared/sectionLabel/sectionLabel";
-import { DEMO_MONSTERS } from "./bestiary.shared";
 import { MonsterRow } from "./monsterRow";
 import styles from './bestiary.module.scss';
+import { useGetSrdMonsters } from "../../../../shared/customHooks/dndInfo/info/srd/monsters";
+import { getUserSettings } from "../../../../shared";
 
 export const BestiaryTile: Component = () => {
     const [search, setSearch] = createSignal('');
+    const [userSettings] = getUserSettings();
+    const getMonsters = createMemo(() => {
+        const systemMonsters = useGetSrdMonsters(userSettings().dndSystem);
+        return systemMonsters();
+    })
     const filtered = createMemo(() => {
         const term = search().trim().toLowerCase();
-        if (!term) return DEMO_MONSTERS;
-        return DEMO_MONSTERS.filter((m) => m.name.toLowerCase().includes(term));
+        if (!term) return getMonsters();
+        return getMonsters().filter((m) => m.name.toLowerCase().includes(term));
     });
 
     return <div class={styles.tile}>
         <SectionLabel label="Bestiary" />
-        <FormField name="Search Monsters.." variant="standard">
+        <FormField name="Search Monsters.." variant="standard" dynamicErrorBar={true}>
             <Input placeholder="Search monsters..." value={search()}
                 onChange={(e) => setSearch(e.currentTarget.value)} />
         </FormField>
