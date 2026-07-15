@@ -10,31 +10,31 @@ export const EventChipBar: Component = () => {
     const { getActiveEvents, selectActiveEvent } = useActiveEvents();
     const [isLeftScrolled, setIsLeftScrolled] = createSignal(false);
     const [isRightScrolled, setIsRightScrolled] = createSignal(false);
-    let elemental: HTMLDivElement;
+    let innerScrollBar: HTMLDivElement;
 
     const scrollBy = (dir: 'left' | 'right') => {
         const AMNT = 75;
-        if (elemental) {
+        if (innerScrollBar) {
             if (!isLeftScrolled() && !isRightScrolled()) {
-                elemental.style.width = 'calc(100% - 80px)';
+                innerScrollBar.style.width = 'calc(100% - 80px)';
             } else if (!isLeftScrolled() || !isRightScrolled()) {
-                elemental.style.width = 'calc(100% - 40px)';
+                innerScrollBar.style.width = 'calc(100% - 40px)';
             } else {
-                elemental.style.width =  '100%';
+                innerScrollBar.style.width =  '100%';
             }
         }
-        elemental?.scrollBy({
+        innerScrollBar?.scrollBy({
             left: dir !== 'left' ? AMNT : -AMNT,
             behavior: 'smooth'
         });
     };
 
     onMount(() => {
-        setIsLeftScrolled(elemental?.scrollLeft === 0);
-        setIsRightScrolled(Math.ceil(elemental.scrollLeft + elemental.clientWidth) >= elemental.scrollWidth);
-        elemental?.addEventListener('scroll', ()=> {
-            setIsLeftScrolled(elemental?.scrollLeft === 0);
-            setIsRightScrolled(Math.ceil(elemental.scrollLeft + elemental.clientWidth) >= elemental.scrollWidth);
+        setIsLeftScrolled(innerScrollBar?.scrollLeft === 0);
+        setIsRightScrolled(Math.ceil(innerScrollBar.scrollLeft + innerScrollBar.clientWidth) >= innerScrollBar.scrollWidth);
+        innerScrollBar?.addEventListener('scroll', ()=> {
+            setIsLeftScrolled(innerScrollBar?.scrollLeft === 0);
+            setIsRightScrolled(Math.ceil(innerScrollBar.scrollLeft + innerScrollBar.clientWidth) >= innerScrollBar.scrollWidth);
         });
     })
 
@@ -42,7 +42,7 @@ export const EventChipBar: Component = () => {
         <Show when={!isLeftScrolled()}>
             <Button onClick={()=>scrollBy('left')}><Icon icon={ArrowBack}/></Button>
         </Show>
-        <div class={styles.bar} ref={(e)=>{elemental=e}}>
+        <div class={styles.bar} ref={(e)=>{innerScrollBar=e}}>
             <For each={getActiveEvents()}>{(event) =>
                 <EventChip event={event} onSelect={selectActiveEvent} />
             }</For>
