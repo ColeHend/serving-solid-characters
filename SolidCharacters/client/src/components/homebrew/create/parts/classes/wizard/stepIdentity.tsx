@@ -27,7 +27,7 @@ export const StepIdentity: Component<StepProps> = (props) => {
         <Input
           value={props.formGroup.get('name') ?? ''}
           onChange={(e) => props.formGroup.set('name', e.currentTarget.value)}
-          placeholder="Runeblade"
+          placeholder="Enter class name..."
         />
       </div>
 
