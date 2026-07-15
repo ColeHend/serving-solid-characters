@@ -24,7 +24,8 @@ vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/classes', () => (
   useDnDClasses: () => (() => [wizardClass])
 }));
 vi.mock('@solidjs/router', () => ({
-  useSearchParams: () => [{ name: 'Wizard' }]
+  useSearchParams: () => [{ name: 'Wizard' }],
+  useNavigate: () => () => {}
 }));
 // Items hook returns empty arrays so Items component renders but without async fetch
 vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/items', () => ({
@@ -36,17 +37,18 @@ vi.mock('../../../../../../shared/customHooks/userSettings', () => ({
 vi.mock('../../../../../../shared/customHooks/components/Snackbar/snackbar', () => ({
   default: () => null
 }));
-// Keep real Stats/Proficiencies/Items to observe prefill side-effects. Still mock heavier tables.
-vi.mock('../featureTable', () => ({ FeatureTable: () => <div data-mock="FeatureTable" /> }));
-// Lightweight header with name input (real component not essential for these tests)
-vi.mock('../header', () => ({ Header: () => <div data-mock="Header"><label>Name<input aria-label="name" onInput={(e: any) => (globalThis as any).__FORM_NAME__ = e.currentTarget.value} /></label></div> }));
+// The shared FeaturesPopup is heavy (mads editors, SRD catalogs) — the wizard shell mounts it
+// closed; stub it out for these prefill tests.
+vi.mock('../../../../Parts/featuresPopup/featuresPopup', () => ({
+  FeaturesPopup: () => null
+}));
 
 import { Classes } from '../classes';
 
-// Fake adapter side-effects already inside component; ensure clean state
 beforeEach(() => {
-  // reset manager state (private API not exposed; mimic by reloading page objects if needed)
-  // For simplicity just ensure starting length used in assertions.
+  // Drafts persist in jsdom localStorage across tests in this file — a leftover draft would
+  // show the resume banner and gate the ?name= prefill these tests assert on.
+  localStorage.clear();
 });
 
 describe('Classes component prefill', () => {

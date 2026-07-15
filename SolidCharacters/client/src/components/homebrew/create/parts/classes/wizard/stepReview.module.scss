@@ -1,0 +1,121 @@
+@use 'coles-solid-library/themes/variables' as *;
+
+// Review step: a vertical stack of full-width summary rows. Accent + warn
+// palette come from the --wiz-* custom props scoped on the wizard root.
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+// ---------------------------------------------------------------------------
+// Row
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2;
+  border-radius: $border-radius-md;
+  background-color: color-mix(in srgb, $color-surface 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+
+  @media (max-width: 768px) {
+    gap: $spacing-1;
+    padding: $spacing-1 $spacing-2;
+  }
+}
+
+.rowWarn {
+  border-color: var(--wiz-warn-border);
+  background-color: var(--wiz-warn-bg);
+}
+
+// ---------------------------------------------------------------------------
+// Status glyph
+
+.statusOk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--wiz-accent);
+  color: var(--wiz-accent);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.statusWarn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  color: var(--wiz-warn-text);
+  font-size: 17px;
+  line-height: 1;
+}
+
+// ---------------------------------------------------------------------------
+// Body
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--on-surface-color);
+}
+
+.summary {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--on-surface-color) 60%, transparent);
+}
+
+// On warn rows the summary / detail line picks up the warn tint (matches mock).
+.rowWarn .summary {
+  color: var(--wiz-warn-text);
+}
+
+// ---------------------------------------------------------------------------
+// Action button (quiet / ghost)
+
+.actionBtn {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border-radius: $border-radius-sm;
+  border: none;
+  background: transparent;
+  color: color-mix(in srgb, var(--on-surface-color) 78%, transparent);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--on-surface-color) 10%, transparent);
+    color: var(--on-surface-color);
+  }
+}
+
+.actionFix {
+  color: var(--wiz-warn-text);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--wiz-warn-text) 14%, transparent);
+    color: var(--wiz-warn-text);
+  }
+}

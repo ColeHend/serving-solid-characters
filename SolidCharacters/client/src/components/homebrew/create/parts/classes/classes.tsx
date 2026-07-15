@@ -1,100 +1,53 @@
-import { Component, createSignal, createEffect, onMount, onCleanup } from "solid-js";
-import { useSearchParams } from "@solidjs/router";
-import { addSnackbar, Button, Container, Form, FormGroup, Validators } from "coles-solid-library";
-import { DeployedCode, HomeRepairService, IdentityPlatform, Save, Star } from "coles-solid-library/icons";
-import { Proficiencies } from "./proficiencies";
+import { Component, Match, Show, Switch, createEffect, createSignal, onCleanup, onMount } from "solid-js";
+import { createStore, unwrap } from "solid-js/store";
+import { useNavigate, useSearchParams } from "@solidjs/router";
+import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-solid-library";
 import { toClass5E } from "./classAdapter";
 // Use unified homebrewManager so new classes immediately appear in homebrew views
 import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
-import { FeatureTable } from "./featureTable";
-import { Stats } from "./stats";
-import { Items } from "./items";
-import { Header } from "./header";
-import styles from './classes.module.scss';
-import { CastingStat, Stat } from "../../../../../shared/models/stats";
-import { LevelEntity, Subclass } from "../../../../../models/old/class.model";
-import { CasterType, Choice, FeatureTypes } from "../../../../../models/old/core.model";
-import { SpellsKnown } from "../../../../../shared/models/casting";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { Class5E } from "../../../../../models/data/classes";
-import { beutifyChip } from "../../../../../shared";
-import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
+import { FeatureDetail } from "../../../../../models/generated";
+import { createNewId } from "../../../../../shared/customHooks/utility/tools/idGen";
+import { Stat } from "../../../../../shared/models/stats";
+import { CasterType, FeatureTypes } from "../../../../../models/old/core.model";
+import { SpellsKnown } from "../../../../../shared/models/casting";
+import { FeaturesPopup } from "../../../Parts/featuresPopup/featuresPopup";
+import {
+  ClassForm,
+  DRAFT_FORM_KEYS,
+  ProfStore,
+  STEP_META,
+  WizardLevels,
+  WizardStep,
+  buildLevelEntities,
+  draftKey,
+  emptyWizardLevels,
+  hydrateDraft,
+  parseDraft,
+  serializeDraft,
+  stepStatus,
+} from "./wizard/wizard.shared";
+import { Stepper } from "./wizard/stepper";
+import { WizardFooter } from "./wizard/wizardFooter";
+import { StepIdentity } from "./wizard/stepIdentity";
+import { StepProficiencies } from "./wizard/stepProficiencies";
+import { StepEquipment } from "./wizard/stepEquipment";
+import { StepFeatures } from "./wizard/stepFeatures";
+import { StepSpellcasting } from "./wizard/stepSpellcasting";
+import { StepReview } from "./wizard/stepReview";
+import styles from "./wizard/classesWizard.module.scss";
 
-interface ClassSpecificValue {
-  key: string;
-  value: string;
-};
+// Back-compat re-exports: the form/adapter types now live with the wizard.
+export type { ClassForm, ProfStore } from "./wizard/wizard.shared";
 
-export interface ClassForm {
-  name: string;
-  description: string;
-  hitDie: number;
-  primaryStat: Stat[]; // now multi-select
-  savingThrows: Stat[];
-  armorProficiencies: string[];
-  weaponProficiencies: string[];
-  toolProficiencies: string[];
-  armorStart: string[];
-  weaponStart: string[];
-  itemStart: string[];
-  armorProfChoices: Choice<string>[];
-  weaponProfChoices: Choice<string>[];
-  toolProfChoices: Choice<string>[];
-  skills: Stat[];
-  skillChoiceNum: number;
-  skillChoices: string[];
-  startingEquipment: string[];
-  spellCasting: boolean;
-  castingStat?: CastingStat;
-  casterType?: CasterType;
-  classSpecificValues?: ClassSpecificValue[];
-  subclasses?: Subclass[];
-  metadataSubclassLevels?: number[];
-  metadataSubclassName?: string;
-  metadataSubclassPos?: 'before' | 'after' | string;
-  classLevels: LevelEntity[];
-  spellcastName: string;
-  spellsKnownCalc: SpellsKnown;
-  spellcastAbility: CastingStat;
-  spellsKnownRoundup?: boolean;
-  spellsInfo: string;
-  spellsLevel: number;
-  hasCantrips: boolean;
-}
+type ResumeState = 'none' | 'pending' | 'resumed' | 'discarded';
 
 export const Classes: Component = () => {
   // SRD classes (depends on userSettings().dndSystem: 2014 | 2024 | both)
   const srdClasses = useDnDClasses();
   const [searchParams] = useSearchParams();
-
-  const defaultClassLevels: LevelEntity[] = Array.from({ length: 20 }, (_, i) => ({
-    level: i + 1,
-    features: [{
-      name: `Feature ${i + 1}`,
-      value: 'Description of the feature',
-      metadata: {
-
-      },
-      info: {
-        className: '',
-        subclassName: '',
-        level: i + 1,
-        type: FeatureTypes.Class,
-        other: '',
-      }
-    }],
-    info: {
-      className: '',
-      subclassName: '',
-      level: i + 1,
-      type: FeatureTypes.Class,
-      other: '',
-    },
-    profBonus: i < 5 ? 2 : i < 9 ? 3 : i < 13 ? 4 : i < 17 ? 5 : 6,
-    classSpecific: {},
-  }));
-
-  // const classLevels = new FormArray<LevelEntity[]>([[], []], defaultClassLevels);
+  const navigate = useNavigate();
 
   const ClassFormGroup = new FormGroup<ClassForm>({
     name: ['', [Validators.Required]],
@@ -115,9 +68,11 @@ export const Classes: Component = () => {
     skillChoiceNum: [undefined, []],
     skillChoices: [[], []],
     startingEquipment: [[], []],
+    equipmentChoices: [[], []],
     spellCasting: [false, []],
     castingStat: [undefined, []],
-    casterType: [CasterType.Full, []],
+    // undefined until the user picks a caster card — selecting "None" is an explicit answer
+    casterType: [undefined, []],
     classSpecificValues: [[], []],
     subclasses: [[], []],
     metadataSubclassLevels: [[], []],
@@ -126,107 +81,61 @@ export const Classes: Component = () => {
     classLevels: [[], []],
     spellcastName: ['', []],
     spellsKnownCalc: [SpellsKnown.Number, []],
-    spellcastAbility: [CastingStat.WIS, []],
+    spellsKnownMode: ['fixed', []],
+    spellcastAbility: [undefined, []],
     spellsKnownRoundup: [false, []],
     spellsInfo: ['', []],
-    spellsLevel: [1, []],    
+    spellsLevel: [1, []],
     hasCantrips: [false, []]
   });
-  const [resetNonce, setResetNonce] = createSignal(0);
-  // Typed setter: keeps key/value checked against ClassForm while tolerating the
-  // intentionally-empty (`undefined`) reset values that the form holds before input.
+
   const setField = <K extends keyof ClassForm>(key: K, value: ClassForm[K] | undefined) =>
     ClassFormGroup.set(key, value as ClassForm[K]);
-  const resetForm = () => {
-    // Clear values succinctly (no reset API on FormGroup yet)
-    // Reapply primitives
-    setField('name', '');
-    setField('description', '');
-    setField('hitDie', undefined);
-    setField('primaryStat', []);
-    setField('savingThrows', []);
-    setField('armorProficiencies', []);
-    setField('weaponProficiencies', []);
-    setField('toolProficiencies', []);
-    setField('armorStart', []);
-    setField('weaponStart', []);
-    setField('itemStart', []);
-    setField('armorProfChoices', []);
-    setField('weaponProfChoices', []);
-    setField('toolProfChoices', []);
-    setField('skills', []);
-    setField('skillChoiceNum', undefined);
-    setField('skillChoices', []);
-    setField('startingEquipment', []);
-    setField('spellCasting', false);
-    setField('castingStat', undefined);
-    setField('casterType', CasterType.Full);
-    setField('classSpecificValues', []);
-    setField('subclasses', []);
-    setField('metadataSubclassLevels', []);
-    setField('metadataSubclassName', '');
-    setField('metadataSubclassPos', 'before');
-    setField('classLevels', defaultClassLevels);
-    setField('spellcastName', '');
-    setField('spellsKnownCalc', SpellsKnown.Number);
-    setField('spellcastAbility', CastingStat.WIS);
-    setField('spellsKnownRoundup', false);
-    setField('spellsInfo', '');
-    setField('spellsLevel', 1);
-    setField('hasCantrips', false);
-    setClassLevels(defaultClassLevels);
-    setProfStore({});
-    setResetNonce(n => n + 1);
-    ClassFormGroup.reset();
-  };
 
-  const toFormSpecific = (classSpecific: Class5E['classSpecific'], level: number): Record<string, string> => {
-    const result: Record<string, string> = {};
+  const [step, setStep] = createSignal<WizardStep>(WizardStep.Identity);
+  const [levels, setLevels] = createStore<WizardLevels>(emptyWizardLevels());
+
+  const editName = () => {
+    if (typeof searchParams.name === 'string') return searchParams.name;
+    return searchParams.name?.join(' ') ?? '';
+  };
+  const storageKey = () => draftKey(editName());
+
+  // ---------------------------------------------------------------------------
+  // Prefill (?name= edit mode)
+
+  const toStoreSpecific = (classSpecific: Class5E['classSpecific']): WizardLevels['classSpecific'] => {
+    const result: WizardLevels['classSpecific'] = {};
     if (!classSpecific) return result;
     Object.keys(classSpecific).forEach(key => {
-      const levelMap = classSpecific[key];
-      if (levelMap && levelMap[level] !== undefined) {
-        result[beutifyChip(key)] = levelMap[level];
-      }
+      result[key] = { ...classSpecific[key] };
     });
     return result;
-  }
+  };
 
   const prefillForm = (raw: any) => {
     if (!raw) return;
-    const cls = raw as Class5E; 
-    console.log('Prefilling form with class', cls);
-    
+    const cls = raw as Class5E;
+
     // Basic fields
     setField('name', cls.name || '');
-    // No description field in Class5E currently; leave blank
     // Persisted / SRD class data is snake_case (see toClass5E in classAdapter.ts); fall back to camelCase
     const hitDieRaw = (cls as any).hit_die ?? cls.hitDie;
     const dieNum = typeof hitDieRaw === 'string' ? parseInt(hitDieRaw.replace(/^[dD]/, '') || '0') : hitDieRaw || 0;
     setField('hitDie', dieNum);
-    // Map string stats (e.g. 'INT') to Stat enum values expected by form controls
     const statMap: Record<string, Stat> = { 'STR': Stat.STR, 'DEX': Stat.DEX, 'CON': Stat.CON, 'INT': Stat.INT, 'WIS': Stat.WIS, 'CHA': Stat.CHA };
-    // Primary ability can be a comma separated list in source -> map each to Stat enum
     const primaryRaw = ((cls as any).primary_ability || cls.primaryAbility || '').toUpperCase();
     if (primaryRaw) {
       const parts: string[] = primaryRaw.split(',').map((p: string) => p.trim().slice(0, 3)).filter(Boolean);
       const mapped: Stat[] = parts.map((p: string) => statMap[p]).filter((v: Stat | undefined): v is Stat => v !== undefined);
-      console.log('Mapped primary stats', parts, '->', mapped);
-      
       if (mapped.length) setField('primaryStat', mapped);
     }
     const saves: string[] = (cls as any).saving_throws || cls.savingThrows || [];
     const savingThrowEnums = saves.map(st => statMap[st.toUpperCase()] ?? st).filter(v => v !== undefined);
-    setField('savingThrows', savingThrowEnums);
+    setField('savingThrows', savingThrowEnums as Stat[]);
 
-    // Proficiencies
+    // Proficiencies (chips render straight from the form arrays)
     const profs = cls.proficiencies || { armor: [], weapons: [], tools: [], skills: [] };
-    // Update internal profStore (used on submit) AND visible form arrays (chips render from formGroup)
-    setProfStore({
-      armor: profs.armor || [],
-      weapons: profs.weapons || [],
-      tools: profs.tools || []
-    });
     setField('armorProficiencies', profs.armor || []);
     setField('weaponProficiencies', profs.weapons || []);
     setField('toolProficiencies', profs.tools || []);
@@ -234,19 +143,16 @@ export const Classes: Component = () => {
     ClassFormGroup.set('skills', (profs.skills || []) as any);
 
     // Starting equipment (attempt to pull names)
-  const startingEquip: any[] = (cls as any).starting_equipment || cls.startingEquipment || [];
-  const startingEquipNames = startingEquip.flatMap((e: any) =>
-    Array.isArray(e?.items) ? e.items.map((i: any) => i?.name ?? i) : [e?.item?.name || e?.name]
-  ).filter(Boolean);
-  // The UI displays weaponStart / armorStart / itemStart; without item classification, default all to itemStart
-  setField('itemStart', startingEquipNames);
-  // Keep legacy field in case other code reads it
-  setField('startingEquipment', startingEquipNames);
+    const startingEquip: any[] = (cls as any).starting_equipment || cls.startingEquipment || [];
+    const startingEquipNames = startingEquip.flatMap((e: any) =>
+      Array.isArray(e?.items) ? e.items.map((i: any) => i?.name ?? i) : [e?.item?.name || e?.name]
+    ).filter(Boolean);
+    setField('itemStart', startingEquipNames);
+    // Keep legacy field in case other code reads it
+    setField('startingEquipment', startingEquipNames);
 
     // Start choices (optional structured starting equipment / proficiency choices)
-    // Class5E.startChoices?: { weapon?: string; armor?: string; tool?: string; skill?: string[]; equipment?: string; }
-    // Map single-value equipment choices into respective start arrays so they render as chips.
-    const sc: any = (cls as any).startChoices || (cls as any).start_choices; // tolerate snake_case just in case
+    const sc: any = (cls as any).startChoices || (cls as any).start_choices;
     if (sc) {
       if (sc.weapon) {
         const current = ClassFormGroup.get('weaponStart') || [];
@@ -263,14 +169,10 @@ export const Classes: Component = () => {
         if (!current.includes(sc.tool)) current.push(sc.tool);
         setField('itemStart', current);
       }
-      // If sc.equipment refers to a choice key, we'll handle it in the unified choices prefill below.
       if (Array.isArray(sc.skill) && sc.skill.length) {
-        // Treat as a skill choice list: user can choose "skillChoiceNum" from these options.
-        // If existing skill choices are empty, populate directly; else merge uniquely.
         const existingChoices = ClassFormGroup.get('skillChoices') || [];
         const merged = Array.from(new Set([...existingChoices, ...sc.skill]));
         setField('skillChoices', merged);
-        // If no explicit number yet, default to 1 or the length if smaller than current value.
         const currentNum = ClassFormGroup.get('skillChoiceNum');
         if (currentNum === undefined || currentNum === null) {
           setField('skillChoiceNum', Math.min(merged.length, 1));
@@ -284,23 +186,21 @@ export const Classes: Component = () => {
       if (allChoices && Object.keys(allChoices).length) {
         const ensurePush = (key: 'weaponProfChoices' | 'armorProfChoices' | 'toolProfChoices', choose: number, options: string[]) => {
           if (!options?.length) return;
-            const arr = (ClassFormGroup.get(key) as any[]) || [];
-            const exists = arr.some((c: any) => c.choose === choose && options.every(o => c.choices.includes(o)));
-            if (!exists) {
-              arr.push({ type: FeatureTypes.Item, choose, choices: [...options] });
-              setField(key, arr);
-            }
+          const arr = (ClassFormGroup.get(key) as any[]) || [];
+          const exists = arr.some((c: any) => c.choose === choose && options.every(o => c.choices.includes(o)));
+          if (!exists) {
+            arr.push({ type: FeatureTypes.Item, choose, choices: [...options] });
+            setField(key, arr);
+          }
         };
-        // Directly map all choices regardless of starting equipment reference (so editing an existing class shows everything)
+        const equipmentChoices: ClassForm['equipmentChoices'] = [];
         Object.entries(allChoices).forEach(([ckey, cval]: any) => {
           const choose = cval.amount ?? cval.Amount ?? 0;
           const options: string[] = cval.options || cval.Options || [];
           if (ckey === 'skill_proficiencies') {
-            // Merge skill options
             const existing = ClassFormGroup.get('skillChoices') || [];
             const merged = Array.from(new Set([...existing, ...options]));
             setField('skillChoices', merged);
-            // Only set if not previously set by startChoices
             const currentNum = ClassFormGroup.get('skillChoiceNum');
             if (!currentNum && choose > 0) {
               setField('skillChoiceNum', choose);
@@ -311,11 +211,14 @@ export const Classes: Component = () => {
             ensurePush('armorProfChoices', choose, options);
           } else if (ckey.startsWith('tool_prof_')) {
             ensurePush('toolProfChoices', choose, options);
+          } else if (ckey.startsWith('equipment_')) {
+            // Wizard Equipment step A-or-B rows
+            equipmentChoices.push({ a: options[0] ?? '', b: options[1] ?? '' });
           } else if (sc && sc.equipment === ckey) {
-            // Equipment choice referenced via startChoices.equipment: treat as generic tool/item choice bucket
             ensurePush('toolProfChoices', choose, options);
           }
         });
+        if (equipmentChoices.length) setField('equipmentChoices', equipmentChoices);
 
         // Additionally, walk starting_equipment.optionKeys to make sure referenced choices are present
         (cls.startingEquipment || []).forEach((se: any) => {
@@ -334,8 +237,9 @@ export const Classes: Component = () => {
               ensurePush('weaponProfChoices', choose, options);
             } else if (k.startsWith('armor_prof_')) {
               ensurePush('armorProfChoices', choose, options);
-            } else if (k.startsWith('tool_prof_')) {
-              ensurePush('toolProfChoices', choose, options);
+            } else if (k.startsWith('tool_prof_') || k.startsWith('equipment_')) {
+              // tool choices handled above; equipment_ keys already mapped to A-or-B rows
+              if (k.startsWith('tool_prof_')) ensurePush('toolProfChoices', choose, options);
             } else {
               // Fallback: treat unspecified key as tool/item choice for visibility
               ensurePush('toolProfChoices', choose, options);
@@ -347,65 +251,113 @@ export const Classes: Component = () => {
       console.warn('Choice prefill failure', err);
     }
 
-    // Features -> LevelEntity[]
-    const levelEntities: LevelEntity[] = Array.from({ length: 20 }, (_, i) => {
-      const level = i + 1;
-      const feats = (cls.features?.[level] || []).map((f: any) => ({
+    // Features → wizard level store (FeatureDetail[] per level, ids stamped)
+    const features: WizardLevels['features'] = {};
+    Object.entries(cls.features ?? {}).forEach(([lvl, feats]) => {
+      const level = parseInt(lvl);
+      if (!level || !feats?.length) return;
+      features[level] = feats.map((f: any) => ({
+        id: f.id || createNewId(),
         name: f.name,
-        value: f.description || f.value || '',
-        metadata: {},
-        info: {
-          className: cls.name,
-          subclassName: '',
-          level,
-          type: FeatureTypes.Class,
-          other: ''
-        }
+        description: f.description ?? f.value ?? '',
+        metadata: f.metadata,
       }));
-      return {
-        level,
-        features: feats,
-        info: {
-          className: cls.name,
-          subclassName: '',
-          level,
-          type: FeatureTypes.Class,
-          other: ''
-        },
-        profBonus: level < 5 ? 2 : level < 9 ? 3 : level < 13 ? 4 : level < 17 ? 5 : 6,
-        classSpecific: (toFormSpecific(cls.classSpecific, level) || {}) as any
-      } as LevelEntity;
     });
-    setClassLevels(levelEntities);
-    setField('classLevels', levelEntities);
+    setLevels({
+      features,
+      classSpecific: toStoreSpecific(cls.classSpecific),
+      cantripsKnown: {},
+    });
 
     // Spellcasting (optional)
     if (cls.spellcasting) {
+      const casting: any = cls.spellcasting;
       setField('spellCasting', true);
-      setField('castingStat', (cls.spellcasting as any).spellcasting_ability);
-      setField('spellcastAbility', (cls.spellcasting as any).spellcasting_ability);
-      setField('casterType', (cls.spellcasting as any).caster_type || CasterType.Full);
+      const rawType = casting.caster_type ?? casting.metadata?.casterType;
+      const casterType = typeof rawType === 'number' && rawType <= CasterType.Full ? rawType as CasterType : CasterType.Full;
+      setField('casterType', casterType);
+      const abilityRaw = String(casting.spellcasting_ability ?? casting.spells_known?.stat ?? '').toUpperCase();
+      if (statMap[abilityRaw] !== undefined) setField('spellcastAbility', statMap[abilityRaw]);
+      const knownType = casting.known_type ?? casting.knownType;
+      setField('spellsKnownMode', knownType === 'calc' ? 'prepared' : 'fixed');
+      setField('spellsKnownCalc', knownType === 'calc' ? SpellsKnown.StatLevel : SpellsKnown.Number);
+      // Per-level cantrips known from the stamped slot table
+      const slots: Record<number, any> = casting.metadata?.slots ?? {};
+      const cantrips: WizardLevels['cantripsKnown'] = {};
+      let sawCantrips = false;
+      Object.entries(slots).forEach(([lvl, slot]: [string, any]) => {
+        const value = slot?.cantripsKnown ?? slot?.cantrips_known;
+        if (value !== undefined) {
+          cantrips[parseInt(lvl)] = value;
+          sawCantrips = true;
+        }
+      });
+      if (sawCantrips) {
+        setLevels('cantripsKnown', cantrips);
+        setField('hasCantrips', true);
+      }
     } else {
       setField('spellCasting', false);
       setField('castingStat', undefined);
       setField('spellcastAbility', undefined);
       setField('casterType', CasterType.None);
     }
-
-    setResetNonce(n => n + 1);
   };
+
+  // ---------------------------------------------------------------------------
+  // Draft autosave + resume
+
+  const [resumeState, setResumeState] = createSignal<ResumeState>('none');
+  const [pendingDraft, setPendingDraft] = createSignal(parseDraft(
+    typeof localStorage !== 'undefined' ? localStorage.getItem(storageKey()) : null
+  ));
+  if (pendingDraft()) setResumeState('pending');
+
+  // Baseline snapshot: autosave only writes once the state differs from it, so opening a
+  // page (or a prefilled ?name= edit) without touching anything never creates a draft.
+  const [baseline, setBaseline] = createSignal(serializeDraft(ClassFormGroup, levels, step()));
+
+  const resumeDraft = () => {
+    const draft = pendingDraft();
+    if (!draft) return;
+    hydrateDraft(ClassFormGroup, draft);
+    setLevels(draft.levels);
+    setStep(draft.step);
+    setPrefilled(true); // draft wins over ?name= prefill
+    setResumeState('resumed');
+    setBaseline(serializeDraft(ClassFormGroup, levels, step()));
+  };
+
+  const discardDraft = () => {
+    localStorage.removeItem(storageKey());
+    setPendingDraft(null);
+    setResumeState('discarded');
+  };
+
+  let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
+  createEffect(() => {
+    const snapshot = serializeDraft(ClassFormGroup, levels, step());
+    if (resumeState() === 'pending') return; // don't clobber an undecided draft
+    if (snapshot === baseline()) return;
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+      // Re-check at fire time: a baseline reset (prefill/resume) may have landed after
+      // this write was scheduled — never persist a draft equal to the baseline state.
+      if (snapshot === baseline()) return;
+      try {
+        localStorage.setItem(storageKey(), snapshot);
+      } catch (err) {
+        console.warn('Class draft autosave failed', err);
+      }
+    }, 500);
+  });
+  onCleanup(() => clearTimeout(autosaveTimer));
 
   // Reactive prefill: wait until both search param and homebrew classes are available
   const [prefilled, setPrefilled] = createSignal(false);
   createEffect(() => {
-    if (prefilled()) return; 
-    let className: string;
-    if (typeof searchParams.name === "string" ) {
-      className = searchParams.name?.toLowerCase();
-    } else {
-      className = searchParams.name?.join(" ").toLowerCase() || "";
-    }
-    
+    if (prefilled() || resumeState() === 'pending') return;
+    const className = editName().toLowerCase();
     if (!className) return;
     const hb = homebrewManager.classes();
     const srd = srdClasses();
@@ -415,45 +367,99 @@ export const Classes: Component = () => {
     if (existingClass) {
       prefillForm(existingClass);
       setPrefilled(true);
+      setBaseline(serializeDraft(ClassFormGroup, levels, step()));
     }
   });
 
-  const onSubmit = async (data: ClassForm) => {
-    addSnackbar({ message: 'Saving class...', severity: 'info' });
-    const fullData: ClassForm = {
-      ...data,
-      weaponProficiencies: profStore().weapons || [],
-      armorProficiencies: profStore().armor || [],
-      toolProficiencies: profStore().tools || [],
-      classLevels: classLevels(),
+  // ---------------------------------------------------------------------------
+  // Shared FeaturesPopup (single mounted instance; steps open it via callbacks)
+
+  const [showFeaturePopup, setShowFeaturePopup] = createSignal(false);
+  const [currentFeature, setCurrentFeature] = createSignal<FeatureDetail>({ id: '', name: '', description: '' });
+  const [featureTarget, setFeatureTarget] = createSignal<{ level: number; editId?: string; editCategory?: string }>({ level: 1 });
+
+  const openAddFeature = (level: number) => {
+    setFeatureTarget({ level });
+    setCurrentFeature({ id: '', name: '', description: '' });
+    setShowFeaturePopup(true);
+  };
+
+  const openEditFeature = (level: number, feature: FeatureDetail) => {
+    setFeatureTarget({ level, editId: feature.id, editCategory: feature.metadata?.category });
+    setCurrentFeature({ ...feature });
+    setShowFeaturePopup(true);
+  };
+
+  const onFeatureSaved = (data: FeatureDetail) => {
+    const { level, editId, editCategory } = featureTarget();
+    // The popup emits id:"" and a blank category — stamp/preserve them here.
+    if (editId) {
+      const merged: FeatureDetail = {
+        ...data,
+        id: editId,
+        metadata: { ...data.metadata, category: data.metadata?.category || editCategory },
+      };
+      setLevels('features', level, arr => (arr ?? []).map(f => f.id === editId ? merged : f));
+    } else {
+      setLevels('features', level, arr => [...(arr ?? []), { ...data, id: data.id || createNewId() }]);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // Publish
+
+  const collectForm = (builtLevels: ClassForm['classLevels']): ClassForm => {
+    const form = {} as Record<string, unknown>;
+    DRAFT_FORM_KEYS.forEach(key => { form[key] = ClassFormGroup.get(key); });
+    form.classLevels = builtLevels;
+    form.subclasses = [];
+    return form as unknown as ClassForm;
+  };
+
+  const publish = async () => {
+    const name = ((ClassFormGroup.get('name') as string) || '').trim();
+    if (!name) {
+      addSnackbar({ message: 'Give the class a name on the Identity step first', severity: 'warning' });
+      setStep(WizardStep.Identity);
+      return;
+    }
+    addSnackbar({ message: 'Publishing class...', severity: 'info' });
+    const builtLevels = buildLevelEntities(name, unwrap(levels));
+    const form = collectForm(builtLevels);
+    const profs: ProfStore = {
+      armor: ClassFormGroup.get('armorProficiencies') || [],
+      weapons: ClassFormGroup.get('weaponProficiencies') || [],
+      tools: ClassFormGroup.get('toolProficiencies') || [],
     };
-    const adapted = toClass5E(fullData, profStore(), classLevels());
-    const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") || "";
-    // Simple duplicate guard
-    if (homebrewManager.classes().some(c => c.name.toLowerCase() === (adapted.name || '').toLowerCase() && param?.toLowerCase() !== (adapted.name || '').toLowerCase())) {
+    const adapted = toClass5E(form, profs, builtLevels);
+    const param = editName();
+    // Duplicate guard: block only when the name collides with a class we're NOT editing
+    if (homebrewManager.classes().some(c => c.name.toLowerCase() === name.toLowerCase() && param.toLowerCase() !== name.toLowerCase())) {
       addSnackbar({ message: 'Class name already exists', severity: 'warning' });
       return;
     }
-    const exists = homebrewManager.classes().some(c => c.name.toLowerCase() === (adapted.name || '').toLowerCase());
-    if (exists) {
-      await homebrewManager.updateClass(adapted as any);
-    } else {
-      await homebrewManager.addClass(adapted as any);
+    const exists = homebrewManager.classes().some(c => c.name.toLowerCase() === name.toLowerCase());
+    const saved = exists
+      ? await homebrewManager.updateClass(adapted as any)
+      : await homebrewManager.addClass(adapted as any);
+    if (!saved) {
+      addSnackbar({ message: 'Saving the class failed — it was NOT stored', severity: 'error' });
+      return;
     }
-    addSnackbar({ message: 'Class saved', severity: 'success' });
-    resetForm();
+    localStorage.removeItem(storageKey());
+    addSnackbar({ message: `${name} published`, severity: 'success' });
+    navigate('/homebrew');
   };
-  ClassFormGroup.set('classLevels', defaultClassLevels);
-  const [classLevels, setClassLevels] = createSignal<LevelEntity[]>(defaultClassLevels);
-  const [profStore, setProfStore] = createSignal<ProfStore>({});
+
+  // ---------------------------------------------------------------------------
   // Test instrumentation: aggregate reactive snapshot for unit tests
+
   const [debugSnapshot, setDebugSnapshot] = createSignal({
     primaryStat: '', savingThrows: '', armor: '', weapon: '', tool: '', itemStart: ''
   });
   createEffect(() => {
-    // Update snapshot whenever underlying fields change
-  const primArr = ClassFormGroup.get('primaryStat') || [];
-  const prim = primArr.join(',');
+    const primArr = ClassFormGroup.get('primaryStat') || [];
+    const prim = primArr.join(',');
     const saves = (ClassFormGroup.get('savingThrows') ?? []).join(',');
     const armor = (ClassFormGroup.get('armorProficiencies') ?? []).join('|');
     const weapon = (ClassFormGroup.get('weaponProficiencies') ?? []).join('|');
@@ -462,18 +468,32 @@ export const Classes: Component = () => {
     setDebugSnapshot({ primaryStat: prim, savingThrows: saves, armor, weapon, tool, itemStart });
   });
 
-  onMount(()=>{
+  onMount(() => {
     document.body.classList.add('classes-bg');
-  })
+  });
 
-  onCleanup(()=>{
+  onCleanup(() => {
     document.body.classList.remove('classes-bg');
-  })
+  });
+
+  // ---------------------------------------------------------------------------
+
+  const eyebrowName = () => ((ClassFormGroup.get('name') as string) || '').trim() || 'New Class';
+
+  const stepProps = {
+    formGroup: ClassFormGroup,
+    levels,
+    setLevels,
+    goToStep: (s: WizardStep) => setStep(s),
+    openAddFeature,
+    openEditFeature,
+    publish,
+  };
 
   return (
     <Container
       theme="surface"
-      class={`${styles.container}`}
+      class={styles.wizard}
       data-testid="class-form"
       data-primary-stat={debugSnapshot().primaryStat}
       data-saving-throws={debugSnapshot().savingThrows}
@@ -482,42 +502,54 @@ export const Classes: Component = () => {
       data-tool-profs={debugSnapshot().tool}
       data-item-start={debugSnapshot().itemStart}
     >
-      <h2>Class Creator</h2>
-      <Form data={ClassFormGroup} onSubmit={onSubmit}>
-        <div >
-          <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} transparent>
-            <div class={styles.body}>
-              <Header resetNonce={resetNonce()} />
-              <Stats />
-            </div>
-          </FlatCard>
-          <FlatCard icon={DeployedCode} headerName="Proficiencies" transparent>
-            <Proficiencies setProfStore={setProfStore} formGroup={ClassFormGroup} />
-          </FlatCard>
-          <FlatCard icon={HomeRepairService} headerName="Starting Equipment" transparent>
-            <Items formGroup={ClassFormGroup} />
-          </FlatCard>
-          <FlatCard icon={Star} headerName="Features" transparent>
-            <FeatureTable tableData={classLevels} setTableData={setClassLevels} formGroup={ClassFormGroup} />
-          </FlatCard>
+      <Show when={resumeState() === 'pending'}>
+        <div class={styles.resumeBanner}>
+          <span>You have an unpublished draft{pendingDraft()?.form?.name ? ` of "${pendingDraft()!.form.name}"` : ''}. Resume where you left off?</span>
+          <div class={styles.resumeActions}>
+            <Button theme="primary" onClick={resumeDraft}>Resume draft</Button>
+            <Button transparent onClick={discardDraft}>Discard</Button>
+          </div>
         </div>
-        <FlatCard
-          icon={Save}
-          headerName="Save"
-          alwaysOpen
-          transparent
-        >
-          <Button type="submit" aria-label="Save Class">
-            Submit
-          </Button>
-        </FlatCard>
-      </Form>
+      </Show>
+
+      <div class={styles.eyebrow}>Forging — {eyebrowName()}</div>
+      <h1 class={styles.question}>{STEP_META[step()].question}</h1>
+      <p class={styles.subtitle}>{STEP_META[step()].subtitle}</p>
+
+      <Stepper
+        current={step()}
+        status={(s) => stepStatus(s, ClassFormGroup, levels)}
+        onJump={(s) => setStep(s)}
+      />
+
+      <Switch>
+        <Match when={step() === WizardStep.Identity}><StepIdentity {...stepProps} /></Match>
+        <Match when={step() === WizardStep.Proficiencies}><StepProficiencies {...stepProps} /></Match>
+        <Match when={step() === WizardStep.Equipment}><StepEquipment {...stepProps} /></Match>
+        <Match when={step() === WizardStep.Features}><StepFeatures {...stepProps} /></Match>
+        <Match when={step() === WizardStep.Spellcasting}><StepSpellcasting {...stepProps} /></Match>
+        <Match when={step() === WizardStep.Review}><StepReview {...stepProps} /></Match>
+      </Switch>
+
+      <WizardFooter
+        step={step()}
+        className={(ClassFormGroup.get('name') as string) || ''}
+        onBack={() => setStep(s => Math.max(WizardStep.Identity, s - 1) as WizardStep)}
+        onNext={() => {
+          if (step() === WizardStep.Review) {
+            void publish();
+          } else {
+            setStep(s => Math.min(WizardStep.Review, s + 1) as WizardStep);
+          }
+        }}
+      />
+
+      <FeaturesPopup
+        Show={[showFeaturePopup, setShowFeaturePopup]}
+        feature={[currentFeature, setCurrentFeature]}
+        isEdit={() => !!featureTarget().editId}
+        onClose={onFeatureSaved}
+      />
     </Container>
   );
 };
-
-export interface ProfStore {
-  weapons?: string[];
-  armor?: string[];
-  tools?: string[];
-}

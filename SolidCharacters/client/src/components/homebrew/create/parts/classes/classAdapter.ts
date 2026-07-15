@@ -2,9 +2,10 @@ import { Class5E, Proficiencies } from '../../../../../models/data/classes';
 import { FeatureDetail } from '../../../../../models/data/features';
 import { StartingEquipment } from '../../../../../models/data/items';
 import { Choices, ChoiceDetail } from '../../../../../models/data/core';
-import { Spellcasting, SpellCalc, CasterType as NewCasterType } from '../../../../../models/data/spellcasting';
-import { ClassForm, ProfStore } from './classes';
+import { Spellcasting, SpellCalc, CasterType as NewCasterType, Spellslots } from '../../../../../models/data/spellcasting';
+import { ClassForm, ProfStore } from './wizard/wizard.shared';
 import { LevelEntity } from '../../../../../models/old/class.model';
+import { buildSlotTable } from '../../../../../shared/ai/refs/spellSlots';
 
 // Thin adapter layer to isolate legacy ClassForm shape from the newer Class5E model.
 // Intent: keep UI stable while enabling save payload generation that matches data model.
@@ -111,20 +112,23 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
       } as ChoiceDetail;
     }
   });
+  // Level-1 equipment A-or-B choices (wizard Equipment step)
+  (form.equipmentChoices || []).forEach((c, idx) => {
+    const options = [c?.a, c?.b].map(o => o?.trim()).filter(Boolean) as string[];
+    if (options.length) {
+      choices[`equipment_${idx}`] = {
+        amount: 1,
+        options
+      } as ChoiceDetail;
+    }
+  });
 
-  // Spellcasting mapping (still partial): derive slots & known type
+  // Spellcasting mapping: stamp the canonical slot table for the caster type, then overlay
+  // any per-level extras from the editor (cantrips known from the Advanced section).
   let spellcasting: Spellcasting | undefined;
   if (form.spellCasting) {
-    // Collect slot / cantrip info from per-level spellcasting embed if present
-    const slots: Record<number, any> = {};
-    levels.forEach(l => {
-      if (l.spellcasting) {
-        // Clone only defined properties
-        const slotRec: any = {};
-        Object.entries(l.spellcasting).forEach(([k,v]) => { if (v !== undefined) slotRec[k] = v; });
-        if (Object.keys(slotRec).length) slots[l.level] = slotRec;
-      }
-    });
+    // Old CasterType (models/old) and new CasterType share ordinals 0-3 for None/Third/Half/Full.
+    // NOTE: the new enum adds Pact=4 — if the old enum ever grows, revisit this map.
     const casterTypeMap: Record<number, NewCasterType> = {
       0: NewCasterType.None,
       1: NewCasterType.Third,
@@ -133,6 +137,15 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
     };
     const oldCaster = (form.casterType as unknown as number) ?? 0;
     const newCaster = casterTypeMap[oldCaster] ?? NewCasterType.None;
+
+    const slots: Record<number, Spellslots> =
+      buildSlotTable(newCaster as unknown as Parameters<typeof buildSlotTable>[0]) as unknown as Record<number, Spellslots>;
+    levels.forEach(l => {
+      const cantrips = l.spellcasting?.cantrips_known;
+      if (cantrips !== undefined) {
+        slots[l.level] = { ...(slots[l.level] ?? {}), cantripsKnown: cantrips };
+      }
+    });
 
     const known_type = form.spellsKnownCalc === 0 ? 'number' : 'calc';
     let spells_known: Record<number, number> | SpellCalc;
@@ -162,6 +175,8 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
     ? form.primaryStat.map(statName).filter(Boolean).join(',')
     : statName(form.primaryStat as any);
 
+  // NOTE: persisted classes are snake_case while Class5E declares camelCase — a pre-existing
+  // storage inconsistency (readers tolerate both); hence the two-step cast.
   const payload: Class5EPayload = {
     name: form.name?.trim(),
     hit_die,
@@ -173,7 +188,7 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
     classSpecific,
     spellcasting,
     choices: Object.keys(choices).length ? choices : undefined,
-  } as Class5EPayload;
+  } as unknown as Class5EPayload;
   
   return payload;
 }
