@@ -96,6 +96,17 @@ describe('stepStatus', () => {
     expect(stepStatus(WizardStep.Features, fg, dense)).toBe('complete');
   });
 
+  it('Equipment: an empty choice row is not enough — it needs an entry or a kit item', () => {
+    const emptyRow = fakeFormGroup({ equipmentChoices: [{ options: [{ entries: [] }, { entries: [] }] }] });
+    expect(stepStatus(WizardStep.Equipment, emptyRow, emptyWizardLevels())).toBe('incomplete');
+    const withEntry = fakeFormGroup({
+      equipmentChoices: [{ options: [{ entries: [{ kind: 'item', name: 'Shield', qty: 1 }] }, { entries: [] }] }],
+    });
+    expect(stepStatus(WizardStep.Equipment, withEntry, emptyWizardLevels())).toBe('complete');
+    const kitOnly = fakeFormGroup({ itemStart: ['Shield'] });
+    expect(stepStatus(WizardStep.Equipment, kitOnly, emptyWizardLevels())).toBe('complete');
+  });
+
   it('Spellcasting: complete once any caster card (including None) is picked', () => {
     const fg = fakeFormGroup({});
     expect(stepStatus(WizardStep.Spellcasting, fg, emptyWizardLevels())).toBe('incomplete');
@@ -106,11 +117,17 @@ describe('stepStatus', () => {
 
 describe('draft round-trip', () => {
   it('serialize → parse → hydrate restores form fields, levels and step', () => {
+    const structuredChoice = {
+      options: [
+        { entries: [{ kind: 'item', name: 'Longsword', qty: 1 }, { kind: 'item', name: 'Shield', qty: 1 }] },
+        { entries: [{ kind: 'item', name: 'Javelin', qty: 8 }, { kind: 'custom', name: '4 GP' }] },
+      ],
+    };
     const source = fakeFormGroup({
       name: 'Runeblade',
       hitDie: 10,
       primaryStat: [Stat.STR, Stat.CHA],
-      equipmentChoices: [{ a: 'a martial weapon and a shield', b: 'two martial weapons' }],
+      equipmentChoices: [structuredChoice],
       spellsKnownMode: 'fixed',
     });
     const levels: WizardLevels = {
@@ -129,7 +146,26 @@ describe('draft round-trip', () => {
     expect(target.values.name).toBe('Runeblade');
     expect(target.values.hitDie).toBe(10);
     expect(target.values.primaryStat).toEqual([Stat.STR, Stat.CHA]);
-    expect(target.values.equipmentChoices).toEqual([{ a: 'a martial weapon and a shield', b: 'two martial weapons' }]);
+    expect(target.values.equipmentChoices).toEqual([structuredChoice]);
+  });
+
+  it('migrates legacy {a,b} equipment rows in old drafts to structured custom entries', () => {
+    const draft = parseDraft(JSON.stringify({
+      v: 1,
+      form: { equipmentChoices: [{ a: 'a martial weapon and a shield', b: 'two martial weapons' }] },
+      levels: emptyWizardLevels(),
+      step: WizardStep.Equipment,
+    }));
+    expect(draft).not.toBeNull();
+
+    const target = fakeFormGroup({});
+    hydrateDraft(target, draft!);
+    expect(target.values.equipmentChoices).toEqual([{
+      options: [
+        { entries: [{ kind: 'custom', name: 'a martial weapon and a shield' }] },
+        { entries: [{ kind: 'custom', name: 'two martial weapons' }] },
+      ],
+    }]);
   });
 
   it('rejects malformed or wrong-version payloads', () => {

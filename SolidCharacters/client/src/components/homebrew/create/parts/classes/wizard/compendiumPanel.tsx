@@ -11,13 +11,17 @@ import styles from './stepEquipment.module.scss';
 type CompFilter = 'armor' | 'weapons' | 'tools';
 
 interface CompendiumPanelProps {
-  /** Adds the named item to the fixed kit (parent dedupes against itemStart). */
+  /** Adds the named item to the current add-target (a choice option or the fixed kit). */
   onAdd: (name: string) => void;
+  /** Label of the current add-target, e.g. "Fixed kit" or "Choice 1 · Option A". */
+  addingToLabel?: () => string;
+  /** True while a choice option is targeted — switches the banner to the accent style. */
+  targetingChoice?: () => boolean;
 }
 
 // Right-hand compendium picker: name search + single-select category filter over the
 // SRD/homebrew item list. Each row surfaces a compact stat line and a "+" that pushes the
-// item name up to the fixed kit. Visible list is capped at 50 matches for perf.
+// item name up to the parent's add-target. Visible list is capped at 50 matches for perf.
 export const CompendiumPanel: Component<CompendiumPanelProps> = (props) => {
   const items = useDnDItems();
   const [search, setSearch] = createSignal('');
@@ -53,8 +57,14 @@ export const CompendiumPanel: Component<CompendiumPanelProps> = (props) => {
 
   const toggleFilter = (f: CompFilter) => setFilter((prev) => (prev === f ? null : f));
 
+  const targetLabel = () => props.addingToLabel?.() ?? 'Fixed kit';
+
   return (
     <div class={wiz.card}>
+      <div class={`${styles.addingToBanner} ${props.targetingChoice?.() ? styles.addingToActive : ''}`}>
+        Adding to: <strong>{targetLabel()}</strong>
+      </div>
+
       <div class={styles.searchField}>
         <Icon icon={Search} size="small" />
         <Input
@@ -84,7 +94,7 @@ export const CompendiumPanel: Component<CompendiumPanelProps> = (props) => {
               <button
                 type="button"
                 class={styles.itemAdd}
-                aria-label={`Add ${item.name} to fixed kit`}
+                aria-label={`Add ${item.name} to ${targetLabel()}`}
                 onClick={() => props.onAdd(item.name)}
               >
                 +

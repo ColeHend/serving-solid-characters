@@ -4,6 +4,7 @@ import { StartingEquipment } from '../../../../../models/data/items';
 import { Choices, ChoiceDetail } from '../../../../../models/data/core';
 import { Spellcasting, SpellCalc, CasterType as NewCasterType, Spellslots } from '../../../../../models/data/spellcasting';
 import { ClassForm, ProfStore } from './wizard/wizard.shared';
+import { optionToString } from './wizard/equipment.shared';
 import { LevelEntity } from '../../../../../models/old/class.model';
 import { buildSlotTable } from '../../../../../shared/ai/refs/spellSlots';
 
@@ -112,9 +113,10 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
       } as ChoiceDetail;
     }
   });
-  // Level-1 equipment A-or-B choices (wizard Equipment step)
+  // Level-1 equipment choices (wizard Equipment step): each option's entries collapse to a
+  // comma-joined human string ("Chain Mail, Javelin x8, 155 GP") for the saved format.
   (form.equipmentChoices || []).forEach((c, idx) => {
-    const options = [c?.a, c?.b].map(o => o?.trim()).filter(Boolean) as string[];
+    const options = (c?.options ?? []).map(optionToString).filter(Boolean);
     if (options.length) {
       choices[`equipment_${idx}`] = {
         amount: 1,

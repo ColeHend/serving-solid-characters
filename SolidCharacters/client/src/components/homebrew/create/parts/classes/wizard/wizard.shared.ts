@@ -5,15 +5,14 @@ import { SpellsKnown } from '../../../../../../shared/models/casting';
 import { CasterType, Choice, FeatureTypes } from '../../../../../../models/old/core.model';
 import { LevelEntity, Subclass } from '../../../../../../models/old/class.model';
 import { FeatureDetail } from '../../../../../../models/generated';
+import { choiceHasContent, coerceEquipmentChoices } from './equipment.shared';
+import type { EquipmentChoice } from './equipment.shared';
 
 // Shared (non-JSX) types, constants and pure helpers for the class-creation wizard.
 // Single source of truth for step metadata, completion status and review summaries so the
 // Stepper, the Features warning banner and the Review step can never disagree.
 
-export interface EquipmentChoice {
-  a: string;
-  b: string;
-}
+export type { EquipmentChoice } from './equipment.shared';
 
 export type SpellsKnownMode = 'fixed' | 'prepared' | 'spellbook';
 
@@ -268,7 +267,7 @@ export function stepStatus(step: WizardStep, fg: FormGroup<ClassForm>, levels: W
   }
   case WizardStep.Equipment: {
     const any = ((fg.get('itemStart') as string[])?.length ?? 0) > 0
-      || ((fg.get('equipmentChoices') as EquipmentChoice[])?.length ?? 0) > 0;
+      || (((fg.get('equipmentChoices') as EquipmentChoice[]) ?? []).some(choiceHasContent));
     return any ? 'complete' : 'incomplete';
   }
   case WizardStep.Features: {
@@ -340,7 +339,7 @@ export function buildReviewRows(fg: FormGroup<ClassForm>, levels: WizardLevels):
       step: WizardStep.Equipment,
       ok: stepStatus(WizardStep.Equipment, fg, levels) === 'complete',
       title: 'Starting equipment',
-      summary: `${equipChoices.length} choice row(s) + fixed kit: ${kit.length ? kit.join(', ') : 'empty'}`,
+      summary: `${equipChoices.filter(choiceHasContent).length} choice row(s) + fixed kit: ${kit.length ? kit.join(', ') : 'empty'}`,
       action: 'edit',
     },
     {
@@ -417,7 +416,12 @@ export function parseDraft(raw: string | null): WizardDraft | null {
 
 export function hydrateDraft(fg: FormGroup<ClassForm>, draft: WizardDraft): void {
   DRAFT_FORM_KEYS.forEach(key => {
-    if (key in draft.form) fg.set(key, (draft.form as Record<string, unknown>)[key] as never);
+    if (!(key in draft.form)) return;
+    let value = (draft.form as Record<string, unknown>)[key];
+    // Drafts saved before the structured-equipment rework hold {a, b} rows; coerce them
+    // (and anything malformed) so resumed drafts always match the current shape.
+    if (key === 'equipmentChoices') value = coerceEquipmentChoices(value);
+    fg.set(key, value as never);
   });
 }
 

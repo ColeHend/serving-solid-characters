@@ -6,6 +6,7 @@ import { toClass5E } from "./classAdapter";
 // Use unified homebrewManager so new classes immediately appear in homebrew views
 import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
+import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
 import { Class5E } from "../../../../../models/data/classes";
 import { FeatureDetail } from "../../../../../models/generated";
 import { createNewId } from "../../../../../shared/customHooks/utility/tools/idGen";
@@ -29,6 +30,7 @@ import {
   serializeDraft,
   stepStatus,
 } from "./wizard/wizard.shared";
+import { parseOptionString } from "./wizard/equipment.shared";
 import { Stepper } from "./wizard/stepper";
 import { WizardFooter } from "./wizard/wizardFooter";
 import { StepIdentity } from "./wizard/stepIdentity";
@@ -47,6 +49,10 @@ type ResumeState = 'none' | 'pending' | 'resumed' | 'discarded';
 export const Classes: Component = () => {
   // SRD classes (depends on userSettings().dndSystem: 2014 | 2024 | both)
   const srdClasses = useDnDClasses();
+  // Item names for the edit-load equipment parser; loads async, so an unhydrated list just
+  // means bare names classify as custom chips (still lossless — see equipment.shared.ts).
+  const dndItems = useDnDItems();
+  const itemNameMap = () => new Map(dndItems().map(i => [i.name.toLowerCase(), i.name]));
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -213,8 +219,11 @@ export const Classes: Component = () => {
           } else if (ckey.startsWith('tool_prof_')) {
             ensurePush('toolProfChoices', choose, options);
           } else if (ckey.startsWith('equipment_')) {
-            // Wizard Equipment step A-or-B rows
-            equipmentChoices.push({ a: options[0] ?? '', b: options[1] ?? '' });
+            // Wizard Equipment step rows: each saved option string is parsed back into
+            // item/custom entries (known names become item chips, the rest custom text)
+            equipmentChoices.push({
+              options: options.map(opt => ({ entries: parseOptionString(opt, itemNameMap()) })),
+            });
           } else if (sc && sc.equipment === ckey) {
             ensurePush('toolProfChoices', choose, options);
           }
