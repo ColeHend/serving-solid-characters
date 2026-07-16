@@ -4,20 +4,21 @@ import {
   createEffect,
   createMemo,
   createSignal,
-  For,
   Setter,
   Show,
 } from "solid-js";
 import { UserSettings } from "../../models/userSettings";
-import { useNavigate } from "@solidjs/router";
+import { useLocation, useNavigate } from "@solidjs/router";
 import { Portal } from "solid-js/web";
-import { ExtendedTab } from "../../models/extendedTab";
-import { Button, Container, Icon, Modal } from "coles-solid-library";
-import { Settings } from "coles-solid-library/icons";
+import { Container, Modal } from "coles-solid-library";
 import styles from "./SideMenu.module.scss";
 import useClickOutside from "solid-click-outside";
-import { FlatCard } from "../../shared/components/flatCard/flatCard";
 import SettingsPopup from "./settings/settingsPopup";
+import { SettingsTab } from "./settings/folderTabs.shared";
+import { SECTIONS, SectionId, resolveActiveSection } from "./sideMenu.shared";
+import { NavRail } from "./NavRail";
+import { NavPanel } from "./NavPanel";
+import { refreshRecent } from "../../shared/customHooks/useRecentItems";
 
 interface MenuProps {
   defaultShowList: [Accessor<boolean>, Setter<boolean>];
@@ -33,12 +34,23 @@ export const SideMenu: Component<MenuProps> = (props) => {
   const [shouldRender, setShouldRender] = createSignal(false);
 
   const [showSettings, setShowSettings] = createSignal(false);
+  const [settingsInitialTab, setSettingsInitialTab] = createSignal<
+    SettingsTab | undefined
+  >(undefined);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [showMenu, setShowMenu] = props.defaultShowList;
   const isMobile = props.defaultIsMobile[0];
   const [userSettings, setUserSettings] = props.defaultUserSettings;
+
+  const [activeSection, setActiveSection] = createSignal<SectionId>(
+    resolveActiveSection(location.pathname),
+  );
+  const currentSection = createMemo(
+    () => SECTIONS.find((s) => s.id === activeSection()) ?? SECTIONS[0],
+  );
 
   const [menuRef, setMenuRef] = createSignal<HTMLDivElement | undefined>();
 
@@ -50,9 +62,10 @@ export const SideMenu: Component<MenuProps> = (props) => {
 
     if (anchor && menu) {
       const anchorRect = anchor.getBoundingClientRect();
-      // const menuRect = menu.getBoundingClientRect();
 
       menu.style.position = "absolute";
+      // Explicit height so the RECENT block can pin to the drawer's bottom.
+      menu.style.height = `calc(100dvh - ${anchorRect.bottom}px)`;
 
       if (props.location === "left") {
         menu.style.top = `${anchorRect.bottom}px`;
@@ -64,61 +77,11 @@ export const SideMenu: Component<MenuProps> = (props) => {
     }
   };
 
-  const [MenuItems] = createSignal<ExtendedTab[]>([
-    {
-      Name: "Characters",
-      Link: "/characters",
-      isOpen: false,
-      children: [
-        { Name: "View", Link: "/characters/view", isOpen: false },
-        { Name: "Create", Link: "/characters/create", isOpen: false },
-        { Name: "Sheet Mapper", Link: "/characters/pdfCreate", isOpen: false },
-      ],
-    },
-    {
-      Name: "Homebrew",
-      isOpen: false,
-      children: [
-        { Name: "Classes", Link: "/homebrew/create/classes", isOpen: false },
-        {
-          Name: "Subclasses",
-          Link: "/homebrew/create/subclasses",
-          isOpen: false,
-        },
-        {
-          Name: "Backgrounds",
-          Link: "/homebrew/create/backgrounds",
-          isOpen: false,
-        },
-        { Name: "Races", Link: "/homebrew/create/races", isOpen: false },
-        { Name: "Subraces", Link: "/homebrew/create/subraces", isOpen: false },
-        { Name: "Spells", Link: "/homebrew/create/spells", isOpen: false },
-        { Name: "Feats", Link: "/homebrew/create/feats", isOpen: false },
-        { Name: "Items", Link: "/homebrew/create/items", isOpen: false },
-      ],
-    },
-    {
-      Name: "Info",
-      Link: "/info",
-      isOpen: false,
-      children: [
-        { Name: "Spells", Link: "/info/spells", isOpen: false },
-        { Name: "Feats", Link: "/info/feats", isOpen: false },
-        { Name: "Classes", Link: "/info/classes", isOpen: false },
-        { Name: "Backgrounds", Link: "/info/backgrounds", isOpen: false },
-        { Name: "Items", Link: "/info/items", isOpen: false },
-        { Name: "Races", Link: "/info/races", isOpen: false },
-      ],
-    },
-    {
-      Name: "DM",
-      isOpen: false,
-      children: [{ Name: "DM Tools", Link: "/dm/command", isOpen: false }],
-    },
-  ]);
-
   createEffect(() => {
     if (showMenu()) {
+      setActiveSection(resolveActiveSection(location.pathname));
+      refreshRecent();
+
       setShouldRender(true);
       setIsClosing(false);
       setIsOpening(true);
@@ -143,6 +106,21 @@ export const SideMenu: Component<MenuProps> = (props) => {
     });
   });
 
+  // The gear must not inherit "Account" from a prior avatar click.
+  createEffect(() => {
+    if (!showSettings()) setSettingsInitialTab(undefined);
+  });
+
+  const openSettings = (tab?: SettingsTab) => {
+    setSettingsInitialTab(tab);
+    setShowSettings(true);
+  };
+
+  const handleNavigate = (route: string) => {
+    navigate(route);
+    setShowMenu(false);
+  };
+
   const setOpeningClass = (): string => {
     return props.location === "right"
       ? styles.openingRight
@@ -165,61 +143,19 @@ export const SideMenu: Component<MenuProps> = (props) => {
           ref={(ref) => setMenuRef(ref)}
           class={`${styles.sideMenu} ${isOpening() ? setOpeningClass() : ""} ${isClosing() ? setClosingClass() : ""}`}
         >
-          <ul>
-            <li class={`${styles.headerItem}`}>
-              <h3
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/");
-                }}
-              >
-                Navigation
-              </h3>
-
-              <Button onClick={() => setShowSettings((old) => !old)}>
-                <Icon icon={Settings} size={"large"} />
-              </Button>
-            </li>
-
-            <For each={MenuItems()}>
-              {(tab) => (
-                <>
-                  <li>
-                    <FlatCard
-                      headerName={
-                        <span
-                          class={`${styles.headerItem}`}
-                          onClick={() =>
-                            !tab.Link ? null : navigate(tab.Link)
-                          }
-                          style={{
-                            'cursor': !tab.Link ? 'auto' : 'pointer'
-                          }}
-                        >
-                          {tab.Name}
-                        </span>
-                      }
-                      transparent
-                    >
-                      <For each={tab.children ?? []}>
-                        {(child) => (
-                          <li
-                            class={`${styles.menuItem}`}
-                            onClick={() => {
-                              !child.Link ? null : navigate(child.Link);
-                              setShowMenu(false);
-                            }}
-                          >
-                            {child.Name}
-                          </li>
-                        )}
-                      </For>
-                    </FlatCard>
-                  </li>
-                </>
-              )}
-            </For>
-          </ul>
+          <div class={styles.shell}>
+            <NavRail
+              activeSection={activeSection()}
+              onSelectSection={setActiveSection}
+              username={userSettings().username}
+              onOpenSettings={openSettings}
+            />
+            <NavPanel
+              section={currentSection()}
+              onNavigate={handleNavigate}
+              onClose={() => setShowMenu(false)}
+            />
+          </div>
         </Container>
       </Portal>
       <Modal
@@ -231,6 +167,7 @@ export const SideMenu: Component<MenuProps> = (props) => {
         <SettingsPopup
           defaultUserSettings={userSettings}
           setDefaultUserSettings={setUserSettings}
+          initialTab={settingsInitialTab()}
         />
       </Modal>
     </Show>
