@@ -1,7 +1,7 @@
 import { Component, For, Show, createSignal } from 'solid-js';
 import { reconcile, type SetStoreFunction } from 'solid-js/store';
 import { Input, Icon } from 'coles-solid-library';
-import { Delete, Add } from 'coles-solid-library/icons';
+import { Delete } from 'coles-solid-library/icons';
 import { FlatCard } from '../../../../../../shared/components/flatCard/flatCard';
 import type { WizardLevels } from './wizard.shared';
 import sharedStyles from './classesWizard.module.scss';
@@ -57,68 +57,82 @@ export const AdvancedLevels: Component<AdvancedLevelsProps> = (props) => {
   return (
     <FlatCard headerName="Advanced: level table columns & cantrips" startOpen={false} transparent>
       <div class={styles.advanced}>
-        <div class={styles.advBlock}>
-          <span class={sharedStyles.cardLabel}>Custom columns — level {props.selectedLevel()}</span>
-          <Show
-            when={columnKeys().length}
-            fallback={
-              <span class={styles.advHint}>
-                No custom columns yet. Add one below (e.g. "Rage", "Sneak Attack").
-              </span>
-            }
-          >
-            <For each={columnKeys()}>
-              {(key) => (
-                <div class={styles.advRow}>
-                  <span class={styles.advColName}>{key}</span>
-                  <div class={styles.advInput}>
-                    <Input
-                      value={props.levels.classSpecific[key]?.[props.selectedLevel()] ?? ''}
-                      onChange={(e) =>
-                        props.setLevels('classSpecific', key, props.selectedLevel(), e.currentTarget.value)
-                      }
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    class={styles.deleteBtn}
-                    aria-label={`Delete column ${key}`}
-                    onClick={() => removeColumn(key)}
-                  >
-                    <Icon icon={Delete} size={'small'} />
-                  </button>
+        <div class={sharedStyles.card}>
+          <div class={styles.cardHead}>
+            <span class={sharedStyles.cardLabel}>Custom columns — level {props.selectedLevel()}</span>
+            <span class={sharedStyles.counterMuted}>
+              {columnKeys().length} {columnKeys().length === 1 ? 'column' : 'columns'}
+            </span>
+          </div>
+          <div class={styles.featureList}>
+            <Show
+              when={columnKeys().length}
+              fallback={
+                <div class={styles.empty}>
+                  No custom columns yet. Add one below (e.g. "Rage", "Sneak Attack").
                 </div>
-              )}
-            </For>
-          </Show>
+              }
+            >
+              <For each={columnKeys()}>
+                {(key) => (
+                  <div class={styles.featureRow}>
+                    <span class={styles.featureDot} />
+                    <span class={styles.advColName}>{key}</span>
+                    <div class={`${styles.advInput} ${styles.advInputNarrow}`}>
+                      <Input
+                        value={props.levels.classSpecific[key]?.[props.selectedLevel()] ?? ''}
+                        onChange={(e) =>
+                          props.setLevels('classSpecific', key, props.selectedLevel(), e.currentTarget.value)
+                        }
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      class={styles.deleteBtn}
+                      aria-label={`Delete column ${key}`}
+                      onClick={() => removeColumn(key)}
+                    >
+                      <Icon icon={Delete} size={'small'} />
+                    </button>
+                  </div>
+                )}
+              </For>
+            </Show>
+          </div>
           <div class={styles.advAddRow}>
-            <div class={styles.advInput}>
+            <div class={`${styles.advInput} ${styles.advInputGrow}`}>
               <Input
                 value={newCol()}
                 placeholder="New column name"
                 onChange={(e) => setNewCol(e.currentTarget.value)}
               />
             </div>
-            <button type="button" class={styles.ghostBtn} onClick={addColumn}>
-              <Icon icon={Add} size={'small'} /> Add column
+            <button type="button" class={styles.addBtn} onClick={addColumn}>
+              Add column
             </button>
           </div>
         </div>
 
-        <div class={styles.advBlock}>
-          <span class={sharedStyles.cardLabel}>Cantrips known — level {props.selectedLevel()}</span>
-          <div class={`${styles.advInput} ${styles.advInputNarrow}`}>
-            <Input
-              type="number"
-              min={0}
-              value={cantrips() ?? ''}
-              onChange={(e) => setCantrips(e.currentTarget.value)}
-            />
+        <div class={sharedStyles.card}>
+          <div class={styles.cardHead}>
+            <span class={sharedStyles.cardLabel}>Cantrips known — level {props.selectedLevel()}</span>
           </div>
-          <span class={styles.advHint}>
-            Cantrips and custom columns render as extra columns in the class's level table.
-          </span>
+          <div class={styles.advRow}>
+            <div class={`${styles.advInput} ${styles.advInputNarrow}`}>
+              <Input
+                type="number"
+                transparent
+                min={0}
+                value={cantrips() ?? ''}
+                onChange={(e) => setCantrips(e.currentTarget.value)}
+              />
+            </div>
+          </div>
         </div>
+
+        <span class={styles.advHint}>
+          Cantrips and custom columns render as extra columns in the class's level table.
+        </span>
       </div>
     </FlatCard>
   );

@@ -250,12 +250,6 @@
   padding: 4px 2px 2px;
 }
 
-.advBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
 .advRow {
   display: flex;
   align-items: center;
@@ -266,10 +260,15 @@
   }
 }
 
+// Column name inside a .featureRow — featureName typography, but standalone: .featureMain
+// is a cursor:pointer button reset and .featureName drags in its hover-underline rule.
 .advColName {
-  flex: 0 0 auto;
-  min-width: 120px;
-  font-size: 14px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
   font-weight: 600;
   color: var(--on-surface-color);
 }
@@ -285,9 +284,11 @@
 }
 
 // Boxed wrapper around a coles Input so it matches the wizard's translucent fields.
+// Box visuals only — always pair with .advInputGrow or .advInputNarrow, and only inside
+// a ROW flex parent (.featureRow/.advRow/.advAddRow): in a column parent the modifier's
+// flex-basis becomes HEIGHT and the box balloons.
 .advInput {
-  flex: 1;
-  min-width: 140px;
+  min-width: 0;
   padding: 2px 10px;
   border-radius: $border-radius-sm;
   border: 1px solid color-mix(in srgb, var(--on-surface-color) 18%, transparent);
@@ -298,12 +299,22 @@
     border: none !important;
     outline: none;
     width: 100%;
+    color: var(--on-surface-color); // coles inputs default to --on-container-color
   }
 }
 
+.advInputGrow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .advInputNarrow {
-  flex: 0 0 120px;
-  min-width: 90px;
+  flex: 0 0 160px;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    flex-basis: 120px;
+  }
 }
 
 .advHint {
