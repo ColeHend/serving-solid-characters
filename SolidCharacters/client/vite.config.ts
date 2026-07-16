@@ -1,8 +1,8 @@
 import { defineConfig, ProxyOptions } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { ManifestOptions, VitePWA } from 'vite-plugin-pwa';
-import devtools from 'solid-devtools/vite'
-import eslint from 'vite-plugin-eslint'
+import devtools from 'solid-devtools/vite';
+import eslint from './node_modules/vite-plugin-eslint';
 import colesSolidLibrary from 'coles-solid-library/vite'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -127,7 +127,7 @@ export default defineConfig({
         // headroom for vendor-chunk growth, so a multi-MB asset trips the build (Workbox warns +
         // skips) instead of silently inflating the install.
         globIgnores: ['**/*.map', 'tessdata/**'],
-        maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
       },
       manifest: manifest,
     }),
