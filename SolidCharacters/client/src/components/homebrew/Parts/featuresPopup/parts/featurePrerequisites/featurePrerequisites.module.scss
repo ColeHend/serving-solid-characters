@@ -1,51 +1,12 @@
-@use 'coles-solid-library/themes/variables' as vars;
-
-.preReqInput {
-
-    width: 50% !important;
-}
-
-.cardAlt {
-
-    div { 
-
-        svg {
-            fill: var(--primary-color-varient) !important;
-        }
-    }
-
-    &::before {
-
-        background: linear-gradient(var(--secondary-color-varient, blue), transparent);
-    }
-}
-
-.preReqChip {
-    display: block;
-    border: 1px solid !important;
-    width: 35%;
-    border-radius: 14px;
-    padding: 8px;
-    text-wrap: wrap;
-}
-
-.preReqsBox {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 2%;
-
-    @media screen and (max-width: 768px){
-        flex-direction: column;
-    }
-}
-
 .leftAlignText {
     text-align: left;
 }
 
-.preReqRule {
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     margin-bottom: 8px;
 }
 
@@ -55,51 +16,46 @@
     gap: 12px;
 }
 
-.prereqItem {
-    display: flex;
-    flex-direction: column;
-    padding: 8px;
-
-    div {
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
-        // justify-content: flex-start;
-        // align-items: center;Z
-    }
-}
-
 .prereqBox {
     border-radius: 12px;
 }
 
-.keyValueInput {
-    width: 25%;
+.prereqItem {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
 }
 
-.operationInput {
-    width: 25%;
+.prefix {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    opacity: 0.85;
 }
 
-.keyInput {
-    width: 30%;
+.keyField {
+    flex: 1 1 180px;
+    min-width: 150px;
 }
 
-.groupInput {
-    width: 30%;
+.operationField {
+    flex: 1 1 150px;
+    min-width: 140px;
 }
 
-.bottomHalf {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between;
-
-    button {
-        color: red !important;
-    }
+.valueField {
+    flex: 1 1 140px;
+    min-width: 120px;
 }
 
-.inputBorder {
-    border: 1px solid vars.$color-on-surface !important;
-    padding: 5px;
+.groupField {
+    flex: 0 1 110px;
+    min-width: 90px;
+}
+
+.deleteButton {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 4px;
 }
