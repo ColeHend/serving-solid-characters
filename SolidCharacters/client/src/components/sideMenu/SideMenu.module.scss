@@ -1,8 +1,6 @@
 @use 'coles-solid-library/themes/variables.scss' as vars;
 
 $border-radius: 10px;
-$margin: 2px;
-$padding: 7px;
 
 .sideMenu {
     display: flex;
@@ -10,29 +8,12 @@ $padding: 7px;
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
     transform: translateX(0);
-    width: 180px !important;
-    padding: $padding;
+    width: min(360px, 92vw) !important;
     background-color: color-mix(in srgb, vars.$color-surface 90%, transparent);
     background-image: var(--container-gradient-translucent) !important;
     z-index: 1;
     box-shadow: -4px 0 15px 0 vars.$color-primary;
-    
-
-    ul {
-      list-style: none;
-
-      padding: $padding;
-      margin: $margin;
-    }
-
-    button {
-      background-color: color-mix(in srgb, vars.$color-surface 65%, transparent) !important;
-    
-    
-      svg {
-        fill: vars.$color-on-background !important;
-      }
-    }
+    overflow: hidden;
 
     &.openingLeft {
         animation: slideInFromLeft 0.3s forwards;
@@ -50,48 +31,21 @@ $padding: 7px;
         animation: slideOutToRight 0.3s forwards;
     }
 
+    @media screen and (max-width: vars.$mobile) {
+        width: 100dvw !important;
+        border-radius: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        animation: none !important;
+    }
 }
 
-.headerItem {
-  display: flex;
-  flex-direction: row;
-  
-  justify-content: center;
-  align-items: center;
-  
-  gap: 8%;
-}
-
-.menuItem {
-  display: flex;
-  flex-direction: row;
-  padding: 2px;
-
-  :first-child {
-    flex-grow: 1;
-  }
-  :nth-child(2) :nth-child(3) {
-    margin: 0 4px;
-  }
-
-  h3 {
-    display: inline;
-  }
-
-  button svg {
-    fill: vars.$color-on-background !important;
-  }
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.headerItem {
-  
-  &:hover {
-    cursor: pointer;
-  }
+.shell {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    min-height: 0;
 }
 
 @keyframes slideInFromLeft {

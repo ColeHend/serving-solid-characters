@@ -1,4 +1,4 @@
-import { Accessor, createSignal, Setter, splitProps } from "solid-js";
+import { Accessor, createEffect, createSignal, Setter, splitProps } from "solid-js";
 import style from "./SearchBar.module.scss";
 import { Clone } from "../../customHooks";
 import { Button, Icon, Input, addSnackbar } from "coles-solid-library";
@@ -10,10 +10,12 @@ interface Props<T> {
     tooltip?: string;
 		wrapClass?: string;
     searchFunction?: (data:T, search:string) => boolean;
+    /** Programmatic search (e.g. a ?search= URL param); applied once per distinct value when data is ready. */
+    seed?: string;
 }
 const SearchBar = <T,>(props: Props<T>) => {
   const [searchValue, setSearchValue] = createSignal<string>("");
-  const [local,] = splitProps(props, ['wrapClass', 'tooltip'])
+  const [local, inputProps] = splitProps(props, ['wrapClass', 'tooltip', 'seed', 'dataSource', 'setResults', 'searchFunction'])
   
   
   const searchClick = () => setTimeout(() => {
@@ -45,9 +47,16 @@ const SearchBar = <T,>(props: Props<T>) => {
 
   let searchTimeout:NodeJS.Timeout;
 
-  // createEffect(()=>{
-  //   props.setResults(props.dataSource());
-  // })
+  // Applies a programmatic search once per distinct seed, waiting for the
+  // async dataSource to load before filtering.
+  let appliedSeed: string | undefined;
+  createEffect(() => {
+    const seed = props.seed?.trim();
+    if (!seed || seed === appliedSeed || props.dataSource().length === 0) return;
+    appliedSeed = seed;
+    setSearchValue(seed);
+    searchClick();
+  });
   return (
     <div class={`${style.searchBar}`}>
       <Input
@@ -65,7 +74,7 @@ const SearchBar = <T,>(props: Props<T>) => {
         }}
         // onKeyDown={(e) => e.key === "Enter" && searchClick()}
         // onSubmit={()=>searchClick()}
-        {...props}
+        {...inputProps}
         class={`${style.input} ${(props.class ?? "")}`}
       />
       <Button onClick={searchClick} title={local.tooltip ?? "Search!"}><Icon icon={Search} size={"medium"} /></Button>

@@ -1,0 +1,75 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--spacing-2);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-2);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-small);
+  color: color-mix(in srgb, var(--on-surface-color) 60%, transparent);
+}
+
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 4px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+
+  svg {
+    fill: color-mix(in srgb, var(--on-surface-color) 70%, transparent);
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  }
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.link {
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+  }
+
+  &.active {
+    background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+    color: var(--primary-color);
+  }
+}
