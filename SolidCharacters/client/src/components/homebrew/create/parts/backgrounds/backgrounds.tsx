@@ -1,312 +1,331 @@
-import { Component, For, createSignal, createMemo, Show, createEffect, onMount, onCleanup } from "solid-js";
-import { Body, Input, Select, Option, Button, FormField } from "coles-solid-library";
-import { IdentityPlatform, Save } from "coles-solid-library/icons";
-import styles from './backgrounds.module.scss';
-import HomebrewManager, { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
-import { createStore } from "solid-js/store";
-import { Background, FeatureDetail } from "../../../../../models/generated";
-// import type { FeatureDetail } from "../../../../../models/data/features";
+import { Component, Match, Show, Switch, batch, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { createStore, unwrap } from "solid-js/store";
+import { useNavigate, useSearchParams } from "@solidjs/router";
+import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-solid-library";
+import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
+import { useDnDBackgrounds } from "../../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/feats";
-import { backgroundsStore } from "../../../../../shared/stores/backgroundsStore";
-import { candidateEquipmentItems } from './constants';
-import AbilitiesSection from './sections/AbilitiesSection';
-import EquipmentSection from './sections/EquipmentSection';
-import FeatSection from './sections/FeatSection';
-import ProficienciesSection from './sections/ProficienciesSection';
-import ProficienciesModal from './sections/ProficienciesModal';
-import LanguagesModal from './sections/LanguagesModal';
-import LanguagesSection from './sections/LanguagesSection';
-import FeaturesSection from './sections/FeaturesSection';
-import { validate, fieldError as fieldErrHelper } from './validation';
-import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
-import { useSearchParams } from "@solidjs/router";
+import { Background, FeatureDetail } from "../../../../../models/generated";
+import { createNewId } from "../../../../../shared/customHooks/utility/tools/idGen";
+import { FeaturesPopup } from "../../../Parts/featuresPopup/featuresPopup";
+import {
+  BackgroundExtras,
+  BackgroundForm,
+  BackgroundWizardStep,
+  STEP_META,
+  backgroundDraftKey,
+  draftStorage,
+  emptyExtras,
+  hydrateDraft,
+  hydrateFeatures,
+  parseDraft,
+  serializeDraft,
+  stepStatus,
+  toBackground,
+  toEquipmentGroups,
+} from "./wizard/wizard.shared";
+import { Stepper } from "./wizard/stepper";
+import { WizardFooter } from "./wizard/wizardFooter";
+import { StepIdentity } from "./wizard/stepIdentity";
+import { StepAbilitiesFeat } from "./wizard/stepAbilitiesFeat";
+import { StepProficienciesLanguages } from "./wizard/stepProficienciesLanguages";
+import { StepEquipment } from "./wizard/stepEquipment";
+import { StepFeatures } from "./wizard/stepFeatures";
+import { StepReview } from "./wizard/stepReview";
+import styles from "../classes/wizard/classesWizard.module.scss";
+
+type ResumeState = 'none' | 'pending' | 'resumed' | 'discarded';
 
 const Backgrounds: Component = () => {
+  const allBackgrounds = useDnDBackgrounds();
   const allFeats = useDnDFeats();
-  const [searchParams,setSearchParams] = useSearchParams();
+  const originFeats = createMemo(() => allFeats().filter(f => (f.prerequisites?.length ?? 0) === 0));
+  const [searchParams] = useSearchParams<{ name: string }>();
+  const navigate = useNavigate();
 
-  // ---------------- NEW DATA FORMAT SECTION (incremental migration) ----------------
-  const bStore = backgroundsStore; // alias
-  const selectedFeat = createMemo(() => bStore.state.form.feat);
+  const BackgroundFormGroup = new FormGroup<BackgroundForm>({
+    name: ['', [Validators.Required]],
+    desc: ['', []],
+    feat: ['', []],
+    abilityOptions: [[], []],
+    languages: [[], []],
+    langChoiceAmount: [0, []],
+    armorProfs: [[], []],
+    weaponProfs: [[], []],
+    toolProfs: [[], []],
+    skillProfs: [[], []],
+  });
 
-  const remainingAbilityPicks = createMemo(() => 3 - bStore.state.form.abilityChoices.length);
+  const setField = <K extends keyof BackgroundForm>(key: K, value: BackgroundForm[K]) =>
+    BackgroundFormGroup.set(key, value);
 
-  function handleAddAbility(a: string) {
-    if (!a) return;
-    bStore.addAbilityChoice(a);
-  }
+  const [step, setStep] = createSignal<BackgroundWizardStep>(BackgroundWizardStep.Identity);
+  const [extras, setExtras] = createStore<BackgroundExtras>(emptyExtras());
 
-  function handleSelectBackground(name: string) {
-    bStore.selectBackground(name);
-  }
+  const paramString = (value: string | string[] | undefined) => {
+    if (typeof value === 'string') return value;
+    return value?.join(' ') ?? '';
+  };
+  const editName = () => paramString(searchParams.name);
+  const storageKey = () => backgroundDraftKey(editName());
 
-  function handleSelectFeat(feat: string) {
-    bStore.setFeat(feat);
-  }
+  // ---------------------------------------------------------------------------
+  // Prefill (?name= edit mode — a homebrew name edits in place, an SRD name clones)
 
-  function saveNewFormat(update = false) {
-    const active = bStore.activeBackground();
-    if (!active) return;
-  if (!isValid()) { showSnackbar('Cannot save: fix validation errors', 'error'); return; }
-    const draft: Background = { ...active } as Background;
-    if (bStore.state.form.abilityChoices.length) draft.abilityOptions = [...bStore.state.form.abilityChoices];
-    draft.feat = bStore.state.form.feat || undefined;
-    // apply any staged edits from edit buffers
-    if (editedProfs.armor.length || editedProfs.weapons.length || editedProfs.skills.length || editedProfs.tools.length) {
-      draft.proficiencies = { ...editedProfs };
+  const prefillForm = (found: Background) => {
+    batch(() => {
+      setField('name', found.name || '');
+      setField('desc', found.desc || '');
+      setField('feat', found.feat || '');
+      setField('abilityOptions', found.abilityOptions ?? []);
+      setField('languages', found.languages?.options ?? []);
+      setField('langChoiceAmount', found.languages?.amount ?? 0);
+      setField('armorProfs', found.proficiencies?.armor ?? []);
+      setField('weaponProfs', found.proficiencies?.weapons ?? []);
+      setField('toolProfs', found.proficiencies?.tools ?? []);
+      setField('skillProfs', found.proficiencies?.skills ?? []);
+      setExtras({
+        equipment: toEquipmentGroups(found.startEquipment),
+        features: hydrateFeatures(found.features),
+      });
+    });
+  };
+
+  // ---------------------------------------------------------------------------
+  // Draft autosave + resume
+
+  const [resumeState, setResumeState] = createSignal<ResumeState>('none');
+  const [pendingDraft, setPendingDraft] = createSignal(parseDraft(draftStorage.read(storageKey())));
+  if (pendingDraft()) setResumeState('pending');
+
+  // Baseline snapshot: autosave only writes once the state differs from it, so opening the
+  // page (or a prefilled edit) without touching anything never creates a draft.
+  const [baseline, setBaseline] = createSignal(serializeDraft(BackgroundFormGroup, extras, step()));
+
+  const resumeDraft = () => {
+    const draft = pendingDraft();
+    if (!draft) return;
+    hydrateDraft(BackgroundFormGroup, draft);
+    setExtras(draft.extras);
+    setStep(draft.step);
+    setPrefilled(true); // draft wins over ?name= prefill
+    setResumeState('resumed');
+    setBaseline(serializeDraft(BackgroundFormGroup, extras, step()));
+  };
+
+  const discardDraft = () => {
+    draftStorage.remove(storageKey());
+    setPendingDraft(null);
+    setResumeState('discarded');
+  };
+
+  let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
+  createEffect(() => {
+    const snapshot = serializeDraft(BackgroundFormGroup, extras, step());
+    if (resumeState() === 'pending') return; // don't clobber an undecided draft
+    if (snapshot === baseline()) return;
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+      // Re-check at fire time: a baseline reset (prefill/resume) may have landed after
+      // this write was scheduled — never persist a draft equal to the baseline state.
+      if (snapshot === baseline()) return;
+      draftStorage.write(storageKey(), snapshot);
+    }, 500);
+  });
+  onCleanup(() => clearTimeout(autosaveTimer));
+
+  // Reactive prefill: wait until both the search param and the background list are available
+  const [prefilled, setPrefilled] = createSignal(false);
+  createEffect(() => {
+    if (prefilled() || resumeState() === 'pending') return;
+    const name = editName().trim().toLowerCase();
+    if (!name) return;
+    const found = allBackgrounds().find(b => (b.name || '').toLowerCase() === name);
+    if (!found) return;
+    prefillForm(found);
+    setPrefilled(true);
+    setBaseline(serializeDraft(BackgroundFormGroup, extras, step()));
+  });
+
+  // ---------------------------------------------------------------------------
+  // Shared FeaturesPopup (single mounted instance; steps open it via callbacks)
+
+  const [showFeaturePopup, setShowFeaturePopup] = createSignal(false);
+  const [currentFeature, setCurrentFeature] = createSignal<FeatureDetail>({ id: '', name: '', description: '' });
+  const [featureTarget, setFeatureTarget] = createSignal<{ editId?: string; editCategory?: string }>({});
+
+  const openAddFeature = () => {
+    setFeatureTarget({});
+    setCurrentFeature({ id: '', name: '', description: '' });
+    setShowFeaturePopup(true);
+  };
+
+  const openEditFeature = (feature: FeatureDetail) => {
+    // The row hands us a Solid store node; the popup structured-clones its input while
+    // hydrating the mads FormArray, which throws "Proxy object could not be cloned" on
+    // store proxies — unwrap to the raw object and detach a deep copy first.
+    const plain = structuredClone(unwrap(feature));
+    setFeatureTarget({ editId: plain.id, editCategory: plain.metadata?.category });
+    setCurrentFeature(plain);
+    setShowFeaturePopup(true);
+  };
+
+  const onFeatureSaved = (data: FeatureDetail) => {
+    const { editId, editCategory } = featureTarget();
+    if (editId) {
+      const merged: FeatureDetail = {
+        ...data,
+        id: editId,
+        metadata: { ...data.metadata, category: data.metadata?.category || editCategory },
+      };
+      setExtras('features', arr => arr.map(f => f.id === editId ? merged : f));
+    } else {
+      setExtras('features', arr => [...arr, { ...data, id: data.id || createNewId() }]);
     }
-    draft.languages = { amount: languageAmount(), options: [...languageOptions()] };
-  draft.startEquipment = [...equipmentGroups()];
-  draft.features = [...featuresList()];
-  if (update) { HomebrewManager.updateBackground(draft); showSnackbar('Background updated','success'); }
-  else { HomebrewManager.addBackground(draft); showSnackbar('Background saved','success'); }
-  }
+  };
 
-  // ----- Editing state for new panel additions -----
-  const [editedProfs, setEditedProfs] = createStore({ armor: [] as string[], weapons: [] as string[], tools: [] as string[], skills: [] as string[] });
-  const [languageAmount, setLanguageAmount] = createSignal(0);
-  const [languageOptions, setLanguageOptions] = createSignal<string[]>([]);
-  const [equipmentGroups, setEquipmentGroups] = createSignal<{ optionKeys?: string[]; items?: string[] }[]>([]);
-  // pending equipment items (controlled external state for EquipmentSection)
-  const [pendingEquipItems, setPendingEquipItems] = createSignal<string[]>([]);
-  const addPendingEquipItem = (it: string) => { const v = it.trim(); if (!v) return; setPendingEquipItems(list => list.includes(v) ? list : [...list, v]); };
-  const removePendingEquipItem = (it: string) => setPendingEquipItems(list => list.filter(v => v !== it));
-  const clearPendingEquip = () => setPendingEquipItems([]);
-  // equipment group editing (modal logic moved into EquipmentSection)
-  // section collapse state
-  const [collapsed, setCollapsed] = createStore<Record<string, boolean>>({});
-  const toggle = (k: string) => setCollapsed(k, v => !v);
-  const [featuresList, setFeaturesList] = createSignal<FeatureDetail[]>([]);
+  // ---------------------------------------------------------------------------
+  // Publish
 
-  function syncActiveToEditors() {
-    const active = bStore.activeBackground();
-    if (!active) return;
-    setEditedProfs({ ...active.proficiencies });
-    setLanguageAmount(active.languages?.amount || 0);
-    setLanguageOptions([...(active.languages?.options || [])]);
-  setEquipmentGroups([...(active.startEquipment || [])]);
-  setFeaturesList([...(active.features || [])]);
-  }
+  const publish = async () => {
+    const name = ((BackgroundFormGroup.get('name') as string) || '').trim();
+    if (!name) {
+      addSnackbar({ message: 'Give the background a name on the Identity step first', severity: 'warning' });
+      setStep(BackgroundWizardStep.Identity);
+      return;
+    }
+    // The homebrew row being edited (?name= target). An SRD-only ?name= match is a clone —
+    // there is no homebrew row, so publish adds a new one.
+    const editTarget = editName().trim().toLowerCase();
+    const existing = editTarget
+      ? homebrewManager.backgrounds().find(b => (b.name || '').toLowerCase() === editTarget)
+      : undefined;
+    // Duplicate guard: block only when the name collides with a homebrew background we're
+    // NOT editing. Shadowing an SRD name is allowed — that's how cloning works.
+    const collides = homebrewManager.backgrounds().some(b =>
+      (b.name || '').toLowerCase() === name.toLowerCase() && (!existing || b.id !== existing.id));
+    if (collides) {
+      addSnackbar({ message: 'Background name already exists', severity: 'warning' });
+      return;
+    }
+    addSnackbar({ message: 'Publishing background...', severity: 'info' });
+    const background = toBackground(BackgroundFormGroup, unwrap(extras), existing?.id);
+    // addBackground silently no-ops on a duplicate name and updateBackground on an unknown
+    // id — both are ruled out above (existing.id comes straight from the homebrew list).
+    // They resolve void and emit their own success/error snackbars, so (unlike the class
+    // publish) there is no saved-boolean to check here.
+    if (existing) await homebrewManager.updateBackground(background);
+    else await homebrewManager.addBackground(background);
+    draftStorage.remove(storageKey());
+    navigate('/homebrew');
+  };
 
-  createMemo(() => { // run when selection changes
-    void bStore.state.selection.activeName; // tracked dependency (read for reactivity)
-    syncActiveToEditors();
+  // ---------------------------------------------------------------------------
+  // Test instrumentation: aggregate reactive snapshot for unit tests
+
+  const [debugSnapshot, setDebugSnapshot] = createSignal({
+    name: '', feat: '', abilities: '', languages: '', groups: '', features: ''
   });
-
-  function removeLanguage(lang: string) { setLanguageOptions(o => o.filter(l => l !== lang)); }
-
-  function pushProf(category: keyof typeof editedProfs, value: string) {
-    if (!value) return; setEditedProfs(category, arr => arr.includes(value) ? arr : [...arr, value]); }
-  function removeProf(category: keyof typeof editedProfs, value: string) { setEditedProfs(category, arr => arr.filter(v => v !== value)); }
-
-  const existsInHomebrew = createMemo(() => {
-    const active = bStore.activeBackground();
-    if (!active) return false;
-    if (bStore.state.selection.activeName === '__new__') return false;
-    return homebrewManager.backgrounds().some(b => b.name === active.name);
-  });
-
-  // change detection for polish
-  const isModified = createMemo(() => {
-    const active = bStore.activeBackground();
-    if (!active) return false;
-    const abilityChanged = JSON.stringify(active.abilityOptions || []) !== JSON.stringify(bStore.state.form.abilityChoices);
-    const featChanged = (active.feat || '') !== (bStore.state.form.feat || '');
-    const profChanged = JSON.stringify(active.proficiencies || {}) !== JSON.stringify(editedProfs);
-    const langChanged = JSON.stringify(active.languages || { amount:0, options:[] }) !== JSON.stringify({ amount: languageAmount(), options: languageOptions() });
-  const equipChanged = JSON.stringify(active.startEquipment || []) !== JSON.stringify(equipmentGroups());
-  const featuresChanged = JSON.stringify(active.features || []) !== JSON.stringify(featuresList());
-  return abilityChanged || featChanged || profChanged || langChanged || equipChanged || featuresChanged;
-  });
-
-  // Validation rules
-  const validationErrors = createMemo(() => {
-    const active = bStore.activeBackground();
-    if (!active) return [] as string[];
-    return validate({
-      isNew: bStore.state.selection.activeName === '__new__',
-      name: active.name || '',
-      languageAmount: languageAmount(),
-      languageOptions: languageOptions(),
-      features: featuresList(),
-      abilityChoices: bStore.state.form.abilityChoices,
-      abilityBaseline: active.abilityOptions?.length || 0,
-      equipmentGroups: equipmentGroups()
+  createEffect(() => {
+    setDebugSnapshot({
+      name: (BackgroundFormGroup.get('name') as string) || '',
+      feat: (BackgroundFormGroup.get('feat') as string) || '',
+      abilities: ((BackgroundFormGroup.get('abilityOptions') as string[]) ?? []).join(','),
+      languages: ((BackgroundFormGroup.get('languages') as string[]) ?? []).join(','),
+      groups: extras.equipment.map(g => g.key).join(','),
+      features: extras.features.map(f => f.name).join(','),
     });
   });
-  const isValid = createMemo(() => validationErrors().length === 0);
-
-  // Inline error helpers: map field -> first relevant error
-  const fieldError = (field: string) => fieldErrHelper(validationErrors(), field);
-
-  // Snackbar state
-  const [snackbar, setSnackbar] = createSignal<{ msg: string; type: 'success' | 'error'; ts: number } | null>(null);
-  function showSnackbar(msg: string, type: 'success'|'error'='success') { setSnackbar({ msg, type, ts: Date.now() }); }
-  createEffect(() => { if (snackbar()) { const t = setTimeout(()=> setSnackbar(null), SNACKBAR_TIMEOUT_MS); return () => clearTimeout(t); } });
-
-  // Search Params
-
-  if (searchParams.name === "" && bStore.activeBackground()) {
-    setSearchParams({ name: bStore.activeBackground()?.name})
-  } else {
-    setSearchParams({ name: bStore.state.order[0]})
-  }
-
-  createEffect(()=>{
-    if (searchParams.name && typeof searchParams.name === "string") {
-      handleSelectBackground(searchParams.name)
-    } else if (Array.isArray(searchParams.name)) {
-      handleSelectBackground(searchParams.name?.join(" "))
-    }
-  })
 
   onMount(() => {
     document.body.classList.add('backgrounds-bg');
-  })
-
+  });
 
   onCleanup(() => {
     document.body.classList.remove('backgrounds-bg');
-  })
+  });
+
+  // ---------------------------------------------------------------------------
+
+  const eyebrowName = () => ((BackgroundFormGroup.get('name') as string) || '').trim() || 'New Background';
+
+  const stepProps = {
+    formGroup: BackgroundFormGroup,
+    extras,
+    setExtras,
+    originFeats,
+    goToStep: (s: BackgroundWizardStep) => setStep(s),
+    openAddFeature,
+    openEditFeature,
+    publish,
+  };
 
   return (
-    <Body class={`${styles.body}`}>
-        <h1>Backgrounds</h1>
-        <div class={styles.newPanel}>
-          <h2>SRD / Homebrew Background Editor</h2>
-          <FlatCard icon={IdentityPlatform} headerName="Identity" alwaysOpen transparent>
-            <div class={styles.rowWrap}>
-              <FormField name="Select Background (2024)">
-                <Select transparent value={bStore.state.selection.activeName || ''} onChange={(val) => { if (val === '__new__') bStore.selectNew(); else handleSelectBackground(val); }}>
-                  <Option value="">-- choose --</Option>
-                  <Option value="__new__">+ New Background</Option>
-                  <For each={bStore.state.order}>{name => <Option value={name}>{name}</Option>}</For>
-                </Select>
-              </FormField>
-              <Show when={bStore.activeBackground()}>
-                <div class={styles.description} style={{ width: '100%' }}>
-                  <Show
-                    when={bStore.state.selection.activeName === '__new__'}
-                    fallback={<div>
-                      <h3>{bStore.activeBackground()?.name}</h3>
-                      <p>{bStore.activeBackground()?.desc}</p>
-                    </div>}
-                  >
-                    <div>
-                      <FormField name="Name">
-                        <Input transparent value={bStore.activeBackground()?.name || ''} onInput={e => bStore.updateBlankDraft('name', e.currentTarget.value)} />
-                      </FormField>
-                      <FormField name="Description">
-                        <Input transparent value={bStore.activeBackground()?.desc || ''} onInput={e => bStore.updateBlankDraft('desc', e.currentTarget.value)} />
-                      </FormField>
-                    </div>
-                  </Show>
-                </div>
-              </Show>
-            </div>
-          </FlatCard>
-          <Show when={bStore.activeBackground()}>
-            <div class={styles.sectionList}>
-              <AbilitiesSection
-                collapsed={collapsed.abilities}
-                toggle={toggle}
-                abilityChoices={bStore.state.form.abilityChoices}
-                abilityOptions={bStore.abilityOptions()}
-                remaining={remainingAbilityPicks()}
-                onAddAbility={(val) => handleAddAbility(val)}
-                onRemoveAbility={(i) => bStore.removeAbilityChoice(i)}
-                onEdit={() => {}}
-                onReset={() => { bStore.state.form.abilityChoices.slice().forEach(()=>bStore.removeAbilityChoice(0)); }}
-              />
-              <EquipmentSection
-                collapsed={collapsed.equipment}
-                toggle={toggle}
-                groups={equipmentGroups()}
-                activeKey={bStore.state.form.equipmentOptionKey}
-                optionKeys={bStore.equipmentOptionKeys()}
-                selectedItems={bStore.selectedEquipmentItems()}
-                onSelectKey={(k) => bStore.setEquipmentOptionKey(k)}
-                onCommitGroup={(keys, items) => setEquipmentGroups(list => [...list, { optionKeys: keys, items }])}
-                candidateItems={candidateEquipmentItems(backgroundsStore.state.entities as any)}
-                addPendingItem={addPendingEquipItem}
-                pendingItems={pendingEquipItems()}
-                removePendingItem={removePendingEquipItem}
-                clearPending={clearPendingEquip}
-                error={!!fieldError('equipment')}
-              />
-              <FeatSection
-                collapsed={collapsed.feat}
-                toggle={toggle}
-                feats={allFeats()}
-                value={selectedFeat() || ''}
-                onChange={handleSelectFeat}
-                onClear={() => bStore.setFeat(undefined as unknown as string)}
-              />
-              <ProficienciesSection
-                collapsed={collapsed.profs}
-                toggle={toggle}
-                profs={editedProfs as any}
-                onEdit={() => {}}
-              />
-              <ProficienciesModal
-                profs={editedProfs as any}
-                push={(cat,val)=> pushProf(cat,val)}
-                remove={(cat,val)=> removeProf(cat,val)}
-              />
-              <LanguagesSection
-                collapsed={collapsed.langs}
-                toggle={toggle}
-                amount={languageAmount()}
-                options={languageOptions()}
-                onEdit={() => {}}
-                error={!!fieldError('languages')}
-              />
-              <LanguagesModal
-                amount={languageAmount()}
-                setAmount={(n)=> setLanguageAmount(n)}
-                options={languageOptions()}
-                addLanguage={(l)=> setLanguageOptions(o => [...o, l])}
-                removeLanguage={(l)=> removeLanguage(l)}
-              />
-              <FeaturesSection
-                collapsed={collapsed.features}
-                toggle={toggle}
-                features={featuresList()}
-                onChange={(fs)=> setFeaturesList(fs)}
-                error={!!fieldError('features')}
-              />
-              {/* Validation Messages */}
-              <Show when={validationErrors().length}>
-                <div class={styles.validationBox}>
-                  <For each={validationErrors()}>{e => <div class={styles.validationItem}>{e}</div>}</For>
-                </div>
-              </Show>
-              {/* Persist */}
-              <FlatCard icon={Save} headerName="Saving" alwaysOpen transparent>
-                <div class={styles.chipsRow}>
-                  <Show when={!existsInHomebrew()} >
-                   <Button disabled={!bStore.activeBackground() || !isValid()} onClick={() => saveNewFormat(false)}>Save As Homebrew</Button>
-                  </Show>
-                  <Show when={existsInHomebrew()}>
-                    <Button disabled={!bStore.activeBackground() || !isModified() || !isValid()} onClick={() => saveNewFormat(true)}>Update Homebrew</Button>
-                  </Show>
-                  <Show when={isModified()}><span class={styles.modifiedBadge}>Modified</span></Show>
-                </div>
-              </FlatCard>
-            </div>
-          </Show>
-          <Show when={snackbar()}>
-            <div class={styles.snackbar} data-type={snackbar()!.type}>{snackbar()!.msg}</div>
-          </Show>
-          <Show when={bStore.state.status === 'loading'}>
-            <div>Loading backgrounds...</div>
-          </Show>
-          <Show when={bStore.state.status === 'error'}>
-            <div style={{ color: 'red' }}>Failed to load backgrounds: {bStore.state.error}</div>
-          </Show>
+    <Container
+      theme="surface"
+      class={styles.wizard}
+      data-testid="background-form"
+      data-name={debugSnapshot().name}
+      data-feat={debugSnapshot().feat}
+      data-abilities={debugSnapshot().abilities}
+      data-languages={debugSnapshot().languages}
+      data-groups={debugSnapshot().groups}
+      data-features={debugSnapshot().features}
+    >
+      <Show when={resumeState() === 'pending'}>
+        <div class={styles.resumeBanner}>
+          <span>You have an unpublished draft{pendingDraft()?.form?.name ? ` of "${pendingDraft()!.form.name}"` : ''}. Resume where you left off?</span>
+          <div class={styles.resumeActions}>
+            <Button theme="primary" onClick={resumeDraft}>Resume draft</Button>
+            <Button transparent onClick={discardDraft}>Discard</Button>
+          </div>
         </div>
-    </Body> 
+      </Show>
+
+      <div class={styles.eyebrow}>Forging — {eyebrowName()}</div>
+      <h1 class={styles.question}>{STEP_META[step()].question}</h1>
+      <p class={styles.subtitle}>{STEP_META[step()].subtitle}</p>
+
+      <Stepper
+        current={step()}
+        status={(s) => stepStatus(s, BackgroundFormGroup, extras)}
+        onJump={(s) => setStep(s)}
+      />
+
+      <Switch>
+        <Match when={step() === BackgroundWizardStep.Identity}><StepIdentity {...stepProps} /></Match>
+        <Match when={step() === BackgroundWizardStep.AbilitiesFeat}><StepAbilitiesFeat {...stepProps} /></Match>
+        <Match when={step() === BackgroundWizardStep.ProficienciesLanguages}><StepProficienciesLanguages {...stepProps} /></Match>
+        <Match when={step() === BackgroundWizardStep.Equipment}><StepEquipment {...stepProps} /></Match>
+        <Match when={step() === BackgroundWizardStep.Features}><StepFeatures {...stepProps} /></Match>
+        <Match when={step() === BackgroundWizardStep.Review}><StepReview {...stepProps} /></Match>
+      </Switch>
+
+      <WizardFooter
+        step={step()}
+        backgroundName={(BackgroundFormGroup.get('name') as string) || ''}
+        onBack={() => setStep(s => Math.max(BackgroundWizardStep.Identity, s - 1) as BackgroundWizardStep)}
+        onNext={() => {
+          if (step() === BackgroundWizardStep.Review) {
+            void publish();
+          } else {
+            setStep(s => Math.min(BackgroundWizardStep.Review, s + 1) as BackgroundWizardStep);
+          }
+        }}
+      />
+
+      <FeaturesPopup
+        Show={[showFeaturePopup, setShowFeaturePopup]}
+        feature={[currentFeature, setCurrentFeature]}
+        isEdit={() => !!featureTarget().editId}
+        onClose={onFeatureSaved}
+        context={{
+          kind: 'Background feature',
+          className: ((BackgroundFormGroup.get('name') as string) || '').trim() || undefined,
+        }}
+      />
+    </Container>
   );
-}
-export const SNACKBAR_TIMEOUT_MS = 3200; // exported for tests
+};
+
 export default Backgrounds;
