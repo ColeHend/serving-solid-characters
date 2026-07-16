@@ -2,7 +2,7 @@ import { defineConfig, ProxyOptions } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { ManifestOptions, VitePWA } from 'vite-plugin-pwa';
 import devtools from 'solid-devtools/vite';
-import eslint from './node_modules/vite-plugin-eslint';
+import eslint from 'vite-plugin-eslint';
 import colesSolidLibrary from 'coles-solid-library/vite'
 import fs from 'node:fs'
 import path from 'node:path'
