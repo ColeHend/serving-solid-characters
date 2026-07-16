@@ -1,0 +1,28 @@
+// Gradient "ink" for headings. Pure mixin — zero CSS output, so modules can @use it
+// without re-emitting anything.
+
+// $gradient-var/$fallback-var take custom-property NAMES, letting callers swap in a
+// context-appropriate pair (e.g. the navbar title uses --header-title-gradient with
+// --header-on-background-color, since the on-surface pair is unreadable on the header bar).
+@mixin gradientHeading($fit: false, $gradient-var: --on-surface-gradient, $fallback-var: --on-surface-color) {
+  // Solid fallback: browsers without background-clip:text, and any window where the
+  // [data-theme] tokens aren't applied yet.
+  color: var(#{$fallback-var});
+
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    // Inner var() fallback: if the gradient token is ever missing, degrade to a flat
+    // "gradient" of the solid fallback color instead of invisible transparent text.
+    background-image: var(#{$gradient-var},
+      linear-gradient(0deg, var(#{$fallback-var}), var(#{$fallback-var})));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @if $fit {
+    // Span the gradient across the glyphs, not the full block (for centered titles).
+    width: fit-content;
+    margin-inline: auto;
+  }
+}

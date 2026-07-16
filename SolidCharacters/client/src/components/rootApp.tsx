@@ -1,13 +1,14 @@
 import { RouteSectionProps, useNavigate } from "@solidjs/router";
 import mobileCheck from '../shared/customHooks/utility/tools/mobileCheck'
 import useStyle from "../shared/customHooks/utility/style/styleHook";
+import { applyTheme } from "../shared/customHooks/utility/style/themeRegistry";
 import { getUserSettings, useInjectServices, isAiConfigured, refreshAiProviderStatus } from "../shared";
 import SparkSidebar from "./aiSpark/SparkSidebar";
 import { Component, createSignal, createContext, createMemo, onMount, onCleanup, createEffect, ErrorBoundary, For, Show } from "solid-js";
 import { effect } from "solid-js/web";
 import Navbar from "./navbar/navbar";
 import { HookContext, ProviderProps } from "../models/hookContext";
-import { addTheme, Button, Container, SnackbarController } from "coles-solid-library";
+import { Button, Container, SnackbarController } from "coles-solid-library";
 import { UserSettings } from "../models/userSettings";
 import { useDnDSpells } from "../shared/customHooks/dndInfo/info/all/spells";
 import styles from './rootApp.module.scss';
@@ -84,7 +85,7 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
   createEffect(() => {
     try {
       const theme = defaultUserSettings().theme;
-      addTheme(theme);
+      applyTheme(theme);
     } catch (error) {
       console.error("Failed to add theme:", error);
     }

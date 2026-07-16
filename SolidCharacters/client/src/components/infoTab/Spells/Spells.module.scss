@@ -1,4 +1,5 @@
 @use 'coles-solid-library/themes/variables' as vars;
+@use '../../../styles/gradientText' as *;
 
 
 $mobile: 768px;
@@ -106,6 +107,7 @@ $mobile: 768px;
 
 .bodyTitle {
     text-align: center;
+    @include gradientHeading(true);
 }
 
 .SpellName {

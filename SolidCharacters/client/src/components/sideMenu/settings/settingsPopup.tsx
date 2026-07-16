@@ -1,9 +1,10 @@
-import { Component, Accessor, Setter, createSignal, Switch, Match, Show } from "solid-js";
+import { Component, Accessor, Setter, createSignal, Switch, Match, Show, For } from "solid-js";
 import { Clone } from "../../../shared/customHooks/utility/tools/Tools";
 import { UserSettings } from "../../../models/userSettings";
 import styles from "./settingsPopup.module.scss";
 import getUserSettings, { saveUserSettings } from "../../../shared/customHooks/userSettings";
-import { Select, Option, addSnackbar, Button, addTheme } from "coles-solid-library";
+import { Select, Option, addSnackbar, Button } from "coles-solid-library";
+import { THEMES, getTheme, applyTheme } from "../../../shared/customHooks/utility/style/themeRegistry";
 import { homebrewManager } from "../../../shared";
 import FolderTabStrip from "./folderTabStrip";
 import { SettingsTab, SETTINGS_TABS } from "./folderTabs.shared";
@@ -52,16 +53,15 @@ const SettingsPopup: Component<Props> = (props) => {
                 <Match when={tab === "Theme"}>
                   <div>
                     <h3>Theme</h3>
-                    <label for="themeChange">Change Theme : {userSettings().theme}</label>
+                    <label for="themeChange">Change Theme : {getTheme(userSettings().theme).label}</label>
                     <Select<string> value={userSettings().theme} onSelect={(e) => {
                       setUserSettings(old => {
                         old.theme = e;
-                        addTheme(e);
+                        applyTheme(e);
                         return Clone(old)
                       });
                     }} >
-                      <Option value="dark">Dark</Option>
-                      <Option value="light">Light</Option>
+                      <For each={THEMES}>{(t) => <Option value={t.id}>{t.label}</Option>}</For>
                     </Select>
                   </div>
                 </Match>

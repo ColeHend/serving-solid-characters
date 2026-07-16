@@ -10,6 +10,7 @@ $mobile-size:768px;
 
   h1 {
     text-align: center;
+    @include gradientHeading(true);
   }
 
   button {
