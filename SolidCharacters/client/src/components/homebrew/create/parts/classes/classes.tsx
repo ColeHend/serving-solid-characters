@@ -391,7 +391,8 @@ export const Classes: Component = () => {
 
   const onFeatureSaved = (data: FeatureDetail) => {
     const { level, editId, editCategory } = featureTarget();
-    // The popup emits id:"" and a blank category — stamp/preserve them here.
+    // The popup preserves id/category now; editId still wins for replace-by-id,
+    // and editCategory is only a fallback for features saved before that change.
     if (editId) {
       const merged: FeatureDetail = {
         ...data,
@@ -548,6 +549,10 @@ export const Classes: Component = () => {
         feature={[currentFeature, setCurrentFeature]}
         isEdit={() => !!featureTarget().editId}
         onClose={onFeatureSaved}
+        context={{
+          className: (ClassFormGroup.get('name') as string) || undefined,
+          level: featureTarget().level,
+        }}
       />
     </Container>
   );

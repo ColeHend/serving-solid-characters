@@ -7,7 +7,10 @@ import type { FeatureDetail } from '../../../../../models/generated';
 // data hooks at component top; useDndFeatures additionally runs other hooks at
 // module load, so the whole module must be replaced.
 vi.mock('../../../../../shared/customHooks/dndInfo/info/all/spells', () => ({
-  useDnDSpells: () => (() => [])
+  useDnDSpells: () => (() => [
+    { id: 'sp1', name: 'Bless' },
+    { id: 'sp2', name: 'Cure Wounds' },
+  ])
 }));
 vi.mock('../../../../../shared/customHooks/dndInfo/info/all/items', () => ({
   useDnDItems: () => (() => [])
@@ -42,56 +45,191 @@ const blankFeature = (): FeatureDetail => ({ id: '', name: '', description: '' }
 const nameInput = (container: HTMLElement) =>
   container.querySelector('input[data-mock="Input"]') as HTMLInputElement;
 
+const usesInput = (container: HTMLElement) =>
+  container.querySelector('input[type="number"]') as HTMLInputElement;
+
+const spellInput = (container: HTMLElement) =>
+  container.querySelector('input[placeholder^="Type a spell"]') as HTMLInputElement;
+
+const renderPopup = (feature: FeatureDetail, onClose = vi.fn()) => {
+  const featureSignal = createSignal<FeatureDetail>(feature);
+  const utils = render(() =>
+    <FeaturesPopup Show={createSignal(true)} feature={featureSignal} isEdit={() => !!feature.id} onClose={onClose} />
+  );
+  return { ...utils, onClose, setFeature: featureSignal[1] };
+};
+
+const lastEmitted = (onClose: ReturnType<typeof vi.fn>) =>
+  onClose.mock.calls.at(-1)![0] as FeatureDetail;
+
 describe('FeaturesPopup edit hydration', () => {
 
   // Regression tripwire: hydrating an edit-mode feature used to loop forever
   // ("too much recursion") because the hydration effect tracked the internal
   // feature signal it was writing. render() itself throws pre-fix.
   it('hydrates an edit-mode feature without recursing', async () => {
-    const feature = createSignal<FeatureDetail>(editFeature());
-    const { container } = render(() =>
-      <FeaturesPopup Show={createSignal(true)} feature={feature} isEdit={() => true} onClose={vi.fn()} />
-    );
+    const { container } = renderPopup(editFeature());
     await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
     expect((container.querySelector('textarea') as HTMLTextAreaElement).value).toBe('Regain HP');
   });
 
   it('re-opens blank (add mode) after cancel, dropping the previous edit\'s mad rows', async () => {
-    const [getF, setF] = createSignal<FeatureDetail>(editFeature());
-    const onClose = vi.fn();
-    const { container, getByText } = render(() =>
-      <FeaturesPopup Show={createSignal(true)} feature={[getF, setF]} isEdit={() => true} onClose={onClose} />
-    );
+    const { container, getByText, onClose, setFeature } = renderPopup(editFeature());
     await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
 
     // Mirror the real close→reopen flow: Cancel clears the internal state,
     // then the parent's openAddFeature hands over a fresh blank feature.
     fireEvent.click(getByText('Cancel'));
-    setF(blankFeature());
+    setFeature(blankFeature());
     await waitFor(() => expect(nameInput(container).value).toBe(''));
 
-    fireEvent.click(getByText('Update Feature'));
-    const emitted = onClose.mock.calls.at(-1)![0] as FeatureDetail;
+    fireEvent.click(getByText('Save changes'));
+    const emitted = lastEmitted(onClose);
     expect(emitted.name).toBe('');
+    expect(emitted.id).toBe('');
     expect(emitted.metadata!.mads).toHaveLength(0);
   });
 
-  it('emits edited name/description via onClose with hydrated mads preserved', async () => {
-    const feature = createSignal<FeatureDetail>(editFeature());
-    const onClose = vi.fn();
-    const { container, getByText } = render(() =>
-      <FeaturesPopup Show={createSignal(true)} feature={feature} isEdit={() => true} onClose={onClose} />
-    );
+  it('emits edited name/description via onClose with id and hydrated mads preserved', async () => {
+    const { container, getByText, onClose } = renderPopup(editFeature());
     await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
 
     fireEvent.input(nameInput(container), { target: { value: 'Reckless Rage' } });
     fireEvent.input(container.querySelector('textarea')!, { target: { value: 'Attack with abandon' } });
 
-    fireEvent.click(getByText('Update Feature'));
-    const emitted = onClose.mock.calls.at(-1)![0] as FeatureDetail;
+    fireEvent.click(getByText('Save changes'));
+    const emitted = lastEmitted(onClose);
     expect(emitted.name).toBe('Reckless Rage');
     expect(emitted.description).toBe('Attack with abandon');
+    expect(emitted.id).toBe('f1');
     expect(emitted.metadata!.mads).toHaveLength(2);
     expect(emitted.metadata!.mads![0].command).toBe('AddHitPoints');
+  });
+
+  it('preserves an edited free-text category on save', async () => {
+    const feature = editFeature();
+    feature.metadata!.category = 'Channel Divinity';
+    const { container, getByText, onClose } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    const categoryInput = container.querySelectorAll('input[data-mock="Input"]')[1] as HTMLInputElement;
+    expect(categoryInput.value).toBe('Channel Divinity');
+    expect(categoryInput.disabled).toBe(false);
+    fireEvent.input(categoryInput, { target: { value: 'Rage Powers' } });
+
+    fireEvent.click(getByText('Save changes'));
+    expect(lastEmitted(onClose).metadata!.category).toBe('Rage Powers');
+  });
+
+  it('locks the category input for wizard machine tags', async () => {
+    const feature = editFeature();
+    feature.metadata!.category = 'ASI';
+    const { container } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    const categoryInput = container.querySelectorAll('input[data-mock="Input"]')[1] as HTMLInputElement;
+    expect(categoryInput.disabled).toBe(true);
+  });
+});
+
+describe('Usage & spells ↔ mads bridge', () => {
+
+  it('binds limited uses to the AddUses mad and excludes it from the effect count', async () => {
+    const { container, getByText } = renderPopup(editFeature());
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    // AddUses is owned by the Usage & spells tab; only AddHitPoints is an effect.
+    getByText('Effects (1)');
+
+    fireEvent.click(getByText('Usage & spells'));
+    await waitFor(() => expect(usesInput(container).value).toBe('1'));
+  });
+
+  it('updates the AddUses mad from the usage tab, normalizing the recharge label', async () => {
+    const { container, getByText, onClose } = renderPopup(editFeature());
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Usage & spells'));
+    await waitFor(() => expect(usesInput(container)).toBeTruthy());
+    fireEvent.change(usesInput(container), { target: { value: '3' } });
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    const usesMads = mads.filter(m => m.command === 'AddUses');
+    expect(usesMads).toHaveLength(1);
+    expect(usesMads[0].value).toEqual({ amount: '3', recharge: 'Short Rest' });
+  });
+
+  it('removes the AddUses mad when uses are cleared', async () => {
+    const { container, getByText, onClose } = renderPopup(editFeature());
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Usage & spells'));
+    await waitFor(() => expect(usesInput(container)).toBeTruthy());
+    fireEvent.change(usesInput(container), { target: { value: '' } });
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads).toHaveLength(1);
+    expect(mads[0].command).toBe('AddHitPoints');
+  });
+
+  it('adds a spell chip on Enter and emits a concrete AddSpells mad', async () => {
+    const { container, getByText, onClose } = renderPopup(editFeature());
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Usage & spells'));
+    await waitFor(() => expect(spellInput(container)).toBeTruthy());
+    fireEvent.input(spellInput(container), { target: { value: 'Bless' } });
+    fireEvent.keyDown(spellInput(container), { key: 'Enter' });
+
+    await waitFor(() => expect(container.querySelector('[data-mock="Chip"][data-value="Bless"]')).toBeTruthy());
+    // A granted spell is usage-owned, so the effect count is unchanged.
+    getByText('Effects (1)');
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    const spellMad = mads.find(m => m.command === 'AddSpells');
+    expect(spellMad?.value).toEqual({ ID: 'sp1' });
+    expect(spellMad?.type).toBe(0);
+  });
+
+  it('drops the AddSpells mad when its chip is removed', async () => {
+    const feature = editFeature();
+    feature.metadata!.mads!.push({ command: 'AddSpells', value: { ID: 'sp2' }, type: 0, prerequisites: [], group: 0 });
+    const { container, getByText, onClose } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Usage & spells'));
+    await waitFor(() => expect(container.querySelector('[data-mock="Chip"][data-value="Cure Wounds"]')).toBeTruthy());
+    fireEvent.click(container.querySelector('button[aria-label="remove Cure Wounds"]')!);
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads.some(m => m.command === 'AddSpells')).toBe(false);
+    expect(mads).toHaveLength(2);
+  });
+
+  it('binds only the FIRST AddUses mad; duplicates stay visible as effects', async () => {
+    const feature = editFeature();
+    feature.metadata!.mads = [
+      { command: 'AddUses', value: { amount: '1', recharge: 'short' }, type: 1, prerequisites: [], group: 0 },
+      { command: 'AddUses', value: { amount: '9', recharge: 'Long Rest' }, type: 1, prerequisites: [], group: 0 },
+      { command: 'AddHitPoints', value: { amount: '5' }, type: 0, prerequisites: [], group: 0 },
+    ];
+    const { container, getByText, onClose } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    // The duplicate AddUses is NOT hidden — it counts as an effect alongside AddHitPoints.
+    getByText('Effects (2)');
+
+    fireEvent.click(getByText('Usage & spells'));
+    await waitFor(() => expect(usesInput(container).value).toBe('1'));
+    fireEvent.change(usesInput(container), { target: { value: '4' } });
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads[0].value["amount"]).toBe('4');
+    expect(mads[1].value["amount"]).toBe('9');
   });
 });
