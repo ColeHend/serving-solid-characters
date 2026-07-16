@@ -46,7 +46,7 @@ const root = document.getElementById("root");
 if (!root) {
   console.error("ROOT ELEMENT NOT FOUND! Application cannot mount!");
   document.body.innerHTML = `
-    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#121212;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:20px;text-align:center;">
+    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#121212;color:#fff;font-family:'Bookinsanity',Georgia,serif;padding:20px;text-align:center;">
       <h1 style="margin:0;">Something went wrong</h1>
       <p style="opacity:.8;margin:0;">The app couldn't find its mount point. Please reload the page.</p>
     </div>

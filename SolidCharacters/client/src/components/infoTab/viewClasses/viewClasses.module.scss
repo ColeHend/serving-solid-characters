@@ -87,4 +87,5 @@ $mobile: 768px;
 
 .Title {
   text-align: center;
+  @include gradientHeading(true);
 }
