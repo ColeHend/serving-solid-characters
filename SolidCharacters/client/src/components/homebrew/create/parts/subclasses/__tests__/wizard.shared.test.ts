@@ -7,6 +7,8 @@ import {
   SubclassWizardStep,
   buildReviewRows,
   buildSubclassFeatures,
+  classSelectorKey,
+  classVersionLabel,
   collectForm,
   emptySubclassLevels,
   hydrateSubclassFeatures,
@@ -15,12 +17,14 @@ import {
   serializeDraft,
   stepStatus,
   subclassDraftKey,
+  toClassOption,
   toDataSubclass,
 } from '../wizard/wizard.shared';
 
 const makeForm = (overrides: Partial<SubclassForm> = {}) => {
   const fg = new FormGroup<SubclassForm>({
     parentClass: ['', []],
+    parentClassId: ['', []],
     name: ['', []],
     description: ['', []],
     hasCasting: [false, []],
@@ -125,6 +129,19 @@ describe('review rows', () => {
     expect(rows[1].ok).toBe(false);
     expect(rows[1].action).toBe('fix');
   });
+
+  it('notes out-of-range feature levels without blocking (row stays ok/edit)', () => {
+    const fg = makeForm({ parentClass: 'Wizard', name: 'Echo' });
+    const levels = { features: { 3: [{ id: 'a', name: 'F', description: 'd' }], 10: [{ id: 'b', name: 'G', description: 'd' }] } };
+    const rows = buildReviewRows(fg, levels, [3, 6]);
+    expect(rows[1].ok).toBe(true);
+    expect(rows[1].action).toBe('edit');
+    expect(rows[1].detail).toContain('10');
+    expect(rows[1].detail).toContain('Wizard');
+    // no restriction → no detail note
+    expect(buildReviewRows(fg, levels, null)[1].detail).toBeUndefined();
+    expect(buildReviewRows(fg, levels)[1].detail).toBeUndefined();
+  });
 });
 
 describe('drafts', () => {
@@ -152,6 +169,34 @@ describe('drafts', () => {
     expect(parseDraft(JSON.stringify({ v: 99, form: {} }))).toBeNull();
     const badStep = parseDraft(JSON.stringify({ v: 1, form: {}, levels: { features: {} }, step: 42 }));
     expect(badStep?.step).toBe(SubclassWizardStep.Identity);
+  });
+});
+
+describe('parent-class selector helpers', () => {
+  it('keys SRD classes by id and homebrew (id-less) classes by name', () => {
+    expect(classSelectorKey({ id: '481ed09a-b505', name: 'Barbarian' })).toBe('481ed09a-b505');
+    expect(classSelectorKey({ id: 0, name: 'Numeric' })).toBe('0');
+    expect(classSelectorKey({ name: 'Stormwarden' })).toBe('hb:Stormwarden');
+    expect(classSelectorKey({ id: '', name: 'Stormwarden' })).toBe('hb:Stormwarden');
+  });
+
+  it('labels the ruleset from the centrally-stamped legacy flag', () => {
+    expect(classVersionLabel({ legacy: true })).toBe('2014');
+    expect(classVersionLabel({ legacy: false })).toBe('2024');
+    expect(classVersionLabel({})).toBe('Homebrew');
+  });
+
+  it('builds selector options with a version-tagged label', () => {
+    expect(toClassOption({ id: 'w24', name: 'Wizard', legacy: false })).toEqual({
+      key: 'w24', name: 'Wizard', version: '2024', label: 'Wizard (2024)',
+    });
+    expect(toClassOption({ name: 'Stormwarden' }).label).toBe('Stormwarden (Homebrew)');
+  });
+
+  it('round-trips parentClassId through drafts', () => {
+    const fg = makeForm({ parentClass: 'Wizard', parentClassId: 'w24', name: 'Echo' });
+    const parsed = parseDraft(serializeDraft(fg, emptySubclassLevels(), SubclassWizardStep.Identity));
+    expect(parsed?.form.parentClassId).toBe('w24');
   });
 });
 

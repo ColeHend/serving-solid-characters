@@ -1,4 +1,4 @@
-import { Component, Match, Show, Switch, batch, createEffect, createSignal, onCleanup, onMount } from "solid-js";
+import { Component, Match, Show, Switch, batch, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-solid-library";
@@ -9,6 +9,7 @@ import { FeatureDetail } from "../../../../../models/generated";
 import { Spell } from "../../../../../models/data";
 import { srdSubclass } from "../../../../../models/data/generated";
 import { createNewId } from "../../../../../shared/customHooks/utility/tools/idGen";
+import { detectSubclassFeatureLevels } from "../../../../../shared/ai/refs/classProgression";
 import { FeaturesPopup } from "../../../Parts/featuresPopup/featuresPopup";
 import { parseDataSpellcasting } from "./subclassAdapter";
 import { SpellsKnown } from "./SpellsKnown";
@@ -17,6 +18,7 @@ import {
   SubclassForm,
   SubclassLevels,
   SubclassWizardStep,
+  classSelectorKey,
   collectForm,
   draftStorage,
   emptySubclassLevels,
@@ -29,6 +31,7 @@ import {
   subclassDraftKey,
   subclassFeatureLevels,
   subclassStorageKey,
+  toClassOption,
   toDataSubclass,
 } from "./wizard/wizard.shared";
 import { Stepper } from "./wizard/stepper";
@@ -43,13 +46,14 @@ type ResumeState = 'none' | 'pending' | 'resumed' | 'discarded';
 
 const Subclasses: Component = () => {
   const allClasses = useDnDClasses();
-  const allClassNames = () => allClasses().map(c => c.name);
+  const classOptions = () => allClasses().map(toClassOption);
   const allSpells = useDnDSpells();
   const [searchParams] = useSearchParams<{ name: string; subclass: string }>();
   const navigate = useNavigate();
 
   const SubclassFormGroup = new FormGroup<SubclassForm>({
     parentClass: ['', [Validators.Required]],
+    parentClassId: ['', []],
     name: ['', [Validators.Required]],
     description: ['', []],
     hasCasting: [false, []],
@@ -67,6 +71,22 @@ const Subclasses: Component = () => {
 
   const setField = <K extends keyof SubclassForm>(key: K, value: SubclassForm[K]) =>
     SubclassFormGroup.set(key, value);
+
+  // Resolve by selector key first (unambiguous across 2014/2024/homebrew); fall back to the
+  // name for states that predate the id — old drafts and name-only ?name= prefills.
+  const parentClassData = createMemo(() => {
+    const key = (SubclassFormGroup.get('parentClassId') as string) || '';
+    if (key) return allClasses().find(c => classSelectorKey(c) === key);
+    const name = (SubclassFormGroup.get('parentClass') as string) || '';
+    return name ? allClasses().find(c => c.name === name) : undefined;
+  });
+
+  // Levels the parent class grants subclass features at; null = nothing detectable
+  // (no class picked, or a class without markers) → the Features step falls back to all 20.
+  const allowedLevels = createMemo<number[] | null>(() => {
+    const detected = detectSubclassFeatureLevels(parentClassData());
+    return detected.length ? detected : null;
+  });
 
   const [step, setStep] = createSignal<SubclassWizardStep>(SubclassWizardStep.Identity);
   const [levels, setLevels] = createStore<SubclassLevels>(emptySubclassLevels());
@@ -88,6 +108,10 @@ const Subclasses: Component = () => {
   const prefillForm = (found: srdSubclass) => {
     batch(() => {
       setField('parentClass', found.parentClass || '');
+      // Stored subclasses know their parent only by name; resolve the selector key to the
+      // first name match (same class the pre-id lookup would have used) so the Select shows it.
+      const parentMatch = allClasses().find(c => c.name === found.parentClass);
+      setField('parentClassId', parentMatch ? classSelectorKey(parentMatch) : '');
       setField('name', found.name || '');
       setField('description', found.description || '');
       setLevels({ features: hydrateSubclassFeatures(found.features) });
@@ -244,11 +268,12 @@ const Subclasses: Component = () => {
   // Test instrumentation: aggregate reactive snapshot for unit tests
 
   const [debugSnapshot, setDebugSnapshot] = createSignal({
-    parentClass: '', name: '', casterType: '', featureLevels: ''
+    parentClass: '', parentClassId: '', name: '', casterType: '', featureLevels: ''
   });
   createEffect(() => {
     setDebugSnapshot({
       parentClass: (SubclassFormGroup.get('parentClass') as string) || '',
+      parentClassId: (SubclassFormGroup.get('parentClassId') as string) || '',
       name: (SubclassFormGroup.get('name') as string) || '',
       casterType: SubclassFormGroup.get('hasCasting') ? ((SubclassFormGroup.get('casterType') as string) || '') : '',
       featureLevels: subclassFeatureLevels(levels.features).join(','),
@@ -271,7 +296,8 @@ const Subclasses: Component = () => {
     formGroup: SubclassFormGroup,
     levels,
     setLevels,
-    allClassNames,
+    classOptions,
+    allowedLevels,
     allSpells: allSpells as unknown as () => Spell[],
     goToStep: (s: SubclassWizardStep) => setStep(s),
     openAddFeature,
@@ -285,6 +311,7 @@ const Subclasses: Component = () => {
       class={styles.wizard}
       data-testid="subclass-form"
       data-parent-class={debugSnapshot().parentClass}
+      data-parent-class-id={debugSnapshot().parentClassId}
       data-name={debugSnapshot().name}
       data-caster-type={debugSnapshot().casterType}
       data-feature-levels={debugSnapshot().featureLevels}

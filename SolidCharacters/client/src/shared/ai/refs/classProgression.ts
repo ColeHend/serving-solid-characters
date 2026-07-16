@@ -41,18 +41,69 @@ const BACKSTOP_FEATURE = {
     description: "You gain a class feature at this level.",
 };
 
+/** The `metadata.category` tag the homebrew class wizard stamps on a subclass-grant marker feature. */
+export const SUBCLASS_MARKER_CATEGORY = "Subclass";
+
+/** The 2024 SRD's canonical name for a non-grant subclass level ("Subclass Feature", desc "See your subclass."). */
+export const SUBCLASS_FEATURE_NAME_2024 = "Subclass Feature";
+
+/** "<ClassName> Subclass" — the grant-level marker name shared by the 2024 SRD, the homebrew
+ *  class wizard, and the AI assembler. Detector and builders both go through here so they can't drift. */
+export function subclassMarkerName(className: string): string {
+    const trimmed = className.trim();
+    return trimmed ? `${trimmed} Subclass` : "Subclass";
+}
+
+/** 2014 SRD grant-level feature titles — the subclass "slot" is named after the archetype. */
+export const SUBCLASS_TITLES_2014 = [
+    "Primal Path", "Bard College", "Divine Domain", "Druid Circle",
+    "Martial Archetype", "Monastic Tradition", "Sacred Oath", "Ranger Archetype",
+    "Roguish Archetype", "Sorcerous Origin", "Otherworldly Patron", "Arcane Tradition",
+];
+
+// 2014 non-grant levels are "<title> feature"/"<title> Feature" (casing varies), and the
+// Barbarian abbreviates to "Path feature". Compared lowercased alongside the titles themselves.
+const SUBCLASS_NAMES_2014 = new Set([
+    ...SUBCLASS_TITLES_2014.map(t => t.toLowerCase()),
+    ...SUBCLASS_TITLES_2014.map(t => `${t.toLowerCase()} feature`),
+    "path feature",
+]);
+
 /**
  * The `create_class` tool-input feature (no `id` — `featuresByLevel` stamps one) marking the subclass-grant
  * level, so that row in the base-class table isn't blank. Appended in `assemble.ts` where the working class's
  * `subclassLevel` is known (the `create_class` schema itself carries no subclass field).
  */
 export function subclassMarkerInput(className: string, level: number): { level: number; name: string; description: string } {
-    const label = className.trim() ? `${className.trim()} Subclass` : "Subclass";
     return {
         level,
-        name: label,
+        name: subclassMarkerName(className),
         description: "You choose a subclass, gaining its features at this and later levels.",
     };
+}
+
+/**
+ * Levels at which a class grants a subclass feature, across every convention in the data:
+ * the homebrew wizard's `metadata.category: "Subclass"` marker, the "<ClassName> Subclass" /
+ * "Subclass Feature" names (2024 SRD, AI assembler), and the 2014 SRD's archetype-title names.
+ * Pure; returns a sorted ascending list, [] when nothing is detectable (caller decides the fallback).
+ */
+export function detectSubclassFeatureLevels(
+    cls: { name?: string; features?: Record<number, FeatureDetail[]> } | undefined,
+): number[] {
+    if (!cls?.features) return [];
+    const markerName = subclassMarkerName(cls.name ?? "").toLowerCase();
+    const isMarker = (f: FeatureDetail): boolean => {
+        if (f.metadata?.category === SUBCLASS_MARKER_CATEGORY) return true;
+        const name = (f.name ?? "").trim().toLowerCase();
+        return name === markerName
+            || name === SUBCLASS_FEATURE_NAME_2024.toLowerCase()
+            || SUBCLASS_NAMES_2014.has(name);
+    };
+    return Object.entries(cls.features)
+        .filter(([lvl, feats]) => Number.isFinite(+lvl) && (feats ?? []).some(isMarker))
+        .map(([lvl]) => +lvl)
+        .sort((a, b) => a - b);
 }
 
 /** Build a fresh `FeatureDetail` from a `{ name, description }` template, stamping a new id. */

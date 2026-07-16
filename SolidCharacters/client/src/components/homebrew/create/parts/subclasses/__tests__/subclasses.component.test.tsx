@@ -7,6 +7,7 @@ const h = vi.hoisted(() => ({
   navigate: vi.fn(),
   snackbar: vi.fn(),
   subclasses: [] as unknown[],
+  classes: [] as unknown[],
   addSubclass: vi.fn().mockResolvedValue(true),
   updateSubclass: vi.fn().mockResolvedValue(true),
 }));
@@ -29,7 +30,7 @@ vi.mock('../../../../../../shared/customHooks/homebrewManager', () => ({
   },
 }));
 vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/classes', () => ({
-  useDnDClasses: () => (() => [{ name: 'Wizard' }, { name: 'Fighter' }]),
+  useDnDClasses: () => (() => h.classes),
 }));
 vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/spells', () => ({
   useDnDSpells: () => (() => [{ name: 'Fire Bolt', level: 0 }, { name: 'Magic Missile', level: 1 }]),
@@ -62,6 +63,8 @@ beforeEach(() => {
   vi.clearAllMocks();
   h.params = {};
   h.subclasses = [];
+  // Name-only classes → no detectable subclass levels → the Features step's all-20 fallback.
+  h.classes = [{ name: 'Wizard' }, { name: 'Fighter' }];
   h.addSubclass.mockResolvedValue(true);
   h.updateSubclass.mockResolvedValue(true);
 });
@@ -94,6 +97,8 @@ describe('Subclasses wizard', () => {
     });
     expect(formEl.getAttribute('data-name')).toBe('Echo');
     expect(formEl.getAttribute('data-feature-levels')).toBe('3');
+    // Name-only stored subclass resolves its selector key to the first name match.
+    expect(formEl.getAttribute('data-parent-class-id')).toBe('hb:Wizard');
   });
 
   it('publishes an edited subclass through updateSubclass and navigates home', async () => {
@@ -135,6 +140,125 @@ describe('Subclasses wizard', () => {
     ));
     expect(h.addSubclass).not.toHaveBeenCalled();
     expect(h.updateSubclass).not.toHaveBeenCalled();
+  });
+
+  it('limits the Features pill grid to the parent class\'s subclass levels', async () => {
+    h.classes = [
+      {
+        name: 'Wizard',
+        features: {
+          3: [{ name: 'Wizard Subclass', description: 'Choose a subclass.' }],
+          6: [{ name: 'Subclass Feature', description: 'See your subclass.' }],
+          10: [{ name: 'Subclass Feature', description: 'See your subclass.' }],
+          14: [{ name: 'Subclass Feature', description: 'See your subclass.' }],
+        },
+      },
+      { name: 'Fighter' },
+    ];
+    localStorage.setItem('hb:subclassDraft:new', JSON.stringify({
+      v: 1,
+      form: { parentClass: 'Wizard', name: 'Echo', description: '' },
+      levels: { features: {} },
+      step: 1,
+    }));
+    render(() => <Subclasses />);
+    fireEvent.click(await screen.findByText('Resume draft'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Level 3,/ })).toBeTruthy();
+    });
+    expect(screen.getByRole('button', { name: /^Level 6,/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Level 10,/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Level 14,/ })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /^Level 1,/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Level 4,/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Level 20,/ })).toBeNull();
+  });
+
+  it('keeps out-of-range levels visible as flagged pills with a warning banner', async () => {
+    h.classes = [
+      {
+        name: 'Wizard',
+        features: {
+          3: [{ name: 'Wizard Subclass', description: 'Choose a subclass.' }],
+          6: [{ name: 'Subclass Feature', description: 'See your subclass.' }],
+        },
+      },
+      { name: 'Fighter' },
+    ];
+    localStorage.setItem('hb:subclassDraft:new', JSON.stringify({
+      v: 1,
+      form: { parentClass: 'Wizard', name: 'Echo', description: '' },
+      levels: { features: { 5: [{ id: 'f5', name: 'Stray Step', description: 'Placed off-cadence' }] } },
+      step: 1,
+    }));
+    render(() => <Subclasses />);
+    fireEvent.click(await screen.findByText('Resume draft'));
+
+    const strayPill = await screen.findByRole('button', { name: /^Level 5,.*not a subclass level/ });
+    expect(strayPill).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Level 3,/ })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /^Level 4,/ })).toBeNull();
+    expect(screen.getByText(/Level 5 isn't among Wizard's subclass levels/)).toBeTruthy();
+  });
+
+  it('resolves the parent by selector key, not first name match (2014 vs 2024 Wizard)', async () => {
+    h.classes = [
+      {
+        id: 'w14', name: 'Wizard', legacy: true,
+        features: { 2: [{ name: 'Arcane Tradition', description: 'Choose a tradition.' }], 6: [{ name: 'Arcane Tradition Feature', description: 'See your subclass.' }] },
+      },
+      {
+        id: 'w24', name: 'Wizard', legacy: false,
+        features: { 3: [{ name: 'Wizard Subclass', description: 'Choose a subclass.' }], 6: [{ name: 'Subclass Feature', description: 'See your subclass.' }] },
+      },
+    ];
+    localStorage.setItem('hb:subclassDraft:new', JSON.stringify({
+      v: 1,
+      form: { parentClass: 'Wizard', parentClassId: 'w24', name: 'Echo', description: '' },
+      levels: { features: {} },
+      step: 1,
+    }));
+    render(() => <Subclasses />);
+    fireEvent.click(await screen.findByText('Resume draft'));
+
+    // The 2024 Wizard (id w24) grants at 3/6 — the 2014 first-name-match would show 2/6.
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Level 3,/ })).toBeTruthy();
+    });
+    expect(screen.getByRole('button', { name: /^Level 6,/ })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /^Level 2,/ })).toBeNull();
+  });
+
+  it('snaps the selected level to the first allowed pill when 3 is not offered', async () => {
+    // 2014-style Wizard grants at 2/6/10/14 — the step's initial selection (3) must snap to 2.
+    h.classes = [
+      {
+        id: 'w14', name: 'Wizard', legacy: true,
+        features: {
+          2: [{ name: 'Arcane Tradition', description: 'Choose a tradition.' }],
+          6: [{ name: 'Arcane Tradition Feature', description: 'See your subclass.' }],
+          10: [{ name: 'Arcane Tradition Feature', description: 'See your subclass.' }],
+          14: [{ name: 'Arcane Tradition Feature', description: 'See your subclass.' }],
+        },
+      },
+    ];
+    localStorage.setItem('hb:subclassDraft:new', JSON.stringify({
+      v: 1,
+      form: { parentClass: 'Wizard', parentClassId: 'w14', name: 'Echo', description: '' },
+      levels: { features: {} },
+      step: 1,
+    }));
+    render(() => <Subclasses />);
+    fireEvent.click(await screen.findByText('Resume draft'));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /^Level 3,/ })).toBeNull();
+    });
+    // Selection snapped off the missing 3 onto the first offered level.
+    expect(screen.getByText(/Level 2 — 0 Features/)).toBeTruthy();
+    expect(screen.getByText('Add feature to level 2')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Level 2,/ }).getAttribute('aria-pressed')).toBe('true');
   });
 
   it('offers to resume a saved draft and restores its form + step', async () => {

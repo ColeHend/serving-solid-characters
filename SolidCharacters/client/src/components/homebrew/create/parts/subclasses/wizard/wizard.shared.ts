@@ -23,12 +23,42 @@ export { LEVELS, draftStorage, featuresPlaced, formatLevelList };
 export type { StepMeta, StepStatus };
 
 export interface SubclassForm extends SpellcastingFormState {
+  /** Parent class NAME — what the persisted Subclass model, storage_key and duplicate guard key on. */
   parentClass: string;
+  /** Selector key of the chosen parent class (see classSelectorKey) — disambiguates classes that
+   *  share a name across rulesets (2014 vs 2024 Wizard). '' when unresolved (old drafts, name-only prefill). */
+  parentClassId: string;
   name: string;
   description: string;
   /** Spell-picker selection on the Spellcasting step; ephemeral, never drafted/persisted. */
   selectedSpellName: string;
 }
+
+// ---------------------------------------------------------------------------
+// Parent-class selector
+
+/** Stable unique option key for a class in the merged SRD+homebrew list: the SRD GUID when
+ *  present, else a name-derived key (homebrew classes are Dexie-keyed by name and may lack an id). */
+export const classSelectorKey = (cls: { id?: string | number; name: string }): string =>
+  cls.id != null && `${cls.id}` !== '' ? `${cls.id}` : `hb:${cls.name}`;
+
+/** Ruleset tag for the selector: SRD entities carry a centrally-stamped `legacy`
+ *  (2014 → true, 2024 → false); homebrew classes carry none. */
+export const classVersionLabel = (cls: { legacy?: boolean }): '2014' | '2024' | 'Homebrew' =>
+  cls.legacy === true ? '2014' : cls.legacy === false ? '2024' : 'Homebrew';
+
+export interface ClassOption {
+  key: string;
+  name: string;
+  version: '2014' | '2024' | 'Homebrew';
+  /** Display text: "Wizard (2014)". */
+  label: string;
+}
+
+export const toClassOption = (cls: { id?: string | number; name: string; legacy?: boolean }): ClassOption => {
+  const version = classVersionLabel(cls);
+  return { key: classSelectorKey(cls), name: cls.name, version, label: `${cls.name} (${version})` };
+};
 
 // ---------------------------------------------------------------------------
 // Steps
@@ -213,11 +243,16 @@ export interface SubclassReviewRow {
   action: 'edit' | 'fix';
 }
 
-export function buildReviewRows(fg: FormGroup<SubclassForm>, levels: SubclassLevels): SubclassReviewRow[] {
+export function buildReviewRows(
+  fg: FormGroup<SubclassForm>,
+  levels: SubclassLevels,
+  allowedLevels?: number[] | null,
+): SubclassReviewRow[] {
   const name = ((fg.get('name') as string) || '').trim();
   const parentClass = (fg.get('parentClass') as string) || '';
   const placed = featuresPlaced(levels.features);
   const withFeatures = subclassFeatureLevels(levels.features);
+  const offenders = allowedLevels ? withFeatures.filter(l => !allowedLevels.includes(l)) : [];
 
   const casterSummary = () => {
     if (!fg.get('hasCasting')) return 'Non-caster · no spell slots';
@@ -242,6 +277,10 @@ export function buildReviewRows(fg: FormGroup<SubclassForm>, levels: SubclassLev
       summary: placed > 0
         ? `Features at level${withFeatures.length === 1 ? '' : 's'} ${formatLevelList(withFeatures)}`
         : 'No features yet — a subclass needs at least one.',
+      // Out-of-range levels are informational only — never blocks publish.
+      detail: offenders.length
+        ? `Level${offenders.length === 1 ? '' : 's'} ${formatLevelList(offenders)} aren't subclass levels for ${parentClass || 'the parent class'}.`
+        : undefined,
       action: placed > 0 ? 'edit' : 'fix',
     },
     {
@@ -267,9 +306,11 @@ export const subclassDraftKey = (editClass?: string, editSubclass?: string): str
   return `hb:subclassDraft:${cls && sub ? `${cls}__${sub}` : 'new'}`;
 };
 
-/** Every SubclassForm field that round-trips through a draft (selectedSpellName is ephemeral UI). */
+/** Every SubclassForm field that round-trips through a draft (selectedSpellName is ephemeral UI).
+ *  parentClassId is absent from pre-existing drafts — hydrateDraft skips missing keys and the
+ *  shell's parent-class lookup falls back to the name. */
 export const DRAFT_FORM_KEYS = [
-  'parentClass', 'name', 'description',
+  'parentClass', 'parentClassId', 'name', 'description',
   'hasCasting', 'casterType', 'castingModifier',
   'spellsKnownCalc', 'halfCasterRoundUp', 'hasCantrips', 'hasRitualCasting',
   'spellsKnownPerLevel', 'spellcastingInfo', 'subclassSpells',
@@ -325,8 +366,10 @@ export interface StepProps {
   formGroup: FormGroup<SubclassForm>;
   levels: SubclassLevels;
   setLevels: SetStoreFunction<SubclassLevels>;
-  /** Parent-class options for the Identity step. */
-  allClassNames: () => string[];
+  /** Parent-class options for the Identity step's selector, keyed by classSelectorKey. */
+  classOptions: () => ClassOption[];
+  /** Parent class's subclass-grant levels; null = no restriction (Features step shows all 20). */
+  allowedLevels: () => number[] | null;
   /** Spell catalog for the Spellcasting step's picker. */
   allSpells: () => Spell[];
   goToStep: (step: SubclassWizardStep) => void;

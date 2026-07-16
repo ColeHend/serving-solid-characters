@@ -9,7 +9,7 @@ import styles from '../../classes/wizard/stepReview.module.scss';
  * action lives in the wizard footer, not here.
  */
 export const StepReview: Component<StepProps> = (props) => {
-  const rows = createMemo(() => buildReviewRows(props.formGroup, props.levels));
+  const rows = createMemo(() => buildReviewRows(props.formGroup, props.levels, props.allowedLevels()));
 
   return (
     <div class={styles.stack}>
