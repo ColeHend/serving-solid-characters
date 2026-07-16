@@ -1,6 +1,6 @@
 /** @jsxImportSource solid-js */
 // Minimal test stub for 'coles-solid-library'
-import { JSX, Component, splitProps } from 'solid-js';
+import { JSX, Component, splitProps, For } from 'solid-js';
 import { createStore, unwrap } from 'solid-js/store';
 import { createSignal, untrack } from 'solid-js';
 
@@ -45,7 +45,25 @@ export const Chip: Component<AnyProps> = (p) => {
 };
 export const Chipbar = passthrough('Chipbar');
 export const Modal = passthrough('Modal');
-export const TabBar = passthrough('TabBar');
+// Mirrors the real TabBar's API surface: renders one button per label and
+// delivers clicks via onTabChange(label, index).
+export const TabBar: Component<AnyProps> = (p) => {
+  const [local, rest] = splitProps(p, ['tabs', 'activeTab', 'onTabChange', 'colors', 'size', 'tabPosition', 'indicatorClass', 'noRail', 'animationTiming']);
+  return (
+    <div data-mock="TabBar" role="tablist" data-active-tab={local.activeTab} {...rest}>
+      <For each={(local.tabs ?? []) as string[]}>
+        {(label, i) => (
+          <button
+            data-mock="Tab"
+            role="tab"
+            aria-selected={local.activeTab === i()}
+            onClick={() => local.onTabChange?.(label, i())}
+          >{label}</button>
+        )}
+      </For>
+    </div>
+  );
+};
 export const ExpansionPanel = passthrough('ExpansionPanel');
 export const FormField = passthrough('FormField');
 export const FieldError = passthrough('FieldError');

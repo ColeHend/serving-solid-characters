@@ -1,0 +1,338 @@
+// Edit/Add Feature modal. The Modal renders through a Portal, so the wizard's
+// --wiz-* accent tokens are out of scope here — the same values are declared
+// locally as --pop-* (the popup is also opened outside the wizard).
+.wrapper {
+    --pop-accent: #a78bfa;
+    --pop-accent-bright: #c9a8fa;
+    --pop-on-accent: #1c1029;
+    --pop-text-muted: color-mix(in srgb, var(--on-surface-color) 60%, transparent);
+    --pop-text-faint: color-mix(in srgb, var(--on-surface-color) 45%, transparent);
+    --pop-label: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+    --pop-hairline: color-mix(in srgb, var(--on-surface-color) 22%, transparent);
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    text-align: left;
+    color: var(--on-surface-color);
+}
+
+// ---------------------------------------------------------------------------
+// Header
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px 10px;
+}
+
+.headerIcon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--pop-accent) 20%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        fill: var(--pop-accent);
+    }
+}
+
+.headerTitle {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.25;
+}
+
+.headerSubtitle {
+    color: var(--pop-text-faint);
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
+.headerClose {
+    margin-left: auto;
+}
+
+.tabsRow {
+    padding: 0 20px;
+}
+
+// ---------------------------------------------------------------------------
+// Body
+
+.scrollBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px 24px 16px;
+}
+
+.label {
+    display: block;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--pop-label);
+    margin: 18px 0 4px;
+}
+
+.underlineField {
+    input,
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--pop-hairline);
+        border-radius: 0;
+        color: var(--on-surface-color);
+        padding: 6px 2px;
+        font-size: 1rem;
+
+        &:focus {
+            outline: none;
+            border-bottom-color: var(--pop-accent);
+        }
+
+        &:disabled {
+            color: var(--pop-text-muted);
+            cursor: not-allowed;
+        }
+    }
+
+    textarea {
+        min-height: 88px;
+        resize: vertical;
+    }
+}
+
+.lockHint {
+    color: var(--pop-text-faint);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+// ---------------------------------------------------------------------------
+// Usage & spells tab
+
+.sectionLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pop-label);
+    margin: 24px 0 10px;
+
+    svg {
+        fill: var(--pop-label);
+    }
+}
+
+.usesRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.usesNumber {
+    width: 90px;
+}
+
+.usesPer {
+    color: var(--pop-text-muted);
+    white-space: nowrap;
+}
+
+.chipsRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+// ---------------------------------------------------------------------------
+// Effects tab
+
+.effectsHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin: 14px 0;
+}
+
+.effectsHelper {
+    color: var(--pop-text-muted);
+    font-size: 0.9rem;
+}
+
+.addEffectBtn {
+    background: transparent !important;
+    border: 1px solid var(--pop-accent) !important;
+    color: var(--on-surface-color) !important;
+    border-radius: 8px !important;
+    padding: 6px 14px !important;
+    white-space: nowrap;
+}
+
+.emptyState {
+    border: 1.5px dashed var(--pop-hairline);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    color: var(--pop-text-muted);
+}
+
+.effectCard {
+    border: 1px solid var(--pop-hairline);
+    border-left: 3px solid var(--pop-accent);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+
+.effectCardHead {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.deleteBtn {
+    margin-left: auto;
+    background: transparent !important;
+    border: none !important;
+    padding: 4px !important;
+
+    svg {
+        fill: var(--pop-label);
+    }
+
+    &:hover svg {
+        fill: var(--error-color);
+    }
+}
+
+.typeRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.typeCaption {
+    color: var(--pop-text-faint);
+    font-size: 12.5px;
+}
+
+.segmented {
+    display: inline-flex;
+    flex-shrink: 0;
+    border: 1px solid var(--pop-hairline);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+}
+
+.segmentBtn {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 7px !important;
+    padding: 5px 12px !important;
+    color: var(--pop-text-muted) !important;
+    font-weight: 600 !important;
+}
+
+.segmentBtnActive {
+    background: var(--pop-accent) !important;
+    color: var(--pop-on-accent) !important;
+}
+
+.valueRow {
+    margin-top: 12px;
+}
+
+.addValueBtn {
+    background: transparent !important;
+    border: none !important;
+    padding: 4px 0 !important;
+    color: var(--pop-accent) !important;
+    font-weight: 600 !important;
+}
+
+.valueSummary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 12px;
+}
+
+.prereqSection {
+    margin-top: 12px;
+    border-top: 1px solid var(--pop-hairline);
+    padding-top: 4px;
+}
+
+.choiceGroupRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+
+    .label {
+        margin: 0;
+        white-space: nowrap;
+    }
+}
+
+.choiceGroupInput {
+    width: 70px;
+}
+
+.choiceCaption {
+    color: var(--pop-text-faint);
+    font-size: 12.5px;
+}
+
+// ---------------------------------------------------------------------------
+// Footer
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--pop-hairline);
+    padding: 12px 20px;
+}
+
+.footerCount {
+    color: var(--pop-text-muted);
+    font-size: 0.9rem;
+}
+
+.footerActions {
+    display: flex;
+    gap: 10px;
+
+    button {
+        border-radius: 8px !important;
+    }
+}
+
+.saveBtn {
+    background: var(--pop-accent) !important;
+    color: var(--pop-on-accent) !important;
+    font-weight: 600 !important;
+}

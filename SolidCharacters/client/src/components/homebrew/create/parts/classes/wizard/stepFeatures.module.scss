@@ -1,0 +1,323 @@
+@use 'coles-solid-library/themes/variables' as *;
+
+// Features step — level pills, per-level feature list, quick-add actions and the
+// collapsed "advanced" level-table editor. Dark-theme translucent surfaces built on
+// color-mix($color-surface); accent driven by the wizard-root --wiz-* custom props.
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+// ---------------------------------------------------------------------------
+// Level pills
+
+.pillGrid {
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 6px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(10, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+}
+
+.pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 0 6px;
+  min-height: 46px;
+  border-radius: $border-radius-sm;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--on-surface-color) 42%, transparent);
+  background-color: color-mix(in srgb, $color-surface 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--wiz-accent) 55%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+// Level already has ≥1 feature — accent-tinted.
+.pillHas {
+  color: var(--on-surface-color);
+  background-color: color-mix(in srgb, var(--wiz-accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--wiz-accent) 45%, transparent);
+}
+
+// Selected level — filled accent (defined last so it wins over .pillHas).
+.pillOn {
+  color: var(--wiz-on-accent);
+  background-color: var(--wiz-accent-bright);
+  border-color: var(--wiz-accent-bright);
+
+  .pillDot {
+    background-color: var(--wiz-on-accent);
+  }
+}
+
+.pillDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--wiz-accent);
+}
+
+// Invisible spacer keeps featureless pills the same height as dotted ones.
+.pillDotEmpty {
+  width: 5px;
+  height: 5px;
+}
+
+// ---------------------------------------------------------------------------
+// Level card
+
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $spacing-1;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.empty {
+  padding: 6px 2px;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--on-surface-color) 45%, transparent);
+}
+
+// ---------------------------------------------------------------------------
+// Feature row
+
+.featureRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: $border-radius-md;
+  background-color: color-mix(in srgb, $color-surface 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 14%, transparent);
+}
+
+.featureMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+}
+
+.featureDot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--wiz-accent);
+}
+
+.featureName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--on-surface-color);
+
+  .featureMain:hover & {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--wiz-accent) 70%, transparent);
+  }
+}
+
+.featureTag {
+  flex: 0 0 auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--on-surface-color) 68%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 26%, transparent);
+  background: transparent;
+}
+
+.deleteBtn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: $border-radius-sm;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+  transition: color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    color: var(--wiz-warn-text);
+    background-color: color-mix(in srgb, $color-surface 68%, transparent);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Actions row
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.addBtn {
+  padding: 11px 18px;
+  border-radius: $border-radius-sm;
+  border: 1px solid transparent;
+  background-color: var(--wiz-accent-bright);
+  color: var(--wiz-on-accent);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+
+  &:hover {
+    filter: brightness(1.08);
+  }
+}
+
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 16px;
+  border-radius: $border-radius-sm;
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 22%, transparent);
+  background-color: color-mix(in srgb, $color-surface 85%, transparent);
+  color: var(--on-surface-color);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--wiz-accent) 55%, transparent);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Advanced level-table editor
+
+.advanced {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  padding: 4px 2px 2px;
+}
+
+.advRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+  }
+}
+
+// Column name inside a .featureRow — featureName typography, but standalone: .featureMain
+// is a cursor:pointer button reset and .featureName drags in its hover-underline rule.
+.advColName {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--on-surface-color);
+}
+
+.advAddRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+  }
+}
+
+// Boxed wrapper around a coles Input so it matches the wizard's translucent fields.
+// Box visuals only — always pair with .advInputGrow or .advInputNarrow, and only inside
+// a ROW flex parent (.featureRow/.advRow/.advAddRow): in a column parent the modifier's
+// flex-basis becomes HEIGHT and the box balloons.
+.advInput {
+  min-width: 0;
+  padding: 2px 10px;
+  border-radius: $border-radius-sm;
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 18%, transparent);
+  background-color: color-mix(in srgb, $color-surface 82%, transparent);
+
+  input {
+    background: transparent !important;
+    border: none !important;
+    outline: none;
+    width: 100%;
+    color: var(--on-surface-color); // coles inputs default to --on-container-color
+  }
+}
+
+.advInputGrow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.advInputNarrow {
+  flex: 0 0 160px;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    flex-basis: 120px;
+  }
+}
+
+.advHint {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+}
