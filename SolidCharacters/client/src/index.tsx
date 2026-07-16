@@ -37,7 +37,7 @@ const Characters = lazy(() => import("./components/characters/characters"));
 const CharacterCreate = lazy(() => import("./components/characters/create/create"));
 const CharacterView = lazy(() => import("./components/characters/view/view"));
 const CreateCharacterPDF = lazy(() => import("./components/characters/characterCreatePDF/characterCreatePDF").then(m => ({ default: m.CreateCharacterPDF })));
-const HomebrewBackgrounds = lazy(() => import("./components/homebrew/Parts/background/Background").then(m => ({ default: m.HomebrewBackgrounds })));
+const HomebrewBackgrounds = lazy(() => import("./components/homebrew/create/parts/backgrounds/backgrounds"));
 const DMCommand = lazy(() => import("./components/dmCommand/dmCommand"));
 
 console.log("Application initializing...");

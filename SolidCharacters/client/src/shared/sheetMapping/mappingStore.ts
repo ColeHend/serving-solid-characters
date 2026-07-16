@@ -75,8 +75,8 @@ function samePlacement(a: PlacedField, b: PlacedField): boolean {
 
 /**
  * Reactive singleton store for the active {@link SheetTemplate}, backed by
- * `MappingDB` (Dexie). Mirrors the `createRoot` store pattern used elsewhere
- * (e.g. `backgroundsStore`). Reseeds the default template on a missing record or
+ * `MappingDB` (Dexie). Mirrors the `createRoot` store pattern used elsewhere.
+ * Reseeds the default template on a missing record or
  * a `version` mismatch. Drag edits mutate the in-memory `template()` signal (so
  * the live preview updates immediately); `saveTemplate`/`resetToDefault` persist.
  */
