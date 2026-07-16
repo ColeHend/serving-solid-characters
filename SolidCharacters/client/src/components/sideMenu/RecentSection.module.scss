@@ -1,0 +1,84 @@
+.recent {
+  // Tag accents: purple/green derive from the theme; the rest have no theme
+  // token, so they default to fixed values but stay overridable per theme.
+  --tag-purple: var(--primary-color);
+  --tag-green: var(--spark-success-color);
+  --tag-amber: var(--spark-warn-color);
+  --tag-cyan: #22d3ee;
+  --tag-blue: #5b8def;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: var(--spacing-1);
+  border-top: 1px solid color-mix(in srgb, var(--on-surface-color) 14%, transparent);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--spacing-1);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+
+  svg {
+    fill: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+  }
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.typeTag {
+  flex-shrink: 0;
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.type_spell,
+.type_class {
+  color: var(--tag-purple);
+}
+
+.type_subclass {
+  color: var(--tag-cyan);
+}
+
+.type_tool {
+  color: var(--tag-green);
+}
+
+.type_feat,
+.type_background {
+  color: var(--tag-amber);
+}
+
+.type_race,
+.type_subrace,
+.type_item {
+  color: var(--tag-blue);
+}

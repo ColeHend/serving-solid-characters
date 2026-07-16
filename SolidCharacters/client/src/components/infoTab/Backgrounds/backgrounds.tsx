@@ -9,6 +9,7 @@ import BackgroundView from "../../../shared/components/modals/background/backgro
 import { Body, Table, Cell, Column, Header, Row } from "coles-solid-library";
 import { BackgroundMenu } from "./backgroundMenu/backgroundMenu";
 import { useDnDBackgrounds } from "../../../shared/customHooks/dndInfo/info/all/backgrounds";
+import { trackRecentItem } from "../../../shared/customHooks/useRecentItems";
 
 const Viewbackgrounds: Component = () => {
   const [currentBackground,setCurrentBackground] = createSignal<Background | undefined>(undefined); 
@@ -67,6 +68,11 @@ const Viewbackgrounds: Component = () => {
 
     if (showTheBackground() && cur?.name) {
       setSearchParam({ name: cur.name });
+      trackRecentItem({
+        name: cur.name,
+        type: "background",
+        route: `/info/backgrounds?search=${encodeURIComponent(cur.name)}`,
+      });
     } else if (!showTheBackground()) {
       setSearchParam({ name: "" });
     }
@@ -88,12 +94,13 @@ const Viewbackgrounds: Component = () => {
   return <Body class={`${styles.body}`}>
     <h1 class={`${styles.Title}`}>Backgrounds</h1>
     <div class={`${styles.searchBar}`}>
-      <SearchBar 
-        dataSource={tableData} 
+      <SearchBar
+        dataSource={tableData}
         setResults={setSearchResult}
         searchFunction={(data,search)=>{
           return data.name.toLowerCase() === search.toLowerCase();
-        }}/>
+        }}
+        seed={typeof searchParam.search === "string" ? searchParam.search : searchParam.search?.[0]}/>
     </div>
     <div class={`${styles.backgroundsDiv}`} >
       <Show when={columns()} keyed>

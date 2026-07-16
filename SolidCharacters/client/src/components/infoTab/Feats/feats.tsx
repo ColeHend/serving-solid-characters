@@ -27,6 +27,7 @@ import FeatView from "../../../shared/components/modals/featModal/featView";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { FilterDialog } from "../../../shared/components/filterDialog/filterDialog";
 import { FilterChips } from "../../../shared/components/filterDialog/filterChips";
+import { trackRecentItem } from "../../../shared/customHooks/useRecentItems";
 import styles from "./feats.module.scss";
 
 // Feat has no root name/category; sort/filter keys need them on the row type.
@@ -179,6 +180,11 @@ const featsList: Component = () => {
 
     if(showFeatModal() && cur?.details?.name) {
       setSearchParam({ name: cur.details.name})
+      trackRecentItem({
+        name: cur.details.name,
+        type: "feat",
+        route: `/info/feats?search=${encodeURIComponent(cur.details.name)}`,
+      });
     } else if (!showFeatModal()) {
       setSearchParam({ name: ""})
     }
@@ -202,7 +208,8 @@ const featsList: Component = () => {
           setResults={setSearchResult}
           searchFunction={(data,search)=>{
             return (data.details?.name ?? "").toLowerCase().trim().includes(search.toLowerCase().trim());
-          }}></SearchBar>
+          }}
+          seed={typeof searchParam.search === "string" ? searchParam.search : searchParam.search?.[0]}></SearchBar>
         <Button onClick={() => setShowFilter(true)} title="Filter & sort">
           <Icon icon={FilterAlt} size="medium" />
         </Button>
