@@ -1,0 +1,22 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-family: 'Nodesto_Caps_Condensed', serif;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--primary-color);
+  border: 1.5px solid color-mix(in srgb, var(--primary-color) 60%, transparent);
+  background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);
+
+  svg {
+    fill: var(--primary-color);
+  }
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 22%, transparent);
+  }
+}

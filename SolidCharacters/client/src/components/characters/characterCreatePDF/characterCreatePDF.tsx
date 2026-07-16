@@ -25,6 +25,7 @@ import {
 import { generateSheetPdf } from '../../../shared/sheetMapping/pdf/generateSheetPdf';
 import { spellTableRows } from '../../../shared/sheetMapping/pdf/spellTable';
 import { downloadBlob } from '../../../shared/customHooks/utility/tools/downloadBlob';
+import { trackRecentItem } from '../../../shared/customHooks/useRecentItems';
 import {
   DropGeometry,
   movedPlaced,
@@ -59,6 +60,9 @@ export const CreateCharacterPDF: Component = () => {
 
   // Match the rest of the site: the characters page background behind a themed surface.
   onMount(() => document.body.classList.add('character-create-bg'));
+  onMount(() => {
+    trackRecentItem({ name: 'Sheet Mapper', type: 'tool', route: '/characters/pdfCreate' });
+  });
   onCleanup(() => document.body.classList.remove('character-create-bg'));
 
   // Reactive mobile flag (viewport, not user-agent) — drives the docked-vs-modal sidebar.

@@ -8,6 +8,7 @@ import style from "./allItem.module.scss";
 import { ItemsMenu } from "../itemsMenu/itemsMenu";
 import { useSearchParams } from "@solidjs/router";
 import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
+import { trackRecentItem } from "../../../../../shared/customHooks/useRecentItems";
 import { isMobile } from "coles-solid-library/dist/tools/tools.js";
 
 interface props {
@@ -85,6 +86,11 @@ export const AllItems: Component<props> = (props) => {
             setSearchParam({
             name: cur?.name
             })
+            trackRecentItem({
+                name: cur.name,
+                type: "item",
+                route: `/info/items?search=${encodeURIComponent(cur.name)}`,
+            });
         } else if (!showItem()) {
             setSearchParam({
             name: "",
@@ -99,7 +105,7 @@ export const AllItems: Component<props> = (props) => {
 
     return <Body class={`${style.body}`}>
         <div class={`${style.searchBar}`}>
-            <SearchBar searchFunction={(data, search) => data.name.trim().toLowerCase().includes(search.trim().toLowerCase())} dataSource={tabledata} setResults={setSearchResults} />
+            <SearchBar searchFunction={(data, search) => data.name.trim().toLowerCase().includes(search.trim().toLowerCase())} dataSource={tabledata} setResults={setSearchResults} seed={typeof searchParam.search === "string" ? searchParam.search : searchParam.search?.[0]} />
         </div>
 
         <div class={`${style.allItemsTable}`}>

@@ -21,6 +21,7 @@ import { Spell } from "../../../models/generated";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { FilterDialog } from "../../../shared/components/filterDialog/filterDialog";
 import { FilterChips } from "../../../shared/components/filterDialog/filterChips";
+import { trackRecentItem } from "../../../shared/customHooks/useRecentItems";
 
 const SPELL_INITIAL_SORT: SortState = { sortKey: "level", isAsc: true };
 
@@ -77,6 +78,19 @@ const masterSpells: Component = () => {
   const [searchResults, setSearchResults] = createSignal<Spell[]>([]);
   const [showSpell, setShowSpell] = createSignal(false);
   const [showFilter, setShowFilter] = createSignal(false);
+
+  // Record detail views for the nav drawer's RECENT section.
+  createEffect(() => {
+    const spell = currentSpell();
+    if (showSpell() && spell) {
+      trackRecentItem({
+        name: spell.name,
+        type: "spell",
+        route: `/info/spells?search=${encodeURIComponent(spell.name)}`,
+      });
+    }
+  });
+
   const [tableData, setTableData] = createSignal<Spell[]>([]);
   const [lastChar, setLastChar] = createSignal<string>("");
 
@@ -136,6 +150,7 @@ const masterSpells: Component = () => {
           setResults={setSearchResults}
           dataSource={tableData}
           searchFunction={(spell,search)=> spell.name.toLowerCase().trim().includes(search.toLowerCase().trim())}
+          seed={typeof searchParam.search === "string" ? searchParam.search : searchParam.search?.[0]}
         />
         <Button onClick={() => setShowFilter(true)} title="Filter & sort">
           <Icon icon={FilterAlt} size="medium" />

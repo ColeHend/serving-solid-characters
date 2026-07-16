@@ -1,0 +1,54 @@
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-1);
+  flex: 0 0 64px;
+  padding: var(--spacing-1) 4px;
+  border-right: 1px solid color-mix(in srgb, var(--on-surface-color) 10%, transparent);
+}
+
+.railButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 56px;
+  padding: var(--spacing-1) 0;
+  border: none;
+  border-radius: var(--border-radius-md);
+  background: none;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--on-surface-color) 70%, transparent);
+
+  svg {
+    fill: color-mix(in srgb, var(--on-surface-color) 70%, transparent);
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+  }
+
+  &.active {
+    background: color-mix(in srgb, var(--primary-color) 16%, transparent);
+    color: var(--primary-color);
+
+    svg {
+      fill: var(--primary-color);
+    }
+  }
+}
+
+.railLabel {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-1);
+  margin-top: auto;
+  padding-bottom: var(--spacing-1);
+}

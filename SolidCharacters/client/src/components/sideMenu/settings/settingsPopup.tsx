@@ -13,9 +13,10 @@ import AiReviewSettingsTab from "./aiReviewSettingsTab";
 interface Props {
     defaultUserSettings: Accessor<UserSettings>,
     setDefaultUserSettings: Setter<UserSettings>,
+    initialTab?: SettingsTab,
 }
 const SettingsPopup: Component<Props> = (props) => {
-  const [currentTab, setCurrentTab] = createSignal<SettingsTab>("Theme");
+  const [currentTab, setCurrentTab] = createSignal<SettingsTab>(props.initialTab ?? "Theme");
   const [userSettings, setUserSettings] = getUserSettings();
   return (
     <div class={styles.folder}>

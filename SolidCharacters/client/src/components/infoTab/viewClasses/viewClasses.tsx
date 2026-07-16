@@ -23,6 +23,7 @@ import {
   Table 
 } from "coles-solid-library";
 import { ClassMenu } from "./classMenu/classMenu";
+import { trackRecentItem } from "../../../shared/customHooks/useRecentItems";
 import { Class5E } from "../../../models/generated";
 import { useDnDClasses } from "../../../shared/customHooks/dndInfo/info/all/classes";
 import { useDnDSubclasses } from "../../../shared/customHooks/dndInfo/info/all/subclasses";
@@ -81,6 +82,11 @@ const viewClasses: Component = () => {
 
     if (showClass() && cur.name) {
       setSearchParam({ name: cur.name})
+      trackRecentItem({
+        name: cur.name,
+        type: "class",
+        route: `/info/classes?search=${encodeURIComponent(cur.name)}`,
+      });
     } else if (!showClass()) {
       setSearchParam({ name: ""})
     }
@@ -113,12 +119,13 @@ const viewClasses: Component = () => {
       </div>
 
       <div class={`${styles.searchBar}`}>
-        <SearchBar 
-          dataSource={tableData} 
+        <SearchBar
+          dataSource={tableData}
           setResults={setResults}
           searchFunction={(data, search)=>{
             return data.name.toLowerCase() === search.toLowerCase();
           }}
+          seed={typeof searchParam.search === "string" ? searchParam.search : searchParam.search?.[0]}
           />
       </div>
 

@@ -21,6 +21,7 @@ import { Race } from "../../../models/generated";
 import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races";
 import { RaceMenu } from "./raceMenu/raceMenu";
 import RaceView from "../../../shared/components/modals/raceView/raceView";
+import { trackRecentItem } from "../../../shared/customHooks/useRecentItems";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import styles from "./races.module.scss";
 
@@ -77,6 +78,11 @@ const races: Component = () => {
 
     if (showRace() && cur?.name) {
       setSearchParam({ name: cur?.name ?? ''})
+      trackRecentItem({
+        name: cur.name,
+        type: "race",
+        route: `/info/races?search=${encodeURIComponent(cur.name)}`,
+      });
     } else if (!showRace()) {
       setSearchParam({ name: ""})
     }
@@ -99,12 +105,13 @@ const races: Component = () => {
     <h1 class={`${styles.title}`}>Races</h1>
 
     <div class={`${styles.searchBar}`}>
-      <SearchBar 
-        dataSource={tableData} 
+      <SearchBar
+        dataSource={tableData}
         setResults={setResults}
         searchFunction={(data,search)=>{
           return data.name.toLowerCase() === search.toLowerCase();
-        }}/>
+        }}
+        seed={typeof searchParam.search === "string" ? searchParam.search : searchParam.search?.[0]}/>
     </div>
 
     <div class={`${styles.racesTable}`}>
