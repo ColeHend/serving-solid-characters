@@ -11,7 +11,7 @@ import {
   stepStatus,
   toggleInArray,
 } from '../wizard/wizard.shared';
-import type { ClassForm, WizardLevels } from '../wizard/wizard.shared';
+import type { ClassForm, EquipmentChoice, WizardLevels } from '../wizard/wizard.shared';
 import { Stat } from '../../../../../../shared/models/stats';
 
 // Minimal FormGroup stand-in: the shared helpers only use get/set.
@@ -117,7 +117,7 @@ describe('stepStatus', () => {
 
 describe('draft round-trip', () => {
   it('serialize → parse → hydrate restores form fields, levels and step', () => {
-    const structuredChoice = {
+    const structuredChoice: EquipmentChoice = {
       options: [
         { entries: [{ kind: 'item', name: 'Longsword', qty: 1 }, { kind: 'item', name: 'Shield', qty: 1 }] },
         { entries: [{ kind: 'item', name: 'Javelin', qty: 8 }, { kind: 'custom', name: '4 GP' }] },
