@@ -1,0 +1,61 @@
+@use 'coles-solid-library/themes/variables' as *;
+
+// Layout-only extras for the Proficiencies step. Chrome, chips and section heads
+// come from the shared classesWizard module; these classes only add the per-group
+// stacking, the saving-throw counter push, and the skills checkbox grid.
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+// One labelled chip group (a cell inside the shared .grid2).
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+// Saving-throws head: let the counter sit hard-right of the icon + label.
+.headRow {
+  width: 100%;
+}
+
+.pushRight {
+  margin-left: auto;
+}
+
+// Skills card header line: bold label, muted copy, narrow number field, all inline.
+.skillHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  b {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--on-surface-color);
+  }
+}
+
+.numField {
+  display: inline-flex;
+  width: 84px;
+
+  input {
+    width: 100%;
+  }
+}
+
+.skillGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-1 $spacing-2;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}

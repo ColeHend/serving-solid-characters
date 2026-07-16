@@ -1,9 +1,8 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, Setter, Show, Switch } from "solid-js";
+import { Accessor, Component, createMemo, For, Match, Setter, Show, Switch } from "solid-js";
 import { EXAMPLE_CHARACTER } from "../../../../../../shared/customHooks/dndInfo/useExampleChars";
-import { Character, CharacterRace } from "../../../../../../models/character.model";
-import { addSnackbar, Button, Form, FormArray, FormField, FormGroup, Input, Option, Select, Container } from "coles-solid-library";
+import { Button, FormArray, FormField, FormGroup, Icon, Input, Option, Select, Container } from "coles-solid-library";
+import { Delete } from "coles-solid-library/icons";
 import style from "./featurePrerequisites.module.scss";
-import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
 import { MadPrerequisite } from "../../../../../../shared";
 import { MadPrereqForm } from "../../../../../../models/data/formModels";
 
@@ -14,8 +13,7 @@ interface props {
 }
 
 export const FeaturePrerequisites: Component<props> = (props) => {
-    
-    // const [prerequisites, setPrerequisites] = props.prereqs;
+
     const formGroup = props.prereqForm;
 
     const currentFormLength = createMemo(() => formGroup.get().length);
@@ -40,8 +38,8 @@ export const FeaturePrerequisites: Component<props> = (props) => {
             return;
         }
 
-        
-        form.set(key, value); 
+
+        form.set(key, value);
     }
 
     const getPrereq = <T extends keyof MadPrereqForm>(key: T, index: number) => {
@@ -56,16 +54,8 @@ export const FeaturePrerequisites: Component<props> = (props) => {
         return toReturn;
     }
 
-    // prop character for keys
-
-    const characterKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER));
-    
-    const charRaceKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.race));
-    const charProficienciesKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.proficiencies.skills));
-    const charHealthKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.health));
-    const charStatKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.stats));
-    const charItemKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.items));
-    const charCurrencyKeys = createMemo(() => Object.keys(EXAMPLE_CHARACTER.items.currency));
+    const selectedType = (index: number) =>
+        getCharacterKeyType(getPrereq("value", index) ?? "");
 
     const prerequisites = createMemo(() => formGroup.get());
 
@@ -102,7 +92,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
         "Item → Currency → Gold Pieces",
         "Item → Currency → Electrum Pieces",
         "Item → Currency → Sliver Pieces",
-        "Item → Currency → Copper Pieces"  
+        "Item → Currency → Copper Pieces"
     ]
 
     const numberOperations = [
@@ -125,10 +115,10 @@ export const FeaturePrerequisites: Component<props> = (props) => {
         switch (operation) {
             case "===":
                 return "= Equal To";
-            
+
             case "!==":
                 return "≠ Not Equal To";
-            
+
             case ">":
                 return "> Greater Than";
 
@@ -140,7 +130,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
             case "<=":
                 return "≦ At Most";
-            
+
             case "includes":
                 return "Includes";
 
@@ -149,7 +139,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
             case "startsWith":
                 return "Starts With";
-            
+
             case "endsWith":
                 return "Ends With";
 
@@ -165,7 +155,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
             case "Level":
                 return typeof EXAMPLE_CHARACTER.level;
-            
+
             case "Spells":
                 return typeof EXAMPLE_CHARACTER.spells[0].name;
 
@@ -174,16 +164,16 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
             case "AC":
                 return typeof EXAMPLE_CHARACTER.ArmorClass;
-            
+
             case "Speed":
                 return typeof EXAMPLE_CHARACTER.Speed;
-            
+
             case "Class":
                 return typeof EXAMPLE_CHARACTER.className;
-            
+
             case "Subclass":
                 return typeof EXAMPLE_CHARACTER.subclass;
-            
+
             case "Background":
                 return typeof EXAMPLE_CHARACTER.background;
 
@@ -192,7 +182,7 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
             case "Proficiencies":
                 return "string";
-            
+
             case "Saving throws":
                 return typeof EXAMPLE_CHARACTER.savingThrows[0].stat;
 
@@ -255,261 +245,76 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
             case "Item → Currency → Sliver Pieces":
                 return typeof EXAMPLE_CHARACTER.items.currency.sliverPieces;
-        
+
             case "Item → Currency → Copper Pieces":
                 return typeof EXAMPLE_CHARACTER.items.currency.copperPieces;
-                
+
             default:
                 return "undefined";
         }
     }
 
-    // const getKeyType = (key: string) => {
-    //     const value = Gandalf[key as keyof Character];
-     
-    //     switch (typeof value) {
-    //         case "string":
-    //             return "string";
-            
-    //         case "number":
-    //             return "number"
+    return <div class={style.leftAlignText}>
 
-    //         case "object":
-                
-    //             if (Array.isArray(value)) {
-    //                 return "array"
-    //             } else if (value === null) {
-    //                 return "null"
-    //             } else {
-    //                 return "object"
-    //             }
-
-    //         default:
-    //             return "undefined";
-    //     }
-    // };
-
-    // const getRaceKeyType = (key: string) => {
-    //     const value = Gandalf.race[key as keyof Character['race']];
-     
-    //     switch (typeof value) {
-    //         case "string":
-    //             return "string";
-            
-    //         case "number":
-    //             return "number"
-
-    //         case "object":
-                
-    //             if (Array.isArray(value)) {
-    //                 return "array"
-    //             } else if (value === null) {
-    //                 return "null"
-    //             } else {
-    //                 return "object"
-    //             }
-
-    //         default:
-    //             return "undefined";
-    //     }
-    // };
-
-    // const getProficenciesKeyType = (key: string) => {
-    //     const value = Gandalf.proficiencies[key as keyof Character['proficiencies']];
-     
-    //     switch (typeof value) {
-    //         case "string":
-    //             return "string";
-            
-    //         case "number":
-    //             return "number"
-
-    //         case "object":
-                
-    //             if (Array.isArray(value)) {
-    //                 return "array"
-    //             } else if (value === null) {
-    //                 return "null"
-    //             } else {
-    //                 return "object"
-    //             }
-
-    //         default:
-    //             return "undefined";
-    //     }
-    // }
-
-    // const resetForm = () => {
-    //     setPrereqKey("");
-    //     setPrereqGroup(0);
-    //     setPrereqValue("");
-    //     setTertiaryKey("");
-    //     setSubPrereqKey("");
-    //     setPrereqOperation("");
-    // }
-
-    // const fillForm = (key?: string, secondKey?: string, thirdKey?: string, group?: number, value?: string, operation?: string) => {
-    //     setPrereqKey(key ?? "");
-    //     setPrereqGroup(group ?? 0);
-    //     setPrereqValue(value ?? "");
-    //     setTertiaryKey(thirdKey ?? "");
-    //     setSubPrereqKey(secondKey ?? "");
-    //     setPrereqOperation(operation ?? "");
-    // }
-
-    // const handleSubmit = (hasSecondary: boolean, hasTertiary: boolean) => {
-    //     const value = prereqValue();
-    //     const group = prereqGroup();
-    //     const operation = prereqOperation();
-    //     const FirstKey = prereqKey();
-    //     const SecondaryKey = subPrereqKey();
-    //     const TertiaryKey = tertiaryKey();
-        
-    //     const hasSecond = hasSecondary;
-    //     const hasThird = hasTertiary;
-
-    //     if (FirstKey === "" || FirstKey === undefined) {
-    //         addSnackbar({
-    //             message: "Must select a character trait!",
-    //             severity: "error",
-    //         })
-
-    //         return;
-    //     }
-
-        
-    //     if (operation === "" || operation === undefined) {
-    //         addSnackbar({
-    //             message: "Must select an operation!",
-    //             severity: "error",
-    //         });
-            
-    //         return;
-    //     }
-        
-    //     if (value === "" || value === undefined) {
-    //         addSnackbar({
-    //             message: "Must input an value!",
-    //             severity: "error",
-    //         })
-
-    //         return;
-    //     }
-
-    //     if (hasSecond && SecondaryKey === "" || SecondaryKey === undefined) {
-    //         addSnackbar({
-    //             message: "Must select the secondary key!",
-    //             severity: "error"
-    //         })
-
-    //         return;
-    //     }
-
-    //     if (hasThird && TertiaryKey === "" || TertiaryKey === undefined) {
-    //         addSnackbar({
-    //             message: "Must select the tertiary key!",
-    //             severity: "error"
-    //         })
-
-    //         return;
-    //     }
-        
-    //     // setPrerequisitesValue(`prerequisites ${prereqKeys().length + 1}`, {
-    //     //     value: value,
-    //     //     operation: operation,
-    //     //     keyValue: FirstKey,
-    //     //     secondaryValue: SecondaryKey ?? "",
-    //     //     tertiaryValue: TertiaryKey ?? "",
-    //     //     group: group
-    //     // });
-    //     // props.Submit(`prerequisites ${prereqKeys().length + 1}`);
-    //     resetForm();
-        
-    // }
-
-    // createEffect(() => {
-    //     const key = prereqKey();
-    //     const secondaryKey = subPrereqKey();
-        
-    //     // Determine if secondary key is needed
-    //     const needsSecondary = ["race", "proficiencies", "health", "stats", "items"].includes(key);
-    //     setHasSecondary(needsSecondary);
-        
-    //     // Determine if tertiary key is needed (only for currency)
-    //     const needsTertiary = needsSecondary && key === "items" && secondaryKey === "currency";
-    //     setHasTertiary(needsTertiary);
-    // }, [prereqKey, subPrereqKey])
-
-    return <div class={`${style.leftAlignText}`}>
-        
-        <div>
+        <div class={style.header}>
             <h2>Prerequisites</h2>
 
             <Button onClick={addNewPrerequisites}>+ Add Rule</Button>
         </div>
 
-        <div class={`${style.prerequisites}`}>
+        <div class={style.prerequisites}>
             <For each={prerequisites()}>
-                {(form, i) => <Container theme="container" class={`${style.prereqBox}`}>
-                    <div class={`${style.prereqItem}`}>
-                        <div>
-                            <span><i>Character has</i></span>
-                            
-                            <div class={`${style.keyInput}`}>
-                                <FormField name="key">
-                                    <Select value={getPrereq("value", i()) ?? ""} onChange={(value) => setPrereq("value", i(), value)} class={`${style.inputBorder}`}>
-                                        <For each={keys}>
-                                            {key => <Option value={key}>{key}</Option>}
-                                        </For>
-                                    </Select>
-                                </FormField>
-                            </div>
+                {(form, i) => <Container theme="container" class={style.prereqBox}>
+                    <div class={style.prereqItem}>
+                        <span class={style.prefix}><i>Character has</i></span>
 
-                            <div class={`${style.operationInput}`}>
-                                <FormField name="operation">
-                                    <Switch>
-                                        <Match when={getCharacterKeyType(getPrereq("value", i()) ?? "") === "string"}>
-                                            <Select defaultValue="===" value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)} class={`${style.inputBorder}`}>
-                                                <For each={stringOperations}>
-                                                    {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
-                                                </For>
-                                            </Select>
-                                        </Match>
-                                        <Match when={getCharacterKeyType(getPrereq("value", i()) ?? "") === "number" || getCharacterKeyType(getPrereq("value", i()) ?? "") === "bigint" }>
-                                            <Select value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)} class={`${style.inputBorder}`}>
-                                                <For each={numberOperations}>
-                                                    {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
-                                                </For>
-                                            </Select>
-                                        </Match>
-                                    </Switch>
-                                </FormField>
-                            </div>
+                        <FormField name="Trait" class={style.keyField}>
+                            <Select transparent value={getPrereq("value", i()) ?? ""} onChange={(value) => setPrereq("value", i(), value)}>
+                                <For each={keys}>
+                                    {key => <Option value={key}>{key}</Option>}
+                                </For>
+                            </Select>
+                        </FormField>
 
-                            <div class={`${style.keyValueInput}`}>
+                        <Show when={["string", "number", "bigint"].includes(selectedType(i()))}>
+                            <FormField name="Operation" class={style.operationField}>
                                 <Switch>
-                                    <Match when={getCharacterKeyType(getPrereq("value", i()) ?? "") === "string"}>
-                                        <FormField name={`${getPrereq("value", i())}`}>
-                                            <Input placeholder="" type="text" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} class={`${style.keyValueInput} ${style.inputBorder}`} />
-                                        </FormField>
+                                    <Match when={selectedType(i()) === "string"}>
+                                        <Select transparent defaultValue="===" value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)}>
+                                            <For each={stringOperations}>
+                                                {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
+                                            </For>
+                                        </Select>
                                     </Match>
-                                    <Match when={getCharacterKeyType(getPrereq("value", i()) ?? "") === "number" || getCharacterKeyType(getPrereq("value", i()) ?? "") === "bigint" }>
-                                        <FormField name={`${getPrereq("value", i())}`}>
-                                            <Input type="number" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} class={`${style.keyValueInput} ${style.inputBorder}`} />
-                                        </FormField>
+                                    <Match when={selectedType(i()) === "number" || selectedType(i()) === "bigint"}>
+                                        <Select transparent value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)}>
+                                            <For each={numberOperations}>
+                                                {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
+                                            </For>
+                                        </Select>
                                     </Match>
                                 </Switch>
-                            </div>
-                        </div>
-                        <div class={`${style.bottomHalf}`}>
-                            <div class={`${style.groupInput}`}>
-                                <FormField name="Group">
-                                    <Input type="number" value={getPrereq("group", i()) ?? 0} onInput={(e) => setPrereq("group", i(), +e.currentTarget.value)}/>
-                                </FormField>
-                            </div>
+                            </FormField>
 
-                            <Button>X</Button>
-                        </div>
+                            <FormField name="Value" class={style.valueField}>
+                                <Switch>
+                                    <Match when={selectedType(i()) === "string"}>
+                                        <Input transparent type="text" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} />
+                                    </Match>
+                                    <Match when={selectedType(i()) === "number" || selectedType(i()) === "bigint"}>
+                                        <Input transparent type="number" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} />
+                                    </Match>
+                                </Switch>
+                            </FormField>
+                        </Show>
+
+                        <FormField name="Group" class={style.groupField}>
+                            <Input transparent type="number" value={getPrereq("group", i()) ?? 0} onInput={(e) => setPrereq("group", i(), +e.currentTarget.value)}/>
+                        </FormField>
+
+                        <Button transparent class={style.deleteButton} aria-label="Remove rule" onClick={() => props.prereqForm.remove(i())}>
+                            <Icon icon={Delete} size="small" color="red" />
+                        </Button>
                     </div>
                 </Container>}
             </For>

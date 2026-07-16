@@ -24,7 +24,8 @@ vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/classes', () => (
   useDnDClasses: () => (() => [wizardClass])
 }));
 vi.mock('@solidjs/router', () => ({
-  useSearchParams: () => [{ name: 'Wizard' }]
+  useSearchParams: () => [{ name: 'Wizard' }],
+  useNavigate: () => () => {}
 }));
 // Items hook returns empty arrays so Items component renders but without async fetch
 vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/items', () => ({
@@ -36,17 +37,31 @@ vi.mock('../../../../../../shared/customHooks/userSettings', () => ({
 vi.mock('../../../../../../shared/customHooks/components/Snackbar/snackbar', () => ({
   default: () => null
 }));
-// Keep real Stats/Proficiencies/Items to observe prefill side-effects. Still mock heavier tables.
-vi.mock('../featureTable', () => ({ FeatureTable: () => <div data-mock="FeatureTable" /> }));
-// Lightweight header with name input (real component not essential for these tests)
-vi.mock('../header', () => ({ Header: () => <div data-mock="Header"><label>Name<input aria-label="name" onInput={(e: any) => (globalThis as any).__FORM_NAME__ = e.currentTarget.value} /></label></div> }));
+// The shared FeaturesPopup is heavy (mads editors, SRD catalogs) — the wizard shell mounts it
+// closed; stub it out for these prefill tests.
+vi.mock('../../../../Parts/featuresPopup/featuresPopup', () => ({
+  FeaturesPopup: () => null
+}));
 
 import { Classes } from '../classes';
 
-// Fake adapter side-effects already inside component; ensure clean state
+// The environment's localStorage global is a partial stub; give the wizard's draft-autosave a
+// real in-memory Storage, fresh per test, so a leftover draft can never show the resume banner
+// and gate the ?name= prefill these tests assert on.
+const memoryStorage = (): Storage => {
+  const store = new Map<string, string>();
+  return {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => void store.set(k, String(v)),
+    removeItem: (k: string) => void store.delete(k),
+    clear: () => store.clear(),
+    key: (i: number) => Array.from(store.keys())[i] ?? null,
+    get length() { return store.size; },
+  } as Storage;
+};
+
 beforeEach(() => {
-  // reset manager state (private API not exposed; mimic by reloading page objects if needed)
-  // For simplicity just ensure starting length used in assertions.
+  vi.stubGlobal('localStorage', memoryStorage());
 });
 
 describe('Classes component prefill', () => {

@@ -1,0 +1,416 @@
+@use 'coles-solid-library/themes/variables' as *;
+
+// Shared chrome + primitives for the class-creation wizard (newDesign mockups).
+// The mockups use a violet accent that is deliberately independent of the app's
+// green/teal theme — scoped to the wizard via CSS custom props below.
+
+.wizard {
+  --wiz-accent: #a78bfa;            // rings, borders, eyebrow, checks
+  --wiz-accent-bright: #c9a8fa;     // filled buttons / selected chips
+  --wiz-on-accent: #1c1029;         // text on filled accent
+  --wiz-good: #7ac77a;              // satisfied counters
+  --wiz-warn-text: #e8b9b9;
+  --wiz-warn-border: #6e3a3a;
+  --wiz-warn-bg: #2a1517;
+
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  width: 95%;
+  margin: $spacing-3;
+  padding: $spacing-2;
+  border-radius: $border-radius-md;
+  background-color: color-mix(in srgb, $color-surface 60%, transparent) !important;
+
+  @media (max-width: 768px) {
+    margin: $spacing-1;
+    width: auto;
+    padding: $spacing-1;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Header chrome
+
+.eyebrow {
+  color: var(--wiz-accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.question {
+  margin: 2px 0 0;
+  font-size: 1.9em;
+  font-weight: 800;
+  color: var(--on-surface-color);
+}
+
+.subtitle {
+  margin: 0;
+  color: color-mix(in srgb, var(--on-surface-color) 62%, transparent);
+}
+
+// ---------------------------------------------------------------------------
+// Stepper
+
+.stepper {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  margin: $spacing-1 0;
+}
+
+.stepperItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+.stepCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 15px;
+  color: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+  background-color: color-mix(in srgb, $color-surface 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 22%, transparent);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stepCurrent .stepCircle {
+  color: var(--on-surface-color);
+  border-color: var(--wiz-accent);
+  box-shadow: 0 0 0 1px var(--wiz-accent), 0 0 12px color-mix(in srgb, var(--wiz-accent) 45%, transparent);
+}
+
+.stepDone .stepCircle {
+  color: var(--wiz-accent);
+  background-color: color-mix(in srgb, var(--wiz-accent) 18%, transparent);
+  border-color: color-mix(in srgb, var(--wiz-accent) 55%, transparent);
+}
+
+.stepWarn .stepCircle {
+  border-color: var(--wiz-warn-border);
+  color: var(--wiz-warn-text);
+}
+
+.stepLabel {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.stepCurrent .stepLabel {
+  color: var(--on-surface-color);
+  font-weight: 700;
+}
+
+.connector {
+  flex: 1;
+  height: 1px;
+  margin: 19px 10px 0;
+  background-color: color-mix(in srgb, var(--on-surface-color) 20%, transparent);
+}
+
+.connectorDone {
+  background-color: color-mix(in srgb, var(--wiz-accent) 65%, transparent);
+}
+
+// ---------------------------------------------------------------------------
+// Cards / sections
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  padding: $spacing-2;
+  border-radius: $border-radius-md;
+  background-color: color-mix(in srgb, $color-surface 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+}
+
+.cardLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: color-mix(in srgb, var(--on-surface-color) 80%, transparent);
+
+  svg {
+    color: var(--wiz-accent);
+  }
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-2 $spacing-3;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.counterGood {
+  color: var(--wiz-good);
+  font-size: 13px;
+}
+
+.counterMuted {
+  color: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+  font-size: 13px;
+}
+
+// ---------------------------------------------------------------------------
+// Toggle chips
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface-color);
+  background-color: color-mix(in srgb, $color-surface 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 18%, transparent);
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+
+  &:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--wiz-accent) 55%, transparent);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.chipOn {
+  background-color: var(--wiz-accent-bright);
+  border-color: var(--wiz-accent-bright);
+  color: var(--wiz-on-accent);
+}
+
+.chipCheck {
+  font-size: 12px;
+}
+
+// ---------------------------------------------------------------------------
+// Option cards (hit die / caster type)
+
+.optionRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-1;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.optionCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: $spacing-2 $spacing-1;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  color: var(--on-surface-color);
+  background-color: color-mix(in srgb, $color-surface 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 16%, transparent);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--wiz-accent) 55%, transparent);
+  }
+}
+
+.optionCardOn {
+  border-color: var(--wiz-accent);
+  background-color: color-mix(in srgb, var(--wiz-accent) 12%, transparent);
+  box-shadow: 0 0 0 1px var(--wiz-accent);
+}
+
+.optionCardStart {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.optionTitle {
+  font-size: 1.15em;
+  font-weight: 800;
+}
+
+.optionSub {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--on-surface-color) 60%, transparent);
+}
+
+.optionBadge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  color: var(--wiz-accent);
+  font-size: 14px;
+}
+
+// ---------------------------------------------------------------------------
+// Inputs
+
+.boxedField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $border-radius-md;
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 18%, transparent);
+  background-color: color-mix(in srgb, $color-surface 82%, transparent);
+
+  input,
+  textarea {
+    background: transparent !important;
+    border: none !important;
+    outline: none;
+    width: 100%;
+    color: var(--on-surface-color)
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Banners
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: $border-radius-md;
+  font-size: 14px;
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 16%, transparent);
+  background-color: color-mix(in srgb, $color-surface 85%, transparent);
+  color: color-mix(in srgb, var(--on-surface-color) 78%, transparent);
+}
+
+.bannerWarn {
+  border-color: var(--wiz-warn-border);
+  background-color: var(--wiz-warn-bg);
+  color: var(--wiz-warn-text);
+}
+
+// ---------------------------------------------------------------------------
+// Footer
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-1;
+  margin-top: $spacing-1;
+}
+
+.footerCenter {
+  color: color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  font-size: 13px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.backBtn {
+  padding: 10px 16px;
+  border-radius: $border-radius-sm;
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 22%, transparent);
+  background-color: color-mix(in srgb, $color-surface 85%, transparent);
+  color: var(--on-surface-color);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.nextBtn {
+  padding: 10px 18px;
+  border-radius: $border-radius-sm;
+  border: 1px solid transparent;
+  background-color: var(--wiz-accent-bright);
+  color: var(--wiz-on-accent);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+
+  &:hover {
+    filter: brightness(1.08);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Resume-draft banner
+
+.resumeBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-1;
+  padding: 10px 14px;
+  border-radius: $border-radius-md;
+  border: 1px solid color-mix(in srgb, var(--wiz-accent) 45%, transparent);
+  background-color: color-mix(in srgb, var(--wiz-accent) 10%, transparent);
+
+  span {
+    color: var(--on-surface-color);
+  }
+}
+
+.resumeActions {
+  display: flex;
+  gap: 8px;
+}
