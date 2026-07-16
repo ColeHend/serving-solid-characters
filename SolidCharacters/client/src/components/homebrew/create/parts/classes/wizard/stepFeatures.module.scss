@@ -59,6 +59,14 @@
   border-color: color-mix(in srgb, var(--wiz-accent) 45%, transparent);
 }
 
+// Level flagged as out-of-range (features placed outside the parent class's subclass levels) —
+// warn-tinted; sits between .pillHas and .pillOn so a selected flagged pill still reads selected.
+.pillFlag {
+  color: var(--on-surface-color);
+  background-color: color-mix(in srgb, var(--wiz-warn-text) 12%, transparent);
+  border-color: color-mix(in srgb, var(--wiz-warn-text) 55%, transparent);
+}
+
 // Selected level — filled accent (defined last so it wins over .pillHas).
 .pillOn {
   color: var(--wiz-on-accent);

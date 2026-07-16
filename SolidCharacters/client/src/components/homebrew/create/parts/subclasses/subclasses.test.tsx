@@ -1,27 +1,43 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render } from '@solidjs/testing-library';
 import { Router, Route } from '@solidjs/router';
+
+// The shared FeaturesPopup is heavy (mads editors, SRD catalogs) — the wizard shell
+// mounts it closed; stub it out for the route-render test.
+vi.mock('../../../Parts/featuresPopup/featuresPopup', () => ({
+  FeaturesPopup: () => null
+}));
+
 import Subclasses from './subclasses';
 import { buildDataSpellcasting, parseDataSpellcasting } from './subclassAdapter';
 import { SpellsKnown } from './SpellsKnown';
 
-// Minimal mock for global homebrewManager used inside component (if not already provided by test env)
-// We only stub the methods we call in onSave path; tests here focus on rendering + adapters.
-// @ts-expect-error global has no index signature for homebrewManager test stub
-global.homebrewManager = global.homebrewManager || {
-  subclasses: () => [],
-  addSubclass: () => {},
-  updateSubclass: () => {},
+// The environment's localStorage global is a partial stub; give the wizard's draft-autosave
+// a real in-memory Storage, fresh per test, so leftover drafts can't leak between tests.
+const memoryStorage = (): Storage => {
+  const store = new Map<string, string>();
+  return {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => void store.set(k, String(v)),
+    removeItem: (k: string) => void store.delete(k),
+    clear: () => store.clear(),
+    key: (i: number) => Array.from(store.keys())[i] ?? null,
+    get length() { return store.size; },
+  } as Storage;
 };
+
+beforeEach(() => {
+  vi.stubGlobal('localStorage', memoryStorage());
+});
 
 describe('Subclasses Component', () => {
   test('renders route without crashing', () => {
-    render(() => (
+    const { container } = render(() => (
       <Router>
         <Route path='/homebrew/create/subclasses' component={Subclasses} />
       </Router>
     ));
-    // No explicit assertions: absence of throw implies success similar to backgrounds test style.
+    expect(container).toBeTruthy();
   });
 });
 

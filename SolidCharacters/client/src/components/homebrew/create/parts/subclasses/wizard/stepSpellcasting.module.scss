@@ -1,0 +1,95 @@
+@use 'coles-solid-library/themes/variables' as *;
+
+// Spellcasting step — subclass caster setup, custom known counts, granted spells,
+// info blocks and the slot-progression preview. Accent comes from the wizard-root
+// --wiz-* custom props (the page root carries classesWizard.module.scss's .wizard).
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+// ---------------------------------------------------------------------------
+// Custom spells-known editor (SpellsKnown.Other)
+
+.knownRow {
+  display: flex;
+  gap: $spacing-2;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.knownField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+// ---------------------------------------------------------------------------
+// Granted spells picker + spellcasting info blocks
+
+.spellPickerRow {
+  display: flex;
+  gap: $spacing-2;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: $spacing-2;
+}
+
+.infoActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.infoTextarea {
+  resize: vertical;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+// ---------------------------------------------------------------------------
+// Slot progression preview
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.slotTable {
+  border-collapse: collapse;
+  width: 100%;
+
+  th,
+  td {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 4px 6px;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  thead th {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--wiz-accent-bright, #c4b5fd);
+  }
+}

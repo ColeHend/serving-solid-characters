@@ -5,6 +5,8 @@ import styles from './stepEquipment.module.scss';
 interface CustomEntryInputProps {
   /** Receives the trimmed text; the parent appends it as a custom chip. */
   onCommit: (text: string) => void;
+  /** Hint shown in the expanded input; defaults to the equipment example. */
+  placeholder?: string;
 }
 
 // Collapsed "+ text" affordance that expands into a small inline input for free-form
@@ -44,7 +46,7 @@ export const CustomEntryInput: Component<CustomEntryInputProps> = (props) => {
       <span class={styles.customInput} onClick={(e) => e.stopPropagation()}>
         <Input
           value={text()}
-          placeholder="e.g. any martial weapon"
+          placeholder={props.placeholder ?? 'e.g. any martial weapon'}
           ref={(el: HTMLInputElement) => queueMicrotask(() => el.focus())}
           onInput={(e: InputEvent & { currentTarget: HTMLInputElement }) => setText(e.currentTarget.value)}
           onKeyDown={(e: KeyboardEvent) => {

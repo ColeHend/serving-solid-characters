@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ensureAllClassLevels, subclassMarkerInput, MAX_CLASS_LEVEL } from "./classProgression";
+import { detectSubclassFeatureLevels, ensureAllClassLevels, subclassMarkerInput, MAX_CLASS_LEVEL } from "./classProgression";
 import type { FeatureDetail } from "../../../models/generated";
 
 /**
@@ -64,5 +64,67 @@ describe("subclassMarkerInput", () => {
 
     it("falls back to a bare label when the class is unnamed", () => {
         expect(subclassMarkerInput("  ", 3).name).toBe("Subclass");
+    });
+});
+
+describe("detectSubclassFeatureLevels", () => {
+    it("detects the homebrew wizard's metadata.category marker", () => {
+        const cls = {
+            name: "Stormwarden",
+            features: { 2: [{ ...feat("Anything"), metadata: { category: "Subclass" } }], 5: [feat("Storm Strike")] },
+        };
+        expect(detectSubclassFeatureLevels(cls)).toEqual([2]);
+    });
+
+    it("detects the 2024 SRD names — '<ClassName> Subclass' grant plus 'Subclass Feature' follow-ups", () => {
+        const cls = {
+            name: "Wizard",
+            features: {
+                1: [feat("Spellcasting")],
+                3: [feat("Wizard Subclass")],
+                6: [feat("Subclass Feature")],
+                10: [feat("Subclass Feature")],
+            },
+        };
+        expect(detectSubclassFeatureLevels(cls)).toEqual([3, 6, 10]);
+    });
+
+    it("detects 2014 SRD archetype titles and their follow-ups, including Barbarian's 'Path feature'", () => {
+        const barbarian = {
+            name: "Barbarian",
+            features: { 1: [feat("Rage")], 3: [feat("Primal Path")], 6: [feat("Path feature")], 14: [feat("Path feature")] },
+        };
+        expect(detectSubclassFeatureLevels(barbarian)).toEqual([3, 6, 14]);
+
+        const bard = {
+            name: "Bard",
+            features: { 3: [feat("Bard College")], 6: [feat("Bard College Feature")], 14: [feat("Bard College feature")] },
+        };
+        expect(detectSubclassFeatureLevels(bard)).toEqual([3, 6, 14]);
+    });
+
+    it("detects the AI assembler's name-only marker (no metadata)", () => {
+        const marker = subclassMarkerInput("Stormwarden", 3);
+        const cls = { name: "Stormwarden", features: { 3: [{ id: "x", name: marker.name, description: marker.description }] } };
+        expect(detectSubclassFeatureLevels(cls)).toEqual([3]);
+    });
+
+    it("returns [] when nothing is detectable (caller decides the fallback)", () => {
+        expect(detectSubclassFeatureLevels({ name: "Barbarian", features: { 1: [feat("Rage")], 4: [feat("Ability Score Improvement")] } })).toEqual([]);
+        expect(detectSubclassFeatureLevels(undefined)).toEqual([]);
+        expect(detectSubclassFeatureLevels({ name: "Barbarian" })).toEqual([]);
+        expect(detectSubclassFeatureLevels({ name: "Barbarian", features: {} })).toEqual([]);
+    });
+
+    it("reports each level once, ascending, even when multiple conventions match at one level", () => {
+        const cls = {
+            name: "Cleric",
+            features: {
+                10: [feat("Subclass Feature")],
+                1: [feat("Divine Domain"), { ...feat("Divine Order"), metadata: { category: "Subclass" } }],
+                6: [feat("Divine Domain Feature")],
+            },
+        };
+        expect(detectSubclassFeatureLevels(cls)).toEqual([1, 6, 10]);
     });
 });
