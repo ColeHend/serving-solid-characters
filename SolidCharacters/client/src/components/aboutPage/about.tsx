@@ -79,6 +79,10 @@ const credits: Credit[] = [
     title: "Backgrounds",
     note: "AI-generated (ChatGPT); every effort made to avoid infringing existing copyrights.",
   },
+  {
+    title: "Damage Calculations",
+    note: "The damage calculations in The Arcane Dictionary's tools are adapted from the work of LudicSavant and AureusFulgens, whose paper on damage-per-round math remains a gold standard for 5e combat analysis — handling advantage, critical hits, and power-attack breakpoints with genuine rigor. This tool is an independent implementation of their methods and is not affiliated with or endorsed by the original authors."
+  }
 ];
 
 export const aboutPage:Component = () => {
