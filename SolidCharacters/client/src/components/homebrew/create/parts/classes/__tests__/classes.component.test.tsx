@@ -45,10 +45,23 @@ vi.mock('../../../../Parts/featuresPopup/featuresPopup', () => ({
 
 import { Classes } from '../classes';
 
+// The environment's localStorage global is a partial stub; give the wizard's draft-autosave a
+// real in-memory Storage, fresh per test, so a leftover draft can never show the resume banner
+// and gate the ?name= prefill these tests assert on.
+const memoryStorage = (): Storage => {
+  const store = new Map<string, string>();
+  return {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => void store.set(k, String(v)),
+    removeItem: (k: string) => void store.delete(k),
+    clear: () => store.clear(),
+    key: (i: number) => Array.from(store.keys())[i] ?? null,
+    get length() { return store.size; },
+  } as Storage;
+};
+
 beforeEach(() => {
-  // Drafts persist in jsdom localStorage across tests in this file — a leftover draft would
-  // show the resume banner and gate the ?name= prefill these tests assert on.
-  localStorage.clear();
+  vi.stubGlobal('localStorage', memoryStorage());
 });
 
 describe('Classes component prefill', () => {

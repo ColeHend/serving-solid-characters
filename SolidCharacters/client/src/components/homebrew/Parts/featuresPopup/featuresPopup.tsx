@@ -1,5 +1,5 @@
 import { Button, FormField, Input, Modal, FormArray, FormGroup, TextArea,   Option, Select, TabBar, Chip } from "coles-solid-library";
-import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, onCleanup, Setter, Show, Switch } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, For, Match, on, onCleanup, Setter, Show, Switch, untrack } from "solid-js";
 import { MadCommands, MadType } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
 import { FlatCard } from "../../../../shared/components/flatCard/flatCard";
@@ -108,7 +108,6 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
             }
         }
 
-        setFeature(newFeature);        
         setShow(false);
         if (props.onClose) {
             props.onClose(newFeature);
@@ -280,34 +279,31 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         setFeatureValue('name', feature().name);
         setFeatureValue('description', feature().description);
         setFeatureValue("metadata", feature().metadata);
-        
+
         const mads = feature().metadata?.mads ?? [];
-        
-        console.log("ran!");
-        
 
-        mads.forEach((mad) => {
-            const formGroup = new FormGroup<MadForm>({
-                group: [ mad.group, []],
-                type: [mad.type, []],
-                value: [mad.value, []],
-                name: [`${currentMadsLength() + 1}`, []],
-                prerequisites: [mad.prerequisites, []],
-                commandCategory: [``, []],
-                commandType: [``, []],
-                command: [mad.command, []],
+        // fillForm runs from a tracked effect: reading currentMadsLength() / growing the
+        // FormArray in tracking scope makes that effect depend on the array it mutates,
+        // re-running until the script times out. Hydrate untracked, and reset first so a
+        // re-fill replaces the rows instead of appending duplicates.
+        untrack(() => {
+            currentFeatureMetadata.reset();
+            mads.forEach((mad, index) => {
+                const formGroup = new FormGroup<MadForm>({
+                    group: [ mad.group, []],
+                    type: [mad.type, []],
+                    value: [mad.value, []],
+                    name: [`${index + 1}`, []],
+                    prerequisites: [mad.prerequisites, []],
+                    commandCategory: [``, []],
+                    commandType: [``, []],
+                    command: [mad.command, []],
+                })
+
+
+                currentFeatureMetadata.add(formGroup);
             })
-            
-        
-            currentFeatureMetadata.add(formGroup);
         })
-
-        // for (let index = 0; index < mads.length; index++) {
-        //     const element = mads[index];
-            
-        //     // addNewMetadata()
-            
-        // }
     }
 
     const prettyCommand = (command: string) => {
@@ -316,9 +312,12 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
         return split;
     }
 
-    createEffect(()=>{ 
-        const popup = popupRef();
-
+    // Hydrate the internal form only when the PARENT feature changes. on() runs its
+    // callback untracked, so the setFeature writes inside fillForm() can't re-trigger
+    // this effect — that tracked read+write cycle was the "too much recursion" loop
+    // on the edit path. Callers must pass a fresh object reference on every open
+    // (openAddFeature/openEditFeature both do) or the hydration won't re-fire.
+    createEffect(on(() => props.feature[0](), (parent) => {
         if (feature() === null) {
             setFeature({
                 id: "",
@@ -328,31 +327,23 @@ export const FeaturesPopup: Component<popupProps> = (props) => {
                     mads: [],
                 }
             })
-        } else {
-            if (props.feature[0]().name !== "") {
-                fillForm()
-                // queueMicrotask(() => {
-                // })
-            }
         }
 
-        if (popup) {
-            
-            const parentEL = popup.parentElement;
-            
-            if (parentEL) {
-                const parent = parentEL.parentElement;
+        if (parent.name !== "") {
+            fillForm()
+        } else {
+            // Add mode (blank feature): drop any rows left over from a previous edit.
+            currentFeatureMetadata.reset();
+        }
+    }))
 
-                
-
-                if (parent) {
-                    parent.style.setProperty("padding-bottom","0","important")
-                    // parent.addEventListener("load",() => fillForm());
-
-                    
-
-                }
-            }
+    // DOM-only side effect: strip the modal wrapper's bottom padding once it mounts.
+    createEffect(() => {
+        const popup = popupRef();
+        if (!popup) return;
+        const parent = popup.parentElement?.parentElement;
+        if (parent) {
+            parent.style.setProperty("padding-bottom","0","important")
         }
     })
 

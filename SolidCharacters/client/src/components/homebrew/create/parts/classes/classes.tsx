@@ -22,6 +22,7 @@ import {
   WizardStep,
   buildLevelEntities,
   draftKey,
+  draftStorage,
   emptyWizardLevels,
   hydrateDraft,
   parseDraft,
@@ -308,9 +309,7 @@ export const Classes: Component = () => {
   // Draft autosave + resume
 
   const [resumeState, setResumeState] = createSignal<ResumeState>('none');
-  const [pendingDraft, setPendingDraft] = createSignal(parseDraft(
-    typeof localStorage !== 'undefined' ? localStorage.getItem(storageKey()) : null
-  ));
+  const [pendingDraft, setPendingDraft] = createSignal(parseDraft(draftStorage.read(storageKey())));
   if (pendingDraft()) setResumeState('pending');
 
   // Baseline snapshot: autosave only writes once the state differs from it, so opening a
@@ -329,7 +328,7 @@ export const Classes: Component = () => {
   };
 
   const discardDraft = () => {
-    localStorage.removeItem(storageKey());
+    draftStorage.remove(storageKey());
     setPendingDraft(null);
     setResumeState('discarded');
   };
@@ -344,11 +343,7 @@ export const Classes: Component = () => {
       // Re-check at fire time: a baseline reset (prefill/resume) may have landed after
       // this write was scheduled — never persist a draft equal to the baseline state.
       if (snapshot === baseline()) return;
-      try {
-        localStorage.setItem(storageKey(), snapshot);
-      } catch (err) {
-        console.warn('Class draft autosave failed', err);
-      }
+      draftStorage.write(storageKey(), snapshot);
     }, 500);
   });
   onCleanup(() => clearTimeout(autosaveTimer));
@@ -385,8 +380,12 @@ export const Classes: Component = () => {
   };
 
   const openEditFeature = (level: number, feature: FeatureDetail) => {
-    setFeatureTarget({ level, editId: feature.id, editCategory: feature.metadata?.category });
-    setCurrentFeature({ ...feature });
+    // The row hands us a Solid store node; the popup structured-clones its input while
+    // hydrating the mads FormArray, which throws "Proxy object could not be cloned" on
+    // store proxies — unwrap to the raw object and detach a deep copy first.
+    const plain = structuredClone(unwrap(feature));
+    setFeatureTarget({ level, editId: plain.id, editCategory: plain.metadata?.category });
+    setCurrentFeature(plain);
     setShowFeaturePopup(true);
   };
 
@@ -446,7 +445,7 @@ export const Classes: Component = () => {
       addSnackbar({ message: 'Saving the class failed — it was NOT stored', severity: 'error' });
       return;
     }
-    localStorage.removeItem(storageKey());
+    draftStorage.remove(storageKey());
     addSnackbar({ message: `${name} published`, severity: 'success' });
     navigate('/homebrew');
   };
