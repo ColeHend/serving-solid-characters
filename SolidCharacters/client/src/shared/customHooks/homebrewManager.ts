@@ -221,6 +221,30 @@ class HomebrewManager {
     return new Promise(res => this.updateFeatInDB(toStore).subscribe({ complete: () => res(), error: () => res() }));
   }
   private updateFeatInDB = (feat: any) => { let error = false; return httpClient$.toObservable(HombrewDB.feats.put(feat)).pipe(take(1), catchError(err => { console.error(err); error = true; addSnackbar({ message: "Error updating feat", severity: "error" }); return of(null) }), finalize(() => { if (!error) { this._setFeats(list => list.map(f => f.details.name === feat.details.name ? feat : f)); addSnackbar({ message: "Feat updated", severity: "success" }); } })) }
+  public removeFeat = (name: string): Promise<void> | void => {
+    const featName = (f: any) => f?.details?.name ?? f?.name;
+    if (!this._feats().some(f => featName(f) === name)) return;
+    const rest = this._feats().filter(f => featName(f) !== name);
+    return new Promise(res => {
+      httpClient$.toObservable(HombrewDB.feats.clear())
+      .pipe(
+        take(1),
+        concatMap(() => httpClient$.toObservable(HombrewDB.feats.bulkAdd(rest)))
+      )
+      .subscribe({
+        error: (err: unknown) => {
+          console.error(err);
+          addSnackbar({ message: "Error removing feat", severity: "error" });
+          res();
+        },
+        complete: () => {
+          this._setFeats(rest);
+          addSnackbar({ message: "Feat removed", severity: "success" });
+          res();
+        }
+      });
+    });
+  }
 
   // Spells
   public addSpell = (spell: Spell): Promise<void> | null => { if (this._spells().some(s => s.name === spell.name)) return null; return new Promise(res => this.addSpellToDB(Clone(spell)).subscribe({ complete: () => res(), error: () => res() })); }
