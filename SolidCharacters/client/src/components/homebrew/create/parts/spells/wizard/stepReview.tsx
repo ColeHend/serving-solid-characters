@@ -21,7 +21,7 @@ export const StepReview: Component<StepProps> = (props) => {
       </For>
 
       <Show when={props.isExisting()}>
-        <div class={wizStyles.bannerWarn}>
+        <div class={`${wizStyles.banner} ${wizStyles.bannerWarn}`}>
           <span>This spell is already in your homebrew collection. Deleting removes it permanently.</span>
           <Button theme="error" onClick={() => void props.deleteSpell()}>Delete spell</Button>
         </div>
