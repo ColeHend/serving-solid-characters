@@ -585,6 +585,14 @@ export function buildPreview(toolCall: AiToolCall, dndSystem = "both"): Homebrew
         case "subclass": entity = toSubclass(input); break;
         case "class": entity = toClass(input); break;
     }
+
+    // Central provenance stamp — every create path funnels through this switch (one-shot tools,
+    // class-pipeline assemble), so no per-mapper handling. Empty/whitespace → undefined = plain
+    // homebrew. The edit path (buildEditPreview) deliberately has no stamp: an unconditional
+    // overwrite there would wipe an entity's existing source.
+    const sourceInput = typeof input.source === "string" ? input.source.trim() : "";
+    (entity as { source?: string }).source = sourceInput || undefined;
+
     const title = entityTitle(kind, entity);
 
     // Hard blockers — mirror exactly what the manual editors refuse to save (name + structural integrity).

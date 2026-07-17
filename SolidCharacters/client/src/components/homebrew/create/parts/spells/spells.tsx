@@ -57,6 +57,7 @@ const Spells: Component = () => {
     page: ['', []],
     subClasses: [[], []],
     legacy: [undefined, []],
+    source: ['', []],
   });
 
   const setField = <K extends keyof SpellForm>(key: K, value: SpellForm[K]) =>
@@ -108,6 +109,7 @@ const Spells: Component = () => {
       setField('page', found.page || '');
       setField('subClasses', [...(found.subClasses ?? [])]);
       setField('legacy', found.legacy);
+      setField('source', found.source ?? '');
     });
   };
 

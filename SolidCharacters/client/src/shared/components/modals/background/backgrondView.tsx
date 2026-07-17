@@ -4,6 +4,7 @@ import { FlatCard, Modal } from "coles-solid-library";
 import styles from "./backgroundView.module.scss"
 import Markdown from "../../MarkDown/MarkDown";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { sourceLabel } from "../modals.shared";
 import { ChoiceCard } from "../../choiceCard/choiceCard";
 
 interface props {
@@ -65,7 +66,7 @@ const BackgroundView: Component<props> = (props) => {
         <DndDialogHeader onClose={()=>setShowMenu(false)}>
           <div class={`${styles.styledHeader}`}>
             <div>
-              <div class={`${styles.eyebrow}`}>Background <Show when={legacy()}><span class={`${styles.dot}`}>·</span> legacy</Show></div>
+              <div class={`${styles.eyebrow}`}>Background <Show when={legacy()}><span class={`${styles.dot}`}>·</span> legacy</Show><span class={`${styles.dot}`}>·</span> {sourceLabel(currentBackground())}</div>
 
             </div>
 

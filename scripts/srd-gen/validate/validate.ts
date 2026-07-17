@@ -1,5 +1,6 @@
 import { validateStoredCommand } from "../../../SolidCharacters/client/src/shared/ai/commands/madCommandCatalog.ts";
 import { COUNT_GATES } from "../config.ts";
+import { SOURCE } from "../emit/stampSource.ts";
 import type { Ruleset, RulesetData, FeatureDetailJson, MadFeatureJson } from "../types.ts";
 
 export interface ValidationResult {
@@ -56,6 +57,21 @@ export function validateLegacy(ruleset: Ruleset, data: RulesetData): ValidationR
             const label = `${kind}[${i}] "${row?.name ?? row?.id ?? "?"}"`;
             if (typeof row?.legacy !== "boolean") res.errors.push(`${label}: missing/non-boolean legacy`);
             else if (row.legacy !== expected) res.errors.push(`${label}: legacy=${row.legacy}, ruleset ${ruleset} expects ${expected}`);
+        });
+    }
+    return res;
+}
+
+/** Every top-level entity must carry the centrally stamped `source` ("SRD 5.1" / "SRD 5.2"). */
+export function validateSource(ruleset: Ruleset, data: RulesetData): ValidationResult {
+    const res: ValidationResult = { errors: [], warnings: [] };
+    const expected = SOURCE[ruleset];
+    for (const [kind, rows] of Object.entries(data)) {
+        if (!Array.isArray(rows)) continue;
+        rows.forEach((row: { source?: unknown; name?: string; id?: string }, i) => {
+            const label = `${kind}[${i}] "${row?.name ?? row?.id ?? "?"}"`;
+            if (typeof row?.source !== "string") res.errors.push(`${label}: missing/non-string source`);
+            else if (row.source !== expected) res.errors.push(`${label}: source="${row.source}", ruleset ${ruleset} expects "${expected}"`);
         });
     }
     return res;

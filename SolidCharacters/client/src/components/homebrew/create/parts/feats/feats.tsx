@@ -45,6 +45,7 @@ const Feats: Component = () => {
   const FeatFormGroup = new FormGroup<FeatForm>({
     name: ['', [Validators.Required]],
     description: ['', []],
+    source: ['', []],
     prerequisites: [[], []],
     metadata: [undefined, []],
     id: ['', []],
@@ -90,6 +91,7 @@ const Feats: Component = () => {
       setField('metadata', found.details?.metadata ? structuredClone(found.details.metadata) : undefined);
       setField('id', found.id || '');
       setField('legacy', found.legacy);
+      setField('source', found.source ?? '');
     });
   };
 

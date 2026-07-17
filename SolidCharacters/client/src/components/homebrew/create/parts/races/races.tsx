@@ -41,6 +41,7 @@ const Races: Component = () => {
 
   const RaceFormGroup = new FormGroup<RaceForm>({
     name: ['', [Validators.Required]],
+    source: ['', []],
     size: [[], []],
     speed: [30, []],
     languages: [[], []],
@@ -73,6 +74,7 @@ const Races: Component = () => {
   const prefillForm = (found: Race) => {
     batch(() => {
       setField('name', found.name || '');
+      setField('source', found.source ?? '');
       setField('size', parseSizes(found.size));
       setField('speed', found.speed || 30);
       setField('languages', [...(found.languages ?? [])]);

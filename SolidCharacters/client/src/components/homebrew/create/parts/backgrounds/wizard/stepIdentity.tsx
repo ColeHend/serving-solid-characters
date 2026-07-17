@@ -27,6 +27,15 @@ export const StepIdentity: Component<StepProps> = (props) => {
           )}
         />
       </div>
+
+      <div class={styles.boxedField}>
+        <span class={styles.cardLabel}>Source (optional)</span>
+        <Input
+          value={props.formGroup.get('source') ?? ''}
+          onChange={(e) => props.formGroup.set('source', e.currentTarget.value)}
+          placeholder="e.g. My Campaign"
+        />
+      </div>
     </div>
   );
 };

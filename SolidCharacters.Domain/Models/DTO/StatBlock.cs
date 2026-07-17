@@ -13,6 +13,8 @@ public class Rule
   [JsonProperty("id")] public string Id { get; set; } = null!;
   /// <summary>True for 2014 (legacy) SRD data, false for 2024; null when unknown (homebrew, stale caches).</summary>
   [JsonProperty("legacy")] public bool? Legacy { get; set; }
+  /// <summary>Provenance label, e.g. "SRD 5.1", "SRD 5.2"; null means homebrew/unknown.</summary>
+  [JsonProperty("source")] public string? Source { get; set; }
   [JsonProperty("name")] public string Name { get; set; } = null!;
   [JsonProperty("description")] public string Description { get; set; } = null!;
   /// <summary>Broad grouping for browsing, e.g. "Combat", "Movement", "Exploration", "Social".</summary>
@@ -200,6 +202,8 @@ public class Monster
   [JsonProperty("id")] public string Id { get; set; } = null!;
   /// <summary>True for 2014 (legacy) SRD data, false for 2024; null when unknown.</summary>
   [JsonProperty("legacy")] public bool? Legacy { get; set; }
+  /// <summary>Provenance label, e.g. "SRD 5.1", "SRD 5.2"; null means homebrew/unknown.</summary>
+  [JsonProperty("source")] public string? Source { get; set; }
 
   [JsonProperty("name")] public string Name { get; set; } = null!;
   [JsonProperty("size")] public string Size { get; set; } = null!;   // "Tiny".."Gargantuan"

@@ -7,6 +7,9 @@
  * `legacy` (2014 → true, 2024 → false) is optional in these types because parsers must
  * NOT emit it — the central emit/stampLegacy.ts pass owns it, and validateLegacy hard-gates
  * its presence before write (same ownership model as ids/mads).
+ *
+ * `source` ("SRD 5.1" / "SRD 5.2") follows the same model: emit/stampSource.ts owns it,
+ * validateSource hard-gates it, parsers must not emit it.
  */
 
 export type Ruleset = "2014" | "2024";
@@ -43,6 +46,7 @@ export interface PrerequisiteJson {
 export interface FeatJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     details: FeatureDetailJson;
     prerequisites: PrerequisiteJson[];
 }
@@ -91,6 +95,7 @@ export interface SpellcastingJson {
 export interface ClassJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     hit_die: string;
     primary_ability: string;
@@ -107,6 +112,7 @@ export interface ClassJson {
 export interface SubclassJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     parent_class: string;
     description: string;
@@ -128,6 +134,7 @@ export interface AbilityBonusChoiceJson {
 export interface RaceJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     size: string;
     speed: number;
@@ -147,6 +154,7 @@ export interface SubraceJson extends RaceJson {
 export interface BackgroundJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     desc: string;
     proficiencies: ProficienciesJson;
@@ -160,6 +168,7 @@ export interface BackgroundJson {
 export interface SpellJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     description: string;
     duration: string;
@@ -184,6 +193,7 @@ export interface SpellJson {
 export interface ItemJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     desc: string;
     type: number; // 0 Weapon, 1 Armor, 2 Tool, 3 Item
@@ -195,6 +205,7 @@ export interface ItemJson {
 export interface MagicItemJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     desc: string;
     rarity: string;
@@ -208,6 +219,7 @@ export interface MagicItemJson {
 export interface WeaponMasteryJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     damage: string;
     properties: string[];
@@ -223,6 +235,7 @@ export interface WeaponMasteryJson {
 export interface RuleJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     description: string;
     category?: string;
@@ -359,6 +372,7 @@ export interface MonsterAttackJson {
 export interface MonsterJson {
     id: string;
     legacy?: boolean;
+    source?: string;
     name: string;
     size: string; // "Tiny".."Gargantuan"
     type: string; // creature type: "humanoid", "dragon"

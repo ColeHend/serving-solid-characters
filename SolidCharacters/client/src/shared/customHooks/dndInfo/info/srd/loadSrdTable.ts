@@ -5,6 +5,7 @@ interface SrdTable<T> {
   toArray(): Promise<T[]>;
   // bulkPut may receive a mapped (keyed) shape, so accept any[].
   bulkPut(rows: any[]): Promise<unknown>;
+  clear(): Promise<void>;
 }
 
 /** Outcome of a single SRD load: the rows plus whether the load succeeded (vs failed, e.g.
@@ -48,6 +49,10 @@ export async function loadSrdTable<T>(opts: LoadSrdTableOpts<T>): Promise<SrdLoa
   }
 }
 
+// Every makeSrdLoader call registers a force-refresh here, so refreshAllSrdTables covers all
+// datasets (both rulesets, both magic-item tables, masteries) without per-loader wiring.
+const srdRefreshers: Array<() => Promise<SrdLoadResult<unknown>>> = [];
+
 /**
  * Wraps loadSrdTable with in-flight de-duplication: concurrent callers share one request,
  * a successful load is cached, and a failed load clears the cache so the next call retries.
@@ -56,7 +61,7 @@ export async function loadSrdTable<T>(opts: LoadSrdTableOpts<T>): Promise<SrdLoa
  */
 export function makeSrdLoader<T>(opts: LoadSrdTableOpts<T>): () => Promise<SrdLoadResult<T>> {
   let inFlight: Promise<SrdLoadResult<T>> | undefined;
-  return () => {
+  const load = () => {
     if (!inFlight) {
       inFlight = loadSrdTable(opts).then(r => {
         if (!r.ok) inFlight = undefined;
@@ -65,4 +70,40 @@ export function makeSrdLoader<T>(opts: LoadSrdTableOpts<T>): () => Promise<SrdLo
     }
     return inFlight;
   };
+
+  // Force-refresh: neither load() (skips the network once the table is seeded, memoizes forever)
+  // nor the SW's StaleWhileRevalidate api-srd cache will ever pull updated server data on their
+  // own, so this fetches with a cache-busting param, and only replaces the cached rows AFTER a
+  // successful fetch — a failed pull (e.g. offline) must never wipe existing offline data.
+  const refresh = async (): Promise<SrdLoadResult<T>> => {
+    const sep = opts.endpoint.includes('?') ? '&' : '?';
+    try {
+      const rows = await firstValueFrom(HttpClient$.get<T[]>(`${opts.endpoint}${sep}_r=${Date.now()}`));
+      const fresh = rows ?? [];
+      await opts.table.clear();
+      if (fresh.length) {
+        const toStore = opts.mapForStore ? opts.mapForStore(fresh) : fresh;
+        await opts.table.bulkPut(toStore).catch(err => console.error(`Error saving ${opts.label}:`, err));
+      }
+      if (fresh.length && opts.setSignal) opts.setSignal(fresh);
+      const result: SrdLoadResult<T> = { rows: fresh, ok: true };
+      inFlight = Promise.resolve(result);
+      return result;
+    } catch (e) {
+      console.error(`${opts.label} refresh error`, e);
+      return { rows: [], ok: false };
+    }
+  };
+  srdRefreshers.push(refresh as () => Promise<SrdLoadResult<unknown>>);
+
+  return load;
+}
+
+/**
+ * Re-pull every registered SRD dataset from the server, replacing IndexedDB contents and
+ * in-memory signals. Used by the "Update SRD data" flow after the manifest version check
+ * detects stale cached data. Caller inspects per-dataset `ok` for partial failure.
+ */
+export function refreshAllSrdTables(): Promise<SrdLoadResult<unknown>[]> {
+  return Promise.all(srdRefreshers.map(refresh => refresh()));
 }

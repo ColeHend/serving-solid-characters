@@ -3,6 +3,7 @@ import { Subclass } from "../../../../models/generated";
 import { Modal } from "coles-solid-library";
 import styles from "./subclassView.module.scss";
 import Markdown from "../../MarkDown/MarkDown";
+import { sourceLabel } from "../modals.shared";
 
 interface props {
   subclass: Accessor<Subclass>;
@@ -22,7 +23,7 @@ const SubclassView: Component<props> = (props) => {
     <Modal title={currentSubclass().name} show={props.show}>
       <div class={`${styles.wrapper}`}>
         <Show when={currentSubclass().parentClass}>
-          <h2 class={`${styles.subtitle}`}>Subclass · {currentSubclass().parentClass}</h2>
+          <h2 class={`${styles.subtitle}`}>Subclass · {currentSubclass().parentClass} · {sourceLabel(currentSubclass())}</h2>
         </Show>
 
         <span>

@@ -46,6 +46,7 @@ const Backgrounds: Component = () => {
   const BackgroundFormGroup = new FormGroup<BackgroundForm>({
     name: ['', [Validators.Required]],
     desc: ['', []],
+    source: ['', []],
     feat: ['', []],
     abilityOptions: [[], []],
     languages: [[], []],
@@ -76,6 +77,7 @@ const Backgrounds: Component = () => {
     batch(() => {
       setField('name', found.name || '');
       setField('desc', found.desc || '');
+      setField('source', found.source ?? '');
       setField('feat', found.feat || '');
       setField('abilityOptions', found.abilityOptions ?? []);
       setField('languages', found.languages?.options ?? []);

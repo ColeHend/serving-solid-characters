@@ -59,6 +59,7 @@ export const Classes: Component = () => {
   const ClassFormGroup = new FormGroup<ClassForm>({
     name: ['', [Validators.Required]],
     description: ['', []],
+    source: ['', []],
     hitDie: [undefined, [Validators.Required]],
     primaryStat: [[], [Validators.Required]],
     savingThrows: [[], []],
@@ -126,6 +127,7 @@ export const Classes: Component = () => {
 
     // Basic fields
     setField('name', cls.name || '');
+    setField('source', cls.source ?? '');
     // Persisted / SRD class data is snake_case (see toClass5E in classAdapter.ts); fall back to camelCase
     const hitDieRaw = (cls as any).hit_die ?? cls.hitDie;
     const dieNum = typeof hitDieRaw === 'string' ? parseInt(hitDieRaw.replace(/^[dD]/, '') || '0') : hitDieRaw || 0;

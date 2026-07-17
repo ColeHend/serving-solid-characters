@@ -20,6 +20,8 @@ export type { StepMeta, StepStatus };
 export interface BackgroundForm {
   name: string;
   desc: string;
+  /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
+  source?: string;
   /** Selected origin feat's SRD id — '' = none. */
   feat: string;
   /** Ability score display names the background offers (2024-style), max 3. */
@@ -192,9 +194,11 @@ export const hydrateFeatures = (features?: FeatureDetail[]): FeatureDetail[] =>
 // Persistence assembly
 
 export function toBackground(fg: FormGroup<BackgroundForm>, extras: BackgroundExtras, existingId?: string): Background {
+  const source = ((fg.get('source') as string) || '').trim();
   return {
     id: existingId || createNewId(),
     name: ((fg.get('name') as string) || '').trim(),
+    ...(source ? { source } : {}),
     desc: (fg.get('desc') as string) || '',
     proficiencies: {
       armor: (fg.get('armorProfs') as string[]) ?? [],
@@ -329,7 +333,7 @@ export const backgroundDraftKey = (editName?: string): string =>
   `hb:backgroundDraft:${(editName ?? '').trim().toLowerCase() || 'new'}`;
 
 export const DRAFT_FORM_KEYS = [
-  'name', 'desc', 'feat', 'abilityOptions',
+  'name', 'desc', 'source', 'feat', 'abilityOptions',
   'languages', 'langChoiceAmount',
   'armorProfs', 'weaponProfs', 'toolProfs', 'skillProfs',
 ] as const satisfies readonly (keyof BackgroundForm)[];

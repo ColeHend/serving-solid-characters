@@ -4,6 +4,7 @@ import style from "./featView.module.scss";
 import { Modal } from "coles-solid-library";
 import Markdown from "../../MarkDown/MarkDown";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { sourceLabel } from "../modals.shared";
 
 interface props {
   feat: Accessor<Feat>;
@@ -52,6 +53,7 @@ const FeatView: Component<props> = (props) => {
             </Show>
 
             <span>FEAT</span>
+            <span> · {sourceLabel(currentFeat())}</span>
 
             <h1>{currentFeat()?.details?.name}</h1>
           </div>

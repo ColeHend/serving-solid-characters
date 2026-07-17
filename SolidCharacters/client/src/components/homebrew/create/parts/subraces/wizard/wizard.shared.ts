@@ -222,7 +222,7 @@ export const subraceDraftKey = (editRace?: string, editSubrace?: string): string
   `hb:subraceDraft:${(editRace ?? '').trim().toLowerCase() || '_'}:${(editSubrace ?? '').trim().toLowerCase() || 'new'}`;
 
 export const DRAFT_FORM_KEYS = [
-  'parentRaceKey', 'parentRaceName', 'name', 'desc',
+  'parentRaceKey', 'parentRaceName', 'name', 'desc', 'source',
   'size', 'speed',
   'languages', 'langChoiceAmount', 'langChoiceOptions',
   'abilityBonuses',

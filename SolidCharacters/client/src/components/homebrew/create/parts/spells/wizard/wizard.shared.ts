@@ -23,6 +23,8 @@ export interface SpellForm {
   school: string;
   description: string;
   higherLevel: string;
+  /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
+  source?: string;
   // Casting
   castingTime: string;
   range: string;
@@ -144,6 +146,8 @@ export function toDataSpell(form: SpellForm): Spell {
     subClasses: [...(form.subClasses ?? [])],
   };
   if (form.legacy !== undefined) data.legacy = form.legacy;
+  const source = form.source?.trim();
+  if (source) data.source = source;
   return data;
 }
 
@@ -244,7 +248,7 @@ export const spellDraftKey = (editName?: string): string => {
 /** Every SpellForm field round-trips through a draft — including the pass-through
  *  fields, so a drafted edit of an SRD/AI spell keeps data the wizard never shows. */
 export const DRAFT_FORM_KEYS = [
-  'name', 'level', 'school', 'description', 'higherLevel',
+  'name', 'level', 'school', 'description', 'higherLevel', 'source',
   'castingTime', 'range', 'duration', 'concentration', 'ritual',
   'isVerbal', 'isSomatic', 'isMaterial', 'materialsNeeded',
   'classes',

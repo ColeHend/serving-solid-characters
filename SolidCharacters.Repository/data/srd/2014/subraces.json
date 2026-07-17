@@ -43,7 +43,8 @@
    "age": "",
    "sizeDescription": ""
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f0066dd5-405a-4200-83c5-de318c0ce540",
@@ -103,7 +104,8 @@
    "age": "",
    "sizeDescription": ""
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "894705bb-587e-40cb-85ea-0cc01f8faaf4",
@@ -135,7 +137,8 @@
    "age": "",
    "sizeDescription": ""
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "be15b450-a00b-4daa-ba63-460f23952e43",
@@ -203,6 +206,7 @@
    "age": "",
    "sizeDescription": ""
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  }
 ]

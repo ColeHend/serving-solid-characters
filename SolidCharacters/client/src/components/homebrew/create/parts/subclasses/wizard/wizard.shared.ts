@@ -30,6 +30,8 @@ export interface SubclassForm extends SpellcastingFormState {
   parentClassId: string;
   name: string;
   description: string;
+  /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
+  source?: string;
   /** Spell-picker selection on the Spellcasting step; ephemeral, never drafted/persisted. */
   selectedSpellName: string;
 }
@@ -202,8 +204,10 @@ export const subclassStorageKey = (parentClass: string, name: string): string =>
   `${parentClass.toLowerCase()}__${name.toLowerCase()}`;
 
 export function toDataSubclass(form: SubclassForm, levels: SubclassLevels): Subclass {
+  const source = form.source?.trim();
   return {
     name: form.name,
+    ...(source ? { source } : {}),
     parentClass: form.parentClass,
     description: form.description || '',
     features: buildSubclassFeatures(levels.features),
@@ -310,7 +314,7 @@ export const subclassDraftKey = (editClass?: string, editSubclass?: string): str
  *  parentClassId is absent from pre-existing drafts — hydrateDraft skips missing keys and the
  *  shell's parent-class lookup falls back to the name. */
 export const DRAFT_FORM_KEYS = [
-  'parentClass', 'parentClassId', 'name', 'description',
+  'parentClass', 'parentClassId', 'name', 'description', 'source',
   'hasCasting', 'casterType', 'castingModifier',
   'spellsKnownCalc', 'halfCasterRoundUp', 'hasCantrips', 'hasRitualCasting',
   'spellsKnownPerLevel', 'spellcastingInfo', 'subclassSpells',

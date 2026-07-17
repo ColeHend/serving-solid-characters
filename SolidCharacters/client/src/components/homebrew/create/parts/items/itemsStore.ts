@@ -17,6 +17,8 @@ export interface DraftItem {
   kind: DraftKind;
   name: string;
   desc: string; // single rich text / markdown string (joined for legacy arrays)
+  /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
+  source?: string;
   cost: { quantity: number; unit: string };
   weight?: number;
   tags: string[];
@@ -91,6 +93,7 @@ function toDraft(entity: any): DraftItem {
       ...blob,
       name: entity.name || blob.name || '',
       desc: typeof entity.desc === 'string' ? entity.desc : blob.desc || '',
+      source: entity.source || blob.source || '',
       cost: parsedCost
     } as DraftItem;
   }
@@ -123,6 +126,7 @@ function toDraft(entity: any): DraftItem {
     kind,
     name: entity.name || '',
     desc: Array.isArray(entity.desc) ? (entity.desc[0] || '') : (entity.desc || ''),
+    source: entity.source || '',
     cost: parsedCost,
     weight: entity.weight,
     // Tags: merge any explicit tags plus parsed weapon/armor property keywords
@@ -241,9 +245,11 @@ function fromDraftToData(d: DraftItem, existing?: DataItem): DataItem {
   let typeEnum = DataItemTypeEnum.Item;
   if (d.kind === 'Weapon') typeEnum = DataItemTypeEnum.Weapon;
   else if (d.kind === 'Armor') typeEnum = DataItemTypeEnum.Armor;
+  const source = d.source?.trim();
   return {
     id: existing?.id || Date.now(),
     name: d.name,
+    ...(source ? { source } : {}),
     desc: d.desc,
     type: typeEnum,
     weight: d.weight || 0,

@@ -17,6 +17,7 @@ import InstallControl from "../pwa/InstallControl";
 import { recoverFromChunkError } from "../pwa/preloadRecovery";
 import ErrorFallback from "../shared/components/errorFallback";
 import { useOnline } from "../shared/customHooks/utility/useOnline";
+import { checkSrdFreshness } from "../pwa/offline/srdVersion";
 
 // A lazy route whose JS/CSS chunk fails to load (typically a stale-SW transition) throws
 // one of these. Detect it so the ErrorBoundary can self-heal instead of dead-ending.
@@ -119,6 +120,15 @@ const RootApp: Component<RouteSectionProps<unknown>> = (props) => {
 
   // Reactive connectivity for the offline indicator (see subheader below).
   const online = useOnline();
+
+  // Startup runs its own freshness check (install.ts); this catches users who START offline
+  // and reconnect later, so the "Update SRD data" button can still appear mid-session.
+  let wasOffline = false;
+  createEffect(() => {
+    const isOnline = online();
+    if (isOnline && wasOffline) void checkSrdFreshness();
+    wasOffline = !isOnline;
+  });
 
   // --------quickLinks Memo---------
   const quickLinks = createMemo<{

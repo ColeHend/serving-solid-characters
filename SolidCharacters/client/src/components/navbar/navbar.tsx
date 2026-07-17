@@ -5,8 +5,11 @@ import { Button, Container, Icon } from "coles-solid-library";
 import DataTransferModal from "../DataTransfering/dataTransferModal";
 import { Dictionary, FileExport, Menu } from "coles-solid-library/icons";
 import GrimoireNavButton from "./GrimoireNavButton";
+import UpdateSrdNavButton from "./UpdateSrdNavButton";
 import { isAiConfigured } from "../../shared/customHooks/userSettings";
 import { RulesDictionary } from "../../shared/components/modals/rulesDictionary/rulesDictionary";
+import { srdUpdateAvailable } from "../../pwa/offline/srdVersion";
+import { useOnline } from "../../shared/customHooks/utility/useOnline";
 
 type Props = {
     style?: CSSModuleClasses[string],
@@ -26,6 +29,7 @@ const Navbar: Component<Props> = (props) => {
   const [showDataTransfer, setShowDataTransfer] = createSignal(false);
   const [showRulesDict, setShowRulesDict] = createSignal(false);
   const [local, other] = splitProps(props, ["list"]);
+  const online = useOnline();
 
   return (
     <Container theme="header"  class={`${navStyles.navbar}`}>
@@ -61,6 +65,10 @@ const Navbar: Component<Props> = (props) => {
 
           <Show when={isAiConfigured()}>
             <GrimoireNavButton />
+          </Show>
+
+          <Show when={srdUpdateAvailable() && online()}>
+            <UpdateSrdNavButton />
           </Show>
 
           <Button transparent ref={props.setAnchor} onClick={()=>(local.list[1](true))} >

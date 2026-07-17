@@ -6,6 +6,7 @@ import { useDnDSubraces } from "../../../customHooks/dndInfo/info/all/subraces";
 import Markdown from "../../MarkDown/MarkDown";
 import { Description } from "./description/description";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { sourceLabel } from "../modals.shared";
 import { FlatCard } from "coles-solid-library";
 
 interface props {
@@ -62,7 +63,7 @@ const RaceView: Component<props> = (props) => {
     <div class={`${styles.raceWrapper}`} ref={setMenuRef}>
       <DndDialogHeader onClose={()=>setShow(old => !old)}>
         <div class={`${styles.styledHeader}`}>
-          Species<Show when={race().legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show>
+          Species<Show when={race().legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show><span class={`${styles.dot}`}>·</span>{sourceLabel(race())}
 
           <h1>{race()?.name ?? ""}</h1>
         </div>

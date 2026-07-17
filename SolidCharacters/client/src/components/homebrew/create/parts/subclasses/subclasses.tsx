@@ -67,6 +67,7 @@ const Subclasses: Component = () => {
     spellcastingInfo: [[], []],
     subclassSpells: [[], []],
     selectedSpellName: ['', []],
+    source: ['', []],
   });
 
   const setField = <K extends keyof SubclassForm>(key: K, value: SubclassForm[K]) =>
@@ -114,6 +115,7 @@ const Subclasses: Component = () => {
       setField('parentClassId', parentMatch ? classSelectorKey(parentMatch) : '');
       setField('name', found.name || '');
       setField('description', found.description || '');
+      setField('source', found.source ?? '');
       setLevels({ features: hydrateSubclassFeatures(found.features) });
       if (found.spellcasting) {
         const parsed = parseDataSpellcasting(found.spellcasting as never);

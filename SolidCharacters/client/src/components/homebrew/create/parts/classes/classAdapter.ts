@@ -179,8 +179,10 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
 
   // NOTE: persisted classes are snake_case while Class5E declares camelCase — a pre-existing
   // storage inconsistency (readers tolerate both); hence the two-step cast.
+  const source = form.source?.trim();
   const payload: Class5EPayload = {
     name: form.name?.trim(),
+    ...(source ? { source } : {}),
     hit_die,
     primary_ability: primaryAbility,
     saving_throws: (form.savingThrows || []).map(statName),
