@@ -1,4 +1,4 @@
-import { createStore } from 'solid-js/store';
+import { createStore, unwrap } from 'solid-js/store';
 import { createMemo } from 'solid-js';
 import { homebrewManager } from '../../../../../shared';
 import type { Item as DataItem, ItemProperties } from '../../../../../models/data/items';
@@ -341,6 +341,14 @@ async function loadSrdOnce(): Promise<void> {
   }
 }
 
+// Re-snapshot homebrew from the live manager signal. The loadSrdOnce snapshot can predate
+// Dexie finishing its initial load, which strands ?name= deep links to homebrew items.
+function refreshHomebrew() {
+  const hb: Record<string, DataItem> = {};
+  homebrewManager.items().forEach(i => { if (i?.name) hb[i.name] = i as DataItem; });
+  setState('homebrew', hb);
+}
+
 function selectNew() {
   const draft = ensureKindDefaults(blankDraft(), { overwrite: true });
   setState(p => ({ selection: { activeName: '__new__' }, template: null, form: draft, selectionVersion: p.selectionVersion + 1 }));
@@ -439,7 +447,10 @@ function persist(): { ok: boolean; errs?: string[] } {
   if (errs.length) return { ok: false, errs };
   const activeKey = state.selection.activeName;
   const existing = state.homebrew[activeKey];
-  const dataItem = fromDraftToData(state.form!, existing);
+  // Detach from the store proxy: fromDraftToData copies arrays (tags, features) into
+  // properties, and homebrewManager Clone()s the item — structuredClone throws on proxies,
+  // which silently dropped the Dexie write for any item with tags.
+  const dataItem = fromDraftToData(unwrap(state.form!) as DraftItem, existing);
   const isNew = !existing || activeKey === '__new__';
   // Perform persistence through homebrewManager
   if (isNew) {
@@ -462,6 +473,7 @@ function persist(): { ok: boolean; errs?: string[] } {
 export const itemsStore = {
   state,
   loadSrdOnce,
+  refreshHomebrew,
   selectNew,
   select,
   updateField,
