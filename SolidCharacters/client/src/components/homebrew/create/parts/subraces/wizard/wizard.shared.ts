@@ -273,6 +273,12 @@ export interface StepProps {
   setExtras: SetStoreFunction<RaceExtras>;
   /** Parent-race options for the Identity step's selector, keyed by raceSelectorKey. */
   raceOptions: () => RaceOption[];
+  /** Names of existing homebrew subraces of the selected parent race (Identity step's edit picker). */
+  subraceOptions: () => string[];
+  /** Currently-edited subrace name from ?subrace= ('' when creating new). */
+  subracePickerValue: () => string;
+  /** Retargets the wizard at an existing subrace ('' = "+ New Subrace"). */
+  onPickSubrace: (name: string) => void;
   goToStep: (step: SubraceWizardStep) => void;
   /** Opens the shared FeaturesPopup in "add" mode. */
   openAddFeature: () => void;
