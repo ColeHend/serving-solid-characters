@@ -107,9 +107,15 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
 
     const features:FeatureDetail[] = [];
 
+    // Carry choiceKey/metadata through so the feat's mads (character-change commands)
+    // actually apply — collectMadFeatures reads them off character.features.
+    const backgroundFeat = getFeature(form.BackgrndFeat)?.details;
     features.push({
         name: form.BackgrndFeat,
-        description: getFeature(form.BackgrndFeat)?.details.description ?? ""
+        description: backgroundFeat?.description ?? "",
+        choiceKey: backgroundFeat?.choiceKey,
+        metadata: backgroundFeat?.metadata,
+        id: ""
     })
 
     
@@ -276,6 +282,14 @@ export function toCharacter5e(form: CharacterForm,charClasses: Accessor<string[]
             equipped: equipped(),
             attuned: attuned(),
         },
+        movementTypes: [],
+        movementSpeeds: {},
+        senses: {},
+        rollBonuses: [],
+        grantedActions: [],
+        statChoices: {},
+        proficiencyChoices: {},
+        spellChoices: {}
     });
 
     return payload;
