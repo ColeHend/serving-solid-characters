@@ -1,7 +1,7 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
-import { Show, ErrorBoundary, lazy } from "solid-js";
+import { Show, ErrorBoundary, lazy, createEffect } from "solid-js";
 import "./index.scss";
 import App from "./App";
 import 'solid-devtools';
@@ -11,6 +11,7 @@ import { initInstallFlow } from './pwa/install';
 import { initPreloadRecovery } from './pwa/preloadRecovery';
 import RootApp from "./components/rootApp";
 import ErrorFallback from "./shared/components/errorFallback";
+import { getUserSettings } from "./shared";
 
 // Auto-heal lazy chunk / CSS preload failures (stale-SW transitions) before anything renders.
 initPreloadRecovery();
@@ -40,7 +41,6 @@ const CreateCharacterPDF = lazy(() => import("./components/characters/characterC
 const HomebrewBackgrounds = lazy(() => import("./components/homebrew/create/parts/backgrounds/backgrounds"));
 const DMCommand = lazy(() => import("./components/dmCommand/dmCommand"));
 
-console.log("Application initializing...");
 
 const root = document.getElementById("root");
 if (!root) {
@@ -51,11 +51,17 @@ if (!root) {
       <p style="opacity:.8;margin:0;">The app couldn't find its mount point. Please reload the page.</p>
     </div>
   `;
-} else {
-  console.log("Root element found, continuing initialization");
 }
 
 if (root) {
+  const [settings, setSettings] = getUserSettings();
+  createEffect(() => {
+    if (settings().theme === 'parchment') {
+      document.body.classList.add('parchment-bg');
+    } else {
+      document.body.classList.remove('parchment-bg');
+    }
+  })
   // Clear the static HTML app-shell loader (index.html) and mount synchronously — no artificial
   // delay; the Router's Suspense + lazy routes handle async chunk loading from here.
   root.innerHTML = '';
