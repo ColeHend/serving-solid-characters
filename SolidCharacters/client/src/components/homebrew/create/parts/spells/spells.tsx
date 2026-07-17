@@ -1,383 +1,314 @@
-import { Component, For, createSignal, createMemo, Show, createEffect, onMount, Accessor, onCleanup } from "solid-js";
-import styles from './spells.module.scss';
-import { Input, Button, Select, Option, Chip, Body, TextArea, FormField, Checkbox } from "coles-solid-library";
-import { Candle, DeployedCode, IdentityPlatform, Save } from "coles-solid-library/icons";
-import { getAddNumberAccent, UniqueSet } from "../../../../../shared/";
+import { Component, Match, Show, Switch, batch, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { useNavigate, useSearchParams } from "@solidjs/router";
+import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-solid-library";
+import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
-import { createStore } from "solid-js/store";
-import { Spell } from "../../../../../models/generated";
-import HomebrewManager from "../../../../../shared/customHooks/homebrewManager";
-import { useSearchParams } from "@solidjs/router";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
-import { FlatCard } from "../../../../../shared/components/flatCard/flatCard";
+import { Spell } from "../../../../../models/generated";
 import { takeEditHandoff } from "../../../../../shared/ai/editHandoff";
+import {
+  STEP_META,
+  SpellForm,
+  SpellWizardStep,
+  collectForm,
+  draftStorage,
+  hydrateDraft,
+  parseDraft,
+  serializeDraft,
+  spellDraftKey,
+  stepStatus,
+  toDataSpell,
+} from "./wizard/wizard.shared";
+import { Stepper } from "./wizard/stepper";
+import { WizardFooter } from "./wizard/wizardFooter";
+import { StepIdentity } from "./wizard/stepIdentity";
+import { StepCasting } from "./wizard/stepCasting";
+import { StepClasses } from "./wizard/stepClasses";
+import { StepReview } from "./wizard/stepReview";
+import styles from "../classes/wizard/classesWizard.module.scss";
 
-const Spells: Component = () => {  
-  
-  const [currentSpell, setCurrentSpell] = createStore<Spell>({
-    id: "",
-    name: "",
-    description: "",
-    duration: "",
-    concentration: false,
-    level: "0",
-    range: "",
-    ritual: false,
-    school: "",
-    castingTime: "",
-    damageType: "",
-    page: "",
-    isMaterial: false,
-    isSomatic: false,
-    isVerbal: false,
-    materialsNeeded: "",
-    higherLevel: "",
-    classes: [],
-    subClasses: [],
-    components:"", 
-  });
-  
-   // Helper to extract pure data from the store for API calls
-  const getCleanData = () => {
-    return {
-      id: currentSpell.id,
-      name: currentSpell.name,
-      description: spellDesc(), // Use the signal value directly
-      duration: currentSpell.duration,
-      concentration: currentSpell.concentration,
-      level: currentSpell.level,
-      range: currentSpell.range,
-      ritual: currentSpell.ritual,
-      school: currentSpell.school,
-      castingTime: currentSpell.castingTime,
-      damageType: currentSpell.damageType,
-      page: currentSpell.page,
-      isMaterial: currentSpell.isMaterial,
-      isSomatic: currentSpell.isSomatic,
-      isVerbal: currentSpell.isVerbal,
-      materialsNeeded: currentSpell.materialsNeeded,
-      higherLevel: spellHigherLevel(), // Use the signal value directly
-      classes: [...currentSpell.classes],
-      subClasses: [...currentSpell.subClasses],
-      components: currentSpell.components,
-    };
-  };
+type ResumeState = 'none' | 'pending' | 'resumed' | 'discarded';
 
-  const doesExist = createMemo(()=>HomebrewManager.spells().findIndex((x) => x.name.toLowerCase() === currentSpell.name.toLowerCase()) > -1)
-   const createSpell = () => {
-    HomebrewManager.addSpell(structuredClone(getCleanData()));
-  }
-  
-  const updateSpell = () => {
-    HomebrewManager.updateSpell(structuredClone(getCleanData()));
-  }
-  
-  const spellLevels = Array.from({ length: 10 }, (_, i) => i);
+const Spells: Component = () => {
   const allSpells = useDnDSpells();
   const allClasses = useDnDClasses();
-  
-  const [searchParam] = useSearchParams();
-  
-  const ClassNames = createMemo(()=> allClasses().map((x) => x.name));
-  const [tempValue, setTempValue] = createStore<{[key:string]:string}>({});
-  const [showCustoms, setShowCustoms] = createStore<{ [key: string]: boolean }>({
-    castingTime: false,
-    range: false,
+  const [searchParams] = useSearchParams<{ name: string }>();
+  const navigate = useNavigate();
+
+  const SpellFormGroup = new FormGroup<SpellForm>({
+    name: ['', [Validators.Required]],
+    level: ['0', []],
+    school: ['', []],
+    description: ['', []],
+    higherLevel: ['', []],
+    castingTime: ['', []],
+    range: ['', []],
+    duration: ['', []],
+    concentration: [false, []],
+    ritual: [false, []],
+    isVerbal: [false, []],
+    isSomatic: [false, []],
+    isMaterial: [false, []],
+    materialsNeeded: ['', []],
+    classes: [[], []],
+    id: ['', []],
+    components: ['', []],
+    damageType: ['', []],
+    page: ['', []],
+    subClasses: [[], []],
+    legacy: [undefined, []],
   });
-  const [spellDesc, setSpellDesc] = createSignal("");
-  const [spellHigherLevel, setSpellHigherLevel] = createSignal("");
-  
-  const getSchools = () => {
-    const schools = new UniqueSet<string>();
-		
-    allSpells().forEach(spell => schools.add(spell.school));
-    return schools.value.sort()
-  };
-  
-  const getCastingTimes = () => {
-    const castingTimes = new UniqueSet<string>();
-    allSpells().forEach(spell => castingTimes.add(spell.castingTime));
-    return castingTimes.value.sort()
-  };
-  
-  const getRanges = () => {
-    const ranges = new UniqueSet<string>();
-    allSpells().forEach(spell => ranges.add(spell.range));
-    return ranges.value.sort()
-  }
-  
-  const getDurations = () => {
-    const durations = new UniqueSet<string>(); 
-    allSpells().forEach(spell => durations.add(spell.duration));
-    return durations.value.sort()
-  }
-  
-  const fillSpellInfo = (search?: boolean)=> {
-    const searchName = search ? searchParam.name : currentSpell.name;
-    const spell = HomebrewManager.spells().find((x)=>x.name === searchName);
-    const srdSpell = allSpells().find((x)=>x.name === searchName)
 
-    if(srdSpell) {
-      setCurrentSpell(srdSpell);
-      setSpellDesc(srdSpell.description);
-      setSpellHigherLevel(srdSpell.higherLevel ?? "");
+  const setField = <K extends keyof SpellForm>(key: K, value: SpellForm[K]) =>
+    SpellFormGroup.set(key, value);
+
+  const [step, setStep] = createSignal<SpellWizardStep>(SpellWizardStep.Identity);
+
+  const paramString = (value: string | string[] | undefined) => {
+    if (typeof value === 'string') return value;
+    return value?.join(' ') ?? '';
+  };
+  const editName = () => paramString(searchParams.name);
+  const storageKey = () => spellDraftKey(editName());
+
+  const classNames = createMemo(() => allClasses().map(c => c.name));
+
+  // The stored homebrew spell the current name points at (live via homebrewManager —
+  // the useDnD* homebrew snapshot never sees in-session mutations). Matched loosely,
+  // but deletes/updates go through the stored EXACT name, which is what Dexie keys on.
+  const storedMatch = createMemo(() => {
+    const name = ((SpellFormGroup.get('name') as string) || '').trim().toLowerCase();
+    return name ? homebrewManager.spells().find(s => (s.name || '').toLowerCase() === name) : undefined;
+  });
+  const isExisting = () => !!storedMatch();
+
+  // ---------------------------------------------------------------------------
+  // Prefill (?name= edit mode + AI "Edit manually" handoff)
+
+  const prefillForm = (found: Spell) => {
+    batch(() => {
+      setField('name', found.name || '');
+      setField('level', found.level || '0');
+      setField('school', found.school || '');
+      setField('description', found.description || '');
+      setField('higherLevel', found.higherLevel || '');
+      setField('castingTime', found.castingTime || '');
+      setField('range', found.range || '');
+      setField('duration', found.duration || '');
+      setField('concentration', !!found.concentration);
+      setField('ritual', !!found.ritual);
+      setField('isVerbal', !!found.isVerbal);
+      setField('isSomatic', !!found.isSomatic);
+      setField('isMaterial', !!found.isMaterial);
+      setField('materialsNeeded', found.materialsNeeded || '');
+      setField('classes', [...(found.classes ?? [])]);
+      setField('id', found.id || '');
+      setField('components', found.components || '');
+      setField('damageType', found.damageType || '');
+      setField('page', found.page || '');
+      setField('subClasses', [...(found.subClasses ?? [])]);
+      setField('legacy', found.legacy);
+    });
+  };
+
+  // ---------------------------------------------------------------------------
+  // Draft autosave + resume
+
+  const [resumeState, setResumeState] = createSignal<ResumeState>('none');
+  const [pendingDraft, setPendingDraft] = createSignal(parseDraft(draftStorage.read(storageKey())));
+  if (pendingDraft()) setResumeState('pending');
+
+  // Baseline snapshot: autosave only writes once the state differs from it, so opening the
+  // page (or a prefilled edit) without touching anything never creates a draft.
+  const [baseline, setBaseline] = createSignal(serializeDraft(SpellFormGroup, step()));
+
+  const resumeDraft = () => {
+    const draft = pendingDraft();
+    if (!draft) return;
+    hydrateDraft(SpellFormGroup, draft);
+    setStep(draft.step);
+    setPrefilled(true); // draft wins over ?name= prefill
+    setResumeState('resumed');
+    setBaseline(serializeDraft(SpellFormGroup, step()));
+  };
+
+  const discardDraft = () => {
+    draftStorage.remove(storageKey());
+    setPendingDraft(null);
+    setResumeState('discarded');
+  };
+
+  let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
+  createEffect(() => {
+    const snapshot = serializeDraft(SpellFormGroup, step());
+    if (resumeState() === 'pending') return; // don't clobber an undecided draft
+    if (snapshot === baseline()) return;
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+      // Re-check at fire time: a baseline reset (prefill/resume) may have landed after
+      // this write was scheduled — never persist a draft equal to the baseline state.
+      if (snapshot === baseline()) return;
+      draftStorage.write(storageKey(), snapshot);
+    }, 500);
+  });
+  onCleanup(() => clearTimeout(autosaveTimer));
+
+  // Reactive prefill: wait until the search param and spell catalogs are available.
+  // Homebrew wins over an SRD spell of the same name, like the old page.
+  const [prefilled, setPrefilled] = createSignal(false);
+  createEffect(() => {
+    if (prefilled() || resumeState() === 'pending') return;
+    const target = editName().trim().toLowerCase();
+    if (!target) return;
+    const stored = homebrewManager.spells().find(s => (s.name || '').toLowerCase() === target);
+    const found = stored ?? allSpells().find(s => (s.name || '').toLowerCase() === target);
+    if (found) {
+      prefillForm(found);
+      setPrefilled(true);
+      setBaseline(serializeDraft(SpellFormGroup, step()));
     }
-    if (spell) {
-      setCurrentSpell(spell);
-      setSpellDesc(spell.description);
-      setSpellHigherLevel(spell.higherLevel ?? "");
-    };
+  });
+
+  // ---------------------------------------------------------------------------
+  // Publish / delete
+
+  const publish = async () => {
+    const name = ((SpellFormGroup.get('name') as string) || '').trim();
+    if (!name) {
+      addSnackbar({ message: 'Name your spell on the Identity step first', severity: 'warning' });
+      setStep(SpellWizardStep.Identity);
+      return;
+    }
+    addSnackbar({ message: 'Publishing spell...', severity: 'info' });
+    const data = toDataSpell(collectForm(SpellFormGroup));
+    const editKey = editName().trim().toLowerCase();
+    // Duplicate guard: block only when the name collides with a spell we're NOT editing.
+    const looseExists = homebrewManager.spells().some(s => (s.name || '').toLowerCase() === name.toLowerCase());
+    if (looseExists && name.toLowerCase() !== editKey) {
+      addSnackbar({ message: `A spell named ${name} already exists`, severity: 'warning' });
+      return;
+    }
+    // Dexie keys spells by name, so renaming an edited spell publishes a NEW record and
+    // leaves the old-named row behind (Delete on Review removes it) — same as subclasses.
+    // Update-vs-add follows the manager's exact-name check so an update can't silently no-op.
+    const exactExists = homebrewManager.spells().some(s => s.name === data.name);
+    await (exactExists ? homebrewManager.updateSpell(data) : homebrewManager.addSpell(data));
+    // The manager resolves even when Dexie fails (it snackbars the error itself) — only
+    // treat the publish as done once the spell is actually in the live list.
+    if (!homebrewManager.spells().some(s => s.name === data.name)) {
+      addSnackbar({ message: 'Saving the spell failed — it was NOT stored', severity: 'error' });
+      return;
+    }
+    draftStorage.remove(storageKey());
+    addSnackbar({ message: `${name} published`, severity: 'success' });
+    navigate('/homebrew');
   };
 
-  onMount(()=>{
-    // A spell handed off from the Grimoire assistant's "Edit manually" isn't saved yet, so it can't be
-    // looked up by name — load the entity directly. Falls back to the ?name= edit path otherwise.
+  const deleteSpell = async () => {
+    const target = storedMatch();
+    if (!target) return;
+    await homebrewManager.removeSpell(target.name);
+    draftStorage.remove(storageKey());
+    navigate('/homebrew');
+  };
+
+  // ---------------------------------------------------------------------------
+  // Test instrumentation: aggregate reactive snapshot for unit tests
+
+  const [debugSnapshot, setDebugSnapshot] = createSignal({
+    name: '', level: '', school: '', classes: ''
+  });
+  createEffect(() => {
+    setDebugSnapshot({
+      name: (SpellFormGroup.get('name') as string) || '',
+      level: (SpellFormGroup.get('level') as string) || '',
+      school: (SpellFormGroup.get('school') as string) || '',
+      classes: ((SpellFormGroup.get('classes') as string[]) ?? []).join(','),
+    });
+  });
+
+  onMount(() => {
+    // A spell handed off from the Grimoire assistant's "Edit manually" isn't saved yet, so
+    // it can't be looked up by name — load the entity directly. The one-shot take() means
+    // this can only fire once; the ?name= edit path covers everything else.
     const draft = takeEditHandoff<Spell>("spell");
     if (draft) {
-      setCurrentSpell(draft);
-      setSpellDesc(draft.description ?? "");
-      setSpellHigherLevel(draft.higherLevel ?? "");
-    } else if (searchParam.name) {
-      fillSpellInfo(true);
+      prefillForm(draft);
+      setPrefilled(true);
+      setBaseline(serializeDraft(SpellFormGroup, step()));
     }
-
     document.body.classList.add('spells-bg');
-  })
+  });
 
   onCleanup(() => {
     document.body.classList.remove('spells-bg');
-  })
-  createEffect(() => {
-    setCurrentSpell({ 'description': spellDesc() });
-  });
-  createEffect(() => {
-    setCurrentSpell({ 'higherLevel': spellHigherLevel() });
   });
 
-  const isValid: Accessor<boolean> = createMemo(() => {
-    return currentSpell.name?.trim().length > 0 &&
-      currentSpell.range?.trim().length > 0 && 
-      currentSpell.castingTime?.trim().length > 0 &&
-      currentSpell.duration?.trim().length > 0 &&
-      currentSpell.description?.trim().length > 0;
-  });
+  // ---------------------------------------------------------------------------
 
-  return <Body class={`${styles.body}`}>
-    <h1>Spells</h1>
-    <div class={`${styles.wrapper}`}>
-      <FlatCard icon={IdentityPlatform} headerName="Identity" startOpen={true} transparent>
-        <p>
-          <FormField class={`${styles.smallField}`} name="Spell Name">
-            <Input transparent value={currentSpell['name']} onInput={(e) => setCurrentSpell({ name: e.currentTarget.value })} />
-          </FormField>
-          <Show when={doesExist()}>
-            <Button onClick={()=>fillSpellInfo()}>Fill Info</Button>
-            <Button onClick={() => HomebrewManager.removeSpell(currentSpell.name)}>Delete</Button>
-          </Show>
-        </p>
-        <p>
-          <FormField name="Description">
-            <TextArea transparent={true} text={spellDesc} setText={setSpellDesc} />
-          </FormField>
-        </p>
-        <span class={`${styles.break}`} />
-        <p>
-          <FormField name="Higher Levels">
-            <TextArea transparent={true} text={spellHigherLevel} setText={setSpellHigherLevel} />
-          </FormField>
-        </p>
-      </FlatCard>
-      <FlatCard icon={Candle} headerName="Components" transparent>
-        <span class={`${styles.break}`} />
-        <p>
-          <Checkbox label="has Verbal?"
-            checked={currentSpell['isVerbal']}
-            onChange={(e) => setCurrentSpell({ isVerbal: e })} />
-          <Checkbox label="has Somatic?"
-            checked={currentSpell['isSomatic']}
-            onChange={(e) => setCurrentSpell({ isSomatic: e })} />
-          <Checkbox label="has Material?"
-            checked={currentSpell['isMaterial']}
-            onChange={(e) => setCurrentSpell({ isMaterial: e })} />
-          <Checkbox label="is Ritual?"
-            checked={currentSpell['ritual']}
-            onChange={(e) => setCurrentSpell({ ritual: e })} />
-        </p>
-        <span class={`${styles.break}`} />
-        <Show when={currentSpell['isMaterial']}>
-          <div>
-            <FormField name="Material Components">
-              <Input transparent
-                value={currentSpell['materialsNeeded']}
-                onChange={(e) => setCurrentSpell({ materialsNeeded: e.currentTarget.value })} />
-            </FormField>
+  const eyebrowName = () => ((SpellFormGroup.get('name') as string) || '').trim() || 'New Spell';
+
+  const stepProps = {
+    formGroup: SpellFormGroup,
+    allSpells: allSpells as unknown as () => Spell[],
+    classNames,
+    goToStep: (s: SpellWizardStep) => setStep(s),
+    publish,
+    deleteSpell,
+    isExisting,
+  };
+
+  return (
+    <Container
+      theme="surface"
+      class={styles.wizard}
+      data-testid="spell-form"
+      data-name={debugSnapshot().name}
+      data-level={debugSnapshot().level}
+      data-school={debugSnapshot().school}
+      data-classes={debugSnapshot().classes}
+    >
+      <Show when={resumeState() === 'pending'}>
+        <div class={styles.resumeBanner}>
+          <span>You have an unpublished draft{pendingDraft()?.form?.name ? ` of "${pendingDraft()!.form.name}"` : ''}. Resume where you left off?</span>
+          <div class={styles.resumeActions}>
+            <Button theme="primary" onClick={resumeDraft}>Resume draft</Button>
+            <Button transparent onClick={discardDraft}>Discard</Button>
           </div>
-        </Show>
-        <div class={`${styles.flexBoxRow}`}>
-          <span class={`${styles.break}`} />
-          <p class={`${styles.field}`}>
-            <label>Level </label>
-            <Select class={`${styles.border} ${styles.transparent}`} value={currentSpell["level"]} onChange={(e) => setCurrentSpell({ level: e })} transparent>
-              <For each={spellLevels}>{(slotLevel) =>
-                <Option value={slotLevel.toString(10)} >
-                  {getAddNumberAccent(slotLevel)}
-                </Option>
-              }</For>
-            </Select>
-          </p>
-          <p class={`${styles.field}`}>
-            <label>School </label>
-            <Select class={`${styles.border} ${styles.transparent}`}
-              value={currentSpell["school"]}
-              onChange={(e) => setCurrentSpell({ "school": e})} transparent>
-              <For each={getSchools()}>{(school) =>
-                <Option value={school} >
-                  {school}
-                </Option>
-              }</For>
-            </Select>
-          </p>
         </div>
-      </FlatCard>
-      <FlatCard icon={DeployedCode} headerName="properties" transparent>
-        <div class={`${styles.flexBoxRow}`}>
-          <span class={`${styles.break}`} />
-          <div class={`${styles.field}`}>
-            <h4>Classes?</h4>
-            <Select class={`${styles.border} ${styles.transparent}`} value={tempValue["currentClass"]} onChange={(e)=>setTempValue({"currentClass": e})} transparent>
-              <For each={ClassNames()}>{(className) =>
-                <Option value={className} >
-                  {className}
-                </Option>
-              }</For>
-            </Select>
-            <span class={`${styles.classes}`}>
-              <Button disabled={currentSpell["classes"].includes(tempValue["currentClass"])} onClick={()=>{
-                setCurrentSpell({ classes: [...currentSpell["classes"], tempValue["currentClass"]] })
-              }}>Add</Button>
-            </span>
-          </div>
-          <div class={`${styles.classList}`}>
-            <For each={currentSpell["classes"]}>{(className) =>
-              <Chip key="Class" value={className} remove={()=>{
-                setCurrentSpell({ classes: currentSpell["classes"].filter((x: string)=>x !== className) })
-              }} />
-            }</For>
-          </div>
-          <span class={`${styles.break}`} />
-          <p class={`${styles.field}`}>
-            <span>
-              {/* <label >Custom</label>
-              <Input type="checkbox" tooltip="Custom Input?"
-                onClick={(e) => setShowCustoms({ "castingTime": e.currentTarget.checked })}
-                checked={showCustoms["castingTime"]} /> */}
+      </Show>
 
-              <Checkbox label="Custom"
-                onChange={(e) => setShowCustoms({ "castingTime": e })}
-                checked={showCustoms["castingTime"]} />
-            </span>
-            <Show when={!showCustoms["castingTime"]}>
-              <label>Casting Time</label>
-              <Select class={`${styles.border} ${styles.transparent}`}
-                value={currentSpell["castingTime"]}
-                onChange={(e) => setCurrentSpell({ "castingTime": e})} transparent>
-                <For each={getCastingTimes()}>{(castingTime) =>
-                  <Option value={castingTime} >
-                    {castingTime}
-                  </Option>
-                }</For>
-              </Select>
-            </Show>
-            <Show when={showCustoms["castingTime"]}>
-              <FormField class={`${styles.smallField}`} name="Casting Time">
-                <Input transparent
-                  value={currentSpell["castingTime"]}
-                  onChange={(e) => setCurrentSpell({ "castingTime": e.currentTarget.value})} />
-              </FormField>
-            </Show>
-          </p>
-          <p class={`${styles.field}`}>
-            <span>
-              {/* <label>Custom</label> */}
-              {/* <Input type="checkbox" tooltip="Custom Input?"
-                onClick={(e) => setShowCustoms({ "range": e.currentTarget.checked })}
-                checked={showCustoms["range"]} /> */}
-              
-              <Checkbox label="Custom" ariaLabel="Custom Input?"
-                onChange={(e) => setShowCustoms({ "range": e })}
-                checked={showCustoms["range"]} />
-            </span>
-            <Show when={!showCustoms["range"]}>
-              <label>Range</label>
-              <Select class={`${styles.border} ${styles.transparent}`} transparent
-                value={currentSpell['range']}
-                onChange={(e) => setCurrentSpell({ 'range': e})}>
-                <For each={getRanges()}>{(range) =>
-                  <Option value={range} >
-                    {range}
-                  </Option>
-                }</For>
-              </Select>
-            </Show>
-            <Show when={showCustoms["range"]}>
-              <FormField class={`${styles.smallField}`} name="Range">
-                <Input transparent value={currentSpell['range']}
-                  onChange={(e) => setCurrentSpell({ 'range': e.currentTarget.value})} />
-              </FormField>
-            </Show>
-          </p>     
-          <span class={`${styles.break}`} />
-          <p class={`${styles.field}`}>
-            <span>
-            </span>
-            <span>
-              <Checkbox label="Custom Duration?" 
-                onChange={(e) => setShowCustoms({ "duration": e })}
-                checked={showCustoms["duration"]} />
-              <Checkbox label="is Concentration?"
-                checked={currentSpell['concentration']}
-                onChange={(e) => setCurrentSpell({ concentration: e })} />
-            </span>
-            <span class={`${styles.duration}`}>
-              <Show when={!showCustoms["duration"]}>
-                <label>Duration</label>
-                <Select class={`${styles.border} ${styles.transparent}`} transparent 
-                  value={currentSpell["duration"]} 
-                  onChange={(e)=>{
-                    setCurrentSpell({ duration: e})
-                  }}>
-                  <For each={getDurations().filter((val) => currentSpell["concentration"] ? val.toLowerCase().includes("concentration") : !val.toLowerCase().includes("concentration"))}>{(duration) =>
-                    <Option value={duration} >
-                      {duration}
-                    </Option>
-                  }</For>
-                </Select>
-              </Show>
-              <Show when={showCustoms["duration"]}>
-                <FormField class={`${styles.smallField}`} name="Duration">
-                  <Input transparent
-                    value={currentSpell['duration']}
-                    onChange={(e) => setCurrentSpell({ duration: e.currentTarget.value})} />
-                </FormField>
-              </Show>
-            </span>
-          </p>
-          <span class={`${styles.break}`} />
-        </div>
-        
-      </FlatCard>
-      <FlatCard icon={Save} headerName="Saving" alwaysOpen transparent>
-        <span class={`${styles.break}`} />
-        <p>
-          <Show when={!doesExist()}>
-            <Button disabled={!isValid()} onClick={createSpell}>Create</Button>
-          </Show>
-          <Show when={doesExist()}>
-            <Button disabled={!isValid()} onClick={updateSpell}>Update</Button>
-          </Show>
-        </p>
-      </FlatCard>
-    </div>
-  </Body>
-}
+      <div class={styles.eyebrow}>Forging — {eyebrowName()}</div>
+      <h1 class={styles.question}>{STEP_META[step()].question}</h1>
+      <p class={styles.subtitle}>{STEP_META[step()].subtitle}</p>
+
+      <Stepper
+        current={step()}
+        status={(s) => stepStatus(s, SpellFormGroup)}
+        onJump={(s) => setStep(s)}
+      />
+
+      <Switch>
+        <Match when={step() === SpellWizardStep.Identity}><StepIdentity {...stepProps} /></Match>
+        <Match when={step() === SpellWizardStep.Casting}><StepCasting {...stepProps} /></Match>
+        <Match when={step() === SpellWizardStep.Classes}><StepClasses {...stepProps} /></Match>
+        <Match when={step() === SpellWizardStep.Review}><StepReview {...stepProps} /></Match>
+      </Switch>
+
+      <WizardFooter
+        step={step()}
+        spellName={(SpellFormGroup.get('name') as string) || ''}
+        onBack={() => setStep(s => Math.max(SpellWizardStep.Identity, s - 1) as SpellWizardStep)}
+        onNext={() => {
+          if (step() === SpellWizardStep.Review) {
+            void publish();
+          } else {
+            setStep(s => Math.min(SpellWizardStep.Review, s + 1) as SpellWizardStep);
+          }
+        }}
+      />
+    </Container>
+  );
+};
+
 export default Spells;
