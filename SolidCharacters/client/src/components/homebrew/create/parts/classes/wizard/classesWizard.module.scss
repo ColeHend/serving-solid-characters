@@ -1,17 +1,19 @@
 @use 'coles-solid-library/themes/variables' as *;
 
 // Shared chrome + primitives for the class-creation wizard (newDesign mockups).
-// The mockups use a violet accent that is deliberately independent of the app's
-// green/teal theme — scoped to the wizard via CSS custom props below.
+// Accent/warn tokens derive from the active theme variant so the wizard tracks
+// arcane (violet) and parchment (dnd red) alike — scoped via CSS custom props below.
 
 .wizard {
-  --wiz-accent: #a78bfa;            // rings, borders, eyebrow, checks
-  --wiz-accent-bright: #c9a8fa;     // filled buttons / selected chips
-  --wiz-on-accent: #1c1029;         // text on filled accent
-  --wiz-good: #7ac77a;              // satisfied counters
-  --wiz-warn-text: #e8b9b9;
-  --wiz-warn-border: #6e3a3a;
-  --wiz-warn-bg: #2a1517;
+  --wiz-accent: var(--primary-color);          // rings, borders, eyebrow, checks
+  --wiz-accent-bright: var(--primary-color);   // filled buttons / selected chips
+  --wiz-on-accent: var(--on-primary-color);    // text on filled accent
+  --wiz-good: var(--spark-success-color);      // satisfied counters
+  --wiz-warn-text: var(--error-color);
+  --wiz-warn-border: color-mix(in srgb, var(--error-color) 55%, transparent);
+  // Opaque (mixed into surface, not transparent) so warn text stays readable
+  // over the page art showing through the translucent wizard card.
+  --wiz-warn-bg: color-mix(in srgb, var(--error-color) 15%, var(--surface-color));
 
   display: flex;
   flex-direction: column;
