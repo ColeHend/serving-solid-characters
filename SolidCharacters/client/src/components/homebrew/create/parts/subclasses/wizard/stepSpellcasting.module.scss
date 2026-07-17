@@ -48,7 +48,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--spark-hairline);
   border-radius: 10px;
   padding: $spacing-2;
 }
@@ -62,8 +62,8 @@
   resize: vertical;
   width: 100%;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--spark-hairline);
+  background: var(--spark-raise);
   color: inherit;
   padding: 8px 10px;
   font: inherit;
@@ -82,14 +82,14 @@
 
   th,
   td {
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--spark-hairline);
     padding: 4px 6px;
     font-size: 0.75rem;
     text-align: center;
   }
 
   thead th {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--wiz-accent-bright, #c4b5fd);
+    background: var(--spark-raise);
+    color: var(--wiz-accent-bright, var(--primary-color));
   }
 }
