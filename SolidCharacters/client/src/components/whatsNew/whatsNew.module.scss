@@ -1,0 +1,26 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2);
+
+  ul {
+    margin: 0;
+    padding-left: var(--spacing-4);
+
+    li {
+      margin-bottom: var(--spacing-1);
+    }
+  }
+}
+
+.date {
+  margin: 0;
+  opacity: 0.75;
+  font-size: var(--font-size-small);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,0 +1,174 @@
+@use '../../../../../index.scss' as *;
+
+.takenRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  min-height: 28px;
+}
+
+.lockedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: $font-ui;
+  font-size: 0.76rem;
+  padding: 4px 12px;
+  border: 1px solid var(--codex-gold-deep);
+  border-radius: 999px;
+  color: var(--codex-gold);
+}
+
+.chipWithInfo {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.featList {
+  margin-top: 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+}
+
+.featRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--codex-border) 45%, transparent);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.featText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.featName {
+  font-family: $font-ui;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--codex-parchment);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.categoryChip {
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--codex-border);
+  border-radius: 4px;
+  color: var(--codex-gold);
+}
+
+.featDescription {
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  color: var(--codex-ink-dim);
+}
+
+.prereqLine {
+  font-family: $font-ui;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--codex-ink-dim);
+}
+
+.prereqUnmet {
+  color: var(--codex-gold);
+}
+
+// ── Choice-form MADS pickers ──
+.choicesLabel {
+  margin: 18px 0 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+  font-family: $font-ui;
+}
+
+.choicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choiceRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  font-family: $font-ui;
+  font-size: 0.85rem;
+}
+
+.choiceName {
+  font-weight: 600;
+  color: var(--codex-parchment);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.choicePending {
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--codex-gold);
+  border-radius: 999px;
+  color: var(--codex-gold);
+}
+
+.choiceHint {
+  font-size: 0.75rem;
+  color: var(--codex-ink-dim);
+}
+
+.choicePills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.choicePill {
+  padding: 3px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--codex-gold);
+  }
+}
+
+.choicePillActive {
+  border-color: var(--codex-gold);
+  background: color-mix(in srgb, var(--codex-gold) 16%, transparent);
+  color: var(--codex-gold);
+}

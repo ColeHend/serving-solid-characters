@@ -71,6 +71,70 @@ export class Character {
     }
 
   }
+  /** Which ruleset the character was built under. Absent on pre-rebuild characters (treat as 2014). */
+  public edition?: RulesetSelection;
+  /** Appearance, personality, and backstory freetext from the Details & Story section. */
+  public details?: CharacterDetails;
+  /** Feats picked in the creator, tagged with where they came from. */
+  public featsTaken?: CharacterFeatTaken[];
+  /** Creator round-trip state so edit mode can restore the exact builder inputs. View/PDF ignore it. */
+  public builder?: CharacterBuilderState;
+  /** True = stats already include species/background/manual bonuses; consumers must not re-add race bonuses. */
+  public statsInclusive?: boolean;
+}
+
+export type CharacterEdition = '2014' | '2024';
+/** What the creator builds against: one edition, or both merged (legacy rows badged). */
+export type RulesetSelection = CharacterEdition | 'both';
+
+export interface CharacterDetails {
+  gender?: string;
+  pronouns?: string;
+  age?: string;
+  height?: string;
+  weight?: string;
+  eyes?: string;
+  hair?: string;
+  skin?: string;
+  faith?: string;
+  appearance?: string;
+  personalityTraits?: string;
+  ideals?: string;
+  bonds?: string;
+  flaws?: string;
+  backstory?: string;
+  /** Downscaled (≤512px) JPEG data-URL. */
+  portrait?: string;
+}
+
+export interface CharacterFeatTaken {
+  name: string;
+  source: 'background' | 'chosen';
+}
+
+export type SkillOverrideState = 'none' | 'proficient' | 'expertise';
+export type AbilityGenMethod = 'standard' | 'extended' | 'pointbuy' | 'roll' | 'manual';
+
+export interface CharacterBuilderState {
+  abilityMethod: AbilityGenMethod;
+  baseScores: Stats;
+  bonusScores: Stats;
+  /** 2024 background boost per ability (+2/+1 or three +1s). */
+  backgroundBoosts: Partial<Record<keyof Stats, number>>;
+  /** Explicit skill-pill overrides only; unset skills derive from class/background picks. */
+  skillOverrides: Record<string, SkillOverrideState>;
+  /** Chosen class skills keyed by class name. */
+  classSkillChoices: Record<string, string[]>;
+  /** 4d6-drop-lowest results when abilityMethod is 'roll'. */
+  rolledPool: number[];
+  /** Species abilityBonusChoice picks ("str", "con"). Absent on older saves. */
+  raceAbilityChoices?: string[];
+  /** Species languageChoice picks. Absent on older saves. */
+  raceLanguageChoices?: string[];
+  /** Species traitChoice picks (trait names). Absent on older saves. */
+  raceTraitChoices?: string[];
+  /** Origin-feat override; '' or absent = the background's recommended feat. */
+  originFeat?: string;
 }
 export interface CharacterProficiency {
 	skills: Record<string, CharacterSkillProficiency>

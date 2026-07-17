@@ -1,0 +1,312 @@
+import { Component, For, Match, Setter, Show, Switch, createMemo, createSignal } from "solid-js";
+import { Button, Checkbox, Chip } from "coles-solid-library";
+import { srdItem } from "../../../../../models/data/generated";
+import { Item } from "../../../../../models/generated";
+import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
+import { InfoButton } from "../../shell/infoButton";
+import { useCreate } from "../../state/createContext";
+import { AddItem } from "./addItem/AddItem";
+import { CurrencyInput } from "./currencyInput";
+import { parseEquipmentChoice } from "./equipmentChoice";
+import styles from "./itemsSection.module.scss";
+
+const CURRENCIES = [
+  { key: "pp", name: "Platinum", color: "#E5E4E2", hint: "= 10 GP" },
+  { key: "gp", name: "Gold", color: "#FFD700", hint: "= 2 EP, 10 SP" },
+  { key: "ep", name: "Electrum", color: "#CDBA6C", hint: "= 5 SP" },
+  { key: "sp", name: "Silver", color: "#C0C0C0", hint: "= 10 CP" },
+  { key: "cp", name: "Copper", color: "#B87333", hint: "" },
+] as const;
+
+export const ItemsSection: Component = () => {
+  const { draft, actions, derived, data, editName } = useCreate();
+  const [classMode, setClassMode] = createSignal<"items" | "gold">("items");
+  const [backgroundMode, setBackgroundMode] = createSignal<"items" | "gold">("items");
+
+  const [viewedItem, setViewedItem] = createSignal<Item>();
+  const [showItemView, setShowItemView] = createSignal(false);
+  const viewItem = (item: Item) => {
+    setViewedItem(item);
+    setShowItemView(true);
+  };
+  /** Inventory holds free-text names (equipment packs included) — only SRD-resolvable ones get a view button. */
+  const itemByName = (name: string) =>
+    data.items().find((item) => item.name?.toLowerCase() === name.toLowerCase());
+
+  const initialClass = createMemo(() => derived.classByName(draft.classes[0]?.name ?? ""));
+
+  /**
+   * Equipment choice GROUPS: 2024 classes have a single "equipment" group; 2014 classes
+   * have several ("start_1", "start_2", …) and the player picks one option from EACH.
+   */
+  const classEquipmentGroups = createMemo((): { key: string; options: string[] }[] => {
+    const class5e = initialClass();
+    if (!class5e?.choices) return [];
+    const equipmentKey = class5e.startChoices?.equipment;
+    if (equipmentKey && class5e.choices[equipmentKey]) {
+      return [{ key: equipmentKey, options: class5e.choices[equipmentKey].options ?? [] }];
+    }
+    return Object.entries(class5e.choices)
+      .filter(([key]) => key !== "skills")
+      .map(([key, choice]) => ({ key, options: choice.options ?? [] }));
+  });
+
+  const backgroundEquipment = createMemo(() => derived.selectedBackground()?.startEquipment ?? []);
+
+  /**
+   * Grant/revoke one equipment option: embedded currency ("14 GP", "10 SP") lands in the
+   * matching coin pouch, everything else goes into the inventory.
+   */
+  const applyChoice = (checked: boolean, choice: string) => {
+    const { items, coin } = parseEquipmentChoice(choice);
+    if (coin) {
+      const delta = checked ? coin.amount : -coin.amount;
+      actions.setCurrency(coin.key, draft.items.currency[coin.key] + delta);
+    }
+    if (checked) {
+      actions.updateItems({ inventory: [...draft.items.inventory, ...items] });
+    } else {
+      actions.updateItems({
+        inventory: draft.items.inventory.filter((item) => !items.includes(item)),
+      });
+    }
+  };
+
+  const resetClassChoice = () => {
+    Object.values(draft.items.classItemChoices).forEach((choice) => applyChoice(false, choice));
+    actions.setCurrency("gp", draft.items.currency.gp - draft.items.classGold);
+    actions.updateItems({ classItemChoices: {}, classGold: 0 });
+  };
+
+  const setGroupChoice = (groupKey: string, choice: string, checked: boolean) => {
+    applyChoice(checked, choice);
+    const next = { ...draft.items.classItemChoices };
+    if (checked) next[groupKey] = choice;
+    else delete next[groupKey];
+    actions.updateItems({ classItemChoices: next });
+  };
+
+  const resetBackgroundChoice = () => {
+    if (draft.items.backgroundItemChoice) applyChoice(false, draft.items.backgroundItemChoice);
+    actions.setCurrency("gp", draft.items.currency.gp - draft.items.backgroundGold);
+    actions.updateItems({ backgroundItemChoice: null, backgroundGold: 0 });
+  };
+
+  const setClassGold = (value: number) => {
+    actions.setCurrency("gp", draft.items.currency.gp - draft.items.classGold + value);
+    actions.updateItems({ classGold: value });
+  };
+
+  const setBackgroundGold = (value: number) => {
+    actions.setCurrency("gp", draft.items.currency.gp - draft.items.backgroundGold + value);
+    actions.updateItems({ backgroundGold: value });
+  };
+
+  // AddItem keeps its [Accessor, Setter] contract; adapt the store to it.
+  const inventoryAccessor = () => [...draft.items.inventory];
+  const inventorySetter = ((value: string[] | ((prev: string[]) => string[])) => {
+    const next = typeof value === "function" ? value([...draft.items.inventory]) : value;
+    actions.updateItems({ inventory: next });
+    return next;
+  }) as Setter<string[]>;
+
+  return (
+    <div>
+      <Show when={!editName() && (initialClass() || derived.selectedBackground())}>
+        <h5 class={styles.blockLabel}>Starting equipment</h5>
+        <Show when={draft.classes.length > 1}>
+          <p class={styles.multiclassHint}>
+            Multiclass characters take starting equipment from their initial class only.
+          </p>
+        </Show>
+
+        <Show when={initialClass()}>
+          <div class={styles.sourceBlock}>
+            <div class={styles.sourceHeader}>
+              <strong>{initialClass()?.name}</strong>
+              <span class={styles.modeButtons}>
+                <Button
+                  transparent={classMode() !== "items"}
+                  onClick={() => {
+                    resetClassChoice();
+                    setClassMode("items");
+                  }}
+                >
+                  Items
+                </Button>
+                <span class={styles.orText}>or</span>
+                <Button
+                  transparent={classMode() !== "gold"}
+                  onClick={() => {
+                    resetClassChoice();
+                    setClassMode("gold");
+                  }}
+                >
+                  Gold
+                </Button>
+              </span>
+            </div>
+            <Switch>
+              <Match when={classMode() === "gold"}>
+                <label class={styles.goldRow}>
+                  Starting gold
+                  <CurrencyInput value={draft.items.classGold} onCommit={setClassGold} />
+                </label>
+              </Match>
+              <Match when={classMode() === "items"}>
+                <For each={classEquipmentGroups()}>
+                  {(group, groupIndex) => (
+                    <div>
+                      <Show when={classEquipmentGroups().length > 1}>
+                        <span class={styles.choiceGroupLabel}>Choice {groupIndex() + 1}</span>
+                      </Show>
+                      <ul class={styles.choiceList}>
+                        <For each={group.options}>
+                          {(choice) => (
+                            <li>
+                              <Checkbox
+                                checked={draft.items.classItemChoices[group.key] === choice}
+                                disabled={
+                                  !!draft.items.classItemChoices[group.key] &&
+                                  draft.items.classItemChoices[group.key] !== choice
+                                }
+                                onChange={(checked: boolean) => setGroupChoice(group.key, choice, checked)}
+                                label={<span>{choice}</span>}
+                              />
+                            </li>
+                          )}
+                        </For>
+                      </ul>
+                    </div>
+                  )}
+                </For>
+              </Match>
+            </Switch>
+          </div>
+        </Show>
+
+        <Show when={derived.selectedBackground()}>
+          <div class={styles.sourceBlock}>
+            <div class={styles.sourceHeader}>
+              <strong>{derived.selectedBackground()?.name}</strong>
+              <span class={styles.modeButtons}>
+                <Button
+                  transparent={backgroundMode() !== "items"}
+                  onClick={() => {
+                    resetBackgroundChoice();
+                    setBackgroundMode("items");
+                  }}
+                >
+                  Items
+                </Button>
+                <span class={styles.orText}>or</span>
+                <Button
+                  transparent={backgroundMode() !== "gold"}
+                  onClick={() => {
+                    resetBackgroundChoice();
+                    setBackgroundMode("gold");
+                  }}
+                >
+                  Gold
+                </Button>
+              </span>
+            </div>
+            <Switch>
+              <Match when={backgroundMode() === "gold"}>
+                <label class={styles.goldRow}>
+                  Starting gold
+                  <CurrencyInput value={draft.items.backgroundGold} onCommit={setBackgroundGold} />
+                </label>
+              </Match>
+              <Match when={backgroundMode() === "items"}>
+                <ul class={styles.choiceList}>
+                  <For each={backgroundEquipment()}>
+                    {(choice) => {
+                      const choiceString = (choice.items ?? []).join(", ");
+                      return (
+                        <li>
+                          <Checkbox
+                            checked={draft.items.backgroundItemChoice === choiceString}
+                            disabled={
+                              draft.items.backgroundItemChoice !== null &&
+                              draft.items.backgroundItemChoice !== choiceString
+                            }
+                            onChange={(checked: boolean) => {
+                              applyChoice(checked, choiceString);
+                              actions.updateItems({
+                                backgroundItemChoice: checked ? choiceString : null,
+                              });
+                            }}
+                            label={
+                              <span>
+                                ({(choice.optionKeys ?? []).join("/")}): {choiceString}
+                              </span>
+                            }
+                          />
+                        </li>
+                      );
+                    }}
+                  </For>
+                </ul>
+              </Match>
+            </Switch>
+          </div>
+        </Show>
+      </Show>
+
+      <h5 class={styles.blockLabel}>Inventory ({draft.items.inventory.length})</h5>
+      <Show when={draft.items.inventory.length > 0} fallback={<Chip value="None" />}>
+        <div class={styles.inventoryBox}>
+          <For each={draft.items.inventory}>
+            {(item) => (
+              <span class={styles.chipWithInfo}>
+                <Chip value={item} remove={() => actions.removeInventoryItem(item)} />
+                <Show when={itemByName(item)}>
+                  {(resolved) => (
+                    <InfoButton label={`View ${item} details`} onClick={() => viewItem(resolved())} />
+                  )}
+                </Show>
+              </span>
+            )}
+          </For>
+        </div>
+      </Show>
+
+      <h5 class={styles.blockLabel}>Add item</h5>
+      <AddItem
+        allItems={data.items}
+        inventory={[inventoryAccessor, inventorySetter]}
+        onView={viewItem}
+        showLegacy={draft.edition === "both"}
+      />
+
+      <h5 class={styles.blockLabel}>Currency</h5>
+      <div class={styles.moneySection}>
+        <For each={CURRENCIES}>
+          {(currency) => (
+            <div>
+              <div class={styles.currenyBox}>
+                <span class={styles.currencyHeader}>
+                  <div class={styles.currencyBar} style={{ "background-color": currency.color }} />
+                  <strong>{currency.name}</strong>
+                </span>
+                <span class={styles.moneyInput}>
+                  <CurrencyInput
+                    value={draft.items.currency[currency.key]}
+                    transparent
+                    onCommit={(value) => actions.setCurrency(currency.key, value)}
+                  />
+                </span>
+              </div>
+              <div class={styles.conversionHint}>{currency.hint}</div>
+            </div>
+          )}
+        </For>
+      </div>
+
+      <Show when={viewedItem()} keyed>
+        {(item) => <ItemPopup item={() => item as srdItem} show={[showItemView, setShowItemView]} />}
+      </Show>
+    </div>
+  );
+};

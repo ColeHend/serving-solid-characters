@@ -1,0 +1,182 @@
+@use '../../../../../index.scss' as *;
+
+.castingLine {
+  margin: 0 0 12px;
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-ink-dim);
+}
+
+.quickAddRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.quickAddField {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  background: var(--codex-card-raised);
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.suggestion {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+  }
+}
+
+.suggestionMeta {
+  font-size: 0.72rem;
+  color: var(--codex-ink-dim);
+  white-space: nowrap;
+}
+
+.emptyState {
+  border: 1px dashed var(--codex-border);
+  border-radius: 8px;
+  padding: 26px;
+  text-align: center;
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-ink-dim);
+}
+
+.levelGroup {
+  margin-bottom: 12px;
+}
+
+.levelLabel {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+  font-family: $font-ui;
+}
+
+.spellChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chipWithInfo {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.footnote {
+  margin: 10px 0 0;
+  font-family: $font-ui;
+  font-size: 0.75rem;
+  color: var(--codex-ink-dim);
+}
+
+// ---- Grimoire modal ----
+
+.grimoire {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: $font-ui;
+  padding: 4px 18px 16px;
+}
+
+.grimoireFilters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.grimoireCount {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--codex-ink-dim);
+}
+
+.grimoireList {
+  overflow-y: auto;
+  max-height: 55vh;
+  scrollbar-width: thin;
+}
+
+.grimoireRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 4px;
+  border-bottom: 1px solid color-mix(in srgb, var(--codex-border) 45%, transparent);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.grimoireText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  min-width: 190px;
+}
+
+.grimoireName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--codex-parchment);
+}
+
+.offListMark {
+  color: var(--codex-gold);
+}
+
+.grimoireMeta {
+  font-size: 0.72rem;
+  color: var(--codex-ink-dim);
+}
+
+.grimoireFlavor {
+  flex: 1;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--codex-gold);
+  opacity: 0.85;
+  text-align: right;
+}

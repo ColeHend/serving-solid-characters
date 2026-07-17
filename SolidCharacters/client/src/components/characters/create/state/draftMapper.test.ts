@@ -1,0 +1,271 @@
+import { describe, expect, it } from "vitest";
+import { Character } from "../../../../models/character.model";
+import { Background, CasterType, Class5E, Feat, Race } from "../../../../models/generated";
+import { SrdLookups, characterToDraft, draftToCharacter } from "./draftMapper";
+import { emptyDraft } from "./types";
+
+const barbarian = {
+  name: "Barbarian",
+  hitDie: "d12",
+  savingThrows: ["Strength", "Constitution"],
+  features: { 1: [{ id: "rage", name: "Rage", description: "" }] },
+  choices: { skills: { options: ["Athletics", "Perception", "Survival"], amount: 2 } },
+} as unknown as Class5E;
+
+const sorcerer = {
+  name: "Sorcerer",
+  hitDie: "d6",
+  savingThrows: ["Constitution", "Charisma"],
+  spellcasting: { metadata: { casterType: CasterType.Full, slots: {} }, knownType: 0, learnedSpells: {} },
+  features: { 3: [{ id: "sub", name: "Sorcerer Subclass", description: "" }] },
+} as unknown as Class5E;
+
+const human = {
+  name: "Human",
+  size: "Medium",
+  speed: 30,
+  abilityBonuses: [],
+  traits: [{ details: { id: "v", name: "Versatile", description: "" } }],
+} as unknown as Race;
+
+const soldier = {
+  name: "Soldier",
+  proficiencies: { skills: ["Athletics", "Intimidation"], tools: [], weapons: [], armor: [] },
+  abilityOptions: ["Strength", "Dexterity", "Constitution"],
+  feat: "Savage Attacker",
+} as unknown as Background;
+
+const feat = (name: string): Feat =>
+  ({ id: name, details: { id: name, name, description: `${name} does things.` }, prerequisites: [] }) as unknown as Feat;
+
+const lookups: SrdLookups = {
+  classes: [barbarian, sorcerer],
+  subclasses: [],
+  races: [human],
+  subraces: [],
+  backgrounds: [soldier],
+  feats: [feat("Savage Attacker"), feat("Alert")],
+};
+
+/** The plan's verification character: 2024 Human Soldier, Barbarian 1 / Sorcerer 3 (Draconic). */
+const scenarioDraft = () =>
+  emptyDraft("2024", {
+    name: "Verity",
+    alignment: "true neutral",
+    classes: [
+      { name: "Barbarian", level: 1, subclass: "", skillChoices: ["Perception"] },
+      { name: "Sorcerer", level: 3, subclass: "Draconic Sorcery", skillChoices: [] },
+    ],
+    species: "Human",
+    background: "Soldier",
+    abilityMethod: "manual",
+    baseScores: { str: 15, dex: 16, con: 14, int: 12, wis: 10, cha: 8 },
+    feats: ["Alert"],
+    spells: ["Acid Splash", "Blade Ward"],
+    languages: ["Elvish"],
+  });
+
+describe("draftToCharacter", () => {
+  const character = draftToCharacter(scenarioDraft(), lookups);
+
+  it("builds contiguous level rows with real hit dice and the subclass on each row", () => {
+    expect(character.levels).toHaveLength(4);
+    expect(character.levels.map((l) => l.level)).toEqual([1, 2, 3, 4]);
+    expect(character.levels.map((l) => l.hitDie)).toEqual([12, 6, 6, 6]);
+    expect(character.levels[0].features.map((f) => f.name)).toEqual(["Rage"]);
+    expect(character.levels[3].subclass).toBe("Draconic Sorcery");
+    expect(character.subclass).toEqual(["Draconic Sorcery"]);
+  });
+
+  it("derives HP 32, AC 13, and final scores with statsInclusive", () => {
+    expect(character.health).toEqual({ max: 32, current: 32, temp: 0 });
+    expect(character.ArmorClass).toBe(13);
+    expect(character.stats).toEqual({ str: 15, dex: 16, con: 14, int: 12, wis: 10, cha: 8 });
+    expect(character.statsInclusive).toBe(true);
+    expect(character.edition).toBe("2024");
+  });
+
+  it("persists real skill proficiencies from class picks and background", () => {
+    const skills = character.proficiencies.skills;
+    expect(skills.Perception).toMatchObject({ proficient: true, value: 2 });
+    expect(skills.Athletics).toMatchObject({ proficient: true, value: 4 });
+    expect(skills.Intimidation).toMatchObject({ proficient: true, value: 1 });
+    // The old mapper hardcoded these two as expert — they must be plain now.
+    expect(skills.Arcana).toMatchObject({ proficient: false, expertise: false, value: 1 });
+    expect(skills.History).toMatchObject({ proficient: false, expertise: false, value: 1 });
+    expect(Object.keys(skills)).toHaveLength(18);
+    // The view page indexes this legacy key casing case-sensitively.
+    expect(skills["Sleight Of Hand"]).toBeDefined();
+    expect(skills["Sleight of Hand"]).toBeUndefined();
+  });
+
+  it("marks initial-class saving throws only", () => {
+    const proficient = character.savingThrows.filter((s) => s.proficient).map((s) => s.stat);
+    expect(proficient.sort()).toEqual(["con", "str"]);
+    expect(character.savingThrows).toHaveLength(6);
+  });
+
+  it("keeps the view/PDF contract fields", () => {
+    expect(character.className).toBe("Barbarian,Sorcerer");
+    expect(character.background).toBe("Soldier");
+    expect(character.languages).toEqual(["Common", "Elvish"]);
+    expect(character.spells).toEqual([
+      { name: "Acid Splash", prepared: false },
+      { name: "Blade Ward", prepared: false },
+    ]);
+    expect(character.race.species).toBe("Human");
+    expect(character.Speed).toBe(30);
+  });
+
+  it("composes the origin feat and chosen feats into features + featsTaken", () => {
+    expect(character.featsTaken).toEqual([
+      { name: "Savage Attacker", source: "background" },
+      { name: "Alert", source: "chosen" },
+    ]);
+    expect(character.features.map((f) => f.name)).toEqual(["Savage Attacker", "Alert"]);
+    expect(character.features[0].description).toContain("Savage Attacker");
+  });
+});
+
+describe("characterToDraft", () => {
+  it("round-trips a creator-saved character", () => {
+    const original = scenarioDraft();
+    const restored = characterToDraft(draftToCharacter(original, lookups), lookups, "2014");
+    expect(restored.edition).toBe("2024");
+    expect(restored.classes).toEqual(original.classes);
+    expect(restored.species).toBe("Human");
+    expect(restored.background).toBe("Soldier");
+    expect(restored.abilityMethod).toBe("manual");
+    expect(restored.baseScores).toEqual(original.baseScores);
+    expect(restored.feats).toEqual(["Alert"]);
+    expect(restored.spells).toEqual(original.spells);
+    expect(restored.languages).toEqual(["Elvish"]);
+  });
+
+  it("round-trips a both-editions character", () => {
+    const original = emptyDraft("both", {
+      name: "Blend",
+      classes: [{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }],
+      species: "Human",
+    });
+    const restored = characterToDraft(draftToCharacter(original, lookups), lookups, "2014");
+    expect(restored.edition).toBe("both");
+    expect(restored.species).toBe("Human");
+  });
+
+  it("folds species languages and language picks into character.languages and back", () => {
+    const dwarf = {
+      name: "Dwarf",
+      size: "Medium",
+      speed: 25,
+      languages: ["Common", "Dwarvish"],
+      languageChoice: { options: ["Giant", "Gnomish"], amount: 1 },
+      abilityBonuses: [],
+      traits: [],
+    } as unknown as Race;
+    const withDwarf: SrdLookups = { ...lookups, races: [human, dwarf] };
+    const original = emptyDraft("2014", {
+      name: "Grimnir",
+      classes: [{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }],
+      species: "Dwarf",
+      languages: ["Elvish"],
+      raceLanguageChoices: ["Giant"],
+    });
+    const character = draftToCharacter(original, withDwarf);
+    expect(character.languages).toEqual(["Common", "Dwarvish", "Giant", "Elvish"]);
+
+    const restored = characterToDraft(character, withDwarf, "2014");
+    expect(restored.languages).toEqual(["Elvish"]);
+    expect(restored.raceLanguageChoices).toEqual(["Giant"]);
+  });
+
+  it("applies and round-trips race ability choice picks", () => {
+    const halfElf = {
+      name: "Half-Elf",
+      size: "Medium",
+      speed: 30,
+      abilityBonuses: [{ stat: 5, value: 2 }],
+      abilityBonusChoice: {
+        amount: 2,
+        choices: [
+          { stat: 0, value: 1 },
+          { stat: 2, value: 1 },
+        ],
+      },
+      traits: [],
+    } as unknown as Race;
+    const withHalfElf: SrdLookups = { ...lookups, races: [halfElf] };
+    const original = emptyDraft("2014", {
+      name: "Sylvie",
+      classes: [{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }],
+      species: "Half-Elf",
+      abilityMethod: "manual",
+      baseScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+      raceAbilityChoices: ["str", "con"],
+    });
+    const character = draftToCharacter(original, withHalfElf);
+    expect(character.stats).toEqual({ str: 11, dex: 10, con: 11, int: 10, wis: 10, cha: 12 });
+
+    const restored = characterToDraft(character, withHalfElf, "2014");
+    expect(restored.raceAbilityChoices).toEqual(["str", "con"]);
+    expect(restored.baseScores).toEqual(original.baseScores);
+  });
+
+  it("round-trips the extended standard array method", () => {
+    const original = emptyDraft("2024", {
+      name: "Extra",
+      classes: [{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }],
+      abilityMethod: "extended",
+      baseScores: { str: 17, dex: 15, con: 13, int: 12, wis: 10, cha: 8 },
+    });
+    const restored = characterToDraft(draftToCharacter(original, lookups), lookups, "2014");
+    expect(restored.abilityMethod).toBe("extended");
+    expect(restored.baseScores).toEqual(original.baseScores);
+  });
+
+  it("loads a pre-rebuild character without crashing and with conservative defaults", () => {
+    // Shaped like the old mapper's output: no edition/details/builder, hardcoded skill bug included.
+    const legacy = {
+      name: "Old Timer",
+      className: "Barbarian",
+      subclass: [],
+      background: "Soldier",
+      alignment: "",
+      levels: [{ class: "Barbarian", subclass: "", level: 1, hitDie: 12, features: [] }],
+      spells: [{ name: "Acid Splash", prepared: false }],
+      race: { species: "Human", features: [] },
+      languages: ["Common", "Elvish"],
+      stats: { str: 15, dex: 10, con: 14, int: 8, wis: 12, cha: 10 },
+      proficiencies: {
+        skills: { Arcana: { stat: "int", value: 10, proficient: true, expertise: true } },
+        other: {},
+      },
+      features: [{ id: "", name: "Savage Attacker", description: "" }],
+      items: { inventory: ["Spear"], equipped: [], attuned: [], currency: { platinumPieces: 0, goldPieces: 12, electrumPieces: 0, sliverPieces: 0, copperPieces: 0 } },
+    } as unknown as Character;
+
+    const draft = characterToDraft(legacy, lookups, "2014");
+    expect(draft.edition).toBe("2014");
+    expect(draft.classes).toEqual([{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }]);
+    expect(draft.abilityMethod).toBe("manual");
+    expect(draft.baseScores).toEqual(legacy.stats);
+    expect(draft.skillOverrides).toEqual({ Arcana: "expertise" });
+    // The background's own feat is derived, not treated as a chosen feat.
+    expect(draft.feats).toEqual([]);
+    expect(draft.languages).toEqual(["Elvish"]);
+    expect(draft.items.currency.gp).toBe(12);
+  });
+
+  it("falls back to the className CSV when the levels array is broken", () => {
+    const broken = {
+      name: "CSV",
+      className: "Barbarian,Sorcerer",
+      subclass: ["", "Draconic Sorcery"],
+      levels: [],
+      stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+    } as unknown as Character;
+    const draft = characterToDraft(broken, lookups, "2024");
+    expect(draft.classes.map((c) => c.name)).toEqual(["Barbarian", "Sorcerer"]);
+    expect(draft.classes[1].subclass).toBe("Draconic Sorcery");
+  });
+});

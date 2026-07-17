@@ -1,0 +1,153 @@
+@use '../../../../../index.scss' as *;
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  text-align: left;
+  background: color-mix(in srgb, var(--codex-card-raised) 55%, transparent);
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--codex-parchment);
+
+  &:hover {
+    border-color: var(--codex-gold-deep);
+  }
+}
+
+.cardSelected {
+  border-color: var(--codex-gold);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--codex-gold) 25%, transparent);
+  background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+}
+
+.cardName {
+  font-family: $font-heading;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+}
+
+.cardMeta {
+  font-family: $font-ui;
+  font-size: 0.72rem;
+  color: var(--codex-ink-dim);
+}
+
+.cardBonuses {
+  font-family: $font-ui;
+  font-size: 0.72rem;
+  color: var(--codex-gold);
+}
+
+.traitRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+}
+
+.traitChip {
+  font-family: $font-ui;
+  font-size: 0.76rem;
+  padding: 4px 12px;
+  border: 1px solid var(--codex-gold-deep);
+  border-radius: 999px;
+  color: var(--codex-gold);
+}
+
+.lineageRow {
+  margin-top: 14px;
+  max-width: 340px;
+}
+
+.blockLabel {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+  font-family: $font-ui;
+}
+
+.pairingNotice {
+  margin: 0 0 10px;
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--codex-ink-dim);
+}
+
+.choiceBlock {
+  margin-top: 14px;
+}
+
+.choicePills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.choicePill {
+  padding: 3px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--codex-gold);
+  }
+}
+
+.choicePillActive {
+  border-color: var(--codex-gold);
+  background: color-mix(in srgb, var(--codex-gold) 16%, transparent);
+  color: var(--codex-gold);
+}
+
+.choiceBlock {
+  margin-top: 14px;
+}
+
+.choicePills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.choicePill {
+  padding: 3px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--codex-gold);
+  }
+}
+
+.choicePillActive {
+  border-color: var(--codex-gold);
+  background: color-mix(in srgb, var(--codex-gold) 16)
+
+}

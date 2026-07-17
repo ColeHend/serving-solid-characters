@@ -1,0 +1,70 @@
+@use '../../../../index.scss' as *;
+
+.section {
+  background: var(--codex-card);
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 14px 20px;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: color-mix(in srgb, var(--codex-gold) 4%, transparent);
+  }
+}
+
+.numeral {
+  font-family: $font-heading;
+  font-size: 1.05rem;
+  color: var(--codex-numeral);
+  min-width: 1.6em;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  color: var(--codex-parchment);
+}
+
+.summary {
+  font-family: $font-ui;
+  font-size: 0.8rem;
+  color: var(--codex-gold);
+  opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--codex-gold);
+  opacity: 0.7;
+  transition: transform 250ms ease;
+}
+
+.chevronClosed {
+  transform: rotate(180deg);
+}
+
+.content {
+  padding: 4px 20px 20px;
+  overflow: hidden;
+}
+
+.subtitle {
+  margin: 0 0 14px;
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-ink-dim);
+}

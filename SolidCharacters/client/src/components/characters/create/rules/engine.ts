@@ -1,0 +1,382 @@
+import {
+  AbilityScores,
+  CasterType,
+  Class5E,
+  Feat,
+  Race,
+  Spell,
+  Subclass,
+  Subrace,
+} from "../../../../models/generated";
+import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
+import { SkillOverrideState } from "../../../../models/character.model";
+import {
+  getAbilityModifier,
+  getProficiencyBonus,
+} from "../../../../shared/customHooks/utility/tools/dndMath";
+import { detectSubclassFeatureLevels } from "../../../../shared/ai/refs/classProgression";
+import { ABILITY_KEYS, AbilityKey, SKILLS, SPELL_ABILITY } from "./constants";
+
+export { getAbilityModifier, getProficiencyBonus };
+
+/**
+ * The target design shows initiative as the plain DEX mod even with Alert taken (2024 RAW would
+ * add the proficiency bonus). Ship the design's behavior; the saved character still carries
+ * Alert's RollBonus metadata, so flipping this constant is the only change needed to go RAW.
+ */
+export const ALERT_ADDS_PROF_TO_INITIATIVE = false;
+
+export interface LeveledClass {
+  name: string;
+  level: number;
+}
+
+export function totalLevel(classes: LeveledClass[]): number {
+  return classes.reduce((sum, c) => sum + (c.level || 0), 0);
+}
+
+/** "d12" (2024) | "12" (2014, numeric in the file) | 12 → 12; unparseable → 0. */
+export function hitDieSides(hitDie: string | number | undefined | null): number {
+  if (typeof hitDie === "number") return Number.isFinite(hitDie) ? hitDie : 0;
+  if (!hitDie) return 0;
+  const parsed = parseInt(hitDie.replace(/^d/i, ""), 10);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+/** "Strength" | "STR" | "str." → 'str'; unknown → undefined. */
+export function normalizeAbility(name: string | undefined | null): AbilityKey | undefined {
+  const key = (name ?? "").trim().slice(0, 3).toLowerCase();
+  return (ABILITY_KEYS as string[]).includes(key) ? (key as AbilityKey) : undefined;
+}
+
+function raceBonuses(race: Race | Subrace | undefined): Partial<Record<AbilityKey, number>> {
+  const out: Partial<Record<AbilityKey, number>> = {};
+  race?.abilityBonuses?.forEach((bonus) => {
+    if (bonus.stat === AbilityScores.ALL) {
+      ABILITY_KEYS.forEach((k) => (out[k] = (out[k] ?? 0) + bonus.value));
+      return;
+    }
+    // CHOICE-stat entries resolve through abilityBonusChoice + the player's picks instead.
+    const key = normalizeAbility(AbilityScores[bonus.stat]);
+    if (key) out[key] = (out[key] ?? 0) + bonus.value;
+  });
+  return out;
+}
+
+/** The race's abilityBonusChoice applied to the player's picked abilities. */
+function raceChoiceBonuses(
+  race: Race | undefined,
+  picks: AbilityKey[],
+): Partial<Record<AbilityKey, number>> {
+  const out: Partial<Record<AbilityKey, number>> = {};
+  if (!race?.abilityBonusChoice || picks.length === 0) return out;
+  const capped = picks.slice(0, race.abilityBonusChoice.amount);
+  race.abilityBonusChoice.choices?.forEach((bonus) => {
+    const key = normalizeAbility(AbilityScores[bonus.stat]);
+    if (key && capped.includes(key)) out[key] = (out[key] ?? 0) + bonus.value;
+  });
+  return out;
+}
+
+/**
+ * Final ability scores. 2024: species grant nothing — base + manual bonus + background boosts.
+ * 2014: ability increases come from race/subrace instead and apply automatically.
+ * Both: the species' edition decides — a legacy species grants its own bonuses, a current
+ * one leaves the increases to the (edition-paired) background's boosts.
+ */
+export function computeFinalScores(
+  edition: "2014" | "2024" | "both",
+  base: Stats,
+  bonus: Stats,
+  backgroundBoosts: Partial<Record<AbilityKey, number>>,
+  race?: Race,
+  subrace?: Subrace,
+  raceAbilityChoices: AbilityKey[] = [],
+): Stats {
+  const out = {} as Stats;
+  const raceGrantsBonuses = edition === "2014" || (edition === "both" && race?.legacy === true);
+  const fromRace = raceGrantsBonuses ? raceBonuses(race) : {};
+  const fromSubrace = raceGrantsBonuses ? raceBonuses(subrace) : {};
+  const fromChoice = raceGrantsBonuses ? raceChoiceBonuses(race, raceAbilityChoices) : {};
+  const boosts = edition !== "2014" ? backgroundBoosts : {};
+  ABILITY_KEYS.forEach((k) => {
+    out[k] =
+      (base[k] ?? 0) +
+      (bonus[k] ?? 0) +
+      (boosts[k] ?? 0) +
+      (fromRace[k] ?? 0) +
+      (fromSubrace[k] ?? 0) +
+      (fromChoice[k] ?? 0);
+  });
+  return out;
+}
+
+/** Union of Common, species/lineage languages, species language picks, and manual picks. */
+export function collectLanguages(
+  manualLanguages: string[],
+  raceLanguageChoices: string[],
+  race?: Race,
+  subrace?: Subrace,
+): string[] {
+  const out: string[] = [];
+  const push = (language: string | undefined) => {
+    const name = (language ?? "").trim();
+    if (name && !out.some((l) => l.toLowerCase() === name.toLowerCase())) out.push(name);
+  };
+  push("Common");
+  race?.languages?.forEach(push);
+  subrace?.languages?.forEach(push);
+  raceLanguageChoices.forEach(push);
+  manualLanguages.forEach(push);
+  return out;
+}
+
+/**
+ * Max HP: the initial class's first level gives the die maximum; every other level (including the
+ * rest of the initial class) gives the die average (sides/2 + 1). CON mod applies per level, with
+ * each level contributing at least 1 HP. Classes missing a hit die (bad homebrew) count as d0.
+ */
+export function computeMaxHp(
+  classes: LeveledClass[],
+  classByName: (name: string) => Class5E | undefined,
+  conMod: number,
+): number {
+  let hp = 0;
+  classes.forEach((entry, classIndex) => {
+    const sides = hitDieSides(classByName(entry.name)?.hitDie);
+    for (let lvl = 1; lvl <= (entry.level || 0); lvl++) {
+      const die = classIndex === 0 && lvl === 1 ? sides : Math.floor(sides / 2) + 1;
+      hp += Math.max(1, die + conMod);
+    }
+  });
+  return hp;
+}
+
+/** Unarmored baseline; armor/shield handling stays on the sheet side. */
+export function computeAc(dexMod: number): number {
+  return 10 + dexMod;
+}
+
+export function computeInitiative(dexMod: number, featNames: string[], profBonus: number): number {
+  const hasAlert = featNames.some((f) => f.trim().toLowerCase() === "alert");
+  return dexMod + (hasAlert && ALERT_ADDS_PROF_TO_INITIATIVE ? profBonus : 0);
+}
+
+export interface SkillRow {
+  name: string;
+  ability: AbilityKey;
+  state: SkillOverrideState;
+  /** Where the current state came from; null when the skill is untrained. */
+  source: "class" | "background" | "manual" | null;
+  mod: number;
+}
+
+export interface SkillInputs {
+  /** Union of every selected class's picked skills. */
+  classSkills: string[];
+  backgroundSkills: string[];
+  /** Explicit pill overrides; these win over derived class/background states. */
+  overrides: Record<string, SkillOverrideState>;
+  finalScores: Stats;
+  profBonus: number;
+}
+
+export function computeSkillRows(inputs: SkillInputs): SkillRow[] {
+  const classSet = new Set(inputs.classSkills.map((s) => s.toLowerCase()));
+  const backgroundSet = new Set(inputs.backgroundSkills.map((s) => s.toLowerCase()));
+  return SKILLS.map((skill) => {
+    const lower = skill.name.toLowerCase();
+    const override = inputs.overrides[skill.name];
+    let state: SkillOverrideState = "none";
+    let source: SkillRow["source"] = null;
+    if (override !== undefined) {
+      state = override;
+      source = "manual";
+    } else if (classSet.has(lower)) {
+      state = "proficient";
+      source = "class";
+    } else if (backgroundSet.has(lower)) {
+      state = "proficient";
+      source = "background";
+    }
+    const profMultiplier = state === "expertise" ? 2 : state === "proficient" ? 1 : 0;
+    const mod =
+      getAbilityModifier(inputs.finalScores[skill.ability] ?? 10) +
+      inputs.profBonus * profMultiplier;
+    return { name: skill.name, ability: skill.ability, state, source, mod };
+  });
+}
+
+export function computePassivePerception(skillRows: SkillRow[]): number {
+  const perception = skillRows.find((row) => row.name === "Perception");
+  return 10 + (perception?.mod ?? 0);
+}
+
+export interface SaveRow {
+  key: AbilityKey;
+  mod: number;
+  proficient: boolean;
+}
+
+/** Saving-throw proficiencies come from the initial class only (multiclass rule). */
+export function computeSavingThrows(
+  initialClass: Class5E | undefined,
+  finalScores: Stats,
+  profBonus: number,
+): SaveRow[] {
+  const proficient = new Set(
+    (initialClass?.savingThrows ?? [])
+      .map(normalizeAbility)
+      .filter((k): k is AbilityKey => k !== undefined),
+  );
+  return ABILITY_KEYS.map((key) => ({
+    key,
+    proficient: proficient.has(key),
+    mod: getAbilityModifier(finalScores[key] ?? 10) + (proficient.has(key) ? profBonus : 0),
+  }));
+}
+
+export interface SpellcastingInfo {
+  className: string;
+  ability: AbilityKey;
+  saveDc: number;
+  attack: number;
+}
+
+export function computeSpellcasting(
+  classes: LeveledClass[],
+  classByName: (name: string) => Class5E | undefined,
+  finalScores: Stats,
+  profBonus: number,
+): SpellcastingInfo[] {
+  return classes
+    .map((entry) => ({ entry, class5e: classByName(entry.name) }))
+    .filter(({ class5e }) => !!class5e?.spellcasting)
+    .map(({ entry, class5e }) => {
+      const ability =
+        normalizeAbility(class5e?.spellcasting?.spellsKnownCalc?.stat) ??
+        SPELL_ABILITY[entry.name.toLowerCase()] ??
+        "cha";
+      const mod = getAbilityModifier(finalScores[ability] ?? 10);
+      return {
+        className: entry.name,
+        ability,
+        saveDc: 8 + profBonus + mod,
+        attack: profBonus + mod,
+      };
+    });
+}
+
+/** "d12 · STR, CON · Martial"-style caster label for the class detail card. */
+export function casterTypeLabel(class5e: Class5E | undefined): string {
+  switch (class5e?.spellcasting?.metadata?.casterType) {
+    case CasterType.Full:
+      return "Full caster";
+    case CasterType.Half:
+      return "Half caster";
+    case CasterType.Third:
+      return "Third caster";
+    case CasterType.Pact:
+      return "Pact caster";
+    default:
+      return "Martial";
+  }
+}
+
+/**
+ * Level a subclass unlocks: the class's own subclass-marker features, else the earliest feature
+ * level across its subclasses, else the 5e-conventional 3.
+ */
+export function subclassUnlockLevel(
+  class5e: Class5E | undefined,
+  subclassesOfClass: Subclass[],
+): number {
+  const detected = detectSubclassFeatureLevels(class5e);
+  if (detected.length > 0) return detected[0];
+  const featureLevels = subclassesOfClass
+    .flatMap((sub) => Object.keys(sub.features ?? {}).map(Number))
+    .filter((lvl) => Number.isFinite(lvl) && lvl > 0);
+  return featureLevels.length > 0 ? Math.min(...featureLevels) : 3;
+}
+
+export interface SkillChoiceSpec {
+  options: string[];
+  amount: number;
+}
+
+/** Class skill picks; empty options in the data (2024 Bard) mean "any skill". */
+export function classSkillChoiceSpec(class5e: Class5E | undefined): SkillChoiceSpec {
+  const choice = class5e?.choices?.["skills"];
+  const options = choice?.options?.length
+    ? choice.options
+    : class5e?.proficiencies?.skills?.length
+      ? class5e.proficiencies.skills
+      : SKILLS.map((s) => s.name);
+  return { options, amount: choice?.amount || 2 };
+}
+
+/** ✦ marker — the spell is on none of the character's class lists. */
+export function isOffList(spell: Spell, classNames: string[]): boolean {
+  const owned = new Set(classNames.map((n) => n.toLowerCase()));
+  return !(spell.classes ?? []).some((c) => owned.has(c.toLowerCase()));
+}
+
+/** First sentence of a rules description, markdown stripped, ≤90 chars. */
+export function summarize(text: string | undefined | null): string {
+  const plain = (text ?? "")
+    .replace(/[*_`#>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const sentence = plain.split(/(?<=[.!?])\s/)[0] ?? "";
+  return sentence.length > 90 ? `${sentence.slice(0, 89).trimEnd()}…` : sentence;
+}
+
+/** One-line grimoire flavor for a spell row. */
+export function spellFlavor(spell: Spell): string {
+  return summarize(spell.description);
+}
+
+export type FeatCategory = "Origin" | "General" | "Other";
+
+/**
+ * Normalized feat category from the data ("Origin Feat"/"General Feat"); data without a category
+ * (2014) falls back to the app's existing zero-prerequisites heuristic for origin feats.
+ */
+export function featCategory(feat: Feat): FeatCategory {
+  const category = feat.details?.metadata?.category?.toLowerCase() ?? "";
+  if (category.includes("origin")) return "Origin";
+  if (category.includes("general")) return "General";
+  if (category) return "Other";
+  return (feat.prerequisites?.length ?? 0) === 0 ? "Origin" : "General";
+}
+
+/** Combined caster level for multiclass slot tables (full + half/2 + third/3, rounded down). */
+export function multiclassCasterLevel(
+  classes: LeveledClass[],
+  classByName: (name: string) => Class5E | undefined,
+): number {
+  return classes.reduce((sum, entry) => {
+    switch (classByName(entry.name)?.spellcasting?.metadata?.casterType) {
+      case CasterType.Full:
+      case CasterType.Pact:
+        return sum + entry.level;
+      case CasterType.Half:
+        return sum + Math.floor(entry.level / 2);
+      case CasterType.Third:
+        return sum + Math.floor(entry.level / 3);
+      default:
+        return sum;
+    }
+  }, 0);
+}
+
+/** Parse a darkvision range out of species trait text, e.g. "…Darkvision with a range of 60 feet…". */
+export function darkvisionRange(traits: { details?: { name?: string; description?: string } }[]): number | undefined {
+  for (const trait of traits ?? []) {
+    const text = `${trait.details?.name ?? ""} ${trait.details?.description ?? ""}`;
+    if (!/darkvision/i.test(text)) continue;
+    const match = text.match(/(\d+)\s*(?:feet|foot|ft)/i);
+    if (match) return parseInt(match[1], 10);
+  }
+  return undefined;
+}

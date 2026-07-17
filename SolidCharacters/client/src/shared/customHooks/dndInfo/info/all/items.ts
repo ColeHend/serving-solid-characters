@@ -3,12 +3,16 @@ import { useGetHombrewItems } from "../homebrew/items";
 import { createMemo } from "solid-js";
 import getUserSettings from "../../../userSettings";
 
-export function useDnDItems() {
+type settings = {
+  overrideVersion: string;
+}
+
+export function useDnDItems(settings?: settings) {
   const HombrewItems = useGetHombrewItems();
   const [userSettings] = getUserSettings();
 
   return createMemo(() => {
-    const version = userSettings().dndSystem || '2014';
+    const version = settings ? settings.overrideVersion : userSettings().dndSystem || '2014';
     const srd = useGetSrdItems(version);
 
     return [...srd(),...HombrewItems()];
