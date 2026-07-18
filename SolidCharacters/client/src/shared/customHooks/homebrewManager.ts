@@ -6,6 +6,7 @@ import { srdItem, srdSubclass } from "../../models/data/generated";
 import HombrewDB from "./utility/localDB/new/homebrewDB";
 import httpClient$ from "./utility/tools/httpClientObs";
 import { Clone } from "./utility/tools/Tools";
+import { createNewId } from "./utility/tools/idGen";
 import {addSnackbar} from "coles-solid-library";
 
 // Mapping helpers to expose legacy-ish shapes (hitDie, name, desc at root) if UI still expects them.
@@ -136,6 +137,9 @@ class HomebrewManager {
   public addClass = async (newClass: Class5E): Promise<boolean> => {
     if (this._classes().some(c => c.name === newClass.name)) return false;
     const toStore = Clone(newClass);
+    // Homebrew classes historically had no id (Dexie keys by name); subclasses now reference
+    // their parent by id (parentClassId), so every stored class must carry one.
+    if (!toStore.id) toStore.id = createNewId();
     try {
       await HombrewDB.classes.put(toStore);
     } catch (err) {
@@ -148,8 +152,12 @@ class HomebrewManager {
     return true;
   }
   public updateClass = async (updated: Class5E): Promise<boolean> => {
-    if (!this._classes().some(c => c.name === updated.name)) return false;
+    const existing = this._classes().find(c => c.name === updated.name);
+    if (!existing) return false;
     const toStore = Clone(updated);
+    // Preserve the stored id (subclasses reference it via parentClassId); mint one for
+    // rows that predate class ids.
+    if (!toStore.id) toStore.id = existing.id || createNewId();
     try {
       await HombrewDB.classes.put(toStore);
     } catch (err) {

@@ -16,6 +16,15 @@
     overflow: hidden;
     text-align: left;
     color: var(--on-surface-color);
+
+    // The library's Input/Select carry max-width: 400px; fields here should span
+    // the modal. Explicit narrow fields (.usesNumber, .choiceGroupInput) set
+    // width, so they stay compact.
+    :global(.coles-solid-selectControl),
+    :global(input:not([type="checkbox"]):not([type="radio"])),
+    :global(textarea) {
+        max-width: none;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -89,6 +98,7 @@
     input,
     textarea {
         width: 100%;
+        max-width: none;
         box-sizing: border-box;
         background: transparent;
         border: none;

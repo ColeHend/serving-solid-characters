@@ -196,6 +196,16 @@ export function addMadFeature(character: Character, feature: MadFeature): Charac
         case "RemoveActions":
             character = removeActionsFeature(character, feature);
             break;
+        case "AddArmorProficiencies":
+        case "RemoveArmorProficiencies":
+        case "AddWeaponProficiencies":
+        case "RemoveWeaponProficiencies":
+        case "AddToolProficiencies":
+        case "RemoveToolProficiencies":
+            // Equipment proficiencies have no character field — they resolve at PDF-export
+            // time (useExportProficiencies + equipmentProficiencies.ts), so the sheet
+            // application is a deliberate no-op.
+            break;
         default:
             break;
     }

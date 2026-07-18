@@ -4,6 +4,7 @@ import useStyles from "../../../../../shared/customHooks/utility/style/styleHook
 import styles from "./stat.module.scss";
 import getUserSettings from "../../../../../shared/customHooks/userSettings";
 import { CharacterSkillProficiency, RollAdvantage, RollBonus } from "../../../../../models/character.model";
+import { Stats } from "../../../../../shared/customHooks/dndInfo/useCharacters";
 import { rollBonusAmount } from "../../../../../shared/customHooks/mads/commands/useRollBonusFeature";
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
   name: string;
   skills: Record<string, CharacterSkillProficiency>;
   proficientMod: number;
+  /** All six ability scores — a bonus's statBonus ability can differ from this block's own. */
+  stats?: Stats;
   /** Save/check advantages that apply to this ability (renders nothing when absent). */
   advantages?: RollAdvantage[];
   /** Save/check flat bonuses that apply to this ability (renders nothing when absent). */
@@ -84,7 +87,7 @@ const StatBlock: Component<Props> = (props) => {
             <For each={props.bonuses ?? []}>
               {(rb) => (
                 <Chip value={
-                  `+${rollBonusAmount(rb, props.proficientMod)}` +
+                  `+${rollBonusAmount(rb, props.proficientMod, props.stats)}` +
                   `${rb.rollType === "AbilityCheck" ? " (checks)" : ""}` +
                   `${rb.condition ? ` · ${rb.condition}` : ""}`
                 } />

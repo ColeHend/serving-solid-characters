@@ -40,7 +40,10 @@ export type MadCommands = AddRemove<'Spells'> |
     AddRemove<'Senses'> |
     AddRemove<'HitPoints'> |
     AddRemove<'RollBonus'> |
-    AddRemove<'Actions'>;
+    AddRemove<'Actions'> |
+    AddRemove<'ArmorProficiencies'> |
+    AddRemove<'WeaponProficiencies'> |
+    AddRemove<'ToolProficiencies'>;
 
 export interface MadFeature {
     command: MadCommands;

@@ -28,6 +28,9 @@ import { RollBonusFeature } from "./parts/rollBonusFeature/rollBonusFeature";
 import { ActionsFeature } from "./parts/actionsFeature/actionsFeature";
 import { AttacksFeature } from "./parts/attacksFeature/attacksFeature";
 import { UsesFeature } from "./parts/usesFeature/usesFeature";
+import { ArmorProfFeature } from "./parts/armorProfFeature/armorProfFeature";
+import { WeaponProfFeature } from "./parts/weaponProfFeature/weaponProfFeature";
+import { ToolProfFeature } from "./parts/toolProfFeature/toolProfFeature";
 import { EffectCardData, MAD_CATEGORIES, MadsApi, PrereqFormArray, PrereqState } from "./featuresPopup.shared";
 import styles from "./featuresPopup.module.scss";
 
@@ -269,10 +272,11 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         <Match when={command() === "AddRollBonus" || command() === "RemoveRollBonus"}>
                             <RollBonusFeature
                                 getValue={getValue}
-                                toggleValue={(rollType, bonus, proficiencyBonus, stat, condition) => {
+                                toggleValue={(rollType, bonus, proficiencyBonus, statBonus, stat, condition) => {
                                     const next: Record<string, string> = { "rollType": rollType };
                                     if (bonus) next["bonus"] = bonus;
                                     if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
+                                    if (statBonus) next["statBonus"] = statBonus;
                                     if (stat) next["stat"] = stat;
                                     if (condition) next["condition"] = condition;
                                     commitValue(next);
@@ -300,14 +304,56 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         <Match when={command() === "AddUses" || command() === "RemoveUses"}>
                             <UsesFeature
                                 getValue={getValue}
-                                toggleValue={(amount, recharge) => {
-                                    props.api.setMadFeature("value", props.index, { "amount": amount.toString(), "recharge": recharge });
+                                toggleValue={(amount, proficiencyBonus, recharge) => {
+                                    const next: Record<string, string> = { "recharge": recharge };
+                                    if (amount) next["amount"] = amount;
+                                    if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
+                                    props.api.setMadFeature("value", props.index, next);
                                     props.api.setMadFeature("command", props.index, command());
                                     // Uses describes its owning feature (uses/recharge), not a sheet change.
                                     props.api.setMadFeature("type", props.index, MadType.Info);
                                     props.api.setEditorOpen(props.row.name, false);
                                 }}
                             />
+                        </Match>
+                        <Match when={command() === "AddArmorProficiencies" || command() === "RemoveArmorProficiencies"}>
+                            <ArmorProfFeature
+                                getValue={getValue}
+                                allowChoice={command() === "AddArmorProficiencies"}
+                                toggleProf={(armor, extra) => {
+                                    const next: Record<string, string> = { "armor": armor };
+                                    if (armor === "choice" && extra?.options) {
+                                        next["options"] = extra.options;
+                                        next["count"] = extra.count ?? "1";
+                                    }
+                                    commitValue(next);
+                                }} />
+                        </Match>
+                        <Match when={command() === "AddWeaponProficiencies" || command() === "RemoveWeaponProficiencies"}>
+                            <WeaponProfFeature
+                                getValue={getValue}
+                                allowChoice={command() === "AddWeaponProficiencies"}
+                                toggleProf={(weapon, extra) => {
+                                    const next: Record<string, string> = { "weapon": weapon };
+                                    if (weapon === "choice" && extra?.options) {
+                                        next["options"] = extra.options;
+                                        next["count"] = extra.count ?? "1";
+                                    }
+                                    commitValue(next);
+                                }} />
+                        </Match>
+                        <Match when={command() === "AddToolProficiencies" || command() === "RemoveToolProficiencies"}>
+                            <ToolProfFeature
+                                getValue={getValue}
+                                allowChoice={command() === "AddToolProficiencies"}
+                                toggleProf={(tool, extra) => {
+                                    const next: Record<string, string> = { "tool": tool };
+                                    if (tool === "choice" && extra?.options) {
+                                        next["options"] = extra.options;
+                                        next["count"] = extra.count ?? "1";
+                                    }
+                                    commitValue(next);
+                                }} />
                         </Match>
                         <Match when={command() === "AddMovement" || command() === "RemoveMovement"}>
                             <MovementFeature

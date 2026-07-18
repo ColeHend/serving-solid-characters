@@ -11,6 +11,7 @@ interface SourceLabelEntity {
   legacy?: boolean;
   name?: string;
   parentClass?: string;
+  parentClassId?: string;
   details?: { name?: string };
   /** Merge-time provenance marker — see dndInfo/info/provenance.ts. */
   __homebrew?: boolean;
@@ -58,8 +59,10 @@ function isHomebrew(kind: SourceLabelKind, entity: SourceLabelEntity): boolean {
     const rowName = norm(row.name ?? row.details?.name);
     if (rowName !== name) return false;
     // Subclasses are stored per parent (storage_key = parentClass__name); require the parent
-    // to match too so same-named subclasses of different classes stay distinct.
+    // to match too so same-named subclasses of different classes stay distinct. Prefer the
+    // id-based ref when both rows carry one (exact across renamed/same-named parents).
     if (kind === 'subclass') {
+      if (entity.parentClassId && row.parentClassId) return entity.parentClassId === row.parentClassId;
       const parent = norm(entity.parentClass);
       return !parent || norm(row.parentClass) === parent;
     }

@@ -1,3 +1,4 @@
+import { Class5E } from "../../../models/generated";
 import { homebrewManager } from "../../customHooks/homebrewManager";
 
 /**
@@ -44,4 +45,42 @@ export function canonicalClassName(raw: string): string {
     const trimmed = (raw ?? "").trim();
     if (!trimmed) return trimmed;
     return canonicalClassMap().get(norm(trimmed)) ?? trimmed;
+}
+
+// --- parent-class ID resolution (mirrors raceRefs: lazy SRD catalog, homebrew-first find) ---
+
+let srdClassesAcc: (() => Class5E[]) | null = null;
+let catalogLoading: Promise<void> | null = null;
+
+/**
+ * Load the SRD class catalogs (both editions) once, fail-open. Await this before building a subclass
+ * preview so a cold session doesn't spuriously miss the parent-class id.
+ */
+export function ensureClassCatalog(): Promise<void> {
+    catalogLoading ??= (async () => {
+        try {
+            const mod = await import("../../customHooks/dndInfo/info/srd/classes");
+            await Promise.all([mod.loadSrdClasses("2014"), mod.loadSrdClasses("2024")]);
+            srdClassesAcc = mod.useGetSrdClasses("both");
+        } catch {
+            // Fail open: resolution degrades to homebrew classes only (name fallback covers the rest).
+        }
+    })();
+    return catalogLoading;
+}
+
+function srdClasses(): Class5E[] {
+    return srdClassesAcc ? srdClassesAcc() : [];
+}
+
+/**
+ * Resolve a class NAME to its live Class5E row (homebrew first so a user's own class wins a name
+ * tie, then SRD — 2024 row wins over 2014 in "both" since consumers prefer current). Undefined for
+ * an unknown name; the caller falls back to name-based matching.
+ */
+export function findParentClass(name: string): Class5E | undefined {
+    const n = norm(name ?? "");
+    if (!n) return undefined;
+    const byName = (arr: Class5E[]): Class5E | undefined => arr.find(c => norm(c?.name ?? "") === n);
+    return byName(homebrewManager.classes()) ?? byName(srdClasses().filter(c => c.legacy === false)) ?? byName(srdClasses());
 }

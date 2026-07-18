@@ -17,13 +17,14 @@ import { MadFeature, MadType } from "../../../models/generated";
  * resolve to KNOWN options is dropped entirely rather than attached as a sheet-corrupting no-op.
  */
 
-/** The 25 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
+/** The 28 command categories (each becomes Add<Category> / Remove<Category>). Mirrors MadCommands. */
 export type MadCategory =
     | "Spells" | "Items" | "Proficiencies" | "Features" | "Currency" | "ArmorClass"
     | "Expertise" | "Feats" | "Languages" | "Resistances" | "Vulnerabilities"
     | "Immunities" | "SavingThrows" | "Stats" | "Speed" | "AllProficiencies"
     | "ClassFeature" | "Advantage" | "Attacks" | "Uses"
-    | "Movement" | "Senses" | "HitPoints" | "RollBonus" | "Actions";
+    | "Movement" | "Senses" | "HitPoints" | "RollBonus" | "Actions"
+    | "ArmorProficiencies" | "WeaponProficiencies" | "ToolProficiencies";
 
 export const MAD_CATEGORIES: MadCategory[] = [
     "Spells", "Items", "Proficiencies", "Features", "Currency", "ArmorClass",
@@ -31,6 +32,7 @@ export const MAD_CATEGORIES: MadCategory[] = [
     "Immunities", "SavingThrows", "Stats", "Speed", "AllProficiencies",
     "ClassFeature", "Advantage", "Attacks", "Uses",
     "Movement", "Senses", "HitPoints", "RollBonus", "Actions",
+    "ArmorProficiencies", "WeaponProficiencies", "ToolProficiencies",
 ];
 
 /** Catalog entities a command can reference by name (resolved to the entity's `.id`). */
@@ -77,6 +79,26 @@ const CURRENCY_ALIASES: Record<string, string> = {
 /** Proficiency-bonus fractions for AllProficiencies (matches useAllProficiencyFeature.ts switch). */
 export const PB_CHOICES = ["Third PB", "Half PB", "Full PB"] as const;
 
+/** Armor training categories (match the sheet's Equipment Training checkboxes). */
+export const ARMOR_KEYS = ["Light Armor", "Medium Armor", "Heavy Armor", "Shields"] as const;
+
+/** Loose armor phrasings → canonical ARMOR_KEYS entry (keys are lowercased, non-alpha stripped). */
+const ARMOR_ALIASES: Record<string, string> = {
+    light: "Light Armor", lightarmor: "Light Armor", lightarmour: "Light Armor",
+    medium: "Medium Armor", mediumarmor: "Medium Armor", mediumarmour: "Medium Armor",
+    heavy: "Heavy Armor", heavyarmor: "Heavy Armor", heavyarmour: "Heavy Armor",
+    shield: "Shields", shields: "Shields",
+};
+
+/** Weapon proficiency CATEGORIES; a specific weapon name ("Longswords") is also accepted as free text. */
+export const WEAPON_CATEGORY_KEYS = ["Simple Weapons", "Martial Weapons"] as const;
+
+/** Loose weapon-category phrasings → canonical WEAPON_CATEGORY_KEYS entry. */
+const WEAPON_CATEGORY_ALIASES: Record<string, string> = {
+    simple: "Simple Weapons", simpleweapon: "Simple Weapons", simpleweapons: "Simple Weapons",
+    martial: "Martial Weapons", martialweapon: "Martial Weapons", martialweapons: "Martial Weapons",
+};
+
 /** Standard languages — a HINT for the model; any non-empty string is accepted. */
 export const COMMON_LANGUAGES = [
     "Common", "Undercommon", "Abyssal", "Infernal", "Celestial", "Primordial", "Draconic",
@@ -120,7 +142,8 @@ const ROLL_TYPE_ALIASES: Record<string, string> = {
 
 // ---- field specs ----
 
-type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillOrChoice" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "refOrChoice" | "refCsv" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag" | "actionType";
+type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillOrChoice" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "refOrChoice" | "refCsv" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag" | "actionType"
+    | "armorProf" | "armorProfOrChoice" | "armorProfCsv" | "weaponProf" | "weaponProfOrChoice" | "weaponProfCsv" | "textOrChoice" | "textCsv";
 
 interface FieldSpec {
     /** The value-object key this field writes (e.g. "bonus", "damageType", "ID"). */
@@ -258,8 +281,44 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
             { key: "count", type: "number", required: false },
         ],
         removeFields: [{ key: "proficiency", type: "skillOrChoice", required: true }],
-        hint: "grants proficiency in one skill; proficiency = a skill name (skills only — saving-throw proficiency is SavingThrows). " +
+        hint: "grants proficiency in one skill; proficiency = a skill name (skills ONLY — saving throws are SavingThrows; armor/weapon/tool proficiency are ArmorProficiencies/WeaponProficiencies/ToolProficiencies). " +
             "For 'proficiency in N skills of your choice' use proficiency = choice with options = comma-separated allowed skills and count = how many the player picks (the player picks on the sheet).",
+    },
+    ArmorProficiencies: {
+        category: "ArmorProficiencies", idBased: false,
+        labelKeys: ["armor", "count"],
+        addFields: [
+            { key: "armor", type: "armorProfOrChoice", required: true },
+            { key: "options", type: "armorProfCsv", required: false },
+            { key: "count", type: "number", required: false },
+        ],
+        removeFields: [{ key: "armor", type: "armorProf", required: true }],
+        hint: "grants armor training; armor = 'Light Armor'/'Medium Armor'/'Heavy Armor'/'Shields' (one command per category — 'light armor and shields' is TWO commands). " +
+            "For 'training with N armor categories of your choice' use armor = choice with options = comma-separated allowed categories and count = how many the player picks.",
+    },
+    WeaponProficiencies: {
+        category: "WeaponProficiencies", idBased: false,
+        labelKeys: ["weapon", "count"],
+        addFields: [
+            { key: "weapon", type: "weaponProfOrChoice", required: true },
+            { key: "options", type: "weaponProfCsv", required: false },
+            { key: "count", type: "number", required: false },
+        ],
+        removeFields: [{ key: "weapon", type: "weaponProf", required: true }],
+        hint: "grants weapon proficiency; weapon = 'Simple Weapons'/'Martial Weapons' or a specific weapon name like 'Longswords'. " +
+            "For 'proficiency with N weapons of your choice' use weapon = choice with options = comma-separated allowed weapons and count = how many the player picks.",
+    },
+    ToolProficiencies: {
+        category: "ToolProficiencies", idBased: false,
+        labelKeys: ["tool", "count"],
+        addFields: [
+            { key: "tool", type: "textOrChoice", required: true },
+            { key: "options", type: "textCsv", required: false },
+            { key: "count", type: "number", required: false },
+        ],
+        removeFields: [{ key: "tool", type: "text", required: true }],
+        hint: "grants tool proficiency; tool = the tool's name (\"Thieves' Tools\", 'Herbalism Kit', 'Smith's Tools'...). " +
+            "For 'proficiency with N tools of your choice' use tool = choice with options = comma-separated allowed tools and count = how many the player picks.",
     },
     Expertise: {
         category: "Expertise", idBased: false,
@@ -333,11 +392,12 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     RollBonus: {
         category: "RollBonus", idBased: false,
-        labelKeys: ["rollType", "bonus", "proficiencyBonus", "stat", "condition"],
+        labelKeys: ["rollType", "bonus", "proficiencyBonus", "statBonus", "stat", "condition"],
         addFields: [
             { key: "rollType", type: "rollType", required: true },
             { key: "bonus", type: "number", required: false },
             { key: "proficiencyBonus", type: "pbChoice", required: false },
+            { key: "statBonus", type: "ability", required: false },
             { key: "stat", type: "ability", required: false },
             { key: "condition", type: "text", required: false },
         ],
@@ -345,23 +405,30 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
             { key: "rollType", type: "rollType", required: true },
             { key: "bonus", type: "number", required: false },
             { key: "proficiencyBonus", type: "pbChoice", required: false },
+            { key: "statBonus", type: "ability", required: false },
             { key: "stat", type: "ability", required: false },
             { key: "condition", type: "text", required: false },
         ],
-        hint: "adds a flat or proficiency-bonus modifier to a d20 roll — this is NOT advantage; " +
+        hint: "adds a flat, proficiency-bonus, or ability-modifier bonus to a d20 roll — this is NOT advantage; " +
             "rollType = SavingThrow/WeaponAttack/SpellAttack/Initiative/AbilityCheck, bonus = a fixed number ('+2 bonus to attack rolls' → bonus 2), " +
             "proficiencyBonus = 'Third PB'/'Half PB'/'Full PB' when the bonus IS the proficiency bonus ('add your Proficiency Bonus to Initiative' → Full PB), " +
-            "stat (optional) narrows saves/checks, condition (optional) = qualifier like 'with Ranged weapons'. Provide bonus OR proficiencyBonus. " +
+            "statBonus = an ability whose MODIFIER is ADDED to the roll ('add your Wisdom modifier to Initiative' → statBonus wis). " +
+            "stat (optional) only NARROWS which saves/checks the bonus applies to — it is never added (use statBonus to add an ability modifier). " +
+            "condition (optional) = qualifier like 'with Ranged weapons'. Provide bonus, proficiencyBonus, or statBonus. " +
             "An AC change is NEVER RollBonus (AC is not a roll — use ArmorClass); damage bonuses have no command.",
     },
     Uses: {
         category: "Uses", idBased: false, madType: MadType.Info,
+        labelKeys: ["amount", "proficiencyBonus", "recharge"],
         addFields: [
-            { key: "amount", type: "number", required: true },
+            { key: "amount", type: "number", required: false },
+            { key: "proficiencyBonus", type: "pbChoice", required: false },
             { key: "recharge", type: "recharge", required: false },
         ],
-        removeFields: [{ key: "amount", type: "number", required: true }],
-        hint: "marks THIS feature as limited-use (e.g. 'you can use this twice, regaining all uses on a long rest'); amount = number of uses, recharge = Short Rest or Long Rest",
+        removeFields: [{ key: "amount", type: "number", required: false }],
+        hint: "marks THIS feature as limited-use (e.g. 'you can use this twice, regaining all uses on a long rest'); " +
+            "amount = a fixed number of uses, OR proficiencyBonus = 'Third PB'/'Half PB'/'Full PB' when the uses scale with the proficiency bonus " +
+            "('a number of times equal to your Proficiency Bonus' → Full PB). Provide amount OR proficiencyBonus. recharge = Short Rest or Long Rest",
     },
     Actions: {
         category: "Actions", idBased: false,
@@ -407,11 +474,18 @@ export const COMMAND_COMMON_MISTAKES =
     "- \"add your Proficiency Bonus to your Initiative rolls\" → RollBonus {\"rollType\":\"Initiative\",\"proficiencyBonus\":\"Full PB\"} (a flat/PB modifier to a roll is NEVER Advantage)\n" +
     "- \"+2 bonus to attack rolls with Ranged weapons\" → RollBonus {\"rollType\":\"WeaponAttack\",\"bonus\":\"2\",\"condition\":\"with Ranged weapons\"}\n" +
     "- \"+1 bonus to saving throws\" → RollBonus {\"rollType\":\"SavingThrow\",\"bonus\":\"1\"}\n" +
+    "- \"add your Wisdom modifier to your Initiative rolls\" → RollBonus {\"rollType\":\"Initiative\",\"statBonus\":\"wis\"} (an ADDED ability modifier is statBonus, NEVER stat)\n" +
+    "- \"+2 to Dexterity saving throws\" → RollBonus {\"rollType\":\"SavingThrow\",\"bonus\":\"2\",\"stat\":\"dex\"} (stat only NARROWS which saves/checks; it is never added)\n" +
     "- \"+1 bonus to Armor Class\" → ArmorClass {\"bonus\":\"1\"} (a flat AC bonus omits stats; AC is not a roll, so it is NEVER RollBonus)\n" +
     "- \"proficiency in three skills of your choice\" → Proficiencies {\"proficiency\":\"choice\",\"options\":\"<comma-separated allowed skills>\",\"count\":\"3\"}\n" +
+    "- \"you gain proficiency with Martial weapons\" → WeaponProficiencies {\"weapon\":\"Martial Weapons\"} (armor/weapon/tool proficiency is NEVER Proficiencies — that is skills only)\n" +
+    "- \"you gain training with Light armor and Shields\" → TWO ArmorProficiencies commands: {\"armor\":\"Light Armor\"} and {\"armor\":\"Shields\"}\n" +
+    "- \"choose four weapons; you gain proficiency with them\" → WeaponProficiencies {\"weapon\":\"choice\",\"options\":\"<comma-separated allowed weapons>\",\"count\":\"4\"}\n" +
+    "- \"you gain proficiency with Thieves' Tools\" → ToolProficiencies {\"tool\":\"Thieves' Tools\"}\n" +
     "- \"advantage on Stealth checks\" → Advantage {\"rollType\":\"AbilityCheck\",\"mode\":\"advantage\",\"stat\":\"dex\",\"condition\":\"Stealth checks\"} (state WHEN it applies in condition)\n" +
     "- \"As a Bonus Action, you can enter a Rage\" → Actions {\"name\":\"Rage\",\"actionType\":\"bonusAction\"} (an activated ability the character uses — NOT a passive bonus)\n" +
     "- \"you learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list\" → Spells {\"ID\":\"choice\",\"options\":\"<comma-separated allowed spell names>\",\"count\":\"2\",\"spellLevel\":\"0\"}\n" +
+    "- \"a number of times equal to your Proficiency Bonus, regaining all uses on a Long Rest\" → Uses {\"proficiencyBonus\":\"Full PB\",\"recharge\":\"Long Rest\"} (PB-scaled uses omit amount)\n" +
     "- \"once per long rest…\" → Uses (temporary effects, healing, and damage bonuses/rerolls have no category)";
 
 // ---- pure coercion ----
@@ -452,6 +526,14 @@ const CATEGORY_ALIASES: Record<string, MadCategory> = {
     savingthrowbonus: "RollBonus", spellattackbonus: "RollBonus",
     action: "Actions", newaction: "Actions", bonusaction: "Actions", bonusactions: "Actions",
     reaction: "Actions", reactions: "Actions", grantedaction: "Actions", grantedactions: "Actions",
+    armorproficiency: "ArmorProficiencies", armorproficiencies: "ArmorProficiencies",
+    armortraining: "ArmorProficiencies", armorprof: "ArmorProficiencies", armorprofs: "ArmorProficiencies",
+    weaponproficiency: "WeaponProficiencies", weaponproficiencies: "WeaponProficiencies",
+    weapontraining: "WeaponProficiencies", weaponprof: "WeaponProficiencies", weaponprofs: "WeaponProficiencies",
+    weapon: "WeaponProficiencies", weapons: "WeaponProficiencies",
+    toolproficiency: "ToolProficiencies", toolproficiencies: "ToolProficiencies",
+    toolprof: "ToolProficiencies", toolprofs: "ToolProficiencies",
+    tool: "ToolProficiencies", tools: "ToolProficiencies",
     classfeature: "ClassFeature", classfeatures: "ClassFeature",
     invocation: "ClassFeature", invocations: "ClassFeature",
     eldritchinvocation: "ClassFeature", eldritchinvocations: "ClassFeature",
@@ -532,6 +614,23 @@ function coerceSense(raw: string): string | null {
     return null;
 }
 
+function coerceArmorProf(raw: string): string | null {
+    if (!raw) return null;
+    const exact = matchOption(raw, ARMOR_KEYS);
+    if (exact) return exact;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    return ARMOR_ALIASES[key] ?? null;
+}
+
+/** Canonicalize the two weapon CATEGORIES; any other non-empty string passes as a specific weapon name. */
+function coerceWeaponProf(raw: string): string | null {
+    if (!raw) return null;
+    const exact = matchOption(raw, WEAPON_CATEGORY_KEYS);
+    if (exact) return exact;
+    const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+    return WEAPON_CATEGORY_ALIASES[key] ?? raw;
+}
+
 function coerceActionType(raw: string): string | null {
     if (!raw) return null;
     const key = raw.toLowerCase().replace(/[^a-z]/g, "");
@@ -595,6 +694,14 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
         case "advMode": return coerceAdvMode(value);
         case "recharge": return coerceRecharge(value);
         case "actionType": return coerceActionType(value);
+        case "armorProf": return coerceArmorProf(value);
+        case "armorProfOrChoice": return value.toLowerCase() === "choice" ? "choice" : coerceArmorProf(value);
+        case "armorProfCsv": return coerceCsv(value, coerceArmorProf);
+        case "weaponProf": return coerceWeaponProf(value);
+        case "weaponProfOrChoice": return value.toLowerCase() === "choice" ? "choice" : coerceWeaponProf(value);
+        case "weaponProfCsv": return coerceCsv(value, coerceWeaponProf);
+        case "textOrChoice": return value.toLowerCase() === "choice" ? "choice" : (value || null);
+        case "textCsv": return coerceCsv(value, s => s || null);
         case "text": return value || null;
         default: return null;
     }
@@ -630,10 +737,16 @@ export function coerceCommand(
     if (category === "Stats" && value["stat"] === "choice" && !value["options"]) return null;
     // choice-form Proficiencies likewise needs its allowed-skills list
     if (category === "Proficiencies" && value["proficiency"] === "choice" && !value["options"]) return null;
+    // choice-form armor/weapon/tool proficiencies likewise need their allowed-options list
+    if (category === "ArmorProficiencies" && value["armor"] === "choice" && !value["options"]) return null;
+    if (category === "WeaponProficiencies" && value["weapon"] === "choice" && !value["options"]) return null;
+    if (category === "ToolProficiencies" && value["tool"] === "choice" && !value["options"]) return null;
     // choice-form Spells likewise needs its allowed-spells list
     if (category === "Spells" && value["ID"] === "choice" && !value["options"]) return null;
-    // a RollBonus with neither a flat bonus nor a PB fraction would be a no-op badge
-    if (category === "RollBonus" && !value["bonus"] && !value["proficiencyBonus"]) return null;
+    // a RollBonus with no flat bonus, PB fraction, or ability modifier would be a no-op badge
+    if (category === "RollBonus" && !value["bonus"] && !value["proficiencyBonus"] && !value["statBonus"]) return null;
+    // a Uses with neither a fixed amount nor a PB fraction has no resolvable maximum
+    if (category === "Uses" && t === "Add" && !value["amount"] && !value["proficiencyBonus"]) return null;
     return { command: `${t}${category}`, value, type: spec.madType ?? MadType.Character, prerequisites: [], group: 0 };
 }
 
@@ -695,6 +808,18 @@ export function validateStoredCommand(mad: MadFeature): string[] {
         const opts = coerceField({ key: "options", type: "skillCsv", required: true }, value["options"], "", () => null, undefined);
         if (!opts) errors.push(`${prettyCommand(command)} uses proficiency "choice" but has no valid options list`);
     }
+    if (category === "ArmorProficiencies" && isAdd && String(value["armor"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "armorProfCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses armor "choice" but has no valid options list`);
+    }
+    if (category === "WeaponProficiencies" && isAdd && String(value["weapon"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "weaponProfCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses weapon "choice" but has no valid options list`);
+    }
+    if (category === "ToolProficiencies" && isAdd && String(value["tool"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "textCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses tool "choice" but has no valid options list`);
+    }
     if (category === "Spells" && isAdd && String(value["ID"] ?? "") === "choice") {
         // Options hold opaque spell ids post-enrichment — only require the list to be non-empty.
         const opts = typeof value["options"] === "string" ? (value["options"] as string).trim() : "";
@@ -703,7 +828,13 @@ export function validateStoredCommand(mad: MadFeature): string[] {
     if (category === "RollBonus") {
         const bonus = coerceField({ key: "bonus", type: "number", required: false }, value["bonus"], "", () => null, undefined);
         const pb = coerceField({ key: "proficiencyBonus", type: "pbChoice", required: false }, value["proficiencyBonus"], "", () => null, undefined);
-        if (!bonus && !pb) errors.push(`${prettyCommand(command)} needs a bonus or a proficiencyBonus`);
+        const statBonus = coerceField({ key: "statBonus", type: "ability", required: false }, value["statBonus"], "", () => null, undefined);
+        if (!bonus && !pb && !statBonus) errors.push(`${prettyCommand(command)} needs a bonus, a proficiencyBonus, or a statBonus`);
+    }
+    if (category === "Uses" && isAdd) {
+        const amount = coerceField({ key: "amount", type: "number", required: false }, value["amount"], "", () => null, undefined);
+        const pb = coerceField({ key: "proficiencyBonus", type: "pbChoice", required: false }, value["proficiencyBonus"], "", () => null, undefined);
+        if (!amount && !pb) errors.push(`${prettyCommand(command)} needs an amount or a proficiencyBonus`);
     }
     return errors;
 }

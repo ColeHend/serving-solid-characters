@@ -205,10 +205,17 @@ export const subclassStorageKey = (parentClass: string, name: string): string =>
 
 export function toDataSubclass(form: SubclassForm, levels: SubclassLevels): Subclass {
   const source = form.source?.trim();
+  // The selector key is the parent's REAL id except for the legacy `hb:<name>` fallback
+  // (pre-id homebrew classes) — a synthetic key must never persist as parentClassId;
+  // consumers fall back to the parentClass name until the parent is re-saved with an id.
+  const parentClassId = form.parentClassId && !form.parentClassId.startsWith('hb:')
+    ? form.parentClassId
+    : undefined;
   return {
     name: form.name,
     ...(source ? { source } : {}),
     parentClass: form.parentClass,
+    ...(parentClassId ? { parentClassId } : {}),
     description: form.description || '',
     features: buildSubclassFeatures(levels.features),
     spellcasting: buildSubclassSpellcasting(form.name, form),

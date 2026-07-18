@@ -172,6 +172,29 @@ describe("Uses (Info command)", () => {
         expect(featureUsage(feature)).toEqual({ max: 2, recharge: LONG_REST });
     });
 
+    it("featureUsage resolves a PB-fraction max against the character level", () => {
+        const pbScaled = (fraction: string): FeatureDetail => ({
+            id: "", name: "Divine Sense", description: "",
+            metadata: { mads: stored(mad("AddUses", { proficiencyBonus: fraction, recharge: "Long Rest" }, MadType.Info)) },
+        });
+
+        expect(featureUsage(pbScaled("Full PB"), 5)).toEqual({ max: 3, recharge: LONG_REST });
+        expect(featureUsage(pbScaled("Half PB"), 5)).toEqual({ max: 1, recharge: LONG_REST });
+        // no level → treated as level 1 (PB 2)
+        expect(featureUsage(pbScaled("Full PB"))).toEqual({ max: 2, recharge: LONG_REST });
+        // Third PB floors to 0 at PB 2 → not limited-use rather than max 0
+        expect(featureUsage(pbScaled("Third PB"), 1)).toBeNull();
+    });
+
+    it("featureUsage prefers a fixed amount over a PB fraction when both are present", () => {
+        const both: FeatureDetail = {
+            id: "", name: "Rage", description: "",
+            metadata: { mads: stored(mad("AddUses", { amount: "4", proficiencyBonus: "Full PB", recharge: "Long Rest" }, MadType.Info)) },
+        };
+
+        expect(featureUsage(both, 5)).toEqual({ max: 4, recharge: LONG_REST });
+    });
+
     it("featureUsage falls back to metadata.uses/recharge and returns null otherwise", () => {
         const fromMeta: FeatureDetail = {
             id: "", name: "Second Wind", description: "",
@@ -414,6 +437,35 @@ describe("AddRollBonus / RemoveRollBonus", () => {
         expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Full PB" }, 3)).toBe(3);
         expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Half PB" }, 3)).toBe(1);
         expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Third PB" }, 5)).toBe(1);
+    });
+
+    it("rollBonusAmount adds a statBonus ability's modifier on top of the base", () => {
+        const stats = { str: 8, dex: 14, con: 10, int: 10, wis: 16, cha: 10 };
+
+        // statBonus alone: WIS 16 → +3
+        expect(rollBonusAmount({ rollType: "Initiative", statBonus: "wis" }, 3, stats)).toBe(3);
+        // flat + statBonus sum: 2 + 3 = 5
+        expect(rollBonusAmount({ rollType: "Initiative", bonus: 2, statBonus: "wis" }, 3, stats)).toBe(5);
+        // PB fraction + statBonus sum: 3 + 2 (DEX 14) = 5
+        expect(rollBonusAmount({ rollType: "Initiative", proficiencyBonus: "Full PB", statBonus: "dex" }, 3, stats)).toBe(5);
+        // negative modifiers apply too: STR 8 → -1
+        expect(rollBonusAmount({ rollType: "SavingThrow", bonus: 1, statBonus: "str" }, 3, stats)).toBe(0);
+        // no stats available → base only
+        expect(rollBonusAmount({ rollType: "Initiative", statBonus: "wis" }, 3)).toBe(0);
+    });
+
+    it("parses statBonus and keeps it distinct from the stat filter for dedupe", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddRollBonus", { rollType: "Initiative", statBonus: "wis" }));
+        expect(c.rollBonuses).toHaveLength(1);
+        expect(c.rollBonuses[0].statBonus).toBe("wis");
+        expect(c.rollBonuses[0].stat).toBeUndefined();
+
+        // same rollType, different statBonus → a distinct grant
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "Initiative", statBonus: "cha" }));
+        expect(c.rollBonuses).toHaveLength(2);
+        // identical grant dedupes
+        c = addMadFeature(c, mad("AddRollBonus", { rollType: "Initiative", statBonus: "wis" }));
+        expect(c.rollBonuses).toHaveLength(2);
     });
 });
 

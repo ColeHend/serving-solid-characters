@@ -101,7 +101,7 @@ const CharacterView: Component = () => {
   const bonusesFor = (rollType: AdvantageRollType) => rollBonuses().filter(b => b.rollType === rollType);
   const profBonus = () => Math.ceil((displayCharacter()?.level ?? 1) / 4) + 1;
   const bonusLabel = (rb: RollBonus) =>
-    `+${rollBonusAmount(rb, profBonus())}${rb.stat ? ` · ${rb.stat.toUpperCase()}` : ""}${rb.condition ? ` · ${rb.condition}` : ""}`;
+    `+${rollBonusAmount(rb, profBonus(), fullStats())}${rb.stat ? ` · ${rb.stat.toUpperCase()}` : ""}${rb.condition ? ` · ${rb.condition}` : ""}`;
 
   const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
@@ -184,7 +184,7 @@ const CharacterView: Component = () => {
     const base = currentCharacter();
     if (!base) return;
     const limited = allFeatures().flatMap(f => {
-      const usage = featureUsage(f);
+      const usage = featureUsage(f, displayCharacter()?.level);
       return usage ? [{ name: f.name, recharge: usage.recharge }] : [];
     });
     persistCharacter(resetFeatureUses(Clone(base), rest, limited));
@@ -564,7 +564,7 @@ const CharacterView: Component = () => {
               </div>
               <For each={allFeatures()}>
                 {(feature) => {
-                  const usage = featureUsage(feature);
+                  const usage = featureUsage(feature, displayCharacter()?.level);
                   return (
                     <div class={`${stylin().box} ${styles.featureItem}`}>
                       <div class={`${styles.featureTitle}`}>

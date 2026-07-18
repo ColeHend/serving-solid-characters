@@ -1,6 +1,7 @@
 import { Character } from "../../../../../models/character.model";
 import { Class5E, Subclass, Race, Background, Item, MagicItem, Feat, Spell, WeaponMastery, Subrace, Monster, Rule } from "../../../../../models/generated";
 import { srdItem,srdSubclass } from "../../../../../models/data/generated";
+import { createNewId } from "../../tools/idGen";
 import Dexie from "dexie";
 
 export class LocalDB extends Dexie {
@@ -99,6 +100,49 @@ export class LocalDB extends Dexie {
           monsters: 'name',
           rules: 'name',
           characters: 'name'
+        });
+
+        // v5: id-based subclass→class refs. Homebrew classes historically lacked ids (the table is
+        // keyed by name); mint one for any id-less class, then stamp subclass.parentClassId from the
+        // same DB's classes by name. SRD DBs pass through mostly untouched — their classes already
+        // carry ids, and parent_class_id arrives with the next SRD re-fetch; this backfill just
+        // repairs stale caches. Subclasses whose parent lives in ANOTHER DB (a homebrew subclass of
+        // an SRD class) stay id-less here and match by name until re-saved.
+        this.version(5).stores({
+          spells: 'name',
+          classes: 'name',
+          races: 'name',
+          subraces: 'name',
+          backgrounds: 'name',
+          items: 'name',
+          feats: 'name',
+          magicItems: 'name',
+          subclasses: 'name',
+          weaponMasteries: 'name',
+          monsters: 'name',
+          rules: 'name',
+          characters: 'name'
+        }).upgrade(async tx => {
+          const classTable = tx.table('classes');
+          const classes = await classTable.toArray();
+          for (const c of classes) {
+            if (!c.id) {
+              c.id = createNewId();
+              await classTable.put(c);
+            }
+          }
+          const idByName = new Map<string, string>(
+            classes.map((c: { name?: string; id?: string }) => [String(c.name ?? '').toLowerCase(), String(c.id ?? '')]));
+          const subTable = tx.table('subclasses');
+          const subs = await subTable.toArray();
+          for (const s of subs) {
+            if (s.parentClassId) continue;
+            const pid = idByName.get(String(s.parentClass ?? '').toLowerCase());
+            if (pid) {
+              s.parentClassId = pid;
+              await subTable.put(s);
+            }
+          }
         });
 
         // Initialize database with better error handling

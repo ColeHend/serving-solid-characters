@@ -1,6 +1,8 @@
 import { Character } from "../../../../models/character.model";
 import { FeatureDetail } from "../../../../models/generated";
+import { getProficiencyBonus } from "../../utility/tools/dndMath";
 import { MadFeature } from "../madModels";
+import { resolvePbFraction } from "./pbFraction";
 
 export const SHORT_REST = "Short Rest";
 export const LONG_REST = "Long Rest";
@@ -28,8 +30,10 @@ const normalizeRecharge = (raw?: string): RechargeType =>
 /**
  * The limited-use definition for a feature: an AddUses command on the feature wins,
  * falling back to metadata.uses/recharge. Null when the feature is not limited-use.
+ * A fixed amount wins over a PB fraction; the fraction resolves against `level`
+ * (a PB-scaled feature on a character of unknown level counts as level 1).
  */
-export function featureUsage(feature: FeatureDetail): FeatureUsage | null {
+export function featureUsage(feature: FeatureDetail, level?: number): FeatureUsage | null {
     const mads = (feature.metadata?.mads ?? []) as MadFeature[];
     const usesMad = mads.find(m => m.command === "AddUses");
 
@@ -37,6 +41,10 @@ export function featureUsage(feature: FeatureDetail): FeatureUsage | null {
         const max = Number(usesMad.value?.['amount']);
         if (Number.isFinite(max) && max > 0) {
             return { max, recharge: normalizeRecharge(usesMad.value?.['recharge']) };
+        }
+        const pbMax = resolvePbFraction(usesMad.value?.['proficiencyBonus']?.trim(), getProficiencyBonus(level ?? 1));
+        if (pbMax > 0) {
+            return { max: pbMax, recharge: normalizeRecharge(usesMad.value?.['recharge']) };
         }
     }
 

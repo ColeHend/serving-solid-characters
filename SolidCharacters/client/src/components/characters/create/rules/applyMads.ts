@@ -13,6 +13,11 @@ import {
   pendingStatChoices,
   useMadCharacters,
 } from "../../../../shared/customHooks/mads/useMadCharacters";
+import {
+  EQUIP_PROF_KINDS,
+  choiceEquipProfMads,
+  pendingEquipProfChoices,
+} from "../../../../shared/customHooks/mads/equipmentProficiencies";
 import { getAbilityModifier } from "./engine";
 
 /**
@@ -66,7 +71,7 @@ export function applyCreatorMads(character: Character): Character {
   return applied;
 }
 
-export type MadChoiceKind = "stat" | "proficiency" | "spell";
+export type MadChoiceKind = "stat" | "proficiency" | "spell" | "armorProf" | "weaponProf" | "toolProf";
 
 export interface MadChoice {
   feature: FeatureDetail;
@@ -86,6 +91,7 @@ function featureSources(character: Character): FeatureDetail[] {
 
 /** Every choice-form mad on the character's features, flagged with whether it still needs a pick. */
 export function draftMadChoices(character: Character): MadChoice[] {
+  const equipKindOf = { armor: "armorProf", weapon: "weaponProf", tool: "toolProf" } as const;
   return featureSources(character).flatMap((feature) => {
     const pendingStat = pendingStatChoices(character, feature);
     const pendingProf = pendingProficiencyChoices(character, feature);
@@ -109,6 +115,15 @@ export function draftMadChoices(character: Character): MadChoice[] {
         kind: "spell" as const,
         pending: pendingSpell.includes(mad),
       })),
+      ...EQUIP_PROF_KINDS.flatMap((equipKind) => {
+        const pending = pendingEquipProfChoices(equipKind, character, feature);
+        return choiceEquipProfMads(equipKind, feature).map((mad) => ({
+          feature,
+          mad,
+          kind: equipKindOf[equipKind],
+          pending: pending.includes(mad),
+        }));
+      }),
     ];
   });
 }

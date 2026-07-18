@@ -94,10 +94,14 @@ export function characterToSheetValues(
   // `profs` is resolved in-component (see `useExportProficiencies`) and passed in
   // so this mapper stays headless. Missing → blanks (the generator skips empties).
   const ARMOR_MARK = 'X'; // WinAnsi-safe; matches the spell-table checkbox glyph
-  const hasArmor = (k: string): boolean => (profs?.armor ?? []).some((a) => a.toLowerCase() === k.toLowerCase());
-  out.armorLight = hasArmor('Light') ? ARMOR_MARK : '';
-  out.armorMedium = hasArmor('Medium') ? ARMOR_MARK : '';
-  out.armorHeavy = hasArmor('Heavy') ? ARMOR_MARK : '';
+  // Sources disagree on casing/suffix ("Light Armor" mads, "Light armor" SRD 2024, "Light"):
+  // strip a trailing " armor"/" armour" so every spelling ticks its box.
+  const normArmor = (a: string): string => a.toLowerCase().replace(/\s+armou?r$/, '').trim();
+  const hasArmor = (k: string): boolean => (profs?.armor ?? []).some((a) => normArmor(a) === k.toLowerCase());
+  const hasAllArmor = hasArmor('All'); // "All Armor" covers the three weights, not Shields
+  out.armorLight = hasArmor('Light') || hasAllArmor ? ARMOR_MARK : '';
+  out.armorMedium = hasArmor('Medium') || hasAllArmor ? ARMOR_MARK : '';
+  out.armorHeavy = hasArmor('Heavy') || hasAllArmor ? ARMOR_MARK : '';
   out.armorShields = hasArmor('Shields') || hasArmor('Shield') ? ARMOR_MARK : '';
   out.weaponProficiencies = (profs?.weapons ?? []).join(', ');
   out.toolProficiencies = (profs?.tools ?? []).join(', ');

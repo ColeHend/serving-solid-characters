@@ -142,4 +142,13 @@ export function assignIds(store: IdStore, data: RulesetData): void {
         const pid = raceByName.get(nameKey(sr.parentRace));
         if (pid) sr.parentRace = pid;
     }
+
+    // parent_class_id: parsers emit only the parent class NAME; stamp the id ALONGSIDE it
+    // (unlike subraces, parent_class stays a name — consumers still display it). Per-ruleset
+    // stores mean 2014 and 2024 same-named classes resolve to distinct ids automatically.
+    const classByName = new Map(data.classes.map(c => [nameKey(c.name), c.id]));
+    for (const s of data.subclasses) {
+        const pid = classByName.get(nameKey(s.parent_class));
+        if (pid) s.parent_class_id = pid;
+    }
 }

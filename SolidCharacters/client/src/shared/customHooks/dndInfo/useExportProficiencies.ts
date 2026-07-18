@@ -1,5 +1,6 @@
 import { Accessor, createMemo } from "solid-js";
 import { Character } from "../../../models/character.model";
+import { applyEquipProficiencyMads } from "../mads/equipmentProficiencies";
 import { useDnDClasses } from "./info/all/classes";
 import { useDnDBackgrounds } from "./info/all/backgrounds";
 
@@ -63,7 +64,9 @@ const useExportProficiencies = (currentCharacter: Accessor<Character | undefined
       tools.push(...(bg.proficiencies.tools ?? []));
     }
 
-    return { armor: uniq(armor), weapons: uniq(weapons), tools: uniq(tools) };
+    // Feature mads (ArmorProficiencies/WeaponProficiencies/ToolProficiencies) union in on
+    // top — grants, resolved choose-N picks, and Remove subtractions.
+    return applyEquipProficiencyMads(char, { armor: uniq(armor), weapons: uniq(weapons), tools: uniq(tools) });
   });
 };
 

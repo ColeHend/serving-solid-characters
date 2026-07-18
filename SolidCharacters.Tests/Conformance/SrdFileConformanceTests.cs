@@ -1,3 +1,4 @@
+using System.Linq;
 using SolidCharacters.Domain.DTO.Updated;
 using SolidCharacters.Tests.Fixtures;
 using Xunit;
@@ -92,12 +93,16 @@ public class SrdFileConformanceTests
     [MemberData(nameof(Versions))]
     public void Subclasses_RoundTrip(string version)
     {
-        var subclasses = fixture.CreateSrdInfoRepository().GetSubclasses(version);
+        var repo = fixture.CreateSrdInfoRepository();
+        var subclasses = repo.GetSubclasses(version);
+        var classIds = repo.GetClasses(version).Select(c => c.Id).ToHashSet();
         Assert.Equal(12, subclasses.Count);
         foreach (var s in subclasses)
         {
             Assert.False(string.IsNullOrWhiteSpace(s.Id), $"subclass {s.Name}: empty id");
             Assert.False(string.IsNullOrWhiteSpace(s.ParentClass), $"subclass {s.Name}: empty parent_class");
+            Assert.False(string.IsNullOrWhiteSpace(s.ParentClassId), $"subclass {s.Name}: empty parent_class_id");
+            Assert.Contains(s.ParentClassId, classIds);
             foreach (var (lvl, feats) in s.Features)
             {
                 foreach (var f in feats) AssertFeature($"{s.Name} L{lvl}", f);

@@ -9,7 +9,13 @@ import {
   statChoiceKey,
   statChoiceOptions,
 } from "../../../../../shared/customHooks/mads/useMadCharacters";
-import { MadChoice } from "../../rules/applyMads";
+import {
+  EquipProfKind,
+  equipProfChoiceCount,
+  equipProfChoiceKey,
+  equipProfChoiceOptions,
+} from "../../../../../shared/customHooks/mads/equipmentProficiencies";
+import { MadChoice, MadChoiceKind } from "../../rules/applyMads";
 import { ABILITY_FULL_NAMES, AbilityKey } from "../../rules/constants";
 import { useCreate } from "../../state/createContext";
 import styles from "./featsSection.module.scss";
@@ -25,10 +31,18 @@ const toggleCsv = (raw: string | undefined, value: string, max: number): string 
   return [...picks, value].join(",");
 };
 
+/** MadChoiceKind → the equipment-proficiency kind it wraps (undefined for stat/proficiency/spell). */
+const EQUIP_KIND: Partial<Record<MadChoiceKind, EquipProfKind>> = {
+  armorProf: "armor",
+  weaponProf: "weapon",
+  toolProf: "tool",
+};
+
 /**
  * Pickers for choice-form MADS commands carried by picked feats, species traits, and
- * class features — ability increases, skill proficiencies, and granted-spell choices.
- * Picks land in draft.madChoices and resolve live through applyCreatorMads.
+ * class features — ability increases, skill/armor/weapon/tool proficiencies, and
+ * granted-spell choices. Picks land in draft.madChoices and resolve live through
+ * applyCreatorMads (equipment-proficiency picks resolve at PDF export instead).
  */
 export const FeatureChoices: Component = () => {
   const { draft, actions, derived, data } = useCreate();
@@ -97,6 +111,43 @@ export const FeatureChoices: Component = () => {
                       }}
                     </For>
                   </div>
+                </Match>
+                <Match when={EQUIP_KIND[choice.kind]}>
+                  {(equipKind) => {
+                    const key = () => equipProfChoiceKey(equipKind(), choice.feature);
+                    return (
+                      <>
+                        <span class={styles.choiceHint}>
+                          Choose {equipProfChoiceCount(choice.mad)}:
+                        </span>
+                        <div class={styles.choicePills}>
+                          <For each={equipProfChoiceOptions(choice.mad)}>
+                            {(option) => (
+                              <button
+                                type="button"
+                                class={styles.choicePill}
+                                classList={{
+                                  [styles.choicePillActive]: csvPicks(
+                                    draft.madChoices.proficiencies[key()],
+                                  ).includes(option),
+                                }}
+                                onClick={() => {
+                                  const next = toggleCsv(
+                                    draft.madChoices.proficiencies[key()],
+                                    option,
+                                    equipProfChoiceCount(choice.mad),
+                                  );
+                                  if (next !== null) actions.setMadProficiencyChoice(key(), next);
+                                }}
+                              >
+                                {option}
+                              </button>
+                            )}
+                          </For>
+                        </div>
+                      </>
+                    );
+                  }}
                 </Match>
                 <Match when={choice.kind === "spell"}>
                   <span class={styles.choiceHint}>Choose {spellChoiceCount(choice.mad)}:</span>

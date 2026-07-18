@@ -113,6 +113,24 @@ describe('toDataSubclass', () => {
     expect(data.spellcasting?.metadata.casterType).toBe(CasterType.Third);
     expect(data.spellcasting?.known_type).toBe('calc');
   });
+
+  it('persists a real parent-class id but never the synthetic hb: selector key', () => {
+    const withId = toDataSubclass(
+      collectForm(makeForm({ parentClass: 'Wizard', parentClassId: 'w24', name: 'Echo' })),
+      emptySubclassLevels());
+    expect(withId.parentClassId).toBe('w24');
+
+    const hbKey = toDataSubclass(
+      collectForm(makeForm({ parentClass: 'Stormwarden', parentClassId: 'hb:Stormwarden', name: 'Echo' })),
+      emptySubclassLevels());
+    expect(hbKey.parentClassId).toBeUndefined();
+    expect(hbKey.parentClass).toBe('Stormwarden');
+
+    const unresolved = toDataSubclass(
+      collectForm(makeForm({ parentClass: 'Wizard', parentClassId: '', name: 'Echo' })),
+      emptySubclassLevels());
+    expect(unresolved.parentClassId).toBeUndefined();
+  });
 });
 
 describe('review rows', () => {

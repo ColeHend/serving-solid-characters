@@ -219,6 +219,11 @@ export interface RollBonus {
   bonus?: number;
   /** The bonus equals this fraction of the character's proficiency bonus (Alert's PB to Initiative). */
   proficiencyBonus?: PbFraction;
+  /**
+   * An ability whose MODIFIER is ADDED to the roll ("add your Wisdom modifier to Initiative").
+   * Distinct from `stat`, which only narrows which saves/checks the bonus applies to and is never added.
+   */
+  statBonus?: keyof Stats;
   /** Only meaningful for SavingThrow / AbilityCheck; absent = all stats. */
   stat?: keyof Stats;
   /** Free-text qualifier, e.g. "with Ranged weapons". */
