@@ -1,7 +1,7 @@
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { MoreVert } from "coles-solid-library/icons";
 import { Accessor, Component, createSignal, Setter, Show } from "solid-js";
-import { homebrewManager } from "../../../../shared";
+import { characterManager, homebrewManager } from "../../../../shared";
 import { Spell } from "../../../../models/generated";
 import { useNavigate } from "@solidjs/router";
 import styles from "./spellMenu.module.scss";
@@ -46,10 +46,12 @@ export const SpellMenu: Component<SpellMenuProps> = (props) => {
       <MenuItem onClick={()=>setShowAddSpell(old => !old)}>
         Add to Character
       </MenuItem>
-      <Show when={lastChar() !== ""}>
-        <MenuItem onClick={()=>AddSpell(props.spell,lastChar())}>
-          Add to {lastChar()}
-        </MenuItem>
+      <Show when={characterManager.getCharacter(lastChar())}>
+        {(character) => (
+          <MenuItem onClick={()=>AddSpell(props.spell,lastChar())}>
+            Add to {character().name}
+          </MenuItem>
+        )}
       </Show>
     </Menu>
 

@@ -39,7 +39,7 @@ export const SpellsSection: Component = () => {
       .join(", ");
     const combined =
       casters.length > 1
-        ? ` Combined caster level ${multiclassCasterLevel(draft.classes, derived.classByName)} for multiclass slots.`
+        ? ` Combined caster level ${multiclassCasterLevel(draft.classes, derived.classByKey)} for multiclass slots.`
         : "";
     return `Spellcasting: ${parts}.${combined} Add anything — even spells outside your lists.`;
   });

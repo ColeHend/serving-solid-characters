@@ -4,6 +4,7 @@ import { FeatureDetail } from '../../../../../../models/generated';
 import { FeatureDetail as DataFeatureDetail, Spell } from '../../../../../../models/data';
 import { Subclass } from '../../../../../../models/data/subclasses';
 import { createNewId } from '../../../../../../shared/customHooks/utility/tools/idGen';
+import { entitySelectorKey } from '../../../../../../shared/customHooks/utility/tools/entityKey';
 import { SpellsKnown } from '../SpellsKnown';
 import {
   LEVELS,
@@ -41,8 +42,7 @@ export interface SubclassForm extends SpellcastingFormState {
 
 /** Stable unique option key for a class in the merged SRD+homebrew list: the SRD GUID when
  *  present, else a name-derived key (homebrew classes are Dexie-keyed by name and may lack an id). */
-export const classSelectorKey = (cls: { id?: string | number; name: string }): string =>
-  cls.id != null && `${cls.id}` !== '' ? `${cls.id}` : `hb:${cls.name}`;
+export const classSelectorKey = entitySelectorKey;
 
 /** Ruleset tag for the selector: SRD entities carry a centrally-stamped `legacy`
  *  (2014 → true, 2024 → false); homebrew classes carry none. */

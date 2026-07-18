@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Character } from "../../../../models/character.model";
-import { Background, CasterType, Class5E, Feat, Race } from "../../../../models/generated";
+import { Background, CasterType, Class5E, Feat, Race, Spell, Subclass } from "../../../../models/generated";
 import { SrdLookups, characterToDraft, draftToCharacter } from "./draftMapper";
 import { emptyDraft } from "./types";
 
@@ -45,6 +45,7 @@ const lookups: SrdLookups = {
   subraces: [],
   backgrounds: [soldier],
   feats: [feat("Savage Attacker"), feat("Alert")],
+  spells: [],
 };
 
 /** The plan's verification character: 2024 Human Soldier, Barbarian 1 / Sorcerer 3 (Draconic). */
@@ -119,8 +120,8 @@ describe("draftToCharacter", () => {
 
   it("composes the origin feat and chosen feats into features + featsTaken", () => {
     expect(character.featsTaken).toEqual([
-      { name: "Savage Attacker", source: "background" },
-      { name: "Alert", source: "chosen" },
+      { name: "Savage Attacker", source: "background", id: "Savage Attacker" },
+      { name: "Alert", source: "chosen", id: "Alert" },
     ]);
     expect(character.features.map((f) => f.name)).toEqual(["Savage Attacker", "Alert"]);
     expect(character.features[0].description).toContain("Savage Attacker");
@@ -267,5 +268,99 @@ describe("characterToDraft", () => {
     const draft = characterToDraft(broken, lookups, "2024");
     expect(draft.classes.map((c) => c.name)).toEqual(["Barbarian", "Sorcerer"]);
     expect(draft.classes[1].subclass).toBe("Draconic Sorcery");
+  });
+});
+
+describe("hp overrides", () => {
+  it("honors manual max/current/temp and persists them in builder.hp", () => {
+    const draft = { ...scenarioDraft(), hp: { maxOverride: 40, current: 17, temp: 5 } };
+    const character = draftToCharacter(draft, lookups);
+    expect(character.health).toEqual({ max: 40, current: 17, temp: 5 });
+    expect(character.builder?.hp).toEqual({ maxOverride: 40, current: 17, temp: 5 });
+
+    const restored = characterToDraft(character, lookups, "2014");
+    expect(restored.hp).toEqual({ maxOverride: 40, current: 17, temp: 5 });
+  });
+
+  it("clears back to auto max and full current when overrides are unset", () => {
+    const draft = { ...scenarioDraft(), hp: { temp: 0 } };
+    const character = draftToCharacter(draft, lookups);
+    expect(character.health).toEqual({ max: 32, current: 32, temp: 0 });
+  });
+
+  it("restores only temp for legacy saves without builder.hp", () => {
+    const character = draftToCharacter(scenarioDraft(), lookups);
+    delete character.builder!.hp;
+    character.health = { max: 99, current: 3, temp: 7 };
+    const restored = characterToDraft(character, lookups, "2014");
+    expect(restored.hp).toEqual({ temp: 7 });
+  });
+});
+
+describe("id write-through", () => {
+  const barbarianWithId = { ...barbarian, id: "class-barb" } as Class5E;
+  const humanWithId = { ...human, id: "race-human" } as Race;
+  const soldierWithId = { ...soldier, id: "bg-soldier" } as Background;
+  const draconic = {
+    id: "sub-draconic",
+    name: "Draconic Sorcery",
+    parentClass: "Sorcerer",
+    description: "",
+    features: { 3: [{ id: "affinity", name: "Draconic Resilience", description: "" }] },
+  } as unknown as Subclass;
+  const idLookups: SrdLookups = {
+    ...lookups,
+    classes: [barbarianWithId, sorcerer],
+    subclasses: [draconic],
+    races: [humanWithId],
+    backgrounds: [soldierWithId],
+    spells: [{ id: "spell-acid", name: "Acid Splash" } as unknown as Spell],
+  };
+
+  const idDraft = () => ({
+    ...scenarioDraft(),
+    characterId: "char-1",
+    classes: [
+      { name: "Barbarian", classId: "class-barb", level: 1, subclass: "", skillChoices: ["Perception"] },
+      { name: "Sorcerer", level: 3, subclass: "Draconic Sorcery", subclassId: "sub-draconic", skillChoices: [] },
+    ],
+    speciesId: "race-human",
+    backgroundId: "bg-soldier",
+  });
+
+  it("stamps entity ids onto the saved character", () => {
+    const character = draftToCharacter(idDraft(), idLookups);
+    expect(character.id).toBe("char-1");
+    expect(character.levels[0].classId).toBe("class-barb");
+    expect(character.levels[3].subclassId).toBe("sub-draconic");
+    expect(character.race.speciesId).toBe("race-human");
+    expect(character.backgroundId).toBe("bg-soldier");
+    expect(character.spells[0]).toEqual({ name: "Acid Splash", prepared: false, id: "spell-acid" });
+  });
+
+  it("bakes chosen-subclass features into the level rows", () => {
+    const character = draftToCharacter(idDraft(), idLookups);
+    // Sorcerer class level 3 = overall row index 3 (Barb 1 + Sorc 3).
+    expect(character.levels[3].features.map((f) => f.name)).toEqual([
+      "Sorcerer Subclass",
+      "Draconic Resilience",
+    ]);
+  });
+
+  it("round-trips ids through characterToDraft, grouping levels by classId", () => {
+    const character = draftToCharacter(idDraft(), idLookups);
+    const restored = characterToDraft(character, idLookups, "2014");
+    expect(restored.characterId).toBe("char-1");
+    expect(restored.classes).toEqual(idDraft().classes);
+    expect(restored.speciesId).toBe("race-human");
+    expect(restored.backgroundId).toBe("bg-soldier");
+    expect(restored.spells).toEqual(["Acid Splash", "Blade Ward"]);
+  });
+
+  it("resolves stored ids over names when they disagree (renamed entity)", () => {
+    const character = draftToCharacter(idDraft(), idLookups);
+    character.race.species = "Old Human Name";
+    const restored = characterToDraft(character, idLookups, "2014");
+    expect(restored.species).toBe("Human");
   });
 });

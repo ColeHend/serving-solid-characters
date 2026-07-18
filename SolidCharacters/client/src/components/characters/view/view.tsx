@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo, createSignal, onCleanup, onMount, runWithOwner } from "solid-js";
+import { Component, For, Show, createEffect, createMemo, createSignal, onCleanup, onMount, runWithOwner } from "solid-js";
 import styles from "./view.module.scss";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
@@ -37,12 +37,20 @@ const CharacterView: Component = () => {
 
 
   const [searchParam, setSearchParam] = useSearchParams();
-   
-  const [characters, setCharacters] = createSignal(characterManager.characters());
-  if (!searchParam.name) setSearchParam({ name: (characters()?.[0]?.name ?? '') });
-  const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ") || (characters()?.[0].name ?? '')).toLowerCase())?.[0];
 
-  const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
+  // Track the manager's signal directly — Dexie fills it AFTER mount on a hard load.
+  const characters = createMemo(() => characterManager.characters());
+  const paramId = () => (typeof searchParam.id === "string" ? searchParam.id : searchParam.id?.[0] ?? "");
+
+  const [currentCharacter, setCurrentCharacter] = createSignal<Character>(
+    characters().find((x) => x.id === paramId()) ?? characters()?.[0],
+  );
+  // Resolve the ?id= selection (or default to the first character) once the async load lands.
+  createEffect(() => {
+    if (currentCharacter()) return;
+    const found = characters().find((x) => x.id === paramId()) ?? characters()[0];
+    if (found) setCurrentCharacter(found);
+  });
 
   // The character with its mad commands applied, for display only. Handlers mutate in
   // place, so they always run against a fresh Clone of the persisted character — never
@@ -198,7 +206,6 @@ const CharacterView: Component = () => {
     const listener = (e: MediaQueryListEvent) => apply(e);
     mq.addEventListener("change", listener);
     onCleanup(() => mq.removeEventListener("change", listener));
-    setCharacters(characterManager.characters());
   });
 
   type ActionRow = { name: string; range: string; damage: string };
@@ -229,7 +236,9 @@ const CharacterView: Component = () => {
   const ninthLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 9));
 
   effect(() => {
-    setSearchParam({ name: currentCharacter()?.name })
+    const id = currentCharacter()?.id;
+    // Keep the URL on the shown character's id (and clear any legacy ?name= leftover).
+    if (id) setSearchParam({ id, name: undefined });
   })
 
   onMount(() => {
@@ -483,11 +492,11 @@ const CharacterView: Component = () => {
                     </Show>
 
                     <Show when={fifthLevelSpells().length > 0}>
-                      <SpellTable 
-                        spells={firstLevelSpells}
-                        show={showSpellModalHandler} 
+                      <SpellTable
+                        spells={fifthLevelSpells}
+                        show={showSpellModalHandler}
                         currentCharacter={currentCharacter}
-                      />  
+                      />
                     </Show>
 
                     <Show when={sixthLevelSpells().length >  0}>

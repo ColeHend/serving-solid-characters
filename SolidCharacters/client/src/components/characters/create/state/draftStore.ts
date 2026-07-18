@@ -5,8 +5,9 @@ import {
   RulesetSelection,
   SkillOverrideState,
 } from "../../../../models/character.model";
+import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
 import { ABILITY_SCORE_MAX, ABILITY_SCORE_MIN, AbilityKey, MAX_TOTAL_LEVEL } from "../rules/constants";
-import { CharacterDraft, DraftItems, defaultBaseScores, emptyDraft, zeroScores } from "./types";
+import { CharacterDraft, DraftClass, DraftItems, defaultBaseScores, emptyDraft, zeroScores } from "./types";
 
 const nextSkillState: Record<SkillOverrideState, SkillOverrideState> = {
   none: "proficient",
@@ -20,6 +21,10 @@ function roll4d6DropLowest(): number {
   return dice.sort((a, b) => a - b).slice(1).reduce((sum, d) => sum + d, 0);
 }
 
+/** Selector key of a draft class entry: the stored classId, else the name-derived hb: key. */
+export const draftClassKey = (entry: Pick<DraftClass, "classId" | "name">): string =>
+  entry.classId || entitySelectorKey({ name: entry.name });
+
 export function createDraftStore(initial?: Partial<CharacterDraft>) {
   const [draft, setDraft] = createStore<CharacterDraft>(emptyDraft("2024", initial));
 
@@ -30,36 +35,55 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
     setName(name: string) {
       setDraft("name", name);
     },
+    /** Stamps the saved character's id onto the draft (after a first save or edit load). */
+    setCharacterId(id: string | undefined) {
+      setDraft("characterId", id);
+    },
     setAlignment(alignment: string) {
       setDraft("alignment", alignment);
     },
 
-    addClass(name: string) {
-      if (draft.classes.some((c) => c.name === name)) return;
-      setDraft("classes", draft.classes.length, { name, level: 1, subclass: "", skillChoices: [] });
+    addClass(name: string, classId?: string) {
+      const key = classId || entitySelectorKey({ name });
+      if (draft.classes.some((c) => draftClassKey(c) === key)) return;
+      setDraft("classes", draft.classes.length, {
+        name,
+        classId,
+        level: 1,
+        subclass: "",
+        subclassId: undefined,
+        skillChoices: [],
+      });
     },
-    removeClass(name: string) {
-      setDraft("classes", (classes) => classes.filter((c) => c.name !== name));
+    removeClass(key: string) {
+      setDraft("classes", (classes) => classes.filter((c) => draftClassKey(c) !== key));
     },
-    setClassLevel(name: string, level: number) {
+    setClassLevel(key: string, level: number) {
       setDraft(
         "classes",
-        (c) => c.name === name,
+        (c) => draftClassKey(c) === key,
         produce((entry) => {
           const otherLevels = draft.classes
-            .filter((c) => c.name !== name)
+            .filter((c) => draftClassKey(c) !== key)
             .reduce((sum, c) => sum + c.level, 0);
           entry.level = Math.max(1, Math.min(level, MAX_TOTAL_LEVEL - otherLevels));
         }),
       );
     },
-    setSubclass(name: string, subclass: string) {
-      setDraft("classes", (c) => c.name === name, "subclass", subclass);
-    },
-    toggleClassSkill(name: string, skill: string, maxPicks: number) {
+    setSubclass(key: string, subclass: string, subclassId?: string) {
       setDraft(
         "classes",
-        (c) => c.name === name,
+        (c) => draftClassKey(c) === key,
+        produce((entry) => {
+          entry.subclass = subclass;
+          entry.subclassId = subclass ? subclassId : undefined;
+        }),
+      );
+    },
+    toggleClassSkill(key: string, skill: string, maxPicks: number) {
+      setDraft(
+        "classes",
+        (c) => draftClassKey(c) === key,
         produce((entry) => {
           if (entry.skillChoices.includes(skill)) {
             entry.skillChoices = entry.skillChoices.filter((s) => s !== skill);
@@ -70,18 +94,20 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
       );
     },
 
-    setSpecies(species: string) {
+    setSpecies(species: string, speciesId?: string) {
       // A new species brings new choice sets; stale picks must not linger.
       setDraft({
         species,
+        speciesId: species ? speciesId : undefined,
         lineage: "",
+        lineageId: undefined,
         raceAbilityChoices: [],
         raceLanguageChoices: [],
         raceTraitChoices: [],
       });
     },
-    setLineage(lineage: string) {
-      setDraft("lineage", lineage);
+    setLineage(lineage: string, lineageId?: string) {
+      setDraft({ lineage, lineageId: lineage ? lineageId : undefined });
     },
     toggleRaceAbilityChoice(key: AbilityKey, maxPicks: number) {
       setDraft("raceAbilityChoices", (picks) =>
@@ -107,13 +133,29 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
             ? [...picks, name]
             : picks);
     },
-    setBackground(background: string) {
+    setBackground(background: string, backgroundId?: string) {
       // A new background brings new boost abilities and its own recommended feat;
       // stale boosts and origin-feat overrides must not linger.
-      setDraft({ background, backgroundBoosts: {}, originFeat: "" });
+      setDraft({
+        background,
+        backgroundId: background ? backgroundId : undefined,
+        backgroundBoosts: {},
+        originFeat: "",
+        originFeatId: undefined,
+      });
     },
-    setOriginFeat(name: string) {
-      setDraft("originFeat", name);
+    setOriginFeat(name: string, id?: string) {
+      setDraft({ originFeat: name, originFeatId: name ? id : undefined });
+    },
+
+    setHpMaxOverride(value: number | undefined) {
+      setDraft("hp", "maxOverride", value);
+    },
+    setHpCurrent(value: number | undefined) {
+      setDraft("hp", "current", value);
+    },
+    setHpTemp(value: number) {
+      setDraft("hp", "temp", Math.max(0, Math.floor(value || 0)));
     },
 
     addLanguage(language: string) {

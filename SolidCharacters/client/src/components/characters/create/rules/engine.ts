@@ -28,6 +28,8 @@ export const ALERT_ADDS_PROF_TO_INITIATIVE = false;
 
 export interface LeveledClass {
   name: string;
+  /** Selector key of the class when known — resolvers should prefer it over the name. */
+  classId?: string;
   level: number;
 }
 
@@ -138,12 +140,12 @@ export function collectLanguages(
  */
 export function computeMaxHp(
   classes: LeveledClass[],
-  classByName: (name: string) => Class5E | undefined,
+  resolveClass: (entry: LeveledClass) => Class5E | undefined,
   conMod: number,
 ): number {
   let hp = 0;
   classes.forEach((entry, classIndex) => {
-    const sides = hitDieSides(classByName(entry.name)?.hitDie);
+    const sides = hitDieSides(resolveClass(entry)?.hitDie);
     for (let lvl = 1; lvl <= (entry.level || 0); lvl++) {
       const die = classIndex === 0 && lvl === 1 ? sides : Math.floor(sides / 2) + 1;
       hp += Math.max(1, die + conMod);
@@ -245,12 +247,12 @@ export interface SpellcastingInfo {
 
 export function computeSpellcasting(
   classes: LeveledClass[],
-  classByName: (name: string) => Class5E | undefined,
+  resolveClass: (entry: LeveledClass) => Class5E | undefined,
   finalScores: Stats,
   profBonus: number,
 ): SpellcastingInfo[] {
   return classes
-    .map((entry) => ({ entry, class5e: classByName(entry.name) }))
+    .map((entry) => ({ entry, class5e: resolveClass(entry) }))
     .filter(({ class5e }) => !!class5e?.spellcasting)
     .map(({ entry, class5e }) => {
       const ability =
@@ -353,10 +355,10 @@ export function featCategory(feat: Feat): FeatCategory {
 /** Combined caster level for multiclass slot tables (full + half/2 + third/3, rounded down). */
 export function multiclassCasterLevel(
   classes: LeveledClass[],
-  classByName: (name: string) => Class5E | undefined,
+  resolveClass: (entry: LeveledClass) => Class5E | undefined,
 ): number {
   return classes.reduce((sum, entry) => {
-    switch (classByName(entry.name)?.spellcasting?.metadata?.casterType) {
+    switch (resolveClass(entry)?.spellcasting?.metadata?.casterType) {
       case CasterType.Full:
       case CasterType.Pact:
         return sum + entry.level;

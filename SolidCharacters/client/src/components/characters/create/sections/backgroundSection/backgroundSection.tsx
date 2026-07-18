@@ -2,6 +2,7 @@ import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { Button, Chip, Option, Select, addSnackbar } from "coles-solid-library";
 import { Background, StartingEquipment } from "../../../../../models/generated";
 import BackgroundView from "../../../../../shared/components/modals/background/backgrondView";
+import { entitySelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { LANGUAGES } from "../../rules/constants";
 import { featCategory } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
@@ -31,9 +32,13 @@ export const BackgroundSection: Component = () => {
     setShowBackgroundView(true);
   };
 
+  const isPicked = (bg: Background) =>
+    draft.backgroundId ? draft.backgroundId === entitySelectorKey(bg) : draft.background === bg.name;
+
   const pickBackground = (bg: Background) => {
-    const next = draft.background === bg.name ? "" : bg.name;
-    actions.setBackground(next);
+    const picked = isPicked(bg);
+    const next = picked ? "" : bg.name;
+    actions.setBackground(next, picked ? undefined : entitySelectorKey(bg));
     if (next && draft.edition === "both" && draft.species) {
       const side = editionSideOf(data.backgroundsRaw(), next);
       if (side !== undefined && !hasVariantOnSide(data.racesRaw(), draft.species, side)) {
@@ -110,7 +115,7 @@ export const BackgroundSection: Component = () => {
             <button
               type="button"
               class={styles.card}
-              classList={{ [styles.cardSelected]: draft.background === bg.name }}
+              classList={{ [styles.cardSelected]: isPicked(bg) }}
               onClick={() => pickBackground(bg)}
             >
               <span class={styles.cardName}>
@@ -140,9 +145,21 @@ export const BackgroundSection: Component = () => {
                 <span class={styles.detailLabel}>Origin feat</span> —{" "}
                 <Select
                   value={chosenOriginFeat()}
-                  onChange={(value: string) =>
-                    actions.setOriginFeat(value === (bg().feat ?? "") ? "" : value)
-                  }
+                  onChange={(value: string) => {
+                    if (value === (bg().feat ?? "")) {
+                      actions.setOriginFeat("");
+                      return;
+                    }
+                    const feat = data
+                      .feats()
+                      .find((f) => f.details?.name?.toLowerCase() === value.toLowerCase());
+                    actions.setOriginFeat(
+                      value,
+                      feat
+                        ? entitySelectorKey({ id: feat.id, name: feat.details?.name ?? "" })
+                        : undefined,
+                    );
+                  }}
                 >
                   <For each={originFeatOptions()}>
                     {(name) => (

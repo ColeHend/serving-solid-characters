@@ -176,7 +176,7 @@ export function buildChecklist(inputs: ChecklistInputs): ChecklistItem[] {
       id: "featureChoices",
       label: "Feature choices",
       status: "warn",
-      detail: `${inputs.pendingFeatureChoices} pending — pick them under Feats.`,
+      detail: `${inputs.pendingFeatureChoices} pending — pick them in their Class, Species, or Feats section.`,
       sectionId: "codex-feats",
     });
   }

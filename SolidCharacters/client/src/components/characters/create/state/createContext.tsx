@@ -42,9 +42,9 @@ export interface CreateContextValue {
    * for reconciling a switch BEFORE committing it to the store.
    */
   loadEditionData: (edition: RulesetSelection) => Promise<EditionData>;
-  /** Name of the character being edited, null when creating a new one. */
-  editName: Accessor<string | null>;
-  setEditName: (name: string | null) => void;
+  /** Id of the character being edited, null when creating a new one. */
+  editId: Accessor<string | null>;
+  setEditId: (id: string | null) => void;
 }
 
 const CreateContext = createContext<CreateContextValue>();
@@ -57,7 +57,7 @@ export function defaultEdition(): RulesetSelection {
 
 export function CreateProvider(props: { children: JSX.Element }) {
   const { draft, actions } = createDraftStore({ edition: defaultEdition() });
-  const [editName, setEditName] = createSignal<string | null>(null);
+  const [editId, setEditId] = createSignal<string | null>(null);
 
   // Property access happens inside each hook's createMemo, so the store's edition is tracked
   // and every list swaps datasets when the toggle changes.
@@ -104,6 +104,7 @@ export function CreateProvider(props: { children: JSX.Element }) {
     subraces: data.subraces(),
     backgrounds: withVariantFirst(data.backgrounds(), derived.selectedBackground()),
     feats: data.feats(),
+    spells: data.spells(),
   });
 
   // Homebrew isn't edition-tagged — it belongs to every edition's dataset.
@@ -164,7 +165,7 @@ export function CreateProvider(props: { children: JSX.Element }) {
 
   return (
     <CreateContext.Provider
-      value={{ draft, actions, derived, data, lookups, loadEditionData, editName, setEditName }}
+      value={{ draft, actions, derived, data, lookups, loadEditionData, editId, setEditId }}
     >
       {props.children}
     </CreateContext.Provider>

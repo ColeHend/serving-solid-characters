@@ -1,0 +1,77 @@
+@use '../../../../../index.scss' as *;
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 14px;
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-parchment);
+}
+
+.dieLine {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.dieBadge {
+  padding: 1px 8px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--codex-gold);
+}
+
+.ruleHint {
+  margin: 0 0 14px;
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  color: var(--codex-ink-dim);
+}
+
+.autoLine {
+  margin: 0 0 14px;
+  font-family: $font-ui;
+  font-size: 0.9rem;
+  color: var(--codex-parchment);
+
+  strong {
+    color: var(--codex-gold);
+    font-size: 1.05rem;
+  }
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 110px;
+}
+
+.fieldLabel {
+  font-family: $font-ui;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+}
+
+.fieldHint {
+  font-family: $font-ui;
+  font-size: 0.7rem;
+  color: var(--codex-ink-dim);
+}
+
+.emptyHint {
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-ink-dim);
+}

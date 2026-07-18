@@ -1,6 +1,8 @@
 import { Component, For, Show, createMemo } from "solid-js";
 import { Option, Select } from "coles-solid-library";
 import { Class5E, Subclass } from "../../../../../models/generated";
+import { subclassBelongsTo } from "../../../../../models/data/subclasses";
+import { entitySelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { ABILITY_LABELS, MAX_TOTAL_LEVEL } from "../../rules/constants";
 import {
   casterTypeLabel,
@@ -10,9 +12,12 @@ import {
   totalLevel,
 } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
+import { MadChoiceControl } from "../../shell/madChoiceControl";
 import { Stepper } from "../../shell/stepper";
 import { useCreate } from "../../state/createContext";
+import { draftClassKey } from "../../state/draftStore";
 import { DraftClass } from "../../state/types";
+import choiceStyles from "../../shell/madChoiceControl.module.scss";
 import styles from "./classSection.module.scss";
 
 interface ClassDetailCardProps {
@@ -26,11 +31,26 @@ interface ClassDetailCardProps {
 export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
   const { draft, actions, derived, data } = useCreate();
 
-  const class5e = createMemo(() => derived.classByName(props.entry.name));
-  const subclasses = createMemo(() =>
-    data.subclasses().filter((sub) => sub.parentClass?.toLowerCase() === props.entry.name.toLowerCase()));
+  const cardKey = createMemo(() => draftClassKey(props.entry));
+  const class5e = createMemo(() => derived.classByKey(props.entry));
+  const subclasses = createMemo(() => {
+    const cls = class5e();
+    return data.subclasses().filter((sub) =>
+      cls
+        ? subclassBelongsTo(sub, cls)
+        : sub.parentClass?.toLowerCase() === props.entry.name.toLowerCase());
+  });
+  const chosenSubclass = createMemo(() =>
+    subclasses().find((sub) =>
+      props.entry.subclassId
+        ? entitySelectorKey(sub) === props.entry.subclassId
+        : !!props.entry.subclass && sub.name === props.entry.subclass));
   const unlockLevel = createMemo(() => subclassUnlockLevel(class5e(), subclasses()));
   const skillSpec = createMemo(() => classSkillChoiceSpec(class5e()));
+
+  /** Choice-form MADS on this class's (and its chosen subclass's) features. */
+  const cardChoices = createMemo(() =>
+    derived.madChoices().filter((c) => c.source === "class" && c.sourceKey === cardKey()));
 
   const metaLine = createMemo(() => {
     const saves = (class5e()?.savingThrows ?? [])
@@ -53,7 +73,7 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
 
   /** Class + chosen-subclass features gained at the levels this class actually has. */
   const featuresByLevel = createMemo(() => {
-    const subclass = subclasses().find((sub) => sub.name === props.entry.subclass);
+    const subclass = chosenSubclass();
     const byLevel = new Map<number, string[]>();
     const gather = (features: Record<number, { name?: string }[]> | undefined) => {
       Object.entries(features ?? {}).forEach(([levelKey, list]) => {
@@ -95,15 +115,15 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
         <span class={styles.detailControls}>
           <Stepper
             label={`Lv ${props.entry.level}`}
-            onDecrement={() => actions.setClassLevel(props.entry.name, props.entry.level - 1)}
-            onIncrement={() => actions.setClassLevel(props.entry.name, props.entry.level + 1)}
+            onDecrement={() => actions.setClassLevel(cardKey(), props.entry.level - 1)}
+            onIncrement={() => actions.setClassLevel(cardKey(), props.entry.level + 1)}
             decrementDisabled={props.entry.level <= 1}
             incrementDisabled={totalLevel(draft.classes) >= MAX_TOTAL_LEVEL}
           />
           <button
             type="button"
             class={styles.removeButton}
-            onClick={() => actions.removeClass(props.entry.name)}
+            onClick={() => actions.removeClass(cardKey())}
             title={`Remove ${props.entry.name}`}
           >
             ×
@@ -142,7 +162,7 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
 
           <h5 class={styles.blockLabel}>
             {props.entry.name} subclass
-            <Show when={subclasses().find((sub) => sub.name === props.entry.subclass)}>
+            <Show when={chosenSubclass()}>
               {(chosen) => (
                 <InfoButton
                   label={`View ${props.entry.subclass} details`}
@@ -160,13 +180,25 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
               fallback={<p class={styles.unlockHint}>No subclasses in this edition's data.</p>}
             >
               <Select
-                value={props.entry.subclass}
-                onChange={(value: string) => actions.setSubclass(props.entry.name, value)}
+                value={chosenSubclass() ? entitySelectorKey(chosenSubclass()!) : ""}
+                onChange={(value: string) => {
+                  const sub = subclasses().find((s) => entitySelectorKey(s) === value);
+                  actions.setSubclass(cardKey(), sub?.name ?? "", sub ? value : undefined);
+                }}
                 placeholder="Choose a subclass…"
               >
-                <For each={subclasses()}>{(sub) => <Option value={sub.name}>{sub.name}</Option>}</For>
+                <For each={subclasses()}>
+                  {(sub) => <Option value={entitySelectorKey(sub)}>{sub.name}</Option>}
+                </For>
               </Select>
             </Show>
+          </Show>
+
+          <Show when={cardChoices().length > 0}>
+            <h5 class={styles.blockLabel}>Feature choices</h5>
+            <div class={choiceStyles.choicesList}>
+              <For each={cardChoices()}>{(choice) => <MadChoiceControl choice={choice} />}</For>
+            </div>
           </Show>
         </div>
 
@@ -184,7 +216,7 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
                   type="button"
                   class={styles.skillPill}
                   classList={{ [styles.skillPillActive]: props.entry.skillChoices.includes(skill) }}
-                  onClick={() => actions.toggleClassSkill(props.entry.name, skill, skillSpec().amount)}
+                  onClick={() => actions.toggleClassSkill(cardKey(), skill, skillSpec().amount)}
                 >
                   {skill}
                 </button>

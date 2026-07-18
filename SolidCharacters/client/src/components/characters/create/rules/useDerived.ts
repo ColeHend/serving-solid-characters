@@ -19,7 +19,8 @@ import {
   withVariantFirst,
 } from "../state/bothMode";
 import { draftToCharacter } from "../state/draftMapper";
-import { CharacterDraft } from "../state/types";
+import { CharacterDraft, DraftClass } from "../state/types";
+import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
 import { MadChoice, applyCreatorMads, draftMadChoices } from "./applyMads";
 import {
   SaveRow,
@@ -28,6 +29,7 @@ import {
   computeAc,
   computeFinalScores,
   computeInitiative,
+  computeMaxHp,
   computePassivePerception,
   computeSavingThrows,
   computeSkillRows,
@@ -70,9 +72,14 @@ export interface Derived {
   selectedSubrace: Accessor<Subrace | undefined>;
   selectedBackground: Accessor<Background | undefined>;
   classByName: (name: string) => Class5E | undefined;
+  /** Id-first class resolution for a draft entry (selector key, falling back to the name). */
+  classByKey: (entry: Pick<DraftClass, "classId" | "name">) => Class5E | undefined;
   finalScores: Accessor<Stats>;
   abilityMods: Accessor<Record<AbilityKey, number>>;
+  /** Effective max HP (manual override and MADS applied) — what the sheet shows. */
   maxHp: Accessor<number>;
+  /** The computed max HP before any manual override — the HP section's "auto" figure. */
+  autoMaxHp: Accessor<number>;
   ac: Accessor<number>;
   initiative: Accessor<number>;
   speed: Accessor<number>;
@@ -117,6 +124,16 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
   const classByName = (name: string) =>
     preferCurrent(data.classes().filter((c) => c.name?.toLowerCase() === name.toLowerCase()));
 
+  /** Exact selector-key lookup; undefined when no key is stored (legacy saves fall back to names). */
+  const byKey = <T extends { id?: string; name?: string }>(
+    list: T[],
+    key: string | undefined,
+  ): T | undefined =>
+    key ? list.find((e) => entitySelectorKey({ id: e.id, name: e.name ?? "" }) === key) : undefined;
+
+  const classByKey = (entry: Pick<DraftClass, "classId" | "name">) =>
+    byKey(data.classes(), entry.classId) ?? classByName(entry.name);
+
   const pairing = createMemo<PairingState>(() => {
     if (draft.edition !== "both") return { side: undefined, anchor: null };
     const speciesSide = editionSideOf(data.racesRaw(), draft.species);
@@ -145,14 +162,17 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
     ));
 
   const selectedRace = createMemo(() =>
+    byKey(data.racesRaw(), draft.speciesId) ??
     resolveVariant(data.racesRaw(), draft.species, pairing().side));
   const selectedSubrace = createMemo(() =>
     draft.lineage
-      ? preferCurrent(
-        data.subraces().filter((r) => r.name?.toLowerCase() === draft.lineage.toLowerCase()),
-      )
+      ? byKey(data.subraces(), draft.lineageId) ??
+        preferCurrent(
+          data.subraces().filter((r) => r.name?.toLowerCase() === draft.lineage.toLowerCase()),
+        )
       : undefined);
   const selectedBackground = createMemo(() =>
+    byKey(data.backgroundsRaw(), draft.backgroundId) ??
     resolveVariant(data.backgroundsRaw(), draft.background, pairing().side));
 
   const level = createMemo(() => totalLevel(draft.classes));
@@ -192,6 +212,7 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
       subraces: data.subraces(),
       backgrounds: withVariantFirst(data.backgrounds(), selectedBackground()),
       feats: data.feats(),
+      spells: data.spells(),
     }));
   const madCharacter = createMemo(() => applyCreatorMads(draftCharacter()));
   const madChoices = createMemo(() => draftMadChoices(draftCharacter()));
@@ -244,18 +265,24 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
     selectedSubrace,
     selectedBackground,
     classByName,
+    classByKey,
     finalScores,
     abilityMods,
     maxHp: createMemo(() => madCharacter().health?.max ?? 0),
+    autoMaxHp: createMemo(() => computeMaxHp(draft.classes, classByKey, abilityMods().con)),
     ac: createMemo(() => madCharacter().ArmorClass ?? computeAc(abilityMods().dex)),
     initiative: createMemo(() => computeInitiative(effectiveMods().dex, allFeatNames(), profBonus())),
     speed: createMemo(() => madCharacter().Speed ?? 0),
     skillRows,
     passivePerception: createMemo(() => computePassivePerception(skillRows())),
     savingThrows: createMemo(() =>
-      computeSavingThrows(classByName(draft.classes[0]?.name ?? ""), effectiveScores(), profBonus())),
+      computeSavingThrows(
+        draft.classes[0] ? classByKey(draft.classes[0]) : undefined,
+        effectiveScores(),
+        profBonus(),
+      )),
     spellcasting: createMemo(() =>
-      computeSpellcasting(draft.classes, classByName, effectiveScores(), profBonus())),
+      computeSpellcasting(draft.classes, classByKey, effectiveScores(), profBonus())),
     speciesPool,
     backgroundPool,
     pairing,

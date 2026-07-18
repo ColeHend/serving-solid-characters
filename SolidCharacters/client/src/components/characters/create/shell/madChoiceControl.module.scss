@@ -1,0 +1,80 @@
+@use '../../../../index.scss' as *;
+
+// ── Choice-form MADS pickers (shared by the class cards, species section, and feats section) ──
+.choicesLabel {
+  margin: 18px 0 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+  font-family: $font-ui;
+}
+
+.choicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choiceRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  font-family: $font-ui;
+  font-size: 0.85rem;
+}
+
+.choiceName {
+  font-weight: 600;
+  color: var(--codex-parchment);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.choicePending {
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--codex-gold);
+  border-radius: 999px;
+  color: var(--codex-gold);
+}
+
+.choiceHint {
+  font-size: 0.75rem;
+  color: var(--codex-ink-dim);
+}
+
+.choicePills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.choicePill {
+  padding: 3px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--codex-gold);
+  }
+}
+
+.choicePillActive {
+  border-color: var(--codex-gold);
+  background: color-mix(in srgb, var(--codex-gold) 16%, transparent);
+  color: var(--codex-gold);
+}

@@ -2,6 +2,8 @@ import { Stats } from "../shared";
 import { FeatureDetail } from "./generated";
 
 export class Character {
+  /** Stable identity and Dexie primary key (minted via createNewId on create). '' = not yet saved. */
+  public id: string = '';
   public name: string = '';
   public get level() {
     return this.levels.length;
@@ -22,6 +24,8 @@ export class Character {
   public className: string = '';
   public subclass: string[] = [];
   public background: string = '';
+  /** Selector key of the chosen background (SRD id or hb:<name>). Absent on older saves — resolve by name. */
+  public backgroundId?: string;
   public alignment: string = '';
   public features: FeatureDetail[] = [];
   public proficiencies: CharacterProficiency = {
@@ -110,6 +114,8 @@ export interface CharacterDetails {
 export interface CharacterFeatTaken {
   name: string;
   source: 'background' | 'chosen';
+  /** Selector key of the feat (SRD id or hb:<name>). Absent on older saves — resolve by name. */
+  id?: string;
 }
 
 export type SkillOverrideState = 'none' | 'proficient' | 'expertise';
@@ -135,6 +141,15 @@ export interface CharacterBuilderState {
   raceTraitChoices?: string[];
   /** Origin-feat override; '' or absent = the background's recommended feat. */
   originFeat?: string;
+  /** Hit-point inputs from the creator's Hit Points section. Absent = fully auto-computed. */
+  hp?: CharacterHpOverride;
+}
+
+/** Manual HP entries; undefined maxOverride/current fall back to the computed values. */
+export interface CharacterHpOverride {
+  maxOverride?: number;
+  current?: number;
+  temp: number;
 }
 export interface CharacterProficiency {
 	skills: Record<string, CharacterSkillProficiency>
@@ -148,7 +163,11 @@ export interface CharacterSkillProficiency {
 }
 export interface CharacterRace {
 	species: string;
+	/** Selector key of the species (SRD id or hb:<name>). Absent on older saves — resolve by name. */
+	speciesId?: string;
 	subrace?: string;
+	/** Selector key of the subrace. Absent on older saves — resolve by name. */
+	subraceId?: string;
 	age?: string;
 	size?: string;
 	speed?: string;
@@ -162,10 +181,16 @@ export interface CharacterHealth {
 export interface CharacterSpell {
 	name: string;
 	prepared: boolean;
+	/** Spell id when resolvable. Absent on older saves — resolve by name. */
+	id?: string;
 }
 export interface CharacterLevel {
 	class: string;
+	/** Selector key of the class (SRD id or hb:<name>). Absent on older saves — resolve by name. */
+	classId?: string;
 	subclass?: string;
+	/** Selector key of the subclass. Absent on older saves — resolve by name. */
+	subclassId?: string;
 	level: number;
 	hitDie: number;
 	features: FeatureDetail[];

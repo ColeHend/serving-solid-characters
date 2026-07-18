@@ -10,9 +10,12 @@ import {
   Feat,
   FeatureDetail,
   Race,
+  Spell,
   Subclass,
   Subrace,
 } from "../../../../models/generated";
+import { subclassBelongsTo } from "../../../../models/data/subclasses";
+import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
 import {
   collectLanguages,
   computeAc,
@@ -27,6 +30,7 @@ import {
   normalizeAbility,
   totalLevel,
 } from "../rules/engine";
+import { draftClassKey } from "./draftStore";
 import { CharacterDraft, DraftClass, emptyDraft, zeroScores } from "./types";
 
 export interface SrdLookups {
@@ -36,6 +40,7 @@ export interface SrdLookups {
   subraces: Subrace[];
   backgrounds: Background[];
   feats: Feat[];
+  spells: Spell[];
 }
 
 // Both-mode lists can hold a legacy AND a current row per name; the current one wins by
@@ -48,6 +53,19 @@ const byName = <T extends { name?: string; legacy?: boolean }>(
   const matches = list.filter((entry) => entry.name?.toLowerCase() === name.toLowerCase());
   return matches.find((entry) => entry.legacy !== true) ?? matches[0];
 };
+
+/** Exact selector-key lookup; undefined when no key is stored (legacy saves fall back to byName). */
+const byId = <T extends { id?: string; name?: string }>(
+  list: T[],
+  key: string | undefined,
+): T | undefined => {
+  if (!key) return undefined;
+  return list.find((entry) => entitySelectorKey({ id: entry.id, name: entry.name ?? "" }) === key);
+};
+
+/** Selector key of a feat — its display name lives in details, not at the top level. */
+const featKey = (feat: Feat | undefined): string | undefined =>
+  feat ? entitySelectorKey({ id: feat.id, name: feat.details?.name ?? "" }) : undefined;
 
 /**
  * `character.proficiencies.skills` has always been keyed with "Sleight Of Hand" (capital Of),
@@ -84,9 +102,12 @@ function featDetail(feats: Feat[], name: string): FeatureDetail {
 
 export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Character {
   const classByName = (name: string) => byName(lookups.classes, name);
-  const race = byName(lookups.races, draft.species);
-  const subrace = draft.lineage ? byName(lookups.subraces, draft.lineage) : undefined;
-  const background = byName(lookups.backgrounds, draft.background);
+  const classFor = (entry: DraftClass) => byId(lookups.classes, entry.classId) ?? classByName(entry.name);
+  const race = byId(lookups.races, draft.speciesId) ?? byName(lookups.races, draft.species);
+  const subrace = draft.lineage
+    ? byId(lookups.subraces, draft.lineageId) ?? byName(lookups.subraces, draft.lineage)
+    : undefined;
+  const background = byId(lookups.backgrounds, draft.backgroundId) ?? byName(lookups.backgrounds, draft.background);
 
   const finalScores = computeFinalScores(
     draft.edition,
@@ -99,19 +120,34 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   );
   const profBonus = getProficiencyBonus(totalLevel(draft.classes));
   const conMod = getAbilityModifier(finalScores.con);
-  const maxHp = computeMaxHp(draft.classes, classByName, conMod);
+  const autoMaxHp = computeMaxHp(draft.classes, classFor, conMod);
+  const maxHp = draft.hp?.maxOverride ?? autoMaxHp;
 
   const levels: CharacterLevel[] = [];
   let running = 1;
   draft.classes.forEach((entry) => {
-    const class5e = classByName(entry.name);
+    const class5e = classFor(entry);
+    // Chosen-subclass features bake into the level rows so the saved character (and every
+    // MADS consumer) sees them exactly like class features.
+    const subclass5e = entry.subclass || entry.subclassId
+      ? lookups.subclasses.find((sub) =>
+        subclassBelongsTo(sub, class5e) &&
+          (entry.subclassId
+            ? entitySelectorKey(sub) === entry.subclassId
+            : sub.name?.toLowerCase() === entry.subclass.toLowerCase()))
+      : undefined;
     for (let classLevel = 1; classLevel <= entry.level; classLevel++) {
       levels.push({
         class: entry.name,
+        classId: entry.classId,
         subclass: entry.subclass,
+        subclassId: entry.subclassId,
         level: running++,
         hitDie: hitDieSides(class5e?.hitDie),
-        features: [...(class5e?.features?.[classLevel] ?? [])],
+        features: [
+          ...(class5e?.features?.[classLevel] ?? []),
+          ...(subclass5e?.features?.[classLevel] ?? []),
+        ],
       });
     }
   });
@@ -125,9 +161,14 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   });
 
   const originFeat = backgroundFeatName(draft, lookups.backgrounds);
+  const originFeatKey = (draft.originFeat && draft.originFeatId) || featKey(findFeat(lookups.feats, originFeat));
   const featsTaken: CharacterFeatTaken[] = [
-    ...(originFeat ? [{ name: originFeat, source: "background" as const }] : []),
-    ...draft.feats.map((name) => ({ name, source: "chosen" as const })),
+    ...(originFeat ? [{ name: originFeat, source: "background" as const, id: originFeatKey }] : []),
+    ...draft.feats.map((name) => ({
+      name,
+      source: "chosen" as const,
+      id: featKey(findFeat(lookups.feats, name)),
+    })),
   ];
 
   const chosenTraits = (race?.traitChoice?.choices ?? []).filter((trait) =>
@@ -136,6 +177,7 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   const darkvision = darkvisionRange(raceTraits);
 
   const character = new Character();
+  character.id = draft.characterId ?? "";
   character.name = draft.name.trim();
   character.edition = draft.edition;
   character.levels = levels;
@@ -143,16 +185,22 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   character.subclass = draft.classes.map((c) => c.subclass).filter(Boolean);
   character.race = {
     species: race?.name ?? draft.species,
+    speciesId: race ? entitySelectorKey(race) : draft.speciesId,
     subrace: draft.lineage || undefined,
+    subraceId: draft.lineage ? (subrace ? entitySelectorKey(subrace) : draft.lineageId) : undefined,
     age: "",
     size: race?.size ?? "",
     speed: race ? `${race.speed}ft` : "",
     features: raceTraits.flatMap((t) => t.details ?? []),
   };
   character.background = draft.background;
+  character.backgroundId = background ? entitySelectorKey(background) : draft.backgroundId;
   character.alignment = draft.alignment;
   character.languages = collectLanguages(draft.languages, draft.raceLanguageChoices, race, subrace);
-  character.spells = draft.spells.map((name) => ({ name, prepared: false }));
+  character.spells = draft.spells.map((name) => {
+    const spell = byName(lookups.spells, name);
+    return { name: spell?.name ?? name, prepared: false, id: spell?.id || undefined };
+  });
   character.features = featsTaken.map((feat) => featDetail(lookups.feats, feat.name));
   character.featsTaken = featsTaken;
   character.proficiencies = {
@@ -169,8 +217,11 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
     ),
     other: {},
   };
-  character.savingThrows = computeSavingThrows(classByName(draft.classes[0]?.name ?? ""), finalScores, profBonus)
-    .map((save) => ({ stat: save.key, proficient: save.proficient }));
+  character.savingThrows = computeSavingThrows(
+    draft.classes[0] ? classFor(draft.classes[0]) : undefined,
+    finalScores,
+    profBonus,
+  ).map((save) => ({ stat: save.key, proficient: save.proficient }));
   // Choice-form MADS picks travel on the Character contract fields so both the live
   // creator (applyCreatorMads) and the view page resolve them the same way.
   character.statChoices = { ...draft.madChoices.stats };
@@ -179,7 +230,11 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   character.ArmorClass = computeAc(getAbilityModifier(finalScores.dex));
   character.Speed = (subrace?.speed || race?.speed) ?? 0;
   if (darkvision) character.senses = { darkvision };
-  character.health = { max: maxHp, current: maxHp, temp: 0 };
+  character.health = {
+    max: maxHp,
+    current: draft.hp?.current ?? maxHp,
+    temp: draft.hp?.temp ?? 0,
+  };
   character.stats = finalScores;
   character.statsInclusive = true;
   character.details = { ...draft.details };
@@ -189,12 +244,16 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
     bonusScores: { ...draft.bonusScores },
     backgroundBoosts: { ...draft.backgroundBoosts },
     skillOverrides: { ...draft.skillOverrides },
-    classSkillChoices: Object.fromEntries(draft.classes.map((c) => [c.name, [...c.skillChoices]])),
+    // Keyed by selector key so same-named classes (SRD vs homebrew, 2014 vs 2024) don't collide.
+    classSkillChoices: Object.fromEntries(
+      draft.classes.map((c) => [draftClassKey(c), [...c.skillChoices]]),
+    ),
     rolledPool: [...draft.rolledPool],
     raceAbilityChoices: [...draft.raceAbilityChoices],
     raceLanguageChoices: [...draft.raceLanguageChoices],
     raceTraitChoices: [...draft.raceTraitChoices],
     originFeat: draft.originFeat,
+    hp: { ...draft.hp },
   };
   character.items = {
     inventory: [...draft.items.inventory],
@@ -211,20 +270,24 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   return character;
 }
 
-/** Group saved level rows back into per-class entries, first-seen order. */
+/** Group saved level rows back into per-class entries, first-seen order, keyed by selector key. */
 function classesFromLevels(character: Character): DraftClass[] {
   const grouped = new Map<string, DraftClass>();
   (character.levels ?? []).forEach((row) => {
     if (!row.class) return;
-    const existing = grouped.get(row.class);
+    const key = row.classId || entitySelectorKey({ name: row.class });
+    const existing = grouped.get(key);
     if (existing) {
       existing.level += 1;
       if (!existing.subclass && row.subclass) existing.subclass = row.subclass;
+      if (!existing.subclassId && row.subclassId) existing.subclassId = row.subclassId;
     } else {
-      grouped.set(row.class, {
+      grouped.set(key, {
         name: row.class,
+        classId: row.classId,
         level: 1,
         subclass: row.subclass ?? "",
+        subclassId: row.subclassId,
         skillChoices: [],
       });
     }
@@ -236,7 +299,7 @@ function classesFromLevels(character: Character): DraftClass[] {
       .map((name) => name.trim())
       .filter(Boolean)
       .forEach((name, index) => {
-        grouped.set(name, {
+        grouped.set(entitySelectorKey({ name }), {
           name,
           level: 1,
           subclass: character.subclass?.[index] ?? "",
@@ -260,7 +323,11 @@ export function characterToDraft(
   const builder = character.builder;
   const classes = classesFromLevels(character);
   classes.forEach((entry) => {
-    entry.skillChoices = builder?.classSkillChoices?.[entry.name] ?? [];
+    // Selector-key keyed since the id rework; older saves keyed by class name.
+    entry.skillChoices =
+      builder?.classSkillChoices?.[draftClassKey(entry)] ??
+      builder?.classSkillChoices?.[entry.name] ??
+      [];
   });
 
   const skillOverrides = builder
@@ -275,30 +342,51 @@ export function characterToDraft(
     );
 
   const originFeat = backgroundFeatName({ background: character.background ?? "" }, lookups.backgrounds);
+  // Stored feat ids resolve to the canonical feat; unresolvable ids keep the stored name.
+  const featNameFor = (taken: { name: string; id?: string }): string => {
+    const found = taken.id ? lookups.feats.find((f) => featKey(f) === taken.id) : undefined;
+    return found?.details?.name ?? taken.name;
+  };
   const chosenFeats = character.featsTaken
-    ? character.featsTaken.filter((f) => f.source === "chosen").map((f) => f.name)
+    ? character.featsTaken.filter((f) => f.source === "chosen").map(featNameFor)
     : (character.features ?? [])
       .map((f) => f.name)
       .filter((name) => name && name.toLowerCase() !== originFeat.toLowerCase());
 
   // Saved languages include species grants + species picks; only manual/background picks
   // go back into draft.languages (the mapper re-adds the rest on save).
-  const race = byName(lookups.races, character.race?.species);
-  const subrace = character.race?.subrace ? byName(lookups.subraces, character.race.subrace) : undefined;
+  const race =
+    byId(lookups.races, character.race?.speciesId) ?? byName(lookups.races, character.race?.species);
+  const subrace = character.race?.subrace || character.race?.subraceId
+    ? byId(lookups.subraces, character.race?.subraceId) ??
+      byName(lookups.subraces, character.race?.subrace)
+    : undefined;
+  const background =
+    byId(lookups.backgrounds, character.backgroundId) ??
+    byName(lookups.backgrounds, character.background);
   const raceLanguageChoices = builder?.raceLanguageChoices ?? [];
   const raceGrantedLanguages = new Set(
     [...(race?.languages ?? []), ...(subrace?.languages ?? []), ...raceLanguageChoices].map((l) =>
       l.toLowerCase()),
   );
 
+  const originFeatOverride = builder?.originFeat ?? "";
   return emptyDraft(character.edition ?? fallbackEdition, {
+    characterId: character.id || undefined,
     name: character.name ?? "",
     alignment: character.alignment || "true neutral",
     classes,
-    species: character.race?.species ?? "",
-    lineage: character.race?.subrace ?? "",
-    background: character.background ?? "",
-    originFeat: builder?.originFeat ?? "",
+    species: race?.name ?? character.race?.species ?? "",
+    speciesId: race ? entitySelectorKey(race) : character.race?.speciesId,
+    lineage: subrace?.name ?? character.race?.subrace ?? "",
+    lineageId: subrace ? entitySelectorKey(subrace) : character.race?.subraceId,
+    background: background?.name ?? character.background ?? "",
+    backgroundId: background ? entitySelectorKey(background) : character.backgroundId,
+    originFeat: originFeatOverride,
+    originFeatId: originFeatOverride
+      ? featKey(findFeat(lookups.feats, originFeatOverride))
+      : undefined,
+    hp: builder?.hp ? { ...builder.hp } : { temp: character.health?.temp ?? 0 },
     languages: (character.languages ?? []).filter(
       (l) => l.toLowerCase() !== "common" && !raceGrantedLanguages.has(l.toLowerCase()),
     ),
@@ -319,7 +407,9 @@ export function characterToDraft(
       proficiencies: { ...(character.proficiencyChoices ?? {}) },
       spells: { ...(character.spellChoices ?? {}) },
     },
-    spells: (character.spells ?? []).map((s) => s.name).filter(Boolean),
+    spells: (character.spells ?? [])
+      .map((s) => (s.id ? lookups.spells.find((sp) => sp.id === s.id)?.name ?? s.name : s.name))
+      .filter(Boolean),
     details: { ...(character.details ?? {}) },
     items: {
       inventory: [...(character.items?.inventory ?? [])],

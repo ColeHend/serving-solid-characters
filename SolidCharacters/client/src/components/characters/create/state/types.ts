@@ -9,11 +9,22 @@ import { AbilityKey } from "../rules/constants";
 
 export interface DraftClass {
   name: string;
+  /** Selector key of the class (SRD id or hb:<name>). Absent on legacy saves — matched by name. */
+  classId?: string;
   level: number;
   /** '' until the subclass is chosen. */
   subclass: string;
+  /** Selector key of the chosen subclass. Absent on legacy saves — matched by name. */
+  subclassId?: string;
   /** Picked class skills for this class. */
   skillChoices: string[];
+}
+
+/** Manual HP entries; undefined maxOverride/current fall back to the computed values. */
+export interface DraftHp {
+  maxOverride?: number;
+  current?: number;
+  temp: number;
 }
 
 export interface DraftItems {
@@ -33,16 +44,28 @@ export interface DraftItems {
 
 export interface CharacterDraft {
   edition: RulesetSelection;
+  /** Saved character's id when editing — identity across saves. Absent = brand new. */
+  characterId?: string;
   name: string;
   alignment: string;
   /** [0] is the initial class — saving throws and the INITIAL chip come from it. */
   classes: DraftClass[];
   species: string;
-  /** Subrace, 2014 only. */
+  /** Selector key of the species. Absent on legacy saves — matched by name. */
+  speciesId?: string;
+  /** Subrace/lineage name; shown whenever the species has subraces (any edition). */
   lineage: string;
+  /** Selector key of the chosen subrace. Absent on legacy saves — matched by name. */
+  lineageId?: string;
   background: string;
+  /** Selector key of the background. Absent on legacy saves — matched by name. */
+  backgroundId?: string;
   /** Origin-feat override; '' takes the background's recommended feat. */
   originFeat: string;
+  /** Selector key of the origin-feat override. Absent on legacy saves — matched by name. */
+  originFeatId?: string;
+  /** Manual HP entries; unset fields fall back to the auto-computed values. */
+  hp: DraftHp;
   /** Languages besides Common (manual/background picks — species grants live separately). */
   languages: string[];
   /** Picked abilities for the species' abilityBonusChoice (2014 Half-Elf's two +1s). */
@@ -109,6 +132,7 @@ export function emptyDraft(edition: RulesetSelection, overrides?: Partial<Charac
     lineage: "",
     background: "",
     originFeat: "",
+    hp: { temp: 0 },
     languages: [],
     raceAbilityChoices: [],
     raceLanguageChoices: [],

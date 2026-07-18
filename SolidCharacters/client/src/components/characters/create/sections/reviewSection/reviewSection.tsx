@@ -1,5 +1,6 @@
 import { Component, For, createMemo } from "solid-js";
 import { Button } from "coles-solid-library";
+import { subclassBelongsTo } from "../../../../../models/data/subclasses";
 import { ChecklistItem, buildChecklist, checklistReady } from "../../rules/checklist";
 import { classSkillChoiceSpec, subclassUnlockLevel } from "../../rules/engine";
 import { useCreate } from "../../state/createContext";
@@ -26,10 +27,13 @@ export const ReviewSection: Component<ReviewSectionProps> = (props) => {
     buildChecklist({
       name: draft.name,
       classes: draft.classes.map((entry) => {
-        const class5e = derived.classByName(entry.name);
+        const class5e = derived.classByKey(entry);
         const subclasses = data
           .subclasses()
-          .filter((sub) => sub.parentClass?.toLowerCase() === entry.name.toLowerCase());
+          .filter((sub) =>
+            class5e
+              ? subclassBelongsTo(sub, class5e)
+              : sub.parentClass?.toLowerCase() === entry.name.toLowerCase());
         return {
           name: entry.name,
           level: entry.level,
@@ -45,7 +49,9 @@ export const ReviewSection: Component<ReviewSectionProps> = (props) => {
         (draft.edition === "2014" ||
           (draft.edition === "both" && derived.selectedRace()?.legacy === true)) &&
         !!draft.species &&
-        data.subraces().some((sub) => sub.parentRace?.toLowerCase() === draft.species.toLowerCase()),
+        data.subraces().some((sub) =>
+          (derived.selectedRace()?.id && sub.parentRace === derived.selectedRace()?.id) ||
+          sub.parentRace?.toLowerCase() === draft.species.toLowerCase()),
       lineage: draft.lineage,
       background: draft.background,
       abilityMethod: draft.abilityMethod,

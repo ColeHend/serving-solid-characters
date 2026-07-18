@@ -19,7 +19,7 @@ const CURRENCIES = [
 ] as const;
 
 export const ItemsSection: Component = () => {
-  const { draft, actions, derived, data, editName } = useCreate();
+  const { draft, actions, derived, data, editId } = useCreate();
   const [classMode, setClassMode] = createSignal<"items" | "gold">("items");
   const [backgroundMode, setBackgroundMode] = createSignal<"items" | "gold">("items");
 
@@ -33,7 +33,8 @@ export const ItemsSection: Component = () => {
   const itemByName = (name: string) =>
     data.items().find((item) => item.name?.toLowerCase() === name.toLowerCase());
 
-  const initialClass = createMemo(() => derived.classByName(draft.classes[0]?.name ?? ""));
+  const initialClass = createMemo(() =>
+    draft.classes[0] ? derived.classByKey(draft.classes[0]) : undefined);
 
   /**
    * Equipment choice GROUPS: 2024 classes have a single "equipment" group; 2014 classes
@@ -112,7 +113,7 @@ export const ItemsSection: Component = () => {
 
   return (
     <div>
-      <Show when={!editName() && (initialClass() || derived.selectedBackground())}>
+      <Show when={!editId() && (initialClass() || derived.selectedBackground())}>
         <h5 class={styles.blockLabel}>Starting equipment</h5>
         <Show when={draft.classes.length > 1}>
           <p class={styles.multiclassHint}>

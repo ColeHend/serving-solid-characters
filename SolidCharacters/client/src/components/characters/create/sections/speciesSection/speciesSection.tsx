@@ -2,13 +2,16 @@ import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { Option, Select, addSnackbar } from "coles-solid-library";
 import { AbilityScores, Race } from "../../../../../models/generated";
 import RaceView from "../../../../../shared/components/modals/raceView/raceView";
+import { entitySelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { ABILITY_LABELS } from "../../rules/constants";
 import { normalizeAbility } from "../../rules/engine";
 import { signed } from "../../../../../shared/customHooks/utility/tools/dndMath";
 import { InfoButton } from "../../shell/infoButton";
 import { LegacyBadge } from "../../shell/legacyBadge";
+import { MadChoiceControl } from "../../shell/madChoiceControl";
 import { editionSideOf, hasVariantOnSide } from "../../state/bothMode";
 import { useCreate } from "../../state/createContext";
+import choiceStyles from "../../shell/madChoiceControl.module.scss";
 import styles from "./speciesSection.module.scss";
 
 /** "+2 DEX, +1 INT" — 2014 cards advertise their ability bonuses. */
@@ -37,9 +40,13 @@ export const SpeciesSection: Component = () => {
   const raceBonusesApply = (race: Race) =>
     draft.edition === "2014" || (draft.edition === "both" && race.legacy === true);
 
+  const isPicked = (race: Race) =>
+    draft.speciesId ? draft.speciesId === entitySelectorKey(race) : draft.species === race.name;
+
   const pickSpecies = (race: Race) => {
-    const next = draft.species === race.name ? "" : race.name;
-    actions.setSpecies(next);
+    const picked = isPicked(race);
+    const next = picked ? "" : race.name;
+    actions.setSpecies(next, picked ? undefined : entitySelectorKey(race));
     if (next && draft.edition === "both" && draft.background) {
       const side = editionSideOf(data.racesRaw(), next);
       if (side !== undefined && !hasVariantOnSide(data.backgroundsRaw(), draft.background, side)) {
@@ -52,8 +59,23 @@ export const SpeciesSection: Component = () => {
     }
   };
 
-  const lineages = createMemo(() =>
-    data.subraces().filter((sub) => sub.parentRace?.toLowerCase() === draft.species.toLowerCase()));
+  // SRD subraces reference their parent by race ID; homebrew rows by name — match both.
+  const lineages = createMemo(() => {
+    const race = derived.selectedRace();
+    if (!race) return [];
+    return data.subraces().filter((sub) =>
+      (race.id && sub.parentRace === race.id) ||
+      sub.parentRace?.toLowerCase() === (race.name ?? "").toLowerCase());
+  });
+
+  const chosenLineage = createMemo(() =>
+    lineages().find((sub) =>
+      draft.lineageId
+        ? entitySelectorKey(sub) === draft.lineageId
+        : !!draft.lineage && sub.name === draft.lineage));
+
+  /** Choice-form MADS carried by species/subrace traits (and picked trait choices). */
+  const raceChoices = createMemo(() => derived.madChoices().filter((c) => c.source === "race"));
 
   const traits = createMemo(() => {
     const race = derived.selectedRace();
@@ -78,7 +100,7 @@ export const SpeciesSection: Component = () => {
             <button
               type="button"
               class={styles.card}
-              classList={{ [styles.cardSelected]: draft.species === race.name }}
+              classList={{ [styles.cardSelected]: isPicked(race) }}
               onClick={() => pickSpecies(race)}
             >
               <span class={styles.cardName}>
@@ -216,30 +238,35 @@ export const SpeciesSection: Component = () => {
         )}
       </Show>
 
-      <Show
-        when={
-          (draft.edition === "2014" ||
-            (draft.edition === "both" && derived.selectedRace()?.legacy === true)) &&
-          draft.species &&
-          lineages().length > 0
-        }
-      >
+      <Show when={draft.species && lineages().length > 0}>
         <div class={styles.lineageRow}>
           <h5 class={styles.blockLabel}>
             Lineage
-            <Show when={lineages().find((sub) => sub.name === draft.lineage)}>
+            <Show when={chosenLineage()}>
               {(chosen) => (
                 <InfoButton label={`View ${draft.lineage} details`} onClick={() => viewRace(chosen())} />
               )}
             </Show>
           </h5>
           <Select
-            value={draft.lineage}
-            onChange={(value: string) => actions.setLineage(value)}
+            value={chosenLineage() ? entitySelectorKey(chosenLineage()!) : ""}
+            onChange={(value: string) => {
+              const sub = lineages().find((s) => entitySelectorKey(s) === value);
+              actions.setLineage(sub?.name ?? "", sub ? value : undefined);
+            }}
             placeholder="Choose a lineage…"
           >
-            <For each={lineages()}>{(sub) => <Option value={sub.name}>{sub.name}</Option>}</For>
+            <For each={lineages()}>
+              {(sub) => <Option value={entitySelectorKey(sub)}>{sub.name}</Option>}
+            </For>
           </Select>
+        </div>
+      </Show>
+
+      <Show when={raceChoices().length > 0}>
+        <h5 class={choiceStyles.choicesLabel}>Feature choices</h5>
+        <div class={choiceStyles.choicesList}>
+          <For each={raceChoices()}>{(choice) => <MadChoiceControl choice={choice} />}</For>
         </div>
       </Show>
 

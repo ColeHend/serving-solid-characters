@@ -8,6 +8,7 @@ function createExampleCharacter(character: Character) {
 }
 
 const Gandalf = createExampleCharacter({
+  id: "example-gandalf-the-grey",
   name: "Gandalf the Grey",
   level: 2,
   levels: [

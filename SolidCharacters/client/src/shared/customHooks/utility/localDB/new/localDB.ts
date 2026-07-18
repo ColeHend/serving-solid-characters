@@ -18,7 +18,8 @@ export class LocalDB extends Dexie {
   weaponMasteries!: Dexie.Table<WeaponMastery, 'name'>;
   monsters!: Dexie.Table<Monster, 'name'>;
   rules!: Dexie.Table<Rule, 'name'>;
-  characters!: Dexie.Table<Character, 'name'>;
+  // Keyed by the character's own id since v9 (v6-v9 migrate the old name-keyed store).
+  characters!: Dexie.Table<Character, string>;
   isReady: boolean = false;
   initPromise: Promise<void>;
   
@@ -143,6 +144,56 @@ export class LocalDB extends Dexie {
               await subTable.put(s);
             }
           }
+        });
+
+        // v6-v9: re-key the characters store by the character's own `id` (minted here for
+        // existing saves). IndexedDB can't change a store's primary key in place, so this is
+        // the canonical Dexie dance: copy into a temp id-keyed store, drop the old store,
+        // recreate it id-keyed, copy back, drop the temp. Only dnd_characters holds rows —
+        // the SRD DBs' empty characters stores migrate as no-ops. Upgrades never throw
+        // (a throw would trip the corrupted-DB fallback below and wipe the database);
+        // malformed rows are skipped instead.
+        this.version(6).stores({
+          characters_tmp: 'id'
+        }).upgrade(async tx => {
+          try {
+            const rows = await tx.table('characters').toArray();
+            const tmp = tx.table('characters_tmp');
+            for (const row of rows) {
+              try {
+                if (!row || typeof row !== 'object') continue;
+                if (!row.id) row.id = createNewId();
+                await tmp.put(row);
+              } catch (err) {
+                console.error('characters id migration (v6): skipped a row', err);
+              }
+            }
+          } catch (err) {
+            console.error('characters id migration (v6) failed', err);
+          }
+        });
+        this.version(7).stores({
+          characters: null
+        });
+        this.version(8).stores({
+          characters: 'id'
+        }).upgrade(async tx => {
+          try {
+            const rows = await tx.table('characters_tmp').toArray();
+            const chars = tx.table('characters');
+            for (const row of rows) {
+              try {
+                await chars.put(row);
+              } catch (err) {
+                console.error('characters id migration (v8): skipped a row', err);
+              }
+            }
+          } catch (err) {
+            console.error('characters id migration (v8) failed', err);
+          }
+        });
+        this.version(9).stores({
+          characters_tmp: null
         });
 
         // Initialize database with better error handling

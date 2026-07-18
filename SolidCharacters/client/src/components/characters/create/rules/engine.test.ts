@@ -45,8 +45,9 @@ const sorcerer = {
   spellcasting: { metadata: { casterType: CasterType.Full, slots: {} }, knownType: 0, learnedSpells: {} },
 } as unknown as Class5E;
 
-const classByName = (name: string) =>
-  ({ barbarian, sorcerer } as Record<string, Class5E>)[name.toLowerCase()];
+// Entry-based resolver (mirrors derived.classByKey — id-first in prod, name here).
+const classByName = (entry: { name: string }) =>
+  ({ barbarian, sorcerer } as Record<string, Class5E>)[entry.name.toLowerCase()];
 
 // The plan's verification character: Barbarian 1 (initial) / Sorcerer 3, scores above.
 const classes = [
@@ -234,7 +235,7 @@ describe("data normalization helpers", () => {
       name: "Paladin",
       spellcasting: { metadata: { casterType: CasterType.Half, slots: {} } },
     } as unknown as Class5E;
-    const lookup = (n: string) => (n === "Paladin" ? paladin : classByName(n));
+    const lookup = (entry: { name: string }) => (entry.name === "Paladin" ? paladin : classByName(entry));
     expect(
       multiclassCasterLevel(
         [

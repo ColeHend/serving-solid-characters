@@ -15,7 +15,7 @@ interface TopBarProps {
 
 /** Sticky page header: name, alignment, rules toggle, live summary, level badge, actions. */
 export const TopBar: Component<TopBarProps> = (props) => {
-  const { draft, actions, derived, loadEditionData, editName } = useCreate();
+  const { draft, actions, derived, loadEditionData, editId } = useCreate();
   const [showConfirm, setShowConfirm] = createSignal(false);
   const [pendingSwitch, setPendingSwitch] = createSignal<{
     target: RulesetSelection;
@@ -96,13 +96,13 @@ export const TopBar: Component<TopBarProps> = (props) => {
         <Button onClick={props.onCreateSheet} transparent title="Export a PDF sheet">
           PDF
         </Button>
-        <Show when={editName()}>
+        <Show when={editId()}>
           <Button onClick={props.onDelete} theme="error" transparent>
             Delete
           </Button>
         </Show>
         <Button onClick={props.onSave} disabled={props.saveDisabled}>
-          {editName() ? "Update" : "Save"}
+          {editId() ? "Update" : "Save"}
         </Button>
       </div>
 
