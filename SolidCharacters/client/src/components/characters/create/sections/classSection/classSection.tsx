@@ -5,7 +5,7 @@ import ClassModal from "../../../../../shared/components/modals/classModal/class
 import SubclassView from "../../../../../shared/components/modals/subclassView/subclassView";
 import { entitySelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { ABILITY_LABELS } from "../../rules/constants";
-import { normalizeAbility } from "../../rules/engine";
+import { hitDieLabel, normalizeAbility } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
 import { LegacyBadge } from "../../shell/legacyBadge";
 import { useCreate } from "../../state/createContext";
@@ -94,7 +94,7 @@ export const ClassSection: Component = () => {
                   <LegacyBadge />
                 </Show>
                 <InfoButton label={`View ${class5e.name} details`} onClick={() => viewClass(class5e)} />
-                <span class={styles.cardDie}>{class5e.hitDie}</span>
+                <span class={styles.cardDie}>{hitDieLabel(class5e.hitDie)}</span>
               </span>
               <span class={styles.cardMeta}>{abilityAbbreviations(class5e.primaryAbility)}</span>
             </button>

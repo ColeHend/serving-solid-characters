@@ -7,12 +7,15 @@ import { ABILITY_LABELS, MAX_TOTAL_LEVEL } from "../../rules/constants";
 import {
   casterTypeLabel,
   classSkillChoiceSpec,
+  hitDieLabel,
   normalizeAbility,
   subclassUnlockLevel,
   totalLevel,
 } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
 import { MadChoiceControl } from "../../shell/madChoiceControl";
+import { isFeatOrAsiFeature } from "../../rules/applyMads";
+import { FeatOrAsiControl } from "./featOrAsiControl";
 import { Stepper } from "../../shell/stepper";
 import { useCreate } from "../../state/createContext";
 import { draftClassKey } from "../../state/draftStore";
@@ -50,7 +53,7 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
         return key ? ABILITY_LABELS[key] : save;
       })
       .join(", ");
-    return [class5e()?.hitDie, saves, casterTypeLabel(class5e())].filter(Boolean).join(" · ");
+    return [hitDieLabel(class5e()?.hitDie), saves, casterTypeLabel(class5e())].filter(Boolean).join(" · ");
   });
 
   /** This class's multiclass prerequisite (13+ primary abilities) isn't met — advisory only. */
@@ -188,7 +191,16 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
           <Show when={cardChoices().length > 0}>
             <h5 class={styles.blockLabel}>Feature choices</h5>
             <div class={choiceStyles.choicesList}>
-              <For each={cardChoices()}>{(choice) => <MadChoiceControl choice={choice} />}</For>
+              <For each={cardChoices()}>
+                {(choice) => (
+                  <Show
+                    when={choice.kind === "stat" && isFeatOrAsiFeature(choice.feature)}
+                    fallback={<MadChoiceControl choice={choice} />}
+                  >
+                    <FeatOrAsiControl choice={choice} />
+                  </Show>
+                )}
+              </For>
             </div>
           </Show>
         </div>

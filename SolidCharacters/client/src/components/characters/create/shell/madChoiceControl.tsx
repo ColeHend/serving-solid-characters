@@ -1,6 +1,9 @@
 import { Component, For, Match, Show, Switch } from "solid-js";
 import { Option, Select } from "coles-solid-library";
 import {
+  itemChoiceCount,
+  itemChoiceKey,
+  itemChoiceOptions,
   proficiencyChoiceCount,
   proficiencyChoiceOptions,
   spellChoiceCount,
@@ -50,6 +53,9 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
 
   const spellName = (id: string) =>
     data.spells().find((s) => (s.id ?? "").toLowerCase() === id.toLowerCase())?.name ?? id;
+
+  const itemName = (id: string) =>
+    data.items().find((i) => (i.id ?? "").toLowerCase() === id.toLowerCase())?.name ?? id;
 
   const abilityLabel = (key: string) => ABILITY_FULL_NAMES[key as AbilityKey] ?? key;
 
@@ -170,6 +176,37 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
                     }}
                   >
                     {spellName(id)}
+                  </button>
+                );
+              }}
+            </For>
+          </div>
+        </Match>
+        <Match when={props.choice.kind === "item"}>
+          <span class={styles.choiceHint}>Choose {itemChoiceCount(props.choice.mad)}:</span>
+          <div class={styles.choicePills}>
+            <For each={itemChoiceOptions(props.choice.mad)}>
+              {(id) => {
+                const key = itemChoiceKey(props.choice.feature, props.choice.mad);
+                return (
+                  <button
+                    type="button"
+                    class={styles.choicePill}
+                    classList={{
+                      [styles.choicePillActive]: csvPicks(
+                        draft.madChoices.items[key],
+                      ).includes(id),
+                    }}
+                    onClick={() => {
+                      const next = toggleCsv(
+                        draft.madChoices.items[key],
+                        id,
+                        itemChoiceCount(props.choice.mad),
+                      );
+                      if (next !== null) actions.setMadItemChoice(key, next);
+                    }}
+                  >
+                    {itemName(id)}
                   </button>
                 );
               }}

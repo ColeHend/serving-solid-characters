@@ -34,18 +34,25 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 8px;
+  // The LEGACY chip + info button + die can exceed a 150px card's row; wrap instead
+  // of letting the trailing die get pushed outside the button.
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .cardName {
   font-family: $font-heading;
   font-size: 1.05rem;
   letter-spacing: 0.04em;
+  min-width: 0;
 }
 
 .cardDie {
   font-family: $font-ui;
   font-size: 0.75rem;
   color: var(--codex-gold);
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .cardMeta {

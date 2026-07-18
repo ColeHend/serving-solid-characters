@@ -141,9 +141,12 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                             }} />
                         </Match>
                         <Match when={command() === "AddItems" || command() === "RemoveItems"}>
-                            <ItemFeature allItems={props.data.allItems} getValue={getValue} toggleItem={(id: string) => {
-                                commitValue(getValue()?.["ID"] === id ? { "ID": "" } : { "ID": id });
-                            }} />
+                            <ItemFeature
+                                allItems={props.data.allItems}
+                                getValue={getValue}
+                                allowChoice={command() === "AddItems"}
+                                commit={commitValue}
+                            />
                         </Match>
                         <Match when={command() === "AddCurrency" || command() === "RemoveCurrency"}>
                             <CurrencyFeature getValue={getValue} setCurrecy={(type, amount) => {

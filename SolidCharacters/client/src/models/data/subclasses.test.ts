@@ -30,4 +30,20 @@ describe("subclassBelongsTo", () => {
         expect(subclassBelongsTo({ parentClass: "Barbarian" }, undefined)).toBe(false);
         expect(subclassBelongsTo({ parentClass: "Bard" }, barb2014)).toBe(false);
     });
+
+    it("name fallback refuses cross-edition pairings when both sides declare legacy", () => {
+        // Stale cached SRD rows: id-less but legacy-stamped — must stay in their edition.
+        const legacySub = { parentClass: "Barbarian", legacy: true };
+        expect(subclassBelongsTo(legacySub, { ...barb2014, legacy: true })).toBe(true);
+        expect(subclassBelongsTo(legacySub, { ...barb2024, legacy: false })).toBe(false);
+
+        const currentSub = { parentClass: "Barbarian", legacy: false };
+        expect(subclassBelongsTo(currentSub, { ...barb2014, legacy: true })).toBe(false);
+        expect(subclassBelongsTo(currentSub, { ...barb2024, legacy: false })).toBe(true);
+    });
+
+    it("legacy parity never blocks homebrew (legacy undefined on either side)", () => {
+        expect(subclassBelongsTo({ parentClass: "Barbarian" }, { ...barb2014, legacy: true })).toBe(true);
+        expect(subclassBelongsTo({ parentClass: "Barbarian", legacy: true }, barb2024)).toBe(true);
+    });
 });

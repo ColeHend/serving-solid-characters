@@ -2,6 +2,10 @@ import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { Button, Chip, Input } from "coles-solid-library";
 import { Spell } from "../../../../../models/generated";
 import SpellModal from "../../../../../shared/components/modals/spellModal/spellModal.component";
+import {
+  entitySelectorKey,
+  selectorKeyDisplayName,
+} from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { ABILITY_LABELS } from "../../rules/constants";
 import { isOffList, multiclassCasterLevel } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
@@ -49,17 +53,24 @@ export const SpellsSection: Component = () => {
     if (query.length < 2) return [];
     return data
       .spells()
-      .filter((spell) => spell.name.toLowerCase().includes(query) && !draft.spells.includes(spell.name))
+      .filter(
+        (spell) =>
+          spell.name.toLowerCase().includes(query) &&
+          !draft.spells.includes(entitySelectorKey(spell)),
+      )
       .slice(0, 8);
   });
 
   const knownByLevel = createMemo(() => {
-    const byName = new Map(data.spells().map((spell) => [spell.name.toLowerCase(), spell]));
-    const groups = new Map<string, { name: string; spell?: Spell }[]>();
-    draft.spells.forEach((name) => {
-      const spell = byName.get(name.toLowerCase());
+    const byKey = new Map(data.spells().map((spell) => [entitySelectorKey(spell), spell]));
+    const groups = new Map<string, { key: string; name: string; spell?: Spell }[]>();
+    draft.spells.forEach((key) => {
+      const spell = byKey.get(key);
       const level = `${spell?.level ?? "?"}`;
-      groups.set(level, [...(groups.get(level) ?? []), { name, spell }]);
+      groups.set(level, [
+        ...(groups.get(level) ?? []),
+        { key, name: spell?.name ?? selectorKeyDisplayName(key), spell },
+      ]);
     });
     return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b));
   });
@@ -87,7 +98,7 @@ export const SpellsSection: Component = () => {
                     type="button"
                     class={styles.suggestion}
                     onClick={() => {
-                      actions.addSpell(spell.name);
+                      actions.addSpell(entitySelectorKey(spell));
                       setQuickAdd("");
                     }}
                   >
@@ -121,11 +132,11 @@ export const SpellsSection: Component = () => {
               <h5 class={styles.levelLabel}>{`${level}` === "?" ? "Unplaced" : spellLevelLabel(level)}s</h5>
               <div class={styles.spellChips}>
                 <For each={spells}>
-                  {({ name, spell }) => (
+                  {({ key, name, spell }) => (
                     <span class={styles.chipWithInfo}>
                       <Chip
                         value={spell && isOffList(spell, classNames()) ? `${name} ✦` : name}
-                        remove={() => actions.removeSpell(name)}
+                        remove={() => actions.removeSpell(key)}
                       />
                       <Show when={spell}>
                         {(known) => (

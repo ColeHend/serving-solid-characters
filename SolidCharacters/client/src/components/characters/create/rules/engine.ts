@@ -1,5 +1,6 @@
 import {
   AbilityScores,
+  Background,
   CasterType,
   Class5E,
   Feat,
@@ -20,7 +21,9 @@ import {
   getProficiencyBonus,
 } from "../../../../shared/customHooks/utility/tools/dndMath";
 import { detectSubclassFeatureLevels } from "../../../../shared/ai/refs/classProgression";
-import { ABILITY_KEYS, AbilityKey, SKILLS, SPELL_ABILITY } from "./constants";
+import { ABILITY_KEYS, AbilityBonusStyle, AbilityKey, AbilitySlot, SKILLS, SPELL_ABILITY } from "./constants";
+
+export type { AbilityBonusStyle, AbilitySlot };
 
 export { getAbilityModifier, getProficiencyBonus };
 
@@ -43,70 +46,170 @@ export function hitDieSides(hitDie: string | number | undefined | null): number 
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+/** Display form of any hit-die shape ("12" | "d12" | 12 → "d12"); "" when absent/unparseable. */
+export function hitDieLabel(hitDie: string | number | undefined | null): string {
+  const sides = hitDieSides(hitDie);
+  return sides > 0 ? `d${sides}` : "";
+}
+
 /** "Strength" | "STR" | "str." → 'str'; unknown → undefined. */
 export function normalizeAbility(name: string | undefined | null): AbilityKey | undefined {
   const key = (name ?? "").trim().slice(0, 3).toLowerCase();
   return (ABILITY_KEYS as string[]).includes(key) ? (key as AbilityKey) : undefined;
 }
 
-function raceBonuses(race: Race | Subrace | undefined): Partial<Record<AbilityKey, number>> {
-  const out: Partial<Record<AbilityKey, number>> = {};
-  race?.abilityBonuses?.forEach((bonus) => {
-    if (bonus.stat === AbilityScores.ALL) {
-      ABILITY_KEYS.forEach((k) => (out[k] = (out[k] ?? 0) + bonus.value));
-      return;
-    }
-    // CHOICE-stat entries resolve through abilityBonusChoice + the player's picks instead.
-    const key = normalizeAbility(AbilityScores[bonus.stat]);
-    if (key) out[key] = (out[key] ?? 0) + bonus.value;
-  });
-  return out;
+// ---- ability score bonuses (assignable token pools) ----
+
+export interface AbilityBonusToken {
+  value: number;
+  /** Book-default stat prefilled into the slot; '' for tokens the player must place. */
+  preset: AbilitySlot;
+  /** Stats this token may be assigned to; empty = any of the six. */
+  allowed: AbilityKey[];
 }
 
-/** The race's abilityBonusChoice applied to the player's picked abilities. */
-function raceChoiceBonuses(
-  race: Race | undefined,
-  picks: AbilityKey[],
-): Partial<Record<AbilityKey, number>> {
-  const out: Partial<Record<AbilityKey, number>> = {};
-  if (!race?.abilityBonusChoice || picks.length === 0) return out;
-  const capped = picks.slice(0, race.abilityBonusChoice.amount);
-  race.abilityBonusChoice.choices?.forEach((bonus) => {
-    const key = normalizeAbility(AbilityScores[bonus.stat]);
-    if (key && capped.includes(key)) out[key] = (out[key] ?? 0) + bonus.value;
+export interface AbilityBonusPool {
+  tokens: AbilityBonusToken[];
+  /** Flat bonus to every ability (2014 Human) — fixed, never assigned. */
+  all: number;
+  /** True when the pool is exactly +2/+1 and may alternatively be taken as three +1s. */
+  canSpread: boolean;
+}
+
+const EMPTY_POOL: AbilityBonusPool = { tokens: [], all: 0, canSpread: false };
+
+/**
+ * The race+subrace ability bonuses as an assignable token pool (Tasha's-style: the book's
+ * stats prefill via `preset`, but any token may be reassigned). Empty unless the species
+ * grants bonuses in this edition (2014, or a legacy species in both-mode) — 2024 species
+ * leave ability increases to the background. AbilityScores.ALL bonuses (2014 Human) fold
+ * into `all`. abilityBonusChoice entries become preset-less tokens restricted to the
+ * choice's stats (Half-Elf's two +1s, CHA excluded). style "spread" swaps a +2/+1 pool
+ * for three floating +1s.
+ */
+export function speciesBonusPool(
+  edition: "2014" | "2024" | "both",
+  race?: Race,
+  subrace?: Subrace,
+  style: AbilityBonusStyle = "standard",
+): AbilityBonusPool {
+  const raceGrantsBonuses = edition === "2014" || (edition === "both" && race?.legacy === true);
+  if (!raceGrantsBonuses) return EMPTY_POOL;
+
+  const tokens: AbilityBonusToken[] = [];
+  let all = 0;
+  [race, subrace].forEach((source) => {
+    source?.abilityBonuses?.forEach((bonus) => {
+      if (bonus.stat === AbilityScores.ALL) {
+        all += bonus.value;
+        return;
+      }
+      // CHOICE-stat entries resolve through abilityBonusChoice tokens instead.
+      const key = normalizeAbility(AbilityScores[bonus.stat]);
+      if (key) tokens.push({ value: bonus.value, preset: key, allowed: [] });
+    });
+    const choice = source?.abilityBonusChoice;
+    if (choice && choice.amount > 0) {
+      const allowed = (choice.choices ?? [])
+        .map((c) => normalizeAbility(AbilityScores[c.stat]))
+        .filter((key): key is AbilityKey => key !== undefined);
+      const value = choice.choices?.[0]?.value ?? 1;
+      for (let i = 0; i < choice.amount; i++) tokens.push({ value, preset: "", allowed });
+    }
   });
-  return out;
+
+  const values = tokens.map((t) => t.value).sort((a, b) => b - a);
+  const canSpread = all === 0 && values.length === 2 && values[0] === 2 && values[1] === 1;
+  if (canSpread && style === "spread") {
+    return {
+      tokens: [1, 1, 1].map((value) => ({ value, preset: "" as AbilitySlot, allowed: [] })),
+      all,
+      canSpread,
+    };
+  }
+  return { tokens, all, canSpread };
 }
 
 /**
- * Final ability scores. 2024: species grant nothing — base + manual bonus + background boosts.
- * 2014: ability increases come from race/subrace instead and apply automatically.
- * Both: the species' edition decides — a legacy species grants its own bonuses, a current
- * one leaves the increases to the (edition-paired) background's boosts.
+ * The 2024-style background ability boosts (+2/+1 by default, three +1s in "spread" style)
+ * as an assignable token pool over the background's abilityOptions. Empty for 2014 — that
+ * edition's backgrounds carry no abilityOptions, and both-mode stays data-driven the same way.
  */
-export function computeFinalScores(
+export function backgroundBonusPool(
   edition: "2014" | "2024" | "both",
+  background?: Background,
+  style: AbilityBonusStyle = "standard",
+): AbilityBonusPool {
+  if (edition === "2014") return EMPTY_POOL;
+  const allowed = (background?.abilityOptions ?? [])
+    .map(normalizeAbility)
+    .filter((key): key is AbilityKey => key !== undefined);
+  if (allowed.length === 0) return EMPTY_POOL;
+  const values = style === "spread" ? [1, 1, 1] : [2, 1];
+  return {
+    tokens: values.map((value) => ({ value, preset: "" as AbilitySlot, allowed })),
+    all: 0,
+    canSpread: true,
+  };
+}
+
+/** Each token's book-default slot ('' where the player must choose). */
+export function defaultSlots(pool: AbilityBonusPool): AbilitySlot[] {
+  return pool.tokens.map((token) => token.preset);
+}
+
+/**
+ * The per-ability bonus map a pool + the player's slot assignments produce. `all` applies
+ * to every ability; unassigned ('') or off-allowed slots contribute nothing (the checklist
+ * surfaces them as pending instead of guessing).
+ */
+export function sumBonusPool(
+  pool: AbilityBonusPool,
+  slots: AbilitySlot[],
+): Partial<Record<AbilityKey, number>> {
+  // An empty slot list means "never assigned" (a draft built outside the provider's
+  // default-seeding) — fall back to the book defaults so pure consumers keep zero-click parity.
+  const effective = slots.length === 0 && pool.tokens.length > 0 ? defaultSlots(pool) : slots;
+  const out: Partial<Record<AbilityKey, number>> = {};
+  if (pool.all) ABILITY_KEYS.forEach((k) => (out[k] = (out[k] ?? 0) + pool.all));
+  pool.tokens.forEach((token, i) => {
+    const slot = effective[i] ?? "";
+    if (!slot) return;
+    if (token.allowed.length > 0 && !token.allowed.includes(slot)) return;
+    out[slot] = (out[slot] ?? 0) + token.value;
+  });
+  return out;
+}
+
+/** Both sources' assigned bonus maps in one call — the mapper and the derived layer share it. */
+export function resolveAbilityBonuses(
+  edition: "2014" | "2024" | "both",
+  race: Race | undefined,
+  subrace: Subrace | undefined,
+  background: Background | undefined,
+  slots: { species: AbilitySlot[]; background: AbilitySlot[] },
+  style: { species: AbilityBonusStyle; background: AbilityBonusStyle },
+): { species: Partial<Record<AbilityKey, number>>; background: Partial<Record<AbilityKey, number>> } {
+  return {
+    species: sumBonusPool(speciesBonusPool(edition, race, subrace, style.species), slots.species),
+    background: sumBonusPool(backgroundBonusPool(edition, background, style.background), slots.background),
+  };
+}
+
+/** Final ability scores: player-entered base + manual bonus + assigned species/background bonuses. */
+export function computeFinalScores(
   base: Stats,
   bonus: Stats,
-  backgroundBoosts: Partial<Record<AbilityKey, number>>,
-  race?: Race,
-  subrace?: Subrace,
-  raceAbilityChoices: AbilityKey[] = [],
+  speciesBonuses: Partial<Record<AbilityKey, number>>,
+  backgroundBonuses: Partial<Record<AbilityKey, number>>,
 ): Stats {
   const out = {} as Stats;
-  const raceGrantsBonuses = edition === "2014" || (edition === "both" && race?.legacy === true);
-  const fromRace = raceGrantsBonuses ? raceBonuses(race) : {};
-  const fromSubrace = raceGrantsBonuses ? raceBonuses(subrace) : {};
-  const fromChoice = raceGrantsBonuses ? raceChoiceBonuses(race, raceAbilityChoices) : {};
-  const boosts = edition !== "2014" ? backgroundBoosts : {};
   ABILITY_KEYS.forEach((k) => {
     out[k] =
       (base[k] ?? 0) +
       (bonus[k] ?? 0) +
-      (boosts[k] ?? 0) +
-      (fromRace[k] ?? 0) +
-      (fromSubrace[k] ?? 0) +
-      (fromChoice[k] ?? 0);
+      (speciesBonuses[k] ?? 0) +
+      (backgroundBonuses[k] ?? 0);
   });
   return out;
 }

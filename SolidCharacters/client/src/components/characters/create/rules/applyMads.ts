@@ -5,14 +5,17 @@ import { Clone } from "../../../../shared";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
 import {
+  choiceItemMads,
   choiceProficiencyMads,
   choiceSpellMads,
   choiceStatMads,
   collectMadFeatures,
   collectMagicItemMads,
+  pendingItemChoices,
   pendingProficiencyChoices,
   pendingSpellChoices,
   pendingStatChoices,
+  statChoiceKey,
   useMadCharacters,
 } from "../../../../shared/customHooks/mads/useMadCharacters";
 import {
@@ -74,7 +77,15 @@ export function applyCreatorMads(character: Character, magicItems: MagicItem[] =
   return applied;
 }
 
-export type MadChoiceKind = "stat" | "proficiency" | "spell" | "armorProf" | "weaponProf" | "toolProf";
+/**
+ * A class "Ability Score Improvement" slot — the 5e rule lets a feat replace the increase,
+ * so the creator offers a feat picker with the plain ASI as one of its options.
+ */
+export function isFeatOrAsiFeature(feature: FeatureDetail): boolean {
+  return /ability score improvement/i.test(feature.name ?? "") && choiceStatMads(feature).length > 0;
+}
+
+export type MadChoiceKind = "stat" | "proficiency" | "spell" | "item" | "armorProf" | "weaponProf" | "toolProf";
 
 /** Where a choice-bearing feature came from, so each creator section renders only its own. */
 export type MadChoiceSource = "class" | "race" | "background" | "feat";
@@ -117,12 +128,18 @@ export function draftMadChoices(character: Character): MadChoice[] {
     const pendingStat = pendingStatChoices(character, feature);
     const pendingProf = pendingProficiencyChoices(character, feature);
     const pendingSpell = pendingSpellChoices(character, feature);
+    const pendingItem = pendingItemChoices(character, feature);
+    // A feat-or-ASI slot resolved with a FEAT has no ability pick — that's complete, not pending.
+    const slotFeatChosen = (feature2: FeatureDetail) => {
+      const slot = character.builder?.featOrAsi?.[statChoiceKey(feature2)];
+      return !!slot && slot !== "asi";
+    };
     return [
       ...choiceStatMads(feature).map((mad) => ({
         feature,
         mad,
         kind: "stat" as const,
-        pending: pendingStat.includes(mad),
+        pending: slotFeatChosen(feature) ? false : pendingStat.includes(mad),
         source,
         sourceKey,
       })),
@@ -139,6 +156,14 @@ export function draftMadChoices(character: Character): MadChoice[] {
         mad,
         kind: "spell" as const,
         pending: pendingSpell.includes(mad),
+        source,
+        sourceKey,
+      })),
+      ...choiceItemMads(feature).map((mad) => ({
+        feature,
+        mad,
+        kind: "item" as const,
+        pending: pendingItem.includes(mad),
         source,
         sourceKey,
       })),

@@ -1,5 +1,6 @@
-import { Character, GrantedAction } from "../../../models/character.model";
+import { Character, GrantedAction, itemRefId, itemRefName } from "../../../models/character.model";
 import { MagicItem } from "../../../models/generated";
+import { entitySelectorKey } from "../utility/tools/entityKey";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
 import { addActionsFeature, removeActionsFeature } from "./commands/useActionsFeature";
 import { addAdvantageFeature, removeAdvantageFeature } from "./commands/useAdvantageFeature";
@@ -338,6 +339,53 @@ export function pendingSpellChoices(character: Character, feature: { id?: string
     return choiceSpellMads(feature).filter(m => !resolveChoiceSpellMads(character, feature, m));
 }
 
+/** True for a choice-form Items command ("choose N items from a list") that needs player picks. */
+function isChoiceItemMad(m: MadFeature): boolean {
+    return (m.command === "AddItems" || m.command === "RemoveItems") && m.value?.["ID"] === "choice";
+}
+
+/** The item ids a choice-form Items command allows ("id1,id2" → ["id1","id2"]). */
+export function itemChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/** How many items the player picks (defaults to 1). */
+export function itemChoiceCount(m: MadFeature): number {
+    const n = Number(m.value?.["count"] ?? "1");
+    return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+/**
+ * The character.itemChoices key for one choice-form Items command. Keyed per feature AND per
+ * options list — one feature can carry several item choices (a weapon pick and a tool pick),
+ * and items have no spellLevel-style discriminator, so the allowed list tells them apart.
+ */
+export function itemChoiceKey(feature: { id?: string; name: string }, m: MadFeature): string {
+    return `${statChoiceKey(feature)}::items::${m.value?.["options"] ?? ""}`;
+}
+
+/**
+ * A choice-form Items command EXPANDED into one concrete command per picked item
+ * (character.itemChoices holds a CSV of picked item ids, keyed by itemChoiceKey) — or null while
+ * the picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ */
+function resolveChoiceItemMads(character: Character, feature: { id?: string; name: string }, m: MadFeature): MadFeature[] | null {
+    const picks = (character.itemChoices?.[itemChoiceKey(feature, m)] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    const options = itemChoiceOptions(m);
+    if (picks.length !== itemChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    return picks.map(pick => ({ ...m, value: { ...m.value, ID: pick } }));
+}
+
+/** All choice-form Items commands on a feature (for the sheet's chooser UI). */
+export function choiceItemMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceItemMad);
+}
+
+/** Choice-form Items commands on a feature that still need picks (for the sheet's chooser UI). */
+export function pendingItemChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceItemMads(feature).filter(m => !resolveChoiceItemMads(character, feature, m));
+}
+
 /**
  * Every Character-type mad across all of a character's feature sources
  * (class levels, race, and top-level features), ready to feed useMadCharacters.
@@ -376,6 +424,9 @@ export function collectMadFeatures(character: Character): MadFeature[] {
             if (isChoiceSpellMad(m)) {
                 return resolveChoiceSpellMads(character, f, m) ?? [];
             }
+            if (isChoiceItemMad(m)) {
+                return resolveChoiceItemMads(character, f, m) ?? [];
+            }
             return [m];
         }),
     );
@@ -392,23 +443,46 @@ export function collectMadFeatures(character: Character): MadFeature[] {
 const NO_ATTUNEMENT_PLACEHOLDERS = new Set(["no", "none", "false", "n/a", "-"]);
 
 export function collectMagicItemMads(character: Character, magicItems: MagicItem[]): MadFeature[] {
-    const equipped = new Set((character.items?.equipped ?? []).map(n => n.toLowerCase()));
-    const attuned = new Set((character.items?.attuned ?? []).map(n => n.toLowerCase()));
-    if (equipped.size === 0 && attuned.size === 0) return [];
+    // Gear entries carry a selector key when catalog-added; an id pins the exact catalog row
+    // (the right edition), while free-text and older name-string saves still match by name.
+    const gearSets = (entries: (string | { name: string; id?: string })[] | undefined) => {
+        const names = new Set<string>();
+        const ids = new Set<string>();
+        const idPinnedNames = new Set<string>();
+        (entries ?? []).forEach((entry) => {
+            const name = itemRefName(entry).toLowerCase();
+            names.add(name);
+            const id = itemRefId(entry);
+            if (id) {
+                ids.add(id);
+                idPinnedNames.add(name);
+            }
+        });
+        return { names, ids, idPinnedNames };
+    };
+    const equipped = gearSets(character.items?.equipped);
+    const attuned = gearSets(character.items?.attuned);
+    if (equipped.names.size === 0 && attuned.names.size === 0) return [];
 
     // First row per name wins — merged both-edition catalogs (current rows first) and
-    // duplicated homebrew rows must not apply the same item's mads twice.
+    // duplicated homebrew rows must not apply the same item's mads twice. An id-pinned gear
+    // entry outranks that: only its exact row applies for that name.
     const seen = new Set<string>();
     return magicItems.flatMap(item => {
         const name = (item.name ?? "").toLowerCase();
-        if (!name || seen.has(name) || (!equipped.has(name) && !attuned.has(name))) return [];
+        const key = entitySelectorKey({ id: item.id, name: item.name ?? "" });
+        const idMatch = equipped.ids.has(key) || attuned.ids.has(key);
+        const nameMatch =
+            (equipped.names.has(name) && !equipped.idPinnedNames.has(name)) ||
+            (attuned.names.has(name) && !attuned.idPinnedNames.has(name));
+        if (!name || seen.has(name) || !(idMatch || nameMatch)) return [];
         seen.add(name);
         const attunement = (item.properties?.attunement ?? "").trim().toLowerCase();
         const requiresAttunement = !!attunement && !NO_ATTUNEMENT_PLACEHOLDERS.has(attunement);
-        if (requiresAttunement && !attuned.has(name)) return [];
+        if (requiresAttunement && !(attuned.ids.has(key) || attuned.names.has(name))) return [];
         return ((item.metadata?.mads ?? []) as MadFeature[]).filter(m =>
             m.type === MadType.Character &&
-            !isChoiceStatMad(m) && !isChoiceProficiencyMad(m) && !isChoiceSpellMad(m));
+            !isChoiceStatMad(m) && !isChoiceProficiencyMad(m) && !isChoiceSpellMad(m) && !isChoiceItemMad(m));
     });
 }
 

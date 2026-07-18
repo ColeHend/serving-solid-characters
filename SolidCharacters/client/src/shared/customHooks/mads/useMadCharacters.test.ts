@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Character, CharacterSavingThrow } from "../../../models/character.model";
-import { MovementType } from "../../../models/character.model";
+import { MovementType, itemRefName } from "../../../models/character.model";
 import type { FeatureDetail, MadFeature as StoredMad, MagicItem } from "../../../models/generated";
 
 // These handler modules resolve data hooks at import time; mock them so the
@@ -8,7 +8,7 @@ import type { FeatureDetail, MadFeature as StoredMad, MagicItem } from "../../..
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
 import { rollBonusAmount } from "./commands/useRollBonusFeature";
@@ -734,6 +734,72 @@ describe("AddSpells choice form", () => {
     });
 });
 
+describe("AddItems choice form", () => {
+    it("an unresolved choice reaching the handler is a no-op", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddItems", { ID: "choice", options: "it-1,it-2", count: "1" }));
+        expect(c.items.inventory).toEqual([]);
+    });
+
+    it("collectMadFeatures excludes unresolved choices and expands complete picks into concrete grants", () => {
+        const choice = mad("AddItems", { ID: "choice", options: "it-a,it-b,it-c", count: "2" });
+        const feature: FeatureDetail = { id: "pack-1", name: "Adventuring Gear", description: "", metadata: { mads: stored(choice) } };
+        const base = makeCharacter({ features: [feature] });
+
+        // no picks yet → excluded, listed as pending
+        expect(collectMadFeatures(base)).toEqual([]);
+        expect(pendingItemChoices(base, feature)).toHaveLength(1);
+        expect(choiceItemMads(feature)).toHaveLength(1);
+        expect(itemChoiceOptions(choice)).toEqual(["it-a", "it-b", "it-c"]);
+        expect(itemChoiceCount(choice)).toBe(2);
+        expect(itemChoiceKey(feature, choice)).toBe("pack-1::items::it-a,it-b,it-c");
+
+        // incomplete picks (1 of 2) stay pending
+        const partial = makeCharacter({ ...base, itemChoices: { "pack-1::items::it-a,it-b,it-c": "it-a" } });
+        expect(collectMadFeatures(partial)).toEqual([]);
+
+        // complete picks → one concrete AddItems per item, and they apply
+        const picked = makeCharacter({ ...base, itemChoices: { "pack-1::items::it-a,it-b,it-c": "it-a,it-c" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected).toHaveLength(2);
+        expect(collected.map(m => m.value["ID"]).sort()).toEqual(["it-a", "it-c"]);
+        expect(pendingItemChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect([...applied.items.inventory].map(itemRefName).sort()).toEqual(["it-a", "it-c"]);
+    });
+
+    it("two choice commands on one feature resolve independently via distinct options keys", () => {
+        const weapon = mad("AddItems", { ID: "choice", options: "w-1,w-2", count: "1" });
+        const tool = mad("AddItems", { ID: "choice", options: "t-1,t-2", count: "1" });
+        const feature: FeatureDetail = { id: "kit-1", name: "Starter Kit", description: "", metadata: { mads: stored(weapon, tool) } };
+
+        // only the weapon picked → the tool choice stays pending
+        const half = makeCharacter({ features: [feature], itemChoices: { "kit-1::items::w-1,w-2": "w-2" } });
+        expect(collectMadFeatures(half).map(m => m.value["ID"])).toEqual(["w-2"]);
+        expect(pendingItemChoices(half, feature)).toHaveLength(1);
+
+        // both picked → both resolve
+        const full = makeCharacter({
+            features: [feature],
+            itemChoices: { "kit-1::items::w-1,w-2": "w-2", "kit-1::items::t-1,t-2": "t-1" },
+        });
+        expect(collectMadFeatures(full).map(m => m.value["ID"]).sort()).toEqual(["t-1", "w-2"]);
+        expect(pendingItemChoices(full, feature)).toHaveLength(0);
+    });
+
+    it("a pick outside the options list does not apply", () => {
+        const choice = mad("AddItems", { ID: "choice", options: "it-a,it-b", count: "1" });
+        const feature: FeatureDetail = { id: "kit-2", name: "Kit", description: "", metadata: { mads: stored(choice) } };
+        const c = makeCharacter({ features: [feature], itemChoices: { "kit-2::items::it-a,it-b": "it-z" } });
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+
+    it("fixed-form AddItems still applies unchanged", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddItems", { ID: "it-123" }));
+        expect(c.items.inventory).toEqual([{ name: "it-123" }]);
+    });
+});
+
 describe("collectMagicItemMads", () => {
     // A character carrying the given equipped/attuned item names.
     const carrying = (equipped: string[], attuned: string[] = []): Character =>
@@ -783,5 +849,13 @@ describe("collectMagicItemMads", () => {
         const item = makeMagicItem({ name: "Wand of Wonder", metadata: { mads: stored(speed, uses) } });
 
         expect(collectMagicItemMads(carrying(["Wand of Wonder"]), [item])).toEqual([speed]);
+    });
+
+    it("skips choice-form mads — items have no picker to resolve them", () => {
+        const itemChoice = mad("AddItems", { ID: "choice", options: "it-1,it-2", count: "1" });
+        const speed = mad("AddSpeed", { speed: "10" });
+        const item = makeMagicItem({ name: "Bag of Tricks", metadata: { mads: stored(itemChoice, speed) } });
+
+        expect(collectMagicItemMads(carrying(["Bag of Tricks"]), [item])).toEqual([speed]);
     });
 });

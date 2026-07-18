@@ -1,5 +1,10 @@
 import { Component, For, Show, createMemo } from "solid-js";
 import { signed } from "../../../../shared/customHooks/utility/tools/dndMath";
+import {
+  entitySelectorKey,
+  featSelectorKey,
+  selectorKeyDisplayName,
+} from "../../../../shared/customHooks/utility/tools/entityKey";
 import { advantageLabel, rollBonusLabel, senseLabels } from "../../../../shared/customHooks/mads/rollFormat";
 import { ABILITY_LABELS, ABILITY_KEYS } from "../rules/constants";
 import { useCreate } from "../state/createContext";
@@ -37,20 +42,23 @@ export const LivingSheet: Component<LivingSheetProps> = (props) => {
   const proficientSkills = createMemo(() => derived.skillRows().filter((row) => row.state !== "none"));
 
   const featLine = createMemo(() => {
+    const featName = (key: string) =>
+      data.feats().find((f) => featSelectorKey(f) === key)?.details?.name ?? selectorKeyDisplayName(key);
     const parts = [
       ...(derived.backgroundFeat() ? [`${derived.backgroundFeat()} (origin)`] : []),
-      ...draft.feats,
+      ...draft.feats.map(featName),
     ];
     return parts.join(", ");
   });
 
   const grimoireLines = createMemo(() => {
     if (draft.spells.length === 0) return [];
-    const byName = new Map(data.spells().map((s) => [s.name.toLowerCase(), s]));
+    const byKey = new Map(data.spells().map((s) => [entitySelectorKey(s), s]));
     const groups = new Map<string, string[]>();
-    draft.spells.forEach((name) => {
-      const level = `${byName.get(name.toLowerCase())?.level ?? "?"}`;
-      groups.set(level, [...(groups.get(level) ?? []), name]);
+    draft.spells.forEach((key) => {
+      const spell = byKey.get(key);
+      const level = `${spell?.level ?? "?"}`;
+      groups.set(level, [...(groups.get(level) ?? []), spell?.name ?? selectorKeyDisplayName(key)]);
     });
     return [...groups.entries()]
       .sort(([a], [b]) => a.localeCompare(b))

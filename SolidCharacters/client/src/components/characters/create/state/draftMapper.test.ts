@@ -65,7 +65,8 @@ const scenarioDraft = () =>
     abilityMethod: "manual",
     baseScores: { str: 15, dex: 16, con: 14, int: 12, wis: 10, cha: 8 },
     feats: ["Alert"],
-    spells: ["Acid Splash", "Blade Ward"],
+    // Selector keys — these two aren't in the (empty) spell lookups, so they carry hb: keys.
+    spells: ["hb:Acid Splash", "hb:Blade Ward"],
     languages: ["Elvish"],
   });
 
@@ -183,7 +184,7 @@ describe("characterToDraft", () => {
     expect(restored.raceLanguageChoices).toEqual(["Giant"]);
   });
 
-  it("applies and round-trips race ability choice picks", () => {
+  it("applies and round-trips species bonus-slot assignments (2014 Half-Elf)", () => {
     const halfElf = {
       name: "Half-Elf",
       size: "Medium",
@@ -205,14 +206,89 @@ describe("characterToDraft", () => {
       species: "Half-Elf",
       abilityMethod: "manual",
       baseScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
-      raceAbilityChoices: ["str", "con"],
+      // Pool: [+2 preset cha, +1 choice, +1 choice] — book CHA kept, the two +1s placed.
+      abilityBonuses: { species: ["cha", "str", "con"], background: [] },
     });
     const character = draftToCharacter(original, withHalfElf);
     expect(character.stats).toEqual({ str: 11, dex: 10, con: 11, int: 10, wis: 10, cha: 12 });
 
     const restored = characterToDraft(character, withHalfElf, "2014");
-    expect(restored.raceAbilityChoices).toEqual(["str", "con"]);
+    expect(restored.abilityBonuses.species).toEqual(["cha", "str", "con"]);
     expect(restored.baseScores).toEqual(original.baseScores);
+  });
+
+  it("migrates a legacy builder (raceAbilityChoices/backgroundBoosts) onto the slot model", () => {
+    // 2014 species: the legacy abilityBonusChoice picks fill the choice tokens in order.
+    const halfElf = {
+      name: "Half-Elf",
+      size: "Medium",
+      speed: 30,
+      abilityBonuses: [{ stat: 5, value: 2 }],
+      abilityBonusChoice: {
+        amount: 2,
+        choices: [
+          { stat: 0, value: 1 },
+          { stat: 2, value: 1 },
+        ],
+      },
+      traits: [],
+    } as unknown as Race;
+    const withHalfElf: SrdLookups = { ...lookups, races: [halfElf] };
+    const saved = draftToCharacter(
+      emptyDraft("2014", {
+        name: "Sylvie",
+        classes: [{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }],
+        species: "Half-Elf",
+        abilityMethod: "manual",
+        baseScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+        abilityBonuses: { species: ["cha", "str", "con"], background: [] },
+      }),
+      withHalfElf,
+    );
+    saved.builder = {
+      ...saved.builder!,
+      abilityBonuses: undefined,
+      abilityBonusStyle: undefined,
+      raceAbilityChoices: ["str", "con"],
+    };
+    const migrated = characterToDraft(saved, withHalfElf, "2014");
+    expect(migrated.abilityBonuses.species).toEqual(["cha", "str", "con"]);
+    // The migrated draft reproduces the previously baked stats exactly.
+    expect(draftToCharacter(migrated, withHalfElf).stats).toEqual(saved.stats);
+
+    // 2024 background: the old boost map matches token values (+2 first, then +1).
+    const saved24 = draftToCharacter(
+      emptyDraft("2024", {
+        name: "Verity",
+        classes: [{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }],
+        background: "Soldier",
+        abilityBonuses: { species: [], background: ["str", "con"] },
+      }),
+      lookups,
+    );
+    saved24.builder = {
+      ...saved24.builder!,
+      abilityBonuses: undefined,
+      abilityBonusStyle: undefined,
+      backgroundBoosts: { str: 2, con: 1 },
+    };
+    const migrated24 = characterToDraft(saved24, lookups, "2024");
+    expect(migrated24.abilityBonuses.background).toEqual(["str", "con"]);
+    expect(migrated24.abilityBonusStyle.background).toBe("standard");
+    expect(draftToCharacter(migrated24, lookups).stats).toEqual(saved24.stats);
+
+    // Three +1s in the legacy map = the spread style.
+    saved24.builder = { ...saved24.builder, backgroundBoosts: { str: 1, dex: 1, con: 1 } };
+    const spread = characterToDraft(saved24, lookups, "2024");
+    expect(spread.abilityBonusStyle.background).toBe("spread");
+    expect([...spread.abilityBonuses.background].sort()).toEqual(["con", "dex", "str"]);
+  });
+
+  it("round-trips choice-form mad picks including item choices", () => {
+    const original = scenarioDraft();
+    original.madChoices.items = { "feat::items::it-a,it-b": "it-a" };
+    const restored = characterToDraft(draftToCharacter(original, lookups), lookups, "2024");
+    expect(restored.madChoices.items).toEqual({ "feat::items::it-a,it-b": "it-a" });
   });
 
   it("round-trips the extended standard array method", () => {
@@ -300,6 +376,104 @@ describe("hp overrides", () => {
   });
 });
 
+describe("feat-or-ASI slots", () => {
+  const asiFeature = {
+    id: "barb-asi-4",
+    name: "Ability Score Improvement",
+    description: "",
+    metadata: {
+      mads: [
+        {
+          command: "AddStats",
+          value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" },
+          type: MadType.Character,
+          group: 0,
+        },
+      ],
+    },
+  };
+  const barbarianWithAsi = {
+    ...barbarian,
+    features: { ...(barbarian.features as object), 4: [asiFeature] },
+  } as unknown as Class5E;
+  const asiLookups: SrdLookups = { ...lookups, classes: [barbarianWithAsi, sorcerer] };
+
+  const asiDraft = () =>
+    emptyDraft("2024", {
+      name: "Slotter",
+      classes: [{ name: "Barbarian", level: 4, subclass: "", skillChoices: [] }],
+      species: "Human",
+      background: "Soldier",
+      abilityMethod: "manual",
+      baseScores: { str: 15, dex: 14, con: 13, int: 12, wis: 10, cha: 8 },
+      featOrAsi: { "barb-asi-4": "Alert" },
+    });
+
+  it("emits the slot's feat into featsTaken and persists the slot map in the builder", () => {
+    const character = draftToCharacter(asiDraft(), asiLookups);
+    expect(character.featsTaken).toContainEqual({ name: "Alert", source: "chosen", id: "Alert" });
+    expect(character.features.map((f) => f.name)).toContain("Alert");
+    expect(character.builder?.featOrAsi).toEqual({ "barb-asi-4": "Alert" });
+    // A feat-resolved slot has no ability pick, so the ASI stat mad never applies.
+    expect(character.statChoices?.["barb-asi-4"]).toBeUndefined();
+  });
+
+  it("restores the slot map on load without duplicating the feat into draft.feats", () => {
+    const restored = characterToDraft(draftToCharacter(asiDraft(), asiLookups), asiLookups, "2014");
+    expect(restored.featOrAsi).toEqual({ "barb-asi-4": "Alert" });
+    expect(restored.feats).toEqual([]);
+  });
+
+  it("ignores a dangling slot whose ASI feature is no longer on the build", () => {
+    const draft = { ...asiDraft(), featOrAsi: { "stale-slot": "Alert" } };
+    const character = draftToCharacter(draft, asiLookups);
+    expect((character.featsTaken ?? []).map((f) => f.name)).not.toContain("Alert");
+  });
+
+  it("marks a feat-resolved slot's stat choice as not pending, and an unpicked ASI as pending", () => {
+    const withFeat = draftToCharacter(asiDraft(), asiLookups);
+    const featChoice = draftMadChoices(withFeat).find((c) => c.kind === "stat");
+    expect(featChoice?.pending).toBe(false);
+
+    const asiOnly = { ...asiDraft(), featOrAsi: { "barb-asi-4": "asi" } };
+    const unpicked = draftToCharacter(asiOnly, asiLookups);
+    expect(draftMadChoices(unpicked).find((c) => c.kind === "stat")?.pending).toBe(true);
+
+    asiOnly.madChoices.stats["barb-asi-4"] = "str";
+    const picked = draftToCharacter(asiOnly, asiLookups);
+    expect(draftMadChoices(picked).find((c) => c.kind === "stat")?.pending).toBe(false);
+  });
+});
+
+describe("gear item refs", () => {
+  it("round-trips {name, id?} gear refs — catalog ids kept, free-text stays name-only", () => {
+    const original = scenarioDraft();
+    original.items.inventory = [
+      { name: "Longsword", id: "item-longsword-24" },
+      { name: "10 torches" },
+    ];
+    original.items.equipped = [{ name: "Longsword", id: "item-longsword-24" }];
+    const character = draftToCharacter(original, lookups);
+    expect(character.items.inventory).toEqual([
+      { name: "Longsword", id: "item-longsword-24" },
+      { name: "10 torches" },
+    ]);
+
+    const restored = characterToDraft(character, lookups, "2014");
+    expect(restored.items.inventory).toEqual(original.items.inventory);
+    expect(restored.items.equipped).toEqual(original.items.equipped);
+  });
+
+  it("loads an older save whose gear arrays are plain name strings", () => {
+    const character = draftToCharacter(scenarioDraft(), lookups);
+    character.items.inventory = ["Spear", "Rope"];
+    character.items.attuned = ["Ring of Protection"];
+    const restored = characterToDraft(character, lookups, "2014");
+    expect(restored.items.inventory).toEqual([{ name: "Spear" }, { name: "Rope" }]);
+    expect(restored.items.attuned).toEqual([{ name: "Ring of Protection" }]);
+  });
+});
+
 describe("id write-through", () => {
   const barbarianWithId = { ...barbarian, id: "class-barb" } as Class5E;
   const humanWithId = { ...human, id: "race-human" } as Race;
@@ -357,7 +531,8 @@ describe("id write-through", () => {
     expect(restored.classes).toEqual(idDraft().classes);
     expect(restored.speciesId).toBe("race-human");
     expect(restored.backgroundId).toBe("bg-soldier");
-    expect(restored.spells).toEqual(["Acid Splash", "Blade Ward"]);
+    // Acid Splash resolves in the id lookups, so its legacy hb: key upgrades to the real id.
+    expect(restored.spells).toEqual(["spell-acid", "hb:Blade Ward"]);
   });
 
   it("resolves stored ids over names when they disagree (renamed entity)", () => {

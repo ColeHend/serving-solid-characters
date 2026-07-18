@@ -51,6 +51,8 @@ export class Character {
   public proficiencyChoices: Record<string, string> = {};
   /** Resolved picks for choice-form AddSpells commands, keyed by spellChoiceKey → CSV of spell ids. */
   public spellChoices: Record<string, string> = {};
+  /** Resolved picks for choice-form AddItems commands, keyed by itemChoiceKey → CSV of item ids. */
+  public itemChoices: Record<string, string> = {};
   public resistances: DamageAffinity[] = [];
   public vulnerabilities: DamageAffinity[] = [];
   public immunities: DamageAffinity[] = [];
@@ -131,15 +133,19 @@ export interface CharacterBuilderState {
   abilityMethod: AbilityGenMethod;
   baseScores: Stats;
   bonusScores: Stats;
-  /** 2024 background boost per ability (+2/+1 or three +1s). */
-  backgroundBoosts: Partial<Record<keyof Stats, number>>;
+  /** Legacy saves only: 2024 background boost map — migrated onto abilityBonuses on load. */
+  backgroundBoosts?: Partial<Record<keyof Stats, number>>;
+  /** Ability each species/background bonus token is assigned to ('' = unassigned). */
+  abilityBonuses?: { species: string[]; background: string[] };
+  /** +2/+1 (standard) vs three +1s (spread) per bonus source. */
+  abilityBonusStyle?: { species: 'standard' | 'spread'; background: 'standard' | 'spread' };
   /** Explicit skill-pill overrides only; unset skills derive from class/background picks. */
   skillOverrides: Record<string, SkillOverrideState>;
   /** Chosen class skills keyed by class name. */
   classSkillChoices: Record<string, string[]>;
   /** 4d6-drop-lowest results when abilityMethod is 'roll'. */
   rolledPool: number[];
-  /** Species abilityBonusChoice picks ("str", "con"). Absent on older saves. */
+  /** Legacy saves only: species abilityBonusChoice picks — migrated onto abilityBonuses on load. */
   raceAbilityChoices?: string[];
   /** Species languageChoice picks. Absent on older saves. */
   raceLanguageChoices?: string[];
@@ -147,6 +153,12 @@ export interface CharacterBuilderState {
   raceTraitChoices?: string[];
   /** Origin-feat override; '' or absent = the background's recommended feat. */
   originFeat?: string;
+  /**
+   * Feat-or-ASI slot decisions keyed by the ASI feature's id: "asi" or the chosen feat's
+   * selector key. The chosen feats are ALSO written into featsTaken (so mads/views apply
+   * them); this map only remembers which slot they came from. Absent on older saves.
+   */
+  featOrAsi?: Record<string, string>;
   /** Hit-point inputs from the creator's Hit Points section. Absent = fully auto-computed. */
   hp?: CharacterHpOverride;
 }
@@ -201,10 +213,28 @@ export interface CharacterLevel {
 	hitDie: number;
 	features: FeatureDetail[];
 }
+/** Gear entry: display name plus the item's selector key when it came from the catalog. */
+export interface CharacterItemRef {
+  name: string;
+  /** Selector key of the item (SRD id or hb:<name>). Absent on free-text/pack entries. */
+  id?: string;
+}
+
+/** Older saves stored plain name strings — every gear reader must go through itemRefName. */
+export type CharacterGearEntry = string | CharacterItemRef;
+
+/** Tolerant display-name reader for gear entries of either shape. */
+export const itemRefName = (entry: CharacterGearEntry): string =>
+  typeof entry === "string" ? entry : entry.name;
+
+/** Selector key of a gear entry when it has one (never derived from the bare name). */
+export const itemRefId = (entry: CharacterGearEntry): string | undefined =>
+  typeof entry === "string" ? undefined : entry.id;
+
 export interface CharacterGear {
-	inventory: string[];
-	equipped: string[];
-	attuned: string[];
+	inventory: CharacterGearEntry[];
+	equipped: CharacterGearEntry[];
+	attuned: CharacterGearEntry[];
   currency: CharacterCurrency;
 }
 

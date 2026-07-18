@@ -186,7 +186,19 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
             "For 'choose N spells/cantrips of your choice from a list' use ID = choice with options = comma-separated allowed spell names, " +
             "count = how many the player picks, spellLevel = the spell level (0 = cantrip; the player picks on the sheet).",
     },
-    Items: { category: "Items", idBased: true, refKind: "item", addFields: [REF("ID")], removeFields: [REF("name")], hint: "grants/removes an item — target = exact item name" },
+    Items: {
+        category: "Items", idBased: true, refKind: "item",
+        labelKeys: ["count"],
+        addFields: [
+            { key: "ID", type: "refOrChoice", required: true },
+            { key: "options", type: "refCsv", required: false },
+            { key: "count", type: "number", required: false },
+        ],
+        removeFields: [REF("name")],
+        hint: "grants/removes an item — target = exact item name. " +
+            "For 'choose N items from a list' use ID = choice with options = comma-separated allowed item names, " +
+            "count = how many the player picks (the player picks on the sheet).",
+    },
     Features: { category: "Features", idBased: true, refKind: "feature", addFields: [REF("ID")], removeFields: [REF("ID")], hint: "grants/removes another existing feature — target = exact feature name" },
     Feats: { category: "Feats", idBased: true, refKind: "feat", addFields: [REF("featID")], removeFields: [REF("featID")], hint: "grants/removes a feat — target = exact feat name" },
     ArmorClass: {
@@ -485,6 +497,7 @@ export const COMMAND_COMMON_MISTAKES =
     "- \"advantage on Stealth checks\" → Advantage {\"rollType\":\"AbilityCheck\",\"mode\":\"advantage\",\"stat\":\"dex\",\"condition\":\"Stealth checks\"} (state WHEN it applies in condition)\n" +
     "- \"As a Bonus Action, you can enter a Rage\" → Actions {\"name\":\"Rage\",\"actionType\":\"bonusAction\"} (an activated ability the character uses — NOT a passive bonus)\n" +
     "- \"you learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list\" → Spells {\"ID\":\"choice\",\"options\":\"<comma-separated allowed spell names>\",\"count\":\"2\",\"spellLevel\":\"0\"}\n" +
+    "- \"you gain one simple weapon of your choice\" → Items {\"ID\":\"choice\",\"options\":\"<comma-separated allowed item names>\",\"count\":\"1\"}\n" +
     "- \"a number of times equal to your Proficiency Bonus, regaining all uses on a Long Rest\" → Uses {\"proficiencyBonus\":\"Full PB\",\"recharge\":\"Long Rest\"} (PB-scaled uses omit amount)\n" +
     "- \"once per long rest…\" → Uses (temporary effects, healing, and damage bonuses/rerolls have no category)";
 
@@ -743,6 +756,8 @@ export function coerceCommand(
     if (category === "ToolProficiencies" && value["tool"] === "choice" && !value["options"]) return null;
     // choice-form Spells likewise needs its allowed-spells list
     if (category === "Spells" && value["ID"] === "choice" && !value["options"]) return null;
+    // choice-form Items likewise needs its allowed-items list
+    if (category === "Items" && value["ID"] === "choice" && !value["options"]) return null;
     // a RollBonus with no flat bonus, PB fraction, or ability modifier would be a no-op badge
     if (category === "RollBonus" && !value["bonus"] && !value["proficiencyBonus"] && !value["statBonus"]) return null;
     // a Uses with neither a fixed amount nor a PB fraction has no resolvable maximum
@@ -822,6 +837,11 @@ export function validateStoredCommand(mad: MadFeature): string[] {
     }
     if (category === "Spells" && isAdd && String(value["ID"] ?? "") === "choice") {
         // Options hold opaque spell ids post-enrichment — only require the list to be non-empty.
+        const opts = typeof value["options"] === "string" ? (value["options"] as string).trim() : "";
+        if (!opts) errors.push(`${prettyCommand(command)} uses ID "choice" but has no options list`);
+    }
+    if (category === "Items" && isAdd && String(value["ID"] ?? "") === "choice") {
+        // Options hold opaque item ids post-enrichment — only require the list to be non-empty.
         const opts = typeof value["options"] === "string" ? (value["options"] as string).trim() : "";
         if (!opts) errors.push(`${prettyCommand(command)} uses ID "choice" but has no options list`);
     }

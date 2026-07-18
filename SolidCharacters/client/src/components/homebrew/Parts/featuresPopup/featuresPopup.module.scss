@@ -97,7 +97,7 @@
 .underlineField {
     input,
     textarea {
-        width: 100%;
+        width: 100% !important;
         max-width: none;
         box-sizing: border-box;
         background: transparent;

@@ -37,13 +37,17 @@ export const subclassStorageKey = (parentClass: string, name: string): string =>
  * Whether a subclass belongs to a class: by id when both sides carry one (exact — this is
  * what distinguishes the 2014 and 2024 editions of a same-named class), falling back to a
  * case-insensitive name match (pre-migration homebrew subclasses and id-less homebrew classes).
+ * The name fallback refuses cross-edition pairings when BOTH sides declare a legacy flag —
+ * stale cached SRD rows without parentClassId must not attach to the other edition's class,
+ * while homebrew (legacy undefined) keeps matching freely.
  */
 export function subclassBelongsTo(
-  sub: { parentClassId?: string; parentClass?: string },
-  cls: { id?: string; name?: string } | undefined,
+  sub: { parentClassId?: string; parentClass?: string; legacy?: boolean },
+  cls: { id?: string; name?: string; legacy?: boolean } | undefined,
 ): boolean {
   if (!cls) return false;
   if (sub.parentClassId && cls.id) return sub.parentClassId === cls.id;
+  if (sub.legacy !== undefined && cls.legacy !== undefined && sub.legacy !== cls.legacy) return false;
   return (sub.parentClass ?? '').toLowerCase() === (cls.name ?? '').toLowerCase();
 }
 

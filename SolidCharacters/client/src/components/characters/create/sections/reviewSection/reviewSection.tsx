@@ -55,19 +55,19 @@ export const ReviewSection: Component<ReviewSectionProps> = (props) => {
       abilityMethod: draft.abilityMethod,
       baseScores: draft.baseScores,
       rolledPool: draft.rolledPool,
-      boostsExpected:
-        draft.edition !== "2014" && (derived.selectedBackground()?.abilityOptions?.length ?? 0) > 0,
-      boostsApplied: Object.keys(draft.backgroundBoosts).length > 0,
+      boostsExpected: derived.backgroundBonusPool().tokens.length > 0,
+      boostsApplied:
+        derived.backgroundBonusPool().tokens.length > 0 &&
+        draft.abilityBonuses.background.length === derived.backgroundBonusPool().tokens.length &&
+        draft.abilityBonuses.background.every((slot) => slot !== ""),
       isCaster: derived.spellcasting().length > 0,
       spellsKnown: draft.spells.length,
       pendingFeatureChoices: derived.madChoices().filter((choice) => choice.pending).length,
       raceAbilityChoice:
-        derived.selectedRace()?.abilityBonusChoice &&
-        (draft.edition === "2014" ||
-          (draft.edition === "both" && derived.selectedRace()?.legacy === true))
+        derived.speciesBonusPool().tokens.length > 0
           ? {
-            picked: draft.raceAbilityChoices.length,
-            amount: derived.selectedRace()!.abilityBonusChoice!.amount,
+            picked: draft.abilityBonuses.species.filter((slot) => slot !== "").length,
+            amount: derived.speciesBonusPool().tokens.length,
           }
           : undefined,
       raceLanguageChoice: derived.selectedRace()?.languageChoice

@@ -45,3 +45,47 @@
 .propertiesList {
     list-style-type: none;
 }
+
+.itemFeature {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pickerSplit {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+
+    > * {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+    }
+}
+
+.pickerHint {
+    align-self: center;
+    font-size: 13px;
+    color: var(--pop-text-faint);
+}
+
+.detailPane {
+    overflow-y: auto;
+    max-height: 320px;
+
+    h3 {
+        margin-top: 0;
+    }
+}
+
+.chosenRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+}

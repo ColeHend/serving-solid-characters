@@ -3,11 +3,15 @@ import { CasterType, Class5E, Feat, Spell, Subclass } from "../../../../models/g
 import { CharacterSkillProficiency } from "../../../../models/character.model";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
 import {
+  backgroundBonusPool,
   casterTypeLabel,
   classSkillChoiceSpec,
   collectLanguages,
   computeAc,
   computeFinalScores,
+  defaultSlots,
+  speciesBonusPool,
+  sumBonusPool,
   computeInitiative,
   computeMaxHp,
   computePassivePerception,
@@ -17,6 +21,7 @@ import {
   darkvisionRange,
   featCategory,
   getProficiencyBonus,
+  hitDieLabel,
   hitDieSides,
   isOffList,
   mergeMadSkillRows,
@@ -236,57 +241,107 @@ describe("computeFinalScores", () => {
   const base: Stats = { str: 15, dex: 14, con: 13, int: 12, wis: 10, cha: 8 };
   const zero: Stats = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
 
-  it("2024 applies background boosts, ignores race", () => {
-    const race = { abilityBonuses: [{ stat: 1, value: 2 }] } as never;
-    const out = computeFinalScores("2024", base, { ...zero, dex: 2 }, { str: 2, int: 1 }, race);
-    expect(out).toEqual({ str: 17, dex: 16, con: 13, int: 13, wis: 10, cha: 8 });
+  it("sums base, manual bonus, and both assigned bonus maps", () => {
+    const out = computeFinalScores(base, { ...zero, dex: 2 }, { dex: 2, int: 1 }, { str: 2 });
+    expect(out).toEqual({ str: 17, dex: 18, con: 13, int: 13, wis: 10, cha: 8 });
   });
 
-  it("2014 applies race/subrace bonuses automatically, ignores background boosts", () => {
-    const race = { abilityBonuses: [{ stat: 1, value: 2 }] } as never; // DEX +2
-    const subrace = { abilityBonuses: [{ stat: 3, value: 1 }] } as never; // INT +1
-    const out = computeFinalScores("2014", base, zero, { str: 2 }, race, subrace);
-    expect(out).toEqual({ str: 15, dex: 16, con: 13, int: 13, wis: 10, cha: 8 });
+  it("empty bonus maps leave the base + manual sums untouched", () => {
+    expect(computeFinalScores(base, zero, {}, {})).toEqual(base);
+  });
+});
+
+describe("speciesBonusPool", () => {
+  const dwarf = { abilityBonuses: [{ stat: 2, value: 2 }] } as never; // CON +2
+
+  it("a fixed bonus becomes a reassignable token prefilled with the book stat", () => {
+    const pool = speciesBonusPool("2014", dwarf);
+    expect(pool.tokens).toEqual([{ value: 2, preset: "con", allowed: [] }]);
+    expect(pool.canSpread).toBe(false);
+    // zero-click parity: the defaults reproduce the book assignment
+    expect(sumBonusPool(pool, defaultSlots(pool))).toEqual({ con: 2 });
+    // an empty (never-seeded) slot list falls back to those defaults too
+    expect(sumBonusPool(pool, [])).toEqual({ con: 2 });
+    // ...and the token can be moved anywhere
+    expect(sumBonusPool(pool, ["str"])).toEqual({ str: 2 });
   });
 
-  it("an ALL race bonus raises every score", () => {
-    const race = { abilityBonuses: [{ stat: 7, value: 1 }] } as never; // Human 2014
-    const out = computeFinalScores("2014", base, zero, {}, race);
-    expect(out).toEqual({ str: 16, dex: 15, con: 14, int: 13, wis: 11, cha: 9 });
+  it("folds an ALL bonus into `all` with no tokens (2014 Human)", () => {
+    const human = { abilityBonuses: [{ stat: 7, value: 1 }] } as never;
+    const pool = speciesBonusPool("2014", human);
+    expect(pool).toMatchObject({ tokens: [], all: 1, canSpread: false });
+    expect(sumBonusPool(pool, [])).toEqual({ str: 1, dex: 1, con: 1, int: 1, wis: 1, cha: 1 });
   });
 
-  it("both-mode: a legacy species grants its own bonuses (paired legacy background has no boosts)", () => {
-    const race = { legacy: true, abilityBonuses: [{ stat: 1, value: 2 }] } as never; // DEX +2
-    const out = computeFinalScores("both", base, zero, {}, race);
-    expect(out).toEqual({ str: 15, dex: 16, con: 13, int: 12, wis: 10, cha: 8 });
-  });
-
-  it("both-mode: a current species grants nothing — background boosts apply instead", () => {
-    const race = { abilityBonuses: [{ stat: 1, value: 2 }] } as never; // 2024 row, no legacy flag
-    const out = computeFinalScores("both", base, zero, { str: 2, int: 1 }, race);
-    expect(out).toEqual({ str: 17, dex: 14, con: 13, int: 13, wis: 10, cha: 8 });
-  });
-
-  it("applies the race's abilityBonusChoice picks (2014 Half-Elf's two +1s)", () => {
+  it("Half-Elf: +2 prefilled on CHA plus two restricted choice tokens", () => {
     const halfElf = {
       abilityBonuses: [{ stat: 5, value: 2 }], // CHA +2 fixed
       abilityBonusChoice: {
         amount: 2,
-        choices: [0, 1, 2, 3, 4].map((stat) => ({ stat, value: 1 })),
+        choices: [0, 1, 2, 3, 4].map((stat) => ({ stat, value: 1 })), // CHA excluded
       },
     } as never;
-    const out = computeFinalScores("2014", base, zero, {}, halfElf, undefined, ["str", "con"]);
-    expect(out).toEqual({ str: 16, dex: 14, con: 14, int: 12, wis: 10, cha: 10 });
+    const pool = speciesBonusPool("2014", halfElf);
+    expect(pool.canSpread).toBe(false);
+    expect(defaultSlots(pool)).toEqual(["cha", "", ""]);
+    expect(pool.tokens[1]).toEqual({ value: 1, preset: "", allowed: ["str", "dex", "con", "int", "wis"] });
+    expect(sumBonusPool(pool, ["cha", "str", "con"])).toEqual({ cha: 2, str: 1, con: 1 });
+    // a choice token dropped on an off-allowed stat contributes nothing
+    expect(sumBonusPool(pool, ["cha", "cha", "con"])).toEqual({ cha: 2, con: 1 });
+    // unassigned choice tokens contribute nothing (checklist flags them instead)
+    expect(sumBonusPool(pool, defaultSlots(pool))).toEqual({ cha: 2 });
   });
 
-  it("caps abilityBonusChoice picks at the allowed amount and ignores off-list picks", () => {
-    const race = {
-      abilityBonuses: [],
-      abilityBonusChoice: { amount: 1, choices: [{ stat: 0, value: 1 }] },
-    } as never;
-    const out = computeFinalScores("2014", base, zero, {}, race, undefined, ["dex", "str"]);
-    // DEX isn't in the choice list; STR is second but the cap of 1 already consumed the pick.
-    expect(out).toEqual(base);
+  it("a +2/+1 race+subrace pool canSpread, and spread style swaps in three floating +1s", () => {
+    const elf = { abilityBonuses: [{ stat: 1, value: 2 }] } as never; // DEX +2
+    const highElf = { abilityBonuses: [{ stat: 3, value: 1 }] } as never; // INT +1
+    const standard = speciesBonusPool("2014", elf, highElf);
+    expect(standard.canSpread).toBe(true);
+    expect(defaultSlots(standard)).toEqual(["dex", "int"]);
+
+    const spread = speciesBonusPool("2014", elf, highElf, "spread");
+    expect(spread.canSpread).toBe(true);
+    expect(spread.tokens).toEqual([
+      { value: 1, preset: "", allowed: [] },
+      { value: 1, preset: "", allowed: [] },
+      { value: 1, preset: "", allowed: [] },
+    ]);
+    expect(sumBonusPool(spread, ["str", "wis", "cha"])).toEqual({ str: 1, wis: 1, cha: 1 });
+  });
+
+  it("gates by edition: empty for 2024, and legacy-flag-driven in both-mode", () => {
+    expect(speciesBonusPool("2024", dwarf).tokens).toEqual([]);
+    expect(speciesBonusPool("both", dwarf).tokens).toEqual([]); // no legacy flag → current row
+    const legacyDwarf = { legacy: true, abilityBonuses: [{ stat: 2, value: 2 }] } as never;
+    expect(speciesBonusPool("both", legacyDwarf).tokens).toHaveLength(1);
+  });
+});
+
+describe("backgroundBonusPool", () => {
+  const acolyte = { abilityOptions: ["Intelligence", "Wisdom", "Charisma"] } as never;
+
+  it("standard style is a +2 and a +1 restricted to the background's options", () => {
+    const pool = backgroundBonusPool("2024", acolyte);
+    expect(pool.canSpread).toBe(true);
+    expect(pool.tokens).toEqual([
+      { value: 2, preset: "", allowed: ["int", "wis", "cha"] },
+      { value: 1, preset: "", allowed: ["int", "wis", "cha"] },
+    ]);
+    expect(sumBonusPool(pool, ["wis", "int"])).toEqual({ wis: 2, int: 1 });
+    // an off-options assignment contributes nothing
+    expect(sumBonusPool(pool, ["str", "int"])).toEqual({ int: 1 });
+  });
+
+  it("spread style is three +1s over the same options", () => {
+    const pool = backgroundBonusPool("2024", acolyte, "spread");
+    expect(pool.tokens.map((t) => t.value)).toEqual([1, 1, 1]);
+    expect(sumBonusPool(pool, ["int", "wis", "cha"])).toEqual({ int: 1, wis: 1, cha: 1 });
+  });
+
+  it("empty for 2014, for a background without options, and with no background at all", () => {
+    expect(backgroundBonusPool("2014", acolyte).tokens).toEqual([]);
+    expect(backgroundBonusPool("2024", { abilityOptions: [] } as never).tokens).toEqual([]);
+    expect(backgroundBonusPool("2024", undefined).tokens).toEqual([]);
   });
 });
 
@@ -323,6 +378,14 @@ describe("data normalization helpers", () => {
     expect(hitDieSides(12)).toBe(12);
     expect(hitDieSides(undefined)).toBe(0);
     expect(hitDieSides("weird")).toBe(0);
+  });
+
+  it("hitDieLabel normalizes every hit-die shape to display form", () => {
+    expect(hitDieLabel("12")).toBe("d12"); // bare 2014 string
+    expect(hitDieLabel("d8")).toBe("d8");
+    expect(hitDieLabel(6)).toBe("d6"); // numeric homebrew coercion
+    expect(hitDieLabel(undefined)).toBe("");
+    expect(hitDieLabel("weird")).toBe("");
   });
 
   it("casterTypeLabel maps the enum, defaulting to Martial", () => {

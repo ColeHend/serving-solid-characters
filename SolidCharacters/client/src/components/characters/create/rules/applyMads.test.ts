@@ -78,7 +78,7 @@ describe("applyCreatorMads on the creator's mapped character", () => {
     const asi = before.levels[3].features.find((f: FeatureDetail) =>
       f.name.startsWith("Ability Score"))!;
     const picked = dwarfBarbarian(4, {
-      madChoices: { stats: { [statChoiceKey(asi)]: "con" }, proficiencies: {}, spells: {} },
+      madChoices: { stats: { [statChoiceKey(asi)]: "con" }, proficiencies: {}, spells: {}, items: {} },
     });
     const character = draftToCharacter(picked, lookups);
     expect(draftMadChoices(character).filter((c) => c.pending && c.kind === "stat")).toHaveLength(0);

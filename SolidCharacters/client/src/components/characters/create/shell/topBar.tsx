@@ -26,8 +26,13 @@ export const TopBar: Component<TopBarProps> = (props) => {
   const switchEdition = async (target: RulesetSelection) => {
     if (target === draft.edition) return;
     try {
-      const data = await loadEditionData(target);
-      const { next, dropped } = reconcileEdition(draft, target, data);
+      // The source snapshot recovers names for key-shaped selections (spells/feats) so
+      // same-named entities survive the switch instead of being dropped.
+      const [data, source] = await Promise.all([
+        loadEditionData(target),
+        loadEditionData(draft.edition),
+      ]);
+      const { next, dropped } = reconcileEdition(draft, target, data, source);
       const apply = () => {
         actions.load(next);
         setShowConfirm(false);

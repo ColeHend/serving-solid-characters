@@ -2,11 +2,12 @@ import { createStore, produce, reconcile } from "solid-js/store";
 import {
   AbilityGenMethod,
   CharacterDetails,
+  CharacterItemRef,
   RulesetSelection,
   SkillOverrideState,
 } from "../../../../models/character.model";
 import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
-import { ABILITY_SCORE_MAX, ABILITY_SCORE_MIN, AbilityKey, MAX_TOTAL_LEVEL } from "../rules/constants";
+import { ABILITY_SCORE_MAX, ABILITY_SCORE_MIN, AbilityBonusStyle, AbilityKey, AbilitySlot, MAX_TOTAL_LEVEL } from "../rules/constants";
 import { CharacterDraft, DraftClass, DraftItems, defaultBaseScores, emptyDraft, zeroScores } from "./types";
 
 const nextSkillState: Record<SkillOverrideState, SkillOverrideState> = {
@@ -24,6 +25,10 @@ function roll4d6DropLowest(): number {
 /** Selector key of a draft class entry: the stored classId, else the name-derived hb: key. */
 export const draftClassKey = (entry: Pick<DraftClass, "classId" | "name">): string =>
   entry.classId || entitySelectorKey({ name: entry.name });
+
+/** Same catalog item (matching ids) or, when either side is id-less, the same display name. */
+const sameGearEntry = (a: CharacterItemRef, b: CharacterItemRef): boolean =>
+  a.id && b.id ? a.id === b.id : a.name === b.name;
 
 export function createDraftStore(initial?: Partial<CharacterDraft>) {
   const [draft, setDraft] = createStore<CharacterDraft>(emptyDraft("2024", initial));
@@ -95,27 +100,24 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
     },
 
     setSpecies(species: string, speciesId?: string) {
-      // A new species brings new choice sets; stale picks must not linger.
+      // A new species brings new choice sets and a new bonus pool; stale picks must not
+      // linger (cleared slots reseed to the new pool's book defaults in the provider).
       setDraft({
         species,
         speciesId: species ? speciesId : undefined,
         lineage: "",
         lineageId: undefined,
-        raceAbilityChoices: [],
         raceLanguageChoices: [],
         raceTraitChoices: [],
       });
+      setDraft("abilityBonuses", "species", []);
+      setDraft("abilityBonusStyle", "species", "standard");
     },
     setLineage(lineage: string, lineageId?: string) {
+      // The subrace contributes bonus tokens too — clear so the defaults reseed.
       setDraft({ lineage, lineageId: lineage ? lineageId : undefined });
-    },
-    toggleRaceAbilityChoice(key: AbilityKey, maxPicks: number) {
-      setDraft("raceAbilityChoices", (picks) =>
-        picks.includes(key)
-          ? picks.filter((k) => k !== key)
-          : picks.length < maxPicks
-            ? [...picks, key]
-            : picks);
+      setDraft("abilityBonuses", "species", []);
+      setDraft("abilityBonusStyle", "species", "standard");
     },
     toggleRaceLanguageChoice(language: string, maxPicks: number) {
       setDraft("raceLanguageChoices", (picks) =>
@@ -135,14 +137,15 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
     },
     setBackground(background: string, backgroundId?: string) {
       // A new background brings new boost abilities and its own recommended feat;
-      // stale boosts and origin-feat overrides must not linger.
+      // stale assignments and origin-feat overrides must not linger.
       setDraft({
         background,
         backgroundId: background ? backgroundId : undefined,
-        backgroundBoosts: {},
         originFeat: "",
         originFeatId: undefined,
       });
+      setDraft("abilityBonuses", "background", []);
+      setDraft("abilityBonusStyle", "background", "standard");
     },
     setOriginFeat(name: string, id?: string) {
       setDraft({ originFeat: name, originFeatId: name ? id : undefined });
@@ -191,27 +194,52 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
         baseScores: zeroScores(),
       });
     },
-    applyBackgroundBoost(assignment: Partial<Record<AbilityKey, number>>) {
-      setDraft("backgroundBoosts", reconcile(assignment));
+    /** Assign a bonus token's slot; steals the ability from any other slot in the same source. */
+    assignAbilityBonus(source: "species" | "background", index: number, ability: AbilitySlot) {
+      setDraft(
+        "abilityBonuses",
+        source,
+        produce((slots) => {
+          if (ability) {
+            slots.forEach((slot, i) => {
+              if (i !== index && slot === ability) slots[i] = "";
+            });
+          }
+          slots[index] = ability;
+        }),
+      );
     },
-    clearBackgroundBoosts() {
-      setDraft("backgroundBoosts", reconcile({}));
+    /** Swap +2/+1 ↔ three +1s; the cleared slots reseed to the new pool's defaults in the provider. */
+    setAbilityBonusStyle(source: "species" | "background", style: AbilityBonusStyle) {
+      setDraft("abilityBonusStyle", source, style);
+      setDraft("abilityBonuses", source, []);
+    },
+    /** Overwrite a source's slot assignments (provider default-seeding + the panel's reset button). */
+    resetAbilityBonusSlots(source: "species" | "background", slots: AbilitySlot[]) {
+      setDraft("abilityBonuses", source, [...slots]);
     },
 
     cycleSkill(skill: string, currentState: SkillOverrideState) {
       setDraft("skillOverrides", skill, nextSkillState[currentState]);
     },
 
-    addFeat(name: string) {
-      if (!name || draft.feats.includes(name)) return;
-      setDraft("feats", draft.feats.length, name);
+    addFeat(key: string) {
+      if (!key || draft.feats.includes(key)) return;
+      setDraft("feats", draft.feats.length, key);
     },
-    removeFeat(name: string) {
-      setDraft("feats", (feats) => feats.filter((f) => f !== name));
+    removeFeat(key: string) {
+      setDraft("feats", (feats) => feats.filter((f) => f !== key));
     },
 
     setMadStatChoice(key: string, ability: string) {
       setDraft("madChoices", "stats", key, ability);
+    },
+    /** Resolve a feat-or-ASI slot: "asi" or a feat selector key. A feat clears the stale ability pick. */
+    setFeatOrAsi(featureKey: string, value: string) {
+      setDraft("featOrAsi", featureKey, value);
+      if (value !== "asi") {
+        setDraft("madChoices", "stats", featureKey, undefined as unknown as string);
+      }
     },
     /** CSV of picked skill names (the Character contract's storage shape). */
     setMadProficiencyChoice(key: string, picksCsv: string) {
@@ -221,13 +249,16 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
     setMadSpellChoice(key: string, picksCsv: string) {
       setDraft("madChoices", "spells", key, picksCsv);
     },
-
-    addSpell(name: string) {
-      if (!name || draft.spells.includes(name)) return;
-      setDraft("spells", draft.spells.length, name);
+    setMadItemChoice(key: string, picksCsv: string) {
+      setDraft("madChoices", "items", key, picksCsv);
     },
-    removeSpell(name: string) {
-      setDraft("spells", (spells) => spells.filter((s) => s !== name));
+
+    addSpell(key: string) {
+      if (!key || draft.spells.includes(key)) return;
+      setDraft("spells", draft.spells.length, key);
+    },
+    removeSpell(key: string) {
+      setDraft("spells", (spells) => spells.filter((s) => s !== key));
     },
 
     setDetail<K extends keyof CharacterDetails>(key: K, value: CharacterDetails[K]) {
@@ -237,17 +268,17 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
     updateItems(patch: Partial<DraftItems>) {
       setDraft("items", patch);
     },
-    addInventoryItem(name: string) {
-      if (!name || draft.items.inventory.includes(name)) return;
-      setDraft("items", "inventory", draft.items.inventory.length, name);
+    addInventoryItem(entry: CharacterItemRef) {
+      if (!entry.name || draft.items.inventory.some((i) => sameGearEntry(i, entry))) return;
+      setDraft("items", "inventory", draft.items.inventory.length, { ...entry });
     },
-    removeInventoryItem(name: string) {
+    removeInventoryItem(entry: CharacterItemRef) {
       setDraft(
         "items",
         produce((items) => {
-          items.inventory = items.inventory.filter((i) => i !== name);
-          items.equipped = items.equipped.filter((i) => i !== name);
-          items.attuned = items.attuned.filter((i) => i !== name);
+          items.inventory = items.inventory.filter((i) => !sameGearEntry(i, entry));
+          items.equipped = items.equipped.filter((i) => !sameGearEntry(i, entry));
+          items.attuned = items.attuned.filter((i) => !sameGearEntry(i, entry));
         }),
       );
     },

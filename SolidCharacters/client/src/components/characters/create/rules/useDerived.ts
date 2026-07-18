@@ -35,12 +35,18 @@ import {
 } from "../state/bothMode";
 import { draftToCharacter } from "../state/draftMapper";
 import { CharacterDraft, DraftClass } from "../state/types";
-import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
+import {
+  entitySelectorKey,
+  featSelectorKey,
+  selectorKeyDisplayName,
+} from "../../../../shared/customHooks/utility/tools/entityKey";
 import { MadChoice, applyCreatorMads, draftMadChoices } from "./applyMads";
 import {
+  AbilityBonusPool,
   SaveRow,
   SkillRow,
   SpellcastingInfo,
+  backgroundBonusPool,
   computeAc,
   computeFinalScores,
   computeInitiative,
@@ -51,6 +57,8 @@ import {
   getAbilityModifier,
   getProficiencyBonus,
   mergeMadSkillRows,
+  speciesBonusPool,
+  sumBonusPool,
   totalLevel,
 } from "./engine";
 import { ABILITY_KEYS, AbilityKey } from "./constants";
@@ -90,6 +98,10 @@ export interface Derived {
   classByName: (name: string) => Class5E | undefined;
   /** Id-first class resolution for a draft entry (selector key, falling back to the name). */
   classByKey: (entry: Pick<DraftClass, "classId" | "name">) => Class5E | undefined;
+  /** The species' assignable ability-bonus tokens (empty when the species grants none). */
+  speciesBonusPool: Accessor<AbilityBonusPool>;
+  /** The background's assignable ability-bonus tokens (2024-style boosts; empty for 2014). */
+  backgroundBonusPool: Accessor<AbilityBonusPool>;
   finalScores: Accessor<Stats>;
   abilityMods: Accessor<Record<AbilityKey, number>>;
   /** Effective max HP (manual override and MADS applied) — what the sheet shows. */
@@ -208,15 +220,17 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
   const level = createMemo(() => totalLevel(draft.classes));
   const profBonus = createMemo(() => getProficiencyBonus(level()));
 
+  const speciesBonusTokens = createMemo(() =>
+    speciesBonusPool(draft.edition, selectedRace(), selectedSubrace(), draft.abilityBonusStyle.species));
+  const backgroundBonusTokens = createMemo(() =>
+    backgroundBonusPool(draft.edition, selectedBackground(), draft.abilityBonusStyle.background));
+
   const finalScores = createMemo(() =>
     computeFinalScores(
-      draft.edition,
       draft.baseScores,
       draft.bonusScores,
-      draft.backgroundBoosts,
-      selectedRace(),
-      selectedSubrace(),
-      draft.raceAbilityChoices,
+      sumBonusPool(speciesBonusTokens(), draft.abilityBonuses.species),
+      sumBonusPool(backgroundBonusTokens(), draft.abilityBonuses.background),
     ));
   const abilityMods = createMemo(() => {
     const scores = finalScores();
@@ -227,9 +241,11 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
 
   const backgroundFeat = createMemo(() =>
     selectedBackground() ? draft.originFeat || (selectedBackground()?.feat ?? "") : "");
+  const featNameOfKey = (key: string) =>
+    data.feats().find((f) => featSelectorKey(f) === key)?.details?.name ?? selectorKeyDisplayName(key);
   const allFeatNames = createMemo(() => [
     ...(backgroundFeat() ? [backgroundFeat()] : []),
-    ...draft.feats,
+    ...draft.feats.map(featNameOfKey),
   ]);
 
   // The MADS layer mirrors the view page: map the draft to a Character, apply the feature
@@ -257,8 +273,13 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
 
   const spellNameById = createMemo(
     () => new Map(data.spells().map((s) => [(s.id ?? "").toLowerCase(), s.name])));
+  const spellNameByKey = createMemo(
+    () => new Map(data.spells().map((s) => [entitySelectorKey(s), s.name])));
   const grantedSpells = createMemo(() => {
-    const known = new Set(draft.spells.map((name) => name.toLowerCase()));
+    // Known spells are stored as selector keys; granted ones still dedupe by display name.
+    const known = new Set(
+      draft.spells.map((key) => (spellNameByKey().get(key) ?? selectorKeyDisplayName(key)).toLowerCase()),
+    );
     return (madCharacter().spells ?? [])
       .map((s) => s.name)
       .filter((name) => name && !known.has(name.toLowerCase()))
@@ -305,6 +326,8 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
     selectedBackground,
     classByName,
     classByKey,
+    speciesBonusPool: speciesBonusTokens,
+    backgroundBonusPool: backgroundBonusTokens,
     finalScores,
     abilityMods,
     maxHp: createMemo(() => madCharacter().health?.max ?? 0),

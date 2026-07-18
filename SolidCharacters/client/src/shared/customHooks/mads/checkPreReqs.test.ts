@@ -79,16 +79,16 @@ describe("AddItemFeature prerequisites", () => {
 
     it("grants the item when there are no prerequisites", () => {
         const character = AddItemFeature(makeCharacter(), itemMad([]));
-        expect(character.items.inventory).toContain("Rope");
+        expect(character.items.inventory).toContainEqual({ name: "Rope" });
     });
 
     it("grants the item when prerequisites are met", () => {
         const character = AddItemFeature(makeCharacter(), itemMad([prereq({ keyValue: "5" })]));
-        expect(character.items.inventory).toContain("Rope");
+        expect(character.items.inventory).toContainEqual({ name: "Rope" });
     });
 
     it("withholds the item when prerequisites are unmet", () => {
         const character = AddItemFeature(makeCharacter(), itemMad([prereq({ keyValue: "15" })]));
-        expect(character.items.inventory).not.toContain("Rope");
+        expect(character.items.inventory).not.toContainEqual({ name: "Rope" });
     });
 });

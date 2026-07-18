@@ -225,14 +225,12 @@ export const FeaturePrerequisites: Component<props> = (props) => {
             case "Charisma":
                 return typeof EXAMPLE_CHARACTER.stats.cha;
 
+            // Gear entries are {name, id?} refs now, but prerequisite values still compare
+            // against item NAMES — the editor input stays a plain string.
             case "Item → Inventory":
-                return typeof EXAMPLE_CHARACTER.items.inventory[0];
-
             case "Item → Equipped":
-                return typeof EXAMPLE_CHARACTER.items.equipped[0];
-
             case "Item → Attuned":
-                return typeof EXAMPLE_CHARACTER.items.attuned[0];
+                return "string";
 
             case "Item → Currency → Platinum Pieces":
                 return typeof EXAMPLE_CHARACTER.items.currency.platinumPieces;

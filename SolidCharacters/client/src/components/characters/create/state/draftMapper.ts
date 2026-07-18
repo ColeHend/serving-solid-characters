@@ -1,6 +1,9 @@
 import {
   Character,
+  CharacterBuilderState,
   CharacterFeatTaken,
+  CharacterGearEntry,
+  CharacterItemRef,
   CharacterLevel,
   RulesetSelection,
 } from "../../../../models/character.model";
@@ -15,12 +18,20 @@ import {
   Subrace,
 } from "../../../../models/generated";
 import { resolveSubclassSelection, subclassCandidates } from "../../../../models/data/subclasses";
-import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
+import { statChoiceKey } from "../../../../shared/customHooks/mads/useMadCharacters";
+import { isFeatOrAsiFeature } from "../rules/applyMads";
 import {
+  entitySelectorKey,
+  featSelectorKey,
+  selectorKeyDisplayName,
+} from "../../../../shared/customHooks/utility/tools/entityKey";
+import {
+  backgroundBonusPool,
   collectLanguages,
   computeAc,
   computeFinalScores,
   computeMaxHp,
+  defaultSlots,
   computeSavingThrows,
   computeSkillRows,
   darkvisionRange,
@@ -30,8 +41,11 @@ import {
   normalizeAbility,
   skillDisplayName,
   skillStorageKey,
+  speciesBonusPool,
+  sumBonusPool,
   totalLevel,
 } from "../rules/engine";
+import { AbilityBonusStyle, AbilityKey, AbilitySlot } from "../rules/constants";
 import { draftClassKey } from "./draftStore";
 import { CharacterDraft, DraftClass, emptyDraft, zeroScores } from "./types";
 
@@ -65,9 +79,21 @@ const byId = <T extends { id?: string; name?: string }>(
   return list.find((entry) => entitySelectorKey({ id: entry.id, name: entry.name ?? "" }) === key);
 };
 
-/** Selector key of a feat — its display name lives in details, not at the top level. */
+/** Undefined-tolerant wrapper over the shared feat selector key. */
 const featKey = (feat: Feat | undefined): string | undefined =>
-  feat ? entitySelectorKey({ id: feat.id, name: feat.details?.name ?? "" }) : undefined;
+  feat ? featSelectorKey(feat) : undefined;
+
+/** Exact selector-key lookup for feats (their name lives in details, so byId can't serve). */
+const featByKey = (feats: Feat[], key: string | undefined): Feat | undefined =>
+  key ? feats.find((f) => featSelectorKey(f) === key) : undefined;
+
+/** Normalize saved gear entries — older saves stored plain name strings — into {name, id?} refs. */
+const gearRefs = (entries: CharacterGearEntry[] | undefined): CharacterItemRef[] =>
+  (entries ?? [])
+    .map((entry) =>
+      typeof entry === "string" ? { name: entry } : { name: entry.name, id: entry.id },
+    )
+    .filter((entry) => !!entry.name);
 
 /** Feat lookup with the old mapper's "Magic Initiate (Cleric)" → "Magic Initiate" normalization. */
 function findFeat(feats: Feat[], name: string): Feat | undefined {
@@ -104,13 +130,16 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   const background = byId(lookups.backgrounds, draft.backgroundId) ?? byName(lookups.backgrounds, draft.background);
 
   const finalScores = computeFinalScores(
-    draft.edition,
     draft.baseScores,
     draft.bonusScores,
-    draft.backgroundBoosts,
-    race,
-    subrace,
-    draft.raceAbilityChoices,
+    sumBonusPool(
+      speciesBonusPool(draft.edition, race, subrace, draft.abilityBonusStyle.species),
+      draft.abilityBonuses.species,
+    ),
+    sumBonusPool(
+      backgroundBonusPool(draft.edition, background, draft.abilityBonusStyle.background),
+      draft.abilityBonuses.background,
+    ),
   );
   const profBonus = getProficiencyBonus(totalLevel(draft.classes));
   const conMod = getAbilityModifier(finalScores.con);
@@ -153,13 +182,31 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
 
   const originFeat = backgroundFeatName(draft, lookups.backgrounds);
   const originFeatKey = (draft.originFeat && draft.originFeatId) || featKey(findFeat(lookups.feats, originFeat));
+  // draft.feats holds selector keys; name-resolution is the legacy fallback (stale hb: keys).
+  const chosenFeatOf = (key: string): CharacterFeatTaken => {
+    const feat = featByKey(lookups.feats, key) ?? findFeat(lookups.feats, selectorKeyDisplayName(key));
+    return {
+      name: feat?.details?.name ?? selectorKeyDisplayName(key),
+      source: "chosen" as const,
+      id: feat ? featSelectorKey(feat) : key,
+    };
+  };
+  // Feat-or-ASI picks only count while their slot's feature is still on the build — a class
+  // drop/edition swap changes feature ids, and a dangling slot must not keep granting a feat.
+  const asiSlotKeys = new Set(
+    levels.flatMap((level) => level.features.filter(isFeatOrAsiFeature).map(statChoiceKey)),
+  );
+  const asiFeatKeys = [
+    ...new Set(
+      Object.entries(draft.featOrAsi)
+        .filter(([slot, value]) => asiSlotKeys.has(slot) && value && value !== "asi")
+        .map(([, value]) => value),
+    ),
+  ];
   const featsTaken: CharacterFeatTaken[] = [
     ...(originFeat ? [{ name: originFeat, source: "background" as const, id: originFeatKey }] : []),
-    ...draft.feats.map((name) => ({
-      name,
-      source: "chosen" as const,
-      id: featKey(findFeat(lookups.feats, name)),
-    })),
+    ...draft.feats.map(chosenFeatOf),
+    ...asiFeatKeys.map(chosenFeatOf),
   ];
 
   const chosenTraits = (race?.traitChoice?.choices ?? []).filter((trait) =>
@@ -190,11 +237,15 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   if (background?.features?.length) character.backgroundFeatures = background.features;
   character.alignment = draft.alignment;
   character.languages = collectLanguages(draft.languages, draft.raceLanguageChoices, race, subrace);
-  character.spells = draft.spells.map((name) => {
-    const spell = byName(lookups.spells, name);
-    return { name: spell?.name ?? name, prepared: false, id: spell?.id || undefined };
+  // draft.spells holds selector keys — the exact-key lookup keeps the picked edition's row
+  // (byName alone would resolve a both-mode name collision to the 2024 printing).
+  character.spells = draft.spells.map((key) => {
+    const spell = byId(lookups.spells, key) ?? byName(lookups.spells, selectorKeyDisplayName(key));
+    return { name: spell?.name ?? selectorKeyDisplayName(key), prepared: false, id: spell?.id || undefined };
   });
-  character.features = featsTaken.map((feat) => featDetail(lookups.feats, feat.name));
+  character.features = featsTaken.map(
+    (feat) => featByKey(lookups.feats, feat.id)?.details ?? featDetail(lookups.feats, feat.name),
+  );
   character.featsTaken = featsTaken;
   character.proficiencies = {
     skills: Object.fromEntries(
@@ -220,6 +271,7 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   character.statChoices = { ...draft.madChoices.stats };
   character.proficiencyChoices = { ...draft.madChoices.proficiencies };
   character.spellChoices = { ...draft.madChoices.spells };
+  character.itemChoices = { ...draft.madChoices.items };
   character.ArmorClass = computeAc(getAbilityModifier(finalScores.dex));
   character.Speed = (subrace?.speed || race?.speed) ?? 0;
   if (darkvision) character.senses = { darkvision };
@@ -235,23 +287,27 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
     abilityMethod: draft.abilityMethod,
     baseScores: { ...draft.baseScores },
     bonusScores: { ...draft.bonusScores },
-    backgroundBoosts: { ...draft.backgroundBoosts },
+    abilityBonuses: {
+      species: [...draft.abilityBonuses.species],
+      background: [...draft.abilityBonuses.background],
+    },
+    abilityBonusStyle: { ...draft.abilityBonusStyle },
     skillOverrides: { ...draft.skillOverrides },
     // Keyed by selector key so same-named classes (SRD vs homebrew, 2014 vs 2024) don't collide.
     classSkillChoices: Object.fromEntries(
       draft.classes.map((c) => [draftClassKey(c), [...c.skillChoices]]),
     ),
     rolledPool: [...draft.rolledPool],
-    raceAbilityChoices: [...draft.raceAbilityChoices],
     raceLanguageChoices: [...draft.raceLanguageChoices],
     raceTraitChoices: [...draft.raceTraitChoices],
     originFeat: draft.originFeat,
+    featOrAsi: { ...draft.featOrAsi },
     hp: { ...draft.hp },
   };
   character.items = {
-    inventory: [...draft.items.inventory],
-    equipped: [...draft.items.equipped],
-    attuned: [...draft.items.attuned],
+    inventory: draft.items.inventory.map((entry) => ({ ...entry })),
+    equipped: draft.items.equipped.map((entry) => ({ ...entry })),
+    attuned: draft.items.attuned.map((entry) => ({ ...entry })),
     currency: {
       platinumPieces: draft.items.currency.pp,
       goldPieces: draft.items.currency.gp,
@@ -303,6 +359,75 @@ function classesFromLevels(character: Character): DraftClass[] {
   return [...grouped.values()];
 }
 
+/** Builder slot lists are plain strings on disk — normalize each entry, keeping '' unassigned. */
+const slotsFromBuilder = (raw: string[] | undefined): AbilitySlot[] =>
+  (raw ?? []).map((s) => (s ? normalizeAbility(s) ?? "" : ""));
+
+/** Three +1s in a legacy boost map = the spread style; a +2 anywhere (or nothing) = standard. */
+function legacyBoostStyle(boosts: CharacterBuilderState["backgroundBoosts"]): AbilityBonusStyle {
+  const values = Object.values(boosts ?? {}).filter((v): v is number => typeof v === "number" && v > 0);
+  return values.length === 3 && values.every((v) => v === 1) ? "spread" : "standard";
+}
+
+/**
+ * The draft's ability-bonus assignments from a saved builder. New saves restore verbatim;
+ * legacy saves (raceAbilityChoices/backgroundBoosts) migrate onto the derived pools so the
+ * previously baked stats reproduce exactly; builderless saves start empty (the provider
+ * then seeds book defaults).
+ */
+function restoreAbilityAssignments(
+  builder: CharacterBuilderState | undefined,
+  edition: RulesetSelection,
+  race?: Race,
+  subrace?: Subrace,
+  background?: Background,
+): Pick<CharacterDraft, "abilityBonuses" | "abilityBonusStyle"> {
+  if (builder?.abilityBonuses) {
+    return {
+      abilityBonuses: {
+        species: slotsFromBuilder(builder.abilityBonuses.species),
+        background: slotsFromBuilder(builder.abilityBonuses.background),
+      },
+      abilityBonusStyle: {
+        species: builder.abilityBonusStyle?.species ?? "standard",
+        background: builder.abilityBonusStyle?.background ?? "standard",
+      },
+    };
+  }
+  const style = {
+    species: "standard" as AbilityBonusStyle,
+    background: legacyBoostStyle(builder?.backgroundBoosts),
+  };
+  if (!builder) {
+    return { abilityBonuses: { species: [], background: [] }, abilityBonusStyle: style };
+  }
+
+  // Species: book defaults, with the legacy abilityBonusChoice picks filling the '' tokens in order.
+  const species = defaultSlots(speciesBonusPool(edition, race, subrace, style.species));
+  const legacyPicks = (builder.raceAbilityChoices ?? [])
+    .map(normalizeAbility)
+    .filter((key): key is AbilityKey => key !== undefined);
+  let pick = 0;
+  for (let i = 0; i < species.length && pick < legacyPicks.length; i++) {
+    if (species[i] === "") species[i] = legacyPicks[pick++];
+  }
+
+  // Background: match each token's value to an unused ability in the legacy boost map.
+  const boosts = { ...(builder.backgroundBoosts ?? {}) };
+  const backgroundSlots = backgroundBonusPool(edition, background, style.background).tokens.map(
+    (token): AbilitySlot => {
+      const match = (Object.keys(boosts) as AbilityKey[]).find((key) => boosts[key] === token.value);
+      if (!match) return "";
+      delete boosts[match];
+      return match;
+    },
+  );
+  return {
+    abilityBonuses: { species, background: backgroundSlots },
+    abilityBonusStyle: style,
+  };
+}
+
 /**
  * Rebuild a draft from a saved character for edit mode. Characters saved by this creator restore
  * their builder state verbatim; pre-rebuild characters get conservative defaults (manual scores,
@@ -335,16 +460,25 @@ export function characterToDraft(
     );
 
   const originFeat = backgroundFeatName({ background: character.background ?? "" }, lookups.backgrounds);
-  // Stored feat ids resolve to the canonical feat; unresolvable ids keep the stored name.
-  const featNameFor = (taken: { name: string; id?: string }): string => {
-    const found = taken.id ? lookups.feats.find((f) => featKey(f) === taken.id) : undefined;
-    return found?.details?.name ?? taken.name;
+  // Stored feats become selector keys: the saved id when it still resolves, else re-keyed by
+  // name (legacy name-only saves), else a name-derived key so the display name survives.
+  const featKeyFor = (taken: { name: string; id?: string }): string => {
+    if (taken.id && featByKey(lookups.feats, taken.id)) return taken.id;
+    const found = findFeat(lookups.feats, taken.name);
+    return found ? featSelectorKey(found) : entitySelectorKey({ name: taken.name });
   };
+  // Feats living in a feat-or-ASI slot are re-derived from builder.featOrAsi on save — they
+  // must not double back into draft.feats (their mads would apply twice).
+  const builderFeatOrAsi = builder?.featOrAsi ?? {};
+  const asiFeatIds = new Set(Object.values(builderFeatOrAsi).filter((v) => v && v !== "asi"));
   const chosenFeats = character.featsTaken
-    ? character.featsTaken.filter((f) => f.source === "chosen").map(featNameFor)
+    ? character.featsTaken
+      .filter((f) => f.source === "chosen" && !(f.id && asiFeatIds.has(f.id)))
+      .map(featKeyFor)
     : (character.features ?? [])
       .map((f) => f.name)
-      .filter((name) => name && name.toLowerCase() !== originFeat.toLowerCase());
+      .filter((name): name is string => !!name && name.toLowerCase() !== originFeat.toLowerCase())
+      .map((name) => featKeyFor({ name }));
 
   // Saved languages include species grants + species picks; only manual/background picks
   // go back into draft.languages (the mapper re-adds the rest on save).
@@ -364,7 +498,9 @@ export function characterToDraft(
   );
 
   const originFeatOverride = builder?.originFeat ?? "";
-  return emptyDraft(character.edition ?? fallbackEdition, {
+  const edition = character.edition ?? fallbackEdition;
+  const abilityAssignments = restoreAbilityAssignments(builder, edition, race, subrace, background);
+  return emptyDraft(edition, {
     characterId: character.id || undefined,
     name: character.name ?? "",
     alignment: character.alignment || "true neutral",
@@ -383,31 +519,37 @@ export function characterToDraft(
     languages: (character.languages ?? []).filter(
       (l) => l.toLowerCase() !== "common" && !raceGrantedLanguages.has(l.toLowerCase()),
     ),
-    raceAbilityChoices: (builder?.raceAbilityChoices ?? [])
-      .map(normalizeAbility)
-      .filter((key): key is NonNullable<typeof key> => key !== undefined),
     raceLanguageChoices,
     raceTraitChoices: builder?.raceTraitChoices ?? [],
     abilityMethod: builder?.abilityMethod ?? "manual",
     baseScores: builder ? { ...builder.baseScores } : { ...(character.stats ?? zeroScores()) },
     bonusScores: builder ? { ...builder.bonusScores } : zeroScores(),
-    backgroundBoosts: builder ? { ...builder.backgroundBoosts } : {},
+    ...abilityAssignments,
     rolledPool: builder ? [...builder.rolledPool] : [],
     skillOverrides,
     feats: chosenFeats,
+    featOrAsi: { ...builderFeatOrAsi },
     madChoices: {
       stats: { ...(character.statChoices ?? {}) },
       proficiencies: { ...(character.proficiencyChoices ?? {}) },
       spells: { ...(character.spellChoices ?? {}) },
+      items: { ...(character.itemChoices ?? {}) },
     },
+    // Saved spells become selector keys, id-first; legacy name-only entries re-key via the
+    // catalog (or a name-derived key when the spell no longer exists there).
     spells: (character.spells ?? [])
-      .map((s) => (s.id ? lookups.spells.find((sp) => sp.id === s.id)?.name ?? s.name : s.name))
+      .map((s) => {
+        const spell =
+          (s.id ? lookups.spells.find((sp) => sp.id === s.id) : undefined) ??
+          byName(lookups.spells, s.name);
+        return spell ? entitySelectorKey(spell) : s.name ? entitySelectorKey({ name: s.name }) : "";
+      })
       .filter(Boolean),
     details: { ...(character.details ?? {}) },
     items: {
-      inventory: [...(character.items?.inventory ?? [])],
-      equipped: [...(character.items?.equipped ?? [])],
-      attuned: [...(character.items?.attuned ?? [])],
+      inventory: gearRefs(character.items?.inventory),
+      equipped: gearRefs(character.items?.equipped),
+      attuned: gearRefs(character.items?.attuned),
       currency: {
         pp: character.items?.currency?.platinumPieces ?? 0,
         gp: character.items?.currency?.goldPieces ?? 0,

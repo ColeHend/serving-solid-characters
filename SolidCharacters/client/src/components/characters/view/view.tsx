@@ -7,7 +7,15 @@ import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, Chip } from "coles-solid-library";
-import { AdvantageRollType, Character, RollBonus } from "../../../models/character.model";
+import {
+  AdvantageRollType,
+  Character,
+  CharacterGearEntry,
+  RollBonus,
+  itemRefId,
+  itemRefName,
+} from "../../../models/character.model";
+import { entitySelectorKey } from "../../../shared/customHooks/utility/tools/entityKey";
 import { Spell } from "../../../models/generated";
 import { srdItem } from "../../../models/data/generated";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
@@ -31,8 +39,13 @@ const CharacterView: Component = () => {
   const getKnownSpells = (character: Character) => {
     return allSpells().filter(spell => character?.spells.some(s => s.name === spell.name));
   }
-  const getCurrentItems = (items: string[]) => {
-    return allItems().filter(item => items?.includes(item.name));
+  const getCurrentItems = (items: CharacterGearEntry[]) => {
+    // Gear entries: selector keys pin exact catalog rows; names cover free-text/older saves.
+    const names = new Set((items ?? []).map((entry) => itemRefName(entry).toLowerCase()));
+    const ids = new Set((items ?? []).map(itemRefId).filter((id): id is string => !!id));
+    return allItems().filter(
+      (item) => ids.has(entitySelectorKey(item)) || names.has((item.name ?? "").toLowerCase()),
+    );
   }
   const stylin = createMemo(() => useStyles(userSettings().theme));
 
@@ -101,7 +114,7 @@ const CharacterView: Component = () => {
     { name: "Hellish Rebuke", desc: "Deal fire damage to a creature that damaged you." }
   ]);
   const [currentActionList, setCurrentActionList] = createSignal(actionList());
-  const [currentViewedItems, setCurrentViewedItems] = createSignal<string[]>(currentCharacter()?.items.inventory);
+  const [currentViewedItems, setCurrentViewedItems] = createSignal<CharacterGearEntry[]>(currentCharacter()?.items.inventory);
 
   const fullStats = useGetFullStats(displayCharacter);
 

@@ -1,5 +1,5 @@
 import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
-import { Button, FormField, Input, Option, Select } from "coles-solid-library";
+import { Button, FormField, Input, Option, Select, TextArea } from "coles-solid-library";
 
 interface props {
     toggleValue: (name: string, actionType: string, description: string) => void;
@@ -42,11 +42,11 @@ export const ActionsFeature: Component<props> = (props) => {
             </Select>
         </FormField>
 
-        <FormField name="Description (optional)">
-            <Input
-                value={description()}
-                onInput={(e) => setDescription(e.currentTarget.value)}
-                placeholder="e.g. spend one use to invoke divine energy"
+        <FormField name="" variant="filled">
+            <TextArea
+                text={description}
+                setText={setDescription}
+                placeholder=", e.g. spend one use to invoke divine energy  (optional)"
             />
         </FormField>
 

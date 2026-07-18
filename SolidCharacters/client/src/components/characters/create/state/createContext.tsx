@@ -1,4 +1,4 @@
-import { Accessor, JSX, createContext, createMemo, createSignal, useContext } from "solid-js";
+import { Accessor, JSX, createContext, createEffect, createMemo, createSignal, useContext } from "solid-js";
 import { CharacterEdition, RulesetSelection } from "../../../../models/character.model";
 import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
@@ -25,6 +25,7 @@ import { useGetHombrewSpells } from "../../../../shared/customHooks/dndInfo/info
 import { useGetHombrewSubclasses } from "../../../../shared/customHooks/dndInfo/info/homebrew/subclasses";
 import { useGetHombrewSubraces } from "../../../../shared/customHooks/dndInfo/info/homebrew/subraces";
 import { CreateData, Derived, useDerived } from "../rules/useDerived";
+import { defaultSlots } from "../rules/engine";
 import { withVariantFirst } from "./bothMode";
 import { DraftActions, createDraftStore } from "./draftStore";
 import { SrdLookups } from "./draftMapper";
@@ -107,6 +108,23 @@ export function CreateProvider(props: { children: JSX.Element }) {
   };
 
   const derived = useDerived(draft, data);
+
+  // Seed each bonus source's slots with its pool's book defaults whenever the pool shape
+  // changes (species/lineage/background/style/edition changes clear the slots to []) —
+  // zero-click parity: a fixed-bonus race applies its book stats with no player input.
+  // Steady state (lengths match) writes nothing, so restored assignments survive edit loads.
+  createEffect(() => {
+    const pool = derived.speciesBonusPool();
+    if (draft.abilityBonuses.species.length !== pool.tokens.length) {
+      actions.resetAbilityBonusSlots("species", defaultSlots(pool));
+    }
+  });
+  createEffect(() => {
+    const pool = derived.backgroundBonusPool();
+    if (draft.abilityBonuses.background.length !== pool.tokens.length) {
+      actions.resetAbilityBonusSlots("background", defaultSlots(pool));
+    }
+  });
 
   // Plain-object snapshot for the pure mapper/reconciler. Races/backgrounds surface the
   // pairing-resolved variant first so name lookups hit the edition-correct row in both-mode.

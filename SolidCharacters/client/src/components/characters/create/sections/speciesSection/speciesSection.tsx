@@ -142,40 +142,13 @@ export const SpeciesSection: Component = () => {
         when={
           derived.selectedRace() &&
           raceBonusesApply(derived.selectedRace()!) &&
-          derived.selectedRace()?.abilityBonusChoice
+          derived.speciesBonusPool().tokens.length > 0
         }
       >
-        {(_) => {
-          const choice = () => derived.selectedRace()!.abilityBonusChoice!;
-          return (
-            <div class={styles.choiceBlock}>
-              <h5 class={styles.blockLabel}>
-                Ability bonus — choose {choice().amount} ({draft.raceAbilityChoices.length}/
-                {choice().amount})
-              </h5>
-              <div class={styles.choicePills}>
-                <For each={choice().choices ?? []}>
-                  {(bonus) => {
-                    const key = normalizeAbility(AbilityScores[bonus.stat]);
-                    if (!key) return null;
-                    return (
-                      <button
-                        type="button"
-                        class={styles.choicePill}
-                        classList={{
-                          [styles.choicePillActive]: draft.raceAbilityChoices.includes(key),
-                        }}
-                        onClick={() => actions.toggleRaceAbilityChoice(key, choice().amount)}
-                      >
-                        {signed(bonus.value)} {ABILITY_LABELS[key]}
-                      </button>
-                    );
-                  }}
-                </For>
-              </div>
-            </div>
-          );
-        }}
+        <div class={styles.choiceBlock}>
+          <h5 class={styles.blockLabel}>Ability bonuses</h5>
+          <span class={styles.blockHint}>Assign them in the Abilities section.</span>
+        </div>
       </Show>
 
       <Show when={derived.selectedRace()?.languages?.length || derived.selectedRace()?.languageChoice}>

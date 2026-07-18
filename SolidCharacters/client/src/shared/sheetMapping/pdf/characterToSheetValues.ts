@@ -1,4 +1,4 @@
-import { Character, DamageAffinity } from '../../../models/character.model';
+import { Character, DamageAffinity, itemRefName } from '../../../models/character.model';
 import { FeatureDetail } from '../../../models/generated';
 import { Stats } from '../../customHooks/dndInfo/useCharacters';
 import { getAbilityModifier, getProficiencyBonus, signed } from '../../customHooks/utility/tools/dndMath';
@@ -107,9 +107,9 @@ export function characterToSheetValues(
   out.toolProficiencies = (profs?.tools ?? []).join(', ');
 
   // ── Equipment ──
-  out.inventory = (char.items?.inventory ?? []).join(', ');
-  out.equipped = (char.items?.equipped ?? []).join(', ');
-  out.attuned = (char.items?.attuned ?? []).join(', ');
+  out.inventory = (char.items?.inventory ?? []).map(itemRefName).join(', ');
+  out.equipped = (char.items?.equipped ?? []).map(itemRefName).join(', ');
+  out.attuned = (char.items?.attuned ?? []).map(itemRefName).join(', ');
 
   // ── Currency (note `sliverPieces` typo key) ──
   const c = char.items?.currency;

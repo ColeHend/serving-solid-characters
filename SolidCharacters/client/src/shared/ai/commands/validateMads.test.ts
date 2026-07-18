@@ -252,6 +252,33 @@ describe("Spells choice form", () => {
     });
 });
 
+describe("Items choice form", () => {
+    // A tiny item "catalog": Longsword / Shortbow resolve, anything else doesn't.
+    const ids: Record<string, string> = { "longsword": "it-longsword", "shortbow": "it-shortbow" };
+    const ref = (_kind: string, name: string) => ids[name.toLowerCase()] ?? null;
+
+    it("still coerces the fixed form from a target name", () => {
+        const m = coerceCommand("Add", "Items", {}, "Longsword", ref);
+        expect(m).toMatchObject({ command: "AddItems", value: { ID: "it-longsword" } });
+    });
+
+    it("coerces the choice form, resolving each option name to its id and dropping unknowns", () => {
+        const m = coerceCommand("Add", "Items", { ID: "choice", options: "Longsword, Shortbow, Vorpal Spork", count: "1" }, undefined, ref);
+        expect(m).toMatchObject({ command: "AddItems", value: { ID: "choice", options: "it-longsword,it-shortbow", count: "1" } });
+    });
+
+    it("drops a choice-form command with no options, or whose options all fail to resolve", () => {
+        expect(coerceCommand("Add", "Items", { ID: "choice", count: "1" }, undefined, ref)).toBeNull();
+        expect(coerceCommand("Add", "Items", { ID: "choice", options: "Vorpal Spork", count: "1" }, undefined, ref)).toBeNull();
+    });
+
+    it("validateStoredCommand accepts choice+options and rejects choice without options", () => {
+        expect(validateStoredCommand(mad({ command: "AddItems", value: { ID: "choice", options: "it-longsword,it-shortbow", count: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddItems", value: { ID: "choice", count: "1" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddItems", value: { ID: "it-longsword" } }))).toEqual([]);
+    });
+});
+
 describe("Actions", () => {
     const noRef = () => null;
 

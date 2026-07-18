@@ -5,16 +5,33 @@ import { emptyDraft } from "./types";
 
 const cls = (name: string, skillOptions: string[] = []): Class5E =>
   ({ name, choices: { skills: { options: skillOptions, amount: 2 } } }) as unknown as Class5E;
-const feat = (name: string): Feat => ({ details: { name }, prerequisites: [] }) as unknown as Feat;
+const feat = (name: string, id?: string): Feat =>
+  ({ id, details: { name }, prerequisites: [] }) as unknown as Feat;
+const spell = (name: string, id?: string): Spell => ({ id, name }) as unknown as Spell;
 
 const data2014: EditionData = {
   classes: [cls("Barbarian", ["Athletics", "Survival"]), cls("Sorcerer")],
-  subclasses: [{ name: "Draconic Bloodline", parentClass: "Sorcerer" } as unknown as Subclass],
+  subclasses: [
+    { id: "sub-draconic-14", name: "Draconic Bloodline", parentClass: "Sorcerer" } as unknown as Subclass,
+  ],
   races: [{ name: "Human" } as unknown as Race],
   subraces: [],
   backgrounds: [{ name: "Acolyte" } as unknown as Background],
-  feats: [feat("Grappler")],
-  spells: [{ name: "Acid Splash" } as unknown as Spell],
+  feats: [feat("Grappler", "grappler-14")],
+  spells: [spell("Acid Splash", "acid-14")],
+};
+
+/** The edition being LEFT — resolves the draft's spell/feat selector keys back to names. */
+const source2024: EditionData = {
+  classes: [cls("Barbarian"), cls("Sorcerer")],
+  subclasses: [
+    { id: "sub-draconic-24", name: "Draconic Sorcery", parentClass: "Sorcerer" } as unknown as Subclass,
+  ],
+  races: [{ name: "Goliath" } as unknown as Race],
+  subraces: [],
+  backgrounds: [{ name: "Soldier" } as unknown as Background],
+  feats: [feat("Savage Attacker", "savage-24"), feat("Grappler", "grappler-24")],
+  spells: [spell("Acid Splash", "acid-24"), spell("Sorcerous Burst", "burst-24")],
 };
 
 const draft = () =>
@@ -25,21 +42,25 @@ const draft = () =>
     ],
     species: "Goliath",
     background: "Soldier",
-    backgroundBoosts: { str: 2, con: 1 },
-    feats: ["Savage Attacker", "Grappler"],
-    spells: ["Acid Splash", "Sorcerous Burst"],
+    abilityBonuses: { species: [], background: ["str", "con", "dex"] },
+    abilityBonusStyle: { species: "standard", background: "spread" },
+    feats: ["savage-24", "grappler-24"],
+    spells: ["acid-24", "burst-24"],
   });
 
 describe("reconcileEdition", () => {
-  it("keeps by-name survivors and drops the rest with a report", () => {
-    const { next, dropped } = reconcileEdition(draft(), "2014", data2014);
+  it("keeps same-name survivors re-keyed to the target edition and drops the rest with a report", () => {
+    const { next, dropped } = reconcileEdition(draft(), "2014", data2014, source2024);
     expect(next.edition).toBe("2014");
     expect(next.classes.map((c) => c.name)).toEqual(["Barbarian", "Sorcerer"]);
     expect(next.species).toBe("");
     expect(next.background).toBe("");
-    expect(next.backgroundBoosts).toEqual({});
-    expect(next.feats).toEqual(["Grappler"]);
-    expect(next.spells).toEqual(["Acid Splash"]);
+    // Slot assignments always reset on an edition switch; the provider reseeds defaults.
+    expect(next.abilityBonuses).toEqual({ species: [], background: [] });
+    expect(next.abilityBonusStyle).toEqual({ species: "standard", background: "standard" });
+    // Grappler exists in both editions — its key swaps to the 2014 row's.
+    expect(next.feats).toEqual(["grappler-14"]);
+    expect(next.spells).toEqual(["acid-14"]);
     expect(dropped).toContain("Goliath (species)");
     expect(dropped).toContain("Soldier (background)");
     expect(dropped).toContain("Savage Attacker (feat)");
@@ -47,24 +68,44 @@ describe("reconcileEdition", () => {
   });
 
   it("re-validates a kept class's subclass and skill picks", () => {
-    const { next, dropped } = reconcileEdition(draft(), "2014", data2014);
+    const { next, dropped } = reconcileEdition(draft(), "2014", data2014, source2024);
     expect(next.classes[1].subclass).toBe("");
     expect(dropped).toContain("Draconic Sorcery (subclass)");
     // Perception isn't a 2014 Barbarian option in this fixture; Athletics survives.
     expect(next.classes[0].skillChoices).toEqual(["Athletics"]);
   });
 
+  it("re-keys a kept subclass's selector key to the target edition's row", () => {
+    const survivor = draft();
+    survivor.classes[1].subclass = "Draconic Bloodline";
+    survivor.classes[1].subclassId = "hb:Draconic Bloodline"; // stale pre-id key
+    const { next } = reconcileEdition(survivor, "2014", data2014, source2024);
+    expect(next.classes[1].subclass).toBe("Draconic Bloodline");
+    expect(next.classes[1].subclassId).toBe("sub-draconic-14");
+  });
+
   it("clears the stale selector key alongside a dropped subclass", () => {
     const withKey = draft();
     withKey.classes[1].subclassId = "hb:Draconic Sorcery";
-    const { next } = reconcileEdition(withKey, "2014", data2014);
+    const { next } = reconcileEdition(withKey, "2014", data2014, source2024);
     expect(next.classes[1].subclass).toBe("");
     expect(next.classes[1].subclassId).toBeUndefined();
   });
 
+  it("re-keys feat-or-ASI slot picks and falls back to plain ASI when the feat is gone", () => {
+    const withSlots = {
+      ...draft(),
+      feats: [],
+      featOrAsi: { "slot-1": "grappler-24", "slot-2": "savage-24", "slot-3": "asi" },
+    };
+    const { next, dropped } = reconcileEdition(withSlots, "2014", data2014, source2024);
+    expect(next.featOrAsi).toEqual({ "slot-1": "grappler-14", "slot-2": "asi", "slot-3": "asi" });
+    expect(dropped).toContain("Savage Attacker (feat)");
+  });
+
   it("drops a class entirely when the target edition lacks it, reporting its level", () => {
     const homebrewless = { ...data2014, classes: [cls("Sorcerer")] };
-    const { next, dropped } = reconcileEdition(draft(), "2014", homebrewless);
+    const { next, dropped } = reconcileEdition(draft(), "2014", homebrewless, source2024);
     expect(next.classes.map((c) => c.name)).toEqual(["Sorcerer"]);
     expect(dropped).toContain("Barbarian (class)");
   });
@@ -72,47 +113,46 @@ describe("reconcileEdition", () => {
   it("clears species choice picks when the species drops, and filters them when it survives", () => {
     const withPicks = {
       ...draft(),
-      raceAbilityChoices: ["str" as const],
+      abilityBonuses: { species: ["str" as const], background: [] },
       raceLanguageChoices: ["Giant"],
       raceTraitChoices: ["Firebreath"],
     };
     // Goliath doesn't exist in the 2014 fixture → species and its picks all clear.
-    const dropped = reconcileEdition(withPicks, "2014", data2014).next;
+    const dropped = reconcileEdition(withPicks, "2014", data2014, source2024).next;
     expect(dropped.species).toBe("");
-    expect(dropped.raceAbilityChoices).toEqual([]);
+    expect(dropped.abilityBonuses.species).toEqual([]);
     expect(dropped.raceLanguageChoices).toEqual([]);
     expect(dropped.raceTraitChoices).toEqual([]);
 
     // Human survives but defines no choice sets → the stale picks are filtered out.
-    const survived = reconcileEdition({ ...withPicks, species: "Human" }, "2014", data2014).next;
+    const survived = reconcileEdition({ ...withPicks, species: "Human" }, "2014", data2014, source2024).next;
     expect(survived.species).toBe("Human");
-    expect(survived.raceAbilityChoices).toEqual([]);
+    expect(survived.abilityBonuses.species).toEqual([]);
     expect(survived.raceLanguageChoices).toEqual([]);
   });
 
-  it("drops nothing when entering both-mode with the merged dataset (name superset)", () => {
+  it("drops nothing when entering both-mode with the merged dataset (key superset)", () => {
     const merged: EditionData = {
-      classes: [...data2014.classes, cls("Barbarian"), cls("Sorcerer")],
-      subclasses: [
-        ...data2014.subclasses,
-        { name: "Draconic Sorcery", parentClass: "Sorcerer" } as unknown as Subclass,
-      ],
-      races: [...data2014.races, { name: "Goliath" } as unknown as Race],
+      classes: [...data2014.classes, ...source2024.classes],
+      subclasses: [...data2014.subclasses, ...source2024.subclasses],
+      races: [...data2014.races, ...source2024.races],
       subraces: [],
-      backgrounds: [...data2014.backgrounds, { name: "Soldier" } as unknown as Background],
-      feats: [...data2014.feats, feat("Savage Attacker")],
-      spells: [...data2014.spells, { name: "Sorcerous Burst" } as unknown as Spell],
+      backgrounds: [...data2014.backgrounds, ...source2024.backgrounds],
+      feats: [...data2014.feats, ...source2024.feats],
+      spells: [...data2014.spells, ...source2024.spells],
     };
-    const { next, dropped } = reconcileEdition(draft(), "both", merged);
+    const { next, dropped } = reconcileEdition(draft(), "both", merged, source2024);
     expect(dropped).toEqual([]);
     expect(next.edition).toBe("both");
     expect(next.species).toBe("Goliath");
-    expect(next.spells).toEqual(["Acid Splash", "Sorcerous Burst"]);
+    // Keys already present in the merged target stay untouched — no swap to the 2014 rows.
+    expect(next.spells).toEqual(["acid-24", "burst-24"]);
+    expect(next.feats).toEqual(["savage-24", "grappler-24"]);
   });
 
   it("leaving both-mode drops the other edition's picks like any single-edition switch", () => {
     const bothDraft = { ...draft(), edition: "both" as const };
-    const { next, dropped } = reconcileEdition(bothDraft, "2014", data2014);
+    const { next, dropped } = reconcileEdition(bothDraft, "2014", data2014, source2024);
     expect(next.edition).toBe("2014");
     expect(dropped).toContain("Soldier (background)");
     expect(dropped).toContain("Sorcerous Burst (spell)");
@@ -128,22 +168,33 @@ describe("reconcileEdition", () => {
       feats: [],
       spells: [],
     };
-    const { next, dropped } = reconcileEdition(draft(), "2014", empty);
+    const { next, dropped } = reconcileEdition(draft(), "2014", empty, empty);
     expect(dropped).toEqual([]);
     expect(next.classes).toEqual(draft().classes);
     expect(next.species).toBe("Goliath");
+    expect(next.feats).toEqual(draft().feats);
+    expect(next.spells).toEqual(draft().spells);
     expect(next.edition).toBe("2014");
   });
 
   it("switches silently when everything survives", () => {
     const survivor = emptyDraft("2014", {
-      classes: [{ name: "Sorcerer", level: 2, subclass: "Draconic Bloodline", skillChoices: [] }],
+      classes: [
+        {
+          name: "Sorcerer",
+          level: 2,
+          subclass: "Draconic Bloodline",
+          subclassId: "sub-draconic-14",
+          skillChoices: [],
+        },
+      ],
       species: "Human",
       background: "Acolyte",
-      feats: ["Grappler"],
-      spells: ["Acid Splash"],
+      feats: ["grappler-14"],
+      spells: ["acid-14"],
     });
-    const { dropped } = reconcileEdition(survivor, "2014", data2014);
+    const { next, dropped } = reconcileEdition(survivor, "2014", data2014, data2014);
     expect(dropped).toEqual([]);
+    expect(next.classes[0].subclassId).toBe("sub-draconic-14");
   });
 });
