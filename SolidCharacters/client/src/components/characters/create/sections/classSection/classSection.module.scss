@@ -134,6 +134,15 @@
   color: var(--codex-gold);
 }
 
+.featureEmpty {
+  color: var(--codex-ink-dim);
+  font-style: italic;
+
+  .featureLevel {
+    color: var(--codex-ink-dim);
+  }
+}
+
 .detailMeta {
   font-family: $font-ui;
   font-size: 0.78rem;

@@ -7,6 +7,7 @@ import { ABILITY_LABELS, MAX_TOTAL_LEVEL } from "../../rules/constants";
 import {
   casterTypeLabel,
   classSkillChoiceSpec,
+  featureRowsByLevel,
   hitDieLabel,
   normalizeAbility,
   subclassUnlockLevel,
@@ -65,22 +66,10 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
       .some((key) => key !== undefined && derived.effectiveScores()[key] < 13);
   });
 
-  /** Class + chosen-subclass features gained at the levels this class actually has. */
-  const featuresByLevel = createMemo(() => {
-    const subclass = chosenSubclass();
-    const byLevel = new Map<number, string[]>();
-    const gather = (features: Record<number, { name?: string }[]> | undefined) => {
-      Object.entries(features ?? {}).forEach(([levelKey, list]) => {
-        const level = Number(levelKey);
-        if (!Number.isFinite(level) || level < 1 || level > props.entry.level) return;
-        const names = (list ?? []).map((f) => f.name ?? "").filter(Boolean);
-        if (names.length > 0) byLevel.set(level, [...(byLevel.get(level) ?? []), ...names]);
-      });
-    };
-    gather(class5e()?.features);
-    gather(subclass?.features);
-    return [...byLevel.entries()].sort(([a], [b]) => a - b);
-  });
+  /** Dense per-level rows: real class + chosen-subclass features, generic subclass slots, or empty. */
+  const featuresByLevel = createMemo(() =>
+    featureRowsByLevel(class5e(), chosenSubclass(), props.entry.level,
+      subclasses().flatMap((sub) => Object.keys(sub.features ?? {}).map(Number))));
 
   const proficiencyLine = (list: string[] | undefined) =>
     list?.length ? list.join(", ") : "None";
@@ -144,9 +133,12 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
           >
             <ul class={styles.featureList}>
               <For each={featuresByLevel()}>
-                {([level, names]) => (
-                  <li>
-                    <span class={styles.featureLevel}>Lv {level}</span> {names.join(", ")}
+                {(row) => (
+                  <li classList={{ [styles.featureEmpty]: row.kind === "empty" }}>
+                    <span class={styles.featureLevel}>Lv {row.level}</span>{" "}
+                    <Show when={row.kind !== "empty"} fallback={"No new features"}>
+                      {row.names.join(", ")}
+                    </Show>
                   </li>
                 )}
               </For>

@@ -20,7 +20,11 @@ import {
   getAbilityModifier,
   getProficiencyBonus,
 } from "../../../../shared/customHooks/utility/tools/dndMath";
-import { detectSubclassFeatureLevels } from "../../../../shared/ai/refs/classProgression";
+import {
+  detectSubclassFeatureLevels,
+  isSubclassMarkerFeature,
+  SUBCLASS_FEATURE_NAME_2024,
+} from "../../../../shared/ai/refs/classProgression";
 import { ABILITY_KEYS, AbilityBonusStyle, AbilityKey, AbilitySlot, SKILLS, SPELL_ABILITY } from "./constants";
 
 export type { AbilityBonusStyle, AbilitySlot };
@@ -467,6 +471,57 @@ export function subclassUnlockLevel(
     .flatMap((sub) => Object.keys(sub.features ?? {}).map(Number))
     .filter((lvl) => Number.isFinite(lvl) && lvl > 0);
   return featureLevels.length > 0 ? Math.min(...featureLevels) : 3;
+}
+
+export interface LevelFeatureRow {
+  level: number;
+  /** Display names; empty for kind "empty". */
+  names: string[];
+  /** "subclass" = a generic subclass-slot placeholder row (no subclass chosen yet). */
+  kind: "features" | "subclass" | "empty";
+}
+
+/**
+ * One row per level 1..maxLevel for the class card's feature list — dense, so dead levels render
+ * as "no new features" instead of vanishing. With no subclass chosen, subclass-slot markers pass
+ * through as kind:"subclass" (`subclassLevelHints` — the union of candidate subclasses' feature
+ * levels — synthesizes the slot for sparse homebrew classes that never keyed it). Once a subclass
+ * IS chosen, generic markers never show: only real class + subclass features remain. Returns []
+ * when the class has no named feature data at all, so the card's fallback line still fires.
+ */
+export function featureRowsByLevel(
+  class5e: Class5E | undefined,
+  subclass: Subclass | undefined,
+  maxLevel: number,
+  subclassLevelHints: number[] = [],
+): LevelFeatureRow[] {
+  const classFeatures = class5e?.features ?? {};
+  const hasAnyData = Object.values(classFeatures).some((list) => (list ?? []).some((f) => f?.name));
+  if (!hasAnyData || maxLevel < 1) return [];
+
+  const subFeatures = subclass?.features ?? {};
+  const hints = new Set(subclassLevelHints.filter((lvl) => Number.isFinite(lvl) && lvl > 0));
+  const rows: LevelFeatureRow[] = [];
+  for (let level = 1; level <= maxLevel; level++) {
+    const realNames: string[] = [];
+    const markerNames: string[] = [];
+    for (const feature of (classFeatures[level] ?? []).filter((f) => f?.name)) {
+      (isSubclassMarkerFeature(class5e?.name, feature) ? markerNames : realNames).push(feature.name ?? "");
+    }
+
+    if (subclass) {
+      const subNames = (subFeatures[level] ?? []).map((f) => f?.name ?? "").filter(Boolean);
+      const names = [...realNames, ...subNames];
+      rows.push(names.length > 0 ? { level, names, kind: "features" } : { level, names: [], kind: "empty" });
+    } else if (realNames.length > 0 || markerNames.length > 0) {
+      rows.push({ level, names: [...realNames, ...markerNames], kind: realNames.length > 0 ? "features" : "subclass" });
+    } else if (hints.has(level)) {
+      rows.push({ level, names: [SUBCLASS_FEATURE_NAME_2024], kind: "subclass" });
+    } else {
+      rows.push({ level, names: [], kind: "empty" });
+    }
+  }
+  return rows;
 }
 
 export interface SkillChoiceSpec {

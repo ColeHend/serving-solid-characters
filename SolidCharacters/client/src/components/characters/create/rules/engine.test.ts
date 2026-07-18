@@ -20,6 +20,7 @@ import {
   computeSpellcasting,
   darkvisionRange,
   featCategory,
+  featureRowsByLevel,
   getProficiencyBonus,
   hitDieLabel,
   hitDieSides,
@@ -425,6 +426,72 @@ describe("subclassUnlockLevel", () => {
     const sub = { features: { 2: [], 6: [] } } as unknown as Subclass;
     expect(subclassUnlockLevel(undefined, [sub])).toBe(2);
     expect(subclassUnlockLevel(undefined, [])).toBe(3);
+  });
+});
+
+describe("featureRowsByLevel", () => {
+  // 2014-shaped wizard: dense keys, archetype-title markers at 2 and 6, dead levels 3 and 5.
+  const wizard = {
+    name: "Wizard",
+    features: {
+      1: [{ id: "", name: "Spellcasting", description: "" }, { id: "", name: "Arcane Recovery", description: "" }],
+      2: [{ id: "", name: "Arcane Tradition", description: "" }],
+      3: [],
+      4: [{ id: "", name: "Ability Score Improvement", description: "" }],
+      5: [],
+      6: [{ id: "", name: "Arcane Tradition Feature", description: "" }],
+    },
+  } as unknown as Class5E;
+  const evocation = {
+    name: "School of Evocation",
+    features: {
+      2: [{ id: "", name: "Evocation Savant", description: "" }, { id: "", name: "Sculpt Spells", description: "" }],
+      6: [{ id: "", name: "Potent Cantrip", description: "" }],
+    },
+  } as unknown as Subclass;
+
+  it("emits one row per level 1..maxLevel, with dead levels as kind 'empty'", () => {
+    const rows = featureRowsByLevel(wizard, undefined, 6);
+    expect(rows.map((r) => r.level)).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(rows[0]).toEqual({ level: 1, names: ["Spellcasting", "Arcane Recovery"], kind: "features" });
+    expect(rows[2]).toEqual({ level: 3, names: [], kind: "empty" });
+    expect(rows[4].kind).toBe("empty");
+  });
+
+  it("passes the data's generic placeholders through when no subclass is chosen", () => {
+    const rows = featureRowsByLevel(wizard, undefined, 6);
+    expect(rows[1]).toEqual({ level: 2, names: ["Arcane Tradition"], kind: "subclass" });
+    expect(rows[5]).toEqual({ level: 6, names: ["Arcane Tradition Feature"], kind: "subclass" });
+  });
+
+  it("drops the generic term everywhere once a subclass is chosen — real features only", () => {
+    const rows = featureRowsByLevel(wizard, evocation, 6);
+    expect(rows[1]).toEqual({ level: 2, names: ["Evocation Savant", "Sculpt Spells"], kind: "features" });
+    expect(rows[5]).toEqual({ level: 6, names: ["Potent Cantrip"], kind: "features" });
+  });
+
+  it("marker levels the chosen subclass never filled become plain 'empty' rows (strict drop)", () => {
+    const sparse = {
+      name: "Homebrew Tradition",
+      features: { 2: [{ id: "", name: "Only Feature", description: "" }] },
+    } as unknown as Subclass;
+    expect(featureRowsByLevel(wizard, sparse, 6)[5]).toEqual({ level: 6, names: [], kind: "empty" });
+  });
+
+  it("synthesizes a subclass slot from hint levels for sparse homebrew classes", () => {
+    const homebrew = {
+      name: "Stormwarden",
+      features: { 1: [{ id: "", name: "Storm Strike", description: "" }] },
+    } as unknown as Class5E;
+    const rows = featureRowsByLevel(homebrew, undefined, 3, [3, 7]);
+    expect(rows[1]).toEqual({ level: 2, names: [], kind: "empty" });
+    expect(rows[2]).toEqual({ level: 3, names: ["Subclass Feature"], kind: "subclass" });
+  });
+
+  it("returns [] when the class has no named feature data, or maxLevel < 1", () => {
+    expect(featureRowsByLevel({ name: "X", features: {} } as unknown as Class5E, undefined, 5)).toEqual([]);
+    expect(featureRowsByLevel(undefined, undefined, 5)).toEqual([]);
+    expect(featureRowsByLevel(wizard, undefined, 0)).toEqual([]);
   });
 });
 
