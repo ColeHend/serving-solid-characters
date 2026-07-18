@@ -38,6 +38,20 @@ describe("buildChecklist", () => {
     expect(checklistReady(rows)).toBe(true);
   });
 
+  it("warns when a selected subclass no longer resolves, and stays quiet when it does", () => {
+    const resolved = buildChecklist(baseInputs());
+    expect(resolved.find((row) => row.id === "subclassMissing")).toBeUndefined();
+
+    const inputs = baseInputs();
+    inputs.classes[0].subclassUnresolved = true;
+    const rows = buildChecklist(inputs);
+    const row = rows.find((r) => r.id === "subclassMissing");
+    expect(row?.status).toBe("warn");
+    expect(row?.detail).toContain("Berserker");
+    // Advisory only — an unresolved subclass must not block saving.
+    expect(checklistReady(rows)).toBe(true);
+  });
+
   it("flags the empty draft's required steps as todos", () => {
     const rows = buildChecklist({
       ...baseInputs(),

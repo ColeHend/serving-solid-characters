@@ -54,6 +54,14 @@ describe("reconcileEdition", () => {
     expect(next.classes[0].skillChoices).toEqual(["Athletics"]);
   });
 
+  it("clears the stale selector key alongside a dropped subclass", () => {
+    const withKey = draft();
+    withKey.classes[1].subclassId = "hb:Draconic Sorcery";
+    const { next } = reconcileEdition(withKey, "2014", data2014);
+    expect(next.classes[1].subclass).toBe("");
+    expect(next.classes[1].subclassId).toBeUndefined();
+  });
+
   it("drops a class entirely when the target edition lacks it, reporting its level", () => {
     const homebrewless = { ...data2014, classes: [cls("Sorcerer")] };
     const { next, dropped } = reconcileEdition(draft(), "2014", homebrewless);

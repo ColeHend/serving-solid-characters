@@ -6,7 +6,9 @@ import Dexie from "dexie";
 
 export class LocalDB extends Dexie {
   classes!: Dexie.Table<Class5E, 'name'>;
-  subclasses!: Dexie.Table<srdSubclass, 'name'>; // unified store (v1 primary key 'name')
+  // Keyed by storage_key (parentClass__name) since v13 — same-named subclasses under
+  // different parent classes must coexist (v10-v13 migrate the old name-keyed store).
+  subclasses!: Dexie.Table<srdSubclass, string>;
   races!: Dexie.Table<Race, 'name'>;
   // Second type param is the primary-key TYPE (the key is the `name` field, a string).
   subraces!: Dexie.Table<Subrace, string>;
@@ -194,6 +196,60 @@ export class LocalDB extends Dexie {
         });
         this.version(9).stores({
           characters_tmp: null
+        });
+
+        // v10-v13: re-key the subclasses store by storage_key (parentClass__name). The store
+        // was name-keyed since v1, so two same-named subclasses under different parent classes
+        // silently overwrote each other on `.put`. Same temp-store dance as characters v6-v9;
+        // runs in all three DBs (SRD rows get storage_key computed here, and the SRD loader
+        // stamps it on rows written after this). Upgrades never throw (a throw would trip the
+        // corrupted-DB fallback below and wipe the database); malformed rows are skipped.
+        this.version(10).stores({
+          subclasses_tmp: 'storage_key'
+        }).upgrade(async tx => {
+          try {
+            const rows = await tx.table('subclasses').toArray();
+            const tmp = tx.table('subclasses_tmp');
+            for (const row of rows) {
+              try {
+                if (!row || typeof row !== 'object') continue;
+                if (!row.storage_key) {
+                  // Legacy rows (deprecated subclasses_v2 era) may carry snake_case parent_class.
+                  const parent = row.parentClass ?? row.parent_class ?? '';
+                  if (!parent && !row.name) continue;
+                  row.storage_key = `${String(parent).toLowerCase()}__${String(row.name ?? '').toLowerCase()}`;
+                }
+                await tmp.put(row);
+              } catch (err) {
+                console.error('subclasses re-key migration (v10): skipped a row', err);
+              }
+            }
+          } catch (err) {
+            console.error('subclasses re-key migration (v10) failed', err);
+          }
+        });
+        this.version(11).stores({
+          subclasses: null
+        });
+        this.version(12).stores({
+          subclasses: 'storage_key'
+        }).upgrade(async tx => {
+          try {
+            const rows = await tx.table('subclasses_tmp').toArray();
+            const subs = tx.table('subclasses');
+            for (const row of rows) {
+              try {
+                await subs.put(row);
+              } catch (err) {
+                console.error('subclasses re-key migration (v12): skipped a row', err);
+              }
+            }
+          } catch (err) {
+            console.error('subclasses re-key migration (v12) failed', err);
+          }
+        });
+        this.version(13).stores({
+          subclasses_tmp: null
         });
 
         // Initialize database with better error handling

@@ -1,7 +1,7 @@
 import { Component, For, Show, createMemo } from "solid-js";
 import { Option, Select } from "coles-solid-library";
 import { Class5E, Subclass } from "../../../../../models/generated";
-import { subclassBelongsTo } from "../../../../../models/data/subclasses";
+import { resolveSubclassSelection, subclassCandidates } from "../../../../../models/data/subclasses";
 import { entitySelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { ABILITY_LABELS, MAX_TOTAL_LEVEL } from "../../rules/constants";
 import {
@@ -33,18 +33,9 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
 
   const cardKey = createMemo(() => draftClassKey(props.entry));
   const class5e = createMemo(() => derived.classByKey(props.entry));
-  const subclasses = createMemo(() => {
-    const cls = class5e();
-    return data.subclasses().filter((sub) =>
-      cls
-        ? subclassBelongsTo(sub, cls)
-        : sub.parentClass?.toLowerCase() === props.entry.name.toLowerCase());
-  });
-  const chosenSubclass = createMemo(() =>
-    subclasses().find((sub) =>
-      props.entry.subclassId
-        ? entitySelectorKey(sub) === props.entry.subclassId
-        : !!props.entry.subclass && sub.name === props.entry.subclass));
+  const subclasses = createMemo(() =>
+    subclassCandidates(data.subclasses(), class5e(), props.entry.name));
+  const chosenSubclass = createMemo(() => resolveSubclassSelection(subclasses(), props.entry));
   const unlockLevel = createMemo(() => subclassUnlockLevel(class5e(), subclasses()));
   const skillSpec = createMemo(() => classSkillChoiceSpec(class5e()));
 

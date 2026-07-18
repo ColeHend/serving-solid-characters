@@ -14,7 +14,7 @@ import {
   Subclass,
   Subrace,
 } from "../../../../models/generated";
-import { subclassBelongsTo } from "../../../../models/data/subclasses";
+import { resolveSubclassSelection, subclassCandidates } from "../../../../models/data/subclasses";
 import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
 import {
   collectLanguages,
@@ -122,13 +122,10 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   draft.classes.forEach((entry) => {
     const class5e = classFor(entry);
     // Chosen-subclass features bake into the level rows so the saved character (and every
-    // MADS consumer) sees them exactly like class features.
+    // MADS consumer) sees them exactly like class features. Key match with name fallback:
+    // a stale `hb:` key (id minted later, or renamed) must not silently drop the subclass.
     const subclass5e = entry.subclass || entry.subclassId
-      ? lookups.subclasses.find((sub) =>
-        subclassBelongsTo(sub, class5e) &&
-          (entry.subclassId
-            ? entitySelectorKey(sub) === entry.subclassId
-            : sub.name?.toLowerCase() === entry.subclass.toLowerCase()))
+      ? resolveSubclassSelection(subclassCandidates(lookups.subclasses, class5e, entry.name), entry)
       : undefined;
     for (let classLevel = 1; classLevel <= entry.level; classLevel++) {
       levels.push({

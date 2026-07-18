@@ -1,6 +1,6 @@
 import { Component, For, createMemo } from "solid-js";
 import { Button } from "coles-solid-library";
-import { subclassBelongsTo } from "../../../../../models/data/subclasses";
+import { resolveSubclassSelection, subclassCandidates } from "../../../../../models/data/subclasses";
 import { ChecklistItem, buildChecklist, checklistReady } from "../../rules/checklist";
 import { classSkillChoiceSpec, subclassUnlockLevel } from "../../rules/engine";
 import { useCreate } from "../../state/createContext";
@@ -28,12 +28,7 @@ export const ReviewSection: Component<ReviewSectionProps> = (props) => {
       name: draft.name,
       classes: draft.classes.map((entry) => {
         const class5e = derived.classByKey(entry);
-        const subclasses = data
-          .subclasses()
-          .filter((sub) =>
-            class5e
-              ? subclassBelongsTo(sub, class5e)
-              : sub.parentClass?.toLowerCase() === entry.name.toLowerCase());
+        const subclasses = subclassCandidates(data.subclasses(), class5e, entry.name);
         return {
           name: entry.name,
           level: entry.level,
@@ -42,6 +37,9 @@ export const ReviewSection: Component<ReviewSectionProps> = (props) => {
           skillChoiceAmount: classSkillChoiceSpec(class5e).amount,
           subclassUnlockLevel: subclassUnlockLevel(class5e, subclasses),
           hasSubclasses: subclasses.length > 0,
+          subclassUnresolved:
+            !!(entry.subclass || entry.subclassId) &&
+            !resolveSubclassSelection(subclasses, entry),
         };
       }),
       species: draft.species,

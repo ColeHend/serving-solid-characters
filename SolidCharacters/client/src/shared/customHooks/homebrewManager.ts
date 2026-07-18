@@ -359,6 +359,9 @@ class HomebrewManager {
     if (this._subclasses().some(s => (s as any).storage_key === storage_key)) return false;
     const toStore = Clone(subclass);
     (toStore as any).storage_key = storage_key;
+    // Like addClass: manual-wizard subclasses historically had no id (AI-generated ones do);
+    // every stored subclass carries one so its selector key survives renames.
+    if (!toStore.id) toStore.id = createNewId();
     try {
       await HombrewDB.subclasses.put(toStore as any);
     } catch (err) {
@@ -372,9 +375,13 @@ class HomebrewManager {
   }
   public updateSubclass = async (subclass: srdSubclass): Promise<boolean> => {
     const storage_key = `${subclass.parentClass.toLowerCase()}__${subclass.name.toLowerCase()}`;
-    if (!this._subclasses().some(s => (s as any).storage_key === storage_key)) return false;
+    const existing = this._subclasses().find(s => (s as any).storage_key === storage_key);
+    if (!existing) return false;
     const toStore = Clone(subclass);
     (toStore as any).storage_key = storage_key;
+    // Preserve the stored id (saved characters reference it via subclassId); mint one for
+    // rows that predate subclass ids.
+    if (!toStore.id) toStore.id = existing.id || createNewId();
     try {
       await HombrewDB.subclasses.put(toStore as any);
     } catch (err) {
@@ -390,7 +397,7 @@ class HomebrewManager {
     const storage_key = `${parentClass.toLowerCase()}__${name.toLowerCase()}`;
     if (!this._subclasses().some(s => (s as any).storage_key === storage_key)) return; 
     const rest = this._subclasses().filter(s => ((s as any).storage_key !== storage_key));
-  return new Promise(res => { httpClient$.toObservable(HombrewDB.subclasses.clear()).pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.subclasses.bulkAdd(rest as any[])))).subscribe({ error: err => { console.error(err); addSnackbar({ message: "Error removing subclass", severity: "error" }); res(); }, complete: () => { this._setSubclasses(rest); addSnackbar({ message: "Subclass removed", severity: "success" }); res(); } }); });
+  return new Promise(res => { httpClient$.toObservable(HombrewDB.subclasses.clear()).pipe(take(1), concatMap(() => httpClient$.toObservable(HombrewDB.subclasses.bulkPut(rest as any[])))).subscribe({ error: err => { console.error(err); addSnackbar({ message: "Error removing subclass", severity: "error" }); res(); }, complete: () => { this._setSubclasses(rest); addSnackbar({ message: "Subclass removed", severity: "success" }); res(); } }); });
   }
   public findSubclass = (parentClass: string, name: string): srdSubclass | undefined => {
     const storage_key = `${parentClass.toLowerCase()}__${name.toLowerCase()}`;

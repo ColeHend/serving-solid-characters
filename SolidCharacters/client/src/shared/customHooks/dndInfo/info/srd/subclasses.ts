@@ -2,13 +2,23 @@ import { Subclass } from "../../../../../models/generated";
 import { Accessor, createMemo, createSignal } from "solid-js";
 import SrdDB from "../../../utility/localDB/new/srdDB";
 import SrdDB2024 from "../../../utility/localDB/new/srdDB2024";
+import { subclassStorageKey } from "../../../../../models/data/subclasses";
 import { makeSrdLoader, type SrdLoadResult } from "./loadSrdTable";
 
 const [subclasses2014, setSubclasses2014] = createSignal<Subclass[]>([]);
 const [subclasses2024, setSubclasses2024] = createSignal<Subclass[]>([]);
 
-const load2014 = makeSrdLoader<Subclass>({ table: SrdDB.subclasses, endpoint: '/api/2014/Subclasses', label: '2014 subclasses', setSignal: setSubclasses2014 });
-const load2024 = makeSrdLoader<Subclass>({ table: SrdDB2024.subclasses, endpoint: '/api/2024/Subclasses', label: '2024 subclasses', setSignal: setSubclasses2024 });
+// The subclasses store is keyed by storage_key (schema v13); API rows don't carry it,
+// so every write — initial load AND force-refresh — must stamp it.
+const stampStorageKey = (rows: Subclass[]) =>
+  rows.map(r => ({
+    ...r,
+    storage_key: (r as { storage_key?: string }).storage_key
+      ?? subclassStorageKey(r.parentClass ?? '', r.name ?? ''),
+  }));
+
+const load2014 = makeSrdLoader<Subclass>({ table: SrdDB.subclasses, endpoint: '/api/2014/Subclasses', label: '2014 subclasses', setSignal: setSubclasses2014, mapForStore: stampStorageKey });
+const load2024 = makeSrdLoader<Subclass>({ table: SrdDB2024.subclasses, endpoint: '/api/2024/Subclasses', label: '2024 subclasses', setSignal: setSubclasses2024, mapForStore: stampStorageKey });
 
 /** Ensure a version's subclasses are loaded into IndexedDB + memory. Awaitable for offline preload. */
 export function loadSrdSubclasses(version: '2014' | '2024'): Promise<SrdLoadResult<Subclass>> {

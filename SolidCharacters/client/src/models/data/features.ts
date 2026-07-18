@@ -6,6 +6,9 @@ export interface Feat {
   prerequisites: Prerequisite[];
 }
 export interface FeatureDetail {
+  /** Stable identity for choice-form mads (statChoiceKey) — persisted since the wizards
+   *  stopped stripping it; absent only on legacy rows saved before then. */
+  id?: string;
   name: string;
   description: string;
   choiceKey?: string;

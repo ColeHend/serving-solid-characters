@@ -22,6 +22,8 @@ export interface ChecklistClassInput {
   skillChoiceAmount: number;
   subclassUnlockLevel: number;
   hasSubclasses: boolean;
+  /** A subclass is selected but no longer resolves (renamed/deleted homebrew, missing data). */
+  subclassUnresolved?: boolean;
 }
 
 export interface ChecklistInputs {
@@ -135,6 +137,19 @@ export function buildChecklist(inputs: ChecklistInputs): ChecklistItem[] {
       label: "Subclass",
       status: "warn",
       detail: `${missingSubclass.map((c) => c.name).join(", ")} unlocked a subclass choice.`,
+      sectionId: "codex-class",
+    });
+  }
+
+  const unresolvedSubclass = inputs.classes.filter((c) => c.subclassUnresolved);
+  if (unresolvedSubclass.length > 0) {
+    rows.push({
+      id: "subclassMissing",
+      label: "Subclass missing",
+      status: "warn",
+      detail: `${unresolvedSubclass
+        .map((c) => `${c.subclass || "The selected subclass"} (${c.name})`)
+        .join(", ")} could not be found — its features won't apply.`,
       sectionId: "codex-class",
     });
   }

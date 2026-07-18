@@ -238,7 +238,10 @@ export function buildLevelEntities(className: string, levels: WizardLevels): Lev
       features: (levels.features[level] ?? []).map(f => ({
         name: f.name,
         value: f.description,
-        metadata: {},
+        // id keeps choice-form mad picks stable; metadata carries the authored mads —
+        // both must reach toClass5E intact to survive into the persisted class.
+        id: f.id,
+        metadata: f.metadata ?? {},
         info: { ...info },
       })),
       classSpecific,

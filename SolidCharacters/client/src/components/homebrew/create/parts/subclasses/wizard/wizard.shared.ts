@@ -2,7 +2,7 @@ import type { FormGroup } from 'coles-solid-library';
 import type { SetStoreFunction } from 'solid-js/store';
 import { FeatureDetail } from '../../../../../../models/generated';
 import { FeatureDetail as DataFeatureDetail, Spell } from '../../../../../../models/data';
-import { Subclass } from '../../../../../../models/data/subclasses';
+import { Subclass, subclassStorageKey } from '../../../../../../models/data/subclasses';
 import { createNewId } from '../../../../../../shared/customHooks/utility/tools/idGen';
 import { entitySelectorKey } from '../../../../../../shared/customHooks/utility/tools/entityKey';
 import { SpellsKnown } from '../SpellsKnown';
@@ -161,16 +161,17 @@ export const subclassFeatureLevels = (features: SubclassLevels['features']): num
 
 /**
  * Store (id-bearing generated FeatureDetail) → persisted data-model features record.
- * Strips the wizard-only id but keeps choiceKey/metadata so mads/usage survive a save,
- * unlike the old page's lossy {name, description} projection.
+ * Keeps id/choiceKey/metadata so mads survive a save AND choice-form picks (statChoiceKey
+ * prefers feature.id) stay anchored to the same feature across editor sessions.
  */
 export function buildSubclassFeatures(features: SubclassLevels['features']): Subclass['features'] {
   const result: Subclass['features'] = {};
   LEVELS.forEach(level => {
     const arr = features[level];
     if (!arr?.length) return;
-    result[level] = arr.map(({ name, description, choiceKey, metadata }) => {
+    result[level] = arr.map(({ id, name, description, choiceKey, metadata }) => {
       const out: DataFeatureDetail = { name, description };
+      if (id) out.id = id;
       if (choiceKey !== undefined) out.choiceKey = choiceKey;
       // generated metadata carries mads as an array; the data model's singular typing is
       // absorbed at the homebrewManager boundary like everywhere else.
@@ -200,8 +201,7 @@ export function hydrateSubclassFeatures(features?: Subclass['features'] | Record
 // ---------------------------------------------------------------------------
 // Persistence assembly
 
-export const subclassStorageKey = (parentClass: string, name: string): string =>
-  `${parentClass.toLowerCase()}__${name.toLowerCase()}`;
+export { subclassStorageKey };
 
 export function toDataSubclass(form: SubclassForm, levels: SubclassLevels): Subclass {
   const source = form.source?.trim();

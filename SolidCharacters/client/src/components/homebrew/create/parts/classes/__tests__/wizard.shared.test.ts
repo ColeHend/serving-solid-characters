@@ -63,7 +63,7 @@ describe('buildLevelEntities', () => {
     const entities = buildLevelEntities('Runeblade', wl);
     expect(entities).toHaveLength(20);
     expect(entities[1].features).toEqual([
-      expect.objectContaining({ name: 'Smite', value: 'Hit harder.' }),
+      expect.objectContaining({ name: 'Smite', value: 'Hit harder.', id: 'f1' }),
     ]);
     // classSpecific keys are stamped on every level (adapter reads columns off level 1)
     expect(entities[0].classSpecific).toEqual({ rage_uses: '2' });
@@ -72,6 +72,17 @@ describe('buildLevelEntities', () => {
     expect(entities[0].spellcasting).toBeUndefined();
     expect(entities[0].profBonus).toBe(2);
     expect(entities[19].profBonus).toBe(6);
+  });
+
+  it('carries feature metadata (mads) through to the adapter', () => {
+    const mads = [{ command: 'AddResistances', value: { type: 'fire' }, type: 0, group: 0 }];
+    const wl: WizardLevels = {
+      features: { 3: [{ id: 'f2', name: 'Emberguard', description: 'Resist fire.', metadata: { mads } as never }] },
+      classSpecific: {},
+      cantripsKnown: {},
+    };
+    const entities = buildLevelEntities('Runeblade', wl);
+    expect((entities[2].features[0].metadata as { mads?: unknown }).mads).toEqual(mads);
   });
 });
 

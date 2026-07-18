@@ -42,6 +42,7 @@ export function reconcileEdition(
       .map((entry) => {
         const class5e = data.classes.find((c) => c.name.toLowerCase() === entry.name.toLowerCase());
         let subclass = entry.subclass;
+        let subclassId = entry.subclassId;
         if (subclass && data.subclasses.length > 0) {
           const stillExists = data.subclasses.some(
             (sub) =>
@@ -51,11 +52,13 @@ export function reconcileEdition(
           if (!stillExists) {
             dropped.push(`${subclass} (subclass)`);
             subclass = "";
+            // A dangling selector key would otherwise resolve the dropped subclass right back.
+            subclassId = undefined;
           }
         }
         const validSkills = new Set(classSkillChoiceSpec(class5e).options.map((s) => s.toLowerCase()));
         const skillChoices = entry.skillChoices.filter((skill) => validSkills.has(skill.toLowerCase()));
-        return { ...entry, subclass, skillChoices };
+        return { ...entry, subclass, subclassId, skillChoices };
       });
   }
 

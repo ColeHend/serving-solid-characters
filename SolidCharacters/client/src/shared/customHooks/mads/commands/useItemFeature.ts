@@ -1,23 +1,12 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature, MadType } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
+import { checkPrerequisites } from "../checkPreReqs";
 
 const AddItemFeature = (character: Character, feature: MadFeature): Character => {
     const itemName = feature.value?.['ID'] ?? '';
 
-    const preReqs = feature.prerequisites ?? [];
-
-    if (preReqs.length > 0) {
-        const cond = preReqs.some(preReq => {
-            // if (preReq.group === 0) {
-            //     preReq.
-            // }
-        });
-        if (!cond) {
-
-            return character;
-        }    
-    }
+    if (!checkPrerequisites(character, feature.prerequisites ?? [])) return character;
 
     if (itemName) character.items.inventory.push(itemName);
 

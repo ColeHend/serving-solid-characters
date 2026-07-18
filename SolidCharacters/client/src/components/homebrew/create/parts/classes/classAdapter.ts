@@ -56,6 +56,8 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
       features[lvl.level] = lvl.features.map((f: any) => ({
         name: f.name,
         description: typeof f.value === 'string' ? f.value : JSON.stringify(f.value),
+        ...(f.id ? { id: f.id } : {}),
+        ...(f.metadata && Object.keys(f.metadata).length ? { metadata: f.metadata } : {}),
       }));
     }
   });

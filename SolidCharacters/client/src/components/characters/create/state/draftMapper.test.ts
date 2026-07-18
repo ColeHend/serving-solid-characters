@@ -368,6 +368,50 @@ describe("id write-through", () => {
   });
 });
 
+describe("subclass resolution fallback", () => {
+  const draconic = {
+    id: "sub-draconic",
+    name: "Draconic Sorcery",
+    parentClass: "Sorcerer",
+    description: "",
+    features: { 3: [{ id: "affinity", name: "Draconic Resilience", description: "" }] },
+  } as unknown as Subclass;
+  const stormHerald = {
+    name: "Storm Herald",
+    parentClass: "Stormblade",
+    description: "",
+    features: { 1: [{ id: "tempest", name: "Tempest Aura", description: "" }] },
+  } as unknown as Subclass;
+  const fbLookups: SrdLookups = { ...lookups, subclasses: [draconic, stormHerald] };
+
+  it("resolves a stale hb: selector key by name after the subclass gained a real id", () => {
+    const draft = {
+      ...scenarioDraft(),
+      classes: [
+        { name: "Barbarian", level: 1, subclass: "", skillChoices: ["Perception"] },
+        {
+          name: "Sorcerer",
+          level: 3,
+          subclass: "Draconic Sorcery",
+          subclassId: "hb:Draconic Sorcery",
+          skillChoices: [],
+        },
+      ],
+    };
+    const character = draftToCharacter(draft, fbLookups);
+    expect(character.levels[3].features.map((f) => f.name)).toContain("Draconic Resilience");
+  });
+
+  it("still bakes subclass features when the parent class itself is unresolved", () => {
+    const draft = {
+      ...scenarioDraft(),
+      classes: [{ name: "Stormblade", level: 1, subclass: "Storm Herald", skillChoices: [] }],
+    };
+    const character = draftToCharacter(draft, fbLookups);
+    expect(character.levels[0].features.map((f) => f.name)).toContain("Tempest Aura");
+  });
+});
+
 describe("background features", () => {
   // A background whose OWN feature carries a Character-type mad (a mads source like race.features),
   // distinct from its recommended feat.

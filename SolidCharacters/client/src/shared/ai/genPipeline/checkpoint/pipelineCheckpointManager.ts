@@ -39,7 +39,12 @@ class PipelineCheckpointManager {
 
     /** Upsert a checkpoint after a step, bumping `updatedAt`. Returns the stored row. */
     async save(checkpoint: PipelineCheckpoint): Promise<PipelineCheckpoint> {
-        const updated: PipelineCheckpoint = { ...checkpoint, updatedAt: Date.now() };
+        // Strictly monotonic: a save within the same millisecond as another row's stamp must
+        // still win get()'s most-recent race, so bump past the prior value when Date.now ties.
+        const updated: PipelineCheckpoint = {
+            ...checkpoint,
+            updatedAt: Math.max(Date.now(), checkpoint.updatedAt + 1),
+        };
         await pipelineCheckpointDB.checkpoints.put(updated);
         return updated;
     }
