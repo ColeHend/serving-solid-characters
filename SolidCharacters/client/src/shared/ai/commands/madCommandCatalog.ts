@@ -47,7 +47,7 @@ const ABILITY_ALIASES: Record<string, string> = {
     intelligence: "int", wisdom: "wis", charisma: "cha",
 };
 
-/** Canonical skill keys exactly as initialised on character.proficiencies.skills (characterMapper.ts). */
+/** Canonical skill keys exactly as initialised on character.proficiencies.skills (create/state/draftMapper.ts). */
 export const SKILL_KEYS = [
     "Acrobatics", "Animal Handling", "Arcana", "History", "Athletics", "Deception", "Insight",
     "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance",

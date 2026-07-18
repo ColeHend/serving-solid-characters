@@ -1,6 +1,8 @@
-import { type Component, createSignal, createEffect, ErrorBoundary, onCleanup, onMount } from 'solid-js';
+import { type Component, createSignal, createEffect, ErrorBoundary, For, onCleanup, onMount } from 'solid-js';
 import { getUserSettings, } from './shared';
 import { Button, Container } from 'coles-solid-library';
+import { changelog, upcomingFeatures } from './shared/constants/changelog';
+import { WhatsNewModal } from './components/whatsNew/WhatsNewModal';
 import styles from './App.module.scss';
 
 const App: Component = () => {
@@ -58,44 +60,31 @@ const App: Component = () => {
             <h1>Home</h1>
           </div>
           
-          <div>
-        
-            <div style={{
-              display: 'flex',
-              "flex-direction": 'row',
-              gap: "10%"
-            }}>
-              <span>
-                <h2>Completed Features</h2>
+          <div class={styles.featureColumns}>
+            <span class={styles.updateNotes}>
+              <h2>Update Notes</h2>
 
-                <ul>
-                  <li>Dark Mode & Theming</li>
-                  
-                  <li>Info Viewer & Pop ups</li>
-                  <li>Homebrew Content Support</li>
-                  <li>Search, Pagination, Filtering</li>
-                  <li>PWA/Offline Support</li>
-                </ul>
-              </span>
+              <For each={changelog}>{(release) => (
+                <section>
+                  <h3>{release.title} — {release.date}</h3>
 
-              <span>
-                <h2>Upcoming Features</h2>
+                  <ul>
+                    <For each={release.changes}>{(change) => <li>{change}</li>}</For>
+                  </ul>
+                </section>
+              )}</For>
+            </span>
 
-                <ul>
-                  <li>Accessibility & Mobile UI Improvements</li>
-                  <li>Deeper Homebrew Management (create/edit/share)</li>
-                  <li>Character Builder & Viewer</li> 
-                  <li>Generate a Filled Character sheet PDF</li>
-                  <li>Generate Homebrew with AI</li>
-                  <li>Admin/GM Tools</li>
-                </ul>
-              </span>
+            <span>
+              <h2>Upcoming Features</h2>
 
-            </div>
-
+              <ul>
+                <For each={upcomingFeatures}>{(feature) => <li>{feature}</li>}</For>
+              </ul>
+            </span>
           </div>
-          
-    
+
+          <WhatsNewModal />
         </Container>
       )}
     </ErrorBoundary>

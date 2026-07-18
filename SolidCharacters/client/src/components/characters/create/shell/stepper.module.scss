@@ -1,0 +1,40 @@
+@use '../../../../index.scss' as *;
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.button {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--codex-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--codex-gold);
+    color: var(--codex-gold);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+.label {
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-parchment);
+  min-width: 2.6em;
+  text-align: center;
+}

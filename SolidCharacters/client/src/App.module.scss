@@ -32,6 +32,27 @@
     }
 }
 
+.featureColumns {
+  display: flex;
+  flex-direction: row;
+  gap: 10%;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+}
+
+.updateNotes {
+  section + section {
+    margin-top: var(--spacing-3);
+  }
+
+  h3 {
+    margin-bottom: var(--spacing-1);
+  }
+}
+
 /* New styles for loading and error states */
 .loadingContainer {
   width: 100%;

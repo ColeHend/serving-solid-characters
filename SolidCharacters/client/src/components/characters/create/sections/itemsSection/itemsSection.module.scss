@@ -1,0 +1,162 @@
+@use '../../../../../index.scss' as *;
+
+.currenyBox {
+    display: flex;
+
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid;
+    padding: 0.5%;
+
+    @media screen and (max-width: 768px) {
+        width: min-content;        
+    }
+}
+
+.moneySection {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+    }
+}
+
+.moneyInput {
+    width: 60%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-2);
+
+
+    div {
+        display: none;
+    }
+
+    :nth-child(n) {
+        max-width: 180px;
+        flex: 1 1 auto;
+        box-sizing: border-box;
+    }
+
+    @media screen and (max-width: 768px) {
+        width: 80%;
+        
+    }
+    
+}
+
+.inventoryBox {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1%;
+}
+
+.chipWithInfo {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.multiclassHint {
+    margin: 0 0 8px;
+    font-family: $font-ui;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--codex-ink-dim);
+}
+
+.currencyBar {
+    width: 0.5vw;
+
+    @media screen and (max-width: 768px){
+        width: 1vw;
+    }
+}
+
+.currencyHeader {
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+    height: 50%;
+    margin-top: 3%;
+}
+
+.blockLabel {
+    margin: 18px 0 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--codex-gold);
+    font-family: $font-ui;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.sourceBlock {
+    border: 1px solid var(--codex-border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    font-family: $font-ui;
+    font-size: 0.85rem;
+}
+
+.sourceHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.modeButtons {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.orText {
+    font-size: 0.75rem;
+    color: var(--codex-ink-dim);
+}
+
+.goldRow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.choiceList {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.choiceGroupLabel {
+    display: block;
+    margin: 6px 0 4px;
+    font-family: $font-ui;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--codex-gold);
+}
+
+.conversionHint {
+    font-family: $font-ui;
+    font-size: 0.72rem;
+    color: var(--codex-ink-dim);
+    padding: 2px 0 0 4px;
+}

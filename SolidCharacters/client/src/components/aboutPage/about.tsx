@@ -6,11 +6,11 @@ import Li_Icon from "../../assets/LI-In-Bug.png";
 
 // Portrait is loaded via glob so the build survives while the file hasn't been added yet;
 // an empty match just means Slade falls back to the placeholder disc.
-const portraitGlob = import.meta.glob("../../assets/slade_portrait.png", {
+const portraitGlob = import.meta.glob("../../assets/slade_portrait.webp", {
   eager: true,
   import: "default",
 }) as Record<string, string>;
-const sladePortrait: string | undefined = portraitGlob["../../assets/slade_portrait.png"];
+const sladePortrait: string | undefined = portraitGlob["../../assets/slade_portrait.webp"];
 
 const ABILITIES = ["STR", "DEX", "CON", "INT", "WIS", "CHA"] as const;
 type Ability = typeof ABILITIES[number];

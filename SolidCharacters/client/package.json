@@ -1,6 +1,6 @@
 {
   "name": "serving-solid-characters",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "Arcane Dictionary — a D&D 5e character manager and SRD reference, offline-first PWA.",
   "scripts": {
     "start": "vite --host --force",

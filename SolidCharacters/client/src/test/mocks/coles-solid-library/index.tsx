@@ -24,7 +24,15 @@ export const Icon = passthrough('Icon');
 export const Table = passthrough('Table');
 export const Column = passthrough('Column');
 export const Row = passthrough('Row');
-export const Cell = passthrough('Cell');
+// Cell children are row-render functions in the real Table; the mock has no rows to feed them.
+export const Cell: Component<AnyProps> = (all: AnyProps) => {
+  const [local, rest] = splitProps(all, ['children']);
+  return (
+    <div data-mock="Cell" {...rest}>
+      {typeof local.children === 'function' ? null : local.children}
+    </div>
+  );
+};
 export const Header = passthrough('Header');
 export const Menu = passthrough('Menu');
 export const MenuItem = passthrough('MenuItem');
@@ -100,6 +108,11 @@ export const Select: Component<AnyProps> = (p) => {
 };
 export const Option: Component<AnyProps> = (p) => <option data-mock="Option" value={p.value}>{p.children}</option>;
 export const Input: Component<AnyProps> = (p) => <input data-mock="Input" {...p} />;
+export const NumberInput: Component<AnyProps> = (p) => {
+  const [local, rest] = splitProps(p, ['hideSteppers']);
+  void local;
+  return <input type="number" data-mock="NumberInput" {...rest} />;
+};
 export const TextArea: Component<AnyProps> = (p) => {
   const [local, rest] = splitProps(p, ['text','setText','value']);
   const getter = typeof local.text === 'function' ? local.text as () => string : undefined;

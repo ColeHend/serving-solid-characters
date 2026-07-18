@@ -1,0 +1,111 @@
+@use '../../../../../index.scss' as *;
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  text-align: left;
+  background: color-mix(in srgb, var(--codex-card-raised) 55%, transparent);
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--codex-parchment);
+
+  &:hover {
+    border-color: var(--codex-gold-deep);
+  }
+}
+
+.cardSelected {
+  border-color: var(--codex-gold);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--codex-gold) 25%, transparent);
+  background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+}
+
+.cardName {
+  font-family: $font-heading;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+}
+
+.cardMeta {
+  font-family: $font-ui;
+  font-size: 0.72rem;
+  color: var(--codex-ink-dim);
+}
+
+.detailPanel {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--codex-bg) 45%, transparent);
+}
+
+.detailLine {
+  margin: 0 0 8px;
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-parchment);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.detailLabel {
+  color: var(--codex-gold);
+}
+
+.featDescription {
+  font-style: italic;
+  color: var(--codex-ink-dim);
+}
+
+.languagesBlock {
+  margin-top: 16px;
+}
+
+.blockLabel {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+  font-family: $font-ui;
+}
+
+.languageChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.languageAdd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.languageHint {
+  font-family: $font-ui;
+  font-size: 0.75rem;
+  color: var(--codex-ink-dim);
+}
+
+.pairingNotice {
+  margin: 0 0 10px;
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--codex-ink-dim);
+}

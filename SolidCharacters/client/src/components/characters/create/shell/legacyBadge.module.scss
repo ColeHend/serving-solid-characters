@@ -1,0 +1,13 @@
+.legacyBadge {
+  display: inline-block;
+  font-size: 0.55rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border: 1px solid var(--codex-gold-deep);
+  border-radius: 4px;
+  color: var(--codex-gold);
+  white-space: nowrap;
+  vertical-align: middle;
+}

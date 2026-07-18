@@ -1,0 +1,243 @@
+@use '../../../../../index.scss' as *;
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  text-align: left;
+  background: color-mix(in srgb, var(--codex-card-raised) 55%, transparent);
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--codex-parchment);
+
+  &:hover {
+    border-color: var(--codex-gold-deep);
+  }
+}
+
+.cardSelected {
+  border-color: var(--codex-gold);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--codex-gold) 25%, transparent);
+  background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+}
+
+.cardTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.cardName {
+  font-family: $font-heading;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+}
+
+.cardDie {
+  font-family: $font-ui;
+  font-size: 0.75rem;
+  color: var(--codex-gold);
+}
+
+.cardMeta {
+  font-family: $font-ui;
+  font-size: 0.7rem;
+  color: var(--codex-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.detailList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.detailCard {
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: color-mix(in srgb, var(--codex-bg) 45%, transparent);
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.detailName {
+  margin: 0;
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+.initialChip {
+  font-family: $font-ui;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+  border: 1px solid var(--codex-gold-deep);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+.prereqWarn {
+  font-family: $font-ui;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-parchment);
+  border: 1px solid var(--codex-gold);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: help;
+}
+
+.featureList {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: $font-ui;
+  font-size: 0.8rem;
+  color: var(--codex-parchment);
+}
+
+.featureLevel {
+  display: inline-block;
+  min-width: 2.6rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+}
+
+.detailMeta {
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  color: var(--codex-ink-dim);
+}
+
+.detailControls {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.removeButton {
+  width: 26px;
+  height: 26px;
+  border: 1px solid color-mix(in srgb, var(--error-color) 70%, transparent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--error-color);
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+
+  &:hover {
+    background: color-mix(in srgb, var(--error-color) 15%, transparent);
+  }
+}
+
+.detailBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 12px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detailColumn {
+  min-width: 0;
+}
+
+.profLine {
+  margin: 0 0 6px;
+  font-family: $font-ui;
+  font-size: 0.82rem;
+  color: var(--codex-parchment);
+}
+
+.profLabel {
+  color: var(--codex-ink-dim);
+}
+
+.blockLabel {
+  margin: 14px 0 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+  font-family: $font-ui;
+}
+
+.unlockHint {
+  margin: 0;
+  font-family: $font-ui;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--codex-ink-dim);
+}
+
+.skillsHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+
+  .blockLabel {
+    margin-top: 0;
+  }
+}
+
+.skillCounter {
+  font-family: $font-ui;
+  font-size: 0.75rem;
+  color: var(--codex-ink-dim);
+}
+
+.skillPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.skillPill {
+  font-family: $font-ui;
+  font-size: 0.76rem;
+  padding: 4px 12px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--codex-parchment);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--codex-gold-deep);
+  }
+}
+
+.skillPillActive {
+  border-color: var(--codex-gold);
+  color: var(--codex-gold);
+  background: color-mix(in srgb, var(--codex-gold) 10%, transparent);
+}

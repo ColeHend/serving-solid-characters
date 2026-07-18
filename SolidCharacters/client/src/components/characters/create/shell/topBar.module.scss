@@ -1,0 +1,119 @@
+@use '../../../../index.scss' as *;
+
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: color-mix(in srgb, var(--codex-bg) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--codex-border);
+  border-radius: 8px 8px 0 0;
+}
+
+.nameWrap {
+  min-width: 220px;
+
+  input {
+    font-family: $font-body !important;
+    font-size: 1rem;
+    color: var(--codex-parchment);
+    border: 1px solid var(--codex-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: transparent;
+
+    &::placeholder {
+      color: var(--codex-ink-dim);
+    }
+  }
+}
+
+.editionToggle {
+  display: inline-flex;
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  overflow: hidden;
+
+  button {
+    font-family: $font-ui;
+    font-size: 0.85rem;
+    padding: 7px 14px;
+    border: none;
+    background: transparent;
+    color: var(--codex-parchment);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--codex-gold);
+    }
+  }
+}
+
+.editionActive {
+  background: var(--primary-color) !important;
+  color: var(--on-primary-color) !important;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.summary {
+  font-family: $font-ui;
+  font-size: 0.8rem;
+  color: var(--codex-ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 30vw;
+}
+
+.levelBadge {
+  font-family: $font-heading;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--codex-gold);
+  border: 1px solid var(--codex-gold);
+  border-radius: 8px;
+  padding: 4px 12px;
+  white-space: nowrap;
+}
+
+.actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.confirmBody {
+  font-family: $font-ui;
+
+  ul {
+    margin: 10px 0;
+    padding-left: 20px;
+  }
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .topBar {
+    flex-wrap: wrap;
+  }
+
+  .nameWrap {
+    min-width: 60%;
+  }
+
+  .summary {
+    display: none;
+  }
+}

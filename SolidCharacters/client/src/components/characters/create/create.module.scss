@@ -1,45 +1,71 @@
+@use '../../../index.scss' as *;
 @use 'coles-solid-library/themes/variables' as vars;
 
-.body {
-    width: 80%;
-    height: 80%;
-    border-radius: 15px;
-    padding: 10px;
-    background-color: vars.$color-surface;
-    background-color: color-mix(in srgb, vars.$color-surface 60%, transparent) !important;
+// The codex page's tokens all derive from the active theme's variables (coles-solid-library),
+// so the page follows the user's theme; under the arcane variant it matches the target design.
+// Section modules consume the --codex-* names only — this block is the single theme mapping.
+.codexPage {
+  --codex-bg: #{vars.$color-background};
+  --codex-card: #{vars.$color-surface};
+  --codex-card-raised: #{vars.$color-container};
+  --codex-border: #{vars.$field-border-color};
+  --codex-gold: #{vars.$color-on-surface};
+  --codex-gold-deep: #{vars.$color-secondary-variant};
+  --codex-numeral: #{vars.$color-error};
+  --codex-parchment: #{vars.$header-on-background-color};
+  --codex-ink-dim: color-mix(in srgb, #{vars.$color-on-surface} 55%, transparent);
 
-    @media screen and (max-width: 768px) {
-        width: 100%;
-
-    }
+  width: min(1500px, 96%);
+  margin: 0 auto 40px;
+  background: var(--codex-bg);
+  border: 1px solid var(--codex-border);
+  border-radius: vars.$border-radius-md;
+  color: var(--codex-parchment);
+  font-family: $font-body;
 }
 
-.classHeader {
-    display: flex;
-    flex-direction: row !important;
-    justify-content: space-between;
+.layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) 1fr;
+  gap: vars.$spacing-2;
+  padding: vars.$spacing-2;
+  align-items: start;
 }
 
-.cardAlt {
-
-    div { 
-
-        svg {
-            fill: var(--secondary-color) !important;
-        }
-    }
-
-    &::before {
-
-        background: var(--accent-bar-secondary);
-    }
+.layoutHidden {
+  grid-template-columns: 48px 1fr;
 }
 
-.SectionBody {
-    display: flex;
-    flex-direction: row;
+.sidebar {
+  position: sticky;
+  top: 70px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
 
-    @media screen and (max-width: 768px) {
-        flex-direction: column;
-    }
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$spacing-2;
+  min-width: 0;
+}
+
+.placeholder {
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-ink-dim);
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .layout,
+  .layoutHidden {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
 }

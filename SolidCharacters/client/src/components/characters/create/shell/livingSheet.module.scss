@@ -1,0 +1,152 @@
+@use '../../../../index.scss' as *;
+
+.sheet {
+  background: var(--codex-card);
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: $font-ui;
+}
+
+.rail {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.railButton,
+.hideButton {
+  font-family: $font-ui;
+  font-size: 0.75rem;
+  color: var(--codex-parchment);
+  background: transparent;
+  border: 1px solid var(--codex-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--codex-gold);
+    border-color: var(--codex-gold);
+  }
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sheetTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  color: var(--codex-gold);
+}
+
+.charName {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--codex-parchment);
+}
+
+.summaryLine {
+  margin: 4px 0 14px;
+  font-size: 0.75rem;
+  color: var(--codex-ink-dim);
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.statTile,
+.abilityTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: color-mix(in srgb, var(--codex-bg) 55%, transparent);
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+}
+
+.statLabel {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+}
+
+.statValue {
+  font-family: $font-heading;
+  font-size: 1.25rem;
+  color: var(--codex-parchment);
+}
+
+.abilityRow {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.abilityScore {
+  font-family: $font-heading;
+  font-size: 1.05rem;
+  color: var(--codex-parchment);
+}
+
+.abilityMod {
+  font-size: 0.65rem;
+  color: var(--codex-ink-dim);
+}
+
+.blockLabel {
+  margin: 14px 0 6px;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+}
+
+.blockText {
+  margin: 0 0 2px;
+  font-size: 0.8rem;
+  color: var(--codex-parchment);
+}
+
+.saveChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.saveChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  color: var(--codex-parchment);
+}
+
+.saveProficient {
+  border-color: var(--codex-gold);
+  color: var(--codex-gold);
+  background: color-mix(in srgb, var(--codex-gold) 10%, transparent);
+}
+
+.saveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--codex-gold);
+}

@@ -23,7 +23,11 @@ const useExportFullStats = (currentCharacter: Accessor<Character>) => {
       wis: currentCharacter()?.stats.wis,
       cha: currentCharacter()?.stats.cha,
     };
-    
+
+    // Characters saved by the rebuilt creator store final scores (statsInclusive) —
+    // re-adding race bonuses here would double-count them.
+    if (currentCharacter()?.statsInclusive) return fullStats;
+
     if (!!race && race.abilityBonuses.length > 0) {
       race.abilityBonuses.forEach((bonus) => {
         Object.keys(fullStats).forEach((key) => {

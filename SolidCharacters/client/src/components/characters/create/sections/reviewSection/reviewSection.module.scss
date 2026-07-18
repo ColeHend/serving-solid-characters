@@ -1,0 +1,79 @@
+@use '../../../../../index.scss' as *;
+
+.checklist {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-bottom: 1px solid color-mix(in srgb, var(--codex-border) 45%, transparent);
+  font-family: $font-ui;
+  font-size: 0.85rem;
+  color: var(--codex-parchment);
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--codex-gold) 8%, transparent);
+  }
+}
+
+.glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  border: 1px solid var(--codex-border);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.done {
+  color: var(--codex-gold);
+  border-color: var(--codex-gold-deep);
+}
+
+.warn {
+  color: var(--codex-parchment);
+  border-color: var(--codex-gold);
+}
+
+.todo {
+  color: var(--codex-ink-dim);
+}
+
+.label {
+  font-weight: 600;
+}
+
+.detail {
+  margin-left: auto;
+  text-align: right;
+  color: var(--codex-ink-dim);
+  font-size: 0.78rem;
+}
+
+.readyLine {
+  margin: 0 0 12px;
+  font-family: $font-ui;
+  font-size: 0.8rem;
+  color: var(--codex-ink-dim);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
