@@ -21,13 +21,9 @@ export const ItemsMenu:Component<menuProps> = (props) => {
     
     const navigate = useNavigate();
 
-    const checkForHomebrew = (item: string) => {
-        homebrewManager?.items()?.forEach((customItem:srdItem) => {
-            if (customItem?.name?.toLowerCase() === item?.toLowerCase()) return true;
-        })
-
-        return false
-    }
+    const checkForHomebrew = (item: string) =>
+        homebrewManager?.items()?.some((customItem:srdItem) =>
+            (customItem?.name || '').toLowerCase() === (item || '').toLowerCase()) ?? false;
 
     return <>
         <Button id={`${styles.buttonOverwrite}`} ref={setAnchorEl} onClick={()=>setShowMenu(old=>!old)}>

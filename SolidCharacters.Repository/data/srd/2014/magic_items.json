@@ -8,7 +8,8 @@
   "category": "Armor",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c3bb1c0e-b86c-5554-8464-4f58849ce2c4",
@@ -20,6 +21,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -45,6 +47,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -70,6 +73,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -97,6 +101,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -124,7 +129,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cb07bfdf-2f71-5093-9031-0c25d232206f",
@@ -137,7 +143,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9ee13fbf-01ab-5160-8083-ba6296ca26ce",
@@ -150,7 +157,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5a0e160e-3506-5cd9-92c0-0682c44f987b",
@@ -163,7 +171,8 @@
   "properties": {
    "effect": "The apparatus of the Crab is a Large object with the following statistics:\n\n**Armor Class** 20\n\n**Hit Points** 200\n\n**Speed** 30 ft., swim 30 ft. (or 0 ft. for both if the legs and tail aren't extended)\n\n**Damage Immunities** poison, psychic\n\nTo be used as a vehicle, the apparatus requires one pilot. While the apparatus's hatch is closed, the compartment is airtight and watertight. The compartment holds enough air for 10 hours of breathing, divided by the number of breathing creatures inside.\n\nThe apparatus floats on water. It can also go underwater to a depth of 900 feet. Below that, the vehicle takes 2d6 bludgeoning damage per minute from pressure.\n\nA creature in the compartment can use an action to move as many as two of the apparatus's levers up or down. After each use, a lever goes back to its neutral position. Each lever, from left to right, functions as shown in the Apparatus of the Crab Levers table.\n\n**Table- Apparatus of the Crab**\n\n| Lever | Up | Down |\n|-------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|\n| 1 | Legs and tail extend, allowing the apparatus to walk and swim. | Legs and tail retract, reducing the apparatus's speed to 0 and making it unable to benefit from bonuses to speed. |\n| 2 | Forward window shutter opens. | Forward window shutter closes. |\n| 3 | Side window shutters open (two per side). | Side window shutters close (two per side). |\n| 4 | Two claws extend from the front sides of the apparatus. | The claws retract. |\n| 5 | Each extended claw makes the following melee weapon attack: +8 to hit, reach 5 ft., one target. Hit: 7 (2d6) bludgeoning damage. | Each extended claw makes the following melee weapon attack: +8 to hit, reach 5 ft., one target. Hit: The target is grappled (escape DC 15). |\n| 6 | The apparatus walks or swims forward. | The apparatus walks or swims backward. |\n| 7 | The apparatus turns 90 degrees left. | The apparatus turns 90 degrees right. |\n| 8 | Eyelike fixtures emit bright light in a 30-foot radius and dim light for an additional 30 feet. | The light turns off. |\n| 9 | The apparatus sinks as much as 20 feet in liquid. | The apparatus rises up to 20 feet in liquid. |\n| 10 | The rear hatch unseals and opens. | The rear hatch closes and seals. |\n| | | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3fd3561a-bd56-5478-bbf8-4e8de33fff1f",
@@ -175,6 +184,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -199,6 +209,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -223,6 +234,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -248,7 +260,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "79d0872c-d679-5b3f-96d3-a487cd881aaa",
@@ -263,6 +276,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -290,6 +304,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -317,6 +332,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -344,6 +360,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -371,6 +388,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -398,6 +416,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -425,6 +444,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -452,6 +472,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -479,6 +500,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -506,6 +528,7 @@
    "effect": "**Table- Armor of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -532,7 +555,8 @@
    "attunement": "Requires attunement",
    "effect": "***Curse***. This armor is cursed, a fact that is revealed only when an *identify* spell is cast on the armor or you attune to it. Attuning to the armor curses you until you are targeted by the *remove curse* spell or similar magic; removing the armor fails to end the curse. While cursed, you have vulnerability to two of the three damage types associated with the armor (not the one to which it grants resistance)."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e6220fa5-cc15-5a47-be80-7cfa7f72c98b",
@@ -546,6 +570,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -572,7 +597,8 @@
   "properties": {
    "effect": "Once an *arrow of slaying* deals its extra damage to a creature, it becomes a nonmagical arrow.\n\nOther types of magic ammunition of this kind exist, such as *bolts of slaying* meant for a crossbow, though arrows are most common."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b068b05b-f2b9-5da8-8c7b-a89191dcf7ac",
@@ -585,7 +611,8 @@
   "properties": {
    "effect": "If you dump the bag's contents out on the ground, they explode in a 10-foot radius, extending from the beans. Each creature in the area, including you, must make a DC 15 Dexterity saving throw, taking 5d4 fire damage on a failed save, or half as much damage on a successful one. The fire ignites flammable objects in the area that aren't being worn or carried.\n\nIf you remove a bean from the bag, plant it in dirt or sand, and then water it, the bean produces an effect 1 minute later from the ground where it was planted. The GM can choose an effect from the following table, determine it randomly, or create an effect.\n\n**Table- Bag of Beans**\n\n| d100 | Effect |\n|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n| 01 | 5d4 toadstools sprout. If a creature eats a toadstool, roll any die. On an odd roll, the eater must succeed on a DC 15 Constitution saving throw or take 5d6 poison damage and become poisoned for 1 hour. On an even roll, the eater gains 5d6 temporary hit points for 1 hour. |\n| 02-10 | A geyser erupts and spouts water, beer, berry juice, tea, vinegar, wine, or oil (GM's choice) 30 feet into the air for 1d12 rounds. |\n| 11-20 | A treant sprouts. There's a 50 percent chance that the treant is chaotic evil and attacks. |\n| 21-30 | An animate, immobile stone statue in your likeness rises. It makes verbal threats against you. If you leave it and others come near, it describes you as the most heinous of villains and directs the newcomers to find and attack you. If you are on the same plane of existence as the statue, it knows where you are. The statue becomes inanimate after 24 hours. |\n| 31-40 | A campfire with blue flames springs forth and burns for 24 hours (or until it is extinguished). |\n| 41-50 | 1d6+6 shriekers sprout. |\n| 51-60 | 1d4+8 bright pink toads crawl forth. Whenever a toad is touched, it transforms into a Large or smaller monster of the GM's choice. The monster remains for 1 minute, then disappears in a puff of bright pink smoke. |\n| 61-70 | A hungry bulette burrows up and attacks. 71-80 A fruit tree grows. It has 1d10+20 fruit, 1d8 of which act as randomly determined magic potions, while one acts as an ingested poison of the GM's choice. The tree vanishes after 1 hour. Picked fruit remains, retaining any magic for 30 days. |\n| 81-90 | A nest of 1d4+3 eggs springs up. Any creature that eats an egg must make a DC 20 Constitution saving throw. On a successful save, a creature permanently increases its lowest ability score by 1, randomly choosing among equally low scores. On a failed save, the creature takes 10d6 force damage from an internal magical explosion. |\n| 91-99 | A pyramid with a 60-foot square base bursts upward. Inside is a sarcophagus containing a mummy lord. The pyramid is treated as the mummy lord's lair, and its sarcophagus contains treasure of the GM's choice. |\n| 100 | A giant beanstalk sprouts, growing to a height of the GM's choice. The top leads where the GM chooses, such as to a great view, a cloud giant's castle, or a different plane of existence. |\n| | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0b21ab26-0b5b-5523-9db5-d7b77cbd2e42",
@@ -598,7 +625,8 @@
   "properties": {
    "effect": "The extradimensional creature attached to the bag can sense whatever is placed inside the bag. Animal or vegetable matter placed wholly in the bag is devoured and lost forever. When part of a living creature is placed in the bag, as happens when someone reaches inside it, there is a 50 percent chance that the creature is pulled inside the bag. A creature inside the bag can use its action to try to escape with a successful DC 15 Strength check. Another creature can use its action to reach into the bag to pull a creature out, doing so with a successful DC 20 Strength check (provided it isn't pulled inside the bag first). Any creature that starts its turn inside the bag is devoured, its body destroyed.\n\nInanimate objects can be stored in the bag, which can hold a cubic foot of such material. However, once each day, the bag swallows any objects inside it and spits them out into another plane of existence. The GM determines the time and plane.\n\nIf the bag is pierced or torn, it is destroyed, and anything contained within it is transported to a random location on the Astral Plane."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "13fe7063-d4c5-55a9-b335-b9321082a5d9",
@@ -611,7 +639,8 @@
   "properties": {
    "effect": "If the bag is overloaded, pierced, or torn, it ruptures and is destroyed, and its contents are scattered in the Astral Plane. If the bag is turned inside out, its contents spill forth, unharmed, but the bag must be put right before it can be used again. Breathing creatures inside the bag can survive up to a number of minutes equal to 10 divided by the number of creatures (minimum 1 minute), after which time they begin to suffocate.\n\nPlacing a *bag of holding* inside an extradimensional space created by a *handy haversack*, *portable hole*, or similar item instantly destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it to a random location on the Astral Plane. The gate then closes. The gate is one-way only and can't be reopened."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b1f17a76-51b6-5043-b53b-654c4f2387de",
@@ -624,7 +653,8 @@
   "properties": {
    "effect": "You can use an action to pull the fuzzy object from the bag and throw it up to 20 feet. When the object lands, it transforms into a creature you determine by rolling a d8 and consulting the table that corresponds to the bag's color.\n\nThe creature is friendly to you and your companions, and it acts on your turn. You can use a bonus action to command how the creature moves and what action it takes on its next turn, or to give it general orders, such as to attack your enemies. In the absence of such orders, the creature acts in a fashion appropriate to its nature.\n\nOnce three fuzzy objects have been pulled from the bag, the bag can't be used again until the next dawn.\n\n**Table- Gray Bag of Tricks**\n\n| d8 | Creature |\n|----|--------------|\n| 1 | Weasel |\n| 2 | Giant rat |\n| 3 | Badger |\n| 4 | Boar |\n| 5 | Panther |\n| 6 | Giant badger |\n| 7 | Dire wolf |\n| 8 | Giant elk |\n| | |\n\n**Table- Rust Bag of Tricks**\n\n| d8 | Creature |\n|----|------------|\n| 1 | Rat |\n| 2 | Owl |\n| 3 | Mastiff |\n| 4 | Goat |\n| 5 | Giant goat |\n| 6 | Giant boar |\n| 7 | Lion |\n| 8 | Brown bear |\n| | |\n\n**Table- Tan Bag of Tricks**\n\n| d8 | Creature |\n|----|--------------|\n| 1 | Jackal |\n| 2 | Ape |\n| 3 | Baboon |\n| 4 | Axe beak |\n| 5 | Black bear |\n| 6 | Giant weasel |\n| 7 | Giant hyena |\n| 8 | Tiger |\n| | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6f1c4137-f51a-53ad-874e-7fa30223cd7e",
@@ -637,7 +667,8 @@
   "properties": {
    "effect": "You can use an action to throw the bead up to 60 feet. The bead explodes on impact and is destroyed. Each creature within a 10-foot radius of where the bead landed must succeed on a DC 15 Dexterity saving throw or take 5d4 force damage. A sphere of transparent force then encloses the area for 1 minute. Any creature that failed the save and is completely within the area is trapped inside this sphere. Creatures that succeeded on the save, or are partially within the area, are pushed away from the center of the sphere until they are no longer inside it. Only breathable air can pass through the sphere's wall. No attack or other effect can.\n\nAn enclosed creature can use its action to push against the sphere's wall, moving the sphere up to half the creature's walking speed. The sphere can be picked up, and its magic causes it to weigh only 1 pound, regardless of the weight of creatures inside."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c19f34e4-76c6-5b3b-a48a-1663afa0a147",
@@ -652,6 +683,7 @@
    "effect": "- Your Constitution score increases by 2, to a maximum of 20.\n- You have advantage on Charisma (Persuasion) checks made to interact with dwarves.\n\nIn addition, while attuned to the belt, you have a 50 percent chance each day at dawn of growing a full beard if you're capable of growing one, or a visibly thicker beard if you already have one.\n\nIf you aren't a dwarf, you gain the following additional benefits while wearing the belt:\n\n- You have advantage on saving throws against poison, and you have resistance against poison damage.\n- You have darkvision out to a range of 60 feet.\n- You can speak, read, and write Dwarvish."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -691,6 +723,7 @@
    "effect": "Six varieties of this belt exist, corresponding with and having rarity according to the six kinds of true giants. The *belt of stone giant strength* and the *belt of frost giant strength* look different, but they have the same effect.\n\n**Table- Belt of Strength**\n\n| Type | Strength | Rarity |\n|-------------------|----------|-----------|\n| Hill giant | 21 | Rare |\n| Stone/frost giant | 23 | Very rare |\n| Fire giant | 25 | Very rare |\n| Cloud giant | 27 | Legendary |\n| Storm giant | 29 | Legendary |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -720,6 +753,7 @@
    "effect": "Six varieties of this belt exist, corresponding with and having rarity according to the six kinds of true giants. The *belt of stone giant strength* and the *belt of frost giant strength* look different, but they have the same effect.\n\n**Table- Belt of Strength**\n\n| Type | Strength | Rarity |\n|-------------------|----------|-----------|\n| Hill giant | 21 | Rare |\n| Stone/frost giant | 23 | Very rare |\n| Fire giant | 25 | Very rare |\n| Cloud giant | 27 | Legendary |\n| Storm giant | 29 | Legendary |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -749,6 +783,7 @@
    "effect": "Six varieties of this belt exist, corresponding with and having rarity according to the six kinds of true giants. The *belt of stone giant strength* and the *belt of frost giant strength* look different, but they have the same effect.\n\n**Table- Belt of Strength**\n\n| Type | Strength | Rarity |\n|-------------------|----------|-----------|\n| Hill giant | 21 | Rare |\n| Stone/frost giant | 23 | Very rare |\n| Fire giant | 25 | Very rare |\n| Cloud giant | 27 | Legendary |\n| Storm giant | 29 | Legendary |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -778,6 +813,7 @@
    "effect": "Six varieties of this belt exist, corresponding with and having rarity according to the six kinds of true giants. The *belt of stone giant strength* and the *belt of frost giant strength* look different, but they have the same effect.\n\n**Table- Belt of Strength**\n\n| Type | Strength | Rarity |\n|-------------------|----------|-----------|\n| Hill giant | 21 | Rare |\n| Stone/frost giant | 23 | Very rare |\n| Fire giant | 25 | Very rare |\n| Cloud giant | 27 | Legendary |\n| Storm giant | 29 | Legendary |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -807,6 +843,7 @@
    "effect": "Six varieties of this belt exist, corresponding with and having rarity according to the six kinds of true giants. The *belt of stone giant strength* and the *belt of frost giant strength* look different, but they have the same effect.\n\n**Table- Belt of Strength**\n\n| Type | Strength | Rarity |\n|-------------------|----------|-----------|\n| Hill giant | 21 | Rare |\n| Stone/frost giant | 23 | Very rare |\n| Fire giant | 25 | Very rare |\n| Cloud giant | 27 | Legendary |\n| Storm giant | 29 | Legendary |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -836,6 +873,7 @@
    "effect": "Six varieties of this belt exist, corresponding with and having rarity according to the six kinds of true giants. The *belt of stone giant strength* and the *belt of frost giant strength* look different, but they have the same effect.\n\n**Table- Belt of Strength**\n\n| Type | Strength | Rarity |\n|-------------------|----------|-----------|\n| Hill giant | 21 | Rare |\n| Stone/frost giant | 23 | Very rare |\n| Fire giant | 25 | Very rare |\n| Cloud giant | 27 | Legendary |\n| Storm giant | 29 | Legendary |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -865,6 +903,7 @@
    "effect": "***Curse***. This axe is cursed, and becoming attuned to it extends the curse to you. As long as you remain cursed, you are unwilling to part with the axe, keeping it within reach at all times. You also have disadvantage on attack rolls with weapons other than this one, unless no foe is within 60 feet of you that you can see or hear.\n\nWhenever a hostile creature damages you while the axe is in your possession, you must succeed on a DC 15 Wisdom saving throw or go berserk. While berserk, you must use your action each round to attack the creature nearest to you with the axe. If you can make extra attacks as part of the Attack action, you use those extra attacks, moving to attack the next nearest creature after you fell your current target. If you have multiple possible targets, you attack one at random. You are berserk until you start your turn with no creatures within 60 feet of you that you can see or hear."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -911,6 +950,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -938,7 +978,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "35a7cd90-e29a-5089-98f0-23da5f7b4b3f",
@@ -952,7 +993,8 @@
    "attunement": "Requires attunement",
    "effect": "When the boots' property has been used for a total of 10 minutes, the magic ceases to function until you finish a long rest."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f154942f-23d9-57ad-bcdc-fd9273173999",
@@ -966,6 +1008,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -994,6 +1037,7 @@
    "effect": "- You have resistance to cold damage.\n- You ignore difficult terrain created by ice or snow.\n- You can tolerate temperatures as low as -50 degrees Fahrenheit without any additional protection. If you wear heavy clothes, you can tolerate temperatures as low as -100 degrees Fahrenheit."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1019,7 +1063,8 @@
   "properties": {
    "effect": "The bowl is about 1 foot in diameter and half as deep. It weighs 3 pounds and holds about 3 gallons."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4ad93ab9-c99c-5a37-b0ee-8d0b94c06095",
@@ -1032,7 +1077,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d1d7be74-baec-5513-8520-c9cb3920256a",
@@ -1046,6 +1092,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1072,7 +1119,8 @@
   "properties": {
    "effect": "The brazier weighs 5 pounds."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "be1ed8d6-1978-5442-b393-0862d91359cf",
@@ -1086,6 +1134,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1111,7 +1160,8 @@
   "properties": {
    "effect": "You can send the broom to travel alone to a destination within 1 mile of you if you speak the command word, name the location, and are familiar with that place. The broom comes back to you when you speak another command word, provided that the broom is still within 1 mile of you."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4943ebc9-71f3-53ec-b4b0-6cee563ef422",
@@ -1125,7 +1175,8 @@
    "attunement": "Requires attunement",
    "effect": "**Table- Candle of Invocation**\n\n| d20 | Alignment |\n|-------|-----------------|\n| 1-2 | Chaotic evil |\n| 3-4 | Chaotic neutral |\n| 5-7 | Chaotic good |\n| 8-9 | Neutral evil |\n| 10-11 | Neutral |\n| 12-13 | Neutral good |\n| 14-15 | Lawful evil |\n| 16-17 | Lawful neutral |\n| 18-20 | Lawful good |\n| | |\n\nThe candle's magic is activated when the candle is lit, which requires an action. After burning for 4 hours, the candle is destroyed. You can snuff it out early for use at a later time. Deduct the time it burned in increments of 1 minute from the candle's total burn time.\n\nWhile lit, the candle sheds dim light in a 30-foot radius. Any creature within that light whose alignment matches that of the candle makes attack rolls, saving throws, and ability checks with advantage. In addition, a cleric or druid in the light whose alignment matches the candle's can cast 1st-level spells he or she has prepared without expending spell slots, though the spell's effect is as if cast with a 1st-level slot.\n\nAlternatively, when you light the candle for the first time, you can cast the *gate* spell with it. Doing so destroys the candle."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "97cd40f1-5695-58bc-85be-adc60e177bb8",
@@ -1138,7 +1189,8 @@
   "properties": {
    "effect": "When you disappear, you leave behind a cloud of smoke, and you appear in a similar cloud of smoke at your destination. The smoke lightly obscures the space you left and the space you appear in, and it dissipates at the end of your next turn. A light or stronger wind disperses the smoke."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d6da002a-dbe0-522a-af52-bbdc5c8d8f53",
@@ -1151,7 +1203,8 @@
   "properties": {
    "effect": "Four sizes of *carpet of flying* exist. The GM chooses the size of a given carpet or determines it randomly.\n\n**Table- Carpet of Flying**\n\n| d100 | Size | Capacity | Flying Speed |\n|--------|---------------|----------|--------------|\n| 01-20 | 3 ft. × 5 ft. | 200 lb. | 80 feet |\n| 21-55 | 4 ft. × 6 ft. | 400 lb. | 60 feet |\n| 56-80 | 5 ft. × 7 ft. | 600 lb. | 40 feet |\n| 81-100 | 6 ft. × 9 ft. | 800 lb. | 30 feet |\n| | | | |\n\nA carpet can carry up to twice the weight shown on the table, but it flies at half speed if it carries more than its normal capacity."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "51e3c487-fe4e-598f-a8ea-e842af6eeae4",
@@ -1164,7 +1217,8 @@
   "properties": {
    "effect": "This 6-inch-wide, 1-foot high vessel resembles a chalice with a decorated lid. It weighs 1 pound."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8af5403c-6d24-5939-9ff9-01e4bba23585",
@@ -1177,7 +1231,8 @@
   "properties": {
    "effect": "The chime can be used ten times. After the tenth time, it cracks and becomes useless."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "15096f5e-8e29-5324-8e24-d571711104a4",
@@ -1188,7 +1243,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "16d56f91-9269-52aa-9012-a9f0c9a2cb97",
@@ -1203,6 +1259,7 @@
    "effect": "- You have resistance to poison damage.\n- You have a climbing speed equal to your walking speed.\n- You can move up, down, and across vertical surfaces and upside down along ceilings, while leaving your hands free.\n- You can't be caught in webs of any sort and can move through webs as if they were difficult terrain.\n- You can use an action to cast the *web* spell (save DC 13). The web created by the spell fills twice its normal area. Once used, this property of the cloak can't be used again until the next dawn."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1237,7 +1294,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0630d163-94b0-5dff-95da-781a4c6e3473",
@@ -1251,6 +1309,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1279,6 +1338,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1316,6 +1376,7 @@
    "effect": "While wearing the cloak in an area of dim light or darkness, you can use your action to cast *polymorph* on yourself, transforming into a bat. While you are in the form of the bat, you retain your Intelligence, Wisdom, and Charisma scores. The cloak can't be used this way again until the next dawn."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1342,6 +1403,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1369,7 +1431,8 @@
    "attunement": "Requires attunement",
    "effect": "The following *crystal ball* variants are legendary items and have additional properties.\n\n***Crystal Ball of Mind Reading***. You can use an action to cast the *detect thoughts* spell (save DC 17) while you are scrying with the *crystal ball*, targeting creatures you can see within 30 feet of the spell's sensor. You don't need to concentrate on this *detect thoughts* to maintain it during its duration, but it ends if *scrying* ends.\n\n***Crystal Ball of Telepathy***. While scrying with the crystal ball, you can communicate telepathically with creatures you can see within 30 feet of the spell's sensor. You can also use an action to cast the *suggestion* spell (save DC 17) through the sensor on one of those creatures. You don't need to concentrate on this *suggestion* to maintain it during its duration, but it ends if *scrying* ends. Once used, the *suggestion* power of the *crystal ball* can't be used again until the next dawn.\n\n***Crystal Ball of True Seeing***. While scrying with the crystal ball, you have truesight with a radius of 120 feet centered on the spell's sensor."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "23044b93-8956-5ad0-a43c-46b7777f2b08",
@@ -1384,7 +1447,8 @@
    "effect": "You can use an action to press one of the cube's faces, expending a number of charges based on the chosen face, as shown in the Cube of Force Faces table. Each face has a different effect. If the cube has insufficient charges remaining, nothing happens. Otherwise, a barrier of invisible force springs into existence, forming a cube 15 feet on a side. The barrier is centered on you, moves with you, and lasts for 1 minute, until you use an action to press the cube's sixth face, or the cube runs out of charges. You can change the barrier's effect by pressing a different face of the cube and expending the requisite number of charges, resetting the duration.\n\nIf your movement causes the barrier to come into contact with a solid object that can't pass through the cube, you can't move any closer to that object as long as the barrier remains.\n\n**Table- Cube of Force Effects**\n\n| Face | Charges | Effect |\n|------|---------|-------------------------------------------------------------------------------------------------------------------|\n| 1 | 1 | Gases, wind, and fog can't pass through the barrier. |\n| 2 | 2 | Nonliving matter can't pass through the barrier. Walls, floors, and ceilings can pass through at your discretion. |\n| 3 | 3 | Living matter can't pass through the barrier. |\n| 4 | 4 | Spell effects can't pass through the barrier. |\n| 5 | 5 | Nothing can pass through the barrier. Walls, floors, and ceilings can pass through at your discretion. |\n| 6 | 0 | The barrier deactivates. |\n| | | |\n\nThe cube loses charges when the barrier is targeted by certain spells or comes into contact with certain spell or magic item effects, as shown in the table below.\n\n**Table- Cube of Force Charges Lost**\n\n| Spell or Item | Charges Lost |\n|------------------|--------------|\n| Disintegrate | 1d12 |\n| Horn of blasting | 1d10 |\n| Passwall | 1d6 |\n| Prismatic spray | 1d20 |\n| Wall of fire | 1d4 |\n| | |",
    "charges": "36"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "77487c8e-eaff-5838-aaf0-13b49279be80",
@@ -1398,7 +1462,8 @@
    "effect": "You can use an action to press one side of the cube to cast the *gate* spell with it, opening a portal to the plane keyed to that side. Alternatively, if you use an action to press one side twice, you can cast the *plane shift* spell (save DC 17) with the cube and transport the targets to the plane keyed to that side.\n\nThe cube has 3 charges. Each use of the cube expends 1 charge. The cube regains 1d3 expended charges daily at dawn.",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "77a69818-edbd-5e09-a6c7-7f57d6e4d86f",
@@ -1412,6 +1477,7 @@
    "effect": "You can use an action to cause thick, black poison to coat the blade. The poison remains for 1 minute or until an attack using this weapon hits a creature. That creature must succeed on a DC 15 Constitution saving throw or take 2d10 poison damage and become poisoned for 1 minute. The dagger can't be used this way again until the next dawn."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1439,7 +1505,8 @@
    "attunement": "Requires attunement",
    "effect": "While the sword hovers, you can use a bonus action to cause it to fly up to 30 feet to another spot within 30 feet of you. As part of the same bonus action, you can cause the sword to attack one creature within 5 feet of it.\n\nAfter the hovering sword attacks for the fourth time, it flies up to 30 feet and tries to return to your hand. If you have no hand free, it falls to the ground at your feet. If the sword has no unobstructed path to you, it moves as close to you as it can and then falls to the ground. It also ceases to hover if you grasp it or move more than 30 feet away from it."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1eab041a-ec0a-5296-8dbd-475edfab2227",
@@ -1452,7 +1519,8 @@
   "properties": {
    "effect": "You can use an action to remove the stopper and speak one of three command words, whereupon an amount of fresh water or salt water (your choice) pours out of the flask. The water stops pouring out at the start of your next turn. Choose from the following options:\n\n- \"Stream\" produces 1 gallon of water.\n- \"Fountain\" produces 5 gallons of water.\n- \"Geyser\" produces 30 gallons of water that gushes forth in a geyser 30 feet long and 1 foot wide. As a bonus action while holding the decanter, you can aim the geyser at a creature you can see within 30 feet of you. The target must succeed on a DC 13 Strength saving throw or take 1d4 bludgeoning damage and fall prone. Instead of a creature, you can target an object that isn't being worn or carried and that weighs no more than 200 pounds. The object is either knocked over or pushed up to 15 feet away from you."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d43b7504-df77-5a27-b0d3-b2c692363cb4",
@@ -1465,7 +1533,8 @@
   "properties": {
    "effect": "The magic of the deck functions only if cards are drawn at random (you can use an altered deck of playing cards to simulate the deck). You can use an action to draw a card at random from the deck and throw it to the ground at a point within 30 feet of you.\n\nAn illusion of one or more creatures forms over the thrown card and remains until dispelled. An illusory creature appears real, of the appropriate size, and behaves as if it were a real creature except that it can do no harm. While you are within 120 feet of the illusory creature and can see it, you can use an action to move it magically anywhere within 30 feet of its card. Any physical interaction with the illusory creature reveals it to be an illusion, because objects pass through it. Someone who uses an action to visually inspect the creature identifies it as illusory with a successful DC 15 Intelligence (Investigation) check. The creature then appears translucent.\n\nThe illusion lasts until its card is moved or the illusion is dispelled. When the illusion ends, the image on its card disappears, and that card can't be used again.\n\n**Table- Deck of Illusions**\n\n| Playing Card | Illusion |\n|:------------------|:---------------------------------|\n| Ace of hearts | Red dragon |\n| King of hearts | Knight and four guards |\n| Queen of hearts | Succubus or incubus |\n| Jack of hearts | Druid |\n| Ten of hearts | Cloud giant |\n| Nine of hearts | Ettin |\n| Eight of hearts | Bugbear |\n| Two of hearts | Goblin |\n| Ace of diamonds | Beholder |\n| King of diamonds | Archmage and mage apprentice |\n| Queen of diamonds | Night hag |\n| Jack of diamonds | Assassin |\n| Ten of diamonds | Fire giant |\n| Nine of diamonds | Ogre mage |\n| Eight of diamonds | Gnoll |\n| Two of diamonds | Kobold |\n| Ace of spades | Lich |\n| King of spades | Priest and two acolytes |\n| Queen of spades | Medusa |\n| Jack of spades | Veteran |\n| Ten of spades | Frost giant |\n| Nine of spades | Troll |\n| Eight of spades | Hobgoblin |\n| Two of spades | Goblin |\n| Ace of clubs | Iron golem |\n| King of clubs | Bandit captain and three bandits |\n| Queen of clubs | Erinyes |\n| Jack of clubs | Berserker |\n| Ten of clubs | Hill giant |\n| Nine of clubs | Ogre |\n| Eight of clubs | Orc |\n| Two of clubs | Kobold |\n| Jokers (2) | You (the deck's owner) |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f713ef3a-1493-504d-8610-23fc5a13f818",
@@ -1478,7 +1547,8 @@
   "properties": {
    "effect": "Before you draw a card, you must declare how many cards you intend to draw and then draw them randomly (you can use an altered deck of playing cards to simulate the deck). Any cards drawn in excess of this number have no effect. Otherwise, as soon as you draw a card from the deck, its magic takes effect. You must draw each card no more than 1 hour after the previous draw. If you fail to draw the chosen number, the remaining number of cards fly from the deck on their own and take effect all at once.\n\nOnce a card is drawn, it fades from existence. Unless the card is the Fool or the Jester, the card reappears in the deck, making it possible to draw the same card twice.\n\n**Table- Deck of Many Things**\n\n| Playing Card | Card |\n|:-------------------|:--------------|\n| Ace of diamonds | Vizier[^1] |\n| King of diamonds | Sun |\n| Queen of diamonds | Moon |\n| Jack of diamonds | Star |\n| Two of diamonds | Comet[^1] |\n| Ace of hearts | The Fates[^1] |\n| King of hearts | Throne |\n| Queen of hearts | Key |\n| Jack of hearts | Knight |\n| Two of hearts | Gem[^1] |\n| Ace of clubs | Talons[^1] |\n| King of clubs | The Void |\n| Queen of clubs | Flames |\n| Jack of clubs | Skull |\n| Two of clubs | Idiot[^1] |\n| Ace of spades | Donjon[^1] |\n| King of spades | Ruin |\n| Queen of spades | Euryale |\n| Jack of spades | Rogue |\n| Two of spades | Balance[^1] |\n| Joker (with TM) | Fool[^1] |\n| Joker (without TM) | Jester |\n\n[^1]: Found only in a deck with twenty-two cards\n\n***Balance***. Your mind suffers a wrenching alteration, causing your alignment to change. Lawful becomes chaotic, good becomes evil, and vice versa. If you are true neutral or unaligned, this card has no effect on you.\n\n***Comet***. If you single-handedly defeat the next hostile monster or group of monsters you encounter, you gain experience points enough to gain one level. Otherwise, this card has no effect.\n\n***Donjon***. You disappear and become entombed in a state of suspended animation in an extradimensional sphere. Everything you were wearing and carrying stays behind in the space you occupied when you disappeared. You remain imprisoned until you are found and removed from the sphere. You can't be located by any divination magic, but a *wish* spell can reveal the location of your prison. You draw no more cards.\n\n***Euryale***. The card's medusa-like visage curses you. You take a -2 penalty on saving throws while cursed in this way. Only a god or the magic of The Fates card can end this curse.\n\n***The Fates***. Reality's fabric unravels and spins anew, allowing you to avoid or erase one event as if it never happened. You can use the card's magic as soon as you draw the card or at any other time before you die.\n\n***Flames***. A powerful devil becomes your enemy. The devil seeks your ruin and plagues your life, savoring your suffering before attempting to slay you. This enmity lasts until either you or the devil dies.\n\n***Fool***. You lose 10,000 XP, discard this card, and draw from the deck again, counting both draws as one of your declared draws. If losing that much XP would cause you to lose a level, you instead lose an amount that leaves you with just enough XP to keep your level.\n\n***Gem***. Twenty-five pieces of jewelry worth 2,000 gp each or fifty gems worth 1,000 gp each appear at your feet.\n\n***Idiot***. Permanently reduce your Intelligence by 1d4+1 (to a minimum score of 1). You can draw one additional card beyond your declared draws.\n\n***Jester***. You gain 10,000 XP, or you can draw two additional cards beyond your declared draws.\n\n***Key***. A rare or rarer magic weapon with which you are proficient appears in your hands. The GM chooses the weapon.\n\n***Knight***. You gain the service of a 4th-level fighter who appears in a space you choose within 30 feet of you. The fighter is of the same race as you and serves you loyally until death, believing the fates have drawn him or her to you. You control this character.\n\n***Moon***. You are granted the ability to cast the *wish* spell 1d3 times.\n\n***Rogue***. A nonplayer character of the GM's choice becomes hostile toward you. The identity of your new enemy isn't known until the NPC or someone else reveals it. Nothing less than a *wish* spell or divine intervention can end the NPC's hostility toward you.\n\n***Ruin***. All forms of wealth that you carry or own, other than magic items, are lost to you. Portable property vanishes. Businesses, buildings, and land you own are lost in a way that alters reality the least. Any documentation that proves you should own something lost to this card also disappears.\n\n***Skull***. You summon an avatar of death-a ghostly humanoid skeleton clad in a tattered black robe and carrying a spectral scythe. It appears in a space of the GM's choice within 10 feet of you and attacks you, warning all others that you must win the battle alone. The avatar fights until you die or it drops to 0 hit points, whereupon it disappears. If anyone tries to help you, the helper summons its own avatar of death. A creature slain by an avatar of death can't be restored to life.\n\n**Avatar of Death.**\n\n*Medium undead, neutral evil*\n\n**Armor Class** 20\n\n**Hit Points** half the hit point maximum of its summoner\n\n**Speed** 60 ft., fly 60 ft. (hover)\n\n| STR | DEX | CON | INT | WIS | CHA |\n|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|\n| 16 (+3) | 16 (+3) | 16 (+3) | 16 (+3) | 16 (+3) | 16 (+3) |\n\n**Damage Immunities** necrotic, poison\n\n**Condition Immunities** charmed, frightened, paralyzed, petrified, poisoned, unconscious\n\n**Senses** darkvision 60 ft., truesight 60 ft., passive Perception 13\n\n**Languages** all languages known to its summoner\n\n**Challenge** - (0 XP)\n\n***Incorporeal Movement***. The avatar can move through other creatures and objects as if they were difficult terrain. It takes 5 (1d10) force damage if it ends its turn inside an object.\n\n***Turning Immunity***. The avatar is immune to features that turn undead.\n\n**Actions.**\n\n***Reaping Scythe***. The avatar sweeps its spectral scythe through a creature within 5 feet of it, dealing 7 (1d8+3) slashing damage plus 4 (1d8) necrotic damage.\n\n***Star***. Increase one of your ability scores by 2. The score can exceed 20 but can't exceed 24.\n\n***Sun***. You gain 50,000 XP, and a wondrous item (which the GM determines randomly) appears in your hands.\n\n***Talons***. Every magic item you wear or carry disintegrates. Artifacts in your possession aren't destroyed but do vanish.\n\n***Throne***. You gain proficiency in the Persuasion skill, and you double your proficiency bonus on checks made with that skill. In addition, you gain rightful ownership of a small keep somewhere in the world. However, the keep is currently in the hands of monsters, which you must clear out before you can claim the keep as yours.\n\n***Vizier***. At any time you choose within one year of drawing this card, you can ask a question in meditation and mentally receive a truthful answer to that question. Besides information, the answer helps you solve a puzzling problem or other dilemma. In other words, the knowledge comes with wisdom on how to apply it.\n\n***The Void***. This black card spells disaster. Your soul is drawn from your body and contained in an object in a place of the GM's choice. One or more powerful beings guard the place. While your soul is trapped in this way, your body is incapacitated. A *wish* spell can't restore your soul, but the spell reveals the location of the object that holds it. You draw no more cards."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6a1e055f-0afa-535a-a81f-d03182fc98db",
@@ -1493,6 +1563,7 @@
    "effect": "The first time you attack with the sword on each of your turns, you can transfer some or all of the sword's bonus to your Armor Class, instead of using the bonus on any attacks that turn. For example, you could reduce the bonus to your attack and damage rolls to +1 and gain a +2 bonus to AC. The adjusted bonuses remain in effect until the start of your next turn, although you must hold the sword to gain a bonus to AC from it."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1521,6 +1592,7 @@
    "effect": "***Curse***. Once you don this cursed armor, you can't doff it unless you are targeted by the *remove curse* spell or similar magic. While wearing the armor, you have disadvantage on attack rolls against demons and on saving throws against their spells and special abilities."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1588,7 +1660,8 @@
   "properties": {
    "effect": "You and any creature you designate when you use the shackles can use an action to remove them. Once every 30 days, the bound creature can make a DC 30 Strength (Athletics) check. On a success, the creature breaks free and destroys the shackles."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "444c0b62-6116-515e-9db9-dfc1e59c25aa",
@@ -1603,6 +1676,7 @@
    "effect": "While wearing this armor, you gain a +1 bonus to AC, you have advantage on saving throws against the Frightful Presence and breath weapons of dragons, and you have resistance to one damage type that is determined by the kind of dragon that provided the scales (see the table).\n\nAdditionally, you can focus your senses as an action to magically discern the distance and direction to the closest dragon within 30 miles of you that is of the same type as the armor. This special action can't be used again until the next dawn.\n\n**Table- Dragon Scale Mail**\n\n| Dragon | Resistance |\n|:-------|:-----------|\n| Black | Acid |\n| Blue | Lightning |\n| Brass | Fire |\n| Bronze | Lightning |\n| Copper | Acid |\n| Gold | Fire |\n| Green | Poison |\n| Red | Fire |\n| Silver | Cold |\n| White | Cold |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1640,6 +1714,7 @@
    "effect": "When you hit a dragon with this weapon, the dragon takes an extra 3d6 damage of the weapon's type. For the purpose of this weapon, \"dragon\" refers to any creature with the dragon type, including dragon turtles and wyverns."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1664,7 +1739,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "59d6559d-b884-52fe-a3d0-c5cace0aa892",
@@ -1677,7 +1753,8 @@
   "properties": {
    "effect": "Someone can use an action to smash the pellet against a hard surface, causing the pellet to shatter and release the water the dust absorbed. Doing so ends that pellet's magic.\n\nAn elemental composed mostly of water that is exposed to a pinch of the dust must make a DC 13 Constitution saving throw, taking 10d6 necrotic damage on a failed save, or half as much damage on a successful one."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a85e7fae-006e-53ea-8bb9-5eb8995b66e2",
@@ -1690,7 +1767,8 @@
   "properties": {
    "effect": "When you use an action to throw a handful of the dust into the air, you and each creature that needs to breathe within 30 feet of you must succeed on a DC 15 Constitution saving throw or become unable to breathe, while sneezing uncontrollably. A creature affected in this way is incapacitated and suffocating. As long as it is conscious, a creature can repeat the saving throw at the end of each of its turns, ending the effect on it on a success. The *lesser restoration* spell can also end the effect on a creature."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3ab03937-12e3-5a92-b9be-de98f91662ed",
@@ -1702,6 +1780,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1728,6 +1807,7 @@
    "attunement": "Requires attunement by a dwarf"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1754,7 +1834,8 @@
   "properties": {
    "effect": "You can draw any item the quiver contains as if doing so from a regular quiver or scabbard."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4082e511-ac9d-5a93-a410-292af1eb77b5",
@@ -1767,7 +1848,8 @@
   "properties": {
    "effect": "The first time the bottle is opened, the GM rolls to determine what happens.\n\n**Table- Efreeti Bottle**\n\n| d100 | Effect |\n|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n| 01-10 | The efreeti attacks you. After fighting for 5 rounds, the efreeti disappears, and the bottle loses its magic. |\n| 11-90 | The efreeti serves you for 1 hour, doing as you command. Then the efreeti returns to the bottle, and a new stopper contains it. The stopper can't be removed for 24 hours. The next two times the bottle is opened, the same effect occurs. If the bottle is opened a fourth time, the efreeti escapes and disappears, and the bottle loses its magic. |\n| 91-100 | The efreeti can cast the wish spell three times for you. It disappears when it grants the final wish or after 1 hour, and the bottle loses its magic. |\n| | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "24fd4857-3adb-509d-98a5-457a549c0889",
@@ -1780,7 +1862,8 @@
   "properties": {
    "effect": "**Table- Elemental Gem**\n\n| Gem | Summoned Elemental |\n|----------------|--------------------|\n| Blue sapphire | Air elemental |\n| Yellow diamond | Earth elemental |\n| Red corundum | Fire elemental |\n| Emerald | Water elemental |\n| | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "162f4846-09d9-5baf-9d48-fd830f5bb4a6",
@@ -1792,6 +1875,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1817,7 +1901,8 @@
   "properties": {
    "effect": "The cloud persists as long as the bottle is open. Closing the bottle requires you to speak its command word as an action. Once the bottle is closed, the cloud disperses after 10 minutes. A moderate wind (11 to 20 miles per hour) can also disperse the smoke after 1 minute, and a strong wind (21 or more miles per hour) can do so after 1 round."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a3461bf8-e202-5701-9644-be6c2231c6c8",
@@ -1831,7 +1916,8 @@
    "attunement": "Requires attunement",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "22794c6f-b883-584b-9e01-6c79758d4efc",
@@ -1843,6 +1929,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1871,6 +1958,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1898,7 +1986,8 @@
   "properties": {
    "effect": "**Table- Feather Token**\n\n| d100 | Feather Token |\n|:------:|:--------------|\n| 01-20 | Anchor |\n| 21-35 | Bird |\n| 36-50 | Fan |\n| 51-65 | Swan boat |\n| 66-90 | Tree |\n| 91-100 | Whip |\n\n***Anchor***. You can use an action to touch the token to a boat or ship. For the next 24 hours, the vessel can't be moved by any means. Touching the token to the vessel again ends the effect. When the effect ends, the token disappears.\n\n***Bird***. You can use an action to toss the token 5 feet into the air. The token disappears and an enormous, multicolored bird takes its place. The bird has the statistics of a roc, but it obeys your simple commands and can't attack. It can carry up to 500 pounds while flying at its maximum speed (16 miles an hour for a maximum of 144 miles per day, with a one-hour rest for every 3 hours of flying), or 1,000 pounds at half that speed. The bird disappears after flying its maximum distance for a day or if it drops to 0 hit points. You can dismiss the bird as an action.\n\n***Fan***. If you are on a boat or ship, you can use an action to toss the token up to 10 feet in the air. The token disappears, and a giant flapping fan takes its place. The fan floats and creates a wind strong enough to fill the sails of one ship, increasing its speed by 5 miles per hour for 8 hours. You can dismiss the fan as an action.\n\n***Swan Boat***. You can use an action to touch the token to a body of water at least 60 feet in diameter. The token disappears, and a 50-foot long, 20-foot wide boat shaped like a swan takes its place. The boat is self-propelled and moves across water at a speed of 6 miles per hour. You can use an action while on the boat to command it to move or to turn up to 90 degrees. The boat can carry up to thirty-two Medium or smaller creatures. A Large creature counts as four Medium creatures, while a Huge creature counts as nine. The boat remains for 24 hours and then disappears. You can dismiss the boat as an action.\n\n***Tree***. You must be outdoors to use this token. You can use an action to touch it to an unoccupied space on the ground. The token disappears, and in its place a nonmagical oak tree springs into existence. The tree is 60 feet tall and has a 5-foot diameter trunk, and its branches at the top spread out in a 20-foot radius.\n\n***Whip***. You can use an action to throw the token to a point within 10 feet of you. The token disappears, and a floating whip takes its place. You can then use a bonus action to make a melee spell attack against a creature within 10 feet of the whip, with an attack bonus of +9. On a hit, the target takes 1d6+5 force damage.\n\nAs a bonus action on your turn, you can direct the whip to fly up to 20 feet and repeat the attack against a creature within 10 feet of it. The whip disappears after 1 hour, when you use an action to dismiss it, or when you are incapacitated or die."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "59e3c1ef-112c-586c-bbf6-1ab62f9a46d5",
@@ -1912,7 +2001,8 @@
    "effect": "The creature is friendly to you and your companions. It understands your languages and obeys your spoken commands. If you issue no commands, the creature defends itself but takes no other actions.\n\nThe creature exists for a duration specific to each figurine. At the end of the duration, the creature reverts to its figurine form. It reverts to a figurine early if it drops to 0 hit points or if you use an action to speak the command word again while touching it. When the creature becomes a figurine again, its property can't be used again until a certain amount of time has passed, as specified in the figurine's description.\n\n***Bronze Griffon (Rare)***. This bronze statuette is of a griffon rampant. It can become a griffon for up to 6 hours. Once it has been used, it can't be used again until 5 days have passed.\n\n***Ebony Fly (Rare)***. This ebony statuette is carved in the likeness of a horsefly. It can become a giant fly for up to 12 hours and can be ridden as a mount. Once it has been used, it can't be used again until 2 days have passed.\n\n**Giant Fly.**\n\n*Large beast, unaligned*\n\n**Armor Class** 11\n\n**Hit Points** 19 (3d10+3)\n\n**Speed** 30 ft., fly 60 ft.\n\n| STR | DEX | CON | INT | WIS | CHA |\n|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|\n| 14 (+2) | 13 (+1) | 13 (+1) | 2 (-4) | 10 (+0) | 3 (-4) |\n\n**Senses** darkvision 60 ft., passive Perception 10\n\n**Languages** -\n\n***Golden Lions (Rare)***. These gold statuettes of lions are always created in pairs. You can use one figurine or both simultaneously. Each can become a lion for up to 1 hour. Once a lion has been used, it can't be used again until 7 days have passed.\n\n***Ivory Goats (Rare)***. These ivory statuettes of goats are always created in sets of three. Each goat looks unique and functions differently from the others. Their properties are as follows:\n\n- The *goat of traveling* can become a Large goat with the same statistics as a riding horse. It has 24 charges, and each hour or portion thereof it spends in beast form costs 1 charge. While it has charges, you can use it as often as you wish. When it runs out of charges, it reverts to a figurine and can't be used again until 7 days have passed, when it regains all its charges.\n- The *goat of travail* becomes a giant goat for up to 3 hours. Once it has been used, it can't be used again until 30 days have passed.\n- The *goat of terror* becomes a giant goat for up to 3 hours. The goat can't attack, but you can remove its horns and use them as weapons. One horn becomes a *+1 lance*, and the other becomes a *+2 longsword*. Removing a horn requires an action, and the weapons disappear and the horns return when the goat reverts to figurine form. In addition, the goat radiates a 30-foot radius aura of terror while you are riding it. Any creature hostile to you that starts its turn in the aura must succeed on a DC 15 Wisdom saving throw or be frightened of the goat for 1 minute, or until the goat reverts to figurine form. The frightened creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Once it successfully saves against the effect, a creature is immune to the goat's aura for the next 24 hours. Once the figurine has been used, it can't be used again until 15 days have passed.\n\n***Marble Elephant (Rare)***. This marble statuette is about 4 inches high and long. It can become an elephant for up to 24 hours. Once it has been used, it can't be used again until 7 days have passed.\n\n***Obsidian Steed (Very Rare)***. This polished obsidian horse can become a nightmare for up to 24 hours. The nightmare fights only to defend itself. Once it has been used, it can't be used again until 5 days have passed.\n\nIf you have a good alignment, the figurine has a 10 percent chance each time you use it to ignore your orders, including a command to revert to figurine form. If you mount the nightmare while it is ignoring your orders, you and the nightmare are instantly transported to a random location on the plane of Hades, where the nightmare reverts to figurine form.\n\n***Onyx Dog (Rare)***. This onyx statuette of a dog can become a mastiff for up to 6 hours. The mastiff has an Intelligence of 8 and can speak Common. It also has darkvision out to a range of 60 feet and can see invisible creatures and objects within that range. Once it has been used, it can't be used again until 7 days have passed.\n\n***Serpentine Owl (Rare)***. This serpentine statuette of an owl can become a giant owl for up to 8 hours. Once it has been used, it can't be used again until 2 days have passed. The owl can telepathically communicate with you at any range if you and it are on the same plane of existence.\n\n***Silver Raven (Uncommon)***. This silver statuette of a raven can become a raven for up to 12 hours. Once it has been used, it can't be used again until 2 days have passed. While in raven form, the figurine allows you to cast the *animal messenger* spell on it at will.",
    "charges": "24"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3bacd183-7348-5f87-939c-846fc6b1cfd0",
@@ -1925,7 +2015,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "569bd6f3-2fd5-5004-b87d-114f41bce601",
@@ -1938,7 +2029,8 @@
   "properties": {
    "effect": "One command word causes the box to unfold into a boat 10 feet long, 4 feet wide, and 2 feet deep. The boat has one pair of oars, an anchor, a mast, and a lateen sail. The boat can hold up to four Medium creatures comfortably.\n\nThe second command word causes the box to unfold into a ship 24 feet long, 8 feet wide, and 6 feet deep. The ship has a deck, rowing seats, five sets of oars, a steering oar, an anchor, a deck cabin, and a mast with a square sail. The ship can hold fifteen Medium creatures comfortably.\n\nWhen the box becomes a vessel, its weight becomes that of a normal vessel its size, and anything that was stored in the box remains in the boat.\n\nThe third command word causes the *folding boat* to fold back into a box, provided that no creatures are aboard. Any objects in the vessel that can't fit inside the box remain outside the box as it folds. Any objects in the vessel that can fit inside the box do so."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8469ac80-6d90-58e8-8ae7-973d6aff44ec",
@@ -1953,6 +2045,7 @@
    "effect": "In freezing temperatures, the blade sheds bright light in a 10-foot radius and dim light for an additional 10 feet.\n\nWhen you draw this weapon, you can extinguish all nonmagical flames within 30 feet of you. This property can be used no more than once per hour."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -1979,6 +2072,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2007,7 +2101,8 @@
    "effect": "- The first command word causes the gem to shed bright light in a 30-foot radius and dim light for an additional 30 feet. This effect doesn't expend a charge. It lasts until you use a bonus action to repeat the command word or until you use another function of the gem.\n- The second command word expends 1 charge and causes the gem to fire a brilliant beam of light at one creature you can see within 60 feet of you. The creature must succeed on a DC 15 Constitution saving throw or become blinded for 1 minute. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.\n- The third command word expends 5 charges and causes the gem to flare with blinding light in a 30-foot cone originating from it. Each creature in the cone must make a saving throw as if struck by the beam created with the second command word.\n\nWhen all of the gem's charges are expended, the gem becomes a nonmagical jewel worth 50 gp.",
    "charges": "50"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b2e436a7-8245-56c7-8cb4-ebfd7907a9bb",
@@ -2022,7 +2117,8 @@
    "effect": "The gem regains 1d3 expended charges daily at dawn.",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "76441580-f617-5c5b-8b30-d19c01329dc8",
@@ -2036,6 +2132,7 @@
    "effect": "When you hit a giant with it, the giant takes an extra 2d6 damage of the weapon's type and must succeed on a DC 15 Strength saving throw or fall prone. For the purpose of this weapon, \"giant\" refers to any creature with the giant type, including ettins and trolls."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2061,6 +2158,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2086,7 +2184,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "edad5abf-238e-5ca4-89f3-7795ac575ea8",
@@ -2099,7 +2198,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9a435581-0d70-50d0-b350-3492f1a7ed8a",
@@ -2111,6 +2211,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2139,6 +2240,7 @@
    "charges": "5"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2175,7 +2277,8 @@
   "properties": {
    "effect": "Placing an object in the haversack follows the normal rules for interacting with objects. Retrieving an item from the haversack requires you to use an action. When you reach into the haversack for a specific item, the item is always magically on top.\n\nThe haversack has a few limitations. If it is overloaded, or if a sharp object pierces it or tears it, the haversack ruptures and is destroyed. If the haversack is destroyed, its contents are lost forever, although an artifact always turns up again somewhere. If the haversack is turned inside out, its contents spill forth, unharmed, and the haversack must be put right before it can be used again. If a breathing creature is placed within the haversack, the creature can survive for up to 10 minutes, after which time it begins to suffocate.\n\nPlacing the haversack inside an extradimensional space created by a *bag of holding*, *portable hole*, or similar item instantly destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it and deposited in a random location on the Astral Plane. The gate then closes. The gate is one-way only and can't be reopened."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b190612e-4178-51b7-ad5c-bcf302401ef4",
@@ -2188,7 +2291,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f0428337-45a4-5868-9823-cb16910d265b",
@@ -2202,6 +2306,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2231,6 +2336,7 @@
    "effect": "You gain the following benefits while wearing it:\n\n- You can use an action to cast one of the following spells (save DC 18), using one of the helm's gems of the specified type as a component: *daylight* (opal), *fireball* (fire opal), *prismatic spray* (diamond), or *wall of fire* (ruby). The gem is destroyed when the spell is cast and disappears from the helm.\n- As long as it has at least one diamond, the helm emits dim light in a 30-foot radius when at least one undead is within that area. Any undead that starts its turn in that area takes 1d6 radiant damage.\n- As long as the helm has at least one ruby, you have resistance to fire damage.\n- As long as the helm has at least one fire opal, you can use an action and speak a command word to cause one weapon you are holding to burst into flames. The flames emit bright light in a 10-foot radius and dim light for an additional 10 feet. The flames are harmless to you and the weapon. When you hit with an attack using the blazing weapon, the target takes an extra 1d6 fire damage. The flames last until you use a bonus action to speak the command word again or until you drop or stow the weapon.\n\nRoll a d20 if you are wearing the helm and take fire damage as a result of failing a saving throw against a spell. On a roll of 1, the helm emits beams of light from its remaining gems. Each creature within 60 feet of the helm other than you must succeed on a DC 17 Dexterity saving throw or be struck by a beam, taking radiant damage equal to the number of gems in the helm. The helm and its gems are then destroyed."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2254,7 +2360,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9de621ec-a213-55b3-9d6b-f5bb8d170455",
@@ -2268,7 +2375,8 @@
    "attunement": "Requires attunement",
    "effect": "While focusing on a creature with *detect thoughts*, you can use an action to cast the *suggestion* spell (save DC 13) from the helm on that creature. Once used, the *suggestion* property can't be used again until the next dawn."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ab81c31c-4ec0-5a2a-9c70-bca1a1c30126",
@@ -2282,7 +2390,8 @@
    "attunement": "Requires attunement",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d8d13120-8249-5d7e-a37f-c7ed3ca60d9f",
@@ -2297,6 +2406,7 @@
    "effect": "While you hold the drawn sword, it creates an aura in a 10-foot radius around you. You and all creatures friendly to you in the aura have advantage on saving throws against spells and other magical effects. If you have 17 or more levels in the paladin class, the radius of the aura increases to 30 feet."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2334,7 +2444,8 @@
   "properties": {
    "effect": "Each use of the horn's magic has a 20 percent chance of causing the horn to explode. The explosion deals 10d6 fire damage to the blower and destroys the horn."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a41333dd-8eb4-521b-8ae9-b05e18a49b74",
@@ -2347,7 +2458,8 @@
   "properties": {
    "effect": "Four types of *horn of Valhalla* are known to exist, each made of a different metal. The horn's type determines how many berserkers answer its summons, as well as the requirement for its use. The GM chooses the horn's type or determines it randomly.\n\n**Table- Horn of Valhalla**\n\n| d100 | Horn Type | Berserkers Summoned | Requirement |\n|-------|-----------|---------------------|--------------------------------------|\n| 01-40 | Silver | 2d4+2 | None |\n| 41-75 | Brass | 3d4+3 | Proficiency with all simple weapons |\n| 76-90 | Bronze | 4d4+4 | Proficiency with all medium armor |\n| 91-00 | Iron | 5d4+5 | Proficiency with all martial weapons |\n| | | | |\n\nIf you blow the horn without meeting its requirement, the summoned berserkers attack you. If you meet the requirement, they are friendly to you and your companions and follow your commands."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "abf836fc-059d-5246-b2a8-dc865662e6ff",
@@ -2358,7 +2470,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ceecfde3-5d57-5213-a94d-9ec5c9c799a4",
@@ -2369,7 +2482,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "33ea7930-3eac-50e4-97d4-1f93b83b5506",
@@ -2380,7 +2494,8 @@
   "category": "Rod",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4c905fea-99a2-5a38-8bc1-41ff46d384c7",
@@ -2393,7 +2508,8 @@
   "properties": {
    "effect": "The fortress is a square tower, 20 feet on a side and 30 feet high, with arrow slits on all sides and a battlement atop it. Its interior is divided into two floors, with a ladder running along one wall to connect them. The ladder ends at a trapdoor leading to the roof. When activated, the tower has a small door on the side facing you. The door opens only at your command, which you can speak as a bonus action. It is immune to the *knock* spell and similar magic, such as that of a *chime of opening*.\n\nEach creature in the area where the fortress appears must make a DC 15 Dexterity saving throw, taking 10d10 bludgeoning damage on a failed save, or half as much damage on a successful one. In either case, the creature is pushed to an unoccupied space outside but next to the fortress. Objects in the area that aren't being worn or carried take this damage and are pushed automatically.\n\nThe tower is made of adamantine, and its magic prevents it from being tipped over. The roof, the door, and the walls each have 100 hit points,\n\nimmunity to damage from nonmagical weapons excluding siege weapons, and resistance to all other damage. Only a *wish* spell can repair the fortress (this use of the spell counts as replicating a spell of 8th level or lower). Each casting of *wish* causes the roof, the door, or one wall to regain 50 hit points."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a911d428-2303-5ff6-96ec-2a2257c97e48",
@@ -2407,7 +2523,8 @@
    "attunement": "Requires attunement",
    "effect": "When you use an action to toss one of these stones into the air, the stone orbits your head at a distance of 1d3 feet and confers a benefit to you. Thereafter, another creature must use an action to grasp or net the stone to separate it from you, either by making a successful attack roll against AC 24 or a successful DC 24 Dexterity (Acrobatics) check. You can use an action to seize and stow the stone, ending its effect.\n\nA stone has AC 24, 10 hit points, and resistance to all damage. It is considered to be an object that is being worn while it orbits your head.\n\n***Absorption (Very Rare)***. While this pale lavender ellipsoid orbits your head, you can use your reaction to cancel a spell of 4th level or lower cast by a creature you can see and targeting only you.\n\nOnce the stone has canceled 20 levels of spells, it burns out and turns dull gray, losing its magic. If you are targeted by a spell whose level is higher than the number of spell levels the stone has left, the stone can't cancel it.\n\n***Agility (Very Rare)***. Your Dexterity score increases by 2, to a maximum of 20, while this deep red sphere orbits your head.\n\n***Awareness (Rare)***. You can't be surprised while this dark blue rhomboid orbits your head.\n\n***Fortitude (Very Rare)***. Your Constitution score increases by 2, to a maximum of 20, while this pink rhomboid orbits your head.\n\n***Greater Absorption (Legendary)***. While this marbled lavender and green ellipsoid orbits your head, you can use your reaction to cancel a spell of 8th level or lower cast by a creature you can see and targeting only you.\n\nOnce the stone has canceled 50 levels of spells, it burns out and turns dull gray, losing its magic. If you are targeted by a spell whose level is higher than the number of spell levels the stone has left, the stone can't cancel it.\n\n***Insight (Very Rare)***. Your Wisdom score increases by 2, to a maximum of 20, while this incandescent blue sphere orbits your head.\n\n***Intellect (Very Rare)***. Your Intelligence score increases by 2, to a maximum of 20, while this marbled scarlet and blue sphere orbits your head.\n\n***Leadership (Very Rare)***. Your Charisma score increases by 2, to a maximum of 20, while this marbled pink and green sphere orbits your head.\n\n***Mastery (Legendary)***. Your proficiency bonus increases by 1 while this pale green prism orbits your head.\n\n***Protection (Rare)***. You gain a +1 bonus to AC while this dusty rose prism orbits your head.\n\n***Regeneration (Legendary)***. You regain 15 hit points at the end of each hour this pearly white spindle orbits your head, provided that you have at least 1 hit point.\n\n***Reserve (Rare)***. This vibrant purple prism stores spells cast into it, holding them until you use them. The stone can store up to 3 levels worth of spells at a time. When found, it contains 1d4-1 levels of stored spells chosen by the GM.\n\nAny creature can cast a spell of 1st through 3rd level into the stone by touching it as the spell is cast. The spell has no effect, other than to be stored in the stone. If the stone can't hold the spell, the spell is expended without effect. The level of the slot used to cast the spell determines how much space it uses.\n\nWhile this stone orbits your head, you can cast any spell stored in it. The spell uses the slot level, spell save DC, spell attack bonus, and spellcasting ability of the original caster, but is otherwise treated as if you cast the spell. The spell cast from the stone is no longer stored in it, freeing up space.\n\n***Strength (Very Rare)***. Your Strength score increases by 2, to a maximum of 20, while this pale blue rhomboid orbits your head.\n\n***Sustenance (Rare)***. You don't need to eat or drink while this clear spindle orbits your head."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cf202187-399c-5c83-b760-e8efaa1ed3b5",
@@ -2420,7 +2537,8 @@
   "properties": {
    "effect": "Make a ranged attack roll with an attack bonus equal to your Dexterity modifier plus your proficiency bonus. On a hit, the target is restrained until you take a bonus action to speak the command word again to release it. Doing so, or missing with the attack, causes the bands to contract and become a sphere once more.\n\nA creature, including the one restrained, can use an action to make a DC 20 Strength check to break the iron bands. On a success, the item is destroyed, and the restrained creature is freed. If the check fails, any further attempts made by that creature automatically fail until 24 hours have elapsed.\n\nOnce the bands are used, they can't be used again until the next dawn."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d9828122-48e8-5175-9fd5-bfbee1d63931",
@@ -2433,7 +2551,8 @@
   "properties": {
    "effect": "You can use an action to remove the flask's stopper and release the creature the flask contains. The creature is friendly to you and your companions for 1 hour and obeys your commands for that duration. If you give no commands or give it a command that is likely to result in its death, it defends itself but otherwise takes no actions. At the end of the duration, the creature acts in accordance with its normal disposition and alignment.\n\nAn *identify* spell reveals that a creature is inside the flask, but the only way to determine the type of creature is to open the flask. A newly discovered bottle might already contain a creature chosen by the GM or determined randomly.\n\n**Table- Iron Flask**\n\n| d100 | Contents |\n|-------|-------------------|\n| 1‒50 | Empty |\n| 51‒54 | Demon (type 1) |\n| 55‒58 | Demon (type 2) |\n| 59‒62 | Demon (type 3) |\n| 63‒64 | Demon (type 4) |\n| 65 | Demon (type 5) |\n| 66 | Demon (type 6) |\n| 67 | Deva |\n| 68‒69 | Devil (greater) |\n| 70‒73 | Devil (lesser) |\n| 74‒75 | Djinni |\n| 76‒77 | Efreeti |\n| 78‒83 | Elemental (any) |\n| 84‒86 | Invisible stalker |\n| 87‒90 | Night hag |\n| 91 | Planetar |\n| 92‒95 | Salamander |\n| 96 | Solar |\n| 97‒99 | Succubus/incubus |\n| 100 | Xorn |\n| | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "63c09707-b612-5597-b848-90a379e48120",
@@ -2446,7 +2565,8 @@
   "properties": {
    "effect": "The javelin's property can't be used again until the next dawn. In the meantime, the javelin can still be used as a magic weapon."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6a31aeee-c17c-51a6-a13a-029a2775b04e",
@@ -2457,7 +2577,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "dd435678-a34f-5c2b-a252-26cf13b99cd7",
@@ -2473,6 +2594,7 @@
    "charges": "1"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2510,7 +2632,8 @@
    "attunement": "Requires attunement",
    "effect": "While you hold this weapon, it sheds bright light in a 20-foot radius and dim light for an additional 20 feet."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "18046f73-26f1-5e7d-a47b-68f1a0a093a1",
@@ -2524,6 +2647,7 @@
    "effect": "When you roll a 20 on an attack roll made with this weapon, the target takes an extra 2d6 bludgeoning damage, or 4d6 bludgeoning damage if it's a construct. If a construct has 25 hit points or fewer after taking this damage, it is destroyed."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2552,7 +2676,8 @@
    "effect": "The mace regains 1d3 expended charges daily at dawn.",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9cc216c2-e99c-551f-98b9-00a7d001a548",
@@ -2566,6 +2691,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2592,6 +2718,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2617,6 +2744,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2643,7 +2771,8 @@
   "properties": {
    "effect": "**Table- Manual of Golems**\n\n| d20 | Golem | Time | Cost |\n|-------|-------|----------|------------|\n| 1-5 | Clay | 30 days | 65,000 gp |\n| 6-17 | Flesh | 60 days | 50,000 gp |\n| 18 | Iron | 120 days | 100,000 gp |\n| 19-20 | Stone | 90 days | 80,000 gp |\n| | | | |\n\nTo create a golem, you must spend the time shown on the table, working without interruption with the manual at hand and resting no more than 8 hours per day. You must also pay the specified cost to purchase supplies.\n\nOnce you finish creating the golem, the book is consumed in eldritch flames. The golem becomes animate when the ashes of the manual are sprinkled on it. It is under your control, and it understands and obeys your spoken commands."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e6f378bd-8cf0-541d-9af4-1a3cb9ebcc12",
@@ -2655,6 +2784,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2681,7 +2811,8 @@
   "properties": {
    "effect": "Each pot of paint is sufficient to cover 1,000 square feet of a surface, which lets you create inanimate objects or terrain features-such as a door, a pit, flowers, trees, cells, rooms, or weapons - that are up to 10,000 cubic feet. It takes 10 minutes to cover 100 square feet.\n\nWhen you complete the painting, the object or terrain feature depicted becomes a real, nonmagical object. Thus, painting a door on a wall creates an actual door that can be opened to whatever is beyond. Painting a pit on a floor creates a real pit, and its depth counts against the total area of objects you create.\n\nNothing created by the pigments can have a value greater than 25 gp. If you paint an object of greater value (such as a diamond or a pile of gold), the object looks authentic, but close inspection reveals it is made from paste, bone, or some other worthless material.\n\nIf you paint a form of energy such as fire or lightning, the energy appears but dissipates as soon as you complete the painting, doing no harm to anything."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9cb03d02-5608-5e81-a3cf-414cb27e4308",
@@ -2695,7 +2826,8 @@
    "attunement": "Requires attunement",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a7d2dcf9-e322-5ccf-b0a4-f12bd9758501",
@@ -2708,7 +2840,8 @@
   "properties": {
    "effect": "If the mirror is hanging on a vertical surface and you are within 5 feet of it, you can use an action to speak its command word and activate it. It remains activated until you use an action to speak the command word again.\n\nAny creature other than you that sees its reflection in the activated mirror while within 30 feet of it must succeed on a DC 15 Charisma saving throw or be trapped, along with anything it is wearing or carrying, in one of the mirror's twelve extradimensional cells. This saving throw is made with advantage if the creature knows the mirror's nature, and constructs succeed on the saving throw automatically.\n\nAn extradimensional cell is an infinite expanse filled with thick fog that reduces visibility to 10 feet. Creatures trapped in the mirror's cells don't age, and they don't need to eat, drink, or sleep. A creature trapped within a cell can escape using magic that permits planar travel. Otherwise, the creature is confined to the cell until freed.\n\nIf the mirror traps a creature but its twelve extradimensional cells are already occupied, the mirror frees one trapped creature at random to accommodate the new prisoner. A freed creature appears in an unoccupied space within sight of the mirror but facing away from it. If the mirror is shattered, all creatures it contains are freed and appear in unoccupied spaces near it.\n\nWhile within 5 feet of the mirror, you can use an action to speak the name of one creature trapped in it or call out a particular cell by number. The creature named or contained in the named cell appears as an image on the mirror's surface. You and the creature can then communicate normally.\n\nIn a similar way, you can use an action to speak a second command word and free one creature trapped in the mirror. The freed creature appears, along with its possessions, in the unoccupied space nearest to the mirror and facing away from it."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7c8e7946-44bd-53aa-8daf-43a9828e369c",
@@ -2719,7 +2852,8 @@
   "category": "Armor",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "16fb5b5d-ab13-5176-abdd-884f01aa83ab",
@@ -2733,6 +2867,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2760,7 +2895,8 @@
   "properties": {
    "effect": "You can hurl multiple beads, or even the whole necklace, as one action. When you do so, increase the level of the *fireball* by 1 for each bead beyond the first."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "813fb70c-893c-58ed-ab7d-7663df2742d9",
@@ -2774,7 +2910,8 @@
    "attunement": "Requires attunement by a cleric, druid, or paladin",
    "effect": "Six types of magic beads exist. The GM decides the type of each bead on the necklace or determines it randomly. A necklace can have more than one bead of the same type. To use one, you must be wearing the necklace. Each bead contains a spell that you can cast from it as a bonus action (using your spell save DC if a save is necessary). Once a magic bead's spell is cast, that bead can't be used again until the next dawn.\n\n**Table- Necklace of Prayer Beads**\n\n| d20 | Bead of ... | Spell |\n|-------|--------------|-----------------------------------------------|\n| 1-6 | Blessing | Bless |\n| 7-12 | Curing | Cure wounds (2nd level) or lesser restoration |\n| 13-16 | Favor | Greater restoration |\n| 17-18 | Smiting | Branding smite |\n| 19 | Summons | Planar ally |\n| 20 | Wind walking | Wind walk |\n| | | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "98507595-7ed9-5615-9ae4-fb21d230235e",
@@ -2790,6 +2927,7 @@
    "charges": "1"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2818,6 +2956,7 @@
    "effect": "When you make a ranged attack roll with this weapon against your sworn enemy, you have advantage on the roll. In addition, your target gains no benefit from cover, other than total cover, and you suffer no disadvantage due to long range. If the attack hits, your sworn enemy takes an extra 3d6 piercing damage.\n\nWhile your sworn enemy lives, you have disadvantage on attack rolls with all other weapons."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2854,7 +2993,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "86f5ba46-0c5b-5ec5-9d03-7659fe698858",
@@ -2865,7 +3005,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d94947d2-90ea-5e46-904c-47d68a1bbbff",
@@ -2878,7 +3019,8 @@
   "properties": {
    "effect": "Alternatively, the oil can be poured on the ground as an action, where it covers a 10-foot square, duplicating the effect of the *grease* spell in that area for 8 hours."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "791dbd16-2a90-5722-b8d3-67b1a8d5d367",
@@ -2891,7 +3033,8 @@
   "properties": {
    "attunement": "Requires attunement by a spellcaster"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d9a1a040-30c2-5b43-9434-f1d5dbdf2699",
@@ -2902,7 +3045,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cbdc9d26-e3d6-5ab9-9f9d-e50d32281070",
@@ -2914,6 +3058,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -2939,7 +3084,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cc8508c1-d68b-5100-98e9-60bcad872489",
@@ -2950,7 +3096,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d7cc5f4b-6773-5545-a0cf-087b81f35b29",
@@ -2963,7 +3110,8 @@
   "properties": {
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "40bf31fa-a1fd-549c-bc69-3e6ef5122ba9",
@@ -2978,7 +3126,8 @@
    "effect": "The pipes have 3 charges. If you play the pipes as an action, you can use a bonus action to expend 1 to 3 charges, calling forth one swarm of rats with each expended charge, provided that enough rats are within half a mile of you to be called in this fashion (as determined by the GM). If there aren't enough rats to form a swarm, the charge is wasted. Called swarms move toward the music by the shortest available route but aren't under your control otherwise. The pipes regain 1d3 expended charges daily at dawn.\n\nWhenever a swarm of rats that isn't under another creature's control comes within 30 feet of you while you are playing the pipes, you can make a Charisma check contested by the swarm's Wisdom check. If you lose the contest, the swarm behaves as it normally would and can't be swayed by the pipes' music for the next 24 hours. If you win the contest, the swarm is swayed by the pipes' music and becomes friendly to you and your companions for as long as you continue to play the pipes each round as an action. A friendly swarm obeys your commands. If you issue no commands to a friendly swarm, it defends itself but otherwise takes no actions. If a friendly swarm starts its turn and can't hear the pipes' music, your control over that swarm ends, and the swarm behaves as it normally would and can't be swayed by the pipes' music for the next 24 hours.",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e0f39150-d320-586d-8f90-4a29724387a0",
@@ -2991,7 +3140,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "454a12dc-ac8a-5edf-ae9a-38a8dac1035f",
@@ -3004,7 +3154,8 @@
   "properties": {
    "effect": "You can use an action to unfold a *portable hole* and place it on or against a solid surface, whereupon the *portable hole* creates an extradimensional hole 10 feet deep. The cylindrical space within the hole exists on a different plane, so it can't be used to create open passages. Any creature inside an open *portable hole* can exit the hole by climbing out of it.\n\nYou can use an action to close a *portable hole* by taking hold of the edges of the cloth and folding it up. Folding the cloth closes the hole, and any creatures or objects within remain in the extradimensional space. No matter what's in it, the hole weighs next to nothing.\n\nIf the hole is folded up, a creature within the hole's extradimensional space can use an action to make a DC 10 Strength check. On a successful check, the creature forces its way out and appears within 5 feet of the *portable hole* or the creature carrying it. A breathing creature within a closed *portable hole* can survive for up to 10 minutes, after which time it begins to suffocate.\n\nPlacing a *portable hole* inside an extradimensional space created by a *bag of holding*, *handy haversack*, or similar item instantly destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it and deposited in a random location on the Astral Plane. The gate then closes. The gate is one-way only and can't be reopened."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e828bb58-5965-5e54-ae21-29e4bb175782",
@@ -3015,7 +3166,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "eae9c76c-610b-5369-8bd8-82f6dff91eb1",
@@ -3026,7 +3178,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "288e580f-899f-5ed3-8243-373b44ca0016",
@@ -3037,7 +3190,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "be991cae-c4a1-576e-9594-337c13b7fdf4",
@@ -3048,7 +3202,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0bc2ea4d-ab10-5507-9729-4c2e00ed6af7",
@@ -3059,7 +3214,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "dac5f1d5-c3dc-5c64-abb9-82ad3794a1ab",
@@ -3070,7 +3226,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "96274dd5-dfd1-54a8-aaf9-b060ea518d9d",
@@ -3083,7 +3240,8 @@
   "properties": {
    "effect": "This potion's transparent liquid has floating in it a sliver of fingernail from a giant of the appropriate type. The *potion of frost giant strength* and the *potion of stone giant strength* have the same effect.\n\n**Table- Potion of Giant Strength**\n\n| Type of Giant | Strength | Rarity |\n|-------------------|----------|-----------|\n| Hill giant | 21 | Uncommon |\n| Frost/stone giant | 23 | Rare |\n| Fire giant | 25 | Rare |\n| Cloud giant | 27 | Very rare |\n| Storm giant | 29 | Legendary |\n| | | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "59d3b0ee-e236-57d6-9ec3-b204037fbb89",
@@ -3094,7 +3252,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "29a543f1-0e95-59c0-9383-52a4fca842f7",
@@ -3107,7 +3266,8 @@
   "properties": {
    "effect": "**Table- Potions of Healing**\n\n| Potion of ... | Rarity | HP Regained |\n|------------------|-----------|-------------|\n| Healing | Common | 2d4+2 |\n| Greater healing | Uncommon | 4d4+4 |\n| Superior healing | Rare | 8d4+8 |\n| Supreme healing | Very rare | 10d4+20 |\n| | | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "19240abf-8d28-5729-a91f-bff81c5e6e43",
@@ -3118,7 +3278,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e7b596b3-6108-542a-9ae3-88aa0a386318",
@@ -3129,7 +3290,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "27d02239-14df-5eb0-b652-39cfe82234c6",
@@ -3140,7 +3302,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "831f31e4-a006-582b-8308-140a94ea18fe",
@@ -3153,7 +3316,8 @@
   "properties": {
    "effect": "If you drink it, you take 3d6 poison damage, and you must succeed on a DC 13 Constitution saving throw or be poisoned. At the start of each of your turns while you are poisoned in this way, you take 3d6 poison damage. At the end of each of your turns, you can repeat the saving throw. On a successful save, the poison damage you take on your subsequent turns decreases by 1d6. The poison ends when the damage decreases to 0."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d52ac396-c4ea-5f5f-8ef1-f21803caccfc",
@@ -3166,7 +3330,8 @@
   "properties": {
    "effect": "**Table- Potion of Resistance**\n\n| d10 | Damage Type |\n|-----|-------------|\n| 1 | Acid |\n| 2 | Cold |\n| 3 | Fire |\n| 4 | Force |\n| 5 | Lightning |\n| 6 | Necrotic |\n| 7 | Poison |\n| 8 | Psychic |\n| 9 | Radiant |\n| 10 | Thunder |\n| | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7b6beb7d-108d-5c25-94ec-6bae2724dc82",
@@ -3177,7 +3342,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a2d09b64-f21b-559d-87f1-3326e283380c",
@@ -3188,7 +3354,8 @@
   "category": "Potion",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f256377c-cc72-5268-8d4b-1c2f46f2b100",
@@ -3201,7 +3368,8 @@
   "properties": {
    "effect": "As an action, one dose of the ointment can be swallowed or applied to the skin. The creature that receives it regains 2d8+2 hit points, ceases to be poisoned, and is cured of any disease."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f4918221-c2e4-5f89-a910-8d486255c85f",
@@ -3215,7 +3383,8 @@
    "effect": "- Animal friendship (save DC 13)\n- Fear (save DC 13), targeting only beasts that have an Intelligence of 3 or lower\n- Speak with animals",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "46051c82-9d9b-517b-bb7a-f1f3d9b29251",
@@ -3229,7 +3398,8 @@
    "attunement": "Requires attunement",
    "effect": "While summoned, the djinni is friendly to you and your companions. It obeys any commands you give it, no matter what language you use. If you fail to command it, the djinni defends itself against attackers but takes no other actions.\n\nAfter the djinni departs, it can't be summoned again for 24 hours, and the ring becomes nonmagical if the djinni dies."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "24838d77-19fc-5f94-bdc4-c63797d7d3af",
@@ -3244,7 +3414,8 @@
    "effect": "While wearing this ring, you have advantage on attack rolls against elementals from the linked plane, and they have disadvantage on attack rolls against you. In addition, you have access to properties based on the linked plane.\n\nThe ring has 5 charges. It regains 1d4+1 expended charges daily at dawn. Spells cast from the ring have a save DC of 17.\n\n***Ring of Air Elemental Command***. You can expend 2 of the ring's charges to cast *dominate monster* on an air elemental. In addition, when you fall, you descend 60 feet per round and take no damage from falling. You can also speak and understand Auran.\n\nIf you help slay an air elemental while attuned to the ring, you gain access to the following additional properties:\n\n- You have resistance to lightning damage.\n- You have a flying speed equal to your walking speed and can hover.\n- You can cast the following spells from the ring, expending the necessary number of charges: *chain lightning* (3 charges), *gust of wind* (2 charges), or *wind wall* (1 charge).\n\n***Ring of Earth Elemental Command***. You can expend 2 of the ring's charges to cast *dominate monster* on an earth elemental. In addition, you can move in difficult terrain that is composed of rubble, rocks, or dirt as if it were normal terrain. You can also speak and understand Terran.\n\nIf you help slay an earth elemental while attuned to the ring, you gain access to the following additional properties:\n\n- You have resistance to acid damage.\n- You can move through solid earth or rock as if those areas were difficult terrain. If you end your turn there, you are shunted out to the nearest unoccupied space you last occupied.\n- You can cast the following spells from the ring, expending the necessary number of charges: *stone shape* (2 charges), *stoneskin* (3 charges), or *wall of stone* (3 charges).\n\n***Ring of Fire Elemental Command***. You can expend 2 of the ring's charges to cast *dominate monster* on a fire elemental. In addition, you have resistance to fire damage. You can also speak and understand Ignan.\n\nIf you help slay a fire elemental while attuned to the ring, you gain access to the following additional properties:\n\n- You are immune to fire damage.\n- You can cast the following spells from the ring, expending the necessary number of charges: *burning hands* (1 charge), *fireball* (2 charges), and *wall of fire* (3 charges).\n\n***Ring of Water Elemental Command***. You can expend 2 of the ring's charges to cast *dominate monster* on a water elemental. In addition, you can stand on and walk across liquid surfaces as if they were solid ground. You can also speak and understand Aquan.\n\nIf you help slay a water elemental while attuned to the ring, you gain access to the following additional properties:\n\n- You can breathe underwater and have a swimming speed equal to your walking speed.\n- You can cast the following spells from the ring, expending the necessary number of charges: *create or destroy water* (1 charge), *control water* (3 charges), *ice storm* (2 charges), or *wall of ice* (3 charges).",
    "charges": "5"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c1b29ca5-da89-5dfe-933a-0172f33055ae",
@@ -3258,7 +3429,8 @@
    "attunement": "Requires attunement",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "37914882-2d3d-522e-a2ef-5cf7223f47dc",
@@ -3271,7 +3443,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a9ecab1a-0fcf-5b85-90dc-9ddf31765fe4",
@@ -3284,7 +3457,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1c7e3b8d-9387-5c7f-a64f-fdbfde2fdf0b",
@@ -3297,7 +3471,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "dd10d631-1b9b-5947-9374-96572c16848e",
@@ -3310,7 +3485,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4ff39e30-dc8c-52e6-a269-4b23233849da",
@@ -3324,7 +3500,8 @@
    "attunement": "Requires attunement",
    "effect": "You can use an action to cause the ring to become invisible until you use another action to make it visible, until you remove the ring, or until you die.\n\nIf you die while wearing the ring, your soul enters it, unless it already houses a soul. You can remain in the ring or depart for the afterlife. As long as your soul is in the ring, you can telepathically communicate with any creature wearing it. A wearer can't prevent this telepathic communication."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c04a52fb-6cd0-51fe-a850-51cb10ae9fea",
@@ -3338,6 +3515,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3373,7 +3551,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a7dc8f79-beb6-5094-bfb2-abe111aa4cb7",
@@ -3388,6 +3567,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3415,6 +3595,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3442,6 +3623,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3469,6 +3651,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3496,6 +3679,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3523,6 +3707,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3550,6 +3735,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3577,6 +3763,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3604,6 +3791,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3631,6 +3819,7 @@
    "effect": "**Table- Ring of Resistance**\n\n| d10 | Damage Type | Gem |\n|-----|-------------|------------|\n| 1 | Acid | Pearl |\n| 2 | Cold | Tourmaline |\n| 3 | Fire | Garnet |\n| 4 | Force | Sapphire |\n| 5 | Lightning | Citrine |\n| 6 | Necrotic | Jet |\n| 7 | Poison | Amethyst |\n| 8 | Psychic | Jade |\n| 9 | Radiant | Topaz |\n| 10 | Thunder | Spinel |\n| | | |"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3658,7 +3847,8 @@
    "effect": "The ring has 6 charges for the following other properties. The ring regains 1d6 expended charges daily at dawn.\n\n***Faerie Fire***. You can expend 1 charge as an action to cast *faerie fire* from the ring.\n\n***Ball Lightning***. You can expend 2 charges as an action to create one to four 3-foot diameter spheres of lightning. The more spheres you create, the less powerful each sphere is individually.\n\nEach sphere appears in an unoccupied space you can see within 120 feet of you. The spheres last as long as you concentrate (as if concentrating on a spell), up to 1 minute. Each sphere sheds dim light in a 30-foot radius.\n\nAs a bonus action, you can move each sphere up to 30 feet, but no farther than 120 feet away from you. When a creature other than you comes within 5 feet of a sphere, the sphere discharges lightning at that creature and disappears. That creature must make a DC 15 Dexterity saving throw. On a failed save, the creature takes lightning damage based on the number of spheres you created.\n\n**Table- Ring of Shooting Stars**\n\n| Spheres | Lightning Damage |\n|---------|------------------|\n| 4 | 2d4 |\n| 3 | 2d6 |\n| 2 | 5d4 |\n| 1 | 4d12 |\n| | |\n\n***Shooting Stars***. You can expend 1 to 3 charges as an action. For every charge you expend, you launch a glowing mote of light from the ring at a point you can see within 60 feet of you. Each creature within a 15-foot cube originating from that point is showered in sparks and must make a DC 15 Dexterity saving throw, taking 5d4 fire damage on a failed save, or half as much damage on a successful one.",
    "charges": "6"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7130d2ca-eb42-5402-aa7d-1462b515e909",
@@ -3672,7 +3862,8 @@
    "attunement": "Requires attunement",
    "effect": "Any creature can cast a spell of 1st through 5th level into the ring by touching the ring as the spell is cast. The spell has no effect, other than to be stored in the ring. If the ring can't hold the spell, the spell is expended without effect. The level of the slot used to cast the spell determines how much space it uses.\n\nWhile wearing this ring, you can cast any spell stored in it. The spell uses the slot level, spell save DC, spell attack bonus, and spellcasting ability of the original caster, but is otherwise treated as if you cast the spell. The spell cast from the ring is no longer stored in it, freeing up space."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "bbc3f2ff-cd61-5d53-b57b-6f303b5b5561",
@@ -3686,6 +3877,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3712,6 +3904,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3738,7 +3931,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "87e43564-ecd8-55b7-9d31-d89478fc4e6a",
@@ -3751,7 +3945,8 @@
   "properties": {
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e29120e4-944b-5d39-83c6-df1a76def26d",
@@ -3765,6 +3960,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3788,7 +3984,8 @@
   "category": "Ring",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "986126a8-3513-5b40-8b98-7e1ef07b07e4",
@@ -3802,7 +3999,8 @@
    "attunement": "Requires attunement",
    "effect": "Whenever you use the ring again before taking a long rest, you must succeed on a DC 15 Constitution saving throw or gain one level of exhaustion."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "59a240bf-8939-5e6a-9d2f-4c6d7945e6e1",
@@ -3817,7 +4015,8 @@
    "effect": "Alternatively, you can expend 1 to 3 of the ring's charges as an action to try to break an object you can see within 60 feet of you that isn't being worn or carried. The ring makes a Strength check with a +5 bonus for each charge you spend.",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "56865761-b162-5916-93b6-9b77a2877364",
@@ -3832,6 +4031,7 @@
    "effect": "- The robe lets you see in all directions, and you have advantage on Wisdom (Perception) checks that rely on sight.\n- You have darkvision out to a range of 120 feet.\n- You can see invisible creatures and objects, as well as see into the Ethereal Plane, out to a range of 120 feet.\n\nThe eyes on the robe can't be closed or averted. Although you can close or avert your own eyes, you are never considered to be doing so while wearing this robe.\n\nA *light* spell cast on the robe or a *daylight* spell cast within 5 feet of the robe causes you to be blinded for 1 minute. At the end of each of your turns, you can make a Constitution saving throw (DC 11 for *light* or DC 15 for *daylight*), ending the blindness on a success."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3870,7 +4070,8 @@
    "attunement": "Requires attunement",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1ad66835-4270-519b-bb9f-c0a2817b7dce",
@@ -3885,6 +4086,7 @@
    "effect": "Six stars, located on the robe's upper front portion, are particularly large. While wearing this robe, you can use an action to pull off one of the stars and use it to cast *magic missile* as a 5th-level spell. Daily at dusk, 1d6 removed stars reappear on the robe.\n\nWhile you wear the robe, you can use an action to enter the Astral Plane along with everything you are wearing and carrying. You remain there until you use an action to return to the plane you were on. You reappear in the last space you occupied, or if that space is occupied, the nearest unoccupied space."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3911,7 +4113,8 @@
   "properties": {
    "effect": "The robe has two of each of the following patches:\n\n- Dagger\n- Bullseye lantern (filled and lit)\n- Steel mirror\n- 10-foot pole\n- Hempen rope (50 feet, coiled)\n- Sack\n\nIn addition, the robe has 4d4 other patches. The GM chooses the patches or determines them randomly.\n\n**Table- Robe of Useful Items**\n\n| d100 | Patch |\n|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n| 01-08 | Bag of 100 gp |\n| 09-15 | Silver coffer (1 foot long, 6 inches wide and deep) worth 500 gp |\n| 16-22 | Iron door (up to 10 feet wide and 10 feet high, barred on one side of your choice), which you can place in an opening you can reach; it conforms to fit the opening, attaching and hinging itself |\n| 23-30 | 10 gems worth 100 gp each |\n| 31-44 | Wooden ladder (24 feet long) 45-51 A riding horse with saddle bags |\n| 52-59 | Pit (a cube 10 feet on a side), which you can place on the ground within 10 feet of you |\n| 60-68 | 4 potions of healing |\n| 69-75 | Rowboat (12 feet long) |\n| 76-83 | Spell scroll containing one spell of 1st to 3rd level |\n| 84-90 | 2 mastiffs |\n| 91-96 | Window (2 feet by 4 feet, up to 2 feet deep), which you can place on a vertical surface you can reach |\n| 97-100 | Portable ram |\n| | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1e98715c-f3bc-5f32-818b-3b170c555692",
@@ -3926,6 +4129,7 @@
    "effect": "You gain these benefits while wearing the robe:\n\n- If you aren't wearing armor, your base Armor Class is 15+your Dexterity modifier.\n- You have advantage on saving throws against spells and other magical effects.\n- Your spell save DC and spell attack bonus each increase by 2."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -3964,7 +4168,8 @@
    "attunement": "Requires attunement",
    "effect": "When you become attuned to the rod, you know how many levels of energy the rod has absorbed over the course of its existence, and how many levels of spell energy it currently has stored.\n\nIf you are a spellcaster holding the rod, you can convert energy stored in it into spell slots to cast spells you have prepared or know. You can create spell slots only of a level equal to or lower than your own spell slots, up to a maximum of 5th level. You use the stored levels in place of your slots, but otherwise cast the spell as normal. For example, you can use 3 levels stored in the rod as a 3rd-level spell slot.\n\nA newly found rod has 1d10 levels of spell energy stored in it already. A rod that can no longer absorb spell energy and has no energy remaining becomes nonmagical."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f98face1-8d9d-53e2-b208-26f74c4536bd",
@@ -3979,6 +4184,7 @@
    "effect": "***Alertness***. While holding the rod, you have advantage on Wisdom (Perception) checks and on rolls for initiative.\n\n***Spells***. While holding the rod, you can use an action to cast one of the following spells from it: *detect evil and good*, *detect magic*, *detect poison and disease*, or *see invisibility.*\n\n***Protective Aura***. As an action, you can plant the haft end of the rod in the ground, whereupon the rod's head sheds bright light in a 60-foot radius and dim light for an additional 60 feet. While in that bright light, you and any creature that is friendly to you gain a +1 bonus to AC and saving throws and can sense the location of any invisible hostile creature that is also in the bright light.\n\nThe rod's head stops glowing and the effect ends after 10 minutes, or when a creature uses an action to pull the rod from the ground. This property can't be used again until the next dawn."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4018,6 +4224,7 @@
    "effect": "***Six Buttons***. You can press one of the rod's six buttons as a bonus action. A button's effect lasts until you push a different button or until you push the same button again, which causes the rod to revert to its normal form.\n\nIf you press **button 1**, the rod becomes a *flame tongue*, as a fiery blade sprouts from the end opposite the rod's flanged head (you choose the type of sword).\n\nIf you press **button 2**, the rod's flanged head folds down and two crescent-shaped blades spring out, transforming the rod into a magic battleaxe that grants a +3 bonus to attack and damage rolls made with it.\n\nIf you press **button 3**, the rod's flanged head folds down, a spear point springs from the rod's tip, and the rod's handle lengthens into a 6-foot haft, transforming the rod into a magic spear that grants a +3 bonus to attack and damage rolls made with it.\n\nIf you press **button 4**, the rod transforms into a climbing pole up to 50 feet long, as you specify. In surfaces as hard as granite, a spike at the bottom and three hooks at the top anchor the pole. Horizontal bars 3 inches long fold out from the sides, 1 foot apart, forming a ladder. The pole can bear up to 4,000 pounds. More weight or lack of solid anchoring causes the rod to revert to its normal form.\n\nIf you press **button 5**, the rod transforms into a handheld battering ram and grants its user a +10 bonus to Strength checks made to break through doors, barricades, and other barriers.\n\nIf you press **button 6**, the rod assumes or remains in its normal form and indicates magnetic north. (Nothing happens if this function of the rod is used in a location that has no magnetic north.) The rod also gives you knowledge of your approximate depth beneath the ground or your height above it.\n\n***Drain Life***. When you hit a creature with a melee attack using the rod, you can force the target to make a DC 17 Constitution saving throw. On a failure, the target takes an extra 4d6 necrotic damage, and you regain a number of hit points equal to half that necrotic damage. This property can't be used again until the next dawn.\n\n***Paralyze***. When you hit a creature with a melee attack using the rod, you can force the target to make a DC 17 Strength saving throw. On a failure, the target is paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on a success. This property can't be used again until the next dawn.\n\n***Terrify***. While holding the rod, you can use an action to force each creature you can see within 30 feet of you to make a DC 17 Wisdom saving throw. On a failure, a target is frightened of you for 1 minute. A frightened target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. This property can't be used again until the next dawn."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4045,7 +4252,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3ee16b15-0128-50ad-bada-5cfda3e9a8bf",
@@ -4058,7 +4266,8 @@
   "properties": {
    "effect": "For each hour spent in the paradise, a visitor regains hit points as if it had spent 1 Hit Die. Also, creatures don't age while in the paradise, although time passes normally. Visitors can remain in the paradise for up to 200 days divided by the number of creatures present (round down).\n\nWhen the time runs out or you use an action to end it, all visitors reappear in the location they occupied when you activated the rod, or an unoccupied space nearest that location. The rod can't be used again until ten days have passed."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "59d8ce92-18d3-5272-a62e-ed8febd7c5a3",
@@ -4071,7 +4280,8 @@
   "properties": {
    "effect": "If you tell the rope to knot, large knots appear at 1-foot intervals along the rope. While knotted, the rope shortens to a 50-foot length and grants advantage on checks made to climb it.\n\nThe rope has AC 20 and 20 hit points. It regains 1 hit point every 5 minutes as long as it has at least 1 hit point. If the rope drops to 0 hit points, it is destroyed."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4027ddb4-96f1-5faf-a5f4-bf6f7a058365",
@@ -4084,7 +4294,8 @@
   "properties": {
    "effect": "You can release the creature by using a bonus action to speak a second command word. A target restrained by the rope can use an action to make a DC 15 Strength or Dexterity check (target's choice). On a success, the creature is no longer restrained by the rope.\n\nThe rope has AC 20 and 20 hit points. It regains 1 hit point every 5 minutes as long as it has at least 1 hit point. If the rope drops to 0 hit points, it is destroyed."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cd93d302-669b-5eed-bc07-08110df1aee9",
@@ -4100,6 +4311,7 @@
    "charges": "12"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4128,6 +4340,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4153,6 +4366,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4177,6 +4391,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4201,6 +4416,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4227,7 +4443,8 @@
    "attunement": "Requires attunement",
    "effect": "***Curse***. This shield is cursed. Attuning to it curses you until you are targeted by the *remove curse* spell or similar magic. Removing the shield fails to end the curse on you. Whenever a ranged weapon attack is made against a target within 10 feet of you, the curse causes you to become the target instead."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c2fe725a-b0fe-53e5-b9d3-3734080d45da",
@@ -4241,6 +4458,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4266,7 +4484,8 @@
   "properties": {
    "effect": "One ounce of the glue can cover a 1-foot square surface. The glue takes 1 minute to set. Once it has done so, the bond it creates can be broken only by the application of *universal solvent* or *oil of etherealness*, or with a *wish* spell."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f8d95e54-46ec-5098-bf9e-7c2bafc061e0",
@@ -4279,7 +4498,8 @@
   "properties": {
    "effect": "If the spell is on your class's spell list but of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10+the spell's level. On a failed check, the spell disappears from the scroll with no other effect. Once the spell is cast, the words on the scroll fade, and the scroll itself crumbles to dust.\n\nThe level of the spell on the scroll determines the spell's saving throw DC and attack bonus, as well as the scroll's rarity, as shown in the Spell Scroll table.\n\n**Table- Spell Scroll**\n\n| Spell Level | Rarity | Save DC | Attack Bonus |\n|-------------|-----------|---------|--------------|\n| Cantrip | Common | 13 | +5 |\n| 1st | Common | 13 | +5 |\n| 2nd | Uncommon | 13 | +5 |\n| 3rd | Uncommon | 15 | +7 |\n| 4th | Rare | 15 | +7 |\n| 5th | Rare | 17 | +9 |\n| 6th | Very rare | 17 | +9 |\n| 7th | Very rare | 18 | +10 |\n| 8th | Very rare | 18 | +10 |\n| 9th | Legendary | 19 | +11 |\n| | | | |\n\nA wizard spell on a *spell scroll* can be copied just as spells in spellbooks can be copied. When a spell is copied from a the copier must succeed on an Intelligence (Arcana) check with a DC equal to 10+the spell's level. If the check succeeds, the spell is successfully copied. Whether the check succeeds or fails, the *spell scroll* is destroyed."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4f054ae5-176a-52bf-b619-956349959925",
@@ -4293,6 +4513,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4320,7 +4541,8 @@
   "properties": {
    "effect": "The sphere obliterates all matter it passes through and all matter that passes through it. Artifacts are the exception. Unless an artifact is susceptible to damage from a *sphere of annihilation*, it passes through the sphere unscathed. Anything else that touches the sphere but isn't wholly engulfed and obliterated by it takes 4d10 force damage.\n\nThe sphere is stationary until someone controls it. If you are within 60 feet of an uncontrolled sphere, you can use an action to make a DC 25 Intelligence (Arcana) check. On a success, the sphere levitates in one direction of your choice, up to a number of feet equal to 5 × your Intelligence modifier (minimum 5 feet). On a failure, the sphere moves 10 feet toward you. A creature whose space the sphere enters must succeed on a DC 13 Dexterity saving throw or be touched by it, taking 4d10 force damage.\n\nIf you attempt to control a sphere that is under another creature's control, you make an Intelligence (Arcana) check contested by the other creature's Intelligence (Arcana) check. The winner of the contest gains control of the sphere and can levitate it as normal.\n\nIf the sphere comes into contact with a planar portal, such as that created by the *gate* spell, or an extradimensional space, such as that within a *portable hole*, the GM determines randomly what happens, using the following table.\n\n**Table- Sphere of Annihilation**\n\n| d100 | Result |\n|-------|------------------------------------------------------------------------------------------------------------------------------------|\n| 01-50 | The sphere is destroyed. |\n| 51-85 | The sphere moves through the portal or into the extradimensional space. |\n| 86-00 | A spatial rift sends each creature and object within 180 feet of the sphere, including the sphere, to a random plane of existence. |\n| | |"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8cc0cf3c-5eab-5fbd-bf88-f8071e4adc3b",
@@ -4335,7 +4557,8 @@
    "effect": "If you are holding the staff and fail a saving throw against an enchantment spell that targets only you, you can turn your failed save into a successful one. You can't use this property of the staff again until the next dawn. If you succeed on a save against an enchantment spell that targets only you, with or without the staff's intervention, you can use your reaction to expend 1 charge from the staff and turn the spell back on its caster as if you had cast the spell.\n\nThe staff regains 1d8+2 expended charges daily at dawn. If you expend the last charge, roll a d20. On a 1, the staff becomes a nonmagical quarterstaff.",
    "charges": "10"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ba0e4f42-c229-5f3e-ae6d-c97c285c57ca",
@@ -4351,6 +4574,7 @@
    "charges": "10"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4379,6 +4603,7 @@
    "charges": "10"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4406,7 +4631,8 @@
    "effect": "The staff regains 1d6+4 expended charges daily at dawn. If you expend the last charge, roll a d20. On a 1, the staff vanishes in a flash of light, lost forever.",
    "charges": "10"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b05ccdb6-ed55-56f2-ab1b-0712ff1c229c",
@@ -4422,6 +4648,7 @@
    "charges": "20"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4481,6 +4708,7 @@
    "charges": "10"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4510,7 +4738,8 @@
    "effect": "***Spells***. While holding the staff, you can use an action to expend some of its charges to cast one of the following spells from it, using your spell save DC: *giant insect* (4 charges) or *insect plague* (5 charges).\n\n***Insect Cloud***. While holding the staff, you can use an action and expend 1 charge to cause a swarm of harmless flying insects to spread out in a 30-foot radius from you. The insects remain for 10 minutes, making the area heavily obscured for creatures other than you. The swarm moves with you, remaining centered on you. A wind of at least 10 miles per hour disperses the swarm and ends the effect.",
    "charges": "10"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c6a376b1-d7de-5a52-9485-514cc93c52c0",
@@ -4525,6 +4754,7 @@
    "effect": "***Lightning***. When you hit with a melee attack using the staff, you can cause the target to take an extra 2d6 lightning damage.\n\n***Thunder***. When you hit with a melee attack using the staff, you can cause the staff to emit a crack of thunder, audible out to 300 feet. The target you hit must succeed on a DC 17 Constitution saving throw or become stunned until the end of your next turn.\n\n***Lightning Strike***. You can use an action to cause a bolt of lightning to leap from the staff's tip in a line that is 5 feet wide and 120 feet long. Each creature in that line must make a DC 17 Dexterity saving throw, taking 9d6 lightning damage on a failed save, or half as much damage on a successful one.\n\n***Thunderclap***. You can use an action to cause the staff to issue a deafening thunderclap, audible out to 600 feet. Each creature within 60 feet of you (not including you) must make a DC 17 Constitution saving throw. On a failed save, a creature takes 2d6 thunder damage and becomes deafened for 1 minute. On a successful save, a creature takes half damage and isn't deafened.\n\n***Thunder and Lightning***. You can use an action to use the Lightning Strike and Thunderclap properties at the same time. Doing so doesn't expend the daily use of those properties, only the use of this one."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4554,7 +4784,8 @@
    "effect": "The staff can be wielded as a magic quarterstaff. On a hit, it deals damage as a normal quarterstaff, and you can expend 1 charge to deal an extra 2d10 necrotic damage to the target. In addition, the target must succeed on a DC 15 Constitution saving throw or have disadvantage for 1 hour on any ability check or saving throw that uses Strength or Constitution.",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "92d583b2-0d7e-5e33-9ffa-72795521b7f3",
@@ -4570,6 +4801,7 @@
    "charges": "50"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4619,7 +4851,8 @@
    "attunement": "Requires attunement by a cleric, druid, or warlock",
    "effect": "On your turn, you can mentally command the snake if it is within 60 feet of you and you aren't incapacitated. You decide what action the snake takes and where it moves during its next turn, or you can issue it a general command, such as to attack your enemies or guard a location.\n\nIf the snake is reduced to 0 hit points, it dies and reverts to its staff form. The staff then shatters and is destroyed. If the snake reverts to staff form before losing all its hit points, it regains all of them."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7a489baa-7073-52f1-a426-1ffa79fd2778",
@@ -4635,6 +4868,7 @@
    "charges": "10"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4670,7 +4904,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "48f475b0-ab08-5d3f-b591-3d549270f730",
@@ -4684,6 +4919,7 @@
    "attunement": "Requires attunement"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4722,6 +4958,7 @@
    "effect": "You gain a +2 bonus to attack and damage rolls made with this weapon, which deals radiant damage instead of slashing damage. When you hit an undead with it, that target takes an extra 1d8 radiant damage.\n\nThe sword's luminous blade emits bright light in a 15-foot radius and dim light for an additional 15 feet. The light is sunlight. While the blade persists, you can use an action to expand or reduce its radius of bright and dim light by 5 feet each, to a maximum of 30 feet each or a minimum of 10 feet each."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4748,7 +4985,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c9e1cb6b-e575-5ac0-8b08-dfb5ba2f4736",
@@ -4762,7 +5000,8 @@
    "attunement": "Requires attunement",
    "effect": "When you attack a creature with this weapon and roll a 20 on the attack roll, that target takes an extra 4d6 slashing damage. Then roll another d20. If you roll a 20, you lop off one of the target's limbs, with the effect of such loss determined by the GM. If the creature has no limb to sever, you lop off a portion of its body instead.\n\nIn addition, you can speak the sword's command word to cause the blade to shed bright light in a 10-foot radius and dim light for an additional 10 feet. Speaking the command word again or sheathing the sword puts out the light."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "97b20053-9b82-518b-b069-ab452bcd5e05",
@@ -4776,7 +5015,8 @@
    "attunement": "Requires attunement",
    "effect": "Once per turn, when you hit a creature with an attack using this magic weapon, you can wound the target. At the start of each of the wounded creature's turns, it takes 1d4 necrotic damage for each time you've wounded it, and it can then make a DC 15 Constitution saving throw, ending the effect of all such wounds on itself on a success. Alternatively, the wounded creature, or a creature within 5 feet of it, can use an action to make a DC 15 Wisdom (Medicine) check, ending the effect of such wounds on it on a success."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "409bffea-c3e1-55e9-93b5-417cba69059d",
@@ -4792,6 +5032,7 @@
    "charges": "7"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4822,6 +5063,7 @@
    "charges": "6"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4849,7 +5091,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4137a13e-0b40-5007-9b66-623531c621ad",
@@ -4861,6 +5104,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4886,6 +5130,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4911,6 +5156,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -4938,7 +5184,8 @@
    "attunement": "Requires attunement",
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a499b5b7-aa6a-5b4a-86e8-e5dc8f5d1174",
@@ -4949,7 +5196,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5c383e62-cbb5-5ecf-9aeb-642724c560bb",
@@ -4960,7 +5208,8 @@
   "category": "Weapon",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4666775a-5de1-53f0-a8cc-3c4e0840afe6",
@@ -4975,6 +5224,7 @@
    "effect": "When you attack a creature that has at least one head with this weapon and roll a 20 on the attack roll, you cut off one of the creature's heads. The creature dies if it can't survive without the lost head. A creature is immune to this effect if it is immune to slashing damage, doesn't have or need a head, has legendary actions, or the GM decides that the creature is too big for its head to be cut off with this weapon. Such a creature instead takes an extra 6d8 slashing damage from the hit."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -5003,7 +5253,8 @@
    "effect": "***Spells***. While holding the wand, you can use an action to expend some of its charges to cast one of the following spells (save DC 17): *hold monster* (5 charges) or *hold person* (2 charges).\n\n***Assisted Escape***. While holding the wand, you can use your reaction to expend 1 charge and gain advantage on a saving throw you make to avoid being paralyzed or restrained, or you can expend 1 charge and gain advantage on any check you make to escape a grapple.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d4a0a162-8808-57a8-ad49-baf1d54f143a",
@@ -5018,7 +5269,8 @@
    "effect": "The wand regains 1d6+1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into ashes and is destroyed.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4b50d95d-a417-5180-9fb3-8cbc955d5735",
@@ -5033,7 +5285,8 @@
    "effect": "***Command***. While holding the wand, you can use an action to expend 1 charge and command another creature to flee or grovel, as with the *command* spell (save DC 15).\n\n***Cone of Fear***. While holding the wand, you can use an action to expend 2 charges, causing the wand's tip to emit a 60-foot cone of amber light. Each creature in the cone must succeed on a DC 15 Wisdom saving throw or become frightened of you for 1 minute. While it is frightened in this way, a creature must spend its turns trying to move as far away from you as it can, and it can't willingly move to a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If it has nowhere it can move, the creature can use the Dodge action. At the end of each of its turns, a creature can repeat the saving throw, ending the effect on itself on a success.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ba46a776-d0e0-5423-b469-1b5f4127e247",
@@ -5048,7 +5301,8 @@
    "effect": "The wand regains 1d6+1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into ashes and is destroyed.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "82e0504f-6441-5036-81ae-4b0bb6c0891c",
@@ -5063,7 +5317,8 @@
    "effect": "The wand regains 1d6+1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into ashes and is destroyed.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c2981930-1059-597e-93ac-f40a9a41d1b4",
@@ -5076,7 +5331,8 @@
   "properties": {
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f4366043-3f06-5ab3-80f7-40665651f55d",
@@ -5090,7 +5346,8 @@
    "effect": "The wand regains 1d6+1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into ashes and is destroyed.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f9027b97-72ef-5054-a416-4a545ca608cc",
@@ -5105,7 +5362,8 @@
    "effect": "The wand regains 1d6+1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into ashes and is destroyed.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "61bb3bc5-3a76-55e1-8350-43ded00c5c85",
@@ -5120,7 +5378,8 @@
    "effect": "The wand regains 1d6+1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into ashes and is destroyed.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9002ea64-4b1a-56bf-93e4-366a9ca5437c",
@@ -5133,7 +5392,8 @@
   "properties": {
    "charges": "3"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4f36d108-a01f-556a-8ffa-44b6cac0eb2f",
@@ -5148,7 +5408,8 @@
    "effect": "The wand regains 1d6+1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into ashes and is destroyed.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "55188519-4008-540d-8c1b-2f71f93312ea",
@@ -5163,7 +5424,8 @@
    "effect": "If the effect causes you to cast a spell from the wand, the spell's save DC is 15. If the spell normally has a range expressed in feet, its range becomes 120 feet if it isn't already.\n\nIf an effect covers an area, you must center the spell on and include the target. If an effect has multiple possible subjects, the GM randomly determines which ones are affected.\n\nThe wand regains 1d6+1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into dust and is destroyed.\n\n**Table- Wand of Wonder**\n\n| d100 | Effect |\n|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n| 01-05 | You cast slow. 06-10 You cast faerie fire. |\n| 11-15 | You are stunned until the start of your next turn, believing something awesome just happened. 16-20 You cast gust of wind. |\n| 21-25 | You cast detect thoughts on the target you chose. If you didn't target a creature, you instead take 1d6 psychic damage. |\n| 26-30 | You cast stinking cloud. |\n| 31-33 | Heavy rain falls in a 60-foot radius centered on the target. The area becomes lightly obscured. The rain falls until the start of your next turn. |\n| 34-36 | An animal appears in the unoccupied space nearest the target. The animal isn't under your control and acts as it normally would. Roll a d100 to determine which animal appears. On a 01-25, a rhinoceros appears; on a 26-50, an elephant appears; and on a 51-100, a rat appears. |\n| 37-46 | You cast lightning bolt. |\n| 47-49 | A cloud of 600 oversized butterflies fills a 30-foot radius centered on the target. The area becomes heavily obscured. The butterflies remain for 10 minutes. |\n| 50-53 | You enlarge the target as if you had cast enlarge/reduce. If the target can't be affected by that spell, or if you didn't target a creature, you become the target. |\n| 54-58 | You cast darkness. |\n| 59-62 | Grass grows on the ground in a 60-foot radius centered on the target. If grass is already there, it grows to ten times its normal size and remains overgrown for 1 minute. |\n| 63-65 | An object of the GM's choice disappears into the Ethereal Plane. The object must be neither worn nor carried, within 120 feet of the target, and no larger than 10 feet in any dimension. |\n| 66-69 | You shrink yourself as if you had cast enlarge/reduce on yourself. |\n| 70-79 | You cast fireball. |\n| 80-84 | You cast invisibility on yourself. |\n| 85-87 | Leaves grow from the target. If you chose a point in space as the target, leaves sprout from the creature nearest to that point. Unless they are picked off, the leaves turn brown and fall off after 24 hours. |\n| 88-90 | A stream of 1d4 × 10 gems, each worth 1 gp, shoots from the wand's tip in a line 30 feet long and 5 feet wide. Each gem deals 1 bludgeoning damage, and the total damage of the gems is divided equally among all creatures in the line. |\n| 91-95 | A burst of colorful shimmering light extends from you in a 30-foot radius. You and each creature in the area that can see must succeed on a DC 15 Constitution saving throw or become blinded for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. |\n| 96-97 | The target's skin turns bright blue for 1d10 days. If you chose a point in space, the creature nearest to that point is affected. |\n| 98-100 | If you targeted a creature, it must make a DC 15 Constitution saving throw. If you didn't target a creature, you become the target and must make the saving throw. If the saving throw fails by 5 or more, the target is instantly petrified. On any other failed save, the target is restrained and begins to turn to stone. While restrained in this way, the target must repeat the saving throw at the end of its next turn, becoming petrified on a failure or ending the effect on a success. The petrification lasts until the target is freed by the greater restoration spell or similar magic. |\n| | |",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "80102c2b-45c9-5890-b181-c7ea8de6d7d7",
@@ -5177,6 +5439,7 @@
    "attunement": "Requires attunement by a spellcaster"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -5204,6 +5467,7 @@
    "attunement": "Requires attunement by a spellcaster"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -5231,6 +5495,7 @@
    "attunement": "Requires attunement by a spellcaster"
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -5256,6 +5521,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -5281,6 +5547,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -5306,6 +5573,7 @@
   "weight": "",
   "properties": {},
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -5332,7 +5600,8 @@
   "properties": {
    "effect": "You can use an action to unfold and place the *well of many worlds* on a solid surface, whereupon it creates a two-way portal to another world or plane of existence. Each time the item opens a portal, the GM decides where it leads. You can use an action to close an open portal by taking hold of the edges of the cloth and folding it up. Once *well of many worlds* has opened a portal, it can't do so again for 1d8 hours."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "85b843f9-60e1-5879-855e-a02809b28842",
@@ -5343,7 +5612,8 @@
   "category": "Wondrous Item",
   "weight": "",
   "properties": {},
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "315a784a-4c6e-5421-a87d-44d5e1da7bfe",
@@ -5358,6 +5628,7 @@
    "effect": "The boots regain 2 hours of flying capability for every 12 hours they aren't in use."
   },
   "legacy": true,
+  "source": "SRD 5.1",
   "metadata": {
    "mads": [
     {
@@ -5383,7 +5654,8 @@
   "properties": {
    "attunement": "Requires attunement"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ca1e77fe-531d-5521-919b-0114070c8f5a",
@@ -5398,6 +5670,7 @@
    "effect": "As the wizard towers fell in later ages, the orbs were destroyed or faded into legend, and only three are thought to survive. Their magic has been warped and twisted over the centuries, so although their primary purpose of calling dragons still functions, they also allow some measure of control over dragons.\n\nEach orb contains the essence of an evil dragon, a presence that resents any attempt to coax magic from it. Those lacking in force of personality might find themselves enslaved to an orb.\n\nAn orb is an etched crystal globe about 10 inches in diameter. When used, it grows to about 20 inches in diameter, and mist swirls inside it.\n\nWhile attuned to an orb, you can use an action to peer into the orb's depths and speak its command word. You must then make a DC 15 Charisma check. On a successful check, you control the orb for as long as you remain attuned to it. On a failed check, you become charmed by the orb for as long as you remain attuned to it.\n\nWhile you are charmed by the orb, you can't voluntarily end your attunement to it, and the orb casts *suggestion* on you at will (save DC 18), urging you to work toward the evil ends it desires. The dragon essence within the orb might want many things: the annihilation of a particular people, freedom from the orb, to spread suffering in the world, to advance the worship of Tiamat, or something else the GM decides.\n\n***Random Properties***. An *Orb of Dragonkind* has the following random properties:\n\n- 2 minor beneficial properties\n- 1 minor detrimental property\n- 1 major detrimental property\n\n***Spells***. The orb has 7 charges and regains 1d4+3 expended charges daily at dawn. If you control the orb, you can use an action and expend 1 or more charges to cast one of the following spells (save DC 18) from it: *cure wounds* (5th-level version, 3 charges), *daylight* (1 charge), *death ward* (2 charges), or *scrying* (3 charges).\n\nYou can also use an action to cast the *detect magic* spell from the orb without using any charges.\n\n***Call Dragons***. While you control the orb, you can use an action to cause the artifact to issue a telepathic call that extends in all directions for 40 miles. Evil dragons in range feel compelled to come to the orb as soon as possible by the most direct route. Dragon deities such as Tiamat are unaffected by this call. Dragons drawn to the orb might be hostile toward you for compelling them against their will. Once you have used this property, it can't be used again for 1 hour.\n\n***Destroying an Orb***. An *Orb of Dragonkind* appears fragile but is impervious to most damage, including the attacks and breath weapons of dragons. A *disintegrate* spell or one good hit from a +3 magic weapon is sufficient to destroy an orb, however.",
    "charges": "7"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  }
 ]

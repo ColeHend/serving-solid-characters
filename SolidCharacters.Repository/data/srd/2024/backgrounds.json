@@ -44,7 +44,8 @@
   ],
   "feat": "Magic Initiate (Cleric)",
   "features": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "93ac101f-6942-4513-a813-a356f738836b",
@@ -91,7 +92,8 @@
   ],
   "feat": "Alert",
   "features": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "e24460ca-0397-4d20-a15d-c8234335f5ca",
@@ -138,7 +140,8 @@
   ],
   "feat": "Magic Initiate (Wizard)",
   "features": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "d23c55e4-782c-4f8c-97de-003fe46c774d",
@@ -187,6 +190,7 @@
   ],
   "feat": "Savage Attacker",
   "features": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  }
 ]

@@ -10,7 +10,8 @@ const HomebrewSidebar: Component = () => {
   setHombrewTypes([
     {Name: "Classes", Link: "/homebrew/create/classes"}, 
     {Name: "Subclasses", Link: "/homebrew/create/subclasses"}, 
-    {Name: "Race", Link: "/homebrew/create/races"}, 
+    {Name: "Race", Link: "/homebrew/create/races"},
+    {Name: "Subrace", Link: "/homebrew/create/subraces"},
     {Name: "Backgrounds", Link: "/homebrew/create/backgrounds"}, 
     {Name: "Feats", Link: "/homebrew/create/feats"}, 
     {Name: "Spell", Link: "/homebrew/create/spells"}, 

@@ -1,5 +1,6 @@
 import { useGetSrdSpells } from "../srd/spells";
 import { useGetHombrewSpells } from "../homebrew/spells";
+import { markHomebrew } from "../provenance";
 import { createMemo } from "solid-js";
 import { getUserSettings } from "../../../userSettings";
 
@@ -19,6 +20,6 @@ export function useDnDSpells(settings?: settings) {
     const theSRD = srd();
     const theHomebrew = homebrew()
     
-    return [...theSRD, ...theHomebrew];
+    return [...theSRD, ...markHomebrew(theHomebrew)];
   });
 }

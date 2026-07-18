@@ -22,6 +22,8 @@ interface MagicItemProperties {
 
 export interface Item {
   id: number;
+  /** Provenance label, e.g. "SRD 5.1", "SRD 5.2", or a user-supplied sourcebook; undefined means plain homebrew. */
+  source?: string;
   name: string;
   desc: string;
   type: ItemType;

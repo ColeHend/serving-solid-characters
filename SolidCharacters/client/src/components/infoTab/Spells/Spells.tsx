@@ -12,7 +12,7 @@ import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
 import { useSearchParams } from "@solidjs/router";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
-import { createTableSort, createTableFilter, FilterFieldConfig, SortState } from "../../../shared";
+import { createTableSort, createTableFilter, createSelectionSync, FilterFieldConfig, SortState } from "../../../shared";
 import { Body, Table, Column, Cell, Header, Row, Chip, Button, Icon } from "coles-solid-library";
 import { FilterAlt } from "coles-solid-library/icons";
 import { SpellMenu } from "./spellMenu/spellMenu";
@@ -66,10 +66,13 @@ const masterSpells: Component = () => {
 
  
 
-  // Keep currentSpell in sync with derived selectedSpell
-  createEffect(() => {
-    const sel = selectedSpell();
-    if (sel) setCurrentSpell(sel);
+  // Keep currentSpell in sync with derived selectedSpell without clobbering a
+  // same-named click (the lookup resolves duplicates to the first/2014 copy).
+  createSelectionSync({
+    selected: selectedSpell,
+    list: dndSrdSpells,
+    current: [currentSpell, setCurrentSpell],
+    nameOf: (s) => s.name,
   });
 
   //-------------

@@ -20,6 +20,7 @@ import { incrementString } from "../../../customHooks/utility/tools/incrementCha
 import { ChoiceCard } from "../../choiceCard/choiceCard";
 import Markdown from "../../MarkDown/MarkDown";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { sourceLabel } from "../modals.shared";
 import { Clone } from "../../..";
 
 type props = {
@@ -113,7 +114,7 @@ const ClassModal: Component<props> = (props) => {
       <div class={`${stylin()?.primary} ${styles.CenterPage}`} ref={setMenuRef}>
         <DndDialogHeader onClose={()=>props.booleanSetter(false)}>
           <div class={`${styles.styledHeader}`}>
-            Class <span class={`${styles.dot}`}>·</span> <Show when={legacy()}>d</Show>{props?.currentClass().hitDie ?? ""} hit die <Show when={legacy()}><span class={`${styles.dot}`}>·</span> legacy</Show>
+            Class <span class={`${styles.dot}`}>·</span> <Show when={legacy()}>d</Show>{props?.currentClass().hitDie ?? ""} hit die <Show when={legacy()}><span class={`${styles.dot}`}>·</span> legacy</Show><span class={`${styles.dot}`}>·</span> {sourceLabel(props.currentClass(), 'class')}
 
             <h1>{props?.currentClass().name ?? ""}</h1>
           </div>

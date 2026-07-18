@@ -59,6 +59,7 @@ export const Classes: Component = () => {
   const ClassFormGroup = new FormGroup<ClassForm>({
     name: ['', [Validators.Required]],
     description: ['', []],
+    source: ['', []],
     hitDie: [undefined, [Validators.Required]],
     primaryStat: [[], [Validators.Required]],
     savingThrows: [[], []],
@@ -126,6 +127,7 @@ export const Classes: Component = () => {
 
     // Basic fields
     setField('name', cls.name || '');
+    setField('source', cls.source ?? '');
     // Persisted / SRD class data is snake_case (see toClass5E in classAdapter.ts); fall back to camelCase
     const hitDieRaw = (cls as any).hit_die ?? cls.hitDie;
     const dieNum = typeof hitDieRaw === 'string' ? parseInt(hitDieRaw.replace(/^[dD]/, '') || '0') : hitDieRaw || 0;
@@ -346,8 +348,10 @@ export const Classes: Component = () => {
   createEffect(() => {
     const snapshot = serializeDraft(ClassFormGroup, levels, step());
     if (resumeState() === 'pending') return; // don't clobber an undecided draft
-    if (snapshot === baseline()) return;
+    // Cancel any pending write BEFORE the baseline check — reverting to the pristine
+    // state must also cancel the write the edit scheduled, or a phantom draft lands.
     clearTimeout(autosaveTimer);
+    if (snapshot === baseline()) return;
     autosaveTimer = setTimeout(() => {
       // Re-check at fire time: a baseline reset (prefill/resume) may have landed after
       // this write was scheduled — never persist a draft equal to the baseline state.
@@ -406,7 +410,8 @@ export const Classes: Component = () => {
       const merged: FeatureDetail = {
         ...data,
         id: editId,
-        metadata: { ...data.metadata, category: data.metadata?.category || editCategory },
+        // ?? not || — an emptied category is an intentional clear, not a miss.
+        metadata: { ...data.metadata, category: data.metadata?.category ?? editCategory },
       };
       setLevels('features', level, arr => (arr ?? []).map(f => f.id === editId ? merged : f));
     } else {

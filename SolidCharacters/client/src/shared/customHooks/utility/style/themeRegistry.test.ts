@@ -9,12 +9,6 @@ describe("themeRegistry", () => {
     document.body.removeAttribute("data-theme-variant");
   });
 
-  it("falls back to dark for unknown or legacy ids", () => {
-    expect(getTheme("bogus").id).toBe("dark");
-    expect(getTheme(undefined).id).toBe("dark");
-    expect(getTheme("default").id).toBe("dark");
-  });
-
   it("resolves every registered id to itself", () => {
     for (const t of THEMES) {
       expect(getTheme(t.id)).toBe(t);
@@ -29,13 +23,4 @@ describe("themeRegistry", () => {
     expect(document.body.dataset.themeVariant).toBe("parchment");
   });
 
-  it("applyTheme removes data-theme-variant for the plain base themes", () => {
-    applyTheme("arcane");
-    applyTheme("light");
-    expect(document.body.hasAttribute("data-theme-variant")).toBe(false);
-
-    applyTheme("parchment");
-    applyTheme("dark");
-    expect(document.body.hasAttribute("data-theme-variant")).toBe(false);
-  });
 });

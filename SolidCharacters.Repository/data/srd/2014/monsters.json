@@ -170,7 +170,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b201d29e-1803-5a0f-9468-9ae51b6dff26",
@@ -256,7 +257,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d0210e41-007d-5060-815b-ac5d3e3d2ee3",
@@ -483,7 +485,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "40c84cab-f244-5abf-9a86-2fe55a37d866",
@@ -705,7 +708,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f1c56d09-5e59-5919-a684-049953ec22bf",
@@ -934,7 +938,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e968acde-b071-5825-bf77-9b85c5f427c9",
@@ -1167,7 +1172,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "694d330e-8009-5e84-8fca-958de4e0aeea",
@@ -1390,7 +1396,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5a843cee-356b-5dd7-98b1-fe17c11bd1a5",
@@ -1629,7 +1636,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5c228fc1-0d8a-5767-8489-c46d5ed11a47",
@@ -1876,7 +1884,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "446d5ff2-07cf-5399-9904-d85ce2b22b6d",
@@ -2098,7 +2107,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7135b148-b964-507e-bce4-19225c6bffc3",
@@ -2331,7 +2341,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8c7e7926-fe90-5a22-a07a-84397733d28f",
@@ -2559,7 +2570,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2d37dcc3-a726-508f-a234-ac82309748f6",
@@ -2700,7 +2712,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "38a49e7c-acc0-5f0c-981e-bfa065e77071",
@@ -2927,7 +2940,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "94dc3825-d5ae-54f5-841e-24a59847ed78",
@@ -3149,7 +3163,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0644516a-3262-5bb7-884e-bc9ba06388a7",
@@ -3383,7 +3398,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7b0820b5-15e6-58e6-979d-813c7923d1eb",
@@ -3616,7 +3632,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ebf0b853-b6e2-55c9-8f8e-48c969a52b9e",
@@ -3844,7 +3861,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b1afb128-bf73-519c-b422-bc355cb9986b",
@@ -4083,7 +4101,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9ebeceed-eba4-5635-ac40-edf648e63b3a",
@@ -4271,7 +4290,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "00328d11-748b-5498-b9f2-5bd54bcb442c",
@@ -4493,7 +4513,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7c0e12e6-dfca-5ad1-a13c-b10e546b15e5",
@@ -4726,7 +4747,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "11d6ef75-2564-5589-9f69-eb08920966f1",
@@ -4954,7 +4976,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2e4a1abd-9b10-5ff5-a4ab-528968e429f4",
@@ -5142,7 +5165,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5d285c6d-aca1-56af-997c-5b0be1a615b3",
@@ -5245,7 +5269,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "df615ad2-7265-57a8-8dbf-df41516bd928",
@@ -5339,7 +5364,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a23ea660-42ec-528a-9bea-38a23eea8451",
@@ -5442,7 +5468,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "de44a789-bae8-56d0-9b25-7fd0432f7b3b",
@@ -5544,7 +5571,8 @@
   "challenge_rating": "12",
   "proficiency_bonus": 4,
   "xp": 8400,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9b569d5c-4d67-5117-bf4d-196c90bdd6c4",
@@ -5699,7 +5727,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7fff5cfe-5f3f-5392-94f2-3afb56c9a420",
@@ -5781,7 +5810,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2cafe217-1069-550c-b005-a72b8801e35a",
@@ -5868,7 +5898,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1eec3eff-bc6d-5f6e-b778-020568228b13",
@@ -5934,7 +5965,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c5bb7710-fbaf-5412-b21c-74c7ec3ab531",
@@ -6044,7 +6076,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "72b64a00-1010-5f6e-a960-cacb728af839",
@@ -6118,7 +6151,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "45e25583-5dae-5143-b181-3cbf140b35d1",
@@ -6187,7 +6221,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "23c67c15-dfc1-513f-8e4c-c5c9a4b13830",
@@ -6366,7 +6401,8 @@
   "challenge_rating": "19",
   "proficiency_bonus": 6,
   "xp": 22000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4b7eb838-2475-5841-9aae-d68ef24a5eb0",
@@ -6450,7 +6486,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "521666d8-3c40-5fe0-bb60-e80349d1e989",
@@ -6572,7 +6609,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "922ba6eb-4f23-5b1b-ad80-3987364f9c4d",
@@ -6760,7 +6798,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "53d19d4e-91f2-5ed3-86fb-e0559b5429ad",
@@ -6833,7 +6872,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e1ba35f4-f865-5514-a79d-526a184bc6f3",
@@ -6906,7 +6946,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1540a637-b5d1-5f27-a90d-db20d49fb0a5",
@@ -7055,7 +7096,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3d299121-9e1b-5720-aa1c-3c76f8f4dba6",
@@ -7206,7 +7248,8 @@
   "challenge_rating": "11",
   "proficiency_bonus": 4,
   "xp": 7200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7b14298f-2673-5ace-b526-be01ebd47726",
@@ -7280,7 +7323,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8b8dba54-dd67-5a62-81fe-a8805687a2d7",
@@ -7384,7 +7428,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e6746ffe-4239-5a3f-9769-c4fb9025ccf4",
@@ -7504,7 +7549,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e3f4a8a4-923f-5c6b-b674-ba79b4591b8d",
@@ -7596,7 +7642,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5bae4dd7-b006-5f43-808a-0b4cfca68f3f",
@@ -7682,7 +7729,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "08e15cd4-917e-5c4b-9353-04b66d31e81a",
@@ -7760,7 +7808,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2d2c6e96-027e-53d2-8d32-19a66657f32b",
@@ -7924,7 +7973,8 @@
   "challenge_rating": "9",
   "proficiency_bonus": 4,
   "xp": 5000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0681c052-9dae-56ac-a445-f0c723b57dbc",
@@ -8028,7 +8078,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "77b4032e-a9d4-5900-895b-75433909ca5a",
@@ -8145,7 +8196,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2ed792cf-ae2e-5484-b7a8-762e4d25181b",
@@ -8235,7 +8287,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "97acee25-ad09-59e8-bb85-2bfd22a1411b",
@@ -8301,7 +8354,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b90f75ce-0850-54e6-a176-ccdb3908cd22",
@@ -8382,7 +8436,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "bcc60473-a903-5c70-8d0c-d7c903b19206",
@@ -8512,7 +8567,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0687b604-9612-565f-a861-bca6c5c9a1e3",
@@ -8661,7 +8717,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "97a63d2b-f760-54c1-80bd-8824fb85f4e8",
@@ -8794,7 +8851,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d5a21dbc-6e8a-5da3-b34f-9f4197ea3b6b",
@@ -8906,7 +8964,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "88a63e4e-84b2-5744-8408-20b93ae397e7",
@@ -9044,7 +9103,8 @@
   "challenge_rating": "9",
   "proficiency_bonus": 4,
   "xp": 5000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b24b72f7-c349-56b2-baed-a58aaf13c5c5",
@@ -9176,7 +9236,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3b8982ae-87ce-5728-9927-bd4aa4cc2190",
@@ -9303,7 +9364,8 @@
   "challenge_rating": "9",
   "proficiency_bonus": 4,
   "xp": 5000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e82ca96d-8bd2-53ae-86fb-cbf98077631c",
@@ -9372,7 +9434,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "048c2998-174f-5456-9c0a-5bc06d36b307",
@@ -9439,7 +9502,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "77fa6f86-9b96-5233-ac6b-54f9900e5e4c",
@@ -9524,7 +9588,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5cdda3b3-0d91-5d9d-8977-f47dad7abbac",
@@ -9668,7 +9733,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "aa77a1e3-7745-5e5d-9b1c-caba9ae0f7b2",
@@ -9745,7 +9811,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b7369a8f-b675-5c65-b855-7b165a436465",
@@ -9827,7 +9894,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d489851c-7560-5040-acfe-4fb4bf86efa9",
@@ -9932,7 +10000,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "180a5187-4afc-5ca8-a6c7-1d3041198f58",
@@ -10019,7 +10088,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3a888857-3eb3-5f35-9d96-47380443ddd7",
@@ -10112,7 +10182,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "02878c99-6217-5822-88e4-191053dffc72",
@@ -10204,7 +10275,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a76ccd67-0749-5568-a310-18c0e922bcfe",
@@ -10270,7 +10342,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a8cfffa8-0c3f-54fb-b4c3-ee2cc3f5159c",
@@ -10421,7 +10494,8 @@
   "challenge_rating": "10",
   "proficiency_bonus": 4,
   "xp": 5900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6fecd712-e485-5c27-a64d-0f4650ce037d",
@@ -10512,7 +10586,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c15abf75-c471-5bf6-8cf2-3e250fc5dcb9",
@@ -10632,7 +10707,8 @@
   "challenge_rating": "11",
   "proficiency_bonus": 4,
   "xp": 7200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1338ec7b-88ff-5b94-9a5b-0433b73acbe8",
@@ -10742,7 +10818,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9e696266-e18a-5c9f-b22d-739a70b87a45",
@@ -10808,7 +10885,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9d21fa95-182f-551b-9e7a-984a57c611cc",
@@ -10959,7 +11037,8 @@
   "challenge_rating": "17",
   "proficiency_bonus": 6,
   "xp": 18000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4c8902b8-779d-5b91-b912-7b8c5f460e39",
@@ -11083,7 +11162,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a958527a-6336-5d46-9409-07de682a1f12",
@@ -11247,7 +11327,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7143f21e-8717-53a9-b68a-aa55d20c86d2",
@@ -11351,7 +11432,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b3bd01ac-ed56-5dbc-9a18-e0a079bf0fa8",
@@ -11471,7 +11553,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ccfd2d9c-7022-5474-adad-feca8f90b8ac",
@@ -11597,7 +11680,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e7c5c327-f6ce-5afb-a3e6-318bcc469e1a",
@@ -11718,7 +11802,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0eb3c344-d86b-53b2-97e0-069b9cdb5a10",
@@ -11799,7 +11884,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5dbd4aad-d2f2-53d7-b642-4582237adc0a",
@@ -11916,7 +12002,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "141dacb4-10ec-53dd-835b-bc4b8f78de98",
@@ -12042,7 +12129,8 @@
   "challenge_rating": "11",
   "proficiency_bonus": 4,
   "xp": 7200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "90a21c92-13d1-5c12-a6d8-6c0a04065217",
@@ -12131,7 +12219,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "19886cb5-66bc-5293-859e-3b880c08c6dd",
@@ -12246,7 +12335,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4f08e1a0-7b16-5186-be94-8f30638e805c",
@@ -12334,7 +12424,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "01a519d9-a612-5160-b57a-3ff3b563f0b2",
@@ -12505,7 +12596,8 @@
   "challenge_rating": "12",
   "proficiency_bonus": 4,
   "xp": 8400,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "26297bb1-e467-5031-a1f4-6a262a7383dd",
@@ -12648,7 +12740,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a21ee52b-6d4d-5cfb-b6ff-ca0a1dc5734f",
@@ -12757,7 +12850,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0f4625aa-d775-5ce2-8a06-70f972988af0",
@@ -12882,7 +12976,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5adef114-e3df-556b-9fc6-09deaf4b93dc",
@@ -13002,7 +13097,8 @@
   "challenge_rating": "9",
   "proficiency_bonus": 4,
   "xp": 5000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "943af456-e8c5-56a0-87db-f078667d0e16",
@@ -13134,7 +13230,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "36b3783e-af16-5a9d-aa80-0f90e697e67d",
@@ -13210,7 +13307,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c0dc5f47-e419-52b7-b766-e1ab8df8c611",
@@ -13314,7 +13412,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3c196e61-9229-5aff-ad81-22778ce599fb",
@@ -13390,7 +13489,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 0,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7ca907b7-c5c6-5a06-a0d7-ce3699ea3f03",
@@ -13510,7 +13610,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "af16bc1c-384c-5b48-98e7-ad51250741eb",
@@ -13630,7 +13731,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b9333b85-dc52-59b6-b819-03eafa22462c",
@@ -13737,7 +13839,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7967ad96-9cdd-52ba-bdd0-17e666b82f93",
@@ -13845,7 +13948,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "87a74a9e-4eab-5a50-831c-29e332866fc1",
@@ -14007,7 +14111,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "83c6c788-728b-536e-bc2c-3c31df775947",
@@ -14100,7 +14205,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6ad507dc-02f6-5865-bd3e-ecca5a5ce6d6",
@@ -14203,7 +14309,8 @@
   "challenge_rating": "7",
   "proficiency_bonus": 3,
   "xp": 2900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "35d7a614-815a-52f8-9cc6-f8bc3a6373ba",
@@ -14300,7 +14407,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6a793d74-63db-5837-845e-5b2c80feaca6",
@@ -14380,7 +14488,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "db5251bb-def4-562a-b218-ff389ffb5fcb",
@@ -14458,7 +14567,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b6e5098d-3424-5e1a-8334-dd87c18c4da9",
@@ -14533,7 +14643,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f6be80aa-7303-5013-89d0-8d700bd3b58d",
@@ -14625,7 +14736,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "93d8b3ab-6a3c-5b56-9dfb-97dee84a4d0f",
@@ -14708,7 +14820,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "df66adee-c756-55a1-ac0a-8aebd6491fc6",
@@ -14805,7 +14918,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d4ebd734-29cb-5141-b12f-7f1ce93495f3",
@@ -14909,7 +15023,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "124aaa81-efa9-50a5-bfdd-6188cfb64a17",
@@ -15008,7 +15123,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "36e5d84b-bd01-5f65-a96d-0741b78cbe8f",
@@ -15082,7 +15198,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e7d53188-3a5f-561c-8ca6-35dcbc82faa5",
@@ -15181,7 +15298,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8c2f30aa-92bf-5217-ad77-816d017e9a75",
@@ -15259,7 +15377,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2e613810-3543-5c4b-8234-cf741e286aad",
@@ -15338,7 +15457,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a30cf827-d495-500b-a95e-7048e5feecd3",
@@ -15408,7 +15528,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2fb92479-15ea-5e79-8187-44c3b50f995b",
@@ -15512,7 +15633,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "aa19149c-6ae8-51e1-b0b8-819efb237409",
@@ -15608,7 +15730,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "24028c26-cacf-5abc-ae90-20796b379ac9",
@@ -15689,7 +15812,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1ecdd4e2-d108-5f4d-880f-5484396ce5fa",
@@ -15773,7 +15897,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ace32e7d-dfad-5cbc-bff1-87af71debfb7",
@@ -15868,7 +15993,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "15eced30-1ac3-5b53-9150-83e2bc36ee77",
@@ -15948,7 +16074,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "71590040-8ed4-56f5-a7a9-e8bfe25d4a54",
@@ -16036,7 +16163,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "96548665-4f68-5ad2-9a0c-6a5216440e73",
@@ -16146,7 +16274,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4f9ea8cb-63e0-5ac0-99f9-3ab7a2b92494",
@@ -16237,7 +16366,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a2b20389-09f3-54f6-ace2-7e01f910a7c1",
@@ -16345,7 +16475,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "154151fa-e44d-53b4-a0ea-9c7eb797c295",
@@ -16418,7 +16549,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0efa77fe-85e9-5b69-ac38-e2275be4b937",
@@ -16504,7 +16636,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "910555bf-3db9-50c0-af63-bfa95ecb6316",
@@ -16608,7 +16741,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a7e24224-39a9-5804-bca4-44b0fb157693",
@@ -16708,7 +16842,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b0151e2e-7be5-57a7-8248-75c290ebc508",
@@ -16860,7 +16995,8 @@
   "challenge_rating": "9",
   "proficiency_bonus": 4,
   "xp": 5000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "13451892-7009-54cb-b9b6-d5ec144abda0",
@@ -16999,7 +17135,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1472b66b-e01f-55ad-be16-8aaa5c726258",
@@ -17113,7 +17250,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "bcb90fa5-d478-5205-a9c8-48f6de95c31d",
@@ -17235,7 +17373,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d1ba349a-35b2-5975-bfdc-1f12b3fdd2da",
@@ -17312,7 +17451,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4440a254-2264-5b81-aeab-f86ecad4cb01",
@@ -17411,7 +17551,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b3a14d1b-d20f-5693-9377-2b1602f6b183",
@@ -17522,7 +17663,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8a49dcf5-3b68-57c1-90a1-1ab752419960",
@@ -17639,7 +17781,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ae0da152-df0f-5380-a108-65c93b737204",
@@ -17761,7 +17904,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e8a56e15-d67b-53fb-a2ab-20d93faeef65",
@@ -17872,7 +18016,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1593ea4a-ebf3-519d-b5cb-79188ed5bc65",
@@ -17976,7 +18121,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b3d0e3a0-e290-593d-b64f-c2892805dad7",
@@ -18086,7 +18232,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6b51d5af-45a3-52d7-b22f-7c4647d2271b",
@@ -18168,7 +18315,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9db64f2e-9a02-51a3-9468-401e0f22cb31",
@@ -18294,7 +18442,8 @@
   "challenge_rating": "10",
   "proficiency_bonus": 4,
   "xp": 5900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a9d51cf2-0c7d-5469-8887-85be23df6241",
@@ -18454,7 +18603,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b2e4ae1a-f3a1-59ca-b5fc-ffc6487e223a",
@@ -18555,7 +18705,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "39b91f5f-7b34-5fb8-a754-4f57f8a2b99e",
@@ -18630,7 +18781,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "605435b0-6429-53b4-8823-85550ad1585d",
@@ -18744,7 +18896,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "982f38e8-9b8b-5af1-8b4b-96826cab40ea",
@@ -18892,7 +19045,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "47afb057-39a8-583b-9d24-8f630a9791a9",
@@ -18988,7 +19142,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ed561e93-28f4-52af-aa26-6d99aab8a2e8",
@@ -19091,7 +19246,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "fde7fddd-aeea-51a9-82fa-265ce6b4b743",
@@ -19189,7 +19345,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6369d6ae-1327-5c59-8120-ec90e21bbdb0",
@@ -19267,7 +19424,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8a26e990-eeb1-52a4-8e93-7b0da9a53f1e",
@@ -19433,7 +19591,8 @@
   "challenge_rating": "11",
   "proficiency_bonus": 4,
   "xp": 7200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "27fcc7bf-d2c9-52b2-ad98-b4a90dbfe83d",
@@ -19521,7 +19680,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6d694ff5-930d-5358-884e-062247d109e5",
@@ -19625,7 +19785,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "acfa86d3-be90-57b8-9679-7b963907c079",
@@ -19704,7 +19865,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "fbd7d960-4d20-5257-a9e1-90f3393c3181",
@@ -19907,7 +20069,8 @@
   "challenge_rating": "14",
   "proficiency_bonus": 5,
   "xp": 11500,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e6a0d41a-3751-5a84-a094-10595988ae5a",
@@ -20052,7 +20215,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5bd61a93-8fbc-5ec4-899c-471ae9f45481",
@@ -20203,7 +20367,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c55a72bd-e0e8-5865-8926-bd9782bf1265",
@@ -20331,7 +20496,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "56d52c27-de4e-56b2-b37b-7a1e2068d1a6",
@@ -20492,7 +20658,8 @@
   "challenge_rating": "16",
   "proficiency_bonus": 5,
   "xp": 15000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "36f4b4c1-070a-5105-a7c5-f2d26df98f4d",
@@ -20576,7 +20743,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "af1d4883-9789-5ce6-897b-120d8864a2ff",
@@ -20669,7 +20837,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "44ade5b9-55a2-5bf8-8b14-ebfe9bde26bc",
@@ -20784,7 +20953,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1ab07c60-7a52-5251-8dd8-16601cbcf2c8",
@@ -20880,7 +21050,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c30d3197-6300-5ab2-857d-95ead0387e94",
@@ -21105,7 +21276,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "db1e4b50-d419-51ca-8689-eab9ef0e1025",
@@ -21231,7 +21403,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8aaf42ac-d394-5ce8-a862-4c6243b1bcfd",
@@ -21327,7 +21500,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6a6d720d-e8ea-58ce-91b6-9ce4807dea66",
@@ -21536,7 +21710,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "802538b5-ee56-5634-b348-b4a7b08e5d32",
@@ -21652,7 +21827,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b5af7d60-dbd6-5c5a-b1c8-d2d338018142",
@@ -21715,7 +21891,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "91dc4ece-f34d-52f1-9f94-38b34ba174be",
@@ -21865,7 +22042,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9fecaf3e-4dbb-580d-b618-353aaaf1ffa6",
@@ -21962,7 +22140,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "fab3edaa-3bc7-561e-b0ac-cc5321e295f1",
@@ -22097,7 +22276,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a04c4a16-b815-52d4-963b-102a7c8a98f3",
@@ -22199,7 +22379,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6665aefa-a9fc-506c-a374-418b0ef20784",
@@ -22288,7 +22469,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "24bdb1b3-b283-5ad2-b313-e191c346a03b",
@@ -22402,7 +22584,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "53797f2f-2d95-582c-94df-8453f530cee2",
@@ -22569,7 +22752,8 @@
   "challenge_rating": "16",
   "proficiency_bonus": 5,
   "xp": 15000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cbaef731-d249-5c8b-bbb6-1d3f1dc74ebc",
@@ -22648,7 +22832,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "bf8465ec-4342-5e50-9a32-86b20bc4f2c1",
@@ -22795,7 +22980,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6e4944c4-e832-5c9a-b5cc-8db098e04ab3",
@@ -22884,7 +23070,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f592ea60-9cda-57d5-b12a-c186e8ea0208",
@@ -23000,7 +23187,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8c75479e-6307-5124-ac86-9978b92d5cd7",
@@ -23125,7 +23313,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "80ebf0d1-2f8c-56ef-a080-21a0d00d39fe",
@@ -23232,7 +23421,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0153ef07-ac62-574e-ad95-3122b8ff0044",
@@ -23335,7 +23525,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8f76e83c-bef6-59c2-83e6-74798408202c",
@@ -23413,7 +23604,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "538053b6-5748-5562-8fbf-c8715895b90f",
@@ -23541,7 +23733,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "172fd9af-992d-50e6-9715-752ac3cdb264",
@@ -23752,7 +23945,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "27050f19-4ff1-5766-9526-556b89eb33f5",
@@ -23918,7 +24112,8 @@
   "challenge_rating": "13",
   "proficiency_bonus": 5,
   "xp": 10000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d86b8430-6155-5b21-9978-248b27699390",
@@ -24064,7 +24259,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "15e54353-d183-5641-ba23-d11912809139",
@@ -24162,7 +24358,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "10bec4f0-8a3b-57c5-baf0-d766003cfa0e",
@@ -24255,7 +24452,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "41f451d5-d6cb-5ba1-93b3-f42af0e28dec",
@@ -24367,7 +24565,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4683065e-e3f6-5e1b-abdb-25fa015efc57",
@@ -24465,7 +24664,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "78670db1-1ed7-5bed-a34d-ff909f5a3d70",
@@ -24551,7 +24751,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "23f8f158-b0ea-56eb-a364-3d525669bbf4",
@@ -24636,7 +24837,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7888753a-bdf1-5769-a042-44659d925b2f",
@@ -24792,7 +24994,8 @@
   "challenge_rating": "7",
   "proficiency_bonus": 3,
   "xp": 2900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e41a2b85-b724-57d1-bfe0-f73cf70df664",
@@ -24892,7 +25095,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e9aeeb17-7f37-54fb-9719-72bace3cb76f",
@@ -25016,7 +25220,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5316ff6e-dc4b-56d4-8c38-ac75f7dc9806",
@@ -25103,7 +25308,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b1e690e2-bad6-5f4c-b2b2-09da5b4e69fd",
@@ -25206,7 +25412,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "48e3f97d-4e95-5e11-a0a7-6c89c083da90",
@@ -25314,7 +25521,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4fdf451d-cf84-5058-97a6-44737bfd3660",
@@ -25405,7 +25613,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4fc12469-eb91-5386-8d8a-879a13c20458",
@@ -25503,7 +25712,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d6073d37-b0d4-5fe3-9b24-10cc3ffaaba8",
@@ -25701,7 +25911,8 @@
   "challenge_rating": "20",
   "proficiency_bonus": 6,
   "xp": 25000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3d929cc1-e464-53b5-ba36-3154d7723411",
@@ -25850,7 +26061,8 @@
   "challenge_rating": "16",
   "proficiency_bonus": 5,
   "xp": 15000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e6428b2c-fdf0-5f8b-8977-7f3951959622",
@@ -25938,7 +26150,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "65d7135e-de47-562b-a944-46ff5f0438b0",
@@ -26007,7 +26220,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c0a26b2c-16f9-5a9d-9891-f8a7fae7c6ac",
@@ -26111,7 +26325,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "981a5509-651b-58c2-9965-f4061c75d05f",
@@ -26177,7 +26392,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e763b16c-4628-5dd5-a20d-915f1a5a4bf7",
@@ -26275,7 +26491,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "87620cb6-adf1-55fb-8bf1-4cd1e40eb2b7",
@@ -26391,7 +26608,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "fda3b41e-06a3-5676-b15c-6dd1462368d0",
@@ -26509,7 +26727,8 @@
   "challenge_rating": "15",
   "proficiency_bonus": 5,
   "xp": 13000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7f6e2cd4-1f2e-59f5-91c3-a0f7c6d283b7",
@@ -26651,7 +26870,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0a40c5c9-d7f2-5878-a75a-8ff4f845139a",
@@ -26725,7 +26945,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8bc7d37c-2c89-5aca-8425-6a84e3e19c64",
@@ -26842,7 +27063,8 @@
   "challenge_rating": "13",
   "proficiency_bonus": 5,
   "xp": 10000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "85b9eca1-59c6-5188-a0de-47d95bdd77c7",
@@ -26909,7 +27131,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "75127a07-e2e0-535c-abac-60429e800375",
@@ -26984,7 +27207,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "20c72c86-8a27-581c-b233-bff04b2c2e75",
@@ -27072,7 +27296,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f4e9017a-67d6-5fae-a75c-ff3754d5c57f",
@@ -27180,7 +27405,8 @@
   "challenge_rating": "11",
   "proficiency_bonus": 4,
   "xp": 7200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cfd7c055-d799-5f89-a960-72fa559e72ed",
@@ -27253,7 +27479,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8bcab193-96f8-538b-98f4-fabad29ca381",
@@ -27319,7 +27546,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "106f8cec-ae16-5c85-8ade-2e713824716e",
@@ -27440,7 +27668,8 @@
   "challenge_rating": "11",
   "proficiency_bonus": 4,
   "xp": 7200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "035f6257-8f57-5553-8366-bd2fec6699f1",
@@ -27560,7 +27789,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ce1bfff7-9fd6-5e24-8f48-aa9130ec3c14",
@@ -27660,7 +27890,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cb9bb0e1-c2bd-5193-a2bf-c31e48d5e1bf",
@@ -27750,7 +27981,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "05069e58-c380-58f4-9343-0d0049bb8a6d",
@@ -27858,7 +28090,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "02404148-bc0e-51cb-b5e2-4ff9047f35c5",
@@ -27997,7 +28230,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5464bb3a-a7ea-5d9c-ad6b-e58605f3ef59",
@@ -28135,7 +28369,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8fe977d2-5869-53fe-b793-0f5c20625bb4",
@@ -28259,7 +28494,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9ec31489-9a98-5969-9bf8-d1824ec71dc4",
@@ -28327,7 +28563,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "87443b8c-3e94-55f0-8d72-24480f626a84",
@@ -28447,7 +28684,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "fa2aa03c-2814-5725-b1d6-ae4af2712a56",
@@ -28547,7 +28785,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6d3de6c5-ed06-55c0-9a6a-120d5b83142c",
@@ -28604,7 +28843,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 0,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "cce6a116-72d1-5612-85d3-feb6d7808d43",
@@ -28750,7 +28990,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c8af9975-d98a-5268-b8e5-1876ce77883a",
@@ -28875,7 +29116,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b598dbfc-ec04-5a45-b537-29a17710c8b7",
@@ -28982,7 +29224,8 @@
   "challenge_rating": "7",
   "proficiency_bonus": 3,
   "xp": 2900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e0af664e-b6bd-54c0-9a52-09e2f1d0292c",
@@ -29048,7 +29291,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1a35faa7-dfed-55a2-82d0-71022946497c",
@@ -29145,7 +29389,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e17d6057-3783-5af5-a420-b9ecade02672",
@@ -29372,7 +29617,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a2037665-0d28-56d9-ba75-cad90c57ea19",
@@ -29505,7 +29751,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d1b6989b-7371-5ac3-8120-497c89027e1e",
@@ -29597,7 +29844,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9839c901-f9fd-5bf6-b5a6-eb2ddd4cf11a",
@@ -29690,7 +29938,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9be7848d-5c1d-5582-8661-7bcf98363507",
@@ -29795,7 +30044,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6a2c0670-bd65-5fe8-9b7c-0d9a3e293391",
@@ -29938,7 +30188,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ebb6647b-596c-5961-95bc-e1a87ed8d6d9",
@@ -30056,7 +30307,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b18af7fc-dcb4-553f-a354-d7bf2df153ef",
@@ -30126,7 +30378,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0fcbeb57-21fa-5f7b-b5b1-7f7e0175c600",
@@ -30259,7 +30512,8 @@
   "challenge_rating": "7",
   "proficiency_bonus": 3,
   "xp": 2900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "14c3e56a-b7c8-5b11-8394-2aa81d1809ed",
@@ -30389,7 +30643,8 @@
   "challenge_rating": "10",
   "proficiency_bonus": 4,
   "xp": 5900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2439593f-99ae-5513-b6e1-99a2ebe58ca2",
@@ -30566,7 +30821,8 @@
   "challenge_rating": "13",
   "proficiency_bonus": 5,
   "xp": 10000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5a615c50-7fc7-5f3b-8aa6-ce021709dc57",
@@ -30746,7 +31002,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b9290a20-a906-54cd-8c84-550a56ffcda1",
@@ -30858,7 +31115,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "35625149-c264-53d2-888c-2854f7867c94",
@@ -30961,7 +31219,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "44168c0f-06e4-5496-8e88-a21ed4fffc23",
@@ -31068,7 +31327,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f1a95e98-dccb-5570-bfec-fa312fc51583",
@@ -31180,7 +31440,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "8c585371-bcec-5c93-99dc-d78b3f05f7e8",
@@ -31285,7 +31546,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "df3957ae-ed39-5ead-a6ef-f01637901eca",
@@ -31393,7 +31655,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6afe6b9f-f494-52a9-8e93-3e6c63ac3207",
@@ -31628,7 +31891,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3ced346e-9a76-5478-a362-7b6ff823e879",
@@ -31731,7 +31995,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "016846b1-7296-51cf-a701-2308bfa5d64f",
@@ -31838,7 +32103,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9fc7e547-4d56-58f9-9d63-2dfd8fd156a5",
@@ -31960,7 +32226,8 @@
   "challenge_rating": "9",
   "proficiency_bonus": 4,
   "xp": 5000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "53067fa2-da07-5dfb-b8d9-7713655f6240",
@@ -32041,7 +32308,8 @@
   "challenge_rating": "1/8",
   "proficiency_bonus": 2,
   "xp": 25,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5b3ae799-b43f-5fcc-be69-c16c42ab1c40",
@@ -32130,7 +32398,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c42a6cf7-cac1-56a8-9cd3-e1ba3ba29f62",
@@ -32238,7 +32507,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7f33b74d-a550-54c9-a4aa-72dfd13d1e9c",
@@ -32334,7 +32604,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f80a7303-9d7f-53fe-8d9c-e84a07eee7b2",
@@ -32487,7 +32758,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c4891948-5e36-56b2-b0ac-9a61a8eb9a65",
@@ -32697,7 +32969,8 @@
    }
   ],
   "legendary_action_count": 3,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1622d77d-671f-5145-add7-cc06229cc482",
@@ -32847,7 +33120,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e20d326a-e8ae-59a5-bc6c-b71fb98090ec",
@@ -32972,7 +33246,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d4323907-7441-5e6e-ad56-c50ec490f9c6",
@@ -33055,7 +33330,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7d3b011c-e254-5ba3-8d9c-fe798cb6df2a",
@@ -33230,7 +33506,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "33ec785c-c073-5536-a180-a3aec38b7945",
@@ -33316,7 +33593,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "aa77ab81-0661-5a69-be1c-d21c77c02b98",
@@ -33388,7 +33666,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ad6e39dd-ac50-543e-a656-129f6faf0d6b",
@@ -33469,7 +33748,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5e66cb46-2341-5afe-85ee-2f19b4e05c8e",
@@ -33612,7 +33892,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1272f4de-c589-5341-b516-be32dc8b86c6",
@@ -33691,7 +33972,8 @@
   "challenge_rating": "0",
   "proficiency_bonus": 2,
   "xp": 10,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "20b35032-4f76-5d13-9110-59ce4a9819c0",
@@ -33830,7 +34112,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "939f4690-8446-5440-95c5-a0b1baf0e837",
@@ -33956,7 +34239,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3b49cdd6-9c27-5aff-9a94-14661575007e",
@@ -34099,7 +34383,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1094b1fc-8cc1-5693-9ed0-230e8a796328",
@@ -34263,7 +34548,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c1f0937c-0340-5fcf-bfcf-f91645900e02",
@@ -34413,7 +34699,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "1c321787-2465-5e12-bfe1-ead6f9977fa4",
@@ -34569,7 +34856,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "19f405d6-98cb-5344-91c6-4427115edabb",
@@ -34716,7 +35004,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "d639f982-b11a-5989-be76-85e3095847db",
@@ -34837,7 +35126,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c89bf2f8-d24f-557b-b52c-a2a2a3d0d3ea",
@@ -34928,7 +35218,8 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "199f24fe-373c-518a-a735-61b26f029bfe",
@@ -35010,7 +35301,8 @@
   "challenge_rating": "1/2",
   "proficiency_bonus": 2,
   "xp": 100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6dcef899-d9d1-5159-9299-b6e39b534eba",
@@ -35148,7 +35440,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "188e83ce-bb88-5f78-bc50-d2dc3fc83d2b",
@@ -35284,7 +35577,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "421c78e9-cdf5-55b5-a88a-fb78b83652a0",
@@ -35414,7 +35708,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "afb75b2c-bb53-533c-ae52-5bc3f2bc2839",
@@ -35539,7 +35834,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "db7374aa-5dac-5a6c-badf-6a9569636098",
@@ -35670,7 +35966,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b9b7c614-d507-5660-995c-efb3fe55a465",
@@ -35795,7 +36092,8 @@
   "challenge_rating": "1",
   "proficiency_bonus": 2,
   "xp": 200,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "88b34179-b799-531f-a51a-20ab8bd1124e",
@@ -35926,7 +36224,8 @@
   "challenge_rating": "3",
   "proficiency_bonus": 2,
   "xp": 700,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b61cab99-d5e4-5252-bce6-b8b6caa786f8",
@@ -36064,7 +36363,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0e11e426-0179-5362-a8d8-8210bab40f0d",
@@ -36194,7 +36494,8 @@
   "challenge_rating": "4",
   "proficiency_bonus": 2,
   "xp": 1100,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "09c43e2b-461f-58dc-a18c-0db2f8ca1ee5",
@@ -36318,7 +36619,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c4bf00ff-25ef-59fc-8c3a-58b20017aa57",
@@ -36449,7 +36751,8 @@
   "challenge_rating": "2",
   "proficiency_bonus": 2,
   "xp": 450,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ef168408-2259-50dd-ad2a-4709731303a3",
@@ -36569,7 +36872,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c90bcd92-3fd8-5f5c-9307-51327e623ae7",
@@ -36696,7 +37000,8 @@
   "challenge_rating": "5",
   "proficiency_bonus": 3,
   "xp": 1800,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "db56fdee-037a-5812-b2c6-7b28f85cd416",
@@ -36855,7 +37160,8 @@
   "challenge_rating": "7",
   "proficiency_bonus": 3,
   "xp": 2900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c8270069-4d06-5900-8dd3-2b54aa8d3cf2",
@@ -37008,7 +37314,8 @@
   "challenge_rating": "9",
   "proficiency_bonus": 4,
   "xp": 5000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "98c10ba5-9c20-5684-a548-ac2d0ac8dee3",
@@ -37162,7 +37469,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a1763da9-45e8-5016-8367-e37e9a424856",
@@ -37322,7 +37630,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e6f59a57-f2f1-5338-9037-b999419fc508",
@@ -37476,7 +37785,8 @@
   "challenge_rating": "7",
   "proficiency_bonus": 3,
   "xp": 2900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "406b091f-7b93-5001-a285-3d1da7c1b5ff",
@@ -37642,7 +37952,8 @@
   "challenge_rating": "10",
   "proficiency_bonus": 4,
   "xp": 5900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "397aa7d7-5d0e-50c5-bf58-a022239e26de",
@@ -37809,7 +38120,8 @@
   "challenge_rating": "8",
   "proficiency_bonus": 3,
   "xp": 3900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c091595b-c8ff-5377-a0d5-6776b14f7e64",
@@ -37962,7 +38274,8 @@
   "challenge_rating": "10",
   "proficiency_bonus": 4,
   "xp": 5900,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "dfeeb8fd-fb82-584d-bc84-49d0b4cf96ac",
@@ -38121,7 +38434,8 @@
   "challenge_rating": "9",
   "proficiency_bonus": 4,
   "xp": 5000,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "5a5ee56e-e831-5f0a-b045-02e2eb9851f6",
@@ -38281,7 +38595,8 @@
   "challenge_rating": "6",
   "proficiency_bonus": 3,
   "xp": 2300,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3a3ead62-55f3-51ad-adc5-8e3ed29cadba",
@@ -38366,6 +38681,7 @@
   "challenge_rating": "1/4",
   "proficiency_bonus": 2,
   "xp": 50,
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  }
 ]

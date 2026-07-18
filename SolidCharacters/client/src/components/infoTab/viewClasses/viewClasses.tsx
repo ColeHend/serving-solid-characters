@@ -12,7 +12,7 @@ import { useSearchParams } from "@solidjs/router";
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
-import { createTableSort, Paginator } from "../../../shared";
+import { createSelectionSync, createTableSort, Paginator } from "../../../shared";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { 
   Body, 
@@ -72,10 +72,12 @@ const viewClasses: Component = () => {
     return list.find(c => c.name.toLowerCase() === target) || list[0];
   });
 
-  createEffect(() => {
-    const sel = selectedClass();
-    if (sel) setCurrentClass(sel);
-  })
+  createSelectionSync({
+    selected: selectedClass,
+    list: srdClasses,
+    current: [currentClass, setCurrentClass],
+    nameOf: (c) => c.name,
+  });
 
   createEffect(() => {
     const cur = currentClass();

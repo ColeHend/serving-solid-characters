@@ -2,9 +2,9 @@
 // --wiz-* accent tokens are out of scope here — the same values are declared
 // locally as --pop-* (the popup is also opened outside the wizard).
 .wrapper {
-    --pop-accent: #a78bfa;
-    --pop-accent-bright: #c9a8fa;
-    --pop-on-accent: #1c1029;
+    --pop-accent: var(--primary-color);
+    --pop-accent-bright: var(--primary-color);
+    --pop-on-accent: var(--on-primary-color);
     --pop-text-muted: color-mix(in srgb, var(--on-surface-color) 60%, transparent);
     --pop-text-faint: color-mix(in srgb, var(--on-surface-color) 45%, transparent);
     --pop-label: color-mix(in srgb, var(--on-surface-color) 55%, transparent);

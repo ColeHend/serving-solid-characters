@@ -1,4 +1,4 @@
-import { createStore } from 'solid-js/store';
+import { createStore, unwrap } from 'solid-js/store';
 import { createMemo } from 'solid-js';
 import { homebrewManager } from '../../../../../shared';
 import type { Item as DataItem, ItemProperties } from '../../../../../models/data/items';
@@ -17,6 +17,8 @@ export interface DraftItem {
   kind: DraftKind;
   name: string;
   desc: string; // single rich text / markdown string (joined for legacy arrays)
+  /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
+  source?: string;
   cost: { quantity: number; unit: string };
   weight?: number;
   tags: string[];
@@ -91,6 +93,7 @@ function toDraft(entity: any): DraftItem {
       ...blob,
       name: entity.name || blob.name || '',
       desc: typeof entity.desc === 'string' ? entity.desc : blob.desc || '',
+      source: entity.source || blob.source || '',
       cost: parsedCost
     } as DraftItem;
   }
@@ -123,6 +126,7 @@ function toDraft(entity: any): DraftItem {
     kind,
     name: entity.name || '',
     desc: Array.isArray(entity.desc) ? (entity.desc[0] || '') : (entity.desc || ''),
+    source: entity.source || '',
     cost: parsedCost,
     weight: entity.weight,
     // Tags: merge any explicit tags plus parsed weapon/armor property keywords
@@ -241,9 +245,11 @@ function fromDraftToData(d: DraftItem, existing?: DataItem): DataItem {
   let typeEnum = DataItemTypeEnum.Item;
   if (d.kind === 'Weapon') typeEnum = DataItemTypeEnum.Weapon;
   else if (d.kind === 'Armor') typeEnum = DataItemTypeEnum.Armor;
+  const source = d.source?.trim();
   return {
     id: existing?.id || Date.now(),
     name: d.name,
+    ...(source ? { source } : {}),
     desc: d.desc,
     type: typeEnum,
     weight: d.weight || 0,
@@ -339,6 +345,14 @@ async function loadSrdOnce(): Promise<void> {
   } catch (e: unknown) {
     setState({ status: 'error', error: (e instanceof Error ? e.message : undefined) || 'Failed to load SRD items' });
   }
+}
+
+// Re-snapshot homebrew from the live manager signal. The loadSrdOnce snapshot can predate
+// Dexie finishing its initial load, which strands ?name= deep links to homebrew items.
+function refreshHomebrew() {
+  const hb: Record<string, DataItem> = {};
+  homebrewManager.items().forEach(i => { if (i?.name) hb[i.name] = i as DataItem; });
+  setState('homebrew', hb);
 }
 
 function selectNew() {
@@ -439,7 +453,10 @@ function persist(): { ok: boolean; errs?: string[] } {
   if (errs.length) return { ok: false, errs };
   const activeKey = state.selection.activeName;
   const existing = state.homebrew[activeKey];
-  const dataItem = fromDraftToData(state.form!, existing);
+  // Detach from the store proxy: fromDraftToData copies arrays (tags, features) into
+  // properties, and homebrewManager Clone()s the item — structuredClone throws on proxies,
+  // which silently dropped the Dexie write for any item with tags.
+  const dataItem = fromDraftToData(unwrap(state.form!) as DraftItem, existing);
   const isNew = !existing || activeKey === '__new__';
   // Perform persistence through homebrewManager
   if (isNew) {
@@ -462,6 +479,7 @@ function persist(): { ok: boolean; errs?: string[] } {
 export const itemsStore = {
   state,
   loadSrdOnce,
+  refreshHomebrew,
   selectNew,
   select,
   updateField,

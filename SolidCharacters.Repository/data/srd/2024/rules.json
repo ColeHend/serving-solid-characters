@@ -7,28 +7,32 @@
   "related": [
    "Proficiency"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "47084c8c-8764-54a8-9edf-6d29652f5328",
   "name": "Ability Score and Modifier",
   "description": "A creature has six ability scores—Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma—each of which has a corresponding modifier. Add the modifier when you make a D20 Test with the corresponding ability or when a rule asks you to do so. *See also* \"Playing the Game\" (\"The Six Abilities\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "870423be-21c9-50bd-88d9-ee851cb47628",
   "name": "Action",
   "description": "On your turn, you can take one action. Choose which action to take from those below or from the special actions provided by your features. *See also* \"Playing the Game\" (\"Actions\"). These actions are defined elsewhere in this glossary:\n| | | | |\n|-----------|-------|-----------|---------|\n| Attack | Dodge | Influence | Search |\n| Dash | Help | Magic | Study |\n| Disengage | Hide | Ready | Utilize |",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "41952400-c6f3-50bc-8ff8-c58ecea9334e",
   "name": "Advantage",
   "description": "If you have Advantage on a D20 Test, roll two d20s, and use the higher roll. A roll can't be affected by more than one Advantage, and Advantage and Disadvantage on the same roll cancel each other. *See also* \"Playing the Game\" (\"D20 Tests\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "23ad2996-64bc-56ef-a931-a6feb9fa857e",
@@ -38,21 +42,24 @@
   "related": [
    "Encounter"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "87210cbe-1621-574c-abb2-8865fc0c1bc2",
   "name": "Alignment",
   "description": "A creature's alignment broadly describes its ethical attitudes and ideals. Alignment is a combination of two factors: one identifies morality (good, evil, or neutral), and the other describes attitudes toward order (lawful, chaotic, or neutral). These factors allow for nine possible combinations, such as Lawful Good and Neutral Evil. *See also* \"Character Creation\" (\"Create Your Character\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "ce167720-daa8-5e36-b4b9-2f6a2670f6b6",
   "name": "Ally",
   "description": "A creature is your ally if it is a member of your adventuring party, your friend, on your side in combat, or a creature that the rules or the GM designates as your ally.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0a38612f-4bbb-55f0-abb7-6a79fa777fa0",
@@ -62,7 +69,8 @@
   "related": [
    "Cover"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "aa61331e-cde1-53d9-8991-a698fd0f5744",
@@ -72,7 +80,8 @@
   "related": [
    "Attack Roll"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "61d1c686-e199-5e91-b120-e905d109e271",
@@ -82,7 +91,8 @@
   "related": [
    "Disadvantage"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b2b04c93-ce40-516e-9976-630164575e6b",
@@ -92,14 +102,16 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0f01bd1d-d05a-5d5f-99e6-a64e3bf8767a",
   "name": "Attack Roll",
   "description": "An attack roll is a D20 Test that represents making an attack with a weapon, an Unarmed Strike, or a spell. *See also* \"Playing the Game\" (\"D20 Tests\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "3641e797-b578-5d3c-88c8-8ab4381ff9c4",
@@ -112,14 +124,16 @@
    "Indifferent",
    "Influence"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "dd1902f6-a637-540f-bcc7-31b7793f09f8",
   "name": "Attunement",
   "description": "Some magic items require a creature to form a bond—called Attunement—with them before the creature can use an item's magical properties. A creature can have Attunement with no more than three magic items at a time. *See also* \"Equipment\" (\"Magic Items\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8514a7c9-120e-5837-8766-754c3ab82324",
@@ -129,28 +143,32 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8ca42335-1673-56c5-b56c-ed9f1f92a023",
   "name": "Blindsight",
   "description": "If you have Blindsight, you can see within a specific range without relying on physical sight. Within that range, you can see anything that isn't behind Total Cover even if you have the Blinded condition or are in Darkness. Moreover, in that range, you can see something that has the Invisible condition.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "c93b6cca-2780-59c7-bb2b-c9d9f0ec0e7d",
   "name": "Bloodied",
   "description": "A creature is Bloodied while it has half its Hit Points or fewer remaining.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "9cc944f6-13fe-5cb4-94b5-2caf336f8d8a",
   "name": "Bonus Action",
   "description": "A Bonus Action is a special action that you can take on the same turn that you take an action. You can't take more than one Bonus Action on a turn, and you have a Bonus Action to take only if a rule explicitly says so. *See also* \"Playing the Game\" (\"Actions\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0674f0e6-5fc9-561a-845a-2a59f57d2543",
@@ -160,14 +178,16 @@
   "related": [
    "Damage Threshold"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "c93a0f32-8504-5f3a-9736-3ac667ecc867",
   "name": "Bright Light",
   "description": "Bright Light is normal illumination. *See also* \"Playing the Game\" (\"Exploration\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2234971b-3b00-5511-88ad-71fdb0cbc0a8",
@@ -177,7 +197,8 @@
    "Hazard"
   ],
   "category": "Hazard",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "499d25ad-1e48-59cd-9212-bcf1599754de",
@@ -187,7 +208,8 @@
   "related": [
    "Speed"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "40a4e604-537c-5b08-bc77-034a60f819ee",
@@ -197,21 +219,24 @@
   "related": [
    "Adventure"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "d19aba6a-a682-5c5a-954b-d6787fdda451",
   "name": "Cantrip",
   "description": "A cantrip is a level 0 spell, which is cast without a spell slot. *See also* \"Spells.\"",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "c6bb39d3-7b3c-56a8-b711-9a7c95f397ae",
   "name": "Carrying Capacity",
   "description": "Your size and Strength score determine the maximum weight in pounds that you can carry, as shown in the Carrying Capacity table. The table also shows the maximum weight you can drag, lift, or push.\nWhile dragging, lifting, or pushing weight in excess of the maximum weight you can carry, your Speed can be no more than 5 feet.\nTable: Carrying Capacity\n| Creature Size | Carry | Drag/Lift/Push |\n|---------------|----------------|----------------|\n| Tiny | Str. × 7.5 lb. | Str. × 15 lb. |\n| Small/Medium | Str. × 15 lb. | Str. × 30 lb. |\n| Large | Str. × 30 lb. | Str. × 60 lb. |\n| Huge | Str. × 60 lb. | Str. × 120 lb. |\n| Gargantuan | Str. × 120 lb. | Str. × 240 lb. |",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "ed33c854-95c6-5210-9a72-a83c074c42d0",
@@ -221,14 +246,16 @@
   "related": [
    "Stat Block"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8e3f9b58-907c-5c5e-8041-e26d4876b53a",
   "name": "Character Sheet",
   "description": "A character sheet is a paper or digital record that you use to track your character's information. *See also* \"Character Creation.\"",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "1a01a893-1fe6-54f8-9e6a-9df0317745c2",
@@ -238,14 +265,16 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "eb967605-aa06-5402-9cea-44dfb391f515",
   "name": "Climbing",
   "description": "While you're climbing, each foot of movement costs 1 extra foot (2 extra feet in Difficult Terrain). You ignore this extra cost if you have a Climb Speed and use it to climb.\nAt the GM's option, climbing a slippery surface or one with few handholds might require a successful DC 15 Strength (Athletics) check.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "54289046-c8ef-5498-bd9d-f547658e1594",
@@ -256,21 +285,24 @@
    "Climbing",
    "Speed"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "74061cc1-1c42-5e51-8021-515f7e5e8562",
   "name": "Concentration",
   "description": "Some spells and other effects require Concentration to remain active, as specified in their descriptions. If the effect's creator loses Concentration, the effect ends. If the effect has a maximum duration, the effect's description specifies how long the creator can concentrate on it: up to 1 minute, 1 hour, or some other duration. The creator can end Concentration at any time (no action required). The following factors break Concentration.\n**_Another Concentration Effect._** You lose Concentration on an effect the moment you start casting a spell that requires Concentration or activate another effect that requires Concentration.\n**_Damage._** If you take damage, you must succeed on a Constitution saving throw to maintain Concentration. The DC equals 10 or half the damage taken (round down), whichever number is higher, up to a maximum DC of 30.\n**_Incapacitated or Dead._** Your Concentration ends if you have the Incapacitated condition or you die.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2e69b1e1-8a35-5b28-b61e-dac83153407a",
   "name": "Condition",
   "description": "A condition is a temporary game state. The definition of a condition says how it affects its recipient, and various rules define how to end a condition. This glossary defines these conditions:\n| | | |\n|------------|---------------|-------------|\n| Blinded | Grappled | Poisoned |\n| Charmed | Incapacitated | Prone |\n| Deafened | Invisible | Restrained |\n| Exhaustion | Paralyzed | Stunned |\n| Frightened | Petrified | Unconscious |\nA condition doesn't stack with itself; a recipient either has a condition or doesn't. The Exhaustion condition is an exception to that rule.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "e3cdf3d1-25f9-585a-b6df-7947c45b9c67",
@@ -280,14 +312,16 @@
    "Area of Effect"
   ],
   "category": "Area of Effect",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "ee6e7c3c-b330-58ed-b4f5-7793bd5c36c2",
   "name": "Cover",
   "description": "Cover provides a degree of protection to a target behind it. There are three degrees of cover, each of which provides a different benefit to a target: Half Cover (+2 bonus to AC and Dexterity saving throws), Three-Quarters Cover (+5 bonus to AC and Dexterity saving throws), and Total Cover (can't be targeted directly). If behind more than one degree of cover, a target benefits only from the most protective degree. *See also* \"Playing the Game\" (\"Combat\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "1741771e-7431-5d09-99fd-3bd2d627d0bf",
@@ -297,7 +331,8 @@
   "related": [
    "Speed"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0e416370-3266-596e-b26c-b076259cd3df",
@@ -307,21 +342,24 @@
   "related": [
    "Creature Type"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "985e153c-1c11-5f57-ab03-4d8ae0fba4ff",
   "name": "Creature Type",
   "description": "Every creature, including every player character, has a tag in the rules that identifies the type of creature it is. Most player characters are of the Humanoid type. These are the game's creature types:\n| | | |\n|------------|-----------|-------------|\n| Aberration | Elemental | Monstrosity |\n| Beast | Fey | Ooze |\n| Celestial | Fiend | Plant |\n| Construct | Giant | Undead |\n| Dragon | Humanoid | |\nThe types don't have rules themselves, but some rules in the game affect creatures of certain types in different ways.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "40156647-6a78-529a-bce0-7a5adb011dba",
   "name": "Critical Hit",
   "description": "If you roll a 20 on the d20 for an attack roll, you score a Critical Hit, and the attack hits regardless of any modifiers or the target's AC. A Critical Hit lets you roll extra dice for the attack's damage against the target. Roll all of the attack's damage dice twice and add them together. Then add any relevant modifiers. *See also* \"Playing the Game\" (\"Damage and Healing\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "1270bf2d-434b-5e40-9f21-d3bfc370a381",
@@ -331,14 +369,16 @@
    "Area of Effect"
   ],
   "category": "Area of Effect",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "a644c821-b0fe-5382-87b1-d09045a351f2",
   "name": "Curses",
   "description": "Some game effects curse a creature or an object. The effect that confers a curse defines what the curse does. Curses can be removed by the *Remove Curse* and *Greater Restoration* spells or other magic that explicitly ends curses.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "16f12591-796e-519d-a098-ac7a1912fff2",
@@ -348,42 +388,48 @@
    "Area of Effect"
   ],
   "category": "Area of Effect",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "7b329cd4-86fb-5604-84b1-921fe1e403e2",
   "name": "D20 Test",
   "description": "D20 Tests encompass the three main d20 rolls of the game: ability checks, attack rolls, and saving throws. If something in the game affects D20 Tests, it affects all three of these rolls. The GM determines whether a D20 Test is warranted in a given circumstance. *See also* \"Playing the Game\" (\"D20 Tests\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "d1a2e6b3-49e2-5477-b0f7-ad73bc85e026",
   "name": "Damage",
   "description": "Damage represents harm that causes a creature or an object to lose Hit Points.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2964cd2d-bbc4-5f35-9fa1-5c82c67920ab",
   "name": "Damage Roll",
   "description": "A damage roll is a die roll, adjusted by any applicable modifiers, that deals damage to a target. *See also* \"Playing the Game\" (\"Damage and Healing\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2b8c95a4-4aa1-5698-8499-8b9f4ed232dd",
   "name": "Damage Threshold",
   "description": "A creature or an object that has a damage threshold has Immunity to all damage unless it takes an amount of damage from a single attack or effect equal to or greater than its damage threshold, in which case it takes that entire instance of damage. Any damage that fails to meet or exceed the damage threshold is superficial and doesn't reduce Hit Points. For example, if an object has a damage threshold of 10, the object takes no damage if 9 damage is dealt to it, since that damage fails to exceed the threshold. If the same object is dealt 11 damage, it takes all of that damage.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8239f8a4-a81c-59bf-816a-6166cc3683b3",
   "name": "Damage Types",
   "description": "Attacks and other harmful effects deal different types of damage. Damage types have no rules of their own, but other rules, such as Resistance, rely on the types. The Damage Types table offers examples to help a GM assign a type to a new effect.\nTable: Damage Types\n| Type | Examples |\n|-------------|--------------------------------------|\n| Acid | Corrosive liquids, digestive enzymes |\n| Bludgeoning | Blunt objects, constriction, falling |\n| Cold | Freezing water, icy blasts |\n| Fire | Flames, unbearable heat |\n| Force | Pure magical energy |\n| Lightning | Electricity |\n| Necrotic | Life-draining energy |\n| Piercing | Fangs, puncturing objects |\n| Poison | Toxic gas, venom |\n| Psychic | Mind-rending energy |\n| Radiant | Holy energy, searing radiation |\n| Slashing | Claws, cutting objects |\n| Thunder | Concussive sound |",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "f62f06c6-8b83-5478-a29d-d5d568755eec",
@@ -393,14 +439,16 @@
   "related": [
    "Heavily Obscured"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "1d73c620-b4a4-5820-9245-123ca54edce3",
   "name": "Darkvision",
   "description": "If you have Darkvision, you can see in Dim Light within a specified range as if it were Bright Light and in Darkness within that range as if it were Dim Light. You discern colors in that Darkness only as shades of gray. *See also* \"Playing the Game\" (\"Exploration\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "4b43b9cc-0035-5192-ac97-4e206a10dcb4",
@@ -413,14 +461,16 @@
   "related": [
    "Speed"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8f1b8ea4-7053-5e45-a653-73099a26ff42",
   "name": "Dead",
   "description": "A dead creature has no Hit Points and can't regain them unless it is first revived by magic such as the *Raise Dead* or *Revivify* spell. When such a spell is cast, the spirit knows who is casting it and can refuse. The spirit of a dead creature has left the body and departed for the Outer Planes, and reviving the creature requires calling the spirit back.\nIf the creature returns to life, the revival effect determines the creature's current Hit Points. Unless otherwise stated, the creature returns to life with any conditions, magical contagions, or curses that were affecting it at death if the durations of those effects are still ongoing. If the creature died with any Exhaustion levels, it returns with 1 fewer level. If the creature had Attunement to one or more magic items, it is no longer attuned to them.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "47330277-beea-53c7-832d-a11dc8582559",
@@ -430,14 +480,16 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8950e92f-30e0-529f-904a-42f1767fac5b",
   "name": "Death Saving Throw",
   "description": "A player character must make a Death Saving Throw (also called a Death Save) if they start their turn with 0 Hit Points. *See also* \"Playing the Game\" (\"Damage and Healing\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "57604e60-a264-513a-8e56-f74a1cb9a552",
@@ -450,21 +502,24 @@
   "related": [
    "Exhaustion"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "4a951bcd-2616-5ec2-a618-6dfe87205542",
   "name": "Difficult Terrain",
   "description": "If a space is Difficult Terrain, every foot of movement in that space costs 1 extra foot. For example, moving 5 feet through Difficult Terrain costs 10 feet of movement. Difficult Terrain isn't cumulative; either a space is Difficult Terrain or it isn't.\nA space is Difficult Terrain if the space contains any of the following or something similar:\n- A creature that isn't Tiny or your ally\n- Furniture that is sized for creatures of your size or larger\n- Heavy snow, ice, rubble, or undergrowth\n- Liquid that's between shin- and waist-deep\n- A narrow opening sized for a creature one size smaller than you\n- A slope of 20 degrees or more",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "a61a1127-90ce-5961-b289-c72322313158",
   "name": "Difficulty Class",
   "description": "A Difficulty Class (DC) is the target number for an ability check or a saving throw. *See also* \"Playing the Game\" (\"D20 Tests\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "264e794d-be7d-59f4-bf0d-2388a71fe7b1",
@@ -474,14 +529,16 @@
   "related": [
    "Lightly Obscured"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2f17f73e-3a99-5793-b3b0-86b792cd0bad",
   "name": "Disadvantage",
   "description": "If you have Disadvantage on a D20 Test, roll two d20s and use the lower roll. A roll can't be affected by more than one Disadvantage, and Advantage and Disadvantage on the same roll cancel each other. *See also* \"Playing the Game\" (\"D20 Tests\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "46535a7b-1054-51d2-9607-03831576a4d8",
@@ -491,7 +548,8 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "e70a1745-a9d1-557d-b03a-f46be89e6043",
@@ -501,7 +559,8 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "9e2a7a0a-0612-536d-86de-dc1ef4bb45dd",
@@ -511,21 +570,24 @@
    "Area of Effect"
   ],
   "category": "Area of Effect",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8cef18eb-0b8a-5973-9b36-13b0a344c9a6",
   "name": "Encounter",
   "description": "An encounter is a scene in an adventure that is part of at least one of the game's three pillars: social interaction, exploration, or combat. *See also* \"Playing the Game\" (\"Social Interaction,\" \"Exploration,\" and \"Combat\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "3faba89d-27a9-54e8-981e-ecb75bbc0b5d",
   "name": "Enemy",
   "description": "A creature is your enemy if it fights against you in combat, actively works to harm you, or is designated as your enemy by the rules or GM.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "a7b84ab3-bdb8-5eac-b1ef-efbb176102a6",
@@ -535,14 +597,16 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "1e895c21-418c-5211-9035-fe7c84deeecd",
   "name": "Experience Points",
   "description": "As they overcome challenges and complete adventures, characters earn Experience Points (XP), which are awarded by the Game Master. When a character's XP total crosses certain thresholds, the character's level increases. *See also* \"Level Advancement.\"",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "760a0fe2-218e-5125-bfba-42d24e757277",
@@ -552,7 +616,8 @@
   "related": [
    "Proficiency"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "f9b58ad6-a51c-5494-afbf-4c6b4b685ab2",
@@ -562,7 +627,8 @@
    "Hazard"
   ],
   "category": "Hazard",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "15a8828e-d7a8-555b-8ca4-851cec6ba928",
@@ -573,7 +639,8 @@
    "Falling",
    "Fly Speed"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "512dcd4c-649c-59c4-948d-f45b72874980",
@@ -584,7 +651,8 @@
    "Flying",
    "Speed"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2c601af5-67ac-5ad7-9e61-69e35af14ba7",
@@ -597,7 +665,8 @@
   "related": [
    "Influence"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "fdfb2cdd-6363-5f93-bf3a-64d551011ca4",
@@ -607,7 +676,8 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "bc4e2205-2447-5472-9330-21e8b20238f7",
@@ -617,7 +687,8 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "d45b5366-e731-5314-8a72-b916fa4929b4",
@@ -628,7 +699,8 @@
    "Unarmed Strike",
    "Grappled"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b465075e-1377-5010-9732-5679cb91e51a",
@@ -642,14 +714,16 @@
    "Malnutrition",
    "Suffocation"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0eb39a59-af47-5fc6-ae0f-9e0d08315aca",
   "name": "Healing",
   "description": "Healing is how you regain Hit Points. *See also* \"Playing the Game\" (\"Damage and Healing\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0dd0932a-38b0-5122-ae74-00454b51cd52",
@@ -660,7 +734,8 @@
    "Blinded",
    "Darkness"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "48cd6426-6df9-5d4a-a79b-0e8f3bbfd542",
@@ -670,14 +745,16 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "c3169db0-7d70-5bc4-932e-c906ea5803bc",
   "name": "Heroic Inspiration",
   "description": "If you (a player character) have Heroic Inspiration, you can expend it to reroll any die immediately after rolling it, and you must use the new roll.\nIf you gain Heroic Inspiration but already have it, it's lost unless you give it to a player character who lacks it.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8053f982-f1e9-5474-81e0-4679c92fecb4",
@@ -687,14 +764,16 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "86ca0040-52db-5a6a-93a1-664ddc9ddac4",
   "name": "High Jump",
   "description": "When you make a High Jump, you leap into the air a number of feet equal to 3 plus your Strength modifier (minimum of 0 feet) if you move at least 10 feet on foot immediately before the jump. When you make a standing High Jump, you can jump only half that distance. Either way, each foot of the jump costs a foot of movement.\nYou can extend your arms half your height above yourself during the jump. Thus, you can reach a distance equal to the height of the jump plus 1½ times your height.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "1a2db32e-fbf3-51b2-affe-458a93678fda",
@@ -704,7 +783,8 @@
   "related": [
    "Short Rest"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "d036b867-b5f0-51a6-9b70-0bc9b8350a1c",
@@ -714,7 +794,8 @@
   "related": [
    "Breaking Objects"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "ff99a225-8abf-5593-90bb-2b231b9d5e90",
@@ -727,7 +808,8 @@
   "related": [
    "Influence"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "28b2b5e0-877a-5770-8729-499f409670f7",
@@ -737,28 +819,32 @@
   "related": [
    "Flying"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "d1e237f6-394b-59d5-934f-cb82115508d3",
   "name": "Illusions",
   "description": "Spells and other effects sometimes create magical illusions. Such an effect defines what the illusion does and which senses or mental faculties it deceives.\nIf an illusion manifests in space, the illusion is insubstantial and weightless, yet it seems to be affected by the environment as if the illusion were real unless the effect that created it specifies otherwise. For example, a visual illusion of a creature casts shadows and reflections, and wind appears to affect the illusory creature. Similarly, an audible illusion echoes in an echoey space.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "c182aaa3-1515-5e9a-a4b5-e5cce5532199",
   "name": "Immunity",
   "description": "If you have Immunity to a damage type or a condition, it doesn't affect you in any way.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "abbe6a68-873b-5207-aad5-c59a4f8d07e8",
   "name": "Improvised Weapons",
   "description": "An improvised weapon is an object wielded as a makeshift weapon, such as broken glass, a table leg, or a frying pan. A Simple or Martial weapon also counts as an improvised weapon if it's wielded in a way contrary to its design; if you use a Ranged weapon to make a melee attack or throw a Melee weapon that lacks the Thrown property, the weapon counts as an improvised weapon. An improvised weapon follows the rules below.\n**_Proficiency._** Don't add your Proficiency Bonus to attack rolls with an improvised weapon.\n**_Damage._** On a hit, the weapon deals 1d4 damage of a type the GM thinks is appropriate for the object.\n**_Range._** If you throw the weapon, it has a normal range of 20 feet and a long range of 60 feet.\n**_Weapon Equivalents._** If an improvised weapon resembles a Simple or Martial weapon, the GM may say it functions as that weapon and uses that weapon's rules. For example, the GM could treat a table leg as a Club.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "5a943302-6215-56f3-b107-1c8ba731fcfb",
@@ -768,7 +854,8 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "90b83259-9a6f-5b3b-af8a-38c0e244ca68",
@@ -781,7 +868,8 @@
   "related": [
    "Influence"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "704486eb-edfa-57e9-a5d1-2df546bdde3d",
@@ -791,14 +879,16 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b0d804b8-ceba-5338-add1-a975bf69fc86",
   "name": "Initiative",
   "description": "Initiative determines the order of turns during combat. The combat rules in \"Playing the Game\" explain how to roll Initiative.\nSometimes a GM might have combatants use their Initiative scores instead of rolling Initiative. Your Initiative score equals 10 plus your Dexterity modifier. If you have Advantage on Initiative rolls, increase your Initiative score by 5. If you have Disadvantage on those rolls, decrease that score by 5. *See also* \"Playing the Game\" (\"Combat\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "7343d9dd-3cf4-5e89-8331-e768aba98ca8",
@@ -808,7 +898,8 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "dec07366-5d0b-5e37-891b-6696aa5bd594",
@@ -819,14 +910,16 @@
    "Long Jump",
    "High Jump"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "a351a029-160b-5700-93fb-15fd29c79901",
   "name": "Knocking Out a Creature",
   "description": "When you would reduce a creature to 0 Hit Points with a melee attack, you can instead reduce the creature to 1 Hit Point. The creature then has the Unconscious condition and starts a Short Rest.\nThe creature remains Unconscious until it regains any Hit Points or until someone uses an action to administer first aid to it, which requires a successful DC 10 Wisdom (Medicine) check.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "909a9d64-7e5d-5ccc-bb97-0fc6eb954793",
@@ -836,7 +929,8 @@
   "related": [
    "Dim Light"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "c2527123-8ec3-5843-bbc5-cb909bfdb763",
@@ -846,14 +940,16 @@
    "Area of Effect"
   ],
   "category": "Area of Effect",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "12a12e61-a712-5848-8a42-7759e3b98226",
   "name": "Long Jump",
   "description": "When you make a Long Jump, you leap horizontally a number of feet up to your Strength score if you\nmove at least 10 feet immediately before the jump. When you make a standing Long Jump, you can leap only half that distance. Either way, each foot you jump costs a foot of movement.\nIf you land in Difficult Terrain, you must succeed on a DC 10 Dexterity (Acrobatics) check or have the Prone condition.\nThis Long Jump rule assumes that the height of the jump doesn't matter, such as a jump across a stream or chasm. At your GM's option, you must succeed on a DC 10 Strength (Athletics) check to clear a low obstacle (no taller than a quarter of the jump's distance), such as a hedge or low wall. Otherwise, you hit the obstacle.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0b0fceb9-608b-5206-9e9c-f8904fb6bf34",
@@ -863,7 +959,8 @@
   "related": [
    "Short Rest"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "688f924e-7b4c-5bf0-940e-1b4b72482358",
@@ -876,14 +973,16 @@
   "related": [
    "Concentration"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "365686c2-c195-5beb-889a-90aa1304e9a6",
   "name": "Magical Effect",
   "description": "An effect is magical if it is created by a spell, a magic item, or a phenomenon that a rule labels as magical.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0de1a7ce-2f36-5514-9c9b-8ea094fd5219",
@@ -896,7 +995,8 @@
   "related": [
    "Exhaustion"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "d746141c-9c55-5c72-a0a9-5af5af162308",
@@ -906,7 +1006,8 @@
   "related": [
    "Creature"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "6306b983-aa30-5061-9a4b-4f81ac1078c0",
@@ -916,7 +1017,8 @@
   "related": [
    "Monster"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "072627f4-5e35-5a83-9f16-b6412472e0ba",
@@ -926,21 +1028,24 @@
   "related": [
    "Breaking Objects"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "23a66b07-06b4-5d2e-b6aa-68569629b7eb",
   "name": "Occupied Space",
   "description": "A space is occupied if a creature is in it or if it is completely filled by objects.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b9aa6010-9c14-5748-ba38-e15b1bed9aec",
   "name": "Opportunity Attacks",
   "description": "You can make an Opportunity Attack when a creature that you can see leaves your reach using its action, its Bonus Action, its Reaction, or one of its speeds. To make the Opportunity Attack, take a Reaction to make one melee attack with a weapon or an Unarmed Strike against the provoking creature. The attack occurs right before the creature leaves your reach. *See also* \"Playing the Game\" (\"Combat\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "20c8ce93-b0a0-5407-aeaa-6d6ca441e9c1",
@@ -950,21 +1055,24 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2fc3b8cb-c121-5784-b81f-fb7be50b2889",
   "name": "Passive Perception",
   "description": "Passive Perception is a score that reflects a creature's general awareness of its surroundings. The GM uses this score when determining whether a creature notices something without consciously making a Wisdom (Perception) check.\nA creature's Passive Perception equals 10 plus the creature's Wisdom (Perception) check bonus. If the creature has Advantage on such checks, increase the score by 5. If the creature has Disadvantage on them, decrease the score by 5. For example, a level 1 character with a Wisdom of 15 and proficiency in Perception has a Passive Perception of 14 (10 + 2 + 2). If that character has Advantage on Wisdom (Perception) checks, the score becomes 19.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "dde6356c-89ed-537f-b165-70197675e802",
   "name": "Per Day",
   "description": "If a rule says you can use something a certain number of times per day, that means you must finish a Long Rest to use it again after you run out of uses.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "1b4f634d-0698-5d7e-97f6-c610c9804082",
@@ -974,14 +1082,16 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "f6ac2201-db7c-5ae7-9ca2-941e6f896284",
   "name": "Player Character",
   "description": "A player character is a character controlled by a player. *See also* \"Character Creation.\"",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "3207dbec-bf00-5ae3-a955-b2a71351a03d",
@@ -991,21 +1101,24 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2e4f08cf-4667-58ec-a2c4-20d4644d1cca",
   "name": "Possession",
   "description": "Some effects cause a creature to be possessed by another creature or entity. A possessing effect defines how the possession operates. Possession can be prevented by the *Protection from Evil and Good* spell and ended by the *Dispel Evil and Good* spell.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0f35e68b-2441-5e08-bdc5-ebef8ad81eec",
   "name": "Proficiency",
   "description": "If you have proficiency with something, you can add your Proficiency Bonus to any D20 Test you make using that thing. A creature might have proficiency in a skill or saving throw or with a weapon or tool. *See also* \"Playing the Game\" (\"Proficiency\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "96828c76-5e63-5f20-970e-3d8b95edab29",
@@ -1015,14 +1128,16 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "43fa487d-5129-5193-b726-846767ce98c8",
   "name": "Reach",
   "description": "A creature has a reach of 5 feet unless a rule says otherwise.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "eaf0a1c0-4d8f-55d7-a8df-a7f67460eb52",
@@ -1032,7 +1147,8 @@
   "related": [
    "Opportunity Attacks"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "c9647dcc-4932-574e-80ee-3fea93070137",
@@ -1042,14 +1158,16 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8af5bb7e-ad56-58d9-bdb2-4be8c47e2d80",
   "name": "Resistance",
   "description": "If you have Resistance to a damage type, damage of that type is halved against you (round down). Resistance is applied only once to an instance of damage. *See also* \"Playing the Game\" (\"Damage and Healing\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "a53fef90-501a-5501-9017-7daf82415a78",
@@ -1059,21 +1177,24 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "84904292-49a5-5957-9bef-e3bd51f10807",
   "name": "Ritual",
   "description": "If you have a spell prepared that has the Ritual tag, you can cast that spell as a Ritual. The Ritual version of a spell takes 10 minutes longer to cast than normal. It also doesn't expend a spell slot, which means the ritual version of a spell can't be cast at a higher level. *See also* \"Spells.\"",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "775c5c38-292e-53d0-861e-8f43c192a720",
   "name": "Round Down",
   "description": "Whenever you divide or multiply a number in the game, round down if you end up with a fraction, even if the fraction is one-half or greater. Some rules make an exception and tell you to round up.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "bd92f843-16dd-5597-aa36-937a51808b89",
@@ -1083,14 +1204,16 @@
   "related": [
    "Saving Throw"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "886369bc-2a60-5948-8aae-b9fa6e05204e",
   "name": "Saving Throw",
   "description": "A saving throw—also called a save—represents an attempt to avoid or resist a threat. You normally make a saving throw only when a rule requires you to do so, but you can decide to fail the save without rolling. The result of a save is detailed in the effect that allowed it. If a target is forced to make a save and lacks the ability score used by it, the target automatically fails. *See also* \"Playing the Game\" (\"D20 Tests\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "f07d7e14-617a-5f8f-803b-dfe54c7b18bf",
@@ -1100,28 +1223,32 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "70bf8345-9285-5d11-85ac-870dd4928301",
   "name": "Shape-Shifting",
   "description": "If an effect, such as Wild Shape or the *Polymorph* spell, lets you shape-shift, its description specifies what happens to you. Unless that description says otherwise, any ongoing effects on you—conditions, spells, curses, and the like—carry over from one form to the other. You revert to your true form if you die.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "f9eda6e2-522e-5683-a453-b81e576083a2",
   "name": "Short Rest",
   "description": "A Short Rest is a 1-hour period of downtime, during which a creature does nothing more strenuous than reading, talking, eating, or standing watch. To start a Short Rest, you must have at least 1 Hit Point.\n**Benefits of the Rest.** When you finish the rest, you gain the following benefits:\n**Spend Hit Point Dice.** You can spend one or more of your Hit Point Dice to regain Hit Points. For each Hit Point Die you spend in this way, roll the die and add your Constitution modifier to it. You regain Hit Points equal to the total (minimum of 1 Hit Point). You can decide to spend an additional Hit Point Die after each roll.\n**Special Feature.** Some features are recharged by a Short Rest. If you have such a feature, it recharges in the way specified in its description.\n**_Interrupting the Rest._** A Short Rest is stopped by the following interruptions:\n- Rolling Initiative\n- Casting a spell other than a cantrip\n- Taking any damage\nAn interrupted Short Rest confers no benefits.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "587edf1a-b028-5906-806f-c3f589776d6d",
   "name": "Simultaneous Effects",
   "description": "If two or more things happen at the same time on a turn, the person at the game table—player or GM whose turn it is decides the order in which those things happen. For example, if two effects occur at the start of a player character's turn, the player decides which of the effects happens first.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "cbd40229-fa38-5548-b547-d961006abe05",
@@ -1131,7 +1258,8 @@
   "related": [
    "Breaking Objects"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "23887706-20ef-5061-85b8-04ee56e60a30",
@@ -1141,7 +1269,8 @@
   "related": [
    "Proficiency"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "46d51ac3-4257-5b49-b931-e365ebc76584",
@@ -1155,28 +1284,32 @@
    "Jumping",
    "Swimming"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "3b50b4ea-e430-5983-87f8-376c6ca62daf",
   "name": "Spell",
   "description": "A spell is a magical effect that has the characteristics described in \"Spells.\"",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "e188fcf7-b8bc-5a56-9371-201512a2e328",
   "name": "Spell Attack",
   "description": "A spell attack is an attack roll made as part of a spell or another magical effect. *See also* \"Spells\" (\"Casting Spells\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b08cb25b-7a36-530e-ad74-32af7e3da566",
   "name": "Spellcasting Focus",
   "description": "A Spellcasting Focus is an object that certain creatures can use in place of a spell's Material components if those materials aren't consumed by the spell and don't have a cost specified. Some classes allow its members to use certain types of Spellcasting Focuses. *See also* \"Spells\" (\"Casting Spells\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "ac1dd3da-4348-56a2-82a5-b111ad94c8f4",
@@ -1186,14 +1319,16 @@
    "Area of Effect"
   ],
   "category": "Area of Effect",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "a3005f40-6bba-5190-a008-a39c9a1a597b",
   "name": "Stable",
   "description": "A creature is Stable if it has 0 Hit Points but isn't required to make Death Saving Throws. *See also* \"Playing the Game\" (\"Damage and Healing\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "1434723a-674c-593a-85db-cdb096e8dcd9",
@@ -1216,7 +1351,8 @@
    "Challenge Rating",
    "Experience Points"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "085f7ef1-eef2-5a4c-81de-c8bb82ea1219",
@@ -1226,14 +1362,16 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2c28d4b6-22fc-5880-bc36-777af45e9fda",
   "name": "Areas of Knowledge",
   "description": "| Skill | Areas |\n|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------|\n| Arcana | Spells, magic items, eldritch symbols, magical traditions, planes of existence, and certain creatures (Aberrations, Constructs, Elementals, Fey, and Monstrosities) |\n| History | Historic events and people, ancient civilizations, wars, and certain creatures (Giants and Humanoids) |\n| Investigation | Traps, ciphers, riddles, and gadgetry |\n| Nature | Terrain, flora, weather, and certain creatures (Beasts, Dragons, Oozes, and Plants) |\n| Religion | Deities, religious hierarchies and rites, holy symbols, cults, and certain crea tures (Celestials, Fiends, and Undead) |",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0f6c6d5f-414f-5d08-8e53-a6c4e98169b4",
@@ -1243,7 +1381,8 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "86c67122-421e-578c-8a71-0093333cfc51",
@@ -1253,21 +1392,24 @@
    "Hazard"
   ],
   "category": "Hazard",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "fd898d80-d842-5ffb-b642-8912c0bf4772",
   "name": "Surprise",
   "description": "If a creature is caught unawares by the start of combat, that creature is surprised, which causes it to have Disadvantage on its Initiative roll. *See also* \"Playing the Game\" (\"Combat\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "05663544-8926-55ab-9a66-a07988eb2a35",
   "name": "Swimming",
   "description": "While you're swimming, each foot of movement costs 1 extra foot (2 extra feet in Difficult Terrain). You ignore this extra cost if you have a Swim Speed and use it to swim. At the GM's option, moving any distance in rough water might require a successful DC 15 Strength (Athletics) check.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "9d3f3c49-e0df-597e-bb2d-37dfcfa46c41",
@@ -1278,49 +1420,56 @@
    "Swimming",
    "Speed"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "54a62724-6b87-5086-a6fb-57283d1e8408",
   "name": "Target",
   "description": "A target is the creature or object targeted by an attack roll, forced to make a saving throw by an effect, or selected to receive the effects of a spell or another phenomenon.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "49706eef-af0e-5e88-b47e-9ceb0285b428",
   "name": "Telepathy",
   "description": "Telepathy is a magical ability that allows a creature to communicate mentally with another creature within a specified range. Unless a rule states otherwise, the contacted creature doesn't need to share a language with the telepath to understand this communication, but the contacted creature must be able to understand at least one language or be telepathic itself to understand.\nA telepath doesn't need to see a contacted creature, and the telepath can start or end the telepathic contact at any time (no action required). Telepathic contact can't be initiated and is immediately broken if either the telepath or the other creature has the Incapacitated condition. Telepathic contact is also broken if the contacted creature is no longer within the telepathy's range or if the telepath contacts a different creature within range.\nA creature without telepathy can receive telepathic messages but can't initiate a telepathic conversation. Once a telepathic conversation starts, the non-telepath can communicate mentally to the telepath until the telepathic connection ends.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "4b256edf-9e99-520e-93bf-c850d4db95f9",
   "name": "Teleportation",
   "description": "Teleportation is a special kind of magical transportation. If you teleport, you disappear and reappear elsewhere instantly, without moving through the intervening space. This transportation doesn't expend movement unless a rule tells you otherwise, and teleportation never provokes Opportunity Attacks.\nWhen you teleport, all the equipment you're wearing and carrying teleports with you. If you're touching another creature when you teleport, that creature doesn't teleport with you unless the teleportation effect says otherwise.\nIf the destination space of your teleportation is occupied by another creature or blocked by a solid obstacle, you instead appear in the nearest unoccupied space of your choice.\nThe description of a teleportation effect tells you if you must see the teleportation's destination.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "7d8dabc0-2e32-5a11-aa51-bbbe736b0ebf",
   "name": "Temporary Hit Points",
   "description": "Temporary Hit Points are granted by certain effects and act as a buffer against losing real Hit Points. *See also* \"Playing the Game\" (\"Damage and Healing\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "5284c114-be1e-592d-b16d-e816b6b6dc80",
   "name": "Tremorsense",
   "description": "A creature with Tremorsense can pinpoint the location of creatures and moving objects within a specific range, provided that the creature with Tremorsense and anything it is detecting are both in contact with the same surface (such as the ground, a wall, or a ceiling) or the same liquid.\nTremorsense can't detect creatures or objects in the air, and it doesn't count as a form of sight.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b29a0a8e-64a6-5d02-a619-15e99b604fb7",
   "name": "Truesight",
   "description": "If you have Truesight, your vision is enhanced within a specified range. Within that range, your vision pierces through the following:\n**Darkness.** You can see in normal and magical Darkness.\n**Invisibility.** You see creatures and objects that have the Invisible condition.\n**Visual Illusions.** Visual illusions appear transparent to you, and you automatically succeed on saving throws against them.\n**Transformations.** You discern the true form of any creature or object you see that has been transformed by magic.\n**Ethereal Plane.** You see into the Ethereal Plane.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b05ec2db-3563-5bba-a1bc-58b8e894f05f",
@@ -1330,7 +1479,8 @@
   "related": [
    "Grappling"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "db0e71df-a746-577d-93d2-70b05ea475dc",
@@ -1340,14 +1490,16 @@
    "Condition"
   ],
   "category": "Condition",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "3ba51cb5-0754-5612-abca-e700aecd662e",
   "name": "Unoccupied Space",
   "description": "A space is unoccupied if no creatures are in it and it isn't completely filled by objects.",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "fb3e9119-1371-53f3-a63e-c23492172f2a",
@@ -1357,21 +1509,24 @@
    "Action"
   ],
   "category": "Action",
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0ff531a9-886b-5fa1-ab38-b56f8786fedc",
   "name": "Vulnerability",
   "description": "If you have Vulnerability to a damage type, damage of that type is doubled against you. Vulnerability is applied only once to an instance of damage. *See also* \"Playing the Game\" (\"Damage and Healing\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "f7e58bf3-ea26-5d57-b4aa-82965b78fc2f",
   "name": "Weapon",
   "description": "A weapon is an object that is in the Simple or Martial weapon category. *See also* \"Equipment\" (\"Weapons\").",
   "tags": [],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "57e7d210-aa8b-561a-8482-91dd856c395c",
@@ -1381,6 +1536,7 @@
   "related": [
    "Weapon"
   ],
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  }
 ]

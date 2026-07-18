@@ -9,7 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { OUT_2014, OUT_2024 } from "./config.ts";
+import { DATA_ROOT, OUT_2014, OUT_2024 } from "./config.ts";
 import type { Ruleset, RulesetData } from "./types.ts";
 import { IdStore, assignIds } from "./ids/idStore.ts";
 import { buildResolver } from "./mads/resolver.ts";
@@ -18,7 +18,9 @@ import { expandMagicItemVariants } from "./mads/variants.ts";
 import { coverageGaps, choiceWordingLint } from "./mads/coverage.ts";
 import { filePlan, writeFiles, cleanupBackups } from "./emit/writers.ts";
 import { stampLegacy } from "./emit/stampLegacy.ts";
-import { validateCounts, validateLegacy, validateMadsInData, validateStructure } from "./validate/validate.ts";
+import { stampSource } from "./emit/stampSource.ts";
+import { rulesetHash, writeManifest, type RulesetManifestEntry } from "./emit/manifest.ts";
+import { validateCounts, validateLegacy, validateMadsInData, validateSource, validateStructure } from "./validate/validate.ts";
 
 import { parseClasses2014 } from "./parsers/2014/classes.ts";
 import { parseRaces2014 } from "./parsers/2014/races.ts";
@@ -97,6 +99,7 @@ interface RunReport {
 }
 
 const reports: RunReport[] = [];
+const manifestEntries: Partial<Record<Ruleset, RulesetManifestEntry>> = {};
 let failed = false;
 
 for (const ruleset of rulesets) {
@@ -105,6 +108,7 @@ for (const ruleset of rulesets) {
     const data = collect(ruleset);
     const variantReport = expandMagicItemVariants(ruleset, data); // split combined items BEFORE ids/mads
     stampLegacy(ruleset, data); // filePlan shares these object references, so this reaches the written files
+    stampSource(ruleset, data);
 
     const store = new IdStore(ruleset, outDir);
     assignIds(store, data);
@@ -119,7 +123,7 @@ for (const ruleset of rulesets) {
     const plan = filePlan(ruleset, data);
     const errors: string[] = [];
     const warnings: string[] = [];
-    for (const r of [validateCounts(ruleset, plan), validateStructure(ruleset, data), validateMadsInData(data), validateLegacy(ruleset, data)]) {
+    for (const r of [validateCounts(ruleset, plan), validateStructure(ruleset, data), validateMadsInData(data), validateLegacy(ruleset, data), validateSource(ruleset, data)]) {
         errors.push(...r.errors);
         warnings.push(...r.warnings);
     }
@@ -145,6 +149,7 @@ for (const ruleset of rulesets) {
         written = writeFiles(outDir, plan);
         const removed = cleanupBackups(outDir);
         console.log(`wrote ${written.length} files to ${outDir}${removed.length ? `; removed ${removed.length} backup artifacts` : ""}`);
+        manifestEntries[ruleset] = { hash: rulesetHash(plan), counts, generatedAt: new Date().toISOString() };
     } else if (dryRun) {
         console.log("dry-run: nothing written");
     } else {
@@ -152,6 +157,11 @@ for (const ruleset of rulesets) {
     }
 
     reports.push({ ruleset, counts, ids: { preserved: store.preserved, minted: store.minted }, mads: madReport, coverageGaps: gaps, errors, warnings, written });
+}
+
+if (Object.keys(manifestEntries).length) {
+    const manifestPath = writeManifest(DATA_ROOT, manifestEntries);
+    console.log(`manifest: ${manifestPath}`);
 }
 
 const reportPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "last-report.json");

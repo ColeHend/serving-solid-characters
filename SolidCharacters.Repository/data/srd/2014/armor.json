@@ -12,7 +12,8 @@
    "Stealth": "Disadvantage",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3e311f20-6a4b-496a-a3cc-25d7007e04e1",
@@ -27,7 +28,8 @@
    "Stealth": "Normal",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4e93dfa9-b472-41bd-a03a-2d68bb4d242a",
@@ -42,7 +44,8 @@
    "Stealth": "Normal",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "a28d6770-114c-4bf8-b438-bb377c381e13",
@@ -57,7 +60,8 @@
    "Stealth": "Normal",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "dab4e5d1-f066-4b4a-a6fd-53d6310c51c6",
@@ -72,7 +76,8 @@
    "Stealth": "Normal",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2662ca29-0866-45a6-824e-4d249ccc3e1a",
@@ -87,7 +92,8 @@
    "Stealth": "Disadvantage",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "f7e439f8-44ea-4c00-812c-67f5b95ac64c",
@@ -102,7 +108,8 @@
    "Stealth": "Normal",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ead4b4c6-888e-4a07-a034-065c1ef8024b",
@@ -117,7 +124,8 @@
    "Stealth": "Disadvantage",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "2e78b891-2714-4a88-9696-79bebee99298",
@@ -132,7 +140,8 @@
    "Stealth": "Disadvantage",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "3ac0a624-aa8b-4dde-b866-eb0cd9bc0973",
@@ -147,7 +156,8 @@
    "Stealth": "Disadvantage",
    "StrengthReq": "13"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "9da0c5f4-9ada-42cd-9150-0b8f46d45a4a",
@@ -162,7 +172,8 @@
    "Stealth": "Disadvantage",
    "StrengthReq": "15"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "ab79ef22-b8e3-44cc-8da5-362579b9e885",
@@ -177,7 +188,8 @@
    "Stealth": "Disadvantage",
    "StrengthReq": "15"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "7e873dbb-cd8b-4517-ba1f-745f82a38b8c",
@@ -192,6 +204,7 @@
    "Stealth": "Normal",
    "StrengthReq": "0"
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  }
 ]

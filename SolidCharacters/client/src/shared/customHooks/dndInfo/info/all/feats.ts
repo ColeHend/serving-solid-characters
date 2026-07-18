@@ -1,5 +1,6 @@
 import { useGetSrdFeats } from "../srd/feats";
 import { useGetHombrewFeats } from "../homebrew/feat";
+import { markHomebrew } from "../provenance";
 import { createMemo } from "solid-js";
 import getUserSettings from "../../../userSettings";
 
@@ -15,6 +16,6 @@ export function useDnDFeats(settings?: settings) {
     const version = settings ? settings.overrideVersion : userSettings().dndSystem || '2014';
     const srd = useGetSrdFeats(version);
 
-    return [...srd(), ...HombrewFeats()]
+    return [...srd(), ...markHomebrew(HombrewFeats())]
   });
 }

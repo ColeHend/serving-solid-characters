@@ -13,6 +13,7 @@ import { loadSrdMasteries } from "../../shared/customHooks/dndInfo/info/srd/mast
 import { loadSrdMonsters } from "../../shared/customHooks/dndInfo/info/srd/monsters";
 import { loadSrdRules } from "../../shared/customHooks/dndInfo/info/srd/rules";
 import { swReady, verifyOfflineReady, writeNonEmptySnapshot, type OfflineReadyReport } from "./verifyOfflineReady";
+import { adoptCurrentSrdVersion } from "./srdVersion";
 import { OCR_ASSET_URLS } from "./ocrAssets";
 
 export type SrdVersion = '2014' | '2024';
@@ -177,7 +178,12 @@ export function runOfflinePreload(versions: SrdVersion[] = ['2014', '2024']): Pr
     // Claim "available offline" only when verification confirms it — not merely that the fetches
     // returned ok. This is what makes the offline indicator trustworthy.
     setPreloadComplete(verified);
-    if (verified) markOfflineDataReady(versions);
+    if (verified) {
+      markOfflineDataReady(versions);
+      // A verified full preload just pulled the server's current data — record its version so
+      // the freshness check doesn't immediately offer an "update" to a freshly seeded client.
+      void adoptCurrentSrdVersion();
+    }
 
     // Warm OCR assets LAST and in the background (largest payload, lowest priority, non-gating) so
     // they never race the precache install or the data sweep. Refresh the report when done so the

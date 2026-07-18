@@ -65,7 +65,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "6af678ca-23b1-4ef9-b417-5d9db31890a2",
@@ -115,7 +116,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "882c9f29-d9e7-46a7-945f-40102557fc28",
@@ -270,7 +272,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "69d0a13f-06db-459e-a53b-14219d3e435d",
@@ -394,7 +397,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "94610ffa-ee9e-48c4-aefc-030a2d3f28e5",
@@ -438,7 +442,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "62272522-35fa-4643-bd20-946d6f38da47",
@@ -475,7 +480,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "28e62c98-99fd-40c7-b1c8-566afade2811",
@@ -656,7 +662,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "c4fdab6f-cc07-43f9-8c9c-a58bcfaafd9f",
@@ -693,7 +700,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "fc6009af-4a44-403b-9c40-5364dbf09be0",
@@ -751,7 +759,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "67faff29-ba21-49a9-8122-ec032068268f",
@@ -843,7 +852,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0372bee7-37a9-44aa-af7b-8eb298ea680c",
@@ -899,7 +909,8 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "4e57865f-4ea4-420c-9b49-9e53c77e8c08",
@@ -941,6 +952,7 @@
     }
    ]
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  }
 ]

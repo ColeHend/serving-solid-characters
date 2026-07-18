@@ -668,3 +668,7 @@ label, legend,
   font-style: normal;
   font-display: swap;
 }
+
+body.parchment-bg {
+  @include parchementBG();
+}

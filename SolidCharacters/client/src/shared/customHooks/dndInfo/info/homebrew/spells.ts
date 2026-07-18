@@ -8,7 +8,9 @@ import homebrewManager from "../../../homebrewManager";
 const [spells, setSpells] = createSignal<Spell[]>([]);
 const allHomebrew = createMemo(() => {
   const allSpells = [...spells(), ...homebrewManager.spells()];
-  return [...new Map(allSpells.map((spell) => [spell.id, spell])).values()]
+  // `||` not `??`: net-new homebrew spells persist id:"" — a nullish check would key
+  // every id-less spell on "" and collapse them all into one entry.
+  return [...new Map(allSpells.map((spell) => [spell.id || spell.name, spell])).values()]
 });
 
 export function useGetHombrewSpells() {

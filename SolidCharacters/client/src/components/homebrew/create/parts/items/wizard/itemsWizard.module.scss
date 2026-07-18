@@ -1,0 +1,39 @@
+@use 'coles-solid-library/themes/variables' as *;
+
+// Item-specific bits only — the wizard chrome, cards, chips, option cards, boxed
+// inputs and review rows all come from the shared classes/wizard modules.
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+// Eyebrow line with the "Modified" badge beside it.
+.eyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modifiedBadge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wiz-on-accent);
+  background-color: var(--wiz-accent-bright);
+}
+
+// Cost quantity / unit / weight on the Identity step.
+.costGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-2 $spacing-3;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}

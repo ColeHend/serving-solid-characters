@@ -42,15 +42,11 @@ export function getUserSettings(forceReload?: boolean): [Accessor<UserSettings>,
         return of([] as UserSettings[]);
       }),
       tap((settings) => {
-        console.log("User settings retrieved:", settings);
-        
         if (settings && settings.length > 0) {
           // We found saved settings, use them
           setCurrentSettings(settings[0]);
-          console.log("Loaded user settings:", settings[0]);
         } else {
           // No settings found, create default settings entry
-          console.log("No settings found, using defaults");
           saveUserSettings({...DEFAULT_SETTINGS});
         }
         
@@ -71,8 +67,6 @@ export function getUserSettings(forceReload?: boolean): [Accessor<UserSettings>,
 export default getUserSettings;
 
 export function saveUserSettings(settings: UserSettings, callback?: ()=>void) {
-  console.log("Saving user settings:", settings);
-  
   userSettingDB.userSettings.put(settings).then(() => {
     console.log("User settings saved successfully");
     if(callback) callback();

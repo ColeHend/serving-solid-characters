@@ -6,8 +6,6 @@ import { WhatsNewModal } from './components/whatsNew/WhatsNewModal';
 import styles from './App.module.scss';
 
 const App: Component = () => {
-  console.log("App component initializing");
-
   onMount(() => {
     document.body.classList.add('home-bg');
   });
@@ -40,7 +38,6 @@ const App: Component = () => {
   // Mark loading as complete after a short delay to ensure UI renders
   setTimeout(() => {
     setIsLoading(false);
-    console.log("App component finished loading");
   }, 500);
 
   return (
