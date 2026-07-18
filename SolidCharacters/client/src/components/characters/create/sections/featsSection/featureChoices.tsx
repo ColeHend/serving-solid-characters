@@ -1,23 +1,25 @@
 import { Component, For, Show, createMemo } from "solid-js";
 import { MadChoiceControl } from "../../shell/madChoiceControl";
+import { MadChoiceSource } from "../../rules/applyMads";
 import { useCreate } from "../../state/createContext";
 import styles from "../../shell/madChoiceControl.module.scss";
 
 /**
- * Pickers for choice-form MADS commands carried by picked feats (origin + chosen). Class
- * and species feature choices render in their own sections — the class detail cards and
- * the species section — via the same MadChoiceControl.
+ * Pickers for one source's choice-form MADS commands, as a labeled block. The feats and
+ * background sections render it directly; class and species feature choices render in
+ * their own sections (the class detail cards filter per-card by sourceKey) via the same
+ * MadChoiceControl.
  */
-export const FeatureChoices: Component = () => {
+export const FeatureChoices: Component<{ source: MadChoiceSource; label: string }> = (props) => {
   const { derived } = useCreate();
 
-  const featChoices = createMemo(() => derived.madChoices().filter((c) => c.source === "feat"));
+  const choices = createMemo(() => derived.madChoices().filter((c) => c.source === props.source));
 
   return (
-    <Show when={featChoices().length > 0}>
-      <h5 class={styles.choicesLabel}>Feat choices</h5>
+    <Show when={choices().length > 0}>
+      <h5 class={styles.choicesLabel}>{props.label}</h5>
       <div class={styles.choicesList}>
-        <For each={featChoices()}>{(choice) => <MadChoiceControl choice={choice} />}</For>
+        <For each={choices()}>{(choice) => <MadChoiceControl choice={choice} />}</For>
       </div>
     </Show>
   );

@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Character } from "../../../../models/character.model";
 import { Background, CasterType, Class5E, Feat, Race, Spell, Subclass } from "../../../../models/generated";
+import { MadType } from "../../../../shared/customHooks/mads/madModels";
+import { draftMadChoices } from "../rules/applyMads";
 import { SrdLookups, characterToDraft, draftToCharacter } from "./draftMapper";
+import { draftClassKey } from "./draftStore";
 import { emptyDraft } from "./types";
 
 const barbarian = {
@@ -362,5 +365,107 @@ describe("id write-through", () => {
     character.race.species = "Old Human Name";
     const restored = characterToDraft(character, idLookups, "2014");
     expect(restored.species).toBe("Human");
+  });
+});
+
+describe("background features", () => {
+  // A background whose OWN feature carries a Character-type mad (a mads source like race.features),
+  // distinct from its recommended feat.
+  const guildArtisan = {
+    name: "Guild Artisan",
+    proficiencies: { skills: ["Insight", "Persuasion"], tools: [], weapons: [], armor: [] },
+    abilityOptions: ["Strength", "Dexterity", "Constitution"],
+    feat: "Alert",
+    features: [
+      {
+        id: "guild-membership",
+        name: "Guild Membership",
+        description: "",
+        metadata: {
+          mads: [
+            { command: "AddLanguages", value: { language: "Guild Cant" }, type: MadType.Character, group: 0 },
+          ],
+        },
+      },
+    ],
+  } as unknown as Background;
+  const bgLookups: SrdLookups = { ...lookups, backgrounds: [soldier, guildArtisan] };
+
+  const guildDraft = () =>
+    emptyDraft("2024", {
+      name: "Artisan",
+      classes: [{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }],
+      species: "Human",
+      background: "Guild Artisan",
+      abilityMethod: "manual",
+      baseScores: { str: 15, dex: 14, con: 13, int: 12, wis: 10, cha: 8 },
+    });
+
+  it("carries the background's own features as raw backgroundFeatures, not as feats", () => {
+    const character = draftToCharacter(guildDraft(), bgLookups);
+    expect(character.backgroundFeatures?.map((f) => f.name)).toContain("Guild Membership");
+    expect(character.features.map((f) => f.name)).not.toContain("Guild Membership");
+  });
+
+  it("leaves backgroundFeatures undefined for a background with no features", () => {
+    const character = draftToCharacter(scenarioDraft(), lookups);
+    expect(character.backgroundFeatures).toBeUndefined();
+  });
+
+  it("re-derives backgroundFeatures from the catalog on a load/save round-trip", () => {
+    const saved = draftToCharacter(guildDraft(), bgLookups);
+    const restored = characterToDraft(saved, bgLookups, "2014");
+    const resaved = draftToCharacter(restored, bgLookups);
+    expect(resaved.backgroundFeatures?.map((f) => f.name)).toContain("Guild Membership");
+  });
+});
+
+describe("mad choice keying", () => {
+  // A class feature bearing a choice-form Proficiencies mad — draftMadChoices must key its
+  // class-source choice by the owning class's selector key (draftClassKey), i.e. its classId.
+  const rogue = {
+    id: "class-rogue",
+    name: "Rogue",
+    hitDie: "d8",
+    savingThrows: ["Dexterity", "Intelligence"],
+    features: {
+      1: [
+        {
+          id: "expertise",
+          name: "Expertise",
+          description: "",
+          metadata: {
+            mads: [
+              {
+                command: "AddProficiencies",
+                value: { proficiency: "choice", options: "Stealth,Acrobatics,Perception", count: "2" },
+                type: MadType.Character,
+                group: 0,
+              },
+            ],
+          },
+        },
+      ],
+    },
+  } as unknown as Class5E;
+  const rogueLookups: SrdLookups = { ...lookups, classes: [rogue] };
+
+  const rogueDraft = () =>
+    emptyDraft("2024", {
+      name: "Sneak",
+      classes: [{ name: "Rogue", classId: "class-rogue", level: 1, subclass: "", skillChoices: [] }],
+      species: "Human",
+      background: "Soldier",
+      abilityMethod: "manual",
+      baseScores: { str: 10, dex: 16, con: 12, int: 14, wis: 10, cha: 8 },
+    });
+
+  it("keys class-source choices by draftClassKey (the entry's classId)", () => {
+    const entry = rogueDraft().classes[0];
+    const character = draftToCharacter(rogueDraft(), rogueLookups);
+    const classChoices = draftMadChoices(character).filter((c) => c.source === "class");
+    expect(classChoices.length).toBeGreaterThan(0);
+    expect(classChoices.every((c) => c.sourceKey === draftClassKey(entry))).toBe(true);
+    expect(draftClassKey(entry)).toBe("class-rogue");
   });
 });

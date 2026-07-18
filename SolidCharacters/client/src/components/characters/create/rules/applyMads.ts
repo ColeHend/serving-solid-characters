@@ -1,5 +1,5 @@
 import { Character } from "../../../../models/character.model";
-import { FeatureDetail } from "../../../../models/generated";
+import { FeatureDetail, MagicItem } from "../../../../models/generated";
 import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
 import { Clone } from "../../../../shared";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
@@ -9,6 +9,7 @@ import {
   choiceSpellMads,
   choiceStatMads,
   collectMadFeatures,
+  collectMagicItemMads,
   pendingProficiencyChoices,
   pendingSpellChoices,
   pendingStatChoices,
@@ -52,9 +53,10 @@ function formulaAc(character: Character, mad: MadFeature): number {
  * display time, never persist the result (the view page re-applies on load — persisting
  * an applied character would double-apply).
  */
-export function applyCreatorMads(character: Character): Character {
+export function applyCreatorMads(character: Character, magicItems: MagicItem[] = []): Character {
   const clone = Clone(character);
-  const mads = collectMadFeatures(clone);
+  // Item mads come AFTER feature mads so a `mode:set` stat item (Headband of Intellect) wins.
+  const mads = [...collectMadFeatures(clone), ...collectMagicItemMads(clone, magicItems)];
   const formulas = mads.filter(isAcFormula);
   const rest = mads.filter((mad) => !isAcFormula(mad));
 
@@ -75,7 +77,7 @@ export function applyCreatorMads(character: Character): Character {
 export type MadChoiceKind = "stat" | "proficiency" | "spell" | "armorProf" | "weaponProf" | "toolProf";
 
 /** Where a choice-bearing feature came from, so each creator section renders only its own. */
-export type MadChoiceSource = "class" | "race" | "feat";
+export type MadChoiceSource = "class" | "race" | "background" | "feat";
 
 export interface MadChoice {
   feature: FeatureDetail;
@@ -103,6 +105,7 @@ function featureSources(character: Character): TaggedFeature[] {
         sourceKey: level.classId || entitySelectorKey({ name: level.class }),
       }))),
     ...(character.race?.features ?? []).map((feature) => ({ feature, source: "race" as const })),
+    ...(character.backgroundFeatures ?? []).map((feature) => ({ feature, source: "background" as const })),
     ...(character.features ?? []).map((feature) => ({ feature, source: "feat" as const })),
   ];
 }

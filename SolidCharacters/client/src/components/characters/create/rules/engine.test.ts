@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CasterType, Class5E, Feat, Spell, Subclass } from "../../../../models/generated";
+import { CharacterSkillProficiency } from "../../../../models/character.model";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
 import {
   casterTypeLabel,
@@ -18,6 +19,7 @@ import {
   getProficiencyBonus,
   hitDieSides,
   isOffList,
+  mergeMadSkillRows,
   multiclassCasterLevel,
   spellFlavor,
   subclassUnlockLevel,
@@ -72,9 +74,8 @@ describe("screenshot scenario (Barbarian 1 / Sorcerer 3, STR15 DEX16 CON14 INT12
     expect(computeAc(3)).toBe(13);
   });
 
-  it("initiative stays at DEX mod with Alert (design behavior, RAW behind the constant)", () => {
-    expect(computeInitiative(3, ["Alert"], 2)).toBe(3);
-    expect(computeInitiative(3, [], 2)).toBe(3);
+  it("initiative is the DEX mod with no Initiative roll bonuses", () => {
+    expect(computeInitiative(3, [], 2, scores)).toBe(3);
   });
 
   it("saving throws are proficient for the initial class only", () => {
@@ -100,6 +101,26 @@ describe("screenshot scenario (Barbarian 1 / Sorcerer 3, STR15 DEX16 CON14 INT12
       profBonus: 2,
     });
     expect(computePassivePerception(rows)).toBe(12);
+  });
+});
+
+describe("computeInitiative", () => {
+  it("is the DEX mod alone when no roll bonuses apply", () => {
+    expect(computeInitiative(3, [], 2, scores)).toBe(3);
+  });
+
+  it("adds a 2014 Alert-style flat Initiative bonus (DEX + 5)", () => {
+    expect(computeInitiative(3, [{ rollType: "Initiative", bonus: 5 }], 2, scores)).toBe(8);
+  });
+
+  it("adds a 2024 Alert-style Full-PB Initiative bonus (DEX + PB)", () => {
+    expect(
+      computeInitiative(3, [{ rollType: "Initiative", proficiencyBonus: "Full PB" }], 2, scores),
+    ).toBe(5);
+  });
+
+  it("ignores roll bonuses that aren't Initiative", () => {
+    expect(computeInitiative(3, [{ rollType: "SavingThrow", bonus: 5 }], 2, scores)).toBe(3);
   });
 });
 
@@ -129,6 +150,85 @@ describe("computeSkillRows", () => {
   it("untrained skills use the bare ability mod", () => {
     expect(byName.Deception).toMatchObject({ state: "none", source: null, mod: -1 });
     expect(rows).toHaveLength(18);
+  });
+});
+
+describe("mergeMadSkillRows", () => {
+  const prof = (
+    stat: keyof Stats,
+    value: number,
+    proficient = false,
+    expertise = false,
+  ): CharacterSkillProficiency => ({ stat, value, proficient, expertise });
+
+  // Athletics/Acrobatics come in class-proficient; every other row is untrained.
+  const baseRows = computeSkillRows({
+    classSkills: ["Athletics", "Acrobatics"],
+    backgroundSkills: [],
+    overrides: {},
+    finalScores: scores,
+    profBonus: 2,
+  });
+  const merge = (
+    baseSkills: Record<string, CharacterSkillProficiency>,
+    madSkills: Record<string, CharacterSkillProficiency>,
+  ) =>
+    Object.fromEntries(
+      mergeMadSkillRows(baseRows, baseSkills, madSkills, scores, 2).map((r) => [r.name, r]),
+    );
+
+  it("locks in a feature-granted proficiency on an untrained skill", () => {
+    const rows = merge({ Perception: prof("wis", 0) }, { Perception: prof("wis", 2, true) });
+    expect(rows.Perception).toMatchObject({
+      state: "proficient",
+      source: "feature",
+      locked: true,
+      mod: 2, // WIS 0 + PB 2
+    });
+  });
+
+  it("upgrades a class-granted proficiency to feature expertise", () => {
+    const rows = merge(
+      { Athletics: prof("str", 4, true) },
+      { Athletics: prof("str", 6, true, true) },
+    );
+    expect(rows.Athletics).toMatchObject({
+      state: "expertise",
+      source: "feature",
+      locked: true,
+      mod: 6, // STR 2 + 2×PB
+    });
+  });
+
+  it("leaves the row untouched when the mad state isn't an upgrade", () => {
+    const rows = merge({ Acrobatics: prof("dex", 5, true) }, { Acrobatics: prof("dex", 5, true) });
+    expect(rows.Acrobatics).toMatchObject({
+      state: "proficient",
+      source: "class",
+      locked: false,
+      mod: 5, // DEX 3 + PB, unchanged
+    });
+  });
+
+  it("adds an AllProficiencies-style value bump to an unchanged row", () => {
+    // Jack of All Trades bumps the stored value by half PB without granting proficiency.
+    const rows = merge({ Stealth: prof("dex", 3) }, { Stealth: prof("dex", 4) });
+    expect(rows.Stealth).toMatchObject({
+      state: "none",
+      source: null,
+      locked: false,
+      mod: 4, // DEX 3 + (4 − 3) bump
+    });
+  });
+
+  it("matches a display-name row against its storage key", () => {
+    const rows = merge({}, { "Sleight Of Hand": prof("dex", 5, true) });
+    expect(rows["Sleight of Hand"]).toMatchObject({
+      state: "proficient",
+      source: "feature",
+      locked: true,
+      mod: 5, // DEX 3 + PB
+    });
   });
 });
 

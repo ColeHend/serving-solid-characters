@@ -7,6 +7,7 @@ import { LANGUAGES } from "../../rules/constants";
 import { featCategory } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
 import { LegacyBadge } from "../../shell/legacyBadge";
+import { FeatureChoices } from "../featsSection/featureChoices";
 import { editionSideOf, hasVariantOnSide } from "../../state/bothMode";
 import { useCreate } from "../../state/createContext";
 import styles from "./backgroundSection.module.scss";
@@ -185,6 +186,7 @@ export const BackgroundSection: Component = () => {
                 <span class={styles.detailLabel}>Equipment</span> — {equipmentLine(bg().startEquipment)}
               </p>
             </Show>
+            <FeatureChoices source="background" label="Feature choices" />
           </div>
         )}
       </Show>

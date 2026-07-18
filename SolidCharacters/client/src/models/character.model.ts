@@ -28,6 +28,12 @@ export class Character {
   public backgroundId?: string;
   public alignment: string = '';
   public features: FeatureDetail[] = [];
+  /**
+   * The background's own features (raw, unapplied) — a mads source like race.features.
+   * Kept separate from `features` (feats) so background choices aren't mistagged as feat picks.
+   * Absent on pre-existing saves; re-derived from the catalog on every creator save.
+   */
+  public backgroundFeatures?: FeatureDetail[];
   public proficiencies: CharacterProficiency = {
     skills: {},
     other: {}

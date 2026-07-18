@@ -1,6 +1,6 @@
 import { Character } from "../../../models/character.model";
 import { MadFeature } from "./madModels";
-import { statChoiceKey } from "./useMadCharacters";
+import { characterMadFeatureSources, statChoiceKey } from "./useMadCharacters";
 
 /**
  * Armor/weapon/tool proficiency mads. Unlike the sheet-mutating commands these have no
@@ -77,10 +77,16 @@ export function pendingEquipProfChoices(
     return choiceEquipProfMads(kind, feature).filter(m => !resolveEquipProfChoice(kind, character, feature, m));
 }
 
-interface EquipProficiencies {
+export interface EquipProficiencies {
     armor: string[];
     weapons: string[];
     tools: string[];
+}
+
+/** The slice of Class5E/Background the base-list union needs (structural — keeps this module off the generated types). */
+interface EquipProfSource {
+    name?: string;
+    proficiencies?: { armor?: string[]; weapons?: string[]; tools?: string[] };
 }
 
 const KIND_RESULT: Record<EquipProfKind, keyof EquipProficiencies> = {
@@ -109,11 +115,7 @@ export function applyEquipProficiencyMads(character: Character, base: EquipProfi
     const adds: EquipProficiencies = { armor: [], weapons: [], tools: [] };
     const removes: EquipProficiencies = { armor: [], weapons: [], tools: [] };
 
-    const features = [
-        ...(character.levels ?? []).flatMap(l => l.features ?? []),
-        ...(character.race?.features ?? []),
-        ...(character.features ?? []),
-    ];
+    const features = characterMadFeatureSources(character);
 
     for (const feature of features) {
         for (const m of (feature.metadata?.mads ?? []) as MadFeature[]) {
@@ -140,4 +142,40 @@ export function applyEquipProficiencyMads(character: Character, base: EquipProfi
         weapons: subtract(uniq([...base.weapons, ...adds.weapons]), removes.weapons),
         tools: subtract(uniq([...base.tools, ...adds.tools]), removes.tools),
     };
+}
+
+/**
+ * Full armor/weapon/tool resolution for a character: the class(es)' and background's base
+ * lists unioned, then the equipment-proficiency mads applied on top. Pure — callers supply
+ * the edition-correct class/background rows (the creator passes its edition-scoped data;
+ * useExportProficiencies passes the settings-scoped hooks).
+ */
+export function resolveCharacterEquipProficiencies(
+    character: Character,
+    classes: EquipProfSource[],
+    backgrounds: EquipProfSource[],
+): EquipProficiencies {
+    // Class names: every level's class, plus the headline className as a fallback.
+    const classNames = uniq([...(character.levels ?? []).map(l => l?.class ?? ""), character.className ?? ""]);
+
+    const armor: string[] = [];
+    const weapons: string[] = [];
+    const tools: string[] = [];
+
+    for (const name of classNames) {
+        const cls = classes.find(c => c.name?.toLowerCase() === name.toLowerCase());
+        if (!cls?.proficiencies) continue;
+        armor.push(...(cls.proficiencies.armor ?? []));
+        weapons.push(...(cls.proficiencies.weapons ?? []));
+        tools.push(...(cls.proficiencies.tools ?? []));
+    }
+
+    const bg = backgrounds.find(b => b.name?.toLowerCase() === (character.background ?? "").toLowerCase());
+    if (bg?.proficiencies) {
+        armor.push(...(bg.proficiencies.armor ?? []));
+        weapons.push(...(bg.proficiencies.weapons ?? []));
+        tools.push(...(bg.proficiencies.tools ?? []));
+    }
+
+    return applyEquipProficiencyMads(character, { armor: uniq(armor), weapons: uniq(weapons), tools: uniq(tools) });
 }

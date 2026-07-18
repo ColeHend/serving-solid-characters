@@ -147,6 +147,15 @@
       ],
       "mads": [
        {
+        "command": "AddArmorProficiencies",
+        "value": {
+         "armor": "Heavy Armor"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
         "command": "AddSpells",
         "value": {
          "ID": "d7deaf7e-7421-4367-87d2-cd8410d52403"

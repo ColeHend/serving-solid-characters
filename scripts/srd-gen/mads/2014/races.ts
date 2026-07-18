@@ -11,8 +11,6 @@ import type { MadMap } from "../spec.ts";
  *  - Trance, Halfling Nimbleness / Naturally Stealthy — no category.
  *  - Lucky (reroll a natural 1) and Savage Attacks (extra crit die) — not advantage, no category.
  *  - Stonecunning / Artificer's Lore — situational double-proficiency on a narrow check, not flat Expertise.
- *  - Dwarven Combat Training / "High Elf/Elf Weapon Training" / Tinker / Tool Proficiency — grant WEAPON or
- *    TOOL proficiency; the Proficiencies category only covers SKILLS, so there is no command for them.
  *  - Languages: named tongues (Common/Elvish/Draconic...) already live in the `languages` field, and the
  *    "extra language of your choice" traits are choices — no Languages command is emitted.
  *  - Draconic Ancestry / Damage Resistance (Dragonborn): the resisted damage type is CHOICE-dependent
@@ -30,6 +28,23 @@ export const map: MadMap = {
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against poison" } },
     ],
     "Dwarf/Darkvision": [DARKVISION_60],
+
+    // Dwarf — "proficiency with the battleaxe, handaxe, light hammer, and warhammer."
+    "Dwarf/Dwarven Combat Training": [
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Battleaxes" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Handaxes" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Light Hammers" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Warhammers" } },
+    ],
+
+    // Dwarf — "proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools."
+    "Dwarf/Tool Proficiency": [
+        { type: "Add", category: "ToolProficiencies", value: {
+            tool: "choice",
+            options: "Smith's Tools,Brewer's Supplies,Mason's Tools",
+            count: "1",
+        } },
+    ],
 
     // Hill Dwarf — "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
     "Hill Dwarf/Dwarven Toughness": [
@@ -52,6 +67,14 @@ export const map: MadMap = {
     ],
     "Elf/Darkvision": [DARKVISION_60],
 
+    // High Elf — "proficiency with the longsword, shortsword, shortbow, and longbow."
+    "High Elf/Elf Weapon Training": [
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Longswords" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Shortswords" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Shortbows" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Longbows" } },
+    ],
+
     // Half-Elf shares Fey Ancestry verbatim.
     "Half-Elf/Fey Ancestry": [
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against being charmed" } },
@@ -71,6 +94,11 @@ export const map: MadMap = {
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "cha", condition: "against magic" } },
     ],
     "Gnome/Darkvision": [DARKVISION_60],
+
+    // Rock Gnome — "You have proficiency with artisan's tools (tinker's tools)."
+    "Rock Gnome/Tinker": [
+        { type: "Add", category: "ToolProficiencies", value: { tool: "Tinker's Tools" } },
+    ],
 
     // Half-Orc — "You gain proficiency in the Intimidation skill."
     "Half-Orc/Menacing": [

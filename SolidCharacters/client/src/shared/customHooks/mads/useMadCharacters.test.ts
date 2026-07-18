@@ -1,14 +1,14 @@
 import { describe, it, expect, vi } from "vitest";
-import type { Character } from "../../../models/character.model";
+import type { Character, CharacterSavingThrow } from "../../../models/character.model";
 import { MovementType } from "../../../models/character.model";
-import type { FeatureDetail, MadFeature as StoredMad } from "../../../models/generated";
+import type { FeatureDetail, MadFeature as StoredMad, MagicItem } from "../../../models/generated";
 
 // These handler modules resolve data hooks at import time; mock them so the
 // suite never touches IndexedDB (same pattern as commandAgent.test.ts).
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
 import { rollBonusAmount } from "./commands/useRollBonusFeature";
@@ -44,6 +44,14 @@ function makeCharacter(overrides: Partial<Character> = {}): Character {
         },
         ...overrides,
     } as Character;
+}
+
+function makeMagicItem(overrides: Partial<MagicItem> = {}): MagicItem {
+    return {
+        id: "", name: "Item", desc: "", rarity: "", cost: "", category: "", weight: "",
+        properties: {},
+        ...overrides,
+    } as MagicItem;
 }
 
 function mad(command: string, value: Record<string, string>, type = MadType.Character): MadFeature {
@@ -83,6 +91,33 @@ describe("AddClassFeature / RemoveClassFeature", () => {
         c = addMadFeature(c, mad("RemoveClassFeature", { name: "DEFENSE" }));
 
         expect(c.features).toHaveLength(0);
+    });
+});
+
+describe("AddSavingThrows", () => {
+    // Creator-built characters pre-fill all six saves as non-proficient.
+    const prefilled = (): CharacterSavingThrow[] =>
+        (["str", "dex", "con", "int", "wis", "cha"] as const).map(stat => ({ stat, proficient: false }));
+
+    it("upgrades a pre-filled entry to proficient instead of skipping it", () => {
+        const c = addMadFeature(makeCharacter({ savingThrows: prefilled() }), mad("AddSavingThrows", { stat: "con" }));
+
+        expect(c.savingThrows).toHaveLength(6);
+        expect(c.savingThrows.find(st => st.stat === "con")?.proficient).toBe(true);
+        expect(c.savingThrows.filter(st => st.proficient)).toHaveLength(1);
+    });
+
+    it("pushes an absent stat as a proficient entry", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddSavingThrows", { stat: "wis" }));
+
+        expect(c.savingThrows).toEqual([{ stat: "wis", proficient: true }]);
+    });
+
+    it("re-adding an already-proficient stat stays a single proficient entry", () => {
+        let c = addMadFeature(makeCharacter(), mad("AddSavingThrows", { stat: "dex" }));
+        c = addMadFeature(c, mad("AddSavingThrows", { stat: "dex" }));
+
+        expect(c.savingThrows).toEqual([{ stat: "dex", proficient: true }]);
     });
 });
 
@@ -296,6 +331,15 @@ describe("collectMadFeatures", () => {
         });
 
         expect(collectMadFeatures(c)).toEqual([speed, advantage, classFeature]);
+    });
+
+    it("includes a Character-type mad carried by a background feature", () => {
+        const bgMad = mad("AddClassFeature", { name: "Shelter of the Faithful" });
+        const c = makeCharacter({
+            backgroundFeatures: [{ id: "", name: "Acolyte", description: "", metadata: { mads: stored(bgMad) } }],
+        });
+
+        expect(collectMadFeatures(c)).toEqual([bgMad]);
     });
 
     it("applying the collected mads to fresh clones is deterministic", () => {
@@ -687,5 +731,57 @@ describe("AddSpells choice form", () => {
     it("fixed-form AddSpells still applies unchanged", () => {
         const c = addMadFeature(makeCharacter(), mad("AddSpells", { ID: "spell-123" }));
         expect(c.spells).toEqual([{ name: "spell-123", prepared: false }]);
+    });
+});
+
+describe("collectMagicItemMads", () => {
+    // A character carrying the given equipped/attuned item names.
+    const carrying = (equipped: string[], attuned: string[] = []): Character =>
+        makeCharacter({
+            items: {
+                inventory: [], equipped, attuned,
+                currency: { platinumPieces: 0, goldPieces: 0, electrumPieces: 0, sliverPieces: 0, copperPieces: 0 },
+            },
+        });
+
+    it("an equipped item with no attunement requirement contributes its Character-type mads", () => {
+        const bonus = mad("AddStats", { stat: "int", statValue: "19", mode: "set" });
+        const item = makeMagicItem({ name: "Headband of Intellect", metadata: { mads: stored(bonus) } });
+
+        expect(collectMagicItemMads(carrying(["Headband of Intellect"]), [item])).toEqual([bonus]);
+    });
+
+    it("an attunement item contributes only when attuned, not merely equipped", () => {
+        const ac = mad("AddArmorClass", { bonus: "1" });
+        const ring = makeMagicItem({
+            name: "Ring of Protection",
+            properties: { attunement: "requires attunement" },
+            metadata: { mads: stored(ac) },
+        });
+
+        expect(collectMagicItemMads(carrying(["Ring of Protection"]), [ring])).toEqual([]);
+        expect(collectMagicItemMads(carrying([], ["Ring of Protection"]), [ring])).toEqual([ac]);
+    });
+
+    it("matches equipped/attuned names case-insensitively", () => {
+        const speed = mad("AddSpeed", { speed: "10" });
+        const item = makeMagicItem({ name: "Boots of Speed", metadata: { mads: stored(speed) } });
+
+        expect(collectMagicItemMads(carrying(["boots of SPEED"]), [item])).toEqual([speed]);
+    });
+
+    it("contributes nothing for items that are neither equipped nor attuned", () => {
+        const speed = mad("AddSpeed", { speed: "10" });
+        const item = makeMagicItem({ name: "Cloak of Elvenkind", metadata: { mads: stored(speed) } });
+
+        expect(collectMagicItemMads(carrying(["Some Other Item"]), [item])).toEqual([]);
+    });
+
+    it("filters out Info-type mads, keeping only Character-type", () => {
+        const speed = mad("AddSpeed", { speed: "10" });
+        const uses = mad("AddUses", { amount: "3" }, MadType.Info);
+        const item = makeMagicItem({ name: "Wand of Wonder", metadata: { mads: stored(speed, uses) } });
+
+        expect(collectMagicItemMads(carrying(["Wand of Wonder"]), [item])).toEqual([speed]);
     });
 });

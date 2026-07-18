@@ -1,8 +1,15 @@
 import { Component, For, Show, createMemo } from "solid-js";
 import { signed } from "../../../../shared/customHooks/utility/tools/dndMath";
+import { advantageLabel, rollBonusLabel, senseLabels } from "../../../../shared/customHooks/mads/rollFormat";
 import { ABILITY_LABELS, ABILITY_KEYS } from "../rules/constants";
 import { useCreate } from "../state/createContext";
 import styles from "./livingSheet.module.scss";
+
+/** Suffix shown after a granted action's name; plain "action" gets no suffix. */
+const ACTION_TYPE_LABELS: Record<string, string> = {
+  bonusAction: "bonus action",
+  reaction: "reaction",
+};
 
 const SPELL_LEVEL_LABELS: Record<string, string> = {
   "0": "Cantrips",
@@ -51,7 +58,7 @@ export const LivingSheet: Component<LivingSheetProps> = (props) => {
   });
 
   const sensesLine = createMemo(() =>
-    derived.senses().map(([name, range]) => `${name} ${range}ft`).join(", "));
+    senseLabels(Object.fromEntries(derived.senses())).join(", "));
 
   const defensesLine = createMemo(() => {
     const { resistances, immunities, vulnerabilities } = derived.defenses();
@@ -63,6 +70,37 @@ export const LivingSheet: Component<LivingSheetProps> = (props) => {
       .filter(Boolean)
       .join(" · ");
   });
+
+  // Walking speed lives in the SPEED tile; this lists only the extra modes.
+  const movementLine = createMemo(() => derived.movementModes().join(", "));
+
+  // Class/background base lists with equipment-proficiency mads (grants + resolved picks) applied.
+  const equipLines = createMemo(() => {
+    const profs = derived.equipProficiencies();
+    return [
+      profs.armor.length ? `Armor: ${profs.armor.join(", ")}` : "",
+      profs.weapons.length ? `Weapons: ${profs.weapons.join(", ")}` : "",
+      profs.tools.length ? `Tools: ${profs.tools.join(", ")}` : "",
+    ].filter(Boolean);
+  });
+
+  const actionsLine = createMemo(() =>
+    derived.grantedActions()
+      .map((action) => {
+        const suffix = ACTION_TYPE_LABELS[action.actionType];
+        return suffix ? `${action.name} (${suffix})` : action.name;
+      })
+      .join(", "));
+
+  const advantagesLine = createMemo(() =>
+    derived.rollAdvantages().map((adv) => `${adv.rollType} ${advantageLabel(adv)}`).join(" · "));
+
+  // Initiative bonuses are already folded into the INIT tile.
+  const rollBonusLine = createMemo(() =>
+    derived.rollBonuses()
+      .filter((rb) => rb.rollType !== "Initiative")
+      .map((rb) => `${rb.rollType} ${rollBonusLabel(rb, derived.profBonus(), derived.effectiveScores())}`)
+      .join(" · "));
 
   const stats = () => [
     { label: "AC", value: `${derived.ac()}` },
@@ -128,6 +166,31 @@ export const LivingSheet: Component<LivingSheetProps> = (props) => {
           <p class={styles.blockText}>{defensesLine()}</p>
         </Show>
 
+        <Show when={movementLine()}>
+          <h5 class={styles.blockLabel}>Movement</h5>
+          <p class={styles.blockText}>{movementLine()}</p>
+        </Show>
+
+        <Show when={actionsLine() || derived.attacksPerAction() > 1}>
+          <h5 class={styles.blockLabel}>Actions</h5>
+          <Show when={actionsLine()}>
+            <p class={styles.blockText}>{actionsLine()}</p>
+          </Show>
+          <Show when={derived.attacksPerAction() > 1}>
+            <p class={styles.blockText}>Attacks per action: {derived.attacksPerAction()}</p>
+          </Show>
+        </Show>
+
+        <Show when={advantagesLine()}>
+          <h5 class={styles.blockLabel}>Advantages</h5>
+          <p class={styles.blockText}>{advantagesLine()}</p>
+        </Show>
+
+        <Show when={rollBonusLine()}>
+          <h5 class={styles.blockLabel}>Roll Bonuses</h5>
+          <p class={styles.blockText}>{rollBonusLine()}</p>
+        </Show>
+
         <h5 class={styles.blockLabel}>Saving Throws</h5>
         <div class={styles.saveChips}>
           <For each={derived.savingThrows()}>
@@ -156,6 +219,11 @@ export const LivingSheet: Component<LivingSheetProps> = (props) => {
             </For>
           </Show>
         </p>
+
+        <Show when={equipLines().length > 0}>
+          <h5 class={styles.blockLabel}>Proficiencies</h5>
+          <For each={equipLines()}>{(line) => <p class={styles.blockText}>{line}</p>}</For>
+        </Show>
 
         <h5 class={styles.blockLabel}>Feats</h5>
         <p class={styles.blockText}>{featLine() || "None yet"}</p>

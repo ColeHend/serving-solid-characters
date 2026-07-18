@@ -20,6 +20,9 @@ export const HpSection: Component = () => {
 
   const conMod = () => derived.abilityMods().con;
 
+  /** Post-mads Max HP minus the base figure (override, else auto) — non-zero only with feature grants like Tough. */
+  const featureHpDelta = () => derived.maxHp() - (draft.hp.maxOverride ?? derived.autoMaxHp());
+
   return (
     <div>
       <Show
@@ -42,6 +45,9 @@ export const HpSection: Component = () => {
         <p class={styles.autoLine}>
           Auto max HP: <strong>{derived.autoMaxHp()}</strong>
         </p>
+        <Show when={featureHpDelta() !== 0}>
+          <p class={styles.featureHpLine}>{signed(featureHpDelta())} HP from features</p>
+        </Show>
       </Show>
 
       <div class={styles.fields}>

@@ -28,6 +28,8 @@ import {
   getProficiencyBonus,
   hitDieSides,
   normalizeAbility,
+  skillDisplayName,
+  skillStorageKey,
   totalLevel,
 } from "../rules/engine";
 import { draftClassKey } from "./draftStore";
@@ -66,14 +68,6 @@ const byId = <T extends { id?: string; name?: string }>(
 /** Selector key of a feat — its display name lives in details, not at the top level. */
 const featKey = (feat: Feat | undefined): string | undefined =>
   feat ? entitySelectorKey({ id: feat.id, name: feat.details?.name ?? "" }) : undefined;
-
-/**
- * `character.proficiencies.skills` has always been keyed with "Sleight Of Hand" (capital Of),
- * and the view page indexes it case-sensitively — keep the legacy storage key while the UI
- * shows the correct "Sleight of Hand".
- */
-const storageSkillKey = (name: string) => (name === "Sleight of Hand" ? "Sleight Of Hand" : name);
-const displaySkillName = (key: string) => (key === "Sleight Of Hand" ? "Sleight of Hand" : key);
 
 /** Feat lookup with the old mapper's "Magic Initiate (Cleric)" → "Magic Initiate" normalization. */
 function findFeat(feats: Feat[], name: string): Feat | undefined {
@@ -195,6 +189,8 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   };
   character.background = draft.background;
   character.backgroundId = background ? entitySelectorKey(background) : draft.backgroundId;
+  // Raw (unapplied) — a mads source like race.features; re-derived from the catalog each save.
+  if (background?.features?.length) character.backgroundFeatures = background.features;
   character.alignment = draft.alignment;
   character.languages = collectLanguages(draft.languages, draft.raceLanguageChoices, race, subrace);
   character.spells = draft.spells.map((name) => {
@@ -206,7 +202,7 @@ export function draftToCharacter(draft: CharacterDraft, lookups: SrdLookups): Ch
   character.proficiencies = {
     skills: Object.fromEntries(
       skillRows.map((row) => [
-        storageSkillKey(row.name),
+        skillStorageKey(row.name),
         {
           stat: row.ability,
           value: row.mod,
@@ -336,7 +332,7 @@ export function characterToDraft(
       Object.entries(character.proficiencies?.skills ?? {})
         .filter(([, skill]) => skill.proficient || skill.expertise)
         .map(([name, skill]) => [
-          displaySkillName(name),
+          skillDisplayName(name),
           skill.expertise ? ("expertise" as const) : ("proficient" as const),
         ]),
     );

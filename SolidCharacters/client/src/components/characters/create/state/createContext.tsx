@@ -1,9 +1,10 @@
-import { Accessor, JSX, createContext, createSignal, useContext } from "solid-js";
+import { Accessor, JSX, createContext, createMemo, createSignal, useContext } from "solid-js";
 import { CharacterEdition, RulesetSelection } from "../../../../models/character.model";
 import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
+import { useDnDMagicItems } from "../../../../shared/customHooks/dndInfo/info/all/magicItems";
 import { useDnDRaces } from "../../../../shared/customHooks/dndInfo/info/all/races";
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDSubclasses } from "../../../../shared/customHooks/dndInfo/info/all/subclasses";
@@ -80,6 +81,17 @@ export function CreateProvider(props: { children: JSX.Element }) {
     items: useDnDItems(editionOpt),
   };
 
+  // The magic-item hook takes a single year, so both-mode merges the two catalogs with the
+  // current rows FIRST — collectMagicItemMads keeps the first row per name, so a same-name
+  // item resolves to its 2024 printing and never applies twice.
+  const magicItems2014 = useDnDMagicItems({ overrideVersion: "2014" });
+  const magicItems2024 = useDnDMagicItems({ overrideVersion: "2024" });
+  const magicItems = createMemo(() => {
+    if (draft.edition === "2014") return magicItems2014();
+    if (draft.edition === "2024") return magicItems2024();
+    return [...magicItems2024(), ...magicItems2014()];
+  });
+
   const data: CreateData = {
     classes: raw.classes,
     subclasses: raw.subclasses,
@@ -91,6 +103,7 @@ export function CreateProvider(props: { children: JSX.Element }) {
     feats: raw.feats,
     spells: raw.spells,
     items: raw.items,
+    magicItems,
   };
 
   const derived = useDerived(draft, data);

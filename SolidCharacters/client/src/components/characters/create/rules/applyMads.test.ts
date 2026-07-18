@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { FeatureDetail } from "../../../../models/generated";
+import { FeatureDetail, MadFeature, MadType, MagicItem } from "../../../../models/generated";
 
 // Same import-time mocks as the mads suites — keep the test off IndexedDB/network.
 vi.mock("../../../../shared/customHooks/dndInfo/useDndFeatures", () => ({
@@ -98,6 +98,88 @@ describe("applyCreatorMads on the creator's mapped character", () => {
 
     // Dwarf trait commands (Darkvision, resistances, tool proficiency choice) tag as race.
     expect(choices.filter((c) => c.source === "race").every((c) => c.sourceKey === undefined)).toBe(true);
-    expect(choices.every((c) => ["class", "race", "feat"].includes(c.source))).toBe(true);
+    expect(choices.every((c) => ["class", "race", "background", "feat"].includes(c.source))).toBe(true);
+  });
+
+  it("tags a choice-form mad on a background feature as source 'background'", () => {
+    const bgChoice: FeatureDetail = {
+      id: "bg-asi",
+      name: "Prodigy",
+      description: "",
+      metadata: {
+        mads: [{ command: "AddStats", value: { stat: "choice", options: "str,dex", statValue: "1" }, type: MadType.Character, prerequisites: [], group: 0 }],
+      },
+    };
+    const character = draftToCharacter(dwarfBarbarian(1), lookups);
+    character.backgroundFeatures = [bgChoice];
+
+    const background = draftMadChoices(character).filter((c) => c.source === "background");
+    expect(background).toHaveLength(1);
+    expect(background[0]).toMatchObject({ kind: "stat", pending: true, sourceKey: undefined });
+  });
+});
+
+describe("magic item mads", () => {
+  /** Minimal MagicItem — collectMagicItemMads only reads name, properties.attunement, metadata.mads. */
+  const magicItem = (name: string, attunement: string | undefined, mads: MadFeature[]): MagicItem => ({
+    id: name,
+    name,
+    desc: "",
+    rarity: "rare",
+    cost: "",
+    category: "Wondrous Item",
+    weight: "",
+    properties: { attunement },
+    metadata: { mads },
+  });
+
+  const headband = magicItem("Headband of Intellect", "requires attunement", [
+    { command: "AddStats", value: { stat: "int", statValue: "19", mode: "set" }, type: MadType.Character, prerequisites: [], group: 0 },
+  ]);
+  const ringOfProtection = magicItem("Ring of Protection", undefined, [
+    { command: "AddArmorClass", value: { bonus: "1" }, type: MadType.Character, prerequisites: [], group: 0 },
+  ]);
+
+  // A feat feature that grants +2 INT — base INT 8 (Dwarf adds none) becomes 10 before any item mad.
+  const withIntFeat = () => {
+    const character = draftToCharacter(dwarfBarbarian(1), lookups);
+    character.features = [{
+      id: "feat-int",
+      name: "Keen Mind",
+      description: "",
+      metadata: { mads: [{ command: "AddStats", value: { stat: "int", statValue: "2" }, type: MadType.Character, prerequisites: [], group: 0 }] },
+    }];
+    return character;
+  };
+
+  it("baseline: the feat's +2 INT applies with no items", () => {
+    expect(applyCreatorMads(withIntFeat()).stats.int).toBe(10);
+  });
+
+  it("an attuned Headband of Intellect's mode:set wins over the feat's +2 (item mads run last)", () => {
+    const character = withIntFeat();
+    character.items.attuned = ["Headband of Intellect"];
+    expect(applyCreatorMads(character, [headband]).stats.int).toBe(19);
+  });
+
+  it("the same item only equipped (not attuned) leaves INT unchanged", () => {
+    const character = withIntFeat();
+    character.items.equipped = ["Headband of Intellect"];
+    expect(applyCreatorMads(character, [headband]).stats.int).toBe(10);
+  });
+
+  it("a flat-AC item without attunement adds its bonus while equipped", () => {
+    const baseline = applyCreatorMads(draftToCharacter(dwarfBarbarian(1), lookups));
+    expect(baseline.ArmorClass).toBe(14); // 10 + dex(2) + con(2), Unarmored Defense
+
+    const character = draftToCharacter(dwarfBarbarian(1), lookups);
+    character.items.equipped = ["Ring of Protection"];
+    expect(applyCreatorMads(character, [ringOfProtection]).ArmorClass).toBe(15);
+  });
+
+  it("without the magic-items argument item mads are simply absent", () => {
+    const character = withIntFeat();
+    character.items.attuned = ["Headband of Intellect"];
+    expect(applyCreatorMads(character).stats.int).toBe(10);
   });
 });

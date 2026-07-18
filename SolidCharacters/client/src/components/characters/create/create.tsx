@@ -26,7 +26,7 @@ import { applyCreatorMads } from "./rules/applyMads";
 import { ABILITY_LABELS } from "./rules/constants";
 
 const CreatePage: Component = () => {
-  const { draft, actions, derived, lookups, editId, setEditId } = useCreate();
+  const { draft, actions, derived, data, lookups, editId, setEditId } = useCreate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [sheetHidden, setSheetHidden] = createSignal(false);
 
@@ -77,7 +77,7 @@ const CreatePage: Component = () => {
       addSnackbar({ message: "Add a class before creating a sheet", severity: "warning" });
       return;
     }
-    const applied = applyCreatorMads(draftToCharacter(draft, lookups()));
+    const applied = applyCreatorMads(draftToCharacter(draft, lookups()), data.magicItems());
     setSheetChar(applied);
     void createCharacterSheet(applied, applied.stats ?? derived.finalScores(), sheetProfs());
   };

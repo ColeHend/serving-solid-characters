@@ -9,7 +9,12 @@ import {
   Subrace,
 } from "../../../../models/generated";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
-import { SkillOverrideState } from "../../../../models/character.model";
+import {
+  CharacterSkillProficiency,
+  RollBonus,
+  SkillOverrideState,
+} from "../../../../models/character.model";
+import { rollBonusAmount } from "../../../../shared/customHooks/mads/commands/useRollBonusFeature";
 import {
   getAbilityModifier,
   getProficiencyBonus,
@@ -18,13 +23,6 @@ import { detectSubclassFeatureLevels } from "../../../../shared/ai/refs/classPro
 import { ABILITY_KEYS, AbilityKey, SKILLS, SPELL_ABILITY } from "./constants";
 
 export { getAbilityModifier, getProficiencyBonus };
-
-/**
- * The target design shows initiative as the plain DEX mod even with Alert taken (2024 RAW would
- * add the proficiency bonus). Ship the design's behavior; the saved character still carries
- * Alert's RollBonus metadata, so flipping this constant is the only change needed to go RAW.
- */
-export const ALERT_ADDS_PROF_TO_INITIATIVE = false;
 
 export interface LeveledClass {
   name: string;
@@ -159,9 +157,22 @@ export function computeAc(dexMod: number): number {
   return 10 + dexMod;
 }
 
-export function computeInitiative(dexMod: number, featNames: string[], profBonus: number): number {
-  const hasAlert = featNames.some((f) => f.trim().toLowerCase() === "alert");
-  return dexMod + (hasAlert && ALERT_ADDS_PROF_TO_INITIATIVE ? profBonus : 0);
+/**
+ * DEX mod plus every Initiative RollBonus the character's mads granted — 2024 Alert (Full PB)
+ * and 2014 Alert (flat +5) both flow through generically.
+ */
+export function computeInitiative(
+  dexMod: number,
+  rollBonuses: RollBonus[],
+  profBonus: number,
+  stats: Stats,
+): number {
+  return (
+    dexMod +
+    rollBonuses
+      .filter((b) => b.rollType === "Initiative")
+      .reduce((sum, b) => sum + rollBonusAmount(b, profBonus, stats), 0)
+  );
 }
 
 export interface SkillRow {
@@ -169,7 +180,9 @@ export interface SkillRow {
   ability: AbilityKey;
   state: SkillOverrideState;
   /** Where the current state came from; null when the skill is untrained. */
-  source: "class" | "background" | "manual" | null;
+  source: "class" | "background" | "manual" | "feature" | null;
+  /** True when a feature mad grants the state — the pill isn't player-toggleable. */
+  locked: boolean;
   mod: number;
 }
 
@@ -182,6 +195,10 @@ export interface SkillInputs {
   finalScores: Stats;
   profBonus: number;
 }
+
+/** Skill-state → proficiency-bonus multiplier (the one place the ranking lives). */
+const stateRank = (state: SkillOverrideState) =>
+  state === "expertise" ? 2 : state === "proficient" ? 1 : 0;
 
 export function computeSkillRows(inputs: SkillInputs): SkillRow[] {
   const classSet = new Set(inputs.classSkills.map((s) => s.toLowerCase()));
@@ -201,11 +218,59 @@ export function computeSkillRows(inputs: SkillInputs): SkillRow[] {
       state = "proficient";
       source = "background";
     }
-    const profMultiplier = state === "expertise" ? 2 : state === "proficient" ? 1 : 0;
     const mod =
       getAbilityModifier(inputs.finalScores[skill.ability] ?? 10) +
-      inputs.profBonus * profMultiplier;
-    return { name: skill.name, ability: skill.ability, state, source, mod };
+      inputs.profBonus * stateRank(state);
+    return { name: skill.name, ability: skill.ability, state, source, locked: false, mod };
+  });
+}
+
+/** Character.proficiencies.skills storage key — one legacy-cased entry differs from the display name. */
+export const skillStorageKey = (name: string) =>
+  name === "Sleight of Hand" ? "Sleight Of Hand" : name;
+export const skillDisplayName = (key: string) =>
+  key === "Sleight Of Hand" ? "Sleight of Hand" : key;
+
+/**
+ * Overlay mads-driven skill changes onto the base rows (display only — the save path keeps
+ * the raw rows). A feature GRANT beats a lower base state, including a manual "none"
+ * (features are hard grants); a feature REMOVE — detected as the applied state dropping
+ * below the pre-mads base state — downgrades the row the same way. Touched rows come back
+ * `locked` with source "feature". Mods are always recomputed from `scores` — the mad
+ * handlers leave `.value` stale — plus the applied-vs-base `.value` delta, which carries
+ * AllProficiencies-style PB-fraction bumps (Jack of All Trades) that state alone can't express.
+ */
+export function mergeMadSkillRows(
+  rows: SkillRow[],
+  baseSkills: Record<string, CharacterSkillProficiency>,
+  madSkills: Record<string, CharacterSkillProficiency>,
+  scores: Stats,
+  profBonus: number,
+): SkillRow[] {
+  const lookup = (skills: Record<string, CharacterSkillProficiency>, name: string) =>
+    skills[name] ?? skills[skillStorageKey(name)];
+  const entryState = (entry: CharacterSkillProficiency | undefined): SkillOverrideState =>
+    entry?.expertise ? "expertise" : entry?.proficient ? "proficient" : "none";
+  return rows.map((row) => {
+    const mad = lookup(madSkills, row.name);
+    const madState = entryState(mad);
+    const baseState = entryState(lookup(baseSkills, row.name));
+    const granted = stateRank(madState) > stateRank(row.state);
+    const removed = stateRank(madState) < stateRank(baseState);
+    const touched = granted || removed;
+    const state = touched ? madState : row.state;
+    const allProfBump = (mad?.value ?? 0) - (lookup(baseSkills, row.name)?.value ?? 0);
+    const mod =
+      getAbilityModifier(scores[row.ability] ?? 10) +
+      profBonus * stateRank(state) +
+      (touched ? 0 : allProfBump);
+    return {
+      ...row,
+      state,
+      source: touched ? ("feature" as const) : row.source,
+      locked: touched,
+      mod,
+    };
   });
 }
 

@@ -7,17 +7,17 @@ import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, Chip } from "coles-solid-library";
-import { AdvantageRollType, Character, MovementSpeedKey, MovementType, RollAdvantage, RollBonus } from "../../../models/character.model";
+import { AdvantageRollType, Character, RollBonus } from "../../../models/character.model";
 import { Spell } from "../../../models/generated";
 import { srdItem } from "../../../models/data/generated";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { characterManager, Clone } from "../../../shared";
-import { collectMadFeatures, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount } from "../../../shared/customHooks/mads/useMadCharacters";
+import { characterMadFeatureSources, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount } from "../../../shared/customHooks/mads/useMadCharacters";
 import { featureUsage, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
-import { rollBonusAmount } from "../../../shared/customHooks/mads/commands/useRollBonusFeature";
-import { movementTypeName } from "../../../shared/customHooks/mads/commands/useMovementFeature";
+import { advantageLabel, movementModeLabels, rollBonusLabel, senseLabels } from "../../../shared/customHooks/mads/rollFormat";
+import { useDnDMagicItems } from "../../../shared/customHooks/dndInfo/info/all/magicItems";
 import UsesTracker from "./usesTracker/usesTracker";
 import { SpellTable } from "./SpellTable/SpellTable";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
@@ -27,6 +27,7 @@ const CharacterView: Component = () => {
   const [userSettings] = getUserSettings();
   const allSpells = useDnDSpells();
   const allItems = useDnDItems();
+  const allMagicItems = useDnDMagicItems();
   const getKnownSpells = (character: Character) => {
     return allSpells().filter(spell => character?.spells.some(s => s.name === spell.name));
   }
@@ -60,7 +61,11 @@ const CharacterView: Component = () => {
     const base = currentCharacter();
     if (!base) return base;
     const clone = Clone(base);
-    return useMadCharacters(clone, collectMadFeatures(clone));
+    // Equipped/attuned magic-item mads apply AFTER feature mads so `mode:set` items win.
+    return useMadCharacters(clone, [
+      ...collectMadFeatures(clone),
+      ...collectMagicItemMads(clone, allMagicItems()),
+    ]);
   });
 
   const [activeMobileTab, setActiveMobileTab] = createSignal(0);
@@ -102,48 +107,27 @@ const CharacterView: Component = () => {
 
   const rollAdvantages = createMemo(() => displayCharacter()?.rollAdvantages ?? []);
   const advantagesFor = (rollType: AdvantageRollType) => rollAdvantages().filter(a => a.rollType === rollType);
-  const advLabel = (adv: RollAdvantage) =>
-    `${adv.mode === "advantage" ? "ADV" : "DIS"}${adv.stat ? ` · ${adv.stat.toUpperCase()}` : ""}${adv.condition ? ` · ${adv.condition}` : ""}`;
+  const advLabel = advantageLabel;
 
   const rollBonuses = createMemo(() => displayCharacter()?.rollBonuses ?? []);
   const bonusesFor = (rollType: AdvantageRollType) => rollBonuses().filter(b => b.rollType === rollType);
   const profBonus = () => Math.ceil((displayCharacter()?.level ?? 1) / 4) + 1;
-  const bonusLabel = (rb: RollBonus) =>
-    `+${rollBonusAmount(rb, profBonus(), fullStats())}${rb.stat ? ` · ${rb.stat.toUpperCase()}` : ""}${rb.condition ? ` · ${rb.condition}` : ""}`;
-
-  const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+  const bonusLabel = (rb: RollBonus) => rollBonusLabel(rb, profBonus(), fullStats());
 
   // Non-walking movement modes as "Fly 60 ft" chips; a mode without its own speed moves at the walking Speed.
   const movementChips = createMemo(() => {
     const c = displayCharacter();
-    if (!c) return [];
-    return (c.movementTypes ?? [])
-      .filter(t => t !== MovementType.Walk)
-      .map(t => {
-        const name = movementTypeName(t);
-        const speed = c.movementSpeeds?.[name as MovementSpeedKey] ?? c.Speed;
-        return `${capitalize(name)} ${speed} ft`;
-      });
+    return c ? movementModeLabels(c) : [];
   });
 
   // Special senses as "Darkvision 60 ft" chips.
-  const senseChips = createMemo(() => {
-    const senses = displayCharacter()?.senses ?? {};
-    return Object.entries(senses)
-      .filter(([, range]) => typeof range === "number" && range > 0)
-      .map(([sense, range]) => `${capitalize(sense)} ${range} ft`);
-  });
+  const senseChips = createMemo(() => senseLabels(displayCharacter()?.senses ?? {}));
 
-  // Every feature source, mads applied: class levels, race, and top-level features
-  // (mads-granted picks like invocations land on the top-level array).
+  // Every feature source, mads applied (mads-granted picks like invocations land on the
+  // top-level array; the source list itself lives in characterMadFeatureSources).
   const allFeatures = createMemo(() => {
     const c = displayCharacter();
-    if (!c) return [];
-    return [
-      ...(c.levels ?? []).flatMap(l => l.features ?? []),
-      ...(c.race?.features ?? []),
-      ...(c.features ?? []),
-    ];
+    return c ? characterMadFeatureSources(c) : [];
   });
 
   const persistCharacter = (updated: Character) => {

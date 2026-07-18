@@ -43,6 +43,13 @@
   }
 }
 
+.featureHpLine {
+  margin: -8px 0 14px;
+  font-family: $font-ui;
+  font-size: 0.8rem;
+  color: var(--codex-gold);
+}
+
 .fields {
   display: flex;
   flex-wrap: wrap;

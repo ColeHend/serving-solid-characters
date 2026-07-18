@@ -119,7 +119,7 @@ export const FeatsSection: Component = () => {
         </For>
       </div>
 
-      <FeatureChoices />
+      <FeatureChoices source="feat" label="Feat choices" />
 
       <Show when={viewedFeat()} keyed>
         {(feat) => <FeatView feat={() => feat} show={[showFeatView, setShowFeatView]} width="40%" height="40%" />}

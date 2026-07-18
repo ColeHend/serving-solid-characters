@@ -230,8 +230,9 @@ export const map: MadMap = {
  *  - Barbarian/Improved Brutal Strike: Adds Staggering Blow ('target has Disadvantage on the next saving throw it makes') and Sundering Blow ('next attack roll made by another creature ... 
  *  - Bard/Expertise: 'You gain Expertise ... in two of your skill proficiencies of your choice' — the Expertise command takes fixed named skills only and has no choice for
  *  - Bard/Expertise: Level-9 grant is again 'Expertise in two more of your skill proficiencies of your choice' — no fixed skills; Expertise has no choice form. Catalog Exp
- *  - Cleric/Divine Order: A role choice: Protector gives 'proficiency with Martial weapons and training with Heavy armor' (weapon/armor, not a canonical skill, so outside the s
- *  - Druid/Primal Order: Role choice mirroring Divine Order: Warden gives 'proficiency with Martial weapons and training with Medium armor' (not skill proficiencies) or Magici
+ *  - Cleric/Divine Order: A role choice: Protector gives 'proficiency with Martial weapons and training with Heavy armor'. WeaponProficiencies/ArmorProficiencies could express the
+ *    grants, but they apply ONLY when the player picks Protector (vs Thaumaturge) — mads have no option-conditional form, and unconditional commands would grant every Cleric the profs.
+ *  - Druid/Primal Order: Role choice mirroring Divine Order: Warden gives 'proficiency with Martial weapons and training with Medium armor' — same option-conditional blocker as Divine Order.
  *  - Monk/Superior Defense: 'expend 3 Focus Points to bolster yourself ... for 1 minute ... you have Resistance to all damage except Force damage' — a temporary activated buff pa
  *  - Paladin/Aura of Protection: 'you and your allies in the aura gain a bonus to saving throws equal to your Charisma modifier (minimum bonus of +1)' — the bonus is an ability modifi
  *  - Paladin/Aura of Courage: 'You and your allies have Immunity to the Frightened condition' — Immunities is damage-type-only; the Frightened condition has no category. Matches cu

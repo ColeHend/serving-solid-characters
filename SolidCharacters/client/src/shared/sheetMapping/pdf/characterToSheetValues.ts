@@ -145,7 +145,12 @@ function names(arr: FeatureDetail[] | undefined): string {
 }
 
 function featureNames(char: Character): string {
-  return names([...(char.features ?? []), ...(char.race?.features ?? []), ...classFeatures(char)]);
+  return names([
+    ...(char.features ?? []),
+    ...(char.backgroundFeatures ?? []),
+    ...(char.race?.features ?? []),
+    ...classFeatures(char),
+  ]);
 }
 
 /**
@@ -159,7 +164,8 @@ export function characterToFeatureLists(char: Character | undefined): Record<str
   return {
     classFeatures: classFeatures(char),
     speciesTraits: (char.race?.features ?? []).filter((f) => f?.name),
-    feats: (char.features ?? []).filter((f) => f?.name),
+    // Background features share the feats placement — the sheet has no fourth list slot.
+    feats: [...(char.features ?? []), ...(char.backgroundFeatures ?? [])].filter((f) => f?.name),
   };
 }
 

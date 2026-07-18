@@ -146,6 +146,18 @@ export const SpellsSection: Component = () => {
         </Show>
       </Show>
 
+      {/* Spells handed out by mads (Magic Initiate, species cantrips) — read-only, not player picks. */}
+      <Show when={derived.grantedSpells().length > 0}>
+        <div class={styles.levelGroup}>
+          <h5 class={styles.levelLabel}>Granted by features</h5>
+          <div class={styles.spellChips}>
+            <For each={derived.grantedSpells()}>
+              {(name) => <Chip value={name} />}
+            </For>
+          </div>
+        </div>
+      </Show>
+
       <GrimoireModal show={[showGrimoire, setShowGrimoire]} onView={viewSpell} />
 
       <Show when={viewedSpell()} keyed>

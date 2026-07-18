@@ -1,6 +1,7 @@
 import { Character } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
+import { resolvePbFraction } from "./pbFraction";
 
 const getProficencyBonus = (level: number) => {
     return Math.ceil(level/ 4) + 1;
@@ -8,39 +9,22 @@ const getProficencyBonus = (level: number) => {
 
 const updateCharacter = (skillstring: string, proficiencyBounsChoice: string, opperator: "+"|"-", character: Character) => {
     const skillsToChange = skillstring.split(",").map(s => s.trim());
-    
-    let bonus: number;
 
-    switch (proficiencyBounsChoice) {
-        case "Third PB":
-            bonus = getProficencyBonus(character.level)/3;
-            break;
+    // resolvePbFraction floors (D&D rounds down) and resolves unknown fractions to 0 —
+    // Half PB at level 5 grants +1, never a fractional +1.5 on the sheet.
+    const bonus = resolvePbFraction(proficiencyBounsChoice, getProficencyBonus(character.level));
+    const signedBonus = opperator === "+" ? bonus : -bonus;
 
-        case "Half PB":
-            bonus = getProficencyBonus(character.level)/2;
-            break;
-
-        case "Full PB":
-            bonus = getProficencyBonus(character.level);
-            break;
-    }
-
-    switch (opperator) {
-        case "+":
-            return skillsToChange.reduce((updatedCharacter, skill) => {
-                updatedCharacter.proficiencies.skills[skill].value += bonus;
-
-                return updatedCharacter;
-            }, character)
-        
-        case "-":
-            return skillsToChange.reduce((updatedCharacter, skill) => {
-                updatedCharacter.proficiencies.skills[skill].value -= bonus;
-
-                return updatedCharacter;
-            }, character)
-    }
-} 
+    return skillsToChange.reduce((updatedCharacter, skill) => {
+        const entry = updatedCharacter.proficiencies.skills[skill];
+        if (!entry) {
+            DebugConsole.warn(`AllProficiencies: character has no skill entry for "${skill}"`);
+            return updatedCharacter;
+        }
+        entry.value += signedBonus;
+        return updatedCharacter;
+    }, character);
+}
 
 /**
  * requires an amount value in the feature.value object, which determines how the character's proficiencies will be increased by the proficiency level 

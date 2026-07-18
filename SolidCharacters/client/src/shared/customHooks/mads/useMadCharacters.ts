@@ -1,4 +1,5 @@
 import { Character, GrantedAction } from "../../../models/character.model";
+import { MagicItem } from "../../../models/generated";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
 import { addActionsFeature, removeActionsFeature } from "./commands/useActionsFeature";
 import { addAdvantageFeature, removeAdvantageFeature } from "./commands/useAdvantageFeature";
@@ -344,12 +345,23 @@ export function pendingSpellChoices(character: Character, feature: { id?: string
  * Choice-form Stats commands are resolved against character.statChoices (keyed by
  * feature name); unresolved ones are excluded until the player picks.
  */
-export function collectMadFeatures(character: Character): MadFeature[] {
-    const feats = [
+/**
+ * Every feature-bearing source on a character, flattened in canonical order: class levels,
+ * race, background, top-level (feats + mads-granted). The ONE place the source list lives —
+ * equipment proficiencies and the view page's feature list reuse it, so a new source is
+ * added here once, not in four hand-maintained copies.
+ */
+export function characterMadFeatureSources(character: Character) {
+    return [
         ...(character.levels ?? []).flatMap(l => l.features ?? []),
         ...(character.race?.features ?? []),
+        ...(character.backgroundFeatures ?? []),
         ...(character.features ?? []),
     ];
+}
+
+export function collectMadFeatures(character: Character): MadFeature[] {
+    const feats = characterMadFeatureSources(character);
 
     return feats.flatMap(f =>
         ((f.metadata?.mads ?? []) as MadFeature[]).flatMap(m => {
@@ -367,6 +379,37 @@ export function collectMadFeatures(character: Character): MadFeature[] {
             return [m];
         }),
     );
+}
+
+/**
+ * Character-type mads carried by the magic items the character has on (Headband of Intellect,
+ * Ring of Protection, ...). Items requiring attunement apply only while attuned; any other
+ * item applies while equipped (or attuned). Matched by name — equipped/attuned store names.
+ * Callers should append these AFTER feature mads so a `mode:set` stat item wins over feat ASIs.
+ * Choice-form mads are skipped — items have no picker UI to resolve them.
+ */
+/** Attunement strings that MEAN "no attunement" despite being non-empty (loosely-authored/AI items). */
+const NO_ATTUNEMENT_PLACEHOLDERS = new Set(["no", "none", "false", "n/a", "-"]);
+
+export function collectMagicItemMads(character: Character, magicItems: MagicItem[]): MadFeature[] {
+    const equipped = new Set((character.items?.equipped ?? []).map(n => n.toLowerCase()));
+    const attuned = new Set((character.items?.attuned ?? []).map(n => n.toLowerCase()));
+    if (equipped.size === 0 && attuned.size === 0) return [];
+
+    // First row per name wins — merged both-edition catalogs (current rows first) and
+    // duplicated homebrew rows must not apply the same item's mads twice.
+    const seen = new Set<string>();
+    return magicItems.flatMap(item => {
+        const name = (item.name ?? "").toLowerCase();
+        if (!name || seen.has(name) || (!equipped.has(name) && !attuned.has(name))) return [];
+        seen.add(name);
+        const attunement = (item.properties?.attunement ?? "").trim().toLowerCase();
+        const requiresAttunement = !!attunement && !NO_ATTUNEMENT_PLACEHOLDERS.has(attunement);
+        if (requiresAttunement && !attuned.has(name)) return [];
+        return ((item.metadata?.mads ?? []) as MadFeature[]).filter(m =>
+            m.type === MadType.Character &&
+            !isChoiceStatMad(m) && !isChoiceProficiencyMad(m) && !isChoiceSpellMad(m));
+    });
 }
 
 

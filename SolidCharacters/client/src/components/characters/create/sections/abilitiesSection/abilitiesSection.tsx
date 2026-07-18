@@ -41,6 +41,17 @@ export const AbilitiesSection: Component = () => {
   const methodIndex = () => METHODS.findIndex((m) => m.method === draft.abilityMethod);
   const hint = () => METHODS[methodIndex()]?.hint ?? "";
 
+  // Marker for the gap between the pre-mads score and the effective (post-mads) score:
+  // signed delta for ASI-style boosts (or penalties), "set" when a mode:"set" mad forces
+  // the value — decided by the mad's actual mode, not the direction of the gap.
+  const abilityDelta = (key: AbilityKey): string | undefined => {
+    const effective = derived.effectiveScores()[key];
+    const base = derived.finalScores()[key];
+    if (derived.setStats().has(key)) return effective === base ? undefined : "set";
+    if (effective === base) return undefined;
+    return signed(effective - base);
+  };
+
   const assignedValues = () => ABILITY_KEYS.map((key) => draft.baseScores[key]);
 
   const isPoolMethod = () =>
@@ -159,8 +170,11 @@ export const AbilitiesSection: Component = () => {
           {(key) => (
             <div class={styles.column}>
               <span class={styles.abilityLabel}>{ABILITY_LABELS[key]}</span>
-              <span class={styles.finalScore}>{derived.finalScores()[key]}</span>
-              <span class={styles.modChip}>{signed(derived.abilityMods()[key])}</span>
+              <span class={styles.finalScore}>{derived.effectiveScores()[key]}</span>
+              <span class={styles.modChip}>{signed(derived.effectiveMods()[key])}</span>
+              <Show when={abilityDelta(key)}>
+                {(delta) => <span class={styles.abilityDelta}>{delta()}</span>}
+              </Show>
 
               <Show when={isPoolMethod()}>
                 <ScoreCell statKey={key} value={draft.baseScores[key]} disabled={!isPoolMethod()} />

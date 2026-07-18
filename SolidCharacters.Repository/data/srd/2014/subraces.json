@@ -83,7 +83,47 @@
     "details": {
      "id": "becd947f-c0a9-58f2-9320-84030a88e350",
      "name": "Elf Weapon Training",
-     "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow."
+     "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Longswords"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Shortswords"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Shortbows"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Longbows"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "b7272c65-0e16-5a00-abe5-8a799e052c02"
@@ -167,7 +207,20 @@
     "details": {
      "id": "e0896c8e-60aa-5d32-b956-1cc51dacbdb0",
      "name": "Tinker",
-     "description": "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time.\nWhen you create a device, choose one of the following options:"
+     "description": "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time.\nWhen you create a device, choose one of the following options:",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddToolProficiencies",
+        "value": {
+         "tool": "Tinker's Tools"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "9d0938d7-9276-40b8-99f6-c465b4a8d93b"

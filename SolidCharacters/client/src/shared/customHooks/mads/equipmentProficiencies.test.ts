@@ -14,6 +14,7 @@ import {
     equipProfChoiceKey,
     equipProfChoiceOptions,
     pendingEquipProfChoices,
+    resolveCharacterEquipProficiencies,
     resolveEquipProfChoice,
 } from "./equipmentProficiencies";
 
@@ -104,5 +105,56 @@ describe("choice helpers", () => {
         const m = mad("AddArmorProficiencies", { armor: "choice", options: " Light Armor , Shields ", count: "0" });
         expect(equipProfChoiceOptions(m)).toEqual(["Light Armor", "Shields"]);
         expect(equipProfChoiceCount(m)).toBe(1);
+    });
+});
+
+describe("resolveCharacterEquipProficiencies", () => {
+    const barbarian = {
+        name: "Barbarian",
+        proficiencies: { armor: ["Light Armor", "Medium Armor", "Shields"], weapons: ["Simple Weapons", "Martial Weapons"], tools: [] },
+    };
+    const soldier = { name: "Soldier", proficiencies: { armor: [], weapons: [], tools: ["Gaming Set"] } };
+
+    const fullCharacter = (features: FeatureDetail[], proficiencyChoices: Record<string, string> = {}): Character =>
+        ({
+            levels: [{ class: "Barbarian", features }],
+            className: "Barbarian",
+            background: "Soldier",
+            race: { species: "dwarf", features: [] },
+            features: [],
+            proficiencyChoices,
+        } as unknown as Character);
+
+    it("unions class and background base lists before applying mads", () => {
+        const out = resolveCharacterEquipProficiencies(fullCharacter([]), [barbarian], [soldier]);
+        expect(out.armor).toEqual(["Light Armor", "Medium Armor", "Shields"]);
+        expect(out.weapons).toEqual(["Simple Weapons", "Martial Weapons"]);
+        expect(out.tools).toEqual(["Gaming Set"]);
+    });
+
+    it("applies flat grants and resolved choice picks on top of the base lists", () => {
+        const training = feature("Dwarven Combat Training", mad("AddWeaponProficiencies", { weapon: "Warhammers" }));
+        const toolChoice = feature("Tool Proficiency",
+            mad("AddToolProficiencies", { tool: "choice", options: "Smith's Tools,Brewer's Supplies,Mason's Tools", count: "1" }));
+        const c = fullCharacter([training, toolChoice], {
+            [equipProfChoiceKey("tool", toolChoice)]: "Smith's Tools",
+        });
+
+        const out = resolveCharacterEquipProficiencies(c, [barbarian], [soldier]);
+        expect(out.weapons).toEqual(["Simple Weapons", "Martial Weapons", "Warhammers"]);
+        expect(out.tools).toEqual(["Gaming Set", "Smith's Tools"]);
+    });
+
+    it("resolves class rows by name from the supplied (edition-scoped) list only", () => {
+        const wrongEdition = { name: "Barbarian", proficiencies: { armor: ["Heavy Armor"], weapons: [], tools: [] } };
+        const out = resolveCharacterEquipProficiencies(fullCharacter([]), [wrongEdition], []);
+        // whatever list the caller supplies wins — the resolver never reaches for global data
+        expect(out.armor).toEqual(["Heavy Armor"]);
+    });
+
+    it("returns only mads grants when neither class nor background resolves", () => {
+        const training = feature("Elf Weapon Training", mad("AddWeaponProficiencies", { weapon: "Longbows" }));
+        const out = resolveCharacterEquipProficiencies(fullCharacter([training]), [], []);
+        expect(out).toEqual({ armor: [], weapons: ["Longbows"], tools: [] });
     });
 });

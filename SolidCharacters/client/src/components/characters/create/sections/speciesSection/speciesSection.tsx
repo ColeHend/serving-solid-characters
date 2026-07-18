@@ -6,6 +6,7 @@ import { entitySelectorKey } from "../../../../../shared/customHooks/utility/too
 import { ABILITY_LABELS } from "../../rules/constants";
 import { normalizeAbility } from "../../rules/engine";
 import { signed } from "../../../../../shared/customHooks/utility/tools/dndMath";
+import { senseLabels } from "../../../../../shared/customHooks/mads/rollFormat";
 import { InfoButton } from "../../shell/infoButton";
 import { LegacyBadge } from "../../shell/legacyBadge";
 import { MadChoiceControl } from "../../shell/madChoiceControl";
@@ -83,6 +84,16 @@ export const SpeciesSection: Component = () => {
     return [...(race?.traits ?? []), ...(subrace?.traits ?? [])]
       .map((trait) => trait.details?.name)
       .filter(Boolean);
+  });
+
+  /** Compact post-MADS movement + senses for the selected species — "Speed 35ft · Fly 35ft · Darkvision 60ft". */
+  const travelSummary = createMemo(() => {
+    const compact = (label: string) => label.replace(" ft", "ft");
+    return [
+      `Speed ${derived.speed()}ft`,
+      ...derived.movementModes().map(compact),
+      ...senseLabels(Object.fromEntries(derived.senses())).map(compact),
+    ].join(" · ");
   });
 
   return (
@@ -267,6 +278,12 @@ export const SpeciesSection: Component = () => {
         <h5 class={choiceStyles.choicesLabel}>Feature choices</h5>
         <div class={choiceStyles.choicesList}>
           <For each={raceChoices()}>{(choice) => <MadChoiceControl choice={choice} />}</For>
+        </div>
+      </Show>
+
+      <Show when={derived.selectedRace()}>
+        <div class={styles.choiceBlock}>
+          <span class={styles.cardMeta}>{travelSummary()}</span>
         </div>
       </Show>
 

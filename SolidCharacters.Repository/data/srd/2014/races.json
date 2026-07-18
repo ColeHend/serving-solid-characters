@@ -75,7 +75,47 @@
     "details": {
      "id": "a708dbd3-24ae-5311-96e2-d0d9c103e5b4",
      "name": "Dwarven Combat Training",
-     "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
+     "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Battleaxes"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Handaxes"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Light Hammers"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Warhammers"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "54f8b041-e8f6-579e-ab11-902725a6b36a"
@@ -84,7 +124,22 @@
     "details": {
      "id": "4f568a43-725d-589e-995d-0c6a18655f27",
      "name": "Tool Proficiency",
-     "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools."
+     "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddToolProficiencies",
+        "value": {
+         "tool": "choice",
+         "options": "Smith's Tools,Brewer's Supplies,Mason's Tools",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "dc353234-257a-53df-9cca-23f673c5b43c"
