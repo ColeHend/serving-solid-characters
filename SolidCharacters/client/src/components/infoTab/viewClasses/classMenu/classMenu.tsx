@@ -1,20 +1,27 @@
 import { useNavigate } from "@solidjs/router";
 import { Button, Icon, Menu, MenuItem } from "coles-solid-library";
 import { MoreVert } from "coles-solid-library/icons";
-import { Component, createSignal } from "solid-js";
+import { Accessor, Component, Show, createMemo, createSignal } from "solid-js";
 import { homebrewManager } from "../../../../shared";
 // import { DnDClass } from "../../../../models";
-import { Class5E } from "../../../../models/generated";
+import { Class5E, Subclass } from "../../../../models/generated";
+import { subclassBelongsTo } from "../../../../models/data/subclasses";
+import { CloneSubclassDialog } from "./cloneSubclassDialog";
 import style from "./classMenu.module.scss";
 
 interface menuProps {
     dndClass: Class5E;
+    subclasses: Accessor<Subclass[]>;
     openDialog: (e: Event) => void;
 }
 
 export const ClassMenu: Component<menuProps> = (props) => {
   const [anchorEl,setAnchorEl] = createSignal<HTMLElement | undefined>();
   const [showMenu, setShowMenu] = createSignal<boolean>(false);
+  const [showCloneDialog, setShowCloneDialog] = createSignal<boolean>(false);
+
+  const classSubclasses = createMemo(() =>
+    props.subclasses().filter(s => subclassBelongsTo(s, props.dndClass)));
 
   const navigate = useNavigate();
 
@@ -40,7 +47,16 @@ export const ClassMenu: Component<menuProps> = (props) => {
       }}>
         {checkForHomebrew(props.dndClass)?"Edit":"Clone and Edit"}
       </MenuItem>
+      <Show when={classSubclasses().length > 0}>
+        <MenuItem onClick={() => setShowCloneDialog(true)}>Clone/Edit Subclass</MenuItem>
+      </Show>
       <MenuItem onClick={props.openDialog}>View</MenuItem>
     </Menu>
+
+    <CloneSubclassDialog
+      show={[showCloneDialog, setShowCloneDialog]}
+      parentClassName={props.dndClass.name}
+      subclasses={classSubclasses}
+    />
   </>
 }

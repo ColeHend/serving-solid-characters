@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-solid-library";
 import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
+import { useDnDSubclasses } from "../../../../../shared/customHooks/dndInfo/info/all/subclasses";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { FeatureDetail } from "../../../../../models/generated";
 import { Spell } from "../../../../../models/data";
@@ -46,6 +47,7 @@ type ResumeState = 'none' | 'pending' | 'resumed' | 'discarded';
 
 const Subclasses: Component = () => {
   const allClasses = useDnDClasses();
+  const allSubclasses = useDnDSubclasses();
   const classOptions = () => allClasses().map(toClassOption);
   const allSpells = useDnDSpells();
   const [searchParams] = useSearchParams<{ name: string; subclass: string }>();
@@ -189,8 +191,11 @@ const Subclasses: Component = () => {
     const className = editClass().toLowerCase();
     const subclassName = editSubclass().toLowerCase();
     if (!className || !subclassName) return;
+    // Homebrew first (the live signal — edits target it); merged SRD list as the clone source.
     const stored = homebrewManager.subclasses().find(s =>
-      (s.parentClass || '').toLowerCase() === className && (s.name || '').toLowerCase() === subclassName);
+      (s.parentClass || '').toLowerCase() === className && (s.name || '').toLowerCase() === subclassName)
+      ?? allSubclasses().find(s =>
+        (s.parentClass || '').toLowerCase() === className && (s.name || '').toLowerCase() === subclassName);
     if (stored) {
       prefillForm(stored);
       setPrefilled(true);
