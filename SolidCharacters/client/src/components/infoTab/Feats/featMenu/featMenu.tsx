@@ -17,15 +17,10 @@ export const FeatMenu:Component<menuProps> = (props) => {
   const [anchorEl, setAnchorEl] = createSignal<HTMLElement | undefined>();
   const [showMenu, setShowMenu] = createSignal<boolean>(false);
 
-  const checkForHomebrew = (feat:Feat):boolean => {
-    homebrewManager.feats().forEach(customFeat => {
-      if (feat.details.name.toLowerCase() === customFeat.name.toLowerCase()) {
-        return true
-      }  
-    })
-
-    return false;
-  }
+  // Homebrew feats may carry their name at the root or only under details.
+  const checkForHomebrew = (feat:Feat):boolean =>
+    homebrewManager.feats().some(customFeat =>
+      (customFeat.name ?? customFeat.details?.name ?? '').toLowerCase() === (feat.details.name || '').toLowerCase());
 
   return <div  class={`${styles.menuBtn}`}>
     <Button ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>

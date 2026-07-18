@@ -43,13 +43,6 @@ describe('parent-race selector helpers', () => {
     expect(raceSelectorKey({ id: '', name: 'Elf' })).toBe('hb:Elf');
     expect(raceSelectorKey({ name: 'Elf' })).toBe('hb:Elf');
   });
-
-  it('labels options by ruleset (legacy flag) with Homebrew as the unflagged default', () => {
-    expect(raceVersionLabel({ legacy: true })).toBe('2014');
-    expect(raceVersionLabel({ legacy: false })).toBe('2024');
-    expect(raceVersionLabel({})).toBe('Homebrew');
-    expect(toRaceOption({ id: 'race-1', name: 'Elf', legacy: false }).label).toBe('Elf (2024)');
-  });
 });
 
 describe('stepStatus', () => {

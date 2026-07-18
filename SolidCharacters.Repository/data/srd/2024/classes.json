@@ -518,7 +518,8 @@
     "20": "4"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "da5435a0-7c94-4c2f-b34a-214805c22396",
@@ -1018,7 +1019,8 @@
     "20": "d12"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "31e2452c-ccfb-4cf5-9d3d-96b8c0776c0e",
@@ -1499,7 +1501,8 @@
     "20": "4"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "3a5594a6-4a72-4e9f-9c63-8749021d050a",
@@ -2013,7 +2016,8 @@
     "20": "4"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b5c7ef14-adc6-4dfb-89c9-1745d2580d58",
@@ -2493,7 +2497,8 @@
     "20": "6"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b8485e64-cedd-406b-aa35-5d04ea17502d",
@@ -3015,7 +3020,8 @@
     "20": "+30 ft."
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "67910be0-51cd-4765-90f8-8f3341349113",
@@ -3533,7 +3539,8 @@
     "20": "3"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "83e69412-d466-4821-a6b5-5de9ab19cb23",
@@ -4062,7 +4069,8 @@
     "20": "6"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "614f376d-abc0-4acd-8db4-318f95c4a74c",
@@ -4466,7 +4474,8 @@
     "20": "10d6"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "94fba721-0644-4673-9f9e-15f1a39f130f",
@@ -4962,7 +4971,8 @@
     "20": "20"
    }
   },
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "2e7eae19-9f4a-4472-b5eb-3230c3a9f084",
@@ -5388,7 +5398,8 @@
    }
   },
   "classSpecific": {},
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "4633a78f-d775-4694-b20f-2d2e13d2e226",
@@ -5805,6 +5816,7 @@
    }
   },
   "classSpecific": {},
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  }
 ]

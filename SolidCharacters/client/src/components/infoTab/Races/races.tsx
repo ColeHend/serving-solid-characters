@@ -16,7 +16,7 @@ import {
   Row, 
 } from "coles-solid-library";
 import { useSearchParams } from "@solidjs/router";
-import { createTableSort, getUserSettings, Paginator } from "../../../shared";
+import { createSelectionSync, createTableSort, getUserSettings, Paginator } from "../../../shared";
 import { Race } from "../../../models/generated";
 import { useDnDRaces } from "../../../shared/customHooks/dndInfo/info/all/races";
 import { RaceMenu } from "./raceMenu/raceMenu";
@@ -68,10 +68,12 @@ const races: Component = () => {
     return list.find(r => r.name.toLowerCase() === target) || list[0];
   })
   
-  createEffect(() => {
-    const sel = selectedRace();
-    if (sel) setCurrentRace(sel);
-  })
+  createSelectionSync({
+    selected: selectedRace,
+    list: srdRaces,
+    current: [currentRace, setCurrentRace],
+    nameOf: (r) => r.name,
+  });
 
   createEffect(() => {
     const cur = currentRace();

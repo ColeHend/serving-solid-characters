@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { runOfflinePreload, clearOfflineDoneMarker, refreshOfflineReadiness, type SrdVersion } from "./offline/preloadSrd";
+import { checkSrdFreshness } from "./offline/srdVersion";
 import { requestPersistentStorage, checkPersisted } from "./offline/persistentStorage";
 
 /**
@@ -11,6 +12,7 @@ import { requestPersistentStorage, checkPersisted } from "./offline/persistentSt
  */
 function scheduleStartupReadinessCheck(versions: SrdVersion[]) {
   const run = async () => {
+    void checkSrdFreshness(); // one lightweight manifest call — drives the "Update SRD data" nav button
     const report = await refreshOfflineReadiness(versions);
     if (detectStandalone() && navigator.onLine && !report?.ready) {
       clearOfflineDoneMarker(); // evicted/incomplete — clear stale marker and re-download

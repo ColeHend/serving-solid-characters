@@ -56,6 +56,7 @@ const Subraces: Component = () => {
     parentRaceName: ['', []],
     name: ['', [Validators.Required]],
     desc: ['', []],
+    source: ['', []],
     size: [[], []],
     speed: [30, []],
     languages: [[], []],
@@ -100,6 +101,7 @@ const Subraces: Component = () => {
       setField('parentRaceName', parent?.name ?? '');
       setField('name', found.name || '');
       setField('desc', pickDescription(found, 'desc'));
+      setField('source', found.source ?? '');
       setField('size', parseSizes(found.size));
       setField('speed', found.speed || 30);
       setField('languages', [...(found.languages ?? [])]);
@@ -215,6 +217,7 @@ const Subraces: Component = () => {
     batch(() => {
       setField('name', '');
       setField('desc', '');
+      setField('source', '');
       setField('size', []);
       setField('speed', 30);
       setField('languages', []);

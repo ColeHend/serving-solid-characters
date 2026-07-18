@@ -18,7 +18,7 @@ import {
   Icon,
 } from "coles-solid-library";
 import { FilterAlt } from "coles-solid-library/icons";
-import { homebrewManager, Paginator, createTableSort, createTableFilter, FilterFieldConfig, SortState, getUserSettings } from "../../../shared";
+import { homebrewManager, Paginator, createTableSort, createTableFilter, createSelectionSync, FilterFieldConfig, SortState, getUserSettings } from "../../../shared";
 import { useSearchParams } from "@solidjs/router";
 import { FeatMenu } from "./featMenu/featMenu";
 import { useDnDFeats } from "../../../shared/customHooks/dndInfo/info/all/feats";
@@ -169,11 +169,14 @@ const featsList: Component = () => {
   })
 
 
-  // Keep currentFeat in sync with derived selectedFeat
-  createEffect(() => {
-    const sel = selectedFeat();
-    if (sel) setCurrentFeat(sel);
-  })
+  // Keep currentFeat in sync with derived selectedFeat without clobbering a
+  // same-named click (the lookup resolves duplicates to the first/2014 copy).
+  createSelectionSync({
+    selected: selectedFeat,
+    list: allFeats,
+    current: [currentFeat, setCurrentFeat],
+    nameOf: (f) => f.details?.name,
+  });
 
   createEffect(()=>{
     const cur = currentFeat();

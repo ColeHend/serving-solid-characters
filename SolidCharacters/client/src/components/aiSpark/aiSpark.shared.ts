@@ -10,6 +10,12 @@ export type { ChatMessage, HomebrewPreview };
 
 /** A short, human-readable one-liner describing a generated entity, shown on the preview card. */
 export function previewSubtitle(p: HomebrewPreview): string {
+    const source = (p.entity as { source?: string }).source?.trim();
+    const base = previewSubtitleBase(p);
+    return source ? `${base} · ${source}` : base;
+}
+
+function previewSubtitleBase(p: HomebrewPreview): string {
     switch (p.kind) {
         case "spell": {
             const s = p.entity as Spell;

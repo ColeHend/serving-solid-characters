@@ -1,5 +1,6 @@
 import { useGetSrdMagicItems } from "../srd/magicItems";
 import { useGetHombrewMagicItems } from "../homebrew/magicItem";
+import { markHomebrew } from "../provenance";
 import { MagicItem } from "../../../../../models/generated";
 import { Accessor, createMemo } from "solid-js";
 import { getUserSettings } from "../../../userSettings";
@@ -13,6 +14,6 @@ export function useDnDMagicItems(opts?: UseDnDMagicItemsOptions): Accessor<Magic
     const active: Year = (opts?.overrideVersion || (userSettings().dndSystem as Year) || "2014");
     const srd = useGetSrdMagicItems(active);
     const homebrew = useGetHombrewMagicItems();
-    return [...srd(), ...homebrew()];
+    return [...srd(), ...markHomebrew(homebrew())];
   });
 }

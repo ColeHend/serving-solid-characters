@@ -3,6 +3,7 @@ import { Component,Accessor, Setter, createMemo, For, Show, createSignal } from 
 import { srdItem } from "../../../../models/data/generated";
 import styles from "./itemsModal.module.scss";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { sourceLabel } from "../modals.shared";
 import { ItemType } from "../../../../models/generated";
 import Markdown from "../../MarkDown/MarkDown";
 
@@ -47,7 +48,7 @@ export const ItemPopup:Component<modalProps> = (props) => {
         <div class={`${styles.itemWrapper}`} ref={setMenuRef}>
             <DndDialogHeader onClose={()=>setShow(false)}>
                 <div class={`${styles.headerTitle}`}> 
-                    {prettyTypeName(ItemType?.[currentItem?.type])}<Show when={currentItem.legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show>
+                    {prettyTypeName(ItemType?.[currentItem?.type])}<Show when={currentItem.legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show><span class={`${styles.dot}`}>·</span>{sourceLabel(currentItem, 'item')}
 
                     <h1>{currentItem?.name}</h1>
                 </div>

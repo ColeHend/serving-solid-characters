@@ -19,6 +19,8 @@ export interface FeatForm {
   // Identity
   name: string;
   description: string;
+  /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
+  source?: string;
   // Prerequisites
   prerequisites: Prerequisite[];
   // Effects — the whole FeatureDetail.metadata object (uses/recharge/spells/category/mads),
@@ -189,6 +191,7 @@ export { commandChipLabel, validateStoredCommand };
 export type StoredFeat = {
   id: string;
   legacy?: boolean;
+  source?: string;
   details: {
     id: string;
     name: string;
@@ -218,6 +221,8 @@ export function toDataFeat(form: FeatForm): StoredFeat {
     desc: [description],
   };
   if (form.legacy !== undefined) data.legacy = form.legacy;
+  const source = form.source?.trim();
+  if (source) data.source = source;
   return data;
 }
 
@@ -301,7 +306,7 @@ export const featDraftKey = (editName?: string): string => {
 /** Every FeatForm field round-trips through a draft — including the pass-through
  *  fields, so a drafted edit of an SRD/AI feat keeps data the wizard never shows. */
 export const DRAFT_FORM_KEYS = [
-  'name', 'description', 'prerequisites', 'metadata', 'id', 'legacy',
+  'name', 'description', 'source', 'prerequisites', 'metadata', 'id', 'legacy',
 ] as const satisfies readonly (keyof FeatForm)[];
 
 export interface FeatWizardDraft {

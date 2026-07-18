@@ -79,4 +79,10 @@ public interface ISrdInfoRepository
   /// <returns>Rules</returns>
   List<Rule> GetRules(string version = "2014");
 
+  /// <summary>
+  /// Get the SRD data version manifest (empty version when no manifest exists on disk)
+  /// </summary>
+  /// <returns>Manifest</returns>
+  SrdManifest GetManifest();
+
 }

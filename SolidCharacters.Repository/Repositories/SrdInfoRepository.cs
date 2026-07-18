@@ -134,6 +134,12 @@ public class SrdInfoRepository : ISrdInfoRepository
     return json.ToList();
   }
 
+  public SrdManifest GetManifest()
+  {
+    var json = jsonService.GetJson<SrdManifest>("srd/manifest");
+    return json ?? new SrdManifest();
+  }
+
   private int ParseVersion(string version)
   {
     int versionInt = int.Parse(version);

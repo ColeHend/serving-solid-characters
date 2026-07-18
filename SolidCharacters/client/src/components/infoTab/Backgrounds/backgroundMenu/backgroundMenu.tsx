@@ -19,15 +19,9 @@ export const BackgroundMenu: Component<menuProps> = (props) => {
   const navigate = useNavigate();
 
 
-  const checkForHomebrew = (background: Background): boolean => {
-    homebrewManager.backgrounds().forEach(customBackground =>{
-      if (background.name.toLowerCase() === customBackground.name.toLowerCase()) {
-        return true
-      }
-    })
-    
-    return false
-  }
+  const checkForHomebrew = (background: Background): boolean =>
+    homebrewManager.backgrounds().some(customBackground =>
+      (customBackground.name || '').toLowerCase() === (background.name || '').toLowerCase());
 
   return <>
     <Button ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)} class={`${styles.menu}`}>

@@ -106,7 +106,8 @@
    "sizeDescription": "Dwarves stand between 4 and 5 feet tall and average about 150 pounds. Your size is Medium.",
    "languageDescription": "You can speak, read, and write Common and Dwarvish. Dwarvish is full of hard consonants and guttural sounds, and those characteristics spill over into whatever other language a dwarf might speak."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "16c1428d-41e5-4d0c-a25e-169eb22bb7e8",
@@ -210,7 +211,8 @@
    "sizeDescription": "Elves range from under 5 to over 6 feet tall and have slender builds. Your size is Medium.",
    "languageDescription": "You can speak, read, and write Common and Elvish. Elvish is fluid, with subtle intonations and intricate grammar. Elven literature is rich and varied, and their songs and poems are famous among other races. Many bards learn their language so they can add Elvish ballads to their repertoires."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "212324d1-3bb9-4afe-8750-a8e945146203",
@@ -278,7 +280,8 @@
    "sizeDescription": "Halflings average about 3 feet tall and weigh about 40 pounds. Your size is Small.",
    "languageDescription": "You can speak, read, and write Common and Halfling. The Halfling language isn't secret, but halflings are loath to share it with others. They write very little, so they don't have a rich body of literature. Their oral tradition, however, is very strong. Almost all halflings speak Common to converse with the people in whose lands they dwell or through which they are traveling."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "70319114-2407-420b-ab81-dfe43b4e2724",
@@ -342,7 +345,8 @@
    "sizeDescription": "Humans vary widely in height and build, from barely 5 feet to well over 6 feet tall. Regardless of your position in that range, your size is Medium.",
    "languageDescription": "You can speak, read, and write Common and one extra language of your choice. Humans typically learn the languages of other peoples they deal with, including obscure dialects. They are fond of sprinkling their speech with words borrowed from other tongues: Orc curses, Elvish musical expressions, Dwarvish military phrases, and so on."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "0613a6c6-4658-4df8-b328-6b5a9927dea9",
@@ -413,7 +417,8 @@
    "sizeDescription": "Dragonborn are taller and heavier than humans, standing well over 6 feet tall and averaging almost 250 pounds. Your size is Medium.",
    "languageDescription": "You can speak, read, and write Common and Draconic. Draconic is thought to be one of the oldest languages and is often used in the study of magic. The language sounds harsh to most other creatures and includes numerous hard consonants and sibilants."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "46e5c14f-d096-4ceb-99f0-d959623ebfcc",
@@ -511,7 +516,8 @@
    "sizeDescription": "Gnomes are between 3 and 4 feet tall and average about 40 pounds. Your size is Small.",
    "languageDescription": "You can speak, read, and write Common and Gnomish. The Gnomish language, which uses the Dwarvish script, is renowned for its technical treatises and its catalogs of knowledge about the natural world."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "75d9a918-620e-4166-ae8d-c06e11c6c98b",
@@ -652,7 +658,8 @@
    "sizeDescription": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
    "languageDescription": "You can speak, read, and write Common, Elvish, and one extra language of your choice."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "b809ace3-d8b9-4ba7-8509-cfcf11a2f75e",
@@ -759,7 +766,8 @@
    "sizeDescription": "Half-orcs are somewhat larger and bulkier than humans, and they range from 5 to well over 6 feet tall. Your size is Medium.",
    "languageDescription": "You can speak, read, and write Common and Orc. Orc is a harsh, grating language with hard consonants. It has no script of its own but is written in the Dwarvish script."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  },
  {
   "id": "e56f8b9e-e95b-4485-8236-6f1cbed06194",
@@ -874,6 +882,7 @@
    "sizeDescription": "Tieflings are about the same size and build as humans. Your size is Medium.",
    "languageDescription": "You can speak, read, and write Common and Infernal."
   },
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  }
 ]

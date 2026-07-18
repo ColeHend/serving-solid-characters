@@ -5,6 +5,7 @@ import { spellLevel, spellComponents } from "../../../customHooks/utility/tools/
 import { Modal } from "coles-solid-library";
 import Markdown from "../../MarkDown/MarkDown";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
+import { sourceLabel } from "../modals.shared";
 import { FleuronDivider } from "../../fleuronDivider/fleuronDivider";
 
 type props = {
@@ -50,6 +51,8 @@ const SpellModal: Component<props> = (props) => {
             <span>level {props?.spell()?.level} spell</span>
             <span> · </span>
             <span>{props?.spell()?.school}</span>
+            <span> · </span>
+            <span>{sourceLabel(props?.spell(), 'spell')}</span>
             <h1 class={`${style.title}`}>{props?.spell()?.name}</h1>
           </div>
         </DndDialogHeader>

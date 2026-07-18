@@ -17,6 +17,7 @@ export enum AbilityScores {
 export interface Background {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   desc: string;
   proficiencies: Proficiencies;
@@ -46,6 +47,7 @@ export interface Choices extends Record<string, ChoiceDetail> {
 export interface Class5E {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   hitDie: string;
   primaryAbility: string;
@@ -95,6 +97,7 @@ export interface DamageEntry {
 export interface Feat {
   id: string;
   legacy?: boolean;
+  source?: string;
   details: FeatureDetail;
   prerequisites: Prerequisite[];
 }
@@ -131,6 +134,7 @@ export interface Health {
 export interface Item {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   desc: string;
   type: ItemType;
@@ -169,6 +173,7 @@ export enum MadType {
 export interface MagicItem {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   desc: string;
   rarity: string;
@@ -188,6 +193,7 @@ export interface MagicItemProperties {
 export interface Monster {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   size: string;
   type: string;
@@ -281,6 +287,7 @@ export interface Proficiencies {
 export interface Race {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   size: string;
   speed: number;
@@ -313,6 +320,7 @@ export interface RollBonus {
 export interface Rule {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   description: string;
   category?: string;
@@ -336,6 +344,7 @@ export interface SkillProficiency {
 export interface Spell {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   description: string;
   duration: string;
@@ -421,6 +430,7 @@ export interface Stats {
 export interface Subclass {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   parentClass: string;
   description: string;
@@ -433,6 +443,7 @@ export interface Subrace extends Race {
   parentRace: string;
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   size: string;
   speed: number;
@@ -453,6 +464,7 @@ export interface TraitChoice {
 export interface WeaponMastery {
   id: string;
   legacy?: boolean;
+  source?: string;
   name: string;
   damage: string;
   properties: string[];

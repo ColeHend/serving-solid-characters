@@ -27,6 +27,7 @@
     "value": "STR 13"
    }
   ],
-  "legacy": true
+  "legacy": true,
+  "source": "SRD 5.1"
  }
 ]

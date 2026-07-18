@@ -107,6 +107,9 @@ export function toRace(fg: FormGroup<RaceForm>, extras: RaceExtras, existingId?:
   return {
     id: existingId || createNewId(),
     name: ((fg.get('name') as string) || '').trim(),
+    // Always emitted (undefined when blank) so clearing the field survives the
+    // {...existing, ...built} update spread instead of resurrecting the old value.
+    source: ((fg.get('source') as string) || '').trim() || undefined,
     size: ((fg.get('size') as string[]) ?? []).join(', '),
     speed: (fg.get('speed') as number) || 0,
     languages: [...((fg.get('languages') as string[]) ?? [])],

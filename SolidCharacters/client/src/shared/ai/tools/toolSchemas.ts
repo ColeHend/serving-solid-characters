@@ -45,6 +45,10 @@ const featureSchema = {
     required: ["level", "name", "description"],
 };
 
+/** Optional provenance label shared by every create_* tool (schemas are additionalProperties:false,
+ * so the model can only fill `source` if it is declared). Never required — empty means plain homebrew. */
+const sourceSchema = { type: "string", description: 'Sourcebook this belongs to ONLY if the user named one, e.g. "My Campaign". Leave empty for plain homebrew.' };
+
 /** A background feature (not leveled), e.g. \"Shelter of the Faithful\". */
 const namedFeatureSchema = {
     type: "object",
@@ -80,6 +84,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 higherLevel: { type: "string", description: "Effect when cast using a higher-level slot, if any." },
                 damageType: { type: "string", description: 'Damage type if the spell deals damage, e.g. "fire", "cold", "radiant". Empty for non-damaging spells.' },
                 classes: { type: "array", items: { type: "string" }, description: "Classes that can learn this spell, e.g. [\"Wizard\",\"Cleric\"]." },
+                source: sourceSchema,
             },
             required: ["name", "description", "level", "school", "castingTime", "range", "duration", "concentration", "ritual", "isVerbal", "isSomatic", "isMaterial"],
         },
@@ -96,6 +101,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 type: { type: "string", enum: ITEM_TYPES, description: "Item category." },
                 weight: { type: "number", description: "Weight in pounds (0 if weightless)." },
                 cost: { type: "string", description: 'Purchase cost, e.g. "15 gp", "2 sp".' },
+                source: sourceSchema,
             },
             required: ["name", "desc", "type", "weight", "cost"],
         },
@@ -116,6 +122,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 attunement: { type: "string", description: 'Attunement requirement, e.g. "Requires attunement by a wizard". Empty if none.' },
                 effect: { type: "string", description: "One-line summary of the mechanical effect for quick reference, e.g. \"Resistance to cold; Misty Step 1/long rest\". Empty if not applicable." },
                 charges: { type: "string", description: "Charges/recharge if applicable, e.g. \"3 charges, regains 1d3 at dawn\". Empty if none." },
+                source: sourceSchema,
             },
             required: ["name", "desc", "rarity", "category"],
         },
@@ -130,6 +137,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 name: { type: "string", description: "Feat name." },
                 description: { type: "string", description: "The feat's concrete benefits (Markdown/bullets allowed). Write at least 2 distinct benefits." },
                 prerequisite: { type: "string", description: "Prerequisite, if any, e.g. \"Strength 13 or higher\". Empty if none." },
+                source: sourceSchema,
             },
             required: ["name", "description"],
         },
@@ -162,6 +170,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                         },
                     },
                 },
+                source: sourceSchema,
             },
             required: ["name", "desc"],
         },
@@ -205,6 +214,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 },
                 age: { type: "string", description: "Flavor: how the species ages and how long it lives. Empty if not applicable." },
                 alignment: { type: "string", description: "Flavor: typical alignment tendencies. Empty if not applicable." },
+                source: sourceSchema,
             },
             required: ["name", "size", "speed"],
         },
@@ -250,6 +260,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 },
                 age: { type: "string", description: "Flavor: aging/lifespan, only if it differs from the parent race. Empty otherwise." },
                 alignment: { type: "string", description: "Flavor: typical alignment tendencies. Empty if not applicable." },
+                source: sourceSchema,
             },
             required: ["name", "parentRace", "traits"],
         },
@@ -266,6 +277,7 @@ export const HOMEBREW_TOOLS: AiToolDef[] = [
                 description: { type: "string", description: "Overview of the subclass's theme and playstyle (Markdown allowed). Write 2-3 sentences minimum." },
                 features: { type: "array", items: featureSchema, description: "Features gained, each tagged with its level. Provide a feature at the subclass's normal levels (typically 3, 6, 10, 14)." },
                 casterType: { type: "string", enum: CASTER_TYPES, description: "Set ONLY if this subclass grants spellcasting its base class lacks (e.g. Eldritch Knight = \"third\"). \"third\"/\"half\"/\"full\"/\"pact\" fill the spell-slot table; omit or \"none\" otherwise." },
+                source: sourceSchema,
             },
             required: ["name", "parentClass", "description", "features"],
         },
@@ -299,6 +311,7 @@ export const CREATE_CLASS_TOOL: AiToolDef = {
             features: { type: "array", items: featureSchema, description: "Class features, each tagged with its level. Provide at least a level-1 and level-2 feature." },
             startingEquipment: { type: "array", items: { type: "string" }, description: "Starting equipment items, e.g. [\"A simple weapon\",\"Leather armor\"]." },
             casterType: { type: "string", enum: CASTER_TYPES, description: "Spellcasting progression: \"none\" (martial), \"third\" (e.g. Eldritch Knight), \"half\" (e.g. Paladin), \"full\" (e.g. Wizard), or \"pact\" (Warlock). Set this for any spellcaster — the app fills the spell-slot table from it. Omit or \"none\" for a non-caster." },
+            source: sourceSchema,
         },
         required: ["name", "hitDie", "primaryAbility", "savingThrows", "features"],
     },

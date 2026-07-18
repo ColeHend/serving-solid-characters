@@ -22,6 +22,8 @@ export const SIZES: string[] = [...SIZE_TOKENS];
 
 export interface RaceForm {
   name: string;
+  /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
+  source?: string;
   /** Size options the race offers — the persisted model joins them with ', '. */
   size: string[];
   speed: number;
@@ -223,7 +225,7 @@ export const raceDraftKey = (editName?: string): string =>
   `hb:raceDraft:${(editName ?? '').trim().toLowerCase() || 'new'}`;
 
 export const DRAFT_FORM_KEYS = [
-  'name', 'size', 'speed',
+  'name', 'source', 'size', 'speed',
   'languages', 'langChoiceAmount', 'langChoiceOptions',
   'abilityBonuses',
   'descAge', 'descAlignment', 'descSize', 'descLanguage', 'descAbilities',

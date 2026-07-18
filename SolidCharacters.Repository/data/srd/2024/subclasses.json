@@ -64,7 +64,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8e9b151a-b847-47cd-a7e2-27729c0596b2",
@@ -115,7 +116,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "fb3b0004-f7db-45a3-ab82-702081864aa5",
@@ -277,7 +279,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "8c8faaa8-43a2-4620-9186-cc7bc7150fd9",
@@ -378,7 +381,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "127653d6-d1fb-4377-ae85-c65aad1cdb2e",
@@ -469,7 +473,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "e9bede68-0b19-5574-9046-947357c3faf8",
@@ -521,7 +526,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "9c7ac12d-d60b-430f-b963-1944c89e47ca",
@@ -684,7 +690,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "469f040a-7612-49c5-b280-0f12ad8ce0ed",
@@ -727,7 +734,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "03a23802-3b05-4dcd-9312-2e49678e415a",
@@ -798,7 +806,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "5aa82a59-58ca-5fc8-a2a3-a22511fb79a4",
@@ -999,7 +1008,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "0b4cee6e-60e4-4f53-8ee6-da45e10d500c",
@@ -1176,7 +1186,8 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  },
  {
   "id": "b8360259-b706-424d-95a1-14a713cf1431",
@@ -1219,6 +1230,7 @@
    ]
   },
   "spellcasting": null,
-  "legacy": false
+  "legacy": false,
+  "source": "SRD 5.2"
  }
 ]

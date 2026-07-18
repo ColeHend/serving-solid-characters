@@ -24,6 +24,8 @@ interface ClassSpecificValue {
 export interface ClassForm {
   name: string;
   description: string;
+  /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
+  source?: string;
   hitDie: number;
   primaryStat: Stat[];
   savingThrows: Stat[];
@@ -374,7 +376,7 @@ export const draftKey = (editName?: string): string =>
 /** Every ClassForm field that round-trips through a draft (classLevels/subclasses excluded — the
  *  levels store is serialized separately and subclasses are not edited by this wizard). */
 export const DRAFT_FORM_KEYS = [
-  'name', 'description', 'hitDie', 'primaryStat', 'savingThrows',
+  'name', 'description', 'source', 'hitDie', 'primaryStat', 'savingThrows',
   'armorProficiencies', 'weaponProficiencies', 'toolProficiencies',
   'armorStart', 'weaponStart', 'itemStart',
   'armorProfChoices', 'weaponProfChoices', 'toolProfChoices',

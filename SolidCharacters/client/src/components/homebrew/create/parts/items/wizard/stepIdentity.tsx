@@ -78,6 +78,16 @@ export const StepIdentity: Component<StepProps> = (props) => {
             />
           </div>
 
+          <div class={sharedStyles.boxedField}>
+            <span class={sharedStyles.cardLabel}>Source (optional)</span>
+            <Input
+              transparent
+              value={store.state.form!.source ?? ''}
+              onInput={e => store.updateField('source', e.currentTarget.value)}
+              placeholder="e.g. My Campaign"
+            />
+          </div>
+
           <div class={styles.costGrid}>
             <div class={sharedStyles.boxedField}>
               <span class={sharedStyles.cardLabel}>Cost</span>
