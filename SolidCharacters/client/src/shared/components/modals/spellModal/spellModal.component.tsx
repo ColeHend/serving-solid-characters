@@ -52,7 +52,7 @@ const SpellModal: Component<props> = (props) => {
             <span> · </span>
             <span>{props?.spell()?.school}</span>
             <span> · </span>
-            <span>{sourceLabel(props?.spell())}</span>
+            <span>{sourceLabel(props?.spell(), 'spell')}</span>
             <h1 class={`${style.title}`}>{props?.spell()?.name}</h1>
           </div>
         </DndDialogHeader>

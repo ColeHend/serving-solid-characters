@@ -53,7 +53,7 @@ const FeatView: Component<props> = (props) => {
             </Show>
 
             <span>FEAT</span>
-            <span> · {sourceLabel(currentFeat())}</span>
+            <span> · {sourceLabel(currentFeat(), 'feat')}</span>
 
             <h1>{currentFeat()?.details?.name}</h1>
           </div>

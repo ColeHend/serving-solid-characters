@@ -4,7 +4,7 @@ import styles from "./backgrounds.module.scss";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { useSearchParams } from "@solidjs/router";
 import { Background } from "../../../models/generated";
-import { createTableSort, getUserSettings, Paginator } from "../../../shared";
+import { createSelectionSync, createTableSort, getUserSettings, Paginator } from "../../../shared";
 import BackgroundView from "../../../shared/components/modals/background/backgrondView";
 import { Body, Table, Cell, Column, Header, Row } from "coles-solid-library";
 import { BackgroundMenu } from "./backgroundMenu/backgroundMenu";
@@ -58,10 +58,12 @@ const Viewbackgrounds: Component = () => {
     return list.find(b => b.name.toLowerCase() === target) || list[0];
   })
 
-  createEffect(() => {
-    const sel = selectedBackground();
-    if (sel) setCurrentBackground(sel);
-  })
+  createSelectionSync({
+    selected: selectedBackground,
+    list: srdbackgrounds,
+    current: [currentBackground, setCurrentBackground],
+    nameOf: (b) => b.name,
+  });
 
   createEffect(() => {
     const cur = currentBackground();

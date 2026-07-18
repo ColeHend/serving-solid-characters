@@ -1,5 +1,6 @@
 import { useGetSrdSubclasses } from "../srd/subclasses";
 import { useGetHombrewSubclasses } from "../homebrew/subclasses";
+import { markHomebrew } from "../provenance";
 import { Subclass } from "../../../../../models/generated";
 import { Accessor, createMemo } from "solid-js";
 import { getUserSettings } from "../../../userSettings";
@@ -16,6 +17,6 @@ export function useDnDSubclasses(settings?: settings): Accessor<Subclass[]> {
     const active = ( settings ? settings.overrideVersion : userSettings().dndSystem|| "2014");
     const srd = useGetSrdSubclasses(active);
         
-    return [...srd(), ...homebrew()];
+    return [...srd(), ...markHomebrew(homebrew())];
   });
 }

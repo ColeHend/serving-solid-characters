@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Accessor, Component, createEffect, createMemo, createSignal, Show } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, Show, untrack } from "solid-js";
 import { srdItem } from "../../../../../models/data/generated";
 import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import SearchBar from "../../../../../shared/components/SearchBar/SearchBar";
-import { createTableSort, getUserSettings, ItemType, Paginator } from "../../../../../shared";
+import { createSelectionSync, createTableSort, getUserSettings, ItemType, Paginator } from "../../../../../shared";
 import style from "./allItem.module.scss";
 import { ItemsMenu } from "../itemsMenu/itemsMenu";
 import { useSearchParams } from "@solidjs/router";
@@ -74,10 +74,12 @@ export const AllItems: Component<props> = (props) => {
         return list?.find(i => i?.name?.toLowerCase() === target) || list[0];
     })
 
-    createEffect(() => {
-        const sel = selectedItem();
-        if (sel) setCurrentItem(sel);
-    })
+    createSelectionSync({
+        selected: selectedItem,
+        list: allItems,
+        current: [currentItem, setCurrentItem],
+        nameOf: (i) => i?.name,
+    });
 
     createEffect(() => {
         const cur = currentItem();
@@ -92,9 +94,15 @@ export const AllItems: Component<props> = (props) => {
                 route: `/info/items?search=${encodeURIComponent(cur.name)}`,
             });
         } else if (!showItem()) {
-            setSearchParam({
-            name: "",
-            })
+            // All four item tabs stay mounted in the Carousel and share ?name=; only the
+            // view whose selection owns the param may clear it, else a background tab's
+            // selection change wipes the active tab's param out from under its open modal.
+            const param = untrack(() =>
+                typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" "),
+            );
+            if (param && cur?.name && param.toLowerCase() === cur.name.toLowerCase()) {
+                setSearchParam({ name: "" });
+            }
         }
     })
 

@@ -24,15 +24,9 @@ export const SpellMenu: Component<SpellMenuProps> = (props) => {
   const [showAddSpell,setShowAddSpell] = createSignal<boolean>(false);
   const [lastChar,setLastChar] = props.lastChar;
 
-  const checkForHomebrew = (spell:Spell):boolean => {
-    homebrewManager.spells().forEach(customSpell=>{
-      if (spell.name.toLowerCase() === customSpell.name.toLowerCase()) {
-        return true;
-      } 
-    })
-
-    return false;
-  };
+  const checkForHomebrew = (spell:Spell):boolean =>
+    homebrewManager.spells().some(customSpell =>
+      (customSpell.name || '').toLowerCase() === (spell.name || '').toLowerCase());
 
   return <>
     <Button class={`${styles.spellMenu}`} ref={setAnchorEl} onClick={()=>setShowMenu((old)=>!old)}>

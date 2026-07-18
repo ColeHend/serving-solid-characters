@@ -18,16 +18,9 @@ export const RaceMenu:Component<menuProps> = (props) => {
 
   const navigate = useNavigate();
 
-  const checkForHomebrew = (race: Race):boolean => {
-
-    homebrewManager.races().forEach(customRace=> {
-      if (customRace.name.toLowerCase() === race.name.toLowerCase()) {
-        return true
-      }
-    })
-
-    return false
-  }
+  const checkForHomebrew = (race: Race):boolean =>
+    homebrewManager.races().some(customRace =>
+      (customRace.name || '').toLowerCase() === (race.name || '').toLowerCase());
 
   return <>
     <Button class={`${styles.raceMenu}`} ref={setAnchorEl} onclick={()=>setShowMenu((old)=>!old)}>

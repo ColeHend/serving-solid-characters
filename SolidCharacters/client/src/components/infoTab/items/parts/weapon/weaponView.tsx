@@ -6,10 +6,11 @@ import {
   createMemo,
   createSignal,
   Show,
+  untrack,
 } from "solid-js";
 import { Body, Cell, Column, Header, Row, Table } from "coles-solid-library";
 import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
-import { createTableSort, Paginator } from "../../../../../shared";
+import { createSelectionSync, createTableSort, Paginator } from "../../../../../shared";
 import { useSearchParams } from "@solidjs/router";
 import { Item } from "../../../../../models/generated";
 import { srdItem } from "../../../../../models/data/generated";
@@ -73,9 +74,11 @@ export const WeaponsView: Component<viewProps> = (props) => {
     return list?.find((i) => i?.name?.toLowerCase() === target) || list[0];
   });
 
-  createEffect(() => {
-    const sel = selectedItem();
-    if (sel) setCurrentItem(sel);
+  createSelectionSync({
+    selected: selectedItem,
+    list: () => props.items(),
+    current: [currentItem, setCurrentItem],
+    nameOf: (i) => i?.name,
   });
 
   createEffect(() => {
@@ -86,9 +89,15 @@ export const WeaponsView: Component<viewProps> = (props) => {
         name: cur?.name,
       });
     } else if (!showItem()) {
-      setSearchParam({
-        name: "",
-      });
+      // All four item tabs stay mounted in the Carousel and share ?name=; only the
+      // view whose selection owns the param may clear it, else a background tab's
+      // selection change wipes the active tab's param out from under its open modal.
+      const param = untrack(() =>
+        typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" "),
+      );
+      if (param && cur?.name && param.toLowerCase() === cur.name.toLowerCase()) {
+        setSearchParam({ name: "" });
+      }
     }
   });
 

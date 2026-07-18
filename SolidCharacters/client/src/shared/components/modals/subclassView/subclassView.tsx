@@ -23,7 +23,7 @@ const SubclassView: Component<props> = (props) => {
     <Modal title={currentSubclass().name} show={props.show}>
       <div class={`${styles.wrapper}`}>
         <Show when={currentSubclass().parentClass}>
-          <h2 class={`${styles.subtitle}`}>Subclass · {currentSubclass().parentClass} · {sourceLabel(currentSubclass())}</h2>
+          <h2 class={`${styles.subtitle}`}>Subclass · {currentSubclass().parentClass} · {sourceLabel(currentSubclass(), 'subclass')}</h2>
         </Show>
 
         <span>

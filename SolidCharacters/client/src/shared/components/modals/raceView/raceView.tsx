@@ -63,7 +63,7 @@ const RaceView: Component<props> = (props) => {
     <div class={`${styles.raceWrapper}`} ref={setMenuRef}>
       <DndDialogHeader onClose={()=>setShow(old => !old)}>
         <div class={`${styles.styledHeader}`}>
-          Species<Show when={race().legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show><span class={`${styles.dot}`}>·</span>{sourceLabel(race())}
+          Species<Show when={race().legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show><span class={`${styles.dot}`}>·</span>{sourceLabel(race(), 'race')}
 
           <h1>{race()?.name ?? ""}</h1>
         </div>

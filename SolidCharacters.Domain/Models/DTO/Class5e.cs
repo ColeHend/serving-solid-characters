@@ -11,7 +11,8 @@ public class Feat
   [JsonProperty("id")] public string Id { get; set; } = null!;
   /// <summary>True for 2014 (legacy) SRD data, false for 2024; null when unknown (homebrew, stale caches).</summary>
   [JsonProperty("legacy")] public bool? Legacy { get; set; }
-  /// <summary>Provenance label, e.g. "SRD 5.1", "SRD 5.2", or a user-supplied sourcebook; null means plain homebrew.</summary>
+  /// <summary>Provenance label, e.g. "SRD 5.1", "SRD 5.2", or a user-supplied sourcebook; null = unlabeled
+  /// (display falls back on Legacy: true → SRD 5.1, false/null → SRD 5.2).</summary>
   [JsonProperty("source")] public string? Source { get; set; }
   public FeatureDetail Details { get; set; } = null!;
   public List<Prerequisite> Prerequisites { get; set; } = new();

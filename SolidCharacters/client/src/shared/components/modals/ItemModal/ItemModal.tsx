@@ -48,7 +48,7 @@ export const ItemPopup:Component<modalProps> = (props) => {
         <div class={`${styles.itemWrapper}`} ref={setMenuRef}>
             <DndDialogHeader onClose={()=>setShow(false)}>
                 <div class={`${styles.headerTitle}`}> 
-                    {prettyTypeName(ItemType?.[currentItem?.type])}<Show when={currentItem.legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show><span class={`${styles.dot}`}>·</span>{sourceLabel(currentItem)}
+                    {prettyTypeName(ItemType?.[currentItem?.type])}<Show when={currentItem.legacy ?? false}><span class={`${styles.dot}`}>·</span>Legacy</Show><span class={`${styles.dot}`}>·</span>{sourceLabel(currentItem, 'item')}
 
                     <h1>{currentItem?.name}</h1>
                 </div>

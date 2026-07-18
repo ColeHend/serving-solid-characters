@@ -9,6 +9,7 @@ import { ItemPopup } from "../../../shared/components/modals/ItemModal/ItemModal
 import ClassModal from "../../../shared/components/modals/classModal/classModal.component";
 import SubclassView from "../../../shared/components/modals/subclassView/subclassView";
 import { HomebrewPreview } from "../aiSpark.shared";
+import { markHomebrew } from "../../../shared/customHooks/dndInfo/info/provenance";
 
 /**
  * Opens a detail dialog for a generated (not-yet-saved) homebrew entity. Most kinds reuse the
@@ -20,7 +21,10 @@ const HomebrewPreviewDialog: Component<{
     preview: HomebrewPreview;
     show: [Accessor<boolean>, Setter<boolean>];
 }> = (props) => {
-    const e = () => props.preview.entity;
+    // A generated preview IS homebrew by construction, but it's unsaved (not in any
+    // homebrewManager store) and unmarked (never passed through the aggregators), so
+    // sourceLabel would fall through to the SRD default — mark a display-only copy.
+    const e = () => markHomebrew([props.preview.entity])[0];
     return (
         <Switch>
             <Match when={props.preview.kind === "spell"}>

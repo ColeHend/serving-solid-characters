@@ -66,7 +66,7 @@ const BackgroundView: Component<props> = (props) => {
         <DndDialogHeader onClose={()=>setShowMenu(false)}>
           <div class={`${styles.styledHeader}`}>
             <div>
-              <div class={`${styles.eyebrow}`}>Background <Show when={legacy()}><span class={`${styles.dot}`}>·</span> legacy</Show><span class={`${styles.dot}`}>·</span> {sourceLabel(currentBackground())}</div>
+              <div class={`${styles.eyebrow}`}>Background <Show when={legacy()}><span class={`${styles.dot}`}>·</span> legacy</Show><span class={`${styles.dot}`}>·</span> {sourceLabel(currentBackground(), 'background')}</div>
 
             </div>
 

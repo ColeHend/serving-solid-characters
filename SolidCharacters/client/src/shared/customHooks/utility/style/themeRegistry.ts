@@ -14,8 +14,8 @@ export interface ThemeDefinition {
 }
 
 export const THEMES: readonly ThemeDefinition[] = [
-  { id: "dark",      label: "Dark",              base: "dark"  },
-  { id: "light",     label: "Light",             base: "light" },
+  // { id: "dark",      label: "Dark",              base: "dark"  },
+  // { id: "light",     label: "Light",             base: "light" },
   { id: "arcane",    label: "Arcane (Dark)",     base: "dark",  variant: "arcane" },
   { id: "parchment", label: "Parchment (Light)", base: "light", variant: "parchment" },
 ];
