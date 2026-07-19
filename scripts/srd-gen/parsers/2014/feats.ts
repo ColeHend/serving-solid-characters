@@ -5,6 +5,7 @@ import { normalizeMarkdown } from "../../md/normalize.ts";
 import { sectionize } from "../../md/sections.ts";
 import { cleanWhitespace } from "../../lib/util.ts";
 import type { FeatJson, PrerequisiteJson } from "../../types.ts";
+import { CURATED_FEATS_2014 } from "./featsData.ts";
 
 // C# PrerequisiteType (enums.cs): String=0, Level=1, Class=2, Subclass=3, Feat=4, Race=5, Item=6, Stat=7.
 const PREREQ = { String: 0, Level: 1, Stat: 7 } as const;
@@ -67,5 +68,6 @@ export function parseFeats2014(): FeatJson[] {
         } as unknown as FeatJson);
     }
 
-    return feats;
+    // Curated feats the 5.1 markdown lacks (clone so the id/stamp passes mutate a copy).
+    return [...feats, ...structuredClone(CURATED_FEATS_2014)];
 }

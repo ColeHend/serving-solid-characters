@@ -1,4 +1,4 @@
-import { Component, For, Show, createEffect, createMemo, createSignal, onCleanup, onMount, runWithOwner } from "solid-js";
+import { Component, For, Index, Show, createEffect, createMemo, createSignal, onCleanup, onMount, runWithOwner } from "solid-js";
 import styles from "./view.module.scss";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
@@ -22,7 +22,7 @@ import SpellModal from "../../../shared/components/modals/spellModal/spellModal.
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { characterManager, Clone } from "../../../shared";
-import { characterMadFeatureSources, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount } from "../../../shared/customHooks/mads/useMadCharacters";
+import { characterMadFeatureSources, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount } from "../../../shared/customHooks/mads/useMadCharacters";
 import { featureUsage, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
 import { advantageLabel, movementModeLabels, rollBonusLabel, senseLabels } from "../../../shared/customHooks/mads/rollFormat";
 import { useDnDMagicItems } from "../../../shared/customHooks/dndInfo/info/all/magicItems";
@@ -156,11 +156,15 @@ const CharacterView: Component = () => {
     persistCharacter(updated);
   };
 
-  const chooseStat = (featureName: string, statKey: string) => {
+  /** Write the ability picked in dropdown slot `index` into the feature's statChoices CSV. */
+  const chooseStatAt = (featureKey: string, index: number, statKey: string, count: number) => {
     const base = currentCharacter();
     if (!base) return;
     const updated = Clone(base);
-    updated.statChoices = { ...(updated.statChoices ?? {}), [featureName]: statKey };
+    updated.statChoices = {
+      ...(updated.statChoices ?? {}),
+      [featureKey]: setStatPickAt(updated.statChoices?.[featureKey], index, statKey, count),
+    };
     persistCharacter(updated);
   };
 
@@ -590,21 +594,33 @@ const CharacterView: Component = () => {
                         />
                       </Show>
                       <For each={choiceStatMads(feature)}>
-                        {(mad) => (
-                          <div class={`${styles.featureTitle}`}>
-                            <span>{`${mad.value?.["mode"] === "set" ? "Set" : "+"}${mad.value?.["statValue"] ?? ""} to an ability of your choice:`}</span>
-                            <Select
-                              value={currentCharacter()?.statChoices?.[statChoiceKey(feature)] ?? ""}
-                              onChange={(val: string) => runWithOwner(null, () => {
-                                if (val && val !== currentCharacter()?.statChoices?.[statChoiceKey(feature)]) chooseStat(statChoiceKey(feature), val);
-                              })}
-                            >
-                              <For each={statChoiceOptions(mad)}>
-                                {(key) => <Option value={key}>{STAT_LABELS[key] ?? key}</Option>}
-                              </For>
-                            </Select>
-                          </div>
-                        )}
+                        {(mad) => {
+                          const count = statChoiceCount(mad);
+                          const picks = () => statChoicePicks(currentCharacter()?.statChoices?.[statChoiceKey(feature)], count);
+                          const label = count > 1
+                            ? `+${mad.value?.["statValue"] ?? ""} to ${count} different abilities of your choice:`
+                            : `${mad.value?.["mode"] === "set" ? "Set" : "+"}${mad.value?.["statValue"] ?? ""} to an ability of your choice:`;
+                          return (
+                            <div class={`${styles.featureTitle}`}>
+                              <span>{label}</span>
+                              {/* One dropdown per pick slot; a slot's options hide the OTHER slots' picks. */}
+                              <Index each={picks()}>
+                                {(pick, i) => (
+                                  <Select
+                                    value={pick()}
+                                    onChange={(val: string) => runWithOwner(null, () => {
+                                      if (val && val !== pick()) chooseStatAt(statChoiceKey(feature), i, val, count);
+                                    })}
+                                  >
+                                    <For each={statChoiceOptions(mad).filter((key) => key === pick() || !picks().includes(key))}>
+                                      {(key) => <Option value={key}>{STAT_LABELS[key] ?? key}</Option>}
+                                    </For>
+                                  </Select>
+                                )}
+                              </Index>
+                            </div>
+                          );
+                        }}
                       </For>
                       <For each={choiceProficiencyMads(feature)}>
                         {(mad) => {

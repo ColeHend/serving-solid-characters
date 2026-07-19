@@ -69,7 +69,7 @@ describe("applyCreatorMads on the creator's mapped character", () => {
     expect(character.Speed).toBe(25);
   });
 
-  it("holds a choice-form ASI pending, then applies the draft's pick", () => {
+  it("holds a choice-form ASI pending until BOTH picks, then applies the draft's picks", () => {
     const before = draftToCharacter(dwarfBarbarian(4), lookups);
     const pending = draftMadChoices(before).filter((choice) => choice.pending);
     expect(pending.some((choice) => choice.kind === "stat")).toBe(true);
@@ -77,12 +77,23 @@ describe("applyCreatorMads on the creator's mapped character", () => {
 
     const asi = before.levels[3].features.find((f: FeatureDetail) =>
       f.name.startsWith("Ability Score"))!;
-    const picked = dwarfBarbarian(4, {
+
+    // one of two picks → still pending, nothing applies
+    const half = draftToCharacter(dwarfBarbarian(4, {
       madChoices: { stats: { [statChoiceKey(asi)]: "con" }, proficiencies: {}, spells: {}, items: {} },
+    }), lookups);
+    expect(draftMadChoices(half).filter((c) => c.pending && c.kind === "stat")).toHaveLength(1);
+    expect(applyCreatorMads(half).stats.con).toBe(14);
+
+    // both picks → +1 to each distinct ability
+    const picked = dwarfBarbarian(4, {
+      madChoices: { stats: { [statChoiceKey(asi)]: "con,str" }, proficiencies: {}, spells: {}, items: {} },
     });
     const character = draftToCharacter(picked, lookups);
     expect(draftMadChoices(character).filter((c) => c.pending && c.kind === "stat")).toHaveLength(0);
-    expect(applyCreatorMads(character).stats.con).toBe(16);
+    const applied = applyCreatorMads(character);
+    expect(applied.stats.con).toBe(15);
+    expect(applied.stats.str).toBe(17);
   });
 
   it("tags each choice with its source so sections can filter their own", () => {

@@ -433,7 +433,6 @@ export interface Subclass {
   source?: string;
   name: string;
   parentClass: string;
-  /** The parent class's id — the canonical match key (parentClass stays the display name). */
   parentClassId?: string;
   description: string;
   features: Record<number, FeatureDetail[]>;

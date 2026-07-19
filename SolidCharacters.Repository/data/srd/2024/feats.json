@@ -129,8 +129,9 @@
       "command": "AddStats",
       "value": {
        "stat": "choice",
-       "statValue": "2",
-       "options": "str,dex,con,int,wis,cha"
+       "statValue": "1",
+       "options": "str,dex,con,int,wis,cha",
+       "count": "2"
       },
       "type": 0,
       "prerequisites": [],

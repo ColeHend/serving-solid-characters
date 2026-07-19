@@ -1,7 +1,11 @@
 import { Button, Checkbox, FormField, Input } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, Show } from "solid-js";
+import { srdItem } from "../../../../../../models/data/generated";
+import { ItemType } from "../../../../../../shared";
+import { ItemMultiSelect } from "../itemMultiSelect/itemMultiSelect";
 
 interface props {
+    allItems: Accessor<srdItem[]>;
     toggleProf: (tool: string, extra?: { options?: string; count?: string }) => void;
     getValue: Accessor<Record<string, string> | undefined>;
     /** Enables the "player chooses" form (Add only). */
@@ -17,14 +21,13 @@ export const ToolProfFeature: Component<props> = (props) => {
 
     const [currTool, setCurrTool] = createSignal(tool() === "choice" ? "" : tool());
     const [isChoice, setIsChoice] = createSignal(tool() === "choice");
-    const [options, setOptions] = createSignal(getMadValue("options") ?? "");
+    const [options, setOptions] = createSignal<string[]>(
+        (getMadValue("options") ?? "").split(",").map(s => s.trim()).filter(Boolean));
     const [count, setCount] = createSignal(+(getMadValue("count") ?? "1") || 1);
-
-    const optionsList = createMemo(() => options().split(",").map(s => s.trim()).filter(Boolean));
 
     const commit = () => {
         if (isChoice()) {
-            props.toggleProf("choice", { options: optionsList().join(","), count: `${count()}` });
+            props.toggleProf("choice", { options: options().join(","), count: `${count()}` });
         } else {
             props.toggleProf(currTool().trim());
         }
@@ -50,20 +53,20 @@ export const ToolProfFeature: Component<props> = (props) => {
         </Show>
 
         <Show when={isChoice()}>
-            <FormField name="Allowed tools (comma-separated)">
-                <Input
-                    value={options()}
-                    onInput={(e) => setOptions(e.currentTarget.value)}
-                    placeholder="e.g. Smith's Tools, Brewer's Supplies, Mason's Tools"
-                />
-            </FormField>
+            <ItemMultiSelect
+                allItems={props.allItems}
+                itemType={ItemType.Tool}
+                label="Allowed tools"
+                selected={options}
+                onChange={setOptions}
+            />
 
             <FormField name="How many the player picks">
                 <Input value={count()} type="number" min={1} onChange={(e) => setCount(Math.max(1, +e.currentTarget.value || 1))} />
             </FormField>
         </Show>
 
-        <Button disabled={isChoice() ? optionsList().length === 0 : !currTool().trim()} onClick={commit}>
+        <Button disabled={isChoice() ? options().length === 0 : !currTool().trim()} onClick={commit}>
             Set Change
         </Button>
     </div>

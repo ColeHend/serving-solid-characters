@@ -221,6 +221,7 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                                     const next: Record<string, string> = { "stat": stat, "statValue": value.toString() };
                                     if (extra?.options) next["options"] = extra.options;
                                     if (extra?.mode) next["mode"] = extra.mode;
+                                    if (stat === "choice" && extra?.count) next["count"] = extra.count;
                                     commitValue(next);
                                 }}
                             />
@@ -334,6 +335,7 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         </Match>
                         <Match when={command() === "AddWeaponProficiencies" || command() === "RemoveWeaponProficiencies"}>
                             <WeaponProfFeature
+                                allItems={props.data.allItems}
                                 getValue={getValue}
                                 allowChoice={command() === "AddWeaponProficiencies"}
                                 toggleProf={(weapon, extra) => {
@@ -347,6 +349,7 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         </Match>
                         <Match when={command() === "AddToolProficiencies" || command() === "RemoveToolProficiencies"}>
                             <ToolProfFeature
+                                allItems={props.data.allItems}
                                 getValue={getValue}
                                 allowChoice={command() === "AddToolProficiencies"}
                                 toggleProf={(tool, extra) => {

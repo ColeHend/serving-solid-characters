@@ -201,13 +201,22 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         }
     }))
 
-    // DOM-only side effect: strip the modal wrapper's bottom padding once it mounts.
+    // DOM-only side effects on the library modal chrome once it mounts: strip the
+    // dialog's bottom padding, and turn its overflow:hidden boxes into clip.
+    // hidden boxes are still programmatically scrollable — the Select dropdown's
+    // focus/scrollIntoView scrolls the dialog itself, sticking the header out of
+    // view with no scrollbar to recover. clip boxes cannot scroll at all.
     createEffect(() => {
         const popup = popupRef();
         if (!popup) return;
-        const parent = popup.parentElement?.parentElement;
-        if (parent) {
-            parent.style.setProperty("padding-bottom", "0", "important")
+        const body = popup.parentElement;
+        const dialog = body?.parentElement;
+        if (body) {
+            body.style.setProperty("overflow", "clip");
+        }
+        if (dialog) {
+            dialog.style.setProperty("padding-bottom", "0", "important");
+            dialog.style.setProperty("overflow", "clip");
         }
     })
 

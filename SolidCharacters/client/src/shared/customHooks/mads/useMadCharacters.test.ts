@@ -8,7 +8,7 @@ import type { FeatureDetail, MadFeature as StoredMad, MagicItem } from "../../..
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
 import { rollBonusAmount } from "./commands/useRollBonusFeature";
@@ -308,6 +308,50 @@ describe("AddStats set mode and choice form", () => {
     it("statChoiceKey prefers the id and falls back to the name", () => {
         expect(statChoiceKey({ id: "abc", name: "ASI" })).toBe("abc");
         expect(statChoiceKey({ id: "", name: "ASI" })).toBe("ASI");
+    });
+
+    it("count=2 expands into one command per distinct pick and stays pending until complete", () => {
+        const choice = mad("AddStats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" });
+        const feature: FeatureDetail = { id: "asi-2024", name: "Ability Score Improvement", description: "", metadata: { mads: stored(choice) } };
+        const base = makeCharacter({ features: [feature] });
+
+        expect(statChoiceCount(choice)).toBe(2);
+        expect(collectMadFeatures(base)).toEqual([]);
+        expect(pendingStatChoices(base, feature)).toHaveLength(1);
+
+        // one of two picks → still pending, nothing applies
+        const half = makeCharacter({ ...base, statChoices: { "asi-2024": "int" } });
+        expect(collectMadFeatures(half)).toEqual([]);
+        expect(pendingStatChoices(half, feature)).toHaveLength(1);
+
+        // duplicate picks are rejected — the abilities must be DIFFERENT
+        const duped = makeCharacter({ ...base, statChoices: { "asi-2024": "int,int" } });
+        expect(collectMadFeatures(duped)).toEqual([]);
+
+        // two distinct picks → two concrete +1 commands, +1 to each ability
+        const picked = makeCharacter({ ...base, statChoices: { "asi-2024": "int,wis" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected.map(m => m.value["stat"])).toEqual(["int", "wis"]);
+        expect(pendingStatChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.stats.int).toBe(11);
+        expect(applied.stats.wis).toBe(11);
+    });
+
+    it("statChoiceCount defaults to 1 for absent or junk counts", () => {
+        expect(statChoiceCount(mad("AddStats", { stat: "choice", options: "str", statValue: "1" }))).toBe(1);
+        expect(statChoiceCount(mad("AddStats", { stat: "choice", options: "str", statValue: "1", count: "x" }))).toBe(1);
+        expect(statChoiceCount(mad("AddStats", { stat: "choice", options: "str", statValue: "1", count: "0" }))).toBe(1);
+    });
+
+    it("statChoicePicks pads to count and setStatPickAt steals duplicates from other slots", () => {
+        expect(statChoicePicks("int", 2)).toEqual(["int", ""]);
+        expect(statChoicePicks("int,wis", 2)).toEqual(["int", "wis"]);
+        expect(setStatPickAt(undefined, 0, "int", 2)).toBe("int,");
+        expect(setStatPickAt("int,", 1, "wis", 2)).toBe("int,wis");
+        // re-picking slot 1 to the ability slot 0 holds clears slot 0 (distinct picks)
+        expect(setStatPickAt("int,wis", 1, "int", 2)).toBe(",int");
     });
 });
 

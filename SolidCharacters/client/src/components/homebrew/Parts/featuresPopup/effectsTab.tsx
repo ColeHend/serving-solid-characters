@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo } from "solid-js";
+import { Component, ErrorBoundary, For, Show, createMemo } from "solid-js";
 import { Button } from "coles-solid-library";
 import { EffectCard } from "./effectCard";
 import { EffectCardData, MadsApi, PrereqFormArray, PrereqState, usageOwnedIndices } from "./featuresPopup.shared";
@@ -39,15 +39,23 @@ export const EffectsTab: Component<EffectsTabProps> = (props) => {
             >
                 <For each={visible()}>
                     {(item) => (
-                        <EffectCard
-                            row={item.row}
-                            index={item.index}
-                            api={props.api}
-                            data={props.data}
-                            prereqForm={props.prereqForm}
-                            prereqs={props.prereqs}
-                            onDelete={() => props.api.removeMad(item.index)}
-                        />
+                        <ErrorBoundary
+                            fallback={(err) => (
+                                <div class={styles.emptyState}>
+                                    This effect failed to render: {err instanceof Error ? err.message : String(err)}
+                                </div>
+                            )}
+                        >
+                            <EffectCard
+                                row={item.row}
+                                index={item.index}
+                                api={props.api}
+                                data={props.data}
+                                prereqForm={props.prereqForm}
+                                prereqs={props.prereqs}
+                                onDelete={() => props.api.removeMad(item.index)}
+                            />
+                        </ErrorBoundary>
                     )}
                 </For>
             </Show>

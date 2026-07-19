@@ -12,8 +12,8 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
  * capstones are intentionally skipped — see the per-class // skipped notes.
  *
  * Limited-use (Uses) commands carry the BASE amount; level-scaling of uses stays in classSpecific.
- * Ability Score Improvement is modeled as a single +2 to a chosen ability — the SRD "+2 to one OR
- * +1/+1 to two" split isn't representable, so every ASI is an APPROXIMATION (+2, player picks one).
+ * Ability Score Improvement is modeled as +1 to two DIFFERENT abilities of the player's choice
+ * (choice-form Stats with count: "2"; the sheet enforces two distinct picks).
  */
 
 // an activated ability: a new action/bonusAction/reaction on the sheet; source (defaults to the
@@ -21,6 +21,10 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
 // description = a short cost/condition qualifier when the grant isn't unconditional
 const action = (name: string, actionType: string, source?: string, description?: string): CommandSpecInput =>
     ({ type: "Add", category: "Actions", value: { name, actionType, source: source ?? name, ...(description ? { description } : {}) } });
+
+// ASI: +1 to two DIFFERENT abilities of the player's choice (count picks, distinct).
+const asi = (): CommandSpecInput =>
+    ({ type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" } });
 
 export const map: MadMap = {
     // ----- Barbarian -----
@@ -36,10 +40,7 @@ export const map: MadMap = {
         // permanent, unconditional-while-able: advantage on Dex saves vs effects you can see
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "dex", condition: "against effects you can see" } },
     ],
-    "Barbarian/Ability Score Improvement": [
-        // approximation: SRD is +2 to one or +1/+1 to two; the split isn't representable
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Barbarian/Ability Score Improvement": [asi()],
     "Barbarian/Extra Attack": [
         { type: "Add", category: "Attacks", value: { amount: "1" } },
     ],
@@ -65,9 +66,7 @@ export const map: MadMap = {
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
         action("Bardic Inspiration", "bonusAction", "Bardic Inspiration (d6)"), // "you use a bonus action on your turn"
     ],
-    "Bard/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Bard/Ability Score Improvement": [asi()],
     // skipped: Jack of All Trades (half PB to ANY ability check not already proficient — applies to
     //   raw ability checks, not an enumerable skill set), Song of Rest (short-rest healing),
     //   Expertise (player chooses two skills), Font of Inspiration (changes Bardic Inspiration
@@ -75,9 +74,7 @@ export const map: MadMap = {
     //   (player-choice spells), Superior Inspiration (situational), die upgrades (d8/d10/d12).
 
     // ----- Cleric -----
-    "Cleric/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Cleric/Ability Score Improvement": [asi()],
     // apply.ts splits map keys on the FIRST "/" only, so the "/" inside the feature name is fine.
     "Cleric/Channel Divinity (1/rest)": [
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Short Rest" } },
@@ -95,9 +92,7 @@ export const map: MadMap = {
         { type: "Add", category: "Uses", value: { amount: "2", recharge: "Short Rest" } },
         action("Wild Shape", "action"), // "you can use your action to magically assume the shape"
     ],
-    "Druid/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Druid/Ability Score Improvement": [asi()],
     // skipped: Wild Shape Improvement (raises beast CR/limits), Timeless Body (aging), Beast Spells
     //   (cast while shaped), Archdruid (unlimited Wild Shape — cap), Druid Circle (subclass).
 
@@ -110,9 +105,7 @@ export const map: MadMap = {
         // base 1 use/short rest; "Action Surge (two uses)" at L17 is a separate scaling feature
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Short Rest" } },
     ],
-    "Fighter/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Fighter/Ability Score Improvement": [asi()],
     "Fighter/Extra Attack": [
         { type: "Add", category: "Attacks", value: { amount: "1" } },
     ],
@@ -149,9 +142,7 @@ export const map: MadMap = {
         // base +10 ft; scaling stays in classSpecific "Unarmored Movement"
         { type: "Add", category: "Speed", value: { speed: "10" } },
     ],
-    "Monk/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Monk/Ability Score Improvement": [asi()],
     "Monk/Extra Attack": [
         { type: "Add", category: "Attacks", value: { amount: "1" } },
     ],
@@ -185,9 +176,7 @@ export const map: MadMap = {
     "Paladin/Lay on Hands": [
         action("Lay on Hands", "action"), // "As an action, you can touch a creature"
     ],
-    "Paladin/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Paladin/Ability Score Improvement": [asi()],
     "Paladin/Extra Attack": [
         { type: "Add", category: "Attacks", value: { amount: "1" } },
     ],
@@ -202,9 +191,7 @@ export const map: MadMap = {
     //   Sacred Oath (subclass).
 
     // ----- Ranger -----
-    "Ranger/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Ranger/Ability Score Improvement": [asi()],
     "Ranger/Extra Attack": [
         { type: "Add", category: "Attacks", value: { amount: "1" } },
     ],
@@ -226,9 +213,7 @@ export const map: MadMap = {
     "Rogue/Cunning Action": [
         action("Cunning Action", "bonusAction", undefined, "Dash, Disengage, or Hide"),
     ],
-    "Rogue/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Rogue/Ability Score Improvement": [asi()],
     "Rogue/Slippery Mind": [
         { type: "Add", category: "SavingThrows", value: { stat: "wis" } },
     ],
@@ -238,9 +223,7 @@ export const map: MadMap = {
     //   Roguish Archetype (subclass).
 
     // ----- Sorcerer -----
-    "Sorcerer/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Sorcerer/Ability Score Improvement": [asi()],
     // Font of Magic's bonus-action conversions (the sorcery-point resource itself stays unrepresented).
     "Sorcerer/Font of Magic": [
         action("Flexible Casting", "bonusAction", "Font of Magic", "convert sorcery points into a spell slot, or a spell slot into sorcery points"),
@@ -250,17 +233,13 @@ export const map: MadMap = {
     //   Sorcerous Origin (subclass), Spellcasting.
 
     // ----- Warlock -----
-    "Warlock/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Warlock/Ability Score Improvement": [asi()],
     // skipped: Pact Magic (spell slots), Eldritch Invocations (player-choice picks), Pact Boon
     //   (player-choice), Mystic Arcanum (player-choice spell), Eldritch Master (slot recovery),
     //   Otherworldly Patron (subclass).
 
     // ----- Wizard -----
-    "Wizard/Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
-    ],
+    "Wizard/Ability Score Improvement": [asi()],
     // skipped: Arcane Recovery (slot recovery), Spell Mastery / Signature Spell (player-choice
     //   spells), Arcane Tradition (subclass), Spellcasting.
 

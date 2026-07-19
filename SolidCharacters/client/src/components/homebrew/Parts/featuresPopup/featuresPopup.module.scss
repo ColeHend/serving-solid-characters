@@ -13,7 +13,10 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    overflow: hidden;
+    // clip, not hidden: hidden boxes can still be scrolled programmatically
+    // (Select dropdown focus/scrollIntoView), leaving the content stuck
+    // scrolled with no scrollbar to recover it.
+    overflow: clip;
     text-align: left;
     color: var(--on-surface-color);
 

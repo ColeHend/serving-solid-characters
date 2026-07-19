@@ -22,7 +22,7 @@ export const COUNT_GATES: Record<string, Record<string, { eq?: number; min?: num
         subraces: { min: 4 },
         spells: { eq: 319 },
         backgrounds: { eq: 1 },
-        feats: { eq: 1 },
+        feats: { eq: 2 },        // Grappler (parsed) + Ability Score Improvement (curated injection)
         items: { min: 100 },
         weapons: { min: 35 },
         armor: { min: 12 },

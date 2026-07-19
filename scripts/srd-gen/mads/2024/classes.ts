@@ -16,8 +16,8 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
  *  - Uses.amount is the count granted at THIS feature; per-level scaling stays in the class table.
  *    Where the count is an ability modifier ("equal to your Charisma modifier, minimum of once") we
  *    approximate with the minimum "1" and flag it — the modifier isn't representable.
- *  - Ability Score Improvement (the 2024 feat) → choice-form +2 to one ability (approximation: the
- *    +1/+1 split isn't representable; the sheet lets the player pick which ability).
+ *  - Ability Score Improvement (the 2024 feat) → choice-form +1 to two DIFFERENT abilities
+ *    (count: "2"; the sheet lets the player pick two distinct abilities).
  *  - Extra-attack chains: each distinctly named feature adds the DELTA so the cumulative total is
  *    right (base 1 attack + Extra Attack +1 = 2; + Two Extra Attacks +1 = 3; + Three Extra Attacks +1 = 4).
  *
@@ -51,8 +51,8 @@ const adv = (rollType: string, extra: Record<string, string> = {}): CommandSpecI
 // description = a short cost/condition qualifier when the grant isn't unconditional
 const action = (name: string, actionType: string, source?: string, description?: string): CommandSpecInput =>
     add("Actions", { name, actionType, source: source ?? name, ...(description ? { description } : {}) });
-// 2024 ASI feat: +2 to one ability of the player's choice (the +1/+1 option isn't representable).
-const asi = (): CommandSpecInput => add("Stats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" });
+// 2024 ASI feat: +1 to two DIFFERENT abilities of the player's choice (count picks, distinct).
+const asi = (): CommandSpecInput => add("Stats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" });
 
 export const map: MadMap = {
     // ============================================================ Barbarian

@@ -262,21 +262,24 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Stats: {
         category: "Stats", idBased: false,
-        labelKeys: ["stat", "statValue", "mode"],
+        labelKeys: ["stat", "statValue", "mode", "count"],
         addFields: [
             { key: "stat", type: "abilityOrChoice", required: true },
             { key: "statValue", type: "number", required: true },
             { key: "options", type: "abilityCsv", required: false },
             { key: "mode", type: "statMode", required: false },
+            { key: "count", type: "number", required: false },
         ],
         removeFields: [
             { key: "stat", type: "abilityOrChoice", required: true },
             { key: "statValue", type: "number", required: true },
             { key: "options", type: "abilityCsv", required: false },
             { key: "mode", type: "statMode", required: false },
+            { key: "count", type: "number", required: false },
         ],
         hint: "changes an ability score; stat = str/dex/con/int/wis/cha, statValue = number (for '+1 Con' style increases — never for AC formulas or skill bonuses). " +
             "For 'increase an ability of your choice' use stat = choice with options = comma-separated allowed abilities (the player picks on the sheet). " +
+            "For 'increase N different abilities of your choice by X each' use stat = choice, statValue = X, count = N (the player picks count DISTINCT abilities on the sheet). " +
             "For 'your score IS N' effects use mode = set (default mode is increase).",
     },
     SavingThrows: {

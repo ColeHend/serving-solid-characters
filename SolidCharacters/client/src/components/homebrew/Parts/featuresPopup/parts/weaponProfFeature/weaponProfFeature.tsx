@@ -1,8 +1,12 @@
 import { Button, Checkbox, FormField, Input, Option, Select } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, Show } from "solid-js";
 import { WEAPON_CATEGORY_KEYS } from "../../../../../../shared/ai/commands/madCommandCatalog";
+import { srdItem } from "../../../../../../models/data/generated";
+import { ItemType } from "../../../../../../shared";
+import { ItemMultiSelect } from "../itemMultiSelect/itemMultiSelect";
 
 interface props {
+    allItems: Accessor<srdItem[]>;
     toggleProf: (weapon: string, extra?: { options?: string; count?: string }) => void;
     getValue: Accessor<Record<string, string> | undefined>;
     /** Enables the "player chooses" form (Add only). */
@@ -23,15 +27,15 @@ export const WeaponProfFeature: Component<props> = (props) => {
         weapon() === "choice" || !weapon() ? "Simple Weapons" : isCategory(weapon()) ? weapon() : SPECIFIC);
     const [specific, setSpecific] = createSignal(weapon() !== "choice" && !isCategory(weapon()) ? weapon() : "");
     const [isChoice, setIsChoice] = createSignal(weapon() === "choice");
-    const [options, setOptions] = createSignal(getMadValue("options") ?? "");
+    const [options, setOptions] = createSignal<string[]>(
+        (getMadValue("options") ?? "").split(",").map(s => s.trim()).filter(Boolean));
     const [count, setCount] = createSignal(+(getMadValue("count") ?? "1") || 1);
 
     const grantValue = createMemo(() => selected() === SPECIFIC ? specific().trim() : selected());
-    const optionsList = createMemo(() => options().split(",").map(s => s.trim()).filter(Boolean));
 
     const commit = () => {
         if (isChoice()) {
-            props.toggleProf("choice", { options: optionsList().join(","), count: `${count()}` });
+            props.toggleProf("choice", { options: options().join(","), count: `${count()}` });
         } else {
             props.toggleProf(grantValue());
         }
@@ -67,20 +71,20 @@ export const WeaponProfFeature: Component<props> = (props) => {
         </Show>
 
         <Show when={isChoice()}>
-            <FormField name="Allowed weapons (comma-separated)">
-                <Input
-                    value={options()}
-                    onInput={(e) => setOptions(e.currentTarget.value)}
-                    placeholder="e.g. Longswords, Shortswords, Rapiers, Greataxes"
-                />
-            </FormField>
+            <ItemMultiSelect
+                allItems={props.allItems}
+                itemType={ItemType.Weapon}
+                label="Allowed weapons"
+                selected={options}
+                onChange={setOptions}
+            />
 
             <FormField name="How many the player picks">
                 <Input value={count()} type="number" min={1} onChange={(e) => setCount(Math.max(1, +e.currentTarget.value || 1))} />
             </FormField>
         </Show>
 
-        <Button disabled={isChoice() ? optionsList().length === 0 : !grantValue()} onClick={commit}>
+        <Button disabled={isChoice() ? options().length === 0 : !grantValue()} onClick={commit}>
             Set Change
         </Button>
     </div>

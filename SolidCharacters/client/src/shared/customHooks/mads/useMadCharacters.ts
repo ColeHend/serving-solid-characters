@@ -224,6 +224,33 @@ export function statChoiceOptions(m: MadFeature): string[] {
     return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
 }
 
+/** How many DISTINCT abilities the player picks (defaults to 1). */
+export function statChoiceCount(m: MadFeature): number {
+    const n = Number(m.value?.["count"] ?? "1");
+    return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+/** The picked abilities in a statChoices CSV, padded/truncated to `count` slots ("" = unpicked). */
+export function statChoicePicks(csv: string | undefined, count: number): string[] {
+    const picks = (csv ?? "").split(",").map(s => s.trim());
+    while (picks.length < count) picks.push("");
+    return picks.slice(0, count);
+}
+
+/**
+ * A statChoices CSV with `ability` written into slot `index` — the shared write path for the
+ * per-slot dropdown UIs. Picks must be DISTINCT: choosing an ability already held by another
+ * slot clears that other slot rather than silently keeping a duplicate.
+ */
+export function setStatPickAt(csv: string | undefined, index: number, ability: string, count: number): string {
+    const picks = statChoicePicks(csv, Math.max(count, index + 1));
+    for (let i = 0; i < picks.length; i++) {
+        if (i !== index && ability && picks[i] === ability) picks[i] = "";
+    }
+    picks[index] = ability;
+    return picks.join(",");
+}
+
 /**
  * The character.statChoices key for a feature. Prefer the feature id — repeated features
  * (Ability Score Improvement at levels 4/8/12...) have distinct ids, so each instance gets
@@ -234,14 +261,18 @@ export function statChoiceKey(feature: { id?: string; name: string }): string {
 }
 
 /**
- * A choice-form Stats command with the player's pick (character.statChoices, keyed by
- * statChoiceKey) substituted in — or null while the pick is missing/invalid, in which
- * case the command must NOT apply.
+ * A choice-form Stats command EXPANDED into one concrete command per picked ability
+ * (character.statChoices holds a CSV of picks, keyed by statChoiceKey) — or null while the
+ * picks are missing/incomplete/duplicated/invalid, in which case the command must NOT apply.
+ * Picks must be DISTINCT ("increase two different ability scores").
  */
-function resolveChoiceStatMad(character: Character, choiceKey: string, m: MadFeature): MadFeature | null {
-    const pick = character.statChoices?.[choiceKey] ?? "";
-    if (!pick || !statChoiceOptions(m).includes(pick)) return null;
-    return { ...m, value: { ...m.value, stat: pick } };
+function resolveChoiceStatMads(character: Character, choiceKey: string, m: MadFeature): MadFeature[] | null {
+    const picks = (character.statChoices?.[choiceKey] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    const options = statChoiceOptions(m);
+    if (picks.length !== statChoiceCount(m)) return null;
+    if (new Set(picks).size !== picks.length) return null;
+    if (!picks.every(p => options.includes(p))) return null;
+    return picks.map(pick => ({ ...m, value: { ...m.value, stat: pick } }));
 }
 
 /** All choice-form stat commands on a feature (for the sheet's chooser UI). */
@@ -249,9 +280,9 @@ export function choiceStatMads(feature: { name: string; metadata?: { mads?: unkn
     return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceStatMad);
 }
 
-/** Choice-form stat commands on a feature that still need a pick (for the sheet's chooser UI). */
+/** Choice-form stat commands on a feature that still need picks (for the sheet's chooser UI). */
 export function pendingStatChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
-    return choiceStatMads(feature).filter(m => !resolveChoiceStatMad(character, statChoiceKey(feature), m));
+    return choiceStatMads(feature).filter(m => !resolveChoiceStatMads(character, statChoiceKey(feature), m));
 }
 
 /** True for a choice-form Proficiencies command ("proficiency in N skills of your choice") that needs player picks. */
@@ -415,8 +446,7 @@ export function collectMadFeatures(character: Character): MadFeature[] {
         ((f.metadata?.mads ?? []) as MadFeature[]).flatMap(m => {
             if (m.type !== MadType.Character) return [];
             if (isChoiceStatMad(m)) {
-                const resolved = resolveChoiceStatMad(character, statChoiceKey(f), m);
-                return resolved ? [resolved] : [];
+                return resolveChoiceStatMads(character, statChoiceKey(f), m) ?? [];
             }
             if (isChoiceProficiencyMad(m)) {
                 return resolveChoiceProficiencyMads(character, statChoiceKey(f), m) ?? [];

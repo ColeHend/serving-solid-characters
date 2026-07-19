@@ -231,8 +231,9 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
       setDraft("feats", (feats) => feats.filter((f) => f !== key));
     },
 
-    setMadStatChoice(key: string, ability: string) {
-      setDraft("madChoices", "stats", key, ability);
+    /** CSV of picked ability keys (the Character contract's multi-pick storage shape). */
+    setMadStatChoice(key: string, picksCsv: string) {
+      setDraft("madChoices", "stats", key, picksCsv);
     },
     /** Resolve a feat-or-ASI slot: "asi" or a feat selector key. A feat clears the stale ability pick. */
     setFeatOrAsi(featureKey: string, value: string) {

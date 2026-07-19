@@ -1,10 +1,13 @@
-import { Component, For, Show, createMemo } from "solid-js";
+import { Component, For, Index, Show, createMemo } from "solid-js";
 import { Option, Select } from "coles-solid-library";
 import { Feat, PrerequisiteType } from "../../../../../models/generated";
 import { featSelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
 import {
+  setStatPickAt,
+  statChoiceCount,
   statChoiceKey,
   statChoiceOptions,
+  statChoicePicks,
 } from "../../../../../shared/customHooks/mads/useMadCharacters";
 import { MadChoice } from "../../rules/applyMads";
 import { ABILITY_FULL_NAMES, AbilityKey } from "../../rules/constants";
@@ -58,7 +61,10 @@ export const FeatOrAsiControl: Component<{ choice: MadChoice }> = (props) => {
   };
 
   const abilityLabel = (key: string) => ABILITY_FULL_NAMES[key as AbilityKey] ?? key;
-  const pending = () => slotValue() === "asi" && !draft.madChoices.stats[slotKey()];
+  const statCount = () => statChoiceCount(props.choice.mad);
+  const statPicks = () => statChoicePicks(draft.madChoices.stats[slotKey()], statCount());
+  const pending = () =>
+    slotValue() === "asi" && statPicks().filter(Boolean).length < statCount();
 
   return (
     <div class={styles.choiceRow}>
@@ -75,15 +81,26 @@ export const FeatOrAsiControl: Component<{ choice: MadChoice }> = (props) => {
         </For>
       </Select>
       <Show when={slotValue() === "asi"}>
-        <Select
-          value={draft.madChoices.stats[slotKey()] ?? ""}
-          onChange={(value: string) => actions.setMadStatChoice(slotKey(), value)}
-          placeholder="Choose an ability…"
-        >
-          <For each={statChoiceOptions(props.choice.mad)}>
-            {(key) => <Option value={key}>{abilityLabel(key)}</Option>}
-          </For>
-        </Select>
+        {/* One dropdown per pick slot; a slot's options hide the OTHER slots' picks (distinct abilities). */}
+        <Index each={statPicks()}>
+          {(pick, i) => (
+            <Select
+              value={pick()}
+              onChange={(value: string) => {
+                if (value === pick()) return;
+                actions.setMadStatChoice(
+                  slotKey(),
+                  setStatPickAt(draft.madChoices.stats[slotKey()], i, value, statCount()),
+                );
+              }}
+              placeholder="Choose an ability…"
+            >
+              <For each={statChoiceOptions(props.choice.mad).filter((key) => key === pick() || !statPicks().includes(key))}>
+                {(key) => <Option value={key}>{abilityLabel(key)}</Option>}
+              </For>
+            </Select>
+          )}
+        </Index>
       </Show>
     </div>
   );

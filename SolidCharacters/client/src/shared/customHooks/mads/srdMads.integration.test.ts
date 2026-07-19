@@ -46,7 +46,7 @@ describe("generated SRD data through the mads runtime (2014)", () => {
         expect(applied.senses?.darkvision).toBe(60); // Dwarf Darkvision trait
     });
 
-    it("holds choice-form ASI pending until picked, then applies the pick", () => {
+    it("holds choice-form ASI pending until BOTH abilities are picked, then applies +1 to each", () => {
         const c = level5Barbarian();
         const asi = c.levels[3].features.find(f => f.name.startsWith("Ability Score"))!;
         expect(asi).toBeDefined();
@@ -55,9 +55,18 @@ describe("generated SRD data through the mads runtime (2014)", () => {
         const before = useMadCharacters(structuredClone(c), collectMadFeatures(c));
         expect(before.stats.con).toBe(14);
 
+        // one of two picks → still pending, nothing applies
         c.statChoices = { [statChoiceKey(asi)]: "con" };
+        expect(pendingStatChoices(c, asi)).toHaveLength(1);
+        const halfPicked = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(halfPicked.stats.con).toBe(14);
+
+        // both picks → +1 to each distinct ability
+        c.statChoices = { [statChoiceKey(asi)]: "con,str" };
+        expect(pendingStatChoices(c, asi)).toHaveLength(0);
         const after = useMadCharacters(structuredClone(c), collectMadFeatures(c));
-        expect(after.stats.con).toBe(16);
+        expect(after.stats.con).toBe(15);
+        expect(after.stats.str).toBe(17);
     });
 
     it("Rage carries an Info-type AddUses command (limited-use tracking)", () => {
@@ -132,6 +141,30 @@ describe("generated SRD data through the mads runtime (2024)", () => {
 
     const feats2024 = read("2024/feats.json");
     const findFeat = (name: string) => feats2024.find((f: { details: { name: string } }) => f.details?.name === name)?.details;
+
+    it("the 2024 ASI feat asks for two distinct picks and applies +1 to each", () => {
+        const asi = findFeat("Ability Score Improvement");
+        expect(asi?.metadata?.mads).toEqual([expect.objectContaining({
+            command: "AddStats",
+            value: { stat: "choice", statValue: "1", options: "str,dex,con,int,wis,cha", count: "2" },
+        })]);
+
+        const c = new Character();
+        c.stats = { str: 10, dex: 10, con: 10, int: 8, wis: 10, cha: 10 };
+        c.features = [asi];
+
+        // one pick → pending, nothing applies
+        c.statChoices = { [statChoiceKey(asi)]: "int" };
+        expect(pendingStatChoices(c, asi)).toHaveLength(1);
+        expect(useMadCharacters(structuredClone(c), collectMadFeatures(c)).stats.int).toBe(8);
+
+        // two distinct picks → +1 each
+        c.statChoices = { [statChoiceKey(asi)]: "int,wis" };
+        expect(pendingStatChoices(c, asi)).toHaveLength(0);
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.stats.int).toBe(9);
+        expect(applied.stats.wis).toBe(11);
+    });
 
     it("Alert carries a PB-to-Initiative RollBonus that lands on rollBonuses", () => {
         const alert = findFeat("Alert");
