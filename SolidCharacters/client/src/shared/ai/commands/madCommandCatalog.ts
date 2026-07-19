@@ -143,7 +143,8 @@ const ROLL_TYPE_ALIASES: Record<string, string> = {
 // ---- field specs ----
 
 type FieldType = "number" | "ability" | "abilityOrChoice" | "abilityCsv" | "skill" | "skillOrChoice" | "skillCsv" | "damageType" | "currency" | "pbChoice" | "text" | "ref" | "refOrChoice" | "refCsv" | "rollType" | "advMode" | "recharge" | "statMode" | "movementType" | "sense" | "flag" | "actionType"
-    | "armorProf" | "armorProfOrChoice" | "armorProfCsv" | "weaponProf" | "weaponProfOrChoice" | "weaponProfCsv" | "textOrChoice" | "textCsv";
+    | "armorProf" | "armorProfOrChoice" | "armorProfCsv" | "weaponProf" | "weaponProfOrChoice" | "weaponProfCsv" | "textOrChoice" | "textCsv"
+    | "damageTypeOrChoice" | "damageTypeCsv";
 
 interface FieldSpec {
     /** The value-object key this field writes (e.g. "bonus", "damageType", "ID"). */
@@ -337,8 +338,19 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Expertise: {
         category: "Expertise", idBased: false,
-        addFields: [{ key: "proficiencies", type: "skillCsv", required: true }], removeFields: [{ key: "proficiencies", type: "skillCsv", required: true }],
-        hint: "grants expertise in one or more skills; proficiencies = comma-separated skill names",
+        labelKeys: ["proficiency", "proficiencies", "count"],
+        addFields: [
+            { key: "proficiency", type: "skillOrChoice", required: false },
+            { key: "options", type: "skillCsv", required: false },
+            { key: "count", type: "number", required: false },
+            { key: "proficiencies", type: "skillCsv", required: false },
+        ],
+        removeFields: [
+            { key: "proficiency", type: "skillOrChoice", required: false },
+            { key: "proficiencies", type: "skillCsv", required: false },
+        ],
+        hint: "grants expertise (double proficiency bonus) in skills the character is already proficient in; proficiency = one skill name, or proficiencies = comma-separated skill names. " +
+            "For 'choose N skills in which you have proficiency to gain Expertise' use proficiency = choice with options = comma-separated allowed skills and count = how many the player picks (the player picks on the sheet).",
     },
     AllProficiencies: {
         category: "AllProficiencies", idBased: false,
@@ -348,8 +360,15 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Resistances: {
         category: "Resistances", idBased: false,
-        addFields: [{ key: "damageType", type: "damageType", required: true }], removeFields: [{ key: "damageType", type: "damageType", required: true }],
-        hint: "grants resistance to a damage type; damageType = one of the standard damage types",
+        labelKeys: ["damageType", "count"],
+        addFields: [
+            { key: "damageType", type: "damageTypeOrChoice", required: true },
+            { key: "options", type: "damageTypeCsv", required: false },
+            { key: "count", type: "number", required: false },
+        ],
+        removeFields: [{ key: "damageType", type: "damageType", required: true }],
+        hint: "grants resistance to a damage type; damageType = one of the standard damage types. " +
+            "For 'resistance to one damage type of your choice' use damageType = choice with options = comma-separated allowed types and count = how many the player picks (the player picks on the sheet).",
     },
     Vulnerabilities: {
         category: "Vulnerabilities", idBased: false,
@@ -358,13 +377,29 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Immunities: {
         category: "Immunities", idBased: false,
-        addFields: [{ key: "damageType", type: "damageType", required: true }], removeFields: [{ key: "damageType", type: "damageType", required: true }],
-        hint: "grants immunity to a damage type; damageType = one of the standard damage types",
+        labelKeys: ["damageType", "condition"],
+        addFields: [
+            { key: "damageType", type: "damageType", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        removeFields: [
+            { key: "damageType", type: "damageType", required: false },
+            { key: "condition", type: "text", required: false },
+        ],
+        hint: "grants immunity to a damage type OR a condition/affliction; damageType = one of the standard damage types, " +
+            "condition = a condition or affliction name ('Disease', 'Frightened', 'Poisoned'). Provide damageType or condition.",
     },
     Languages: {
         category: "Languages", idBased: false,
-        addFields: [{ key: "name", type: "text", required: true }], removeFields: [{ key: "name", type: "text", required: true }],
-        hint: "grants/removes a language; name = the language",
+        labelKeys: ["name", "count"],
+        addFields: [
+            { key: "name", type: "textOrChoice", required: true },
+            { key: "options", type: "textCsv", required: false },
+            { key: "count", type: "number", required: false },
+        ],
+        removeFields: [{ key: "name", type: "text", required: true }],
+        hint: "grants/removes a language; name = the language. " +
+            "For 'N languages of your choice' use name = choice with options = comma-separated allowed languages and count = how many the player picks (the player picks on the sheet).",
     },
     Currency: {
         category: "Currency", idBased: false,
@@ -704,6 +739,8 @@ function coerceField(spec: FieldSpec, raw: unknown, target: string, resolveRef: 
         case "skillOrChoice": return value.toLowerCase() === "choice" ? "choice" : matchOption(value, SKILL_KEYS);
         case "skillCsv": return coerceCsv(value, s => matchOption(s, SKILL_KEYS));
         case "damageType": return matchOption(value, DAMAGE_TYPES);
+        case "damageTypeOrChoice": return value.toLowerCase() === "choice" ? "choice" : matchOption(value, DAMAGE_TYPES);
+        case "damageTypeCsv": return coerceCsv(value, s => matchOption(s, DAMAGE_TYPES));
         case "currency": return coerceCurrency(value);
         case "pbChoice": return coercePbChoice(value);
         case "rollType": return coerceRollType(value);
@@ -753,6 +790,17 @@ export function coerceCommand(
     if (category === "Stats" && value["stat"] === "choice" && !value["options"]) return null;
     // choice-form Proficiencies likewise needs its allowed-skills list
     if (category === "Proficiencies" && value["proficiency"] === "choice" && !value["options"]) return null;
+    // Expertise needs a skill (or choice), or the legacy proficiencies CSV; a choice needs its options list
+    if (category === "Expertise") {
+        if (!value["proficiency"] && !value["proficiencies"]) return null;
+        if (value["proficiency"] === "choice" && !value["options"]) return null;
+    }
+    // choice-form Resistances likewise needs its allowed-damage-types list
+    if (category === "Resistances" && value["damageType"] === "choice" && !value["options"]) return null;
+    // choice-form Languages likewise needs its allowed-languages list
+    if (category === "Languages" && value["name"] === "choice" && !value["options"]) return null;
+    // an Immunities grant is either a damage type or a condition/affliction
+    if (category === "Immunities" && !value["damageType"] && !value["condition"]) return null;
     // choice-form armor/weapon/tool proficiencies likewise need their allowed-options list
     if (category === "ArmorProficiencies" && value["armor"] === "choice" && !value["options"]) return null;
     if (category === "WeaponProficiencies" && value["weapon"] === "choice" && !value["options"]) return null;
@@ -825,6 +873,28 @@ export function validateStoredCommand(mad: MadFeature): string[] {
     if (category === "Proficiencies" && isAdd && String(value["proficiency"] ?? "") === "choice") {
         const opts = coerceField({ key: "options", type: "skillCsv", required: true }, value["options"], "", () => null, undefined);
         if (!opts) errors.push(`${prettyCommand(command)} uses proficiency "choice" but has no valid options list`);
+    }
+    if (category === "Expertise") {
+        const single = coerceField({ key: "proficiency", type: "skillOrChoice", required: false }, value["proficiency"], "", () => null, undefined);
+        const csv = coerceField({ key: "proficiencies", type: "skillCsv", required: false }, value["proficiencies"], "", () => null, undefined);
+        if (!single && !csv) errors.push(`${prettyCommand(command)} needs a proficiency (or the proficiencies list)`);
+        if (isAdd && single === "choice") {
+            const opts = coerceField({ key: "options", type: "skillCsv", required: true }, value["options"], "", () => null, undefined);
+            if (!opts) errors.push(`${prettyCommand(command)} uses proficiency "choice" but has no valid options list`);
+        }
+    }
+    if (category === "Resistances" && isAdd && String(value["damageType"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "damageTypeCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses damageType "choice" but has no valid options list`);
+    }
+    if (category === "Languages" && isAdd && String(value["name"] ?? "") === "choice") {
+        const opts = coerceField({ key: "options", type: "textCsv", required: true }, value["options"], "", () => null, undefined);
+        if (!opts) errors.push(`${prettyCommand(command)} uses name "choice" but has no valid options list`);
+    }
+    if (category === "Immunities") {
+        const dmg = coerceField({ key: "damageType", type: "damageType", required: false }, value["damageType"], "", () => null, undefined);
+        const condition = coerceField({ key: "condition", type: "text", required: false }, value["condition"], "", () => null, undefined);
+        if (!dmg && !condition) errors.push(`${prettyCommand(command)} needs a damageType or a condition`);
     }
     if (category === "ArmorProficiencies" && isAdd && String(value["armor"] ?? "") === "choice") {
         const opts = coerceField({ key: "options", type: "armorProfCsv", required: true }, value["options"], "", () => null, undefined);

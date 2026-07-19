@@ -194,3 +194,65 @@ describe("magic item mads", () => {
     expect(applyCreatorMads(character).stats.int).toBe(10);
   });
 });
+
+describe("draftMadChoices — new choice kinds and branch groups", () => {
+  const madOf = (command: string, value: Record<string, string>, group = 0): MadFeature =>
+    ({ command, value, type: MadType.Character, prerequisites: [], group }) as MadFeature;
+
+  const raceCharacter = (feature: FeatureDetail, proficiencyChoices: Record<string, string> = {}) =>
+    ({
+      levels: [],
+      race: { species: "Test", features: [feature] },
+      backgroundFeatures: [],
+      features: [],
+      proficiencyChoices,
+      statChoices: {},
+      spellChoices: {},
+      itemChoices: {},
+    }) as unknown as Parameters<typeof draftMadChoices>[0];
+
+  it("emits expertise, resistance and language choices with live pending state", () => {
+    const feature = {
+      id: "f-1",
+      name: "Deft Scholar",
+      metadata: { mads: [
+        madOf("AddExpertise", { proficiency: "choice", options: "Arcana,History", count: "1" }),
+        madOf("AddResistances", { damageType: "choice", options: "Fire,Cold", count: "1" }),
+        madOf("AddLanguages", { name: "choice", options: "Elvish,Giant", count: "2" }),
+      ] },
+    } as FeatureDetail;
+
+    const pendingChoices = draftMadChoices(raceCharacter(feature));
+    expect(pendingChoices.map((c) => c.kind).sort()).toEqual(["expertise", "language", "resistance"]);
+    expect(pendingChoices.every((c) => c.pending && c.source === "race")).toBe(true);
+
+    const done = draftMadChoices(raceCharacter(feature, {
+      "f-1::expertise": "Arcana",
+      "f-1::resistance": "Fire",
+      "f-1::languages": "Elvish,Giant",
+    }));
+    expect(done.every((c) => !c.pending)).toBe(true);
+  });
+
+  it("emits one group choice per branched feature and keeps dormant-branch sub-choices hidden", () => {
+    const feature = {
+      id: "f-2",
+      name: "Divine Order",
+      metadata: { mads: [
+        madOf("AddWeaponProficiencies", { weapon: "Martial Weapons", groupLabel: "Protector" }, 1),
+        madOf("AddSpells", { ID: "choice", options: "sp-1,sp-2", count: "1", spellLevel: "0", groupLabel: "Thaumaturge" }, 2),
+      ] },
+    } as FeatureDetail;
+
+    const unpicked = draftMadChoices(raceCharacter(feature));
+    expect(unpicked).toHaveLength(1);
+    expect(unpicked[0].kind).toBe("group");
+    expect(unpicked[0].pending).toBe(true);
+
+    // Thaumaturge picked → the group choice resolves and the nested spell picker surfaces.
+    const picked = draftMadChoices(raceCharacter(feature, { "f-2::group": "2" }));
+    expect(picked.map((c) => c.kind).sort()).toEqual(["group", "spell"]);
+    expect(picked.find((c) => c.kind === "group")?.pending).toBe(false);
+    expect(picked.find((c) => c.kind === "spell")?.pending).toBe(true);
+  });
+});

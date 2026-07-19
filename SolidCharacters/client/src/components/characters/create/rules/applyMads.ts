@@ -5,14 +5,24 @@ import { Clone } from "../../../../shared";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
 import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
 import {
+  activeFeatureMads,
+  choiceExpertiseMads,
   choiceItemMads,
+  choiceLanguageMads,
   choiceProficiencyMads,
+  choiceResistanceMads,
   choiceSpellMads,
   choiceStatMads,
   collectMadFeatures,
   collectMagicItemMads,
+  featureGroupOptions,
+  madGroup,
+  pendingExpertiseChoices,
+  pendingGroupChoice,
   pendingItemChoices,
+  pendingLanguageChoices,
   pendingProficiencyChoices,
+  pendingResistanceChoices,
   pendingSpellChoices,
   pendingStatChoices,
   statChoiceKey,
@@ -85,7 +95,9 @@ export function isFeatOrAsiFeature(feature: FeatureDetail): boolean {
   return /ability score improvement/i.test(feature.name ?? "") && choiceStatMads(feature).length > 0;
 }
 
-export type MadChoiceKind = "stat" | "proficiency" | "spell" | "item" | "armorProf" | "weaponProf" | "toolProf";
+export type MadChoiceKind =
+  | "stat" | "proficiency" | "expertise" | "resistance" | "language"
+  | "spell" | "item" | "armorProf" | "weaponProf" | "toolProf" | "group";
 
 /** Where a choice-bearing feature came from, so each creator section renders only its own. */
 export type MadChoiceSource = "class" | "race" | "background" | "feat";
@@ -125,8 +137,14 @@ function featureSources(character: Character): TaggedFeature[] {
 export function draftMadChoices(character: Character): MadChoice[] {
   const equipKindOf = { armor: "armorProf", weapon: "weaponProf", tool: "toolProf" } as const;
   return featureSources(character).flatMap(({ feature, source, sourceKey }) => {
+    // Only the active branch's choices render — an unpicked lineage's nested pickers stay dormant.
+    const active = activeFeatureMads(character, feature);
+    const inActive = (mad: MadFeature) => active.includes(mad);
     const pendingStat = pendingStatChoices(character, feature);
     const pendingProf = pendingProficiencyChoices(character, feature);
+    const pendingExpertise = pendingExpertiseChoices(character, feature);
+    const pendingResistance = pendingResistanceChoices(character, feature);
+    const pendingLanguage = pendingLanguageChoices(character, feature);
     const pendingSpell = pendingSpellChoices(character, feature);
     const pendingItem = pendingItemChoices(character, feature);
     // A feat-or-ASI slot resolved with a FEAT has no ability pick — that's complete, not pending.
@@ -134,8 +152,21 @@ export function draftMadChoices(character: Character): MadChoice[] {
       const slot = character.builder?.featOrAsi?.[statChoiceKey(feature2)];
       return !!slot && slot !== "asi";
     };
+    const groups = featureGroupOptions(feature);
+    const groupChoice: MadChoice[] = groups.length
+      ? [{
+        feature,
+        // The picker only needs the feature + group options; carry the first branch mad for shape.
+        mad: ((feature.metadata?.mads ?? []) as MadFeature[]).find((m) => madGroup(m) > 0) as MadFeature,
+        kind: "group" as const,
+        pending: pendingGroupChoice(character, feature),
+        source,
+        sourceKey,
+      }]
+      : [];
     return [
-      ...choiceStatMads(feature).map((mad) => ({
+      ...groupChoice,
+      ...choiceStatMads(feature).filter(inActive).map((mad) => ({
         feature,
         mad,
         kind: "stat" as const,
@@ -143,7 +174,7 @@ export function draftMadChoices(character: Character): MadChoice[] {
         source,
         sourceKey,
       })),
-      ...choiceProficiencyMads(feature).map((mad) => ({
+      ...choiceProficiencyMads(feature).filter(inActive).map((mad) => ({
         feature,
         mad,
         kind: "proficiency" as const,
@@ -151,7 +182,31 @@ export function draftMadChoices(character: Character): MadChoice[] {
         source,
         sourceKey,
       })),
-      ...choiceSpellMads(feature).map((mad) => ({
+      ...choiceExpertiseMads(feature).filter(inActive).map((mad) => ({
+        feature,
+        mad,
+        kind: "expertise" as const,
+        pending: pendingExpertise.includes(mad),
+        source,
+        sourceKey,
+      })),
+      ...choiceResistanceMads(feature).filter(inActive).map((mad) => ({
+        feature,
+        mad,
+        kind: "resistance" as const,
+        pending: pendingResistance.includes(mad),
+        source,
+        sourceKey,
+      })),
+      ...choiceLanguageMads(feature).filter(inActive).map((mad) => ({
+        feature,
+        mad,
+        kind: "language" as const,
+        pending: pendingLanguage.includes(mad),
+        source,
+        sourceKey,
+      })),
+      ...choiceSpellMads(feature).filter(inActive).map((mad) => ({
         feature,
         mad,
         kind: "spell" as const,
@@ -159,7 +214,7 @@ export function draftMadChoices(character: Character): MadChoice[] {
         source,
         sourceKey,
       })),
-      ...choiceItemMads(feature).map((mad) => ({
+      ...choiceItemMads(feature).filter(inActive).map((mad) => ({
         feature,
         mad,
         kind: "item" as const,
@@ -169,7 +224,7 @@ export function draftMadChoices(character: Character): MadChoice[] {
       })),
       ...EQUIP_PROF_KINDS.flatMap((equipKind) => {
         const pending = pendingEquipProfChoices(equipKind, character, feature);
-        return choiceEquipProfMads(equipKind, feature).map((mad) => ({
+        return choiceEquipProfMads(equipKind, feature).filter(inActive).map((mad) => ({
           feature,
           mad,
           kind: equipKindOf[equipKind],

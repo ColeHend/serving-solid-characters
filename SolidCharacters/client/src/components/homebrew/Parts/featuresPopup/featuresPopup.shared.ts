@@ -73,6 +73,27 @@ export function usageOwnedIndices(mads: Pick<MadForm, "command" | "value">[]): S
     return owned;
 }
 
+/**
+ * Branch (choice-group) semantics: group 0 always applies; rows sharing a nonzero group form
+ * one branch, and the player picks exactly ONE branch on the sheet. A branch's display name
+ * lives in each row's value.groupLabel.
+ */
+
+/** Distinct nonzero branch numbers across rows, ascending. */
+export function branchNumbers(mads: Pick<MadForm, "group">[]): number[] {
+    return [...new Set(mads.map(m => Number(m.group) || 0).filter(g => g > 0))].sort((a, b) => a - b);
+}
+
+/** A branch's display label: the first non-empty value.groupLabel among its rows. */
+export function branchLabel(mads: Pick<MadForm, "group" | "value">[], group: number): string {
+    for (const m of mads) {
+        if ((Number(m.group) || 0) !== group) continue;
+        const label = (m.value?.["groupLabel"] ?? "").trim();
+        if (label) return label;
+    }
+    return "";
+}
+
 /** Stored recharge values vary in case/shape ("short", "Short Rest"); UI shows the canonical pair. */
 export function normalizeRecharge(raw: string | undefined): "Short Rest" | "Long Rest" {
     return (raw ?? "").toLowerCase().startsWith("short") ? "Short Rest" : "Long Rest";

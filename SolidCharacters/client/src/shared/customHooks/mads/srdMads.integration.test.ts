@@ -8,7 +8,7 @@ import { Character, MovementType } from "../../../models/character.model";
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { collectMadFeatures, useMadCharacters, pendingStatChoices, pendingProficiencyChoices, statChoiceKey, pendingSpellChoices, spellChoiceKey, spellChoiceOptions } from "./useMadCharacters";
+import { collectMadFeatures, useMadCharacters, pendingStatChoices, pendingProficiencyChoices, statChoiceKey, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, pendingExpertiseChoices, expertiseChoiceKey, pendingResistanceChoices, resistanceChoiceKey, pendingGroupChoice, groupChoiceKey, featureGroupOptions } from "./useMadCharacters";
 
 /**
  * Integration gate: the GENERATED server SRD JSON (SolidCharacters.Repository/data/srd)
@@ -292,5 +292,151 @@ describe("generated SRD data through the mads runtime (2024)", () => {
         expect(actions).toEqual(expect.arrayContaining([
             expect.objectContaining({ name: "Merge with Shadows", actionType: "bonusAction", source: "Boon of the Night Spirit" }),
         ]));
+    });
+});
+
+describe("choice-form Expertise / Resistances / branch groups from the generated data", () => {
+    const classes2024 = read("2024/classes.json");
+    const races2024 = read("2024/races.json");
+    const spells2024 = read("2024/spells.json");
+    const spellId = (name: string) => spells2024.find((s: { name: string }) => s.name === name)?.id;
+
+    const proficientSkill = (stat: "str" | "dex" | "con" | "int" | "wis" | "cha") =>
+        ({ stat, value: 0, proficient: true, expertise: false });
+
+    it("2024 Wizard Scholar holds its expertise choice pending, then doubles the picked skill", () => {
+        const wizard = classes2024.find((c: { name: string }) => c.name === "Wizard");
+        const scholar = wizard.features["2"].find((f: FeatureDetail) => f.name === "Scholar")!;
+        expect(scholar.metadata?.mads).toHaveLength(1);
+
+        const c = new Character();
+        c.features = [scholar];
+        c.proficiencies.skills = { "Arcana": proficientSkill("int"), "History": proficientSkill("int") };
+
+        expect(pendingExpertiseChoices(c, scholar)).toHaveLength(1);
+        expect(collectMadFeatures(c)).toEqual([]);
+
+        c.proficiencyChoices = { [expertiseChoiceKey(scholar)]: "Arcana" };
+        expect(pendingExpertiseChoices(c, scholar)).toHaveLength(0);
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.proficiencies.skills["Arcana"].expertise).toBe(true);
+        expect(applied.proficiencies.skills["History"].expertise).toBe(false);
+    });
+
+    it("Rogue Expertise at levels 1 and 6 are independent picks (distinct feature ids)", () => {
+        const rogue = classes2024.find((c: { name: string }) => c.name === "Rogue");
+        const exp1 = rogue.features["1"].find((f: FeatureDetail) => f.name === "Expertise")!;
+        const exp6 = rogue.features["6"].find((f: FeatureDetail) => f.name === "Expertise")!;
+        expect(exp1.id).not.toBe(exp6.id);
+
+        const c = new Character();
+        c.features = [exp1, exp6];
+        c.proficiencies.skills = {
+            "Stealth": proficientSkill("dex"), "Acrobatics": proficientSkill("dex"),
+            "Deception": proficientSkill("cha"), "Persuasion": proficientSkill("cha"),
+        };
+        c.proficiencyChoices = { [expertiseChoiceKey(exp1)]: "Stealth,Acrobatics" };
+
+        expect(pendingExpertiseChoices(c, exp1)).toHaveLength(0);
+        expect(pendingExpertiseChoices(c, exp6)).toHaveLength(1);
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.proficiencies.skills["Stealth"].expertise).toBe(true);
+        expect(applied.proficiencies.skills["Deception"].expertise).toBe(false);
+    });
+
+    it("2024 Dragonborn Damage Resistance resolves the picked ancestry damage type", () => {
+        const dragonborn = races2024.find((r: { name: string }) => r.name === "Dragonborn");
+        const resistance = dragonborn.traits
+            .map((t: { details: FeatureDetail }) => t.details)
+            .find((d: FeatureDetail) => d?.name === "Damage Resistance")!;
+        expect(resistance.metadata?.mads).toHaveLength(1);
+
+        const c = new Character();
+        c.race = { species: "Dragonborn", features: [resistance] };
+        expect(pendingResistanceChoices(c, resistance)).toHaveLength(1);
+        expect(collectMadFeatures(c)).toEqual([]);
+
+        c.proficiencyChoices = { [resistanceChoiceKey(resistance)]: "Lightning" };
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.resistances.map(r => r.type)).toContain("Lightning");
+    });
+
+    it("2024 Elven Lineage is a pick-one branch group; the chosen branch applies with level gates", () => {
+        const elf = races2024.find((r: { name: string }) => r.name === "Elf");
+        const traits = elf.traits.map((t: { details: FeatureDetail }) => t.details).filter(Boolean);
+        const lineage = traits.find((d: FeatureDetail) => d.name === "Elven Lineage")!;
+
+        expect(featureGroupOptions(lineage)).toEqual([
+            { group: 1, label: "Drow" },
+            { group: 2, label: "High Elf" },
+            { group: 3, label: "Wood Elf" },
+        ]);
+
+        const c = new Character();
+        // Character.level derives from the levels array — a single level-1 entry to start.
+        c.levels.push({ class: "Wizard", level: 1, hitDie: 6, features: [] });
+        c.Speed = 30;
+        c.race = { species: "Elf", features: traits };
+
+        // structuredClone drops the class's `level` getter — restore it as plain data, the shape
+        // a Dexie-loaded character has at runtime (the spell prerequisites read character.level).
+        const applyNow = () => {
+            const clone = structuredClone(c) as Character & { level: number };
+            clone.level = c.levels.length;
+            return useMadCharacters(clone, collectMadFeatures(c));
+        };
+
+        // Unpicked → base traits apply (Darkvision 60) but no lineage benefit.
+        expect(pendingGroupChoice(c, lineage)).toBe(true);
+        const before = applyNow();
+        expect(before.senses?.darkvision).toBe(60);
+        expect(before.Speed).toBe(30);
+        expect(before.spells).toHaveLength(0);
+
+        // Wood Elf picked → Speed becomes 35 and Druidcraft is known at level 1...
+        c.proficiencyChoices = { [groupChoiceKey(lineage)]: "3" };
+        const woodL1 = applyNow();
+        expect(woodL1.Speed).toBe(35);
+        expect(woodL1.senses?.darkvision).toBe(60); // Drow's 120 ft stays dormant
+        expect(woodL1.spells.map(s => s.name)).toContain(spellId("Druidcraft"));
+        // ...but the level-3/5 spells stay gated behind character level.
+        expect(woodL1.spells.map(s => s.name)).not.toContain(spellId("Longstrider"));
+
+        for (let lvl = 2; lvl <= 5; lvl++) {
+            c.levels.push({ class: "Wizard", level: lvl, hitDie: 6, features: [] });
+        }
+        const woodL5 = applyNow();
+        expect(woodL5.spells.map(s => s.name)).toContain(spellId("Longstrider"));
+        expect(woodL5.spells.map(s => s.name)).toContain(spellId("Pass without Trace"));
+    });
+
+    it("2014 High Elf Cantrip offers the wizard cantrip list and grants the pick", () => {
+        const highElf = read("2014/subraces.json").find((r: { name: string }) => r.name === "High Elf");
+        const cantrip = highElf.traits
+            .map((t: { details: FeatureDetail }) => t.details)
+            .find((d: FeatureDetail) => d?.name === "Cantrip")!;
+
+        const c = new Character();
+        c.race = { species: "High Elf", features: [cantrip] };
+        expect(pendingSpellChoices(c, cantrip)).toHaveLength(1);
+
+        const mad = cantrip.metadata!.mads![0];
+        const options = spellChoiceOptions(mad as never);
+        expect(options).toHaveLength(14);
+
+        c.spellChoices = { [spellChoiceKey(cantrip, mad as never)]: options[0] };
+        expect(pendingSpellChoices(c, cantrip)).toHaveLength(0);
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.spells.map(s => s.name)).toContain(options[0]);
+    });
+
+    it("2014 Paladin Divine Health grants immunity to Disease", () => {
+        const paladin = read("2014/classes.json").find((cl: { name: string }) => cl.name === "Paladin");
+        const c = new Character();
+        for (let lvl = 1; lvl <= 3; lvl++) {
+            c.levels.push({ class: "Paladin", level: lvl, hitDie: 10, features: paladin.features[String(lvl)] ?? [] });
+        }
+        const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
+        expect(applied.immunities.map(i => i.type)).toContain("Disease");
     });
 });

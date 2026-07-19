@@ -8,7 +8,7 @@ import type { FeatureDetail, MadFeature as StoredMad, MagicItem } from "../../..
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount, choiceExpertiseMads, pendingExpertiseChoices, expertiseChoiceKey, choiceResistanceMads, pendingResistanceChoices, resistanceChoiceKey, choiceLanguageMads, pendingLanguageChoices, languageChoiceKey, featureGroupOptions, groupChoiceKey, pendingGroupChoice, activeFeatureMads } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
 import { rollBonusAmount } from "./commands/useRollBonusFeature";
@@ -901,5 +901,160 @@ describe("collectMagicItemMads", () => {
         const item = makeMagicItem({ name: "Bag of Tricks", metadata: { mads: stored(itemChoice, speed) } });
 
         expect(collectMagicItemMads(carrying(["Bag of Tricks"]), [item])).toEqual([speed]);
+    });
+});
+
+describe("choice-form Expertise commands", () => {
+    const feature = (...mads: MadFeature[]): FeatureDetail =>
+        ({ id: "exp-feat", name: "Expertise", metadata: { mads: stored(...mads) } }) as FeatureDetail;
+
+    const skillRow = (stat: string, proficient: boolean) => ({ stat, value: 0, proficient, expertise: false });
+
+    const withSkills = (feat: FeatureDetail, picks?: string) => makeCharacter({
+        features: [feat],
+        proficiencies: {
+            skills: {
+                Arcana: skillRow("int", true),
+                History: skillRow("int", true),
+                Stealth: skillRow("dex", false),
+            },
+            other: {},
+        } as unknown as Character["proficiencies"],
+        ...(picks !== undefined ? { proficiencyChoices: { [expertiseChoiceKey(feat)]: picks } } : {}),
+    });
+
+    const choiceMad = () => mad("AddExpertise", { proficiency: "choice", options: "Arcana,History,Stealth", count: "2" });
+
+    it("stays pending (and applies nothing) until all picks are made", () => {
+        const feat = feature(choiceMad());
+        const c = withSkills(feat, "Arcana");
+        expect(choiceExpertiseMads(feat)).toHaveLength(1);
+        expect(pendingExpertiseChoices(c, feat)).toHaveLength(1);
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+
+    it("expands complete picks into one concrete command per skill and doubles them on the sheet", () => {
+        const feat = feature(choiceMad());
+        const c = withSkills(feat, "Arcana,History");
+        expect(pendingExpertiseChoices(c, feat)).toHaveLength(0);
+        const resolved = collectMadFeatures(c);
+        expect(resolved.map(m => m.value["proficiency"])).toEqual(["Arcana", "History"]);
+        const applied = useMadCharacters(c, resolved);
+        expect(applied.proficiencies.skills["Arcana"].expertise).toBe(true);
+        expect(applied.proficiencies.skills["History"].expertise).toBe(true);
+    });
+
+    it("rejects picks outside the options list", () => {
+        const feat = feature(choiceMad());
+        const c = withSkills(feat, "Arcana,Deception");
+        expect(pendingExpertiseChoices(c, feat)).toHaveLength(1);
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
+
+    it("the handler refuses expertise on a skill the character is not proficient in", () => {
+        const feat = feature(choiceMad());
+        const c = withSkills(feat, "Arcana,Stealth");
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.proficiencies.skills["Arcana"].expertise).toBe(true);
+        expect(applied.proficiencies.skills["Stealth"].expertise).toBe(false);
+    });
+
+    it("still applies the legacy fixed proficiencies CSV form", () => {
+        const feat = feature(mad("AddExpertise", { proficiencies: "Arcana,History" }));
+        const c = withSkills(feat);
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.proficiencies.skills["Arcana"].expertise).toBe(true);
+        expect(applied.proficiencies.skills["History"].expertise).toBe(true);
+    });
+});
+
+describe("choice-form Resistances and Languages commands", () => {
+    it("resistance choice stays pending, then applies the picked damage type", () => {
+        const feat = { id: "res-feat", name: "Damage Resistance", metadata: { mads: stored(
+            mad("AddResistances", { damageType: "choice", options: "Acid,Cold,Fire", count: "1" }),
+        ) } } as FeatureDetail;
+        const c = makeCharacter({ features: [feat] });
+        expect(choiceResistanceMads(feat)).toHaveLength(1);
+        expect(pendingResistanceChoices(c, feat)).toHaveLength(1);
+        expect(collectMadFeatures(c)).toEqual([]);
+
+        c.proficiencyChoices = { [resistanceChoiceKey(feat)]: "Fire" };
+        expect(pendingResistanceChoices(c, feat)).toHaveLength(0);
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.resistances.map(r => r.type)).toContain("Fire");
+    });
+
+    it("language choice resolves each pick into its own AddLanguages command", () => {
+        const feat = { id: "lang-feat", name: "Deft Explorer", metadata: { mads: stored(
+            mad("AddLanguages", { name: "choice", options: "Elvish,Dwarvish,Giant", count: "2" }),
+        ) } } as FeatureDetail;
+        const c = makeCharacter({ features: [feat] });
+        expect(choiceLanguageMads(feat)).toHaveLength(1);
+        expect(pendingLanguageChoices(c, feat)).toHaveLength(1);
+
+        c.proficiencyChoices = { [languageChoiceKey(feat)]: "Elvish,Giant" };
+        expect(pendingLanguageChoices(c, feat)).toHaveLength(0);
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.languages).toEqual(expect.arrayContaining(["Elvish", "Giant"]));
+    });
+});
+
+describe("branch groups (pick-one lineage)", () => {
+    const branch = (command: string, value: Record<string, string>, group: number, groupLabel: string): MadFeature =>
+        ({ ...mad(command, { ...value, groupLabel }), group });
+
+    const lineage = (): FeatureDetail => ({ id: "lin-feat", name: "Elven Lineage", metadata: { mads: stored(
+        mad("AddLanguages", { name: "Elvish" }), // group 0 — always applies
+        branch("AddSpeed", { speed: "35", mode: "set" }, 1, "Wood Elf"),
+        branch("AddSenses", { sense: "darkvision", range: "120" }, 2, "Drow"),
+    ) } }) as FeatureDetail;
+
+    it("lists the distinct branches with their labels", () => {
+        expect(featureGroupOptions(lineage())).toEqual([
+            { group: 1, label: "Wood Elf" },
+            { group: 2, label: "Drow" },
+        ]);
+    });
+
+    it("applies only group-0 mads while the branch is unpicked (and reports the choice pending)", () => {
+        const feat = lineage();
+        const c = makeCharacter({ features: [feat] });
+        expect(pendingGroupChoice(c, feat)).toBe(true);
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.languages).toContain("Elvish");
+        expect(applied.Speed).toBe(30);
+        expect(applied.senses?.darkvision).toBeUndefined();
+    });
+
+    it("applies exactly the chosen branch's mads once picked", () => {
+        const feat = lineage();
+        const c = makeCharacter({ features: [feat], proficiencyChoices: { [groupChoiceKey(feat)]: "1" } });
+        expect(pendingGroupChoice(c, feat)).toBe(false);
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.Speed).toBe(35);            // Wood Elf branch
+        expect(applied.senses?.darkvision).toBeUndefined(); // Drow branch stays dormant
+    });
+
+    it("resolves a choice-form mad nested inside the chosen branch", () => {
+        const nested = { ...mad("AddProficiencies", { proficiency: "choice", options: "Arcana,History", count: "1", groupLabel: "Scholar" }), group: 1 };
+        const feat = { id: "nest-feat", name: "Order", metadata: { mads: stored(nested) } } as FeatureDetail;
+        const c = makeCharacter({
+            features: [feat],
+            proficiencies: { skills: { Arcana: { stat: "int", value: 0, proficient: false, expertise: false } }, other: {} } as unknown as Character["proficiencies"],
+        });
+
+        // Branch unpicked → the nested picker must NOT surface or apply.
+        expect(collectMadFeatures(c)).toEqual([]);
+        expect(activeFeatureMads(c, feat)).toEqual([]);
+
+        c.proficiencyChoices = { [groupChoiceKey(feat)]: "1", [statChoiceKey(feat)]: "Arcana" };
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.proficiencies.skills["Arcana"].proficient).toBe(true);
+    });
+
+    it("returns all mads untouched for features without branches", () => {
+        const feat = { id: "plain", name: "Plain", metadata: { mads: stored(mad("AddSpeed", { speed: "10" })) } } as FeatureDetail;
+        const c = makeCharacter({ features: [feat] });
+        expect(activeFeatureMads(c, feat)).toHaveLength(1);
     });
 });

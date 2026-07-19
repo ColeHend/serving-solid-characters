@@ -793,7 +793,22 @@
     {
      "id": "2a309b8b-74ed-40de-8fda-c9f9a9b53594",
      "name": "Expertise",
-     "description": "You gain Expertise (see \"Rules Glossary\") in two of your skill proficiencies of your choice. Performance and Persuasion are recommended if you have proficiency in them.\n\nAt Bard level 9, you gain Expertise in two more of your skill proficiencies of your choice."
+     "description": "You gain Expertise (see \"Rules Glossary\") in two of your skill proficiencies of your choice. Performance and Persuasion are recommended if you have proficiency in them.\n\nAt Bard level 9, you gain Expertise in two more of your skill proficiencies of your choice.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "5bc53866-9996-4d75-ada6-4f335126debc",
@@ -879,7 +894,22 @@
     {
      "id": "ae89e471-69aa-5c5a-a1a9-bca60ebb7f2b",
      "name": "Expertise",
-     "description": "You gain Expertise (see \"Rules Glossary\") in two of your skill proficiencies of your choice. Performance and Persuasion are recommended if you have proficiency in them.\n\nAt Bard level 9, you gain Expertise in two more of your skill proficiencies of your choice."
+     "description": "You gain Expertise (see \"Rules Glossary\") in two of your skill proficiencies of your choice. Performance and Persuasion are recommended if you have proficiency in them.\n\nAt Bard level 9, you gain Expertise in two more of your skill proficiencies of your choice.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "10": [
@@ -1247,7 +1277,44 @@
     {
      "id": "d13bd4fb-392b-4113-8944-ac252add0f27",
      "name": "Divine Order",
-     "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\n**Protector.** Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor.\n\n**Thaumaturge.** You know one extra cantrip from the Cleric spell list. In addition, your mystical connection to the divine gives you a bonus to your Intelligence (Arcana or Religion) checks. The bonus equals your Wisdom modifier (minimum of +1)."
+     "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\n**Protector.** Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor.\n\n**Thaumaturge.** You know one extra cantrip from the Cleric spell list. In addition, your mystical connection to the divine gives you a bonus to your Intelligence (Arcana or Religion) checks. The bonus equals your Wisdom modifier (minimum of +1).",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Martial Weapons",
+         "groupLabel": "Protector"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddArmorProficiencies",
+        "value": {
+         "armor": "Heavy Armor",
+         "groupLabel": "Protector"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "choice",
+         "options": "d1424687-4958-4407-ae6c-2ad9fce858aa,b93c0aeb-0495-4078-aac8-785ed81f4e66,7f0857e2-3005-40d7-89a9-43b651a8a367,83b62b3a-8260-4316-8150-d139fcc2db80,b37c68d4-abdf-415f-9b83-c9504594c791,2e1f8fb1-f2fe-469c-bf8b-d3c1a43b7dbd,3ad133a3-37e5-4f89-a12a-907201bcf0ae",
+         "count": "1",
+         "spellLevel": "0",
+         "groupLabel": "Thaumaturge"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 2
+       }
+      ]
+     }
     }
    ],
    "2": [
@@ -1761,7 +1828,44 @@
     {
      "id": "76b53ed1-1601-4e38-8e83-b7c6f7fb8328",
      "name": "Primal Order",
-     "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\n**Magician.** You know one extra cantrip from the Druid spell list. In addition, your mystical connection to nature gives you a bonus to your Intelligence (Arcana or Nature) checks. The bonus equals your Wisdom modifier (minimum bonus of +1).\n\n**Warden.** Trained for battle, you gain proficiency with Martial weapons and training with Medium armor."
+     "description": "You have dedicated yourself to one of the following sacred roles of your choice.\n\n**Magician.** You know one extra cantrip from the Druid spell list. In addition, your mystical connection to nature gives you a bonus to your Intelligence (Arcana or Nature) checks. The bonus equals your Wisdom modifier (minimum bonus of +1).\n\n**Warden.** Trained for battle, you gain proficiency with Martial weapons and training with Medium armor.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "choice",
+         "options": "cac42d57-94ad-4a49-b6f4-4bfc5b185cc6,fef46bf7-2e30-4901-92a3-e1c873a4c88a,d1424687-4958-4407-ae6c-2ad9fce858aa,7f0857e2-3005-40d7-89a9-43b651a8a367,119acc13-4297-41b1-9a24-28a6728090e5,84b4aa30-4351-4353-ac5b-ff186d4518ec,e600d61b-6564-4045-8c3b-ee89d8d2d802,83b62b3a-8260-4316-8150-d139fcc2db80,81367204-30a2-44db-bd7d-5302ff966a52,2e1f8fb1-f2fe-469c-bf8b-d3c1a43b7dbd,23e6ebc2-5504-4bde-95c6-a15d370c0ce2",
+         "count": "1",
+         "spellLevel": "0",
+         "groupLabel": "Magician"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Martial Weapons",
+         "groupLabel": "Warden"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 2
+       },
+       {
+        "command": "AddArmorProficiencies",
+        "value": {
+         "armor": "Medium Armor",
+         "groupLabel": "Warden"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 2
+       }
+      ]
+     }
     }
    ],
    "2": [
@@ -3757,7 +3861,33 @@
     {
      "id": "4b1997a5-51eb-5f0e-8d41-c0d507d7deb8",
      "name": "Deft Explorer",
-     "description": "Thanks to your travels, you gain the following benefits.\n\n**Expertise.** Choose one of your skill proficiencies with which you lack Expertise. You gain Expertise in that skill.\n\n**Languages.** You know two languages of your choice from the language tables in \"Character Creation.\""
+     "description": "Thanks to your travels, you gain the following benefits.\n\n**Expertise.** Choose one of your skill proficiencies with which you lack Expertise. You gain Expertise in that skill.\n\n**Languages.** You know two languages of your choice from the language tables in \"Character Creation.\"",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddLanguages",
+        "value": {
+         "name": "choice",
+         "options": "Common,Undercommon,Abyssal,Infernal,Celestial,Primordial,Draconic,Dwarvish,Elvish,Giant,Gnomish,Goblin,Halfling,Orc,Sylvan,Deep Speech",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "46772669-9fd0-48a2-8e52-14a8ac13b60b",
@@ -3887,7 +4017,22 @@
     {
      "id": "1784e168-11aa-58da-898a-4ffce218ad57",
      "name": "Expertise",
-     "description": "Choose two of your skill proficiencies with which you lack Expertise. You gain Expertise in those skills."
+     "description": "Choose two of your skill proficiencies with which you lack Expertise. You gain Expertise in those skills.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "10": [
@@ -4138,7 +4283,22 @@
     {
      "id": "11bf53ba-a977-4ce6-bedb-cc42effc2db1",
      "name": "Expertise",
-     "description": "You gain Expertise in two of your skill proficiencies of your choice. Sleight of Hand and Stealth are recommended if you have proficiency in them.\n\nAt Rogue level 6, you gain Expertise in two more of your skill proficiencies of your choice."
+     "description": "You gain Expertise in two of your skill proficiencies of your choice. Sleight of Hand and Stealth are recommended if you have proficiency in them.\n\nAt Rogue level 6, you gain Expertise in two more of your skill proficiencies of your choice.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "89ae9fb0-c1fc-498a-8a73-08b12fb9e2a9",
@@ -4258,7 +4418,22 @@
     {
      "id": "a10f3eb0-9e36-5276-b6a7-0caf519250db",
      "name": "Expertise",
-     "description": "You gain Expertise in two of your skill proficiencies of your choice. Sleight of Hand and Stealth are recommended if you have proficiency in them.\n\nAt Rogue level 6, you gain Expertise in two more of your skill proficiencies of your choice."
+     "description": "You gain Expertise in two of your skill proficiencies of your choice. Sleight of Hand and Stealth are recommended if you have proficiency in them.\n\nAt Rogue level 6, you gain Expertise in two more of your skill proficiencies of your choice.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "7": [
@@ -5687,7 +5862,22 @@
     {
      "id": "f62b1387-f83d-58d8-aaef-9aa2e3b943e3",
      "name": "Scholar",
-     "description": "While studying magic, you also specialized in another field of study. Choose one of the following skills in which you have proficiency: Arcana, History, Investigation, Medicine, Nature, or Religion. You have Expertise in the chosen skill."
+     "description": "While studying magic, you also specialized in another field of study. Choose one of the following skills in which you have proficiency: Arcana, History, Investigation, Medicine, Nature, or Religion. You have Expertise in the chosen skill.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Arcana,History,Investigation,Medicine,Nature,Religion",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "3": [

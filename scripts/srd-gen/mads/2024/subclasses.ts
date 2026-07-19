@@ -120,7 +120,11 @@ export const map: MadMap = {
     // use is tracked; no Movement command (same precedent as Goliath Large Form's temporary +10 speed).
     "Draconic Sorcery/Dragon Wings": [uses("1", "Long Rest")], // or restore for 3 Sorcery Points
     "Draconic Sorcery/Dragon Companion": [uses("1", "Long Rest")], // free Summon Dragon cast (already granted at lvl 9)
-    // skip: Elemental Affinity (resistance to a CHOSEN damage type).
+    // "Choose one of those types: Acid, Cold, Fire, Lightning, or Poison. You have Resistance to
+    // that damage type" — the Charisma-modifier damage rider stays narrative.
+    "Draconic Sorcery/Elemental Affinity": [
+        { type: "Add", category: "Resistances", value: { damageType: "choice", options: "Acid,Cold,Fire,Lightning,Poison", count: "1" } },
+    ],
 
     // =============================================== Warlock: Fiend Patron
     "Fiend Patron/Fiend Spells": spells(
@@ -142,6 +146,6 @@ export const map: MadMap = {
  *  - Oath of Devotion/Aura of Devotion: "You and your allies have Immunity to the Charmed condition" — Charmed is a condition, and Immunities category is damage types only (no category for c
  *  - Hunter/Defensive Tactics: Choice between two options, both of which impose Disadvantage on the ENEMY's attack rolls against you ("Opportunity Attacks have Disadvantage against 
  *  - Hunter/Superior Hunter's Defense: "take a Reaction to give yourself Resistance to that damage ... until the end of the current turn" — activated/temporary reaction whose damage type is
- *  - Draconic Sorcery/Elemental Affinity: "Choose one of those types: Acid, Cold, Fire, Lightning, or Poison. You have Resistance to that damage type" — resistance to a CHOSEN damage type; Res
+ * (Former entry — Draconic Sorcery/Elemental Affinity — is encoded above via the Resistances choice form.)
  *  - Fiend Patron/Fiendish Resilience: "Choose one damage type, other than Force ... You have Resistance to that damage type until you choose a different one" — resistance to a CHOSEN (re-s
  */

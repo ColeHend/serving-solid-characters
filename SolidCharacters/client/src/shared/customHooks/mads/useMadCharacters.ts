@@ -370,6 +370,193 @@ export function pendingSpellChoices(character: Character, feature: { id?: string
     return choiceSpellMads(feature).filter(m => !resolveChoiceSpellMads(character, feature, m));
 }
 
+/** True for a choice-form Expertise command ("gain Expertise in a skill of your choice") that needs player picks. */
+function isChoiceExpertiseMad(m: MadFeature): boolean {
+    return (m.command === "AddExpertise" || m.command === "RemoveExpertise") && m.value?.["proficiency"] === "choice";
+}
+
+/** The skills a choice-form Expertise command allows ("Arcana,History" → ["Arcana","History"]). */
+export function expertiseChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/** How many skills the player picks (defaults to 1). */
+export function expertiseChoiceCount(m: MadFeature): number {
+    const n = Number(m.value?.["count"] ?? "1");
+    return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+/**
+ * The character.proficiencyChoices key for a feature's Expertise picks. The "::expertise"
+ * suffix keeps them off the same feature's plain skill-proficiency picks.
+ */
+export function expertiseChoiceKey(feature: { id?: string; name: string }): string {
+    return `${statChoiceKey(feature)}::expertise`;
+}
+
+/**
+ * A choice-form Expertise command EXPANDED into one concrete command per picked skill
+ * (character.proficiencyChoices holds a CSV of picks, keyed by expertiseChoiceKey) — or null
+ * while the picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ */
+function resolveChoiceExpertiseMads(character: Character, feature: { id?: string; name: string }, m: MadFeature): MadFeature[] | null {
+    const picks = (character.proficiencyChoices?.[expertiseChoiceKey(feature)] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    const options = expertiseChoiceOptions(m);
+    if (picks.length !== expertiseChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    return picks.map(pick => ({ ...m, value: { ...m.value, proficiency: pick } }));
+}
+
+/** All choice-form Expertise commands on a feature (for the sheet's chooser UI). */
+export function choiceExpertiseMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceExpertiseMad);
+}
+
+/** Choice-form Expertise commands on a feature that still need picks (for the sheet's chooser UI). */
+export function pendingExpertiseChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceExpertiseMads(feature).filter(m => !resolveChoiceExpertiseMads(character, feature, m));
+}
+
+/** True for a choice-form Resistances command ("resistance to one damage type of your choice") that needs a player pick. */
+function isChoiceResistanceMad(m: MadFeature): boolean {
+    return (m.command === "AddResistances" || m.command === "RemoveResistances") && m.value?.["damageType"] === "choice";
+}
+
+/** The damage types a choice-form Resistances command allows ("Fire,Poison" → ["Fire","Poison"]). */
+export function resistanceChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/** How many damage types the player picks (defaults to 1). */
+export function resistanceChoiceCount(m: MadFeature): number {
+    const n = Number(m.value?.["count"] ?? "1");
+    return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+/** The character.proficiencyChoices key for a feature's resistance picks. */
+export function resistanceChoiceKey(feature: { id?: string; name: string }): string {
+    return `${statChoiceKey(feature)}::resistance`;
+}
+
+/**
+ * A choice-form Resistances command EXPANDED into one concrete command per picked damage type
+ * (character.proficiencyChoices holds a CSV of picks, keyed by resistanceChoiceKey) — or null
+ * while the picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ */
+function resolveChoiceResistanceMads(character: Character, feature: { id?: string; name: string }, m: MadFeature): MadFeature[] | null {
+    const picks = (character.proficiencyChoices?.[resistanceChoiceKey(feature)] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    const options = resistanceChoiceOptions(m);
+    if (picks.length !== resistanceChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    return picks.map(pick => ({ ...m, value: { ...m.value, damageType: pick } }));
+}
+
+/** All choice-form Resistances commands on a feature (for the sheet's chooser UI). */
+export function choiceResistanceMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceResistanceMad);
+}
+
+/** Choice-form Resistances commands on a feature that still need picks (for the sheet's chooser UI). */
+export function pendingResistanceChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceResistanceMads(feature).filter(m => !resolveChoiceResistanceMads(character, feature, m));
+}
+
+/** True for a choice-form Languages command ("two languages of your choice") that needs player picks. */
+function isChoiceLanguageMad(m: MadFeature): boolean {
+    return (m.command === "AddLanguages" || m.command === "RemoveLanguages") && m.value?.["name"] === "choice";
+}
+
+/** The languages a choice-form Languages command allows ("Elvish,Dwarvish" → ["Elvish","Dwarvish"]). */
+export function languageChoiceOptions(m: MadFeature): string[] {
+    return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/** How many languages the player picks (defaults to 1). */
+export function languageChoiceCount(m: MadFeature): number {
+    const n = Number(m.value?.["count"] ?? "1");
+    return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+/** The character.proficiencyChoices key for a feature's language picks. */
+export function languageChoiceKey(feature: { id?: string; name: string }): string {
+    return `${statChoiceKey(feature)}::languages`;
+}
+
+/**
+ * A choice-form Languages command EXPANDED into one concrete command per picked language
+ * (character.proficiencyChoices holds a CSV of picks, keyed by languageChoiceKey) — or null
+ * while the picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ */
+function resolveChoiceLanguageMads(character: Character, feature: { id?: string; name: string }, m: MadFeature): MadFeature[] | null {
+    const picks = (character.proficiencyChoices?.[languageChoiceKey(feature)] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    const options = languageChoiceOptions(m);
+    if (picks.length !== languageChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    return picks.map(pick => ({ ...m, value: { ...m.value, name: pick } }));
+}
+
+/** All choice-form Languages commands on a feature (for the sheet's chooser UI). */
+export function choiceLanguageMads(feature: { name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return ((feature.metadata?.mads ?? []) as MadFeature[]).filter(isChoiceLanguageMad);
+}
+
+/** Choice-form Languages commands on a feature that still need picks (for the sheet's chooser UI). */
+export function pendingLanguageChoices(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    return choiceLanguageMads(feature).filter(m => !resolveChoiceLanguageMads(character, feature, m));
+}
+
+// ---- branch groups ("pick one lineage") ----
+
+/** A mad's branch number; 0 / missing / invalid = always applies. */
+export function madGroup(m: MadFeature): number {
+    const n = Number(m.group ?? 0);
+    return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+}
+
+/**
+ * The mutually-exclusive branches a feature carries: its distinct nonzero groups in order,
+ * labeled by the first value.groupLabel found in each ("Drow", "Infernal"...).
+ */
+export function featureGroupOptions(feature: { metadata?: { mads?: unknown } }): { group: number; label: string }[] {
+    const byGroup = new Map<number, string>();
+    for (const m of (feature.metadata?.mads ?? []) as MadFeature[]) {
+        const g = madGroup(m);
+        if (g === 0) continue;
+        if (!byGroup.has(g) || !byGroup.get(g)) byGroup.set(g, (m.value?.["groupLabel"] ?? "").trim());
+    }
+    return [...byGroup.entries()]
+        .sort((a, b) => a[0] - b[0])
+        .map(([group, label]) => ({ group, label: label || `Option ${group}` }));
+}
+
+/** The character.proficiencyChoices key holding a feature's picked branch (the group number as a string). */
+export function groupChoiceKey(feature: { id?: string; name: string }): string {
+    return `${statChoiceKey(feature)}::group`;
+}
+
+/** The branch the player picked for a feature, or null while unpicked/invalid. */
+export function resolvedGroupChoice(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): number | null {
+    const raw = (character.proficiencyChoices?.[groupChoiceKey(feature)] ?? "").trim();
+    if (!raw) return null;
+    const pick = Number(raw);
+    return featureGroupOptions(feature).some(o => o.group === pick) ? pick : null;
+}
+
+/** True while a feature carries branch groups the player hasn't picked between yet. */
+export function pendingGroupChoice(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): boolean {
+    return featureGroupOptions(feature).length > 0 && resolvedGroupChoice(character, feature) === null;
+}
+
+/**
+ * A feature's mads filtered to the ACTIVE branch: group-0 mads always apply; branch mads only
+ * once the player has picked that branch. The one filter every consumer (sheet application AND
+ * the choice pickers) routes through, so an unpicked branch's commands — including any nested
+ * choice pickers — stay dormant instead of applying to every character.
+ */
+export function activeFeatureMads(character: Character, feature: { id?: string; name: string; metadata?: { mads?: unknown } }): MadFeature[] {
+    const mads = (feature.metadata?.mads ?? []) as MadFeature[];
+    if (!mads.some(m => madGroup(m) > 0)) return mads;
+    const chosen = resolvedGroupChoice(character, feature);
+    return mads.filter(m => madGroup(m) === 0 || madGroup(m) === chosen);
+}
+
 /** True for a choice-form Items command ("choose N items from a list") that needs player picks. */
 function isChoiceItemMad(m: MadFeature): boolean {
     return (m.command === "AddItems" || m.command === "RemoveItems") && m.value?.["ID"] === "choice";
@@ -443,13 +630,23 @@ export function collectMadFeatures(character: Character): MadFeature[] {
     const feats = characterMadFeatureSources(character);
 
     return feats.flatMap(f =>
-        ((f.metadata?.mads ?? []) as MadFeature[]).flatMap(m => {
+        // activeFeatureMads keeps unpicked-branch mads dormant (group 0 always applies).
+        activeFeatureMads(character, f).flatMap(m => {
             if (m.type !== MadType.Character) return [];
             if (isChoiceStatMad(m)) {
                 return resolveChoiceStatMads(character, statChoiceKey(f), m) ?? [];
             }
             if (isChoiceProficiencyMad(m)) {
                 return resolveChoiceProficiencyMads(character, statChoiceKey(f), m) ?? [];
+            }
+            if (isChoiceExpertiseMad(m)) {
+                return resolveChoiceExpertiseMads(character, f, m) ?? [];
+            }
+            if (isChoiceResistanceMad(m)) {
+                return resolveChoiceResistanceMads(character, f, m) ?? [];
+            }
+            if (isChoiceLanguageMad(m)) {
+                return resolveChoiceLanguageMads(character, f, m) ?? [];
             }
             if (isChoiceSpellMad(m)) {
                 return resolveChoiceSpellMads(character, f, m) ?? [];
@@ -510,9 +707,11 @@ export function collectMagicItemMads(character: Character, magicItems: MagicItem
         const attunement = (item.properties?.attunement ?? "").trim().toLowerCase();
         const requiresAttunement = !!attunement && !NO_ATTUNEMENT_PLACEHOLDERS.has(attunement);
         if (requiresAttunement && !(attuned.ids.has(key) || attuned.names.has(name))) return [];
+        // Choice-form and branch-grouped mads are skipped — items have no picker UI to resolve them.
         return ((item.metadata?.mads ?? []) as MadFeature[]).filter(m =>
-            m.type === MadType.Character &&
-            !isChoiceStatMad(m) && !isChoiceProficiencyMad(m) && !isChoiceSpellMad(m) && !isChoiceItemMad(m));
+            m.type === MadType.Character && madGroup(m) === 0 &&
+            !isChoiceStatMad(m) && !isChoiceProficiencyMad(m) && !isChoiceSpellMad(m) && !isChoiceItemMad(m) &&
+            !isChoiceExpertiseMad(m) && !isChoiceResistanceMad(m) && !isChoiceLanguageMad(m));
     });
 }
 

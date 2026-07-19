@@ -48,7 +48,22 @@
     "details": {
      "id": "9a76fec0-caf8-562f-9a7e-cf34b0fe49f4",
      "name": "Damage Resistance",
-     "description": "You have Resistance to the damage type determined by your Draconic Ancestry trait."
+     "description": "You have Resistance to the damage type determined by your Draconic Ancestry trait.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "choice",
+         "options": "Acid,Cold,Fire,Lightning,Poison",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -326,7 +341,165 @@
     "details": {
      "id": "fff0ee5a-f0af-528b-a7d1-cab7ab7aeffe",
      "name": "Elven Lineage",
-     "description": "You are part of a lineage that grants you supernatural abilities. Choose a lineage from the Elven Lineages table. You gain the level 1 benefit of that lineage.\n\nWhen you reach character levels 3 and 5, you learn a higher-level spell, as shown on the table. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have of the appropriate level.\n\nTable: Elven Lineages\n| Lineage | Level 1 | Level 3 | Level 5 |\n|----------|-----------------------------------------------------------------------------------------------------------|--------------|--------------------|\n| Drow | The range of your Darkvision increases to 120 feet. You also know the Dancing Lights cantrip. | Faerie Fire | Darkness |\n| High Elf | You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace that cantrip with a different cantrip from the Wizard spell list. | Detect Magic | Misty Step |\n| Wood Elf | Your Speed increases to 35 feet. You also know the Druidcraft cantrip. | Longstrider | Pass without Trace |\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage)."
+     "description": "You are part of a lineage that grants you supernatural abilities. Choose a lineage from the Elven Lineages table. You gain the level 1 benefit of that lineage.\n\nWhen you reach character levels 3 and 5, you learn a higher-level spell, as shown on the table. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have of the appropriate level.\n\nTable: Elven Lineages\n| Lineage | Level 1 | Level 3 | Level 5 |\n|----------|-----------------------------------------------------------------------------------------------------------|--------------|--------------------|\n| Drow | The range of your Darkvision increases to 120 feet. You also know the Dancing Lights cantrip. | Faerie Fire | Darkness |\n| High Elf | You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace that cantrip with a different cantrip from the Wizard spell list. | Detect Magic | Misty Step |\n| Wood Elf | Your Speed increases to 35 feet. You also know the Druidcraft cantrip. | Longstrider | Pass without Trace |\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage).",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSenses",
+        "value": {
+         "sense": "darkvision",
+         "range": "120",
+         "groupLabel": "Drow"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "3ebca789-1a72-47ed-9937-9d472d911743",
+         "groupLabel": "Drow"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "3dbe5c49-e0ac-4f60-9ffb-e20ebfb95451",
+         "groupLabel": "Drow"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "3",
+          "group": 0
+         }
+        ],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "13fa1d3f-8fe3-4f94-a2ee-e03bb83079e9",
+         "groupLabel": "Drow"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "5",
+          "group": 0
+         }
+        ],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "a62948bb-3fbc-48d4-90ff-54a5e06fed52",
+         "groupLabel": "High Elf"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 2
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "2bd0e570-fdce-4084-99d7-1f538738c9ce",
+         "groupLabel": "High Elf"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "3",
+          "group": 0
+         }
+        ],
+        "group": 2
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "0cc12afe-8a53-40f6-9d6c-6c3a7aa0563c",
+         "groupLabel": "High Elf"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "5",
+          "group": 0
+         }
+        ],
+        "group": 2
+       },
+       {
+        "command": "AddSpeed",
+        "value": {
+         "speed": "35",
+         "mode": "set",
+         "groupLabel": "Wood Elf"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 3
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "cac42d57-94ad-4a49-b6f4-4bfc5b185cc6",
+         "groupLabel": "Wood Elf"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 3
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "202674a3-0c2d-440d-bab3-6a759709ad0b",
+         "groupLabel": "Wood Elf"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "3",
+          "group": 0
+         }
+        ],
+        "group": 3
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "e0780606-466f-45fd-80b9-c225a501fbd3",
+         "groupLabel": "Wood Elf"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "5",
+          "group": 0
+         }
+        ],
+        "group": 3
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -509,7 +682,62 @@
     "details": {
      "id": "f9576533-279b-5120-bab4-f2cfb3a6efc1",
      "name": "Gnomish Lineage",
-     "description": "You are part of a lineage that grants you supernatural abilities. Choose one of the following options; whichever one you choose, Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage):"
+     "description": "You are part of a lineage that grants you supernatural abilities. Choose one of the following options; whichever one you choose, Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage):",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "b0a0227a-2289-4e3e-983e-bc438693a7b3",
+         "groupLabel": "Forest Gnome"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "28b8d668-980d-4dd3-815a-f6fa01a352cd",
+         "groupLabel": "Forest Gnome"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddUses",
+        "value": {
+         "amount": "1",
+         "recharge": "Long Rest",
+         "groupLabel": "Forest Gnome"
+        },
+        "type": 1,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "7f0857e2-3005-40d7-89a9-43b651a8a367",
+         "groupLabel": "Rock Gnome"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 2
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "a62948bb-3fbc-48d4-90ff-54a5e06fed52",
+         "groupLabel": "Rock Gnome"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 2
+       }
+      ]
+     }
     },
     "prerequisites": []
    },
@@ -520,37 +748,7 @@
      "name": "Forest Gnome",
      "description": "You know the *Minor Illusion* cantrip. You also always have the *Speak with Animals* spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. You can also use any spell slots you have to cast the spell.",
      "metadata": {
-      "recharge": "long",
-      "mads": [
-       {
-        "command": "AddSpells",
-        "value": {
-         "ID": "b0a0227a-2289-4e3e-983e-bc438693a7b3"
-        },
-        "type": 0,
-        "prerequisites": [],
-        "group": 0
-       },
-       {
-        "command": "AddSpells",
-        "value": {
-         "ID": "28b8d668-980d-4dd3-815a-f6fa01a352cd"
-        },
-        "type": 0,
-        "prerequisites": [],
-        "group": 0
-       },
-       {
-        "command": "AddUses",
-        "value": {
-         "amount": "1",
-         "recharge": "Long Rest"
-        },
-        "type": 1,
-        "prerequisites": [],
-        "group": 0
-       }
-      ]
+      "recharge": "long"
      }
     },
     "prerequisites": []
@@ -1127,7 +1325,173 @@
     "details": {
      "id": "864c718c-d460-5e30-97aa-0a7ad41213c6",
      "name": "Fiendish Legacy",
-     "description": "You are the recipient of a legacy that grants you supernatural abilities. Choose a legacy from the Fiendish Legacies table. You gain the level 1 benefit of the chosen legacy.\n\nWhen you reach character levels 3 and 5, you learn a higher-level spell, as shown on the table. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have of the appropriate level.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the legacy).\n\nTable: Fiendish Legacies\n| Legacy | Level 1 | Level 3 | Level 5 |\n|----------|--------------------------------------------------------------------------------|-----------------|---------------------|\n| Abyssal | You have Resistance to Poison damage. You also know the Poison Spray cantrip. | Ray of Sickness | Hold Person |\n| Chthonic | You have Resistance to Necrotic damage. You also know the Chill Touch cantrip. | False Life | Ray of Enfeeblement |\n| Infernal | You have Resistance to Fire damage. You also know the Fire Bolt cantrip. | Hellish Rebuke | Darkness |"
+     "description": "You are the recipient of a legacy that grants you supernatural abilities. Choose a legacy from the Fiendish Legacies table. You gain the level 1 benefit of the chosen legacy.\n\nWhen you reach character levels 3 and 5, you learn a higher-level spell, as shown on the table. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have of the appropriate level.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the legacy).\n\nTable: Fiendish Legacies\n| Legacy | Level 1 | Level 3 | Level 5 |\n|----------|--------------------------------------------------------------------------------|-----------------|---------------------|\n| Abyssal | You have Resistance to Poison damage. You also know the Poison Spray cantrip. | Ray of Sickness | Hold Person |\n| Chthonic | You have Resistance to Necrotic damage. You also know the Chill Touch cantrip. | False Life | Ray of Enfeeblement |\n| Infernal | You have Resistance to Fire damage. You also know the Fire Bolt cantrip. | Hellish Rebuke | Darkness |",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "Poison",
+         "groupLabel": "Abyssal"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "84b4aa30-4351-4353-ac5b-ff186d4518ec",
+         "groupLabel": "Abyssal"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "1af4304f-bfe5-41d4-a3f9-d8526d6301cc",
+         "groupLabel": "Abyssal"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "3",
+          "group": 0
+         }
+        ],
+        "group": 1
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "e0a245ec-8384-405c-b8bf-fbe59ed28a4f",
+         "groupLabel": "Abyssal"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "5",
+          "group": 0
+         }
+        ],
+        "group": 1
+       },
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "Necrotic",
+         "groupLabel": "Chthonic"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 2
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "35d85a31-1dea-4052-acf4-1d48642aa0cd",
+         "groupLabel": "Chthonic"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 2
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "249d0cae-85b8-41ca-8881-6a59491fc982",
+         "groupLabel": "Chthonic"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "3",
+          "group": 0
+         }
+        ],
+        "group": 2
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "32fe10f6-d05b-4498-be9d-bbb7607dfb22",
+         "groupLabel": "Chthonic"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "5",
+          "group": 0
+         }
+        ],
+        "group": 2
+       },
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "Fire",
+         "groupLabel": "Infernal"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 3
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "5f378821-e3fb-4cd9-bac7-4dca04e80dd4",
+         "groupLabel": "Infernal"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 3
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "e7de9b47-7e85-4b68-8c9d-c5ce22f5ff42",
+         "groupLabel": "Infernal"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "3",
+          "group": 0
+         }
+        ],
+        "group": 3
+       },
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "13fa1d3f-8fe3-4f94-a2ee-e03bb83079e9",
+         "groupLabel": "Infernal"
+        },
+        "type": 0,
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "5",
+          "group": 0
+         }
+        ],
+        "group": 3
+       }
+      ]
+     }
     },
     "prerequisites": []
    },

@@ -1,11 +1,22 @@
 import { Component, For, Index, Match, Show, Switch } from "solid-js";
 import { Option, Select } from "coles-solid-library";
 import {
+  expertiseChoiceCount,
+  expertiseChoiceKey,
+  expertiseChoiceOptions,
+  featureGroupOptions,
+  groupChoiceKey,
   itemChoiceCount,
   itemChoiceKey,
   itemChoiceOptions,
+  languageChoiceCount,
+  languageChoiceKey,
+  languageChoiceOptions,
   proficiencyChoiceCount,
   proficiencyChoiceOptions,
+  resistanceChoiceCount,
+  resistanceChoiceKey,
+  resistanceChoiceOptions,
   setStatPickAt,
   spellChoiceCount,
   spellChoiceKey,
@@ -52,7 +63,16 @@ const EQUIP_KIND: Partial<Record<MadChoiceKind, EquipProfKind>> = {
  * choices its own source granted.
  */
 export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
-  const { draft, actions, data } = useCreate();
+  const { draft, actions, data, derived } = useCreate();
+
+  /** Expertise requires existing proficiency — offer only the allowed skills the character is trained in. */
+  const proficientOptions = () => {
+    const skills = derived.madCharacter().proficiencies?.skills ?? {};
+    const allowed = expertiseChoiceOptions(props.choice.mad).filter((skill) => skills[skill]?.proficient);
+    // Keep an already-made pick visible even if its proficiency source was later removed.
+    const picked = csvPicks(draft.madChoices.proficiencies[expertiseChoiceKey(props.choice.feature)]);
+    return [...new Set([...allowed, ...picked])];
+  };
 
   const spellName = (id: string) =>
     data.spells().find((s) => (s.id ?? "").toLowerCase() === id.toLowerCase())?.name ?? id;
@@ -130,6 +150,128 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
                     }}
                   >
                     {skill}
+                  </button>
+                );
+              }}
+            </For>
+          </div>
+        </Match>
+        <Match when={props.choice.kind === "group"}>
+          {/* Branch picker ("choose your lineage"): exactly one group takes effect. */}
+          <span class={styles.choiceHint}>Choose 1:</span>
+          <div class={styles.choicePills}>
+            <For each={featureGroupOptions(props.choice.feature)}>
+              {(option) => {
+                const key = groupChoiceKey(props.choice.feature);
+                return (
+                  <button
+                    type="button"
+                    class={styles.choicePill}
+                    classList={{
+                      [styles.choicePillActive]:
+                        (draft.madChoices.proficiencies[key] ?? "").trim() === String(option.group),
+                    }}
+                    onClick={() => actions.setMadProficiencyChoice(key, String(option.group))}
+                  >
+                    {option.label}
+                  </button>
+                );
+              }}
+            </For>
+          </div>
+        </Match>
+        <Match when={props.choice.kind === "expertise"}>
+          <span class={styles.choiceHint}>
+            Choose {expertiseChoiceCount(props.choice.mad)} (skills you're proficient in):
+          </span>
+          <div class={styles.choicePills}>
+            <For each={proficientOptions()}>
+              {(skill) => {
+                const key = expertiseChoiceKey(props.choice.feature);
+                return (
+                  <button
+                    type="button"
+                    class={styles.choicePill}
+                    classList={{
+                      [styles.choicePillActive]: csvPicks(
+                        draft.madChoices.proficiencies[key],
+                      ).includes(skill),
+                    }}
+                    onClick={() => {
+                      const next = toggleCsv(
+                        draft.madChoices.proficiencies[key],
+                        skill,
+                        expertiseChoiceCount(props.choice.mad),
+                      );
+                      if (next !== null) actions.setMadProficiencyChoice(key, next);
+                    }}
+                  >
+                    {skill}
+                  </button>
+                );
+              }}
+            </For>
+            <Show when={proficientOptions().length === 0}>
+              <span class={styles.choiceHint}>No eligible proficient skills yet</span>
+            </Show>
+          </div>
+        </Match>
+        <Match when={props.choice.kind === "resistance"}>
+          <span class={styles.choiceHint}>Choose {resistanceChoiceCount(props.choice.mad)}:</span>
+          <div class={styles.choicePills}>
+            <For each={resistanceChoiceOptions(props.choice.mad)}>
+              {(damageType) => {
+                const key = resistanceChoiceKey(props.choice.feature);
+                return (
+                  <button
+                    type="button"
+                    class={styles.choicePill}
+                    classList={{
+                      [styles.choicePillActive]: csvPicks(
+                        draft.madChoices.proficiencies[key],
+                      ).includes(damageType),
+                    }}
+                    onClick={() => {
+                      const next = toggleCsv(
+                        draft.madChoices.proficiencies[key],
+                        damageType,
+                        resistanceChoiceCount(props.choice.mad),
+                      );
+                      if (next !== null) actions.setMadProficiencyChoice(key, next);
+                    }}
+                  >
+                    {damageType}
+                  </button>
+                );
+              }}
+            </For>
+          </div>
+        </Match>
+        <Match when={props.choice.kind === "language"}>
+          <span class={styles.choiceHint}>Choose {languageChoiceCount(props.choice.mad)}:</span>
+          <div class={styles.choicePills}>
+            <For each={languageChoiceOptions(props.choice.mad)}>
+              {(language) => {
+                const key = languageChoiceKey(props.choice.feature);
+                return (
+                  <button
+                    type="button"
+                    class={styles.choicePill}
+                    classList={{
+                      [styles.choicePillActive]: csvPicks(
+                        draft.madChoices.proficiencies[key],
+                      ).includes(language),
+                    }}
+                    onClick={() => {
+                      const next = toggleCsv(
+                        draft.madChoices.proficiencies[key],
+                        language,
+                        languageChoiceCount(props.choice.mad),
+                      );
+                      if (next !== null) actions.setMadProficiencyChoice(key, next);
+                    }}
+                  >
+                    {language}
                   </button>
                 );
               }}

@@ -22,7 +22,8 @@ import SpellModal from "../../../shared/components/modals/spellModal/spellModal.
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { characterManager, Clone } from "../../../shared";
-import { characterMadFeatureSources, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount } from "../../../shared/customHooks/mads/useMadCharacters";
+import { characterMadFeatureSources, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount, choiceExpertiseMads, expertiseChoiceCount, expertiseChoiceKey, expertiseChoiceOptions } from "../../../shared/customHooks/mads/useMadCharacters";
+import useExportProficiencies from "../../../shared/customHooks/dndInfo/useExportProficiencies";
 import { featureUsage, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
 import { advantageLabel, movementModeLabels, rollBonusLabel, senseLabels } from "../../../shared/customHooks/mads/rollFormat";
 import { useDnDMagicItems } from "../../../shared/customHooks/dndInfo/info/all/magicItems";
@@ -135,6 +136,29 @@ const CharacterView: Component = () => {
 
   // Special senses as "Darkvision 60 ft" chips.
   const senseChips = createMemo(() => senseLabels(displayCharacter()?.senses ?? {}));
+
+  // Resistances / immunities / vulnerabilities (mads applied) as chips.
+  const defenseChips = createMemo(() => {
+    const c = displayCharacter();
+    if (!c) return [];
+    return [
+      ...(c.resistances ?? []).map((r) => `Resists ${r.type}`),
+      ...(c.immunities ?? []).map((r) => `Immune to ${r.type}`),
+      ...(c.vulnerabilities ?? []).map((r) => `Vulnerable to ${r.type}`),
+    ];
+  });
+
+  // Class/background armor/weapon/tool lists with equipment-proficiency mads applied —
+  // the same resolution the PDF export and creator living sheet use.
+  const equipProfs = useExportProficiencies(displayCharacter);
+  const equipLines = createMemo(() => {
+    const profs = equipProfs();
+    return [
+      profs.armor.length ? `Armor: ${profs.armor.join(", ")}` : "",
+      profs.weapons.length ? `Weapons: ${profs.weapons.join(", ")}` : "",
+      profs.tools.length ? `Tools: ${profs.tools.join(", ")}` : "",
+    ].filter(Boolean);
+  });
 
   // Every feature source, mads applied (mads-granted picks like invocations land on the
   // top-level array; the source list itself lives in characterMadFeatureSources).
@@ -340,6 +364,11 @@ const CharacterView: Component = () => {
                   <For each={senseChips()}>{(label) => <Chip value={label} />}</For>
                 </div>
               </Show>
+              <Show when={defenseChips().length}>
+                <div class={`${styles.advChips}`}>
+                  <For each={defenseChips()}>{(label) => <Chip value={label} />}</For>
+                </div>
+              </Show>
               <div class={`${styles.baseCharInfoBox}  ${styles.infoBoxRow}`}>
                 <div class={`${styles.hpMaxTemp}`}>
                   <div>
@@ -397,6 +426,12 @@ const CharacterView: Component = () => {
           <Show when={showStats()}>
             <span >
               <StatBar fullStats={fullStats} currentCharacter={displayCharacter} rollAdvantages={rollAdvantages} rollBonuses={rollBonuses} />
+              <Show when={equipLines().length}>
+                <div class={`${styles.equipProfLines}`}>
+                  <span class={`${styles.equipProfTitle}`}>Trained Equipment</span>
+                  <For each={equipLines()}>{(line) => <div>{line}</div>}</For>
+                </div>
+              </Show>
             </span>
           </Show>
 
@@ -638,6 +673,38 @@ const CharacterView: Component = () => {
                                     />
                                   )}
                                 </For>
+                              </div>
+                            </div>
+                          );
+                        }}
+                      </For>
+                      <For each={choiceExpertiseMads(feature)}>
+                        {(mad) => {
+                          const count = expertiseChoiceCount(mad);
+                          const key = () => expertiseChoiceKey(feature);
+                          // Expertise requires proficiency — offer only the allowed skills the
+                          // character is trained in (an already-made pick stays visible).
+                          const options = () => {
+                            const skills = displayCharacter()?.proficiencies?.skills ?? {};
+                            const allowed = expertiseChoiceOptions(mad).filter((skill) => skills[skill]?.proficient);
+                            return [...new Set([...allowed, ...proficiencyPicks(key())])];
+                          };
+                          return (
+                            <div>
+                              <span>{`Expertise — choose ${count} skill${count > 1 ? "s" : ""} you're proficient in (${proficiencyPicks(key()).length}/${count} picked):`}</span>
+                              <div class={`${styles.advChips}`}>
+                                <For each={options()}>
+                                  {(skill) => (
+                                    <Checkbox
+                                      label={skill}
+                                      checked={proficiencyPicks(key()).includes(skill)}
+                                      onChange={() => runWithOwner(null, () => toggleProficiencyPick(key(), skill, count))}
+                                    />
+                                  )}
+                                </For>
+                                <Show when={options().length === 0}>
+                                  <span>No eligible proficient skills yet</span>
+                                </Show>
                               </div>
                             </div>
                           );

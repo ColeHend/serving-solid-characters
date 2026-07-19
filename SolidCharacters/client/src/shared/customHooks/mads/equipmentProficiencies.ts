@@ -1,6 +1,6 @@
 import { Character } from "../../../models/character.model";
 import { MadFeature } from "./madModels";
-import { characterMadFeatureSources, statChoiceKey } from "./useMadCharacters";
+import { activeFeatureMads, characterMadFeatureSources, statChoiceKey } from "./useMadCharacters";
 
 /**
  * Armor/weapon/tool proficiency mads. Unlike the sheet-mutating commands these have no
@@ -118,7 +118,8 @@ export function applyEquipProficiencyMads(character: Character, base: EquipProfi
     const features = characterMadFeatureSources(character);
 
     for (const feature of features) {
-        for (const m of (feature.metadata?.mads ?? []) as MadFeature[]) {
+        // activeFeatureMads keeps an unpicked branch's grants dormant (group 0 always applies).
+        for (const m of activeFeatureMads(character, feature)) {
             for (const kind of EQUIP_PROF_KINDS) {
                 const cfg = KIND_COMMANDS[kind];
                 const bucket = KIND_RESULT[kind];

@@ -459,7 +459,22 @@
     "details": {
      "id": "696946cc-2bd3-5c42-8a79-c1b85d1ecf54",
      "name": "Damage Resistance",
-     "description": "You have resistance to the damage type associated with your draconic ancestry."
+     "description": "You have resistance to the damage type associated with your draconic ancestry.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "choice",
+         "options": "Acid,Cold,Fire,Lightning,Poison",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "6b0041be-7be4-4b37-99a9-add0cf1f217f"
@@ -911,7 +926,14 @@
          "ID": "6a06dae2-7823-41ef-9981-b83782dd1f45"
         },
         "type": 0,
-        "prerequisites": [],
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "3",
+          "group": 0
+         }
+        ],
         "group": 0
        },
        {
@@ -920,7 +942,14 @@
          "ID": "37ea62e0-bea1-4890-99b5-5c0e63f35a8c"
         },
         "type": 0,
-        "prerequisites": [],
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "5",
+          "group": 0
+         }
+        ],
         "group": 0
        }
       ]

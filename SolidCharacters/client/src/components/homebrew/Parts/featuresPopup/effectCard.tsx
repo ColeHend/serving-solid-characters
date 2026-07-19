@@ -1,5 +1,5 @@
 import { Component, For, Match, Show, Switch, createMemo, runWithOwner } from "solid-js";
-import { Button, Icon, Input, Option, Select } from "coles-solid-library";
+import { Button, Icon, Option, Select } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
 import { MadType } from "../../../../shared/customHooks/mads/madModels";
 import { MadForm } from "../../../../models/data/formModels";
@@ -31,7 +31,7 @@ import { UsesFeature } from "./parts/usesFeature/usesFeature";
 import { ArmorProfFeature } from "./parts/armorProfFeature/armorProfFeature";
 import { WeaponProfFeature } from "./parts/weaponProfFeature/weaponProfFeature";
 import { ToolProfFeature } from "./parts/toolProfFeature/toolProfFeature";
-import { EffectCardData, MAD_CATEGORIES, MadsApi, PrereqFormArray, PrereqState } from "./featuresPopup.shared";
+import { EffectCardData, MAD_CATEGORIES, MadsApi, PrereqFormArray, PrereqState, branchLabel, branchNumbers } from "./featuresPopup.shared";
 import styles from "./featuresPopup.module.scss";
 
 interface EffectCardProps {
@@ -59,8 +59,11 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
     const editorOpen = () => props.api.isEditorOpen(props.row.name);
 
     // Editor commits: write the value, stamp the command string, fold the editor away.
+    // Editors rebuild the value object from scratch — carry the branch label through so
+    // re-editing an effect doesn't silently unlabel its branch.
     const commitValue = (value: Record<string, string>) => {
-        props.api.setMadFeature("value", props.index, value);
+        const groupLabel = (props.row.value?.["groupLabel"] ?? "").trim();
+        props.api.setMadFeature("value", props.index, groupLabel ? { groupLabel, ...value } : value);
         props.api.setMadFeature("command", props.index, command());
         props.api.setEditorOpen(props.row.name, false);
     };
@@ -71,6 +74,20 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
             props.api.setMadFeature("command", props.index, `${type}${props.row.commandCategory}`);
         }
     };
+
+    /** Lowest unused branch number, for the "+ New branch" option. */
+    const nextBranch = createMemo(() => {
+        const used = branchNumbers(props.api.rows());
+        return used.length ? Math.max(...used) + 1 : 1;
+    });
+
+    // runWithOwner(null) + equality guard: coles Select fires onChange from a tracked
+    // effect (echo) — see setCategory below.
+    const setBranch = (raw: string) => runWithOwner(null, () => {
+        const next = Number(raw) || 0;
+        if (next === (Number(props.row.group) || 0)) return;
+        props.api.setMadFeature("group", props.index, next);
+    });
 
     const setCategory = (category: string) => runWithOwner(null, () => {
         if (category === props.row.commandCategory) return;
@@ -398,19 +415,19 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
             </div>
 
             <div class={styles.choiceGroupRow}>
-                <label class={styles.label}>Choice group</label>
-                <div class={`${styles.underlineField} ${styles.choiceGroupInput}`}>
-                    <Input
-                        transparent
-                        type="number"
-                        min={0}
-                        value={props.row.group}
-                        onChange={(e) => props.api.setMadFeature("group", props.index, +e.currentTarget.value)}
-                        aria-label="Choice group"
-                    />
-                </div>
+                <label class={styles.label}>Applies</label>
+                <Select value={String(props.row.group ?? 0)} onChange={setBranch} aria-label="Effect branch">
+                    <Option value="0">Always</Option>
+                    <For each={branchNumbers(props.api.rows())}>
+                        {(group) => {
+                            const label = branchLabel(props.api.rows(), group);
+                            return <Option value={String(group)}>{label ? `Branch ${group} — ${label}` : `Branch ${group}`}</Option>;
+                        }}
+                    </For>
+                    <Option value={String(nextBranch())}>+ New branch</Option>
+                </Select>
                 <span class={styles.choiceCaption}>
-                    Same group number → the player picks one · different numbers → all apply
+                    Branches are exclusive — the player picks ONE · "Always" effects apply regardless
                 </span>
             </div>
         </div>

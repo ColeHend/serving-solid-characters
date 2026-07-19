@@ -62,6 +62,19 @@ function coerceSpecs(
             errors.push(`"${key}": choice-form ${mad.command} is missing its options list`);
             continue;
         }
+        // branch grouping: coerceCommand stamps group 0; curated branches override it after coercion
+        if (spec.group) {
+            if (!spec.groupLabel) {
+                errors.push(`"${key}": ${mad.command} has group ${spec.group} but no groupLabel`);
+                continue;
+            }
+            mad.group = spec.group;
+            mad.value["groupLabel"] = spec.groupLabel;
+        }
+        // level-gated grants (lineage spells at character levels 3/5) ride as prerequisites
+        if (spec.prerequisites?.length) {
+            mad.prerequisites = spec.prerequisites;
+        }
         out.push(mad as unknown as MadFeatureJson);
     }
     return out;

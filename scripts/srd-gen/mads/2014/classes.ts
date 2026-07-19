@@ -26,6 +26,16 @@ const action = (name: string, actionType: string, source?: string, description?:
 const asi = (): CommandSpecInput =>
     ({ type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" } });
 
+// choice-form Expertise: the player picks N skills (the sheet limits the picker to proficient skills).
+const ALL_SKILLS = "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival";
+const expertiseChoice = (count: string): CommandSpecInput =>
+    ({ type: "Add", category: "Expertise", value: { proficiency: "choice", options: ALL_SKILLS, count } });
+
+// choice-form Languages: the player picks N languages from the standard list.
+const STANDARD_LANGUAGES = "Common,Undercommon,Abyssal,Infernal,Celestial,Primordial,Draconic,Dwarvish,Elvish,Giant,Gnomish,Goblin,Halfling,Orc,Sylvan,Deep Speech";
+const languageChoice = (count: string): CommandSpecInput =>
+    ({ type: "Add", category: "Languages", value: { name: "choice", options: STANDARD_LANGUAGES, count } });
+
 export const map: MadMap = {
     // ----- Barbarian -----
     "Barbarian/Rage": [
@@ -67,9 +77,12 @@ export const map: MadMap = {
         action("Bardic Inspiration", "bonusAction", "Bardic Inspiration (d6)"), // "you use a bonus action on your turn"
     ],
     "Bard/Ability Score Improvement": [asi()],
+    // "Choose two of your skill proficiencies. Your proficiency bonus is doubled..." (levels 3 and
+    // 10 — each level instance keys its own picks on the sheet)
+    "Bard/Expertise": [expertiseChoice("2")],
     // skipped: Jack of All Trades (half PB to ANY ability check not already proficient — applies to
     //   raw ability checks, not an enumerable skill set), Song of Rest (short-rest healing),
-    //   Expertise (player chooses two skills), Font of Inspiration (changes Bardic Inspiration
+    //   Font of Inspiration (changes Bardic Inspiration
     //   recharge), Countercharm (advantage only while performing — situational), Magical Secrets
     //   (player-choice spells), Superior Inspiration (situational), die upgrades (d8/d10/d12).
 
@@ -184,8 +197,12 @@ export const map: MadMap = {
         // approximation: uses = Charisma modifier (min 1)
         { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
     ],
+    // "the divine magic flowing through you makes you immune to disease"
+    "Paladin/Divine Health": [
+        { type: "Add", category: "Immunities", value: { condition: "Disease" } },
+    ],
     // skipped: Lay on Hands' HP pool (not a use count), Divine Smite / Improved Divine Smite
-    //   (radiant damage riders), Divine Health (immune to disease — no category), Aura of Protection
+    //   (radiant damage riders), Aura of Protection
     //   (numeric save bonus — no category), Aura of Courage (can't be frightened — condition, no
     //   category), Aura improvements (range scaling), Fighting Style (player-choice), Spellcasting,
     //   Sacred Oath (subclass).
@@ -199,8 +216,13 @@ export const map: MadMap = {
     "Ranger/Vanish": [
         action("Vanish", "bonusAction", undefined, "use the Hide action as a bonus action"),
     ],
-    // skipped: Favored Enemy (advantage only when tracking/recalling that enemy + player-choice
-    //   language — situational), Natural Explorer (doubled PB only in favored terrain), Fighting
+    // "You also learn one language of your choice that is spoken by your favored enemy" — the base
+    // grant and each improvement row (L6/L14) carry one language pick apiece (the improvement rows
+    // are distinct features, so each level instance keys its own pick). The tracking/recall
+    // advantage on the base feature is encoded in the sweep block below.
+    "Ranger/Favored Enemy and Natural Explorer improvements": [languageChoice("1")],
+    "Ranger/Favored Enemy improvement": [languageChoice("1")],
+    // skipped: Natural Explorer (doubled PB only in favored terrain), Fighting
     //   Style (player-choice), Primeval Awareness, Land's Stride (advantage vs impeding plants —
     //   conditional), Hide in Plain Sight (conditional Stealth bonus), Vanish's untrackable rider,
     //   Feral Senses, Foe Slayer (situational), Ranger Archetype (subclass).
@@ -217,7 +239,10 @@ export const map: MadMap = {
     "Rogue/Slippery Mind": [
         { type: "Add", category: "SavingThrows", value: { stat: "wis" } },
     ],
-    // skipped: Expertise (player chooses two proficiencies), Sneak Attack (damage rider),
+    // "choose two of your skill proficiencies, or one ... and your proficiency with thieves' tools"
+    // (levels 1 and 6). The thieves'-tools alternative isn't a skill and stays narrative.
+    "Rogue/Expertise": [expertiseChoice("2")],
+    // skipped: Sneak Attack (damage rider),
     //   Uncanny Dodge, Evasion, Reliable Talent, Blindsense, Elusive (denies enemies
     //   advantage — no category), Stroke of Luck (miss→hit / treat check as 20 — DM adjudication),
     //   Roguish Archetype (subclass).
@@ -259,6 +284,8 @@ export const map: MadMap = {
     "Ranger/Favored Enemy": [
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", stat: "wis", condition: "on Wisdom (Survival) checks to track your favored enemies" } },
         { type: "Add", category: "Advantage", value: { rollType: "AbilityCheck", mode: "advantage", stat: "int", condition: "on Intelligence checks to recall information about your favored enemies" } },
+        // "You also learn one language of your choice that is spoken by your favored enemy"
+        languageChoice("1"),
     ],
     // "you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle s
     "Ranger/Land's Stride": [
@@ -270,11 +297,9 @@ export const map: MadMap = {
  * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
  * deliberately out of scope per the decision rules):
  *  - Bard/Spellcasting: Cantrips and Spells Known are all 'of your choice from the bard spell list' — no fixed spell to grant, and Spells has no list-choice form (rule 6). Sp
- *  - Bard/Expertise: 'choose two of your skill proficiencies' — Expertise takes fixed skills only and has no choice form, so skip per the Expertise catalog note and rule 6
  *  - Bard/Bardic Inspiration (d8): Die-upgrade tier: description is identical to the base feature, only 'the die becomes a d8 at 5th level'. Base Bardic Inspiration (d6) already carries
- *  - Bard/Bardic Inspiration (d10): Die-upgrade tier: identical description, only 'the die becomes a d10 at 10th level'. Base Bardic Inspiration (d6) already carries the Uses command; a 
- *  - Bard/Expertise: 10th-level tier of the same feature: 'choose another two skill proficiencies' — Expertise has no choice form (fixed skills only), so skip per the cata
- *  - Bard/Bardic Inspiration (d12): Die-upgrade tier: identical description, only 'the die becomes a d12 at 15th level'. Base Bardic Inspiration (d6) already carries the Uses command; a 
+ *  - Bard/Bardic Inspiration (d10): Die-upgrade tier: identical description, only 'the die becomes a d10 at 10th level'. Base Bardic Inspiration (d6) already carries the Uses command; a
+ *  - Bard/Bardic Inspiration (d12): Die-upgrade tier: identical description, only 'the die becomes a d12 at 15th level'. Base Bardic Inspiration (d6) already carries the Uses command; a
  *  - Cleric/Channel Divinity (2/rest): Use-count scaling: 'Beginning at 6th level, you can use your Channel Divinity twice between rests.' Base Channel Divinity (1/rest) already carries the
  *  - Cleric/Channel Divinity (3/rest): Use-count scaling: 'beginning at 18th level, you can use it three times between rests.' Base Channel Divinity (1/rest) already carries the Uses comman
  *  - Druid/Wild Shape Improvement: Raises the beast-form pool only (Beast Shapes table: max CR 1/4->1/2->1, removing the 'No swimming'/'No flying speed' limits). Any fly/swim speed come
@@ -284,7 +309,6 @@ export const map: MadMap = {
  *  - Monk/Unarmored Movement improvement: Description repeats the base "your speed increases by 10 feet" which is already encoded on Monk/Unarmored Movement; the +15/+20/etc. scaling stays in 
  *  - Monk/Empty Body: Temporary activated effect: "spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force da
  *  - Paladin/Fighting Style: Player-choice pick ("Choose one of the following options"). The "disadvantage" trigger is Protection's "impose disadvantage on the attack roll" — impo
- *  - Paladin/Divine Health: "the divine magic flowing through you makes you immune to disease" — disease immunity has no damage-type category (catalog: disease/condition immunity
  *  - Ranger/Natural Explorer: "your proficiency bonus is doubled if you are using a skill that you're proficient in" applies only to Int/Wis checks related to your player-chosen fa
  *  - Ranger/Fighting Style: Player-choice pick ("Choose one of the following options"). Archery's "+2 bonus to attack rolls you make with ranged weapons" (the flat-roll-bonus tri
  *  - Ranger/Spellcasting: "You know two 1st-level spells of your choice from the ranger spell list" — player-choice spells from a list, not a fixed grant. The Spells command is
@@ -292,9 +316,10 @@ export const map: MadMap = {
  *  - Ranger/Natural Explorer improvement: "your proficiency bonus is doubled if you are using a skill that you're proficient in" applies only in a player-chosen favored terrain and only to ski
  *  - Ranger/Favored Enemy improvement: L6/L14 upgrade tier of base Favored Enemy. The conditional advantage ("advantage on Wisdom (Survival) checks to track your favored enemies, as well as
  *  - Ranger/Feral Senses: "your inability to see it doesn't impose disadvantage on your attack rolls" negates a normally-applied disadvantage — there is no "cancel disadvantage
- *  - Rogue/Expertise: L1 Expertise: "choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools" — player-choice; E
  *  - Rogue/Sneak Attack: Damage rider ("deal an extra 1d6 damage") — no damage category (rule 5). The "if you have advantage on the attack roll" clause is a precondition for t
- *  - Rogue/Expertise: L6 Expertise tier ("choose two more of your proficiencies... to gain this benefit") — still player-choice; Expertise has no choice form, so skip.
+ * (Former entries in this block — Bard/Rogue Expertise and Paladin/Divine Health — are encoded in
+ * the map above via the Expertise choice form and the Immunities condition field; the Favored
+ * Enemy rows now also carry their language picks.)
  *  - Sorcerer/Spellcasting: All grants are player-choice from the sorcerer list ("four cantrips of your choice", "two 1st-level spells of your choice"); no fixed always-known spe
  *  - Sorcerer/Metamagic: L3 Metamagic: player-choice options ("two of the following Metamagic options of your choice") — no choice form. The disadvantage trigger is Heightened
  *  - Sorcerer/Metamagic: L10 row grants one additional player-choice Metamagic option (tier); same non-encodable content as L3 — player-choice options, and Heightened Spell's 

@@ -21,8 +21,7 @@
     color: var(--on-surface-color);
 
     // The library's Input/Select carry max-width: 400px; fields here should span
-    // the modal. Explicit narrow fields (.usesNumber, .choiceGroupInput) set
-    // width, so they stay compact.
+    // the modal. Explicit narrow fields (.usesNumber) set width, so they stay compact.
     :global(.coles-solid-selectControl),
     :global(input:not([type="checkbox"]):not([type="radio"])),
     :global(textarea) {
@@ -309,13 +308,48 @@
     }
 }
 
-.choiceGroupInput {
-    width: 70px;
-}
-
 .choiceCaption {
     color: var(--pop-text-faint);
     font-size: 12.5px;
+}
+
+// ---------------------------------------------------------------------------
+// Effect branches (mutually-exclusive groups — the player picks one)
+
+.branchSection {
+    border: 1px solid var(--pop-hairline);
+    border-radius: 12px;
+    padding: 12px 14px 2px;
+    margin-bottom: 16px;
+    background: color-mix(in srgb, var(--pop-accent) 4%, transparent);
+}
+
+.branchHead {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.branchBadge {
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--pop-accent);
+    border: 1px solid var(--pop-accent);
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+}
+
+.branchLabelInput {
+    flex: 1;
+
+    input {
+        font-weight: 600;
+    }
 }
 
 // ---------------------------------------------------------------------------
