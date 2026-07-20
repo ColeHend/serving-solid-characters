@@ -252,6 +252,9 @@ public class Subclass
 
   [JsonProperty("parent_class")] public string ParentClass { get; set; } = null!;
 
+  /// <summary>The parent class's id — the canonical match key (ParentClass stays the display name).</summary>
+  [JsonProperty("parent_class_id")] public string? ParentClassId { get; set; }
+
   [JsonProperty("description")] public string Description { get; set; } = null!;
 
   [JsonProperty("features")] public Dictionary<int, List<FeatureDetail>> Features { get; set; } = new();

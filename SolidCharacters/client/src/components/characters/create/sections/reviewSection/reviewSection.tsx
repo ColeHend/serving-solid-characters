@@ -1,5 +1,6 @@
 import { Component, For, createMemo } from "solid-js";
 import { Button } from "coles-solid-library";
+import { resolveSubclassSelection, subclassCandidates } from "../../../../../models/data/subclasses";
 import { ChecklistItem, buildChecklist, checklistReady } from "../../rules/checklist";
 import { classSkillChoiceSpec, subclassUnlockLevel } from "../../rules/engine";
 import { useCreate } from "../../state/createContext";
@@ -26,10 +27,8 @@ export const ReviewSection: Component<ReviewSectionProps> = (props) => {
     buildChecklist({
       name: draft.name,
       classes: draft.classes.map((entry) => {
-        const class5e = derived.classByName(entry.name);
-        const subclasses = data
-          .subclasses()
-          .filter((sub) => sub.parentClass?.toLowerCase() === entry.name.toLowerCase());
+        const class5e = derived.classByKey(entry);
+        const subclasses = subclassCandidates(data.subclasses(), class5e, entry.name);
         return {
           name: entry.name,
           level: entry.level,
@@ -38,6 +37,9 @@ export const ReviewSection: Component<ReviewSectionProps> = (props) => {
           skillChoiceAmount: classSkillChoiceSpec(class5e).amount,
           subclassUnlockLevel: subclassUnlockLevel(class5e, subclasses),
           hasSubclasses: subclasses.length > 0,
+          subclassUnresolved:
+            !!(entry.subclass || entry.subclassId) &&
+            !resolveSubclassSelection(subclasses, entry),
         };
       }),
       species: draft.species,
@@ -45,25 +47,27 @@ export const ReviewSection: Component<ReviewSectionProps> = (props) => {
         (draft.edition === "2014" ||
           (draft.edition === "both" && derived.selectedRace()?.legacy === true)) &&
         !!draft.species &&
-        data.subraces().some((sub) => sub.parentRace?.toLowerCase() === draft.species.toLowerCase()),
+        data.subraces().some((sub) =>
+          (derived.selectedRace()?.id && sub.parentRace === derived.selectedRace()?.id) ||
+          sub.parentRace?.toLowerCase() === draft.species.toLowerCase()),
       lineage: draft.lineage,
       background: draft.background,
       abilityMethod: draft.abilityMethod,
       baseScores: draft.baseScores,
       rolledPool: draft.rolledPool,
-      boostsExpected:
-        draft.edition !== "2014" && (derived.selectedBackground()?.abilityOptions?.length ?? 0) > 0,
-      boostsApplied: Object.keys(draft.backgroundBoosts).length > 0,
+      boostsExpected: derived.backgroundBonusPool().tokens.length > 0,
+      boostsApplied:
+        derived.backgroundBonusPool().tokens.length > 0 &&
+        draft.abilityBonuses.background.length === derived.backgroundBonusPool().tokens.length &&
+        draft.abilityBonuses.background.every((slot) => slot !== ""),
       isCaster: derived.spellcasting().length > 0,
       spellsKnown: draft.spells.length,
       pendingFeatureChoices: derived.madChoices().filter((choice) => choice.pending).length,
       raceAbilityChoice:
-        derived.selectedRace()?.abilityBonusChoice &&
-        (draft.edition === "2014" ||
-          (draft.edition === "both" && derived.selectedRace()?.legacy === true))
+        derived.speciesBonusPool().tokens.length > 0
           ? {
-            picked: draft.raceAbilityChoices.length,
-            amount: derived.selectedRace()!.abilityBonusChoice!.amount,
+            picked: draft.abilityBonuses.species.filter((slot) => slot !== "").length,
+            amount: derived.speciesBonusPool().tokens.length,
           }
           : undefined,
       raceLanguageChoice: derived.selectedRace()?.languageChoice

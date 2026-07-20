@@ -1,9 +1,11 @@
 import { AdvantageRollType, Character, PbFraction, RollBonus } from "../../../../models/character.model";
+import { Stats } from "../../dndInfo/useCharacters";
+import { getAbilityModifier } from "../../utility/tools/dndMath";
 import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
+import { PB_FRACTIONS, resolvePbFraction } from "./pbFraction";
 
 const ROLL_TYPES: readonly AdvantageRollType[] = ["SavingThrow", "WeaponAttack", "SpellAttack", "Initiative", "AbilityCheck"];
-const PB_FRACTIONS: readonly PbFraction[] = ["Third PB", "Half PB", "Full PB"];
 const STAT_KEYS = ["str", "dex", "con", "int", "wis", "cha"];
 
 const parseRollBonus = (feature: MadFeature): RollBonus | null => {
@@ -19,8 +21,11 @@ const parseRollBonus = (feature: MadFeature): RollBonus | null => {
     const rawPb = feature.value?.['proficiencyBonus']?.trim();
     const proficiencyBonus = PB_FRACTIONS.includes(rawPb as PbFraction) ? (rawPb as PbFraction) : undefined;
 
-    // a bonus with neither a flat value nor a PB fraction has nothing to grant
-    if (bonus === undefined && !proficiencyBonus) {
+    const rawStatBonus = feature.value?.['statBonus']?.trim().toLowerCase();
+    const statBonus = rawStatBonus && STAT_KEYS.includes(rawStatBonus) ? (rawStatBonus as RollBonus["statBonus"]) : undefined;
+
+    // a bonus with no flat value, PB fraction, or ability modifier has nothing to grant
+    if (bonus === undefined && !proficiencyBonus && !statBonus) {
         return null;
     }
 
@@ -31,6 +36,7 @@ const parseRollBonus = (feature: MadFeature): RollBonus | null => {
         rollType,
         bonus,
         proficiencyBonus,
+        statBonus,
         stat: stat && STAT_KEYS.includes(stat) ? (stat as RollBonus["stat"]) : undefined,
         condition: condition || undefined,
     };
@@ -40,6 +46,7 @@ const sameRollBonus = (a: RollBonus, b: RollBonus): boolean =>
     a.rollType === b.rollType &&
     (a.bonus ?? 0) === (b.bonus ?? 0) &&
     (a.proficiencyBonus ?? "") === (b.proficiencyBonus ?? "") &&
+    (a.statBonus ?? "") === (b.statBonus ?? "") &&
     (a.stat ?? "") === (b.stat ?? "") &&
     (a.condition ?? "").toLowerCase() === (b.condition ?? "").toLowerCase();
 
@@ -76,6 +83,7 @@ const removeRollBonusFeature = (character: Character, feature: MadFeature): Char
         !(b.rollType === entry.rollType &&
           (b.bonus ?? 0) === (entry.bonus ?? 0) &&
           (b.proficiencyBonus ?? "") === (entry.proficiencyBonus ?? "") &&
+          (b.statBonus ?? "") === (entry.statBonus ?? "") &&
           (!entry.stat || b.stat === entry.stat) &&
           (!entry.condition || (b.condition ?? "").toLowerCase() === entry.condition.toLowerCase())));
 
@@ -84,16 +92,13 @@ const removeRollBonusFeature = (character: Character, feature: MadFeature): Char
 
 /**
  * The concrete modifier a RollBonus grants, resolving PB fractions against the character's
- * proficiency bonus (D&D rounds down). A fixed bonus wins when both are present.
+ * proficiency bonus (D&D rounds down). A fixed bonus wins over a PB fraction when both are
+ * present; a statBonus ability's modifier (resolved against `stats`) is ADDED on top.
  */
-const rollBonusAmount = (bonus: RollBonus, proficiencyBonus: number): number => {
-    if (bonus.bonus !== undefined) return bonus.bonus;
-    switch (bonus.proficiencyBonus) {
-        case "Full PB": return proficiencyBonus;
-        case "Half PB": return Math.floor(proficiencyBonus / 2);
-        case "Third PB": return Math.floor(proficiencyBonus / 3);
-        default: return 0;
-    }
+const rollBonusAmount = (bonus: RollBonus, proficiencyBonus: number, stats?: Stats): number => {
+    const base = bonus.bonus !== undefined ? bonus.bonus : resolvePbFraction(bonus.proficiencyBonus, proficiencyBonus);
+    const statMod = bonus.statBonus && stats ? getAbilityModifier(stats[bonus.statBonus] ?? 10) : 0;
+    return base + statMod;
 }
 
 export { addRollBonusFeature, removeRollBonusFeature, parseRollBonus, rollBonusAmount };

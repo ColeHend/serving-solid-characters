@@ -115,6 +115,8 @@ export interface SubclassJson {
     source?: string;
     name: string;
     parent_class: string;
+    /** The parent class's id within the same ruleset — the canonical match key (parent_class stays for display). */
+    parent_class_id?: string;
     description: string;
     features: Record<string, FeatureDetailJson[]>;
     choices?: Record<string, ChoiceDetailJson>;

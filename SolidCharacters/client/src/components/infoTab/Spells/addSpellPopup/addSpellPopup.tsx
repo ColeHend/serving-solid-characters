@@ -31,8 +31,8 @@ export const AddSpellPopup:Component<modalProps> = (props) => {
     const [, setShowPopup] = props.show;
 
     const handleClick = (character: Character) => {
-        AddSpell(props.spell,character.name);
-        props.character(character.name);
+        AddSpell(props.spell,character.id);
+        props.character(character.id);
         setShowPopup(false);
     }
 

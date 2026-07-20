@@ -11,14 +11,18 @@ import type { MadMap } from "../spec.ts";
  *  - Trance, Halfling Nimbleness / Naturally Stealthy — no category.
  *  - Lucky (reroll a natural 1) and Savage Attacks (extra crit die) — not advantage, no category.
  *  - Stonecunning / Artificer's Lore — situational double-proficiency on a narrow check, not flat Expertise.
- *  - Dwarven Combat Training / "High Elf/Elf Weapon Training" / Tinker / Tool Proficiency — grant WEAPON or
- *    TOOL proficiency; the Proficiencies category only covers SKILLS, so there is no command for them.
  *  - Languages: named tongues (Common/Elvish/Draconic...) already live in the `languages` field, and the
  *    "extra language of your choice" traits are choices — no Languages command is emitted.
- *  - Draconic Ancestry / Damage Resistance (Dragonborn): the resisted damage type is CHOICE-dependent
- *    (picked from the Draconic Ancestry table), so no fixed Resistances command can be authored.
- *  - Infernal Legacy, Cantrip, Extra Language — spell/language choices.
+ *  - Extra Language — "one extra language of your choice" with no bounded option list.
+ *
+ * Formerly skipped, now encoded: Dragonborn Damage Resistance (choice-form Resistances over the
+ * Draconic Ancestry table's types) and High Elf Cantrip (choice-form Spells over the wizard
+ * cantrip list); Infernal Legacy's 3rd/5th-level spells carry `level >=` prerequisites.
  */
+
+/** Character-level gate for spells granted at a later character level. */
+const atLevel = (keyValue: string) =>
+    [{ value: "level", operation: ">=", keyValue, group: 0 }];
 
 /** "You can see in dim light within 60 feet of you..." — every 5.1 Darkvision trait is 60 ft. */
 const DARKVISION_60 = { type: "Add", category: "Senses", value: { sense: "darkvision", range: "60" } } as const;
@@ -30,6 +34,23 @@ export const map: MadMap = {
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against poison" } },
     ],
     "Dwarf/Darkvision": [DARKVISION_60],
+
+    // Dwarf — "proficiency with the battleaxe, handaxe, light hammer, and warhammer."
+    "Dwarf/Dwarven Combat Training": [
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Battleaxes" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Handaxes" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Light Hammers" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Warhammers" } },
+    ],
+
+    // Dwarf — "proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools."
+    "Dwarf/Tool Proficiency": [
+        { type: "Add", category: "ToolProficiencies", value: {
+            tool: "choice",
+            options: "Smith's Tools,Brewer's Supplies,Mason's Tools",
+            count: "1",
+        } },
+    ],
 
     // Hill Dwarf — "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
     "Hill Dwarf/Dwarven Toughness": [
@@ -52,6 +73,14 @@ export const map: MadMap = {
     ],
     "Elf/Darkvision": [DARKVISION_60],
 
+    // High Elf — "proficiency with the longsword, shortsword, shortbow, and longbow."
+    "High Elf/Elf Weapon Training": [
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Longswords" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Shortswords" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Shortbows" } },
+        { type: "Add", category: "WeaponProficiencies", value: { weapon: "Longbows" } },
+    ],
+
     // Half-Elf shares Fey Ancestry verbatim.
     "Half-Elf/Fey Ancestry": [
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", condition: "against being charmed" } },
@@ -71,6 +100,11 @@ export const map: MadMap = {
         { type: "Add", category: "Advantage", value: { rollType: "SavingThrow", mode: "advantage", stat: "cha", condition: "against magic" } },
     ],
     "Gnome/Darkvision": [DARKVISION_60],
+
+    // Rock Gnome — "You have proficiency with artisan's tools (tinker's tools)."
+    "Rock Gnome/Tinker": [
+        { type: "Add", category: "ToolProficiencies", value: { tool: "Tinker's Tools" } },
+    ],
 
     // Half-Orc — "You gain proficiency in the Intimidation skill."
     "Half-Orc/Menacing": [
@@ -96,21 +130,40 @@ export const map: MadMap = {
     "Half-Elf/Skill Versatility": [
         { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: "Acrobatics,Animal Handling,Arcana,History,Athletics,Deception,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival", count: "2" } },
     ],
-    // Encode intent is correct: verified the text grants FIXED named spells (thaumaturgy cantrip known; hellish rebuke at 3rd level; darkness at 5th level) 
+    // Encode intent is correct: verified the text grants FIXED named spells (thaumaturgy cantrip known; hellish rebuke at 3rd level; darkness at 5th level)
     "Tiefling/Infernal Legacy": [
         { type: "Add", category: "Spells", value: {  }, target: "thaumaturgy" },
-        { type: "Add", category: "Spells", value: {  }, target: "hellish rebuke" },
-        { type: "Add", category: "Spells", value: {  }, target: "darkness" },
+        { type: "Add", category: "Spells", value: {  }, target: "hellish rebuke", prerequisites: atLevel("3") },
+        { type: "Add", category: "Spells", value: {  }, target: "darkness", prerequisites: atLevel("5") },
+    ],
+
+    // ================================================================
+    // Choice encodings (July 2026): choice-form commands replaced the
+    // former documented skips below.
+    // ================================================================
+
+    // "You have resistance to the damage type associated with your draconic ancestry." — the
+    // Draconic Ancestry table's distinct damage types, picked on the sheet.
+    "Dragonborn/Damage Resistance": [
+        { type: "Add", category: "Resistances", value: { damageType: "choice", options: "Acid,Cold,Fire,Lightning,Poison", count: "1" } },
+    ],
+
+    // High Elf — "You know one cantrip of your choice from the wizard spell list." All 14 SRD 5.1
+    // wizard cantrips as options (Intelligence-casting clause stays narrative).
+    "High Elf/Cantrip": [
+        { type: "Add", category: "Spells", value: {
+            ID: "choice",
+            options: "Acid Splash,Chill Touch,Dancing Lights,Fire Bolt,Light,Mage Hand,Mending,Message,Minor Illusion,Poison Spray,Prestidigitation,Ray of Frost,Shocking Grasp,True Strike",
+            count: "1",
+            spellLevel: "0",
+        } },
     ],
 };
 
 /*
  * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
  * deliberately out of scope per the decision rules):
- *  - Dwarf/Dwarven Combat Training: Grants WEAPON proficiency ('proficiency with the battleaxe, handaxe, light hammer, and warhammer'); the Proficiencies category covers SKILLS only and 
- *  - Dwarf/Tool Proficiency: Grants a CHOICE of artisan's TOOL proficiency ('smith's tools, brewer's supplies, or mason's tools'); Proficiencies is skills-only and no tool-profici
  *  - Dwarf/Stonecunning: Situational double-proficiency: 'you are considered proficient in the History skill and add double your proficiency bonus' only for Int(History) check
- *  - Dragonborn/Damage Resistance: 'resistance to the damage type associated with your draconic ancestry' — the resisted type is CHOICE-dependent (picked from the Draconic Ancestry tabl
- *  - High Elf/Elf Weapon Training: Text: "You have proficiency with the longsword, shortsword, shortbow, and longbow." These are WEAPON proficiencies; the Proficiencies category covers 
- *  - Rock Gnome/Tinker: Text: "You have proficiency with artisan's tools (tinker's tools)..." plus a temporary clockwork-device construction ability. Tool proficiency has no 
+ * (Former entries in this block — Dwarven Combat Training, Tool Proficiency, Damage Resistance,
+ * Elf Weapon Training, Tinker — are all encoded in the map above.)
  */

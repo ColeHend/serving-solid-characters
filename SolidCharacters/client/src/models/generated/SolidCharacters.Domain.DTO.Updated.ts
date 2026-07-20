@@ -123,6 +123,9 @@ export interface GrantedAction {
   actionType: string;
   description?: string;
   source?: string;
+  uses?: number;
+  proficiencyBonus?: string;
+  recharge?: string;
 }
 
 export interface Health {
@@ -433,6 +436,7 @@ export interface Subclass {
   source?: string;
   name: string;
   parentClass: string;
+  parentClassId?: string;
   description: string;
   features: Record<number, FeatureDetail[]>;
   choices?: Choices;

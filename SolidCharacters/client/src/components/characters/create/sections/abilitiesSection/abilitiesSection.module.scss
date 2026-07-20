@@ -69,6 +69,17 @@
   color: var(--codex-bg);
 }
 
+// Subtle marker when the effective score diverges from the pre-mads score (feat ASI, set-stat item).
+.abilityDelta {
+  font-family: $font-ui;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--codex-ink-dim) 18%, transparent);
+  color: var(--codex-ink-dim);
+}
+
 .manualInput {
   width: 64px;
   text-align: center;

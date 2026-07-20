@@ -116,7 +116,12 @@ describe("RollBonus", () => {
         expect(m).toMatchObject({ command: "AddRollBonus", value: { rollType: "Initiative", proficiencyBonus: "Full PB" } });
     });
 
-    it("drops a RollBonus with neither bonus nor proficiencyBonus, or a bogus rollType", () => {
+    it("coerces an ability-modifier bonus (statBonus)", () => {
+        const m = coerceCommand("Add", "RollBonus", { rollType: "Initiative", statBonus: "WIS" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddRollBonus", value: { rollType: "Initiative", statBonus: "wis" } });
+    });
+
+    it("drops a RollBonus with no bonus, proficiencyBonus, or statBonus, or a bogus rollType", () => {
         expect(coerceCommand("Add", "RollBonus", { rollType: "Initiative" }, undefined, noRef)).toBeNull();
         expect(coerceCommand("Add", "RollBonus", { rollType: "Nonsense", bonus: "1" }, undefined, noRef)).toBeNull();
     });
@@ -129,8 +134,70 @@ describe("RollBonus", () => {
     it("validateStoredCommand accepts valid forms and rejects a bonus-less command", () => {
         expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "SavingThrow", bonus: "1" } }))).toEqual([]);
         expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "Initiative", proficiencyBonus: "Full PB" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "Initiative", statBonus: "wis" } }))).toEqual([]);
         expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "Initiative" } }))).not.toEqual([]);
         expect(validateStoredCommand(mad({ command: "AddRollBonus", value: { rollType: "Nope", bonus: "1" } }))).not.toEqual([]);
+    });
+});
+
+describe("Uses PB scaling", () => {
+    const noRef = () => null;
+
+    it("coerces a PB-fraction Uses with no fixed amount", () => {
+        const m = coerceCommand("Add", "Uses", { proficiencyBonus: "Full PB", recharge: "Long Rest" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddUses", value: { proficiencyBonus: "Full PB", recharge: "Long Rest" } });
+    });
+
+    it("drops a Uses with neither amount nor proficiencyBonus", () => {
+        expect(coerceCommand("Add", "Uses", { recharge: "Long Rest" }, undefined, noRef)).toBeNull();
+    });
+
+    it("validateStoredCommand accepts amount or PB forms and rejects neither", () => {
+        expect(validateStoredCommand(mad({ command: "AddUses", value: { amount: "2", recharge: "Long Rest" }, type: MadType.Info }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddUses", value: { proficiencyBonus: "Half PB", recharge: "Short Rest" }, type: MadType.Info }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddUses", value: { recharge: "Long Rest" }, type: MadType.Info }))).not.toEqual([]);
+    });
+});
+
+describe("Armor/Weapon/Tool proficiencies", () => {
+    const noRef = () => null;
+
+    it("coerces flat grants, canonicalizing loose armor/weapon-category phrasings", () => {
+        expect(coerceCommand("Add", "ArmorProficiencies", { armor: "heavy" }, undefined, noRef))
+            .toMatchObject({ command: "AddArmorProficiencies", value: { armor: "Heavy Armor" } });
+        expect(coerceCommand("Add", "WeaponProficiencies", { weapon: "martial weapons" }, undefined, noRef))
+            .toMatchObject({ command: "AddWeaponProficiencies", value: { weapon: "Martial Weapons" } });
+        expect(coerceCommand("Add", "ToolProficiencies", { tool: "Thieves' Tools" }, undefined, noRef))
+            .toMatchObject({ command: "AddToolProficiencies", value: { tool: "Thieves' Tools" } });
+    });
+
+    it("accepts a specific weapon name as free text but drops unknown armor", () => {
+        expect(coerceCommand("Add", "WeaponProficiencies", { weapon: "Longswords" }, undefined, noRef))
+            .toMatchObject({ value: { weapon: "Longswords" } });
+        expect(coerceCommand("Add", "ArmorProficiencies", { armor: "Chainmail Hat" }, undefined, noRef)).toBeNull();
+    });
+
+    it("coerces the choose-N form and drops it without options", () => {
+        expect(coerceCommand("Add", "WeaponProficiencies",
+            { weapon: "choice", options: "Longswords, Rapiers", count: "2" }, undefined, noRef))
+            .toMatchObject({ value: { weapon: "choice", options: "Longswords,Rapiers", count: "2" } });
+        expect(coerceCommand("Add", "WeaponProficiencies", { weapon: "choice", count: "2" }, undefined, noRef)).toBeNull();
+        expect(coerceCommand("Add", "ArmorProficiencies", { armor: "choice" }, undefined, noRef)).toBeNull();
+        expect(coerceCommand("Add", "ToolProficiencies", { tool: "choice" }, undefined, noRef)).toBeNull();
+    });
+
+    it("resolves loose category aliases", () => {
+        expect(coerceCommand("Add", "weapon training", { weapon: "simple" }, undefined, noRef)?.command)
+            .toBe("AddWeaponProficiencies");
+        expect(coerceCommand("Add", "Armor Training", { armor: "light armor" }, undefined, noRef)?.command)
+            .toBe("AddArmorProficiencies");
+    });
+
+    it("validateStoredCommand accepts grants and choice+options, rejects choice without options", () => {
+        expect(validateStoredCommand(mad({ command: "AddArmorProficiencies", value: { armor: "Shields" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddWeaponProficiencies", value: { weapon: "choice", options: "Longswords,Rapiers", count: "2" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddWeaponProficiencies", value: { weapon: "choice" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddArmorProficiencies", value: { armor: "Chainmail Hat" } }))).not.toEqual([]);
     });
 });
 
@@ -183,6 +250,67 @@ describe("Spells choice form", () => {
         expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "choice", count: "2" } }))).not.toEqual([]);
         expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "sp-firebolt" } }))).toEqual([]);
     });
+
+    it("coerces the filter form with no options — filter values pass through unresolved", () => {
+        const m = coerceCommand("Add", "Spells", { ID: "choice", filterClass: "Wizard, Cleric", filterLevel: "0", count: "2" }, undefined, ref);
+        expect(m).toMatchObject({ command: "AddSpells", value: { ID: "choice", filterClass: "Wizard,Cleric", filterLevel: "0", count: "2" } });
+        expect(m?.value["options"]).toBeUndefined();
+    });
+
+    it("keeps a choice whose options fail to resolve when a filter is present", () => {
+        const m = coerceCommand("Add", "Spells", { ID: "choice", options: "Wishful Thinking", filterSchool: "Evocation", count: "1" }, undefined, ref);
+        expect(m).toMatchObject({ command: "AddSpells", value: { ID: "choice", filterSchool: "Evocation", count: "1" } });
+    });
+
+    it("validateStoredCommand accepts a filter-form choice and still rejects a bare choice", () => {
+        expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "choice", filterLevel: "1", count: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "choice", filterConcentration: "  " } }))).not.toEqual([]);
+    });
+
+    it("an options list that fails to resolve does NOT widen into a level-wide pool", () => {
+        // Curated list + spellLevel, all names unresolvable → drop, don't become "any cantrip".
+        expect(coerceCommand("Add", "Spells", { ID: "choice", options: "Wishful Thinking", count: "1", spellLevel: "0" }, undefined, ref))
+            .toBeNull();
+        // A filter still rescues the command (list derives from the filter, not the level alone).
+        expect(coerceCommand("Add", "Spells", { ID: "choice", options: "Wishful Thinking", filterSchool: "Evocation", spellLevel: "0", count: "1" }, undefined, ref))
+            .toMatchObject({ command: "AddSpells", value: { ID: "choice", filterSchool: "Evocation", spellLevel: "0", count: "1" } });
+    });
+
+    it("a bare spellLevel with no options is a valid derived pool ('any spell of that level')", () => {
+        expect(coerceCommand("Add", "Spells", { ID: "choice", count: "1", spellLevel: "1" }, undefined, ref))
+            .toMatchObject({ command: "AddSpells", value: { ID: "choice", count: "1", spellLevel: "1" } });
+        expect(coerceCommand("Add", "Spells", { ID: "choice", count: "2", spellLevel: "0" }, undefined, ref))
+            .toMatchObject({ command: "AddSpells", value: { ID: "choice", count: "2", spellLevel: "0" } });
+        expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "choice", count: "1", spellLevel: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddSpells", value: { ID: "choice", count: "2", spellLevel: "0" } }))).toEqual([]);
+    });
+});
+
+describe("Items choice form", () => {
+    // A tiny item "catalog": Longsword / Shortbow resolve, anything else doesn't.
+    const ids: Record<string, string> = { "longsword": "it-longsword", "shortbow": "it-shortbow" };
+    const ref = (_kind: string, name: string) => ids[name.toLowerCase()] ?? null;
+
+    it("still coerces the fixed form from a target name", () => {
+        const m = coerceCommand("Add", "Items", {}, "Longsword", ref);
+        expect(m).toMatchObject({ command: "AddItems", value: { ID: "it-longsword" } });
+    });
+
+    it("coerces the choice form, resolving each option name to its id and dropping unknowns", () => {
+        const m = coerceCommand("Add", "Items", { ID: "choice", options: "Longsword, Shortbow, Vorpal Spork", count: "1" }, undefined, ref);
+        expect(m).toMatchObject({ command: "AddItems", value: { ID: "choice", options: "it-longsword,it-shortbow", count: "1" } });
+    });
+
+    it("drops a choice-form command with no options, or whose options all fail to resolve", () => {
+        expect(coerceCommand("Add", "Items", { ID: "choice", count: "1" }, undefined, ref)).toBeNull();
+        expect(coerceCommand("Add", "Items", { ID: "choice", options: "Vorpal Spork", count: "1" }, undefined, ref)).toBeNull();
+    });
+
+    it("validateStoredCommand accepts choice+options and rejects choice without options", () => {
+        expect(validateStoredCommand(mad({ command: "AddItems", value: { ID: "choice", options: "it-longsword,it-shortbow", count: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddItems", value: { ID: "choice", count: "1" } }))).not.toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddItems", value: { ID: "it-longsword" } }))).toEqual([]);
+    });
 });
 
 describe("Actions", () => {
@@ -210,6 +338,25 @@ describe("Actions", () => {
         expect(validateStoredCommand(mad({ command: "AddActions", value: { name: "Channel Divinity", actionType: "action" } }))).toEqual([]);
         expect(validateStoredCommand(mad({ command: "AddActions", value: { name: "Channel Divinity", actionType: "somersault" } }))).not.toEqual([]);
         expect(validateStoredCommand(mad({ command: "AddActions", value: { actionType: "action" } }))).not.toEqual([]);
+    });
+
+    it("coerces inline uses (amount or PB fraction + recharge) and drops a dangling recharge", () => {
+        const fixed = coerceCommand("Add", "Actions", { name: "Rage", actionType: "bonusAction", amount: "2", recharge: "long rest" }, undefined, noRef);
+        expect(fixed).toMatchObject({ value: { amount: "2", recharge: "Long Rest" } });
+
+        const pb = coerceCommand("Add", "Actions", { name: "Divine Sense", actionType: "action", proficiencyBonus: "full pb", recharge: "day" }, undefined, noRef);
+        expect(pb).toMatchObject({ value: { proficiencyBonus: "Full PB", recharge: "Long Rest" } });
+
+        // recharge alone is a no-op key — dropped, but the action itself survives
+        const dangling = coerceCommand("Add", "Actions", { name: "Dash", actionType: "action", recharge: "Long Rest" }, undefined, noRef);
+        expect(dangling).toMatchObject({ command: "AddActions", value: { name: "Dash", actionType: "action" } });
+        expect(dangling?.value["recharge"]).toBeUndefined();
+    });
+
+    it("validateStoredCommand accepts inline-uses grants and flags a recharge with no amount/PB", () => {
+        expect(validateStoredCommand(mad({ command: "AddActions", value: { name: "Rage", actionType: "bonusAction", amount: "2", recharge: "Long Rest" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddActions", value: { name: "Divine Sense", actionType: "action", proficiencyBonus: "Full PB", recharge: "Short Rest" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddActions", value: { name: "Dash", actionType: "action", recharge: "Long Rest" } }))).not.toEqual([]);
     });
 });
 

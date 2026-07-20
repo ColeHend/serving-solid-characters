@@ -2,7 +2,7 @@ import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-
 import { Button, FormField, Input, Option, Select } from "coles-solid-library";
 
 interface props {
-    toggleValue: (rollType: string, bonus: string, proficiencyBonus: string, stat: string, condition: string) => void;
+    toggleValue: (rollType: string, bonus: string, proficiencyBonus: string, statBonus: string, stat: string, condition: string) => void;
     getValue: Accessor<Record<string, string> | undefined>;
 }
 
@@ -33,11 +33,12 @@ export const RollBonusFeature: Component<props> = (props) => {
     const [rollType, setRollType] = createSignal(GetMadValue("rollType") || "SavingThrow");
     const [bonus, setBonus] = createSignal(GetMadValue("bonus"));
     const [pbChoice, setPbChoice] = createSignal(GetMadValue("proficiencyBonus"));
+    const [statBonus, setStatBonus] = createSignal(GetMadValue("statBonus"));
     const [stat, setStat] = createSignal(GetMadValue("stat"));
     const [condition, setCondition] = createSignal(GetMadValue("condition"));
 
     const statPickable = createMemo(() => rollType() === "SavingThrow" || rollType() === "AbilityCheck");
-    const usable = createMemo(() => bonus().trim() !== "" || pbChoice() !== "");
+    const usable = createMemo(() => bonus().trim() !== "" || pbChoice() !== "" || statBonus() !== "");
 
     return <div>
         <FormField name="On Which Rolls">
@@ -65,6 +66,15 @@ export const RollBonusFeature: Component<props> = (props) => {
             </Select>
         </FormField>
 
+        <FormField name="Add an Ability Modifier (optional)">
+            <Select value={statBonus()} onChange={setStatBonus}>
+                <Option value={""}>None</Option>
+                <For each={STATS}>
+                    {(s) => <Option value={s}>{s.toUpperCase()}</Option>}
+                </For>
+            </Select>
+        </FormField>
+
         <Show when={statPickable()}>
             <FormField name="Ability (optional)">
                 <Select value={stat()} onChange={setStat}>
@@ -85,10 +95,10 @@ export const RollBonusFeature: Component<props> = (props) => {
         </FormField>
 
         <Show when={!usable()}>
-            <p>Enter a flat bonus or pick a Proficiency Bonus fraction.</p>
+            <p>Enter a flat bonus, pick a Proficiency Bonus fraction, or pick an ability modifier to add.</p>
         </Show>
 
-        <Button disabled={!usable()} onClick={() => props.toggleValue(rollType(), bonus().trim(), pbChoice(), statPickable() ? stat() : "", condition().trim())}>
+        <Button disabled={!usable()} onClick={() => props.toggleValue(rollType(), bonus().trim(), pbChoice(), statBonus(), statPickable() ? stat() : "", condition().trim())}>
             Set Roll Bonus
         </Button>
     </div>

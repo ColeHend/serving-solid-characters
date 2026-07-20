@@ -11,8 +11,11 @@ const addSavingThrowFeature = (character: Character, feature: MadFeature): Chara
         return character;
     }
 
-    if (character.savingThrows.some(st => st.stat === stat)) {
-        DebugConsole.warn(`Character already has a saving throw for ${stat}`);
+    // Creator-built characters pre-fill all six entries (proficient:false), so an existing
+    // row must be UPGRADED, not skipped — otherwise AddSavingThrows is a silent no-op.
+    const existing = character.savingThrows.find(st => st.stat === stat);
+    if (existing) {
+        existing.proficient = true;
         return character;
     }
 

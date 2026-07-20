@@ -21,6 +21,7 @@ import { ChoiceCard } from "../../choiceCard/choiceCard";
 import Markdown from "../../MarkDown/MarkDown";
 import { DndDialogHeader } from "../../dndDialogHeader/dndDialogHeader";
 import { sourceLabel } from "../modals.shared";
+import { subclassBelongsTo } from "../../../../models/data/subclasses";
 import { Clone } from "../../..";
 
 type props = {
@@ -49,8 +50,11 @@ const ClassModal: Component<props> = (props) => {
   const classLevels = createMemo(() => Object.keys(props?.currentClass()?.features || {}));
   const features = createMemo(() => props?.currentClass()?.features || []);
   const choices = createMemo(() => props?.currentClass()?.choices || {});
+  // Id matching replaces the old name + `legacy === legacy()` pair: each edition's class has a
+  // distinct id, so edition-splitting is automatic — and homebrew subclasses (no `legacy` flag,
+  // previously dropped by that filter) attach to exactly the class they were created under.
   const currentSubclasses = createMemo<Subclass[]>(() => {
-    return allSubclasses()?.filter(s => (s?.parentClass ?? "") === (props?.currentClass()?.name ?? "")).filter(s => s.legacy === legacy());
+    return allSubclasses()?.filter(s => s && subclassBelongsTo(s, props?.currentClass()));
   });
 
   const armorChoiceKey = createMemo(()=>props?.currentClass()?.startChoices?.armor ?? "");

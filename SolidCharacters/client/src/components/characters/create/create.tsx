@@ -14,6 +14,7 @@ import { BackgroundSection } from "./sections/backgroundSection/backgroundSectio
 import { ClassSection } from "./sections/classSection/classSection";
 import { DetailsSection } from "./sections/detailsSection/detailsSection";
 import { FeatsSection } from "./sections/featsSection/featsSection";
+import { HpSection } from "./sections/hpSection/hpSection";
 import { ItemsSection } from "./sections/itemsSection/itemsSection";
 import { ReviewSection } from "./sections/reviewSection/reviewSection";
 import { SkillsSection } from "./sections/skillsSection/skillsSection";
@@ -25,7 +26,7 @@ import { applyCreatorMads } from "./rules/applyMads";
 import { ABILITY_LABELS } from "./rules/constants";
 
 const CreatePage: Component = () => {
-  const { draft, actions, derived, lookups, editName, setEditName } = useCreate();
+  const { draft, actions, derived, data, lookups, editId, setEditId } = useCreate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [sheetHidden, setSheetHidden] = createSignal(false);
 
@@ -39,34 +40,31 @@ const CreatePage: Component = () => {
   const handleSave = () => {
     if (saveDisabled()) return;
     const character = draftToCharacter(draft, lookups());
-    const editing = editName();
-    const collision = characterManager
-      .characters()
-      .some(
-        (c) =>
-          c.name.toLowerCase() === character.name.toLowerCase() &&
-          editing?.toLowerCase() !== c.name.toLowerCase(),
-      );
-    if (collision) {
-      addSnackbar({ message: "Character name already exists", severity: "warning" });
-      return;
-    }
-    if (editing && characterManager.getCharacter(editing)) {
+    const editing = editId();
+    if (editing) {
+      // updateCharacter put()s by id (upsert), so this never duplicates even if the
+      // in-memory list hasn't caught up with a just-created character.
+      character.id = editing;
       characterManager.updateCharacter(character);
+      setSearchParams({ id: editing });
     } else {
-      characterManager.createCharacter(character);
+      // First save mints the id; capture it so re-saves update instead of duplicating.
+      const newId = characterManager.createCharacter(character);
+      actions.setCharacterId(newId);
+      setEditId(newId);
+      setSearchParams({ id: newId });
     }
-    setEditName(character.name);
-    setSearchParams({ name: character.name });
   };
 
   const handleDelete = () => {
-    const editing = editName();
-    if (!editing || !window.confirm(`Delete ${editing}?`)) return;
+    const editing = editId();
+    if (!editing) return;
+    const name = characterManager.getCharacter(editing)?.name ?? "this character";
+    if (!window.confirm(`Delete ${name}?`)) return;
     characterManager.deleteCharacter(editing);
     actions.reset();
-    setEditName(null);
-    setSearchParams({ name: undefined });
+    setEditId(null);
+    setSearchParams({ id: undefined });
   };
 
   /**
@@ -79,24 +77,22 @@ const CreatePage: Component = () => {
       addSnackbar({ message: "Add a class before creating a sheet", severity: "warning" });
       return;
     }
-    const applied = applyCreatorMads(draftToCharacter(draft, lookups()));
+    const applied = applyCreatorMads(draftToCharacter(draft, lookups()), data.magicItems());
     setSheetChar(applied);
     void createCharacterSheet(applied, applied.stats ?? derived.finalScores(), sheetProfs());
   };
 
-  // Edit mode: the ?name= character may arrive after mount (Dexie loads async) — watch until found.
+  // Edit mode: the ?id= character may arrive after mount (Dexie loads async) — watch until found.
   let editLoaded = false;
   createEffect(() => {
     if (editLoaded) return;
-    const param = typeof searchParams.name === "string" ? searchParams.name : searchParams.name?.join(" ") ?? "";
+    const param = typeof searchParams.id === "string" ? searchParams.id : searchParams.id?.[0] ?? "";
     if (!param) return;
-    const character = characterManager
-      .characters()
-      .find((c) => c.name.toLowerCase() === param.toLowerCase());
+    const character = characterManager.getCharacter(param);
     if (!character) return;
     editLoaded = true;
     actions.load(characterToDraft(character, lookups(), defaultEdition()));
-    setEditName(character.name);
+    setEditId(character.id);
   });
 
   onMount(() => document.body.classList.add("character-create-bg"));
@@ -175,6 +171,16 @@ const CreatePage: Component = () => {
 
           <CodexSection
             index="V"
+            title="Hit Points"
+            id="codex-hp"
+            summary={`${derived.maxHp()} max`}
+            subtitle="Auto-computed from your hit dice and Constitution — type a value to override, clear it to return to auto."
+          >
+            <HpSection />
+          </CodexSection>
+
+          <CodexSection
+            index="VI"
             title="Skills"
             id="codex-skills"
             summary={`${derived.skillRows().filter((r) => r.state !== "none").length} proficient`}
@@ -183,12 +189,12 @@ const CreatePage: Component = () => {
             <SkillsSection />
           </CodexSection>
 
-          <CodexSection index="VI" title="Feats" id="codex-feats" summary={`${derived.allFeatNames().length} taken`}>
+          <CodexSection index="VII" title="Feats" id="codex-feats" summary={`${derived.allFeatNames().length} taken`}>
             <FeatsSection />
           </CodexSection>
 
           <CodexSection
-            index="VII"
+            index="VIII"
             title="Spells"
             id="codex-spells"
             summary={draft.spells.length > 0 ? `${draft.spells.length} inscribed` : "None yet"}
@@ -197,7 +203,7 @@ const CreatePage: Component = () => {
           </CodexSection>
 
           <CodexSection
-            index="VIII"
+            index="IX"
             title="Details & Story"
             id="codex-details"
             summary="Gender, age, height, faith, story…"
@@ -205,12 +211,12 @@ const CreatePage: Component = () => {
             <DetailsSection />
           </CodexSection>
 
-          <CodexSection index="IX" title="Items" id="codex-items" summary={`${draft.items.inventory.length} carried`}>
+          <CodexSection index="X" title="Items" id="codex-items" summary={`${draft.items.inventory.length} carried`}>
             <ItemsSection />
           </CodexSection>
 
           <CodexSection
-            index="X"
+            index="XI"
             title="Review"
             id="codex-review"
             summary={saveDisabled() ? "Steps remain" : "Ready to save"}
@@ -220,7 +226,7 @@ const CreatePage: Component = () => {
               onSave={handleSave}
               onCreateSheet={handleCreateSheet}
               saveDisabled={saveDisabled()}
-              editing={!!editName()}
+              editing={!!editId()}
             />
           </CodexSection>
         </div>

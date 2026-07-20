@@ -101,9 +101,12 @@ export function validateStructure(ruleset: Ruleset, data: RulesetData): Validati
             if (!hasSlots) res.errors.push(`class ${name} (2014): no spell_slots_level_* in slots`);
         }
     }
+    const classIds = new Set(data.classes.map(c => c.id));
     for (const s of data.subclasses) {
         nonEmpty("subclass", s.name, s.id);
         if (!s.parent_class) res.errors.push(`subclass ${s.name}: missing parent_class`);
+        if (!s.parent_class_id) res.errors.push(`subclass ${s.name}: missing parent_class_id`);
+        else if (!classIds.has(s.parent_class_id)) res.errors.push(`subclass ${s.name}: parent_class_id "${s.parent_class_id}" is not a class id`);
     }
     const raceIds = new Set(data.races.map(r => r.id));
     for (const r of data.races) nonEmpty("race", r.name, r.id);

@@ -83,25 +83,33 @@ export function subclassMarkerInput(className: string, level: number): { level: 
 }
 
 /**
- * Levels at which a class grants a subclass feature, across every convention in the data:
- * the homebrew wizard's `metadata.category: "Subclass"` marker, the "<ClassName> Subclass" /
- * "Subclass Feature" names (2024 SRD, AI assembler), and the 2014 SRD's archetype-title names.
+ * True when a base-class feature is a subclass slot marker rather than a real feature, across every
+ * convention in the data: the homebrew wizard's `metadata.category: "Subclass"` marker, the
+ * "<ClassName> Subclass" / "Subclass Feature" names (2024 SRD, AI assembler), and the 2014 SRD's
+ * archetype-title names ("Arcane Tradition", "<title> feature", "path feature"). Name-matching is
+ * case-insensitive.
+ */
+export function isSubclassMarkerFeature(
+    className: string | undefined,
+    feature: Pick<FeatureDetail, "name" | "metadata">,
+): boolean {
+    if (feature.metadata?.category === SUBCLASS_MARKER_CATEGORY) return true;
+    const name = (feature.name ?? "").trim().toLowerCase();
+    return name === subclassMarkerName(className ?? "").toLowerCase()
+        || name === SUBCLASS_FEATURE_NAME_2024.toLowerCase()
+        || SUBCLASS_NAMES_2014.has(name);
+}
+
+/**
+ * Levels at which a class grants a subclass feature (per `isSubclassMarkerFeature`).
  * Pure; returns a sorted ascending list, [] when nothing is detectable (caller decides the fallback).
  */
 export function detectSubclassFeatureLevels(
     cls: { name?: string; features?: Record<number, FeatureDetail[]> } | undefined,
 ): number[] {
     if (!cls?.features) return [];
-    const markerName = subclassMarkerName(cls.name ?? "").toLowerCase();
-    const isMarker = (f: FeatureDetail): boolean => {
-        if (f.metadata?.category === SUBCLASS_MARKER_CATEGORY) return true;
-        const name = (f.name ?? "").trim().toLowerCase();
-        return name === markerName
-            || name === SUBCLASS_FEATURE_NAME_2024.toLowerCase()
-            || SUBCLASS_NAMES_2014.has(name);
-    };
     return Object.entries(cls.features)
-        .filter(([lvl, feats]) => Number.isFinite(+lvl) && (feats ?? []).some(isMarker))
+        .filter(([lvl, feats]) => Number.isFinite(+lvl) && (feats ?? []).some((f) => isSubclassMarkerFeature(cls.name, f)))
         .map(([lvl]) => +lvl)
         .sort((a, b) => a - b);
 }

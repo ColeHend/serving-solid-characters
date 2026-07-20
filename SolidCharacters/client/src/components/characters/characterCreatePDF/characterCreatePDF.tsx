@@ -75,18 +75,18 @@ export const CreateCharacterPDF: Component = () => {
     onCleanup(() => mq.removeEventListener('change', handler));
   });
 
-  const initialName = () => {
-    const p = searchParams.name;
+  const initialId = () => {
+    const p = searchParams.id;
     return typeof p === 'string' ? p : Array.isArray(p) ? p[0] : undefined;
   };
-  const [selectedName, setSelectedName] = createSignal<string | undefined>(initialName());
+  const [selectedId, setSelectedId] = createSignal<string | undefined>(initialId());
 
-  // Memo resolves the name (which may be stale/invalid) against the live list,
+  // Memo resolves the id (which may be stale/invalid) against the live list,
   // falling back to the first character so the Select and preview stay in sync.
   const selectedCharacter = createMemo<Character | undefined>(() => {
     const list = characters();
     if (!list.length) return undefined;
-    return (selectedName() ? characterManager.getCharacter(selectedName()!) : undefined) ?? list[0];
+    return (selectedId() ? characterManager.getCharacter(selectedId()!) : undefined) ?? list[0];
   });
 
   // When the user has no saved character, fall back to the bundled example so every
@@ -321,8 +321,8 @@ export const CreateCharacterPDF: Component = () => {
             when={characters().length}
             fallback={<span class={styles.hint}>No characters yet — showing a sample. Create one to use your own.</span>}
           >
-            <Select value={selectedCharacter()?.name ?? ''} onChange={(n: string) => setSelectedName(n)}>
-              <For each={characters()}>{(c) => <Option value={c.name}>{c.name}</Option>}</For>
+            <Select value={selectedCharacter()?.id ?? ''} onChange={(id: string) => setSelectedId(id)}>
+              <For each={characters()}>{(c) => <Option value={c.id}>{c.name}</Option>}</For>
             </Select>
           </Show>
           <TabBar

@@ -1,4 +1,4 @@
-import { Component, For, createMemo, createSignal, onCleanup, onMount, useContext } from "solid-js";
+import { Component, For, createMemo, onCleanup, onMount, useContext } from "solid-js";
 import styles from "./characters.module.scss";
 import useStyles from "../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../shared/customHooks/userSettings";
@@ -18,12 +18,11 @@ const Characters: Component = () => {
   const isMobile = createMemo(() => context.isMobile());
 
   const navigate = useNavigate();
-   
-  const [characters, setCharacters] = createSignal(characterManager.characters());
+
+  // Track the manager's signal directly — Dexie fills it AFTER mount on a hard load.
+  const characters = createMemo(() => characterManager.characters());
 
   onMount(()=>{
-    setCharacters(characterManager.characters());
-
     document.body.classList.add("character-view-bg");
   })
 
@@ -99,7 +98,7 @@ const Characters: Component = () => {
             </Cell>
           </Column>
           
-          <Row onClick={(e,character)=>navigate(`/characters/view?name=${character.name}`)} />
+          <Row onClick={(e,character)=>navigate(`/characters/view?id=${character.id}`)} />
         </Table>
       </div>
     </Body>

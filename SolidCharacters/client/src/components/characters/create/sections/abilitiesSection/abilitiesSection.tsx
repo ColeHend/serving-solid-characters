@@ -1,8 +1,7 @@
-import { Component, For, Show, createMemo, createSignal } from "solid-js";
+import { Component, For, Show, createMemo } from "solid-js";
 import { Button, NumberInput, Option, Select, TabBar } from "coles-solid-library";
 import { AbilityGenMethod } from "../../../../../models/character.model";
 import {
-  ABILITY_FULL_NAMES,
   ABILITY_KEYS,
   ABILITY_LABELS,
   AbilityKey,
@@ -13,7 +12,6 @@ import {
   POINT_BUY_MIN,
   STANDARD_ARRAY,
 } from "../../rules/constants";
-import { normalizeAbility } from "../../rules/engine";
 import { signed } from "../../../../../shared/customHooks/utility/tools/dndMath";
 import {
   DragDropProvider,
@@ -24,6 +22,7 @@ import {
 } from "../../../../../shared/dnd";
 import { Stepper } from "../../shell/stepper";
 import { useCreate } from "../../state/createContext";
+import { AbilityBonusPanel } from "./abilityBonusPanel";
 import { PoolZone, ScoreCell, ScoreDrag, ScoreDrop, remainingPool, resolveScoreDrop } from "./scoreBoard";
 import styles from "./abilitiesSection.module.scss";
 
@@ -40,6 +39,17 @@ export const AbilitiesSection: Component = () => {
 
   const methodIndex = () => METHODS.findIndex((m) => m.method === draft.abilityMethod);
   const hint = () => METHODS[methodIndex()]?.hint ?? "";
+
+  // Marker for the gap between the pre-mads score and the effective (post-mads) score:
+  // signed delta for ASI-style boosts (or penalties), "set" when a mode:"set" mad forces
+  // the value — decided by the mad's actual mode, not the direction of the gap.
+  const abilityDelta = (key: AbilityKey): string | undefined => {
+    const effective = derived.effectiveScores()[key];
+    const base = derived.finalScores()[key];
+    if (derived.setStats().has(key)) return effective === base ? undefined : "set";
+    if (effective === base) return undefined;
+    return signed(effective - base);
+  };
 
   const assignedValues = () => ABILITY_KEYS.map((key) => draft.baseScores[key]);
 
@@ -86,25 +96,6 @@ export const AbilitiesSection: Component = () => {
       return scores.sort((a, b) => b - a);
     }
     return [];
-  };
-
-  // 2024 background boost helper.
-  const boostOptions = createMemo(() =>
-    (derived.selectedBackground()?.abilityOptions ?? [])
-      .map(normalizeAbility)
-      .filter((key): key is AbilityKey => key !== undefined));
-  const [plusTwo, setPlusTwo] = createSignal<AbilityKey | undefined>();
-  const [plusOne, setPlusOne] = createSignal<AbilityKey | undefined>();
-
-  const applyTwoOne = () => {
-    const two = plusTwo() ?? boostOptions()[0];
-    const one = plusOne() ?? boostOptions().find((key) => key !== two);
-    if (!two || !one || two === one) return;
-    actions.applyBackgroundBoost({ [two]: 2, [one]: 1 });
-  };
-
-  const applyThreeOnes = () => {
-    actions.applyBackgroundBoost(Object.fromEntries(boostOptions().map((key) => [key, 1])));
   };
 
   return (
@@ -159,8 +150,11 @@ export const AbilitiesSection: Component = () => {
           {(key) => (
             <div class={styles.column}>
               <span class={styles.abilityLabel}>{ABILITY_LABELS[key]}</span>
-              <span class={styles.finalScore}>{derived.finalScores()[key]}</span>
-              <span class={styles.modChip}>{signed(derived.abilityMods()[key])}</span>
+              <span class={styles.finalScore}>{derived.effectiveScores()[key]}</span>
+              <span class={styles.modChip}>{signed(derived.effectiveMods()[key])}</span>
+              <Show when={abilityDelta(key)}>
+                {(delta) => <span class={styles.abilityDelta}>{delta()}</span>}
+              </Show>
 
               <Show when={isPoolMethod()}>
                 <ScoreCell statKey={key} value={draft.baseScores[key]} disabled={!isPoolMethod()} />
@@ -191,7 +185,7 @@ export const AbilitiesSection: Component = () => {
               <div class={styles.bonusRow}>
                 <span class={styles.bonusLabel}>Bonus</span>
                 <Stepper
-                  label={signed(draft.bonusScores[key] + (draft.backgroundBoosts[key] ?? 0))}
+                  label={signed(draft.bonusScores[key])}
                   onDecrement={() => actions.stepBonus(key, -1)}
                   onIncrement={() => actions.stepBonus(key, 1)}
                 />
@@ -201,37 +195,7 @@ export const AbilitiesSection: Component = () => {
         </For>
       </div>
 
-      <Show when={draft.edition !== "2014" && boostOptions().length > 0}>
-        <div class={styles.boostBar}>
-          <span>
-            Your {draft.background} background boosts{" "}
-            {boostOptions().map((key) => ABILITY_FULL_NAMES[key]).join(", ")}.
-          </span>
-          <span class={styles.boostControls}>
-            <Select
-              value={(plusTwo() ?? boostOptions()[0]) as string}
-              onChange={(value: string) => setPlusTwo(value as AbilityKey)}
-            >
-              <For each={boostOptions()}>
-                {(key) => <Option value={key}>+2 {ABILITY_LABELS[key]}</Option>}
-              </For>
-            </Select>
-            <Select
-              value={(plusOne() ?? boostOptions().find((key) => key !== (plusTwo() ?? boostOptions()[0]))) as string}
-              onChange={(value: string) => setPlusOne(value as AbilityKey)}
-            >
-              <For each={boostOptions()}>
-                {(key) => <Option value={key}>+1 {ABILITY_LABELS[key]}</Option>}
-              </For>
-            </Select>
-            <Button onClick={applyTwoOne}>Apply +2 / +1</Button>
-            <Button onClick={applyThreeOnes}>Apply +1 +1 +1</Button>
-            <Button transparent onClick={() => actions.clearBackgroundBoosts()}>
-              Clear
-            </Button>
-          </span>
-        </div>
-      </Show>
+      <AbilityBonusPanel />
     </div>
     <DragOverlay>
       {(active) => {

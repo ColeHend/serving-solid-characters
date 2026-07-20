@@ -112,6 +112,9 @@ public class GrantedAction
   [JsonProperty("action_type")] public string ActionType { get; set; } = null!; // "action"|"bonusAction"|"reaction"
   [JsonProperty("description")] public string? Description { get; set; }
   [JsonProperty("source")] public string? Source { get; set; }
+  [JsonProperty("uses")] public int? Uses { get; set; }
+  [JsonProperty("proficiency_bonus")] public string? ProficiencyBonus { get; set; } // "Third PB"|"Half PB"|"Full PB"
+  [JsonProperty("recharge")] public string? Recharge { get; set; }                  // "Short Rest"|"Long Rest"
 }
 
 /// <summary>Mirrors `RollAdvantage` (e.g. Pack Tactics advantage on attacks).</summary>

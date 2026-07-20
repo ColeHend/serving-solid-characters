@@ -1,26 +1,10 @@
 import { Race } from "../../../../../models/generated";
-import HttpClient$ from "../../../utility/tools/httpClientObs";
-import { concatMap, of, take, tap } from "rxjs";
-import HombrewDB from "../../../utility/localDB/new/homebrewDB";
-import { createSignal } from "solid-js";
+import { Accessor } from "solid-js";
+import homebrewManager from "../../../homebrewManager";
 
-const [race, setRace] = createSignal<Race[]>([]);
-
-export function useGetHombrewRaces() {
-  const LocalItems = HttpClient$.toObservable(HombrewDB.races.toArray());
-
-  if (race().length === 0) {
-    LocalItems.pipe(
-      take(1),
-      concatMap((items) => {
-        if (items.length > 0) {
-          return of(items);
-        } else {
-          return of([])
-        }
-      }),
-      tap((items) => !!items && items.length > 0 ? setRace(items) : null),
-    ).subscribe();
-  }
-  return race;
+// Live signal — reflects homebrewManager race mutations in the same session
+// (the old one-shot Dexie snapshot went stale until reload). The manager's accessor is
+// loosely typed (any[]); this hook keeps the typed contract consumers rely on.
+export function useGetHombrewRaces(): Accessor<Race[]> {
+  return homebrewManager.races as Accessor<Race[]>;
 }

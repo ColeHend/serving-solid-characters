@@ -67,9 +67,10 @@ const check = (
     }
 };
 
-// choice-form Stats keeps the options list (else the sheet can't resolve the pick)
-check("ASI choice +2", feats["Ability Score Improvement"][0], "AddStats",
-    { stat: "choice", statValue: "2", options: "str,dex,con,int,wis,cha" });
+// choice-form Stats keeps the options list (else the sheet can't resolve the pick) and the
+// count field (ASI = +1 to two DIFFERENT abilities: the player picks `count` distinct abilities)
+check("ASI choice +1/+1", feats["Ability Score Improvement"][0], "AddStats",
+    { stat: "choice", statValue: "1", options: "str,dex,con,int,wis,cha", count: "2" });
 // mode:"set" survives coercion (ability SETTER)
 check("Headband set 19", magicItems["Headband of Intellect"][0], "AddStats",
     { stat: "int", statValue: "19", mode: "set" });

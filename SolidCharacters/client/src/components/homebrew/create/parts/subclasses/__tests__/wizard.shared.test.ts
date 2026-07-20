@@ -69,7 +69,7 @@ describe('stepStatus', () => {
 });
 
 describe('feature build/hydrate round trip', () => {
-  it('hydrate stamps ids; build strips them but keeps metadata/choiceKey', () => {
+  it('hydrate stamps ids for legacy id-less rows; build keeps them with metadata/choiceKey', () => {
     const persisted = {
       3: [{ name: 'Echo Step', description: 'Teleport', metadata: { category: 'Subclass feature' } }],
       7: [{ name: 'Echo Avatar', description: 'Project', choiceKey: 'echo' }],
@@ -81,9 +81,17 @@ describe('feature build/hydrate round trip', () => {
 
     const rebuilt = buildSubclassFeatures(hydrated);
     expect(Object.keys(rebuilt)).toEqual(['3', '7']);
-    expect((rebuilt[3][0] as { id?: string }).id).toBeUndefined();
+    // Persisted ids anchor choice-form mad picks (statChoiceKey) — they must survive the save.
+    expect(rebuilt[3][0].id).toBe(hydrated[3][0].id);
     expect(rebuilt[3][0].metadata?.category).toBe('Subclass feature');
     expect(rebuilt[7][0].choiceKey).toBe('echo');
+  });
+
+  it('keeps feature ids stable across hydrate → build → hydrate', () => {
+    const persisted = { 3: [{ name: 'Echo Step', description: 'Teleport' }] };
+    const first = hydrateSubclassFeatures(persisted as never);
+    const rehydrated = hydrateSubclassFeatures(buildSubclassFeatures(first));
+    expect(rehydrated[3][0].id).toBe(first[3][0].id);
   });
 
   it('hydrate tolerates missing/empty input', () => {
@@ -112,6 +120,24 @@ describe('toDataSubclass', () => {
     expect(data.spellcasting).toBeTruthy();
     expect(data.spellcasting?.metadata.casterType).toBe(CasterType.Third);
     expect(data.spellcasting?.known_type).toBe('calc');
+  });
+
+  it('persists a real parent-class id but never the synthetic hb: selector key', () => {
+    const withId = toDataSubclass(
+      collectForm(makeForm({ parentClass: 'Wizard', parentClassId: 'w24', name: 'Echo' })),
+      emptySubclassLevels());
+    expect(withId.parentClassId).toBe('w24');
+
+    const hbKey = toDataSubclass(
+      collectForm(makeForm({ parentClass: 'Stormwarden', parentClassId: 'hb:Stormwarden', name: 'Echo' })),
+      emptySubclassLevels());
+    expect(hbKey.parentClassId).toBeUndefined();
+    expect(hbKey.parentClass).toBe('Stormwarden');
+
+    const unresolved = toDataSubclass(
+      collectForm(makeForm({ parentClass: 'Wizard', parentClassId: '', name: 'Echo' })),
+      emptySubclassLevels());
+    expect(unresolved.parentClassId).toBeUndefined();
   });
 });
 

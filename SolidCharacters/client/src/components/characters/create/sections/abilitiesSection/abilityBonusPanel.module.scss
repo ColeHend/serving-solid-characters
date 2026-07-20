@@ -1,0 +1,101 @@
+@use '../../../../../index.scss' as *;
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.group {
+  padding: 12px 16px;
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  font-family: $font-ui;
+  font-size: 0.85rem;
+}
+
+.groupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.groupLabel {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--codex-gold);
+}
+
+.styleToggle {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.stylePill {
+  padding: 3px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--codex-gold);
+  }
+}
+
+.stylePillActive {
+  border-color: var(--codex-gold);
+  background: color-mix(in srgb, var(--codex-gold) 16%, transparent);
+  color: var(--codex-gold);
+}
+
+.allNote {
+  display: block;
+  margin-top: 8px;
+  color: var(--codex-ink-dim);
+}
+
+.tokenRows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-top: 10px;
+}
+
+.tokenRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.valueChip {
+  min-width: 2.2rem;
+  text-align: center;
+  padding: 3px 8px;
+  border: 1px solid var(--codex-gold);
+  border-radius: 6px;
+  color: var(--codex-gold);
+  font-weight: 700;
+}
+
+.groupFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.remainingHint {
+  font-size: 0.75rem;
+  color: var(--codex-ink-dim);
+}

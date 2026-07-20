@@ -150,8 +150,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -238,8 +239,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -281,8 +283,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -324,8 +327,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -360,8 +364,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -775,7 +780,22 @@
     {
      "id": "a1e022e1-2736-48b5-a50f-4c0767c154a3",
      "name": "Expertise",
-     "description": "At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 10th level, you can choose another two skill proficiencies to gain this benefit."
+     "description": "At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 10th level, you can choose another two skill proficiencies to gain this benefit.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "4": [
@@ -789,8 +809,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -851,8 +872,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -878,7 +900,22 @@
     {
      "id": "6db3a4dc-507f-450b-8075-97d7bfdf3cb2",
      "name": "Expertise",
-     "description": "At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 10th level, you can choose another two skill proficiencies to gain this benefit."
+     "description": "At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 10th level, you can choose another two skill proficiencies to gain this benefit.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "41bc7d39-05e2-4ae8-a7a3-e7b202345338",
@@ -898,8 +935,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -946,8 +984,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -982,8 +1021,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1313,8 +1353,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1355,8 +1396,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1402,8 +1444,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1433,8 +1476,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1474,8 +1518,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1845,8 +1890,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1881,8 +1927,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1912,8 +1959,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1943,8 +1991,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -1978,8 +2027,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2139,8 +2189,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2181,8 +2232,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2210,8 +2262,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2280,8 +2333,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2309,8 +2363,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2338,8 +2393,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2379,8 +2435,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2621,8 +2678,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2697,8 +2755,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2753,8 +2812,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2854,8 +2914,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -2890,8 +2951,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3229,7 +3291,20 @@
     {
      "id": "ef69d11c-f996-43fd-9cf2-296dc1667b23",
      "name": "Divine Health",
-     "description": "By 3rd level, the divine magic flowing through you makes you immune to disease."
+     "description": "By 3rd level, the divine magic flowing through you makes you immune to disease.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddImmunities",
+        "value": {
+         "condition": "Disease"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "c5fbdbf0-221d-40bd-aafd-a90d6bb60724",
@@ -3248,8 +3323,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3304,8 +3380,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3341,8 +3418,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3392,8 +3470,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3422,8 +3501,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3675,6 +3755,17 @@
         "type": 0,
         "prerequisites": [],
         "group": 0
+       },
+       {
+        "command": "AddLanguages",
+        "value": {
+         "name": "choice",
+         "options": "Common,Undercommon,Abyssal,Infernal,Celestial,Primordial,Draconic,Dwarvish,Elvish,Giant,Gnomish,Goblin,Halfling,Orc,Sylvan,Deep Speech",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
        }
       ]
      }
@@ -3720,8 +3811,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3755,7 +3847,22 @@
     {
      "id": "dda16eab-2959-52cd-a71f-ef30f7fc570f",
      "name": "Favored Enemy and Natural Explorer improvements",
-     "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+     "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddLanguages",
+        "value": {
+         "name": "choice",
+         "options": "Common,Undercommon,Abyssal,Infernal,Celestial,Primordial,Draconic,Dwarvish,Elvish,Giant,Gnomish,Goblin,Halfling,Orc,Sylvan,Deep Speech",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "7": [
@@ -3776,8 +3883,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3838,8 +3946,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3854,7 +3963,22 @@
     {
      "id": "2edd5cd9-9418-5a65-97fd-c03ea9d49179",
      "name": "Favored Enemy improvement",
-     "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+     "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddLanguages",
+        "value": {
+         "name": "choice",
+         "options": "Common,Undercommon,Abyssal,Infernal,Celestial,Primordial,Draconic,Dwarvish,Elvish,Giant,Gnomish,Goblin,Halfling,Orc,Sylvan,Deep Speech",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "c1a1bc75-2d94-4e5b-a08e-d3a4a33be317",
@@ -3896,8 +4020,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -3926,8 +4051,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4031,7 +4157,22 @@
     {
      "id": "0e6bb770-dacc-4ee4-a4d8-a82bfe282ccd",
      "name": "Expertise",
-     "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit."
+     "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     {
      "id": "ada5d491-423b-49ba-809a-672c25aad8b5",
@@ -4098,8 +4239,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4120,7 +4262,22 @@
     {
      "id": "1b4f4e22-fef9-40d3-80ad-8eb36d599458",
      "name": "Expertise",
-     "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit."
+     "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddExpertise",
+        "value": {
+         "proficiency": "choice",
+         "options": "Acrobatics,Animal Handling,Arcana,Athletics,Deception,History,Insight,Intimidation,Investigation,Medicine,Nature,Perception,Performance,Persuasion,Religion,Sleight Of Hand,Stealth,Survival",
+         "count": "2"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "7": [
@@ -4141,8 +4298,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4170,8 +4328,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4199,8 +4358,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4255,8 +4415,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4291,8 +4452,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4665,8 +4827,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4696,8 +4859,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4727,8 +4891,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4758,8 +4923,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -4794,8 +4960,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5057,8 +5224,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5088,8 +5256,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5125,8 +5294,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5168,8 +5338,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5198,8 +5369,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5527,8 +5699,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5558,8 +5731,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5589,8 +5763,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5620,8 +5795,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],
@@ -5650,8 +5826,9 @@
         "command": "AddStats",
         "value": {
          "stat": "choice",
-         "statValue": "2",
-         "options": "str,dex,con,int,wis,cha"
+         "statValue": "1",
+         "options": "str,dex,con,int,wis,cha",
+         "count": "2"
         },
         "type": 0,
         "prerequisites": [],

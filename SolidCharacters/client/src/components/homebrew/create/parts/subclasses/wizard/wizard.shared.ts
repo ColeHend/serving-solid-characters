@@ -2,8 +2,9 @@ import type { FormGroup } from 'coles-solid-library';
 import type { SetStoreFunction } from 'solid-js/store';
 import { FeatureDetail } from '../../../../../../models/generated';
 import { FeatureDetail as DataFeatureDetail, Spell } from '../../../../../../models/data';
-import { Subclass } from '../../../../../../models/data/subclasses';
+import { Subclass, subclassStorageKey } from '../../../../../../models/data/subclasses';
 import { createNewId } from '../../../../../../shared/customHooks/utility/tools/idGen';
+import { entitySelectorKey } from '../../../../../../shared/customHooks/utility/tools/entityKey';
 import { SpellsKnown } from '../SpellsKnown';
 import {
   LEVELS,
@@ -41,8 +42,7 @@ export interface SubclassForm extends SpellcastingFormState {
 
 /** Stable unique option key for a class in the merged SRD+homebrew list: the SRD GUID when
  *  present, else a name-derived key (homebrew classes are Dexie-keyed by name and may lack an id). */
-export const classSelectorKey = (cls: { id?: string | number; name: string }): string =>
-  cls.id != null && `${cls.id}` !== '' ? `${cls.id}` : `hb:${cls.name}`;
+export const classSelectorKey = entitySelectorKey;
 
 /** Ruleset tag for the selector: SRD entities carry a centrally-stamped `legacy`
  *  (2014 → true, 2024 → false); homebrew classes carry none. */
@@ -161,16 +161,17 @@ export const subclassFeatureLevels = (features: SubclassLevels['features']): num
 
 /**
  * Store (id-bearing generated FeatureDetail) → persisted data-model features record.
- * Strips the wizard-only id but keeps choiceKey/metadata so mads/usage survive a save,
- * unlike the old page's lossy {name, description} projection.
+ * Keeps id/choiceKey/metadata so mads survive a save AND choice-form picks (statChoiceKey
+ * prefers feature.id) stay anchored to the same feature across editor sessions.
  */
 export function buildSubclassFeatures(features: SubclassLevels['features']): Subclass['features'] {
   const result: Subclass['features'] = {};
   LEVELS.forEach(level => {
     const arr = features[level];
     if (!arr?.length) return;
-    result[level] = arr.map(({ name, description, choiceKey, metadata }) => {
+    result[level] = arr.map(({ id, name, description, choiceKey, metadata }) => {
       const out: DataFeatureDetail = { name, description };
+      if (id) out.id = id;
       if (choiceKey !== undefined) out.choiceKey = choiceKey;
       // generated metadata carries mads as an array; the data model's singular typing is
       // absorbed at the homebrewManager boundary like everywhere else.
@@ -200,15 +201,21 @@ export function hydrateSubclassFeatures(features?: Subclass['features'] | Record
 // ---------------------------------------------------------------------------
 // Persistence assembly
 
-export const subclassStorageKey = (parentClass: string, name: string): string =>
-  `${parentClass.toLowerCase()}__${name.toLowerCase()}`;
+export { subclassStorageKey };
 
 export function toDataSubclass(form: SubclassForm, levels: SubclassLevels): Subclass {
   const source = form.source?.trim();
+  // The selector key is the parent's REAL id except for the legacy `hb:<name>` fallback
+  // (pre-id homebrew classes) — a synthetic key must never persist as parentClassId;
+  // consumers fall back to the parentClass name until the parent is re-saved with an id.
+  const parentClassId = form.parentClassId && !form.parentClassId.startsWith('hb:')
+    ? form.parentClassId
+    : undefined;
   return {
     name: form.name,
     ...(source ? { source } : {}),
     parentClass: form.parentClass,
+    ...(parentClassId ? { parentClassId } : {}),
     description: form.description || '',
     features: buildSubclassFeatures(levels.features),
     spellcasting: buildSubclassSpellcasting(form.name, form),

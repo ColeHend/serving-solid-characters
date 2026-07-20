@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo, createSignal, onCleanup, onMount, runWithOwner } from "solid-js";
+import { Component, For, Index, Show, createEffect, createMemo, createSignal, onCleanup, onMount, runWithOwner } from "solid-js";
 import styles from "./view.module.scss";
 import StatBar from "./stat-bar/statBar";
 import { useSearchParams } from "@solidjs/router";
@@ -7,17 +7,28 @@ import useGetFullStats from "../../../shared/customHooks/dndInfo/useGetFullStats
 import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, Chip } from "coles-solid-library";
-import { AdvantageRollType, Character, MovementSpeedKey, MovementType, RollAdvantage, RollBonus } from "../../../models/character.model";
+import {
+  ActionType,
+  AdvantageRollType,
+  Character,
+  CharacterGearEntry,
+  GrantedAction,
+  RollBonus,
+  itemRefId,
+  itemRefName,
+} from "../../../models/character.model";
+import { entitySelectorKey } from "../../../shared/customHooks/utility/tools/entityKey";
 import { Spell } from "../../../models/generated";
 import { srdItem } from "../../../models/data/generated";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
 import { useDnDSpells } from "../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items";
 import { characterManager, Clone } from "../../../shared";
-import { collectMadFeatures, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount } from "../../../shared/customHooks/mads/useMadCharacters";
-import { featureUsage, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
-import { rollBonusAmount } from "../../../shared/customHooks/mads/commands/useRollBonusFeature";
-import { movementTypeName } from "../../../shared/customHooks/mads/commands/useMovementFeature";
+import { characterMadFeatureSources, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount, choiceExpertiseMads, expertiseChoiceCount, expertiseChoiceKey, expertiseChoiceOptions } from "../../../shared/customHooks/mads/useMadCharacters";
+import useExportProficiencies from "../../../shared/customHooks/dndInfo/useExportProficiencies";
+import { featureUsage, grantedActionUsage, actionUsesKey, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
+import { advantageLabel, movementModeLabels, rollBonusLabel, senseLabels } from "../../../shared/customHooks/mads/rollFormat";
+import { useDnDMagicItems } from "../../../shared/customHooks/dndInfo/info/all/magicItems";
 import UsesTracker from "./usesTracker/usesTracker";
 import { SpellTable } from "./SpellTable/SpellTable";
 import { FlatCard } from "../../../shared/components/flatCard/flatCard";
@@ -27,22 +38,36 @@ const CharacterView: Component = () => {
   const [userSettings] = getUserSettings();
   const allSpells = useDnDSpells();
   const allItems = useDnDItems();
+  const allMagicItems = useDnDMagicItems();
   const getKnownSpells = (character: Character) => {
     return allSpells().filter(spell => character?.spells.some(s => s.name === spell.name));
   }
-  const getCurrentItems = (items: string[]) => {
-    return allItems().filter(item => items?.includes(item.name));
+  const getCurrentItems = (items: CharacterGearEntry[]) => {
+    // Gear entries: selector keys pin exact catalog rows; names cover free-text/older saves.
+    const names = new Set((items ?? []).map((entry) => itemRefName(entry).toLowerCase()));
+    const ids = new Set((items ?? []).map(itemRefId).filter((id): id is string => !!id));
+    return allItems().filter(
+      (item) => ids.has(entitySelectorKey(item)) || names.has((item.name ?? "").toLowerCase()),
+    );
   }
   const stylin = createMemo(() => useStyles(userSettings().theme));
 
 
   const [searchParam, setSearchParam] = useSearchParams();
-   
-  const [characters, setCharacters] = createSignal(characterManager.characters());
-  if (!searchParam.name) setSearchParam({ name: (characters()?.[0]?.name ?? '') });
-  const selectedCharacter = characters().filter(x => x.name.toLowerCase() === (typeof searchParam.name === "string" ? searchParam.name : searchParam.name?.join(" ") || (characters()?.[0].name ?? '')).toLowerCase())?.[0];
 
-  const [currentCharacter, setCurrentCharacter] = createSignal<Character>(selectedCharacter);
+  // Track the manager's signal directly — Dexie fills it AFTER mount on a hard load.
+  const characters = createMemo(() => characterManager.characters());
+  const paramId = () => (typeof searchParam.id === "string" ? searchParam.id : searchParam.id?.[0] ?? "");
+
+  const [currentCharacter, setCurrentCharacter] = createSignal<Character>(
+    characters().find((x) => x.id === paramId()) ?? characters()?.[0],
+  );
+  // Resolve the ?id= selection (or default to the first character) once the async load lands.
+  createEffect(() => {
+    if (currentCharacter()) return;
+    const found = characters().find((x) => x.id === paramId()) ?? characters()[0];
+    if (found) setCurrentCharacter(found);
+  });
 
   // The character with its mad commands applied, for display only. Handlers mutate in
   // place, so they always run against a fresh Clone of the persisted character — never
@@ -52,7 +77,11 @@ const CharacterView: Component = () => {
     const base = currentCharacter();
     if (!base) return base;
     const clone = Clone(base);
-    return useMadCharacters(clone, collectMadFeatures(clone));
+    // Equipped/attuned magic-item mads apply AFTER feature mads so `mode:set` items win.
+    return useMadCharacters(clone, [
+      ...collectMadFeatures(clone),
+      ...collectMagicItemMads(clone, allMagicItems()),
+    ]);
   });
 
   const [activeMobileTab, setActiveMobileTab] = createSignal(0);
@@ -64,78 +93,84 @@ const CharacterView: Component = () => {
     setShowSpellModal(true);
   }
 
-  const [actionList] = createSignal<{name:string, desc:string;}[]>([
-    { name: "Attack", desc: "Make a melee or ranged attack." },
-    { name: "Magic", desc: "Cast a spell." },
-    { name: "Dash", desc: "Double your movement speed for the turn." },
-    { name: "Disengage", desc: "Move without provoking opportunity attacks." },
-    { name: "Dodge", desc: "Focus on avoiding attacks, giving attackers disadvantage." },
-    { name: "Help", desc: "Assist an ally, giving them advantage on their next attack." },
-    { name: "Hide", desc: "Attempt to hide from enemies." },
-    { name: "Ready", desc: "Prepare an action to trigger later." },
-    { name: "Search", desc: "Look for hidden objects or creatures." },
-    { name: "Use an Object", desc: "Interact with an object." }
-  ]);
-  const [bonusActionList] = createSignal<{name:string, desc:string;}[]>([
-    { name: "Second Wind", desc: "Regain hit points." },
-    { name: "Rage", desc: "Enter a state of heightened combat prowess." },
-    { name: "Healing Word", desc: "Heal an ally with a quick spell." }
-  ]);
-  const [reactionList] = createSignal<{name:string, desc:string;}[]>([
-    { name: "Opportunity Attack", desc: "Make a melee attack against a creature that leaves your reach." },
-    { name: "Shield", desc: "Cast the Shield spell in response to an attack." },
-    { name: "Counterspell", desc: "Attempt to interrupt a spell being cast." },
-    { name: "Hellish Rebuke", desc: "Deal fire damage to a creature that damaged you." }
-  ]);
-  const [currentActionList, setCurrentActionList] = createSignal(actionList());
-  const [currentViewedItems, setCurrentViewedItems] = createSignal<string[]>(currentCharacter()?.items.inventory);
+  // Universal action-economy entries every character has; class/feature-specific
+  // entries come from the character's grantedActions.
+  const GENERIC_ACTIONS: Record<ActionType, { name: string; desc: string }[]> = {
+    action: [
+      { name: "Attack", desc: "Make a melee or ranged attack." },
+      { name: "Magic", desc: "Cast a spell." },
+      { name: "Dash", desc: "Double your movement speed for the turn." },
+      { name: "Disengage", desc: "Move without provoking opportunity attacks." },
+      { name: "Dodge", desc: "Focus on avoiding attacks, giving attackers disadvantage." },
+      { name: "Help", desc: "Assist an ally, giving them advantage on their next attack." },
+      { name: "Hide", desc: "Attempt to hide from enemies." },
+      { name: "Ready", desc: "Prepare an action to trigger later." },
+      { name: "Search", desc: "Look for hidden objects or creatures." },
+      { name: "Use an Object", desc: "Interact with an object." },
+    ],
+    bonusAction: [],
+    reaction: [
+      { name: "Opportunity Attack", desc: "Make a melee attack against a creature that leaves your reach." },
+    ],
+  };
+  const [activeEconomy, setActiveEconomy] = createSignal<ActionType>("action");
+  type ActionEconomyRow = { name: string; desc: string; granted?: GrantedAction };
+  const displayedActions = createMemo<ActionEconomyRow[]>(() => {
+    const granted = (displayCharacter()?.grantedActions ?? [])
+      .filter((a) => a.actionType === activeEconomy())
+      .map((a) => ({ name: a.name, desc: a.description ?? "", granted: a }));
+    return [...GENERIC_ACTIONS[activeEconomy()], ...granted];
+  });
+  const [currentViewedItems, setCurrentViewedItems] = createSignal<CharacterGearEntry[]>(currentCharacter()?.items.inventory);
 
   const fullStats = useGetFullStats(displayCharacter);
 
   const rollAdvantages = createMemo(() => displayCharacter()?.rollAdvantages ?? []);
   const advantagesFor = (rollType: AdvantageRollType) => rollAdvantages().filter(a => a.rollType === rollType);
-  const advLabel = (adv: RollAdvantage) =>
-    `${adv.mode === "advantage" ? "ADV" : "DIS"}${adv.stat ? ` · ${adv.stat.toUpperCase()}` : ""}${adv.condition ? ` · ${adv.condition}` : ""}`;
+  const advLabel = advantageLabel;
 
   const rollBonuses = createMemo(() => displayCharacter()?.rollBonuses ?? []);
   const bonusesFor = (rollType: AdvantageRollType) => rollBonuses().filter(b => b.rollType === rollType);
   const profBonus = () => Math.ceil((displayCharacter()?.level ?? 1) / 4) + 1;
-  const bonusLabel = (rb: RollBonus) =>
-    `+${rollBonusAmount(rb, profBonus())}${rb.stat ? ` · ${rb.stat.toUpperCase()}` : ""}${rb.condition ? ` · ${rb.condition}` : ""}`;
-
-  const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+  const bonusLabel = (rb: RollBonus) => rollBonusLabel(rb, profBonus(), fullStats());
 
   // Non-walking movement modes as "Fly 60 ft" chips; a mode without its own speed moves at the walking Speed.
   const movementChips = createMemo(() => {
     const c = displayCharacter();
-    if (!c) return [];
-    return (c.movementTypes ?? [])
-      .filter(t => t !== MovementType.Walk)
-      .map(t => {
-        const name = movementTypeName(t);
-        const speed = c.movementSpeeds?.[name as MovementSpeedKey] ?? c.Speed;
-        return `${capitalize(name)} ${speed} ft`;
-      });
+    return c ? movementModeLabels(c) : [];
   });
 
   // Special senses as "Darkvision 60 ft" chips.
-  const senseChips = createMemo(() => {
-    const senses = displayCharacter()?.senses ?? {};
-    return Object.entries(senses)
-      .filter(([, range]) => typeof range === "number" && range > 0)
-      .map(([sense, range]) => `${capitalize(sense)} ${range} ft`);
-  });
+  const senseChips = createMemo(() => senseLabels(displayCharacter()?.senses ?? {}));
 
-  // Every feature source, mads applied: class levels, race, and top-level features
-  // (mads-granted picks like invocations land on the top-level array).
-  const allFeatures = createMemo(() => {
+  // Resistances / immunities / vulnerabilities (mads applied) as chips.
+  const defenseChips = createMemo(() => {
     const c = displayCharacter();
     if (!c) return [];
     return [
-      ...(c.levels ?? []).flatMap(l => l.features ?? []),
-      ...(c.race?.features ?? []),
-      ...(c.features ?? []),
+      ...(c.resistances ?? []).map((r) => `Resists ${r.type}`),
+      ...(c.immunities ?? []).map((r) => `Immune to ${r.type}`),
+      ...(c.vulnerabilities ?? []).map((r) => `Vulnerable to ${r.type}`),
     ];
+  });
+
+  // Class/background armor/weapon/tool lists with equipment-proficiency mads applied —
+  // the same resolution the PDF export and creator living sheet use.
+  const equipProfs = useExportProficiencies(displayCharacter);
+  const equipLines = createMemo(() => {
+    const profs = equipProfs();
+    return [
+      profs.armor.length ? `Armor: ${profs.armor.join(", ")}` : "",
+      profs.weapons.length ? `Weapons: ${profs.weapons.join(", ")}` : "",
+      profs.tools.length ? `Tools: ${profs.tools.join(", ")}` : "",
+    ].filter(Boolean);
+  });
+
+  // Every feature source, mads applied (mads-granted picks like invocations land on the
+  // top-level array; the source list itself lives in characterMadFeatureSources).
+  const allFeatures = createMemo(() => {
+    const c = displayCharacter();
+    return c ? characterMadFeatureSources(c) : [];
   });
 
   const persistCharacter = (updated: Character) => {
@@ -151,11 +186,15 @@ const CharacterView: Component = () => {
     persistCharacter(updated);
   };
 
-  const chooseStat = (featureName: string, statKey: string) => {
+  /** Write the ability picked in dropdown slot `index` into the feature's statChoices CSV. */
+  const chooseStatAt = (featureKey: string, index: number, statKey: string, count: number) => {
     const base = currentCharacter();
     if (!base) return;
     const updated = Clone(base);
-    updated.statChoices = { ...(updated.statChoices ?? {}), [featureName]: statKey };
+    updated.statChoices = {
+      ...(updated.statChoices ?? {}),
+      [featureKey]: setStatPickAt(updated.statChoices?.[featureKey], index, statKey, count),
+    };
     persistCharacter(updated);
   };
 
@@ -183,11 +222,17 @@ const CharacterView: Component = () => {
   const takeRest = (rest: RechargeType) => {
     const base = currentCharacter();
     if (!base) return;
+    const level = displayCharacter()?.level;
     const limited = allFeatures().flatMap(f => {
-      const usage = featureUsage(f);
+      const usage = featureUsage(f, level);
       return usage ? [{ name: f.name, recharge: usage.recharge }] : [];
     });
-    persistCharacter(resetFeatureUses(Clone(base), rest, limited));
+    // Granted-action pools too — inline-uses actions have no backing feature to list.
+    const actionLimited = (displayCharacter()?.grantedActions ?? []).flatMap(a => {
+      const usage = grantedActionUsage(a, allFeatures(), level);
+      return usage ? [{ name: actionUsesKey(a), recharge: usage.recharge }] : [];
+    });
+    persistCharacter(resetFeatureUses(Clone(base), rest, [...limited, ...actionLimited]));
   };
 
   const [isMobile, setIsMobile] = createSignal(false);
@@ -198,7 +243,6 @@ const CharacterView: Component = () => {
     const listener = (e: MediaQueryListEvent) => apply(e);
     mq.addEventListener("change", listener);
     onCleanup(() => mq.removeEventListener("change", listener));
-    setCharacters(characterManager.characters());
   });
 
   type ActionRow = { name: string; range: string; damage: string };
@@ -229,7 +273,9 @@ const CharacterView: Component = () => {
   const ninthLevelSpells = createMemo(() => sortSpellsByLevel(getKnownSpells(currentCharacter()), 9));
 
   effect(() => {
-    setSearchParam({ name: currentCharacter()?.name })
+    const id = currentCharacter()?.id;
+    // Keep the URL on the shown character's id (and clear any legacy ?name= leftover).
+    if (id) setSearchParam({ id, name: undefined });
   })
 
   onMount(() => {
@@ -330,6 +376,11 @@ const CharacterView: Component = () => {
                   <For each={senseChips()}>{(label) => <Chip value={label} />}</For>
                 </div>
               </Show>
+              <Show when={defenseChips().length}>
+                <div class={`${styles.advChips}`}>
+                  <For each={defenseChips()}>{(label) => <Chip value={label} />}</For>
+                </div>
+              </Show>
               <div class={`${styles.baseCharInfoBox}  ${styles.infoBoxRow}`}>
                 <div class={`${styles.hpMaxTemp}`}>
                   <div>
@@ -387,6 +438,12 @@ const CharacterView: Component = () => {
           <Show when={showStats()}>
             <span >
               <StatBar fullStats={fullStats} currentCharacter={displayCharacter} rollAdvantages={rollAdvantages} rollBonuses={rollBonuses} />
+              <Show when={equipLines().length}>
+                <div class={`${styles.equipProfLines}`}>
+                  <span class={`${styles.equipProfTitle}`}>Trained Equipment</span>
+                  <For each={equipLines()}>{(line) => <div>{line}</div>}</For>
+                </div>
+              </Show>
             </span>
           </Show>
 
@@ -425,18 +482,37 @@ const CharacterView: Component = () => {
                     setActiveActionTab(index);
                   }}
                   tabs={["Spells", "Items", "Actions"]} />
-                <Show when={activeActionTab() === 1}>
+                <Show when={activeActionTab() === 2}>
                   <div>
                     <div class={`${styles.actionButtonList}`}>
-                      <Button onClick={()=>{setCurrentActionList(actionList())}}>Actions</Button>
-                      <Button onClick={()=>{setCurrentActionList(bonusActionList())}}>Bonus Actions</Button>
-                      <Button onClick={()=>{setCurrentActionList(reactionList())}}>Reactions</Button>
+                      <Button onClick={()=>{setActiveEconomy("action")}}>Actions</Button>
+                      <Button onClick={()=>{setActiveEconomy("bonusAction")}}>Bonus Actions</Button>
+                      <Button onClick={()=>{setActiveEconomy("reaction")}}>Reactions</Button>
                     </div>
-                    <For each={currentActionList()}>{(actionItem)=>{
-                      return (<FlatCard headerName={<span>{actionItem.name}</span>}  class={`${styles.actionList}`} transparent>
-                        <div class={`${styles.actionList}`}>{actionItem.desc}</div>
+                    {/* Index, not For: a pip click clones the character, so row objects are rebuilt
+                        every persist — For would remount (and collapse) the FlatCard mid-interaction. */}
+                    <Index each={displayedActions()}>{(actionItem)=>{
+                      const usage = createMemo(() => {
+                        const granted = actionItem().granted;
+                        return granted ? grantedActionUsage(granted, allFeatures(), displayCharacter()?.level) : null;
+                      });
+                      const poolKey = () => {
+                        const granted = actionItem().granted;
+                        return granted ? actionUsesKey(granted) : "";
+                      };
+                      return (<FlatCard headerName={<span>{actionItem().name}</span>}  class={`${styles.actionList}`} transparent>
+                        <div class={`${styles.actionList}`}>{actionItem().desc}</div>
+                        <Show when={usage()}>
+                          <UsesTracker
+                            featureName={actionItem().name}
+                            max={usage()?.max ?? 0}
+                            recharge={usage()?.recharge ?? LONG_REST}
+                            spent={currentCharacter()?.featureUses?.[poolKey()] ?? 0}
+                            onChange={(spent) => spendUses(poolKey(), spent)}
+                          />
+                        </Show>
                       </FlatCard>)
-                    }}</For>
+                    }}</Index>
                   </div>
                 </Show>
                 <Show when={activeActionTab() === 0}>
@@ -483,11 +559,11 @@ const CharacterView: Component = () => {
                     </Show>
 
                     <Show when={fifthLevelSpells().length > 0}>
-                      <SpellTable 
-                        spells={firstLevelSpells}
-                        show={showSpellModalHandler} 
+                      <SpellTable
+                        spells={fifthLevelSpells}
+                        show={showSpellModalHandler}
                         currentCharacter={currentCharacter}
-                      />  
+                      />
                     </Show>
 
                     <Show when={sixthLevelSpells().length >  0}>
@@ -526,7 +602,7 @@ const CharacterView: Component = () => {
                     <SpellModal spell={currentSelectedSpell} backgroundClick={[showSpellModal, setShowSpellModal]} />
                   </div>
                 </Show>
-                <Show when={activeActionTab() === 2}>
+                <Show when={activeActionTab() === 1}>
                   <div class={`${styles.actionButtonList}`}>
                     <Button onClick={()=>{setCurrentViewedItems(currentCharacter()?.items.inventory)}}>Inventory</Button>
                     <Button onClick={()=>{setCurrentViewedItems(currentCharacter()?.items.equipped)}}>Equipped</Button>
@@ -564,7 +640,7 @@ const CharacterView: Component = () => {
               </div>
               <For each={allFeatures()}>
                 {(feature) => {
-                  const usage = featureUsage(feature);
+                  const usage = featureUsage(feature, displayCharacter()?.level);
                   return (
                     <div class={`${stylin().box} ${styles.featureItem}`}>
                       <div class={`${styles.featureTitle}`}>
@@ -584,21 +660,33 @@ const CharacterView: Component = () => {
                         />
                       </Show>
                       <For each={choiceStatMads(feature)}>
-                        {(mad) => (
-                          <div class={`${styles.featureTitle}`}>
-                            <span>{`${mad.value?.["mode"] === "set" ? "Set" : "+"}${mad.value?.["statValue"] ?? ""} to an ability of your choice:`}</span>
-                            <Select
-                              value={currentCharacter()?.statChoices?.[statChoiceKey(feature)] ?? ""}
-                              onChange={(val: string) => runWithOwner(null, () => {
-                                if (val && val !== currentCharacter()?.statChoices?.[statChoiceKey(feature)]) chooseStat(statChoiceKey(feature), val);
-                              })}
-                            >
-                              <For each={statChoiceOptions(mad)}>
-                                {(key) => <Option value={key}>{STAT_LABELS[key] ?? key}</Option>}
-                              </For>
-                            </Select>
-                          </div>
-                        )}
+                        {(mad) => {
+                          const count = statChoiceCount(mad);
+                          const picks = () => statChoicePicks(currentCharacter()?.statChoices?.[statChoiceKey(feature)], count);
+                          const label = count > 1
+                            ? `+${mad.value?.["statValue"] ?? ""} to ${count} different abilities of your choice:`
+                            : `${mad.value?.["mode"] === "set" ? "Set" : "+"}${mad.value?.["statValue"] ?? ""} to an ability of your choice:`;
+                          return (
+                            <div class={`${styles.featureTitle}`}>
+                              <span>{label}</span>
+                              {/* One dropdown per pick slot; a slot's options hide the OTHER slots' picks. */}
+                              <Index each={picks()}>
+                                {(pick, i) => (
+                                  <Select
+                                    value={pick()}
+                                    onChange={(val: string) => runWithOwner(null, () => {
+                                      if (val && val !== pick()) chooseStatAt(statChoiceKey(feature), i, val, count);
+                                    })}
+                                  >
+                                    <For each={statChoiceOptions(mad).filter((key) => key === pick() || !picks().includes(key))}>
+                                      {(key) => <Option value={key}>{STAT_LABELS[key] ?? key}</Option>}
+                                    </For>
+                                  </Select>
+                                )}
+                              </Index>
+                            </div>
+                          );
+                        }}
                       </For>
                       <For each={choiceProficiencyMads(feature)}>
                         {(mad) => {
@@ -616,6 +704,38 @@ const CharacterView: Component = () => {
                                     />
                                   )}
                                 </For>
+                              </div>
+                            </div>
+                          );
+                        }}
+                      </For>
+                      <For each={choiceExpertiseMads(feature)}>
+                        {(mad) => {
+                          const count = expertiseChoiceCount(mad);
+                          const key = () => expertiseChoiceKey(feature);
+                          // Expertise requires proficiency — offer only the allowed skills the
+                          // character is trained in (an already-made pick stays visible).
+                          const options = () => {
+                            const skills = displayCharacter()?.proficiencies?.skills ?? {};
+                            const allowed = expertiseChoiceOptions(mad).filter((skill) => skills[skill]?.proficient);
+                            return [...new Set([...allowed, ...proficiencyPicks(key())])];
+                          };
+                          return (
+                            <div>
+                              <span>{`Expertise — choose ${count} skill${count > 1 ? "s" : ""} you're proficient in (${proficiencyPicks(key()).length}/${count} picked):`}</span>
+                              <div class={`${styles.advChips}`}>
+                                <For each={options()}>
+                                  {(skill) => (
+                                    <Checkbox
+                                      label={skill}
+                                      checked={proficiencyPicks(key()).includes(skill)}
+                                      onChange={() => runWithOwner(null, () => toggleProficiencyPick(key(), skill, count))}
+                                    />
+                                  )}
+                                </For>
+                                <Show when={options().length === 0}>
+                                  <span>No eligible proficient skills yet</span>
+                                </Show>
                               </div>
                             </div>
                           );

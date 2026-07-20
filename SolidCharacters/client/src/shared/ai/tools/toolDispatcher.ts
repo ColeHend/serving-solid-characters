@@ -8,7 +8,7 @@ import { homebrewManager } from "../../customHooks/homebrewManager";
 import { AiToolCall, TokenUsage } from "../types";
 import { HOMEBREW_KINDS, TOOL_TO_KIND, type HomebrewKind } from "../refs/homebrewKind";
 import type { ReviewState, ReviewVerdict } from "../readiness/types";
-import { canonicalClassName } from "../refs/classRefs";
+import { canonicalClassName, findParentClass } from "../refs/classRefs";
 import { findParentRace, knownRaceNames, raceNameById } from "../refs/raceRefs";
 import { buildSpellcasting, parseCasterType } from "../refs/spellSlots";
 import { ensureAllClassLevels } from "../refs/classProgression";
@@ -313,11 +313,16 @@ function toSubrace(i: Record<string, unknown>): Subrace {
 
 function toSubclass(i: Record<string, unknown>): srdSubclass {
     const casterType = parseCasterType(i.casterType);
+    // Mirror toSubrace: consumers match by the parent's ID (parentClassId, name as fallback) —
+    // resolve homebrew-first, then SRD. Unresolvable → id omitted, the name fallback covers it.
+    const parentName = canonicalClassName(str(i.parentClass));
+    const parent = findParentClass(parentName);
     const sub: Subclass = {
         id: createNewId(),
         name: str(i.name),
-        // Canonicalize so the consumer's exact `subclass.parentClass === class.name` filter matches.
-        parentClass: canonicalClassName(str(i.parentClass)),
+        // Canonicalize so name-based consumers' exact `subclass.parentClass === class.name` filter matches.
+        parentClass: parentName,
+        ...(parent?.id ? { parentClassId: parent.id } : {}),
         description: str(i.description),
         features: featuresByLevel(i.features),
         // Stamp a working slot table from casterType so a caster subclass isn't saved with zero slots.

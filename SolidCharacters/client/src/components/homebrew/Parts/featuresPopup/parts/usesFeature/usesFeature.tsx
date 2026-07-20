@@ -1,8 +1,9 @@
-import { Accessor, Component, createMemo, createSignal } from "solid-js";
-import { Button, FormField, Input, Option, Select } from "coles-solid-library";
+import { Accessor, Component, createMemo, createSignal, Show } from "solid-js";
+import { Button } from "coles-solid-library";
+import { UsesInputs } from "../usesInputs/usesInputs";
 
 interface props {
-    toggleValue: (amount: number, recharge: string) => void;
+    toggleValue: (amount: string, proficiencyBonus: string, recharge: string) => void;
     getValue: Accessor<Record<string, string> | undefined>;
 }
 
@@ -13,21 +14,25 @@ export const UsesFeature: Component<props> = (props) => {
         return madValue()?.[key] || "";
     }
 
-    const [amount, setAmount] = createSignal(+GetMadValue("amount") || 1);
+    const [amount, setAmount] = createSignal(GetMadValue("amount"));
+    const [pbChoice, setPbChoice] = createSignal(GetMadValue("proficiencyBonus"));
     const [recharge, setRecharge] = createSignal(GetMadValue("recharge") || "Long Rest");
 
+    const usable = createMemo(() => pbChoice() !== "" || +amount() > 0);
+
     return <div>
-        <FormField name="Number of Uses">
-            <Input min={1} value={amount()} type="number" onInput={(e) => setAmount(+e.currentTarget.value)} />
-        </FormField>
+        <UsesInputs
+            amount={amount} setAmount={setAmount}
+            pbChoice={pbChoice} setPbChoice={setPbChoice}
+            recharge={recharge} setRecharge={setRecharge}
+        />
 
-        <FormField name="Recharges On">
-            <Select value={recharge()} onChange={setRecharge}>
-                <Option value={"Short Rest"}>Short Rest</Option>
-                <Option value={"Long Rest"}>Long Rest</Option>
-            </Select>
-        </FormField>
+        <Show when={!usable()}>
+            <p>Enter a number of uses or pick a Proficiency Bonus fraction.</p>
+        </Show>
 
-        <Button onClick={() => props.toggleValue(amount(), recharge())}>Set Uses</Button>
+        <Button disabled={!usable()} onClick={() => props.toggleValue(pbChoice() ? "" : amount().trim(), pbChoice(), recharge())}>
+            Set Uses
+        </Button>
     </div>
 }

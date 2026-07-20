@@ -14,6 +14,7 @@ import { capReached, combinedUsed, ensureOverallUsageLoaded, overallUsage } from
 import { HOMEBREW_TOOLS, allowedKinds, enabledUtilityTools, filterPipelineTools, filterTools, requiredFieldsForKind } from "../ai/tools/toolSchemas";
 import { HOMEBREW_KINDS, HomebrewKind, KIND_TO_TOOL, kindLabel, kindLabelLower, TOOL_TO_KIND } from "../ai/refs/homebrewKind";
 import { ensureRaceCatalog } from "../ai/refs/raceRefs";
+import { ensureClassCatalog } from "../ai/refs/classRefs";
 import { toolCategory } from "../ai/tools/toolCategory";
 import { runComputeTool } from "../ai/tools/computeTools";
 import { LOOKUP_TOOLS, runLookupTool } from "../ai/tools/lookupTools";
@@ -1479,6 +1480,8 @@ export class AiAssistant {
         // Subrace tools resolve their parent race NAME → race ID synchronously in finishTurn, so warm the
         // SRD race catalog while the model streams (fire-and-forget; resolution fails soft to homebrew-only).
         if (editTools.length || homebrewTools.some(t => t.name === "create_subrace")) void ensureRaceCatalog();
+        // Subclass tools likewise resolve parent class NAME → class ID (parentClassId) synchronously.
+        if (editTools.length || homebrewTools.some(t => t.name === "create_subclass")) void ensureClassCatalog();
         // Staged-generation seed tools (generate_*): the ONLY class-creation path now that M4 removed the
         // one-shot create_class. Offered in homebrew mode and gated by the same per-kind create permission
         // (denying "class" denies generate_class too).

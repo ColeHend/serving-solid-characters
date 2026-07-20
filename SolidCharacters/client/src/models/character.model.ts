@@ -2,6 +2,8 @@ import { Stats } from "../shared";
 import { FeatureDetail } from "./generated";
 
 export class Character {
+  /** Stable identity and Dexie primary key (minted via createNewId on create). '' = not yet saved. */
+  public id: string = '';
   public name: string = '';
   public get level() {
     return this.levels.length;
@@ -22,8 +24,16 @@ export class Character {
   public className: string = '';
   public subclass: string[] = [];
   public background: string = '';
+  /** Selector key of the chosen background (SRD id or hb:<name>). Absent on older saves — resolve by name. */
+  public backgroundId?: string;
   public alignment: string = '';
   public features: FeatureDetail[] = [];
+  /**
+   * The background's own features (raw, unapplied) — a mads source like race.features.
+   * Kept separate from `features` (feats) so background choices aren't mistagged as feat picks.
+   * Absent on pre-existing saves; re-derived from the catalog on every creator save.
+   */
+  public backgroundFeatures?: FeatureDetail[];
   public proficiencies: CharacterProficiency = {
     skills: {},
     other: {}
@@ -41,6 +51,8 @@ export class Character {
   public proficiencyChoices: Record<string, string> = {};
   /** Resolved picks for choice-form AddSpells commands, keyed by spellChoiceKey → CSV of spell ids. */
   public spellChoices: Record<string, string> = {};
+  /** Resolved picks for choice-form AddItems commands, keyed by itemChoiceKey → CSV of item ids. */
+  public itemChoices: Record<string, string> = {};
   public resistances: DamageAffinity[] = [];
   public vulnerabilities: DamageAffinity[] = [];
   public immunities: DamageAffinity[] = [];
@@ -110,6 +122,8 @@ export interface CharacterDetails {
 export interface CharacterFeatTaken {
   name: string;
   source: 'background' | 'chosen';
+  /** Selector key of the feat (SRD id or hb:<name>). Absent on older saves — resolve by name. */
+  id?: string;
 }
 
 export type SkillOverrideState = 'none' | 'proficient' | 'expertise';
@@ -119,15 +133,19 @@ export interface CharacterBuilderState {
   abilityMethod: AbilityGenMethod;
   baseScores: Stats;
   bonusScores: Stats;
-  /** 2024 background boost per ability (+2/+1 or three +1s). */
-  backgroundBoosts: Partial<Record<keyof Stats, number>>;
+  /** Legacy saves only: 2024 background boost map — migrated onto abilityBonuses on load. */
+  backgroundBoosts?: Partial<Record<keyof Stats, number>>;
+  /** Ability each species/background bonus token is assigned to ('' = unassigned). */
+  abilityBonuses?: { species: string[]; background: string[] };
+  /** +2/+1 (standard) vs three +1s (spread) per bonus source. */
+  abilityBonusStyle?: { species: 'standard' | 'spread'; background: 'standard' | 'spread' };
   /** Explicit skill-pill overrides only; unset skills derive from class/background picks. */
   skillOverrides: Record<string, SkillOverrideState>;
   /** Chosen class skills keyed by class name. */
   classSkillChoices: Record<string, string[]>;
   /** 4d6-drop-lowest results when abilityMethod is 'roll'. */
   rolledPool: number[];
-  /** Species abilityBonusChoice picks ("str", "con"). Absent on older saves. */
+  /** Legacy saves only: species abilityBonusChoice picks — migrated onto abilityBonuses on load. */
   raceAbilityChoices?: string[];
   /** Species languageChoice picks. Absent on older saves. */
   raceLanguageChoices?: string[];
@@ -135,6 +153,21 @@ export interface CharacterBuilderState {
   raceTraitChoices?: string[];
   /** Origin-feat override; '' or absent = the background's recommended feat. */
   originFeat?: string;
+  /**
+   * Feat-or-ASI slot decisions keyed by the ASI feature's id: "asi" or the chosen feat's
+   * selector key. The chosen feats are ALSO written into featsTaken (so mads/views apply
+   * them); this map only remembers which slot they came from. Absent on older saves.
+   */
+  featOrAsi?: Record<string, string>;
+  /** Hit-point inputs from the creator's Hit Points section. Absent = fully auto-computed. */
+  hp?: CharacterHpOverride;
+}
+
+/** Manual HP entries; undefined maxOverride/current fall back to the computed values. */
+export interface CharacterHpOverride {
+  maxOverride?: number;
+  current?: number;
+  temp: number;
 }
 export interface CharacterProficiency {
 	skills: Record<string, CharacterSkillProficiency>
@@ -148,7 +181,11 @@ export interface CharacterSkillProficiency {
 }
 export interface CharacterRace {
 	species: string;
+	/** Selector key of the species (SRD id or hb:<name>). Absent on older saves — resolve by name. */
+	speciesId?: string;
 	subrace?: string;
+	/** Selector key of the subrace. Absent on older saves — resolve by name. */
+	subraceId?: string;
 	age?: string;
 	size?: string;
 	speed?: string;
@@ -162,18 +199,42 @@ export interface CharacterHealth {
 export interface CharacterSpell {
 	name: string;
 	prepared: boolean;
+	/** Spell id when resolvable. Absent on older saves — resolve by name. */
+	id?: string;
 }
 export interface CharacterLevel {
 	class: string;
+	/** Selector key of the class (SRD id or hb:<name>). Absent on older saves — resolve by name. */
+	classId?: string;
 	subclass?: string;
+	/** Selector key of the subclass. Absent on older saves — resolve by name. */
+	subclassId?: string;
 	level: number;
 	hitDie: number;
 	features: FeatureDetail[];
 }
+/** Gear entry: display name plus the item's selector key when it came from the catalog. */
+export interface CharacterItemRef {
+  name: string;
+  /** Selector key of the item (SRD id or hb:<name>). Absent on free-text/pack entries. */
+  id?: string;
+}
+
+/** Older saves stored plain name strings — every gear reader must go through itemRefName. */
+export type CharacterGearEntry = string | CharacterItemRef;
+
+/** Tolerant display-name reader for gear entries of either shape. */
+export const itemRefName = (entry: CharacterGearEntry): string =>
+  typeof entry === "string" ? entry : entry.name;
+
+/** Selector key of a gear entry when it has one (never derived from the bare name). */
+export const itemRefId = (entry: CharacterGearEntry): string | undefined =>
+  typeof entry === "string" ? undefined : entry.id;
+
 export interface CharacterGear {
-	inventory: string[];
-	equipped: string[];
-	attuned: string[];
+	inventory: CharacterGearEntry[];
+	equipped: CharacterGearEntry[];
+	attuned: CharacterGearEntry[];
   currency: CharacterCurrency;
 }
 
@@ -219,6 +280,11 @@ export interface RollBonus {
   bonus?: number;
   /** The bonus equals this fraction of the character's proficiency bonus (Alert's PB to Initiative). */
   proficiencyBonus?: PbFraction;
+  /**
+   * An ability whose MODIFIER is ADDED to the roll ("add your Wisdom modifier to Initiative").
+   * Distinct from `stat`, which only narrows which saves/checks the bonus applies to and is never added.
+   */
+  statBonus?: keyof Stats;
   /** Only meaningful for SavingThrow / AbilityCheck; absent = all stats. */
   stat?: keyof Stats;
   /** Free-text qualifier, e.g. "with Ranged weapons". */
@@ -229,6 +295,9 @@ export interface RollBonus {
 
 export type ActionType = "action" | "bonusAction" | "reaction";
 
+/** When a limited-use pool refills (matches RECHARGE_TYPES in the command catalog). */
+export type RestType = "Short Rest" | "Long Rest";
+
 /** An action/bonus action/reaction a mad granted the character (Channel Divinity, Second Wind, ...). */
 export interface GrantedAction {
   name: string;
@@ -237,6 +306,12 @@ export interface GrantedAction {
   description?: string;
   /** Name of the granting feature — links to featureUses (keyed by feature name) for uses tracking. */
   source?: string;
+  /** Inline fixed number of uses. Absent when proficiencyBonus drives it, or the action is unlimited. */
+  uses?: number;
+  /** Inline uses equal to this fraction of the proficiency bonus (a fixed `uses` wins over this). */
+  proficiencyBonus?: PbFraction;
+  /** When the inline uses refill; only meaningful alongside uses/proficiencyBonus. */
+  recharge?: RestType;
 }
 
 // -- Character Form Models --

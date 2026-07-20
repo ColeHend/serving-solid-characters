@@ -1,103 +1,109 @@
-import { Accessor, Component, createMemo, createSignal, Show } from "solid-js";
+import { Accessor, Component, For, Show, createMemo, createSignal } from "solid-js";
+import { Button, Checkbox, Chip, FormField, Input } from "coles-solid-library";
 import { srdItem } from "../../../../../../models/data/generated";
 import { ItemType } from "../../../../../../shared";
-import { Button, Cell, Column, Header, Table } from "coles-solid-library";
+import { ItemPickerPanel } from "./itemPickerPanel";
 import styles from './itemFeature.module.scss';
 
 interface ItemFeatureProps {
     allItems: Accessor<srdItem[]>;
     getValue: Accessor<Record<string, string> | undefined>;
-    toggleItem: (id: string) => void;
+    /** Enables the "player chooses from a list" form (AddItems only). */
+    allowChoice?: boolean;
+    commit: (value: Record<string, string>) => void;
 }
 
+/**
+ * Value editor for AddItems/RemoveItems. Specific mode picks one item ({ID}); choice mode
+ * (AddItems only) builds the allowed list the player later picks from
+ * ({ID:"choice", options:<CSV of item ids>, count}).
+ */
 export const ItemFeature: Component<ItemFeatureProps> = (props) => {
-    const columns = ["Item Name", "Type", "Actions"];
-
-    const allItems = createMemo(() => props.allItems());
     const madValue = createMemo(() => props.getValue());
+    const getMadValue = (key: string) => madValue()?.[key] ?? "";
 
-    const getMadValue = (key: string) => {
-        return madValue()?.[key] ?? null;
-    }
+    const storedId = getMadValue("ID");
+    const [isChoice, setIsChoice] = createSignal(storedId === "choice");
+    const [localID, setLocalID] = createSignal(storedId === "choice" ? "" : storedId);
+    const [options, setOptions] = createSignal<string[]>(
+        getMadValue("options").split(",").map(s => s.trim()).filter(Boolean));
+    const [count, setCount] = createSignal(+(getMadValue("count") || "1") || 1);
 
-    const learnedItem = createMemo(() => getMadValue("ID") ?? "");
+    const itemById = (id: string) => props.allItems().find(item => item.id === id);
+    const itemName = (id: string) => itemById(id)?.name ?? id;
 
-    const [localID, setLocalID] = createSignal(learnedItem());
+    const selected = createMemo(() => itemById(localID()));
+    const selectedProperties = createMemo(() => selected()?.properties ?? {});
 
-    const isLearned = (id: string) => localID() === id;
+    const addOption = (id: string) => setOptions(old => old.includes(id) ? old : [...old, id]);
+    const removeOption = (id: string) => setOptions(old => old.filter(o => o !== id));
 
-    const getItemByID = (id: string) => allItems().find(item => item.id === id);
+    const commit = () => {
+        if (isChoice()) {
+            props.commit({ "ID": "choice", "options": options().join(","), "count": `${count()}` });
+        } else {
+            props.commit({ "ID": localID() });
+        }
+    };
 
-    const currItemName = createMemo(() => getItemByID(localID())?.name ?? null);
-    const currItemType = createMemo(() => {
-        const item = getItemByID(localID());
-        return item?.type ?? null;
-    });
-    const currItemDesc = createMemo(() => getItemByID(localID())?.desc ?? null);
-    const currItemProperties = createMemo(() => getItemByID(localID())?.properties ?? null);
-    const currItemPropertiesKeys = createMemo(() => {
-        const properties = getItemByID(localID())?.properties;
-        return properties ? Object.keys(properties) : null;
-    });
-    const currItemWeight = createMemo(() => getItemByID(localID())?.weight ?? null);
-    const currItemCost = createMemo(() => getItemByID(localID())?.cost ?? null);
+    return <div class={styles.itemFeature}>
+        <Show when={props.allowChoice}>
+            <Checkbox
+                label="Let the player choose from a list"
+                checked={isChoice()}
+                onChange={() => setIsChoice(v => !v)}
+            />
+        </Show>
 
-    const handleSubmit = () => {
-        props.toggleItem(localID());
-    }
-
-    return <div style={{ display: "flex", "flex-direction": "row" }}>
-
-        <div class={`${styles.itemTable}`}>
-            <Table data={allItems} columns={columns}>
-                <Column name="Item Name">
-                    <Header>Name</Header>
-                    <Cell<srdItem>>
-                        {item => <span>
-                            {item.name}
-                        </span>}
-                    </Cell>
-                </Column>
-                <Column name="Type">
-                    <Header>Type</Header>
-                    <Cell<srdItem>>
-                        {item => <span>
-                            {ItemType[item.type]}
-                        </span>}
-                    </Cell>
-                </Column>
-                <Column name="Actions">
-                    <Header><></></Header>
-                    <Cell<srdItem>>
-                        {item => <Button onClick={()=>{
-                            if (isLearned(item.id)) {
-                                setLocalID("");
-                            } else {
-                                setLocalID(item.id)
-                            }
-                        }}>
-                            {!isLearned(item.id) ? "learned" : "unlearn"}
-                        </Button>}
-                    </Cell>
-                </Column>
-            </Table>
-
-            <Button onClick={handleSubmit}>Set Change</Button>
-        </div>
-        
-        <Show when={localID() !== ""} fallback={<span>Choose an item to see its Details</span>}>
-            <div>
-                <h3>Selected Item: {currItemName()}</h3>
-                <p><strong>Type:</strong> {ItemType[currItemType() ?? 0]}</p>
-                <strong>Properties:</strong>
-                <ul class={`${styles.propertiesList}`}>{
-                    currItemPropertiesKeys()?.map(key => <li>{key}: {currItemProperties()?.[key]}</li>)
-                }</ul>
-                <p><strong>Weight:</strong> {currItemWeight()}</p>
-                <p><strong>Cost:</strong> {currItemCost()}</p>
-                <p>{currItemDesc()}</p>
+        <Show when={!isChoice()}>
+            <div class={styles.pickerSplit}>
+                <ItemPickerPanel
+                    allItems={props.allItems}
+                    onAdd={(id) => setLocalID(prev => prev === id ? "" : id)}
+                />
+                <Show when={selected()} fallback={<span class={styles.pickerHint}>Choose an item to see its details</span>}>
+                    <div class={styles.detailPane}>
+                        <h3>Selected Item: {selected()?.name}</h3>
+                        <p><strong>Type:</strong> {ItemType[selected()?.type ?? 0]}</p>
+                        <strong>Properties:</strong>
+                        <ul class={styles.propertiesList}>
+                            <For each={Object.keys(selectedProperties())}>
+                                {key => <li>{key}: {selectedProperties()[key]}</li>}
+                            </For>
+                        </ul>
+                        <p><strong>Weight:</strong> {selected()?.weight}</p>
+                        <p><strong>Cost:</strong> {selected()?.cost}</p>
+                        <p>{selected()?.desc}</p>
+                    </div>
+                </Show>
             </div>
         </Show>
 
-    </div>
-}
+        <Show when={isChoice()}>
+            <div class={styles.chosenRow}>
+                <Show when={options().length} fallback={<span class={styles.pickerHint}>Add the items the player may choose from</span>}>
+                    <For each={options()}>
+                        {(id) => <Chip value={itemName(id)} remove={() => removeOption(id)} />}
+                    </For>
+                </Show>
+            </div>
+            <ItemPickerPanel
+                allItems={props.allItems}
+                onAdd={addOption}
+                excludeIds={options}
+            />
+            <FormField name="How many the player picks">
+                <Input
+                    value={count()}
+                    type="number"
+                    min={1}
+                    onChange={(e) => setCount(Math.max(1, +e.currentTarget.value || 1))}
+                />
+            </FormField>
+        </Show>
+
+        <Button disabled={isChoice() ? options().length === 0 : !localID()} onClick={commit}>
+            Set Change
+        </Button>
+    </div>;
+};

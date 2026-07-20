@@ -184,8 +184,8 @@ describe('Usage & spells ↔ mads bridge', () => {
     fireEvent.keyDown(spellInput(container), { key: 'Enter' });
 
     await waitFor(() => expect(container.querySelector('[data-mock="Chip"][data-value="Bless"]')).toBeTruthy());
-    // A granted spell is usage-owned, so the effect count is unchanged.
-    getByText('Effects (1)');
+    // Granted spells show in BOTH tabs — the new row also counts as an effect.
+    getByText('Effects (2)');
 
     fireEvent.click(getByText('Save changes'));
     const mads = lastEmitted(onClose).metadata!.mads!;
@@ -208,6 +208,40 @@ describe('Usage & spells ↔ mads bridge', () => {
     const mads = lastEmitted(onClose).metadata!.mads!;
     expect(mads.some(m => m.command === 'AddSpells')).toBe(false);
     expect(mads).toHaveLength(2);
+  });
+
+  it('diverts Save through the unset-effects guard and drops the unset row on Save anyway', async () => {
+    const feature = editFeature();
+    // A row the author never finished: no command, no value → isUnsetRow.
+    feature.metadata!.mads!.push({ command: '', value: {}, type: 0, prerequisites: [], group: 0 });
+    const { container, getByText, onClose } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Save changes'));
+    expect(onClose).not.toHaveBeenCalled(); // guard intercepted the close
+
+    fireEvent.click(getByText('Save anyway'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads).toHaveLength(2); // AddHitPoints + AddUses; the junk row is gone
+    expect(mads.some(m => m.command === '')).toBe(false);
+  });
+
+  it('Keep editing returns from the guard without closing or losing state', async () => {
+    const feature = editFeature();
+    feature.metadata!.mads!.push({ command: '', value: {}, type: 0, prerequisites: [], group: 0 });
+    const { container, getByText, onClose } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Cancel'));
+    expect(onClose).not.toHaveBeenCalled(); // guard intercepted the discard
+    fireEvent.click(getByText('Keep editing'));
+
+    // Still editing: saving again re-diverts, and the confirmed save carries the full state.
+    fireEvent.click(getByText('Save changes'));
+    fireEvent.click(getByText('Save anyway'));
+    const emitted = lastEmitted(onClose);
+    expect(emitted.name).toBe('Second Wind');
+    expect(emitted.metadata!.mads).toHaveLength(2);
   });
 
   it('binds only the FIRST AddUses mad; duplicates stay visible as effects', async () => {

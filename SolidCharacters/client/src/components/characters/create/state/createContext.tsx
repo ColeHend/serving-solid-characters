@@ -1,9 +1,10 @@
-import { Accessor, JSX, createContext, createSignal, useContext } from "solid-js";
+import { Accessor, JSX, createContext, createEffect, createMemo, createSignal, useContext } from "solid-js";
 import { CharacterEdition, RulesetSelection } from "../../../../models/character.model";
 import { useDnDBackgrounds } from "../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useDnDClasses } from "../../../../shared/customHooks/dndInfo/info/all/classes";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
 import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
+import { useDnDMagicItems } from "../../../../shared/customHooks/dndInfo/info/all/magicItems";
 import { useDnDRaces } from "../../../../shared/customHooks/dndInfo/info/all/races";
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDSubclasses } from "../../../../shared/customHooks/dndInfo/info/all/subclasses";
@@ -24,6 +25,7 @@ import { useGetHombrewSpells } from "../../../../shared/customHooks/dndInfo/info
 import { useGetHombrewSubclasses } from "../../../../shared/customHooks/dndInfo/info/homebrew/subclasses";
 import { useGetHombrewSubraces } from "../../../../shared/customHooks/dndInfo/info/homebrew/subraces";
 import { CreateData, Derived, useDerived } from "../rules/useDerived";
+import { defaultSlots } from "../rules/engine";
 import { withVariantFirst } from "./bothMode";
 import { DraftActions, createDraftStore } from "./draftStore";
 import { SrdLookups } from "./draftMapper";
@@ -42,9 +44,9 @@ export interface CreateContextValue {
    * for reconciling a switch BEFORE committing it to the store.
    */
   loadEditionData: (edition: RulesetSelection) => Promise<EditionData>;
-  /** Name of the character being edited, null when creating a new one. */
-  editName: Accessor<string | null>;
-  setEditName: (name: string | null) => void;
+  /** Id of the character being edited, null when creating a new one. */
+  editId: Accessor<string | null>;
+  setEditId: (id: string | null) => void;
 }
 
 const CreateContext = createContext<CreateContextValue>();
@@ -57,7 +59,7 @@ export function defaultEdition(): RulesetSelection {
 
 export function CreateProvider(props: { children: JSX.Element }) {
   const { draft, actions } = createDraftStore({ edition: defaultEdition() });
-  const [editName, setEditName] = createSignal<string | null>(null);
+  const [editId, setEditId] = createSignal<string | null>(null);
 
   // Property access happens inside each hook's createMemo, so the store's edition is tracked
   // and every list swaps datasets when the toggle changes.
@@ -80,6 +82,17 @@ export function CreateProvider(props: { children: JSX.Element }) {
     items: useDnDItems(editionOpt),
   };
 
+  // The magic-item hook takes a single year, so both-mode merges the two catalogs with the
+  // current rows FIRST — collectMagicItemMads keeps the first row per name, so a same-name
+  // item resolves to its 2024 printing and never applies twice.
+  const magicItems2014 = useDnDMagicItems({ overrideVersion: "2014" });
+  const magicItems2024 = useDnDMagicItems({ overrideVersion: "2024" });
+  const magicItems = createMemo(() => {
+    if (draft.edition === "2014") return magicItems2014();
+    if (draft.edition === "2024") return magicItems2024();
+    return [...magicItems2024(), ...magicItems2014()];
+  });
+
   const data: CreateData = {
     classes: raw.classes,
     subclasses: raw.subclasses,
@@ -91,9 +104,27 @@ export function CreateProvider(props: { children: JSX.Element }) {
     feats: raw.feats,
     spells: raw.spells,
     items: raw.items,
+    magicItems,
   };
 
   const derived = useDerived(draft, data);
+
+  // Seed each bonus source's slots with its pool's book defaults whenever the pool shape
+  // changes (species/lineage/background/style/edition changes clear the slots to []) —
+  // zero-click parity: a fixed-bonus race applies its book stats with no player input.
+  // Steady state (lengths match) writes nothing, so restored assignments survive edit loads.
+  createEffect(() => {
+    const pool = derived.speciesBonusPool();
+    if (draft.abilityBonuses.species.length !== pool.tokens.length) {
+      actions.resetAbilityBonusSlots("species", defaultSlots(pool));
+    }
+  });
+  createEffect(() => {
+    const pool = derived.backgroundBonusPool();
+    if (draft.abilityBonuses.background.length !== pool.tokens.length) {
+      actions.resetAbilityBonusSlots("background", defaultSlots(pool));
+    }
+  });
 
   // Plain-object snapshot for the pure mapper/reconciler. Races/backgrounds surface the
   // pairing-resolved variant first so name lookups hit the edition-correct row in both-mode.
@@ -104,6 +135,7 @@ export function CreateProvider(props: { children: JSX.Element }) {
     subraces: data.subraces(),
     backgrounds: withVariantFirst(data.backgrounds(), derived.selectedBackground()),
     feats: data.feats(),
+    spells: data.spells(),
   });
 
   // Homebrew isn't edition-tagged — it belongs to every edition's dataset.
@@ -164,7 +196,7 @@ export function CreateProvider(props: { children: JSX.Element }) {
 
   return (
     <CreateContext.Provider
-      value={{ draft, actions, derived, data, lookups, loadEditionData, editName, setEditName }}
+      value={{ draft, actions, derived, data, lookups, loadEditionData, editId, setEditId }}
     >
       {props.children}
     </CreateContext.Provider>

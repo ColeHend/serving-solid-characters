@@ -4,7 +4,6 @@ import httpClient$ from "../utility/tools/httpClientObs";
 import CharacterDB from "../utility/localDB/new/charactersDB";
 import {
   catchError,
-  concatMap,
   finalize,
   Observable,
   of,
@@ -13,6 +12,7 @@ import {
 } from "rxjs";
 import { addSnackbar } from "coles-solid-library";
 import { Clone } from "../utility/tools/Tools";
+import { createNewId } from "../utility/tools/idGen";
 
 export interface Stats {
   str: number;
@@ -48,9 +48,16 @@ class CharacterManager {
 
   // ------create------
 
+  /** Adds the character under a freshly minted id (every creation path gets one here). */
   public createCharacter(character: Character) {
-    if (this._characters().some((c) => c.name === character.name)) return;
-    this.addCharacterToDB(Clone(character));
+    const copy = Clone(character);
+    copy.id = createNewId();
+    // Subscribe so the pipe actually runs — toObservable is cold, and without a subscriber
+    // the finalize() that reconciles the in-memory signal never fires (the Dexie write is
+    // eager, so the row would persist while the list stayed stale until a full reload —
+    // making a second Save duplicate the character and Delete silently no-op).
+    this.addCharacterToDB(copy).subscribe();
+    return copy.id;
   }
 
   private addCharacterToDB(newCharacter: Character) {
@@ -83,19 +90,21 @@ class CharacterManager {
 
   // ------Read------
 
-  public getCharacter(name: string) {
-    return this._characters().find((character) => character.name === name);
+  public getCharacter(id: string) {
+    return this._characters().find((character) => character.id === id);
   }
 
   // ------Update------
 
   public updateCharacter(character: Character, silent = false) {
-    if (!this.characters().some(c => c.name === character.name)) return;
-    this.updateCharInDB(character, silent);
+    if (!character.id) return;
+    // No in-memory presence guard: Dexie put() upserts by id, and the signal may lag a
+    // just-created character (see createCharacter). Subscribe so the pipe runs.
+    this.updateCharInDB(character, silent).subscribe();
   }
 
-  public updateCharSpell(characterName: string,newSpell: CharacterSpell) {
-    const character = this.getCharacter(characterName);
+  public updateCharSpell(characterId: string, newSpell: CharacterSpell) {
+    const character = this.getCharacter(characterId);
 
     if (character) {
       
@@ -107,7 +116,7 @@ class CharacterManager {
       updated.spells = spells;
       this.updateCharacter(updated)
       addSnackbar({
-        message: `Added ${newSpell.name} to ${characterName}`,
+        message: `Added ${newSpell.name} to ${character.name}`,
         severity: "success"
       })
       return;
@@ -137,7 +146,10 @@ class CharacterManager {
       }),
       finalize(() => {
         if (!failed) {
-          this._setCharacters(list => list.map(c => c.name === updated.name ? updated : c));
+          // Upsert: put() creates the row when missing, so mirror that in the signal.
+          this._setCharacters(list => list.some(c => c.id === updated.id)
+            ? list.map(c => c.id === updated.id ? updated : c)
+            : [...list, updated]);
           if (!silent) {
             addSnackbar({
               message: "Character updated successfully",
@@ -152,15 +164,11 @@ class CharacterManager {
 
   // ------Delete------
 
-  public deleteCharacter(name: string) {
-    if (!this.characters().some(c => c.name === name)) return;
-    const rest = this._characters().filter(c => c.name !== name);
-    
-    httpClient$.toObservable(CharacterDB.characters.clear()).pipe(
-      take(1),
-      concatMap(() => 
-        httpClient$.toObservable(CharacterDB.characters.bulkAdd(rest))
-      )
+  public deleteCharacter(id: string) {
+    if (!this.characters().some(c => c.id === id)) return;
+
+    httpClient$.toObservable(CharacterDB.characters.delete(id)).pipe(
+      take(1)
     ).subscribe({
       error: err => {
         console.error(err);
@@ -168,10 +176,10 @@ class CharacterManager {
           message: "Error removing character",
           severity: "error"
         })
-        
+
       },
       complete: () => {
-        this._setCharacters(rest);
+        this._setCharacters(list => list.filter(c => c.id !== id));
         addSnackbar({
           message: "Character Removed",
           severity: "success"
@@ -180,23 +188,23 @@ class CharacterManager {
     })
   }
 
-  public deleteCharSpell(characterName: string,spellName: string) {
-    
-    // eslint-disable-next-line prefer-const
-    let character = this.getCharacter(characterName);
+  public deleteCharSpell(characterId: string, spellName: string) {
 
-    
+    // eslint-disable-next-line prefer-const
+    let character = this.getCharacter(characterId);
+
+
     if (character) {
       character.spells = character.spells.filter(s => s.name !== spellName);
-      
+
       this.updateCharacter(character);
 
       addSnackbar({
-        message: `deleted ${spellName} from ${characterName}`,
+        message: `deleted ${spellName} from ${character.name}`,
         severity: "success"
       })
       return;
-      
+
     } else {
       addSnackbar({
         message: "Coundn't find character",

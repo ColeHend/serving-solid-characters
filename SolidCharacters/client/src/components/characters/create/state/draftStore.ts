@@ -2,11 +2,13 @@ import { createStore, produce, reconcile } from "solid-js/store";
 import {
   AbilityGenMethod,
   CharacterDetails,
+  CharacterItemRef,
   RulesetSelection,
   SkillOverrideState,
 } from "../../../../models/character.model";
-import { ABILITY_SCORE_MAX, ABILITY_SCORE_MIN, AbilityKey, MAX_TOTAL_LEVEL } from "../rules/constants";
-import { CharacterDraft, DraftItems, defaultBaseScores, emptyDraft, zeroScores } from "./types";
+import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
+import { ABILITY_SCORE_MAX, ABILITY_SCORE_MIN, AbilityBonusStyle, AbilityKey, AbilitySlot, MAX_TOTAL_LEVEL } from "../rules/constants";
+import { CharacterDraft, DraftClass, DraftItems, defaultBaseScores, emptyDraft, zeroScores } from "./types";
 
 const nextSkillState: Record<SkillOverrideState, SkillOverrideState> = {
   none: "proficient",
@@ -20,6 +22,14 @@ function roll4d6DropLowest(): number {
   return dice.sort((a, b) => a - b).slice(1).reduce((sum, d) => sum + d, 0);
 }
 
+/** Selector key of a draft class entry: the stored classId, else the name-derived hb: key. */
+export const draftClassKey = (entry: Pick<DraftClass, "classId" | "name">): string =>
+  entry.classId || entitySelectorKey({ name: entry.name });
+
+/** Same catalog item (matching ids) or, when either side is id-less, the same display name. */
+const sameGearEntry = (a: CharacterItemRef, b: CharacterItemRef): boolean =>
+  a.id && b.id ? a.id === b.id : a.name === b.name;
+
 export function createDraftStore(initial?: Partial<CharacterDraft>) {
   const [draft, setDraft] = createStore<CharacterDraft>(emptyDraft("2024", initial));
 
@@ -30,36 +40,55 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
     setName(name: string) {
       setDraft("name", name);
     },
+    /** Stamps the saved character's id onto the draft (after a first save or edit load). */
+    setCharacterId(id: string | undefined) {
+      setDraft("characterId", id);
+    },
     setAlignment(alignment: string) {
       setDraft("alignment", alignment);
     },
 
-    addClass(name: string) {
-      if (draft.classes.some((c) => c.name === name)) return;
-      setDraft("classes", draft.classes.length, { name, level: 1, subclass: "", skillChoices: [] });
+    addClass(name: string, classId?: string) {
+      const key = classId || entitySelectorKey({ name });
+      if (draft.classes.some((c) => draftClassKey(c) === key)) return;
+      setDraft("classes", draft.classes.length, {
+        name,
+        classId,
+        level: 1,
+        subclass: "",
+        subclassId: undefined,
+        skillChoices: [],
+      });
     },
-    removeClass(name: string) {
-      setDraft("classes", (classes) => classes.filter((c) => c.name !== name));
+    removeClass(key: string) {
+      setDraft("classes", (classes) => classes.filter((c) => draftClassKey(c) !== key));
     },
-    setClassLevel(name: string, level: number) {
+    setClassLevel(key: string, level: number) {
       setDraft(
         "classes",
-        (c) => c.name === name,
+        (c) => draftClassKey(c) === key,
         produce((entry) => {
           const otherLevels = draft.classes
-            .filter((c) => c.name !== name)
+            .filter((c) => draftClassKey(c) !== key)
             .reduce((sum, c) => sum + c.level, 0);
           entry.level = Math.max(1, Math.min(level, MAX_TOTAL_LEVEL - otherLevels));
         }),
       );
     },
-    setSubclass(name: string, subclass: string) {
-      setDraft("classes", (c) => c.name === name, "subclass", subclass);
-    },
-    toggleClassSkill(name: string, skill: string, maxPicks: number) {
+    setSubclass(key: string, subclass: string, subclassId?: string) {
       setDraft(
         "classes",
-        (c) => c.name === name,
+        (c) => draftClassKey(c) === key,
+        produce((entry) => {
+          entry.subclass = subclass;
+          entry.subclassId = subclass ? subclassId : undefined;
+        }),
+      );
+    },
+    toggleClassSkill(key: string, skill: string, maxPicks: number) {
+      setDraft(
+        "classes",
+        (c) => draftClassKey(c) === key,
         produce((entry) => {
           if (entry.skillChoices.includes(skill)) {
             entry.skillChoices = entry.skillChoices.filter((s) => s !== skill);
@@ -70,26 +99,25 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
       );
     },
 
-    setSpecies(species: string) {
-      // A new species brings new choice sets; stale picks must not linger.
+    setSpecies(species: string, speciesId?: string) {
+      // A new species brings new choice sets and a new bonus pool; stale picks must not
+      // linger (cleared slots reseed to the new pool's book defaults in the provider).
       setDraft({
         species,
+        speciesId: species ? speciesId : undefined,
         lineage: "",
-        raceAbilityChoices: [],
+        lineageId: undefined,
         raceLanguageChoices: [],
         raceTraitChoices: [],
       });
+      setDraft("abilityBonuses", "species", []);
+      setDraft("abilityBonusStyle", "species", "standard");
     },
-    setLineage(lineage: string) {
-      setDraft("lineage", lineage);
-    },
-    toggleRaceAbilityChoice(key: AbilityKey, maxPicks: number) {
-      setDraft("raceAbilityChoices", (picks) =>
-        picks.includes(key)
-          ? picks.filter((k) => k !== key)
-          : picks.length < maxPicks
-            ? [...picks, key]
-            : picks);
+    setLineage(lineage: string, lineageId?: string) {
+      // The subrace contributes bonus tokens too — clear so the defaults reseed.
+      setDraft({ lineage, lineageId: lineage ? lineageId : undefined });
+      setDraft("abilityBonuses", "species", []);
+      setDraft("abilityBonusStyle", "species", "standard");
     },
     toggleRaceLanguageChoice(language: string, maxPicks: number) {
       setDraft("raceLanguageChoices", (picks) =>
@@ -107,13 +135,30 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
             ? [...picks, name]
             : picks);
     },
-    setBackground(background: string) {
+    setBackground(background: string, backgroundId?: string) {
       // A new background brings new boost abilities and its own recommended feat;
-      // stale boosts and origin-feat overrides must not linger.
-      setDraft({ background, backgroundBoosts: {}, originFeat: "" });
+      // stale assignments and origin-feat overrides must not linger.
+      setDraft({
+        background,
+        backgroundId: background ? backgroundId : undefined,
+        originFeat: "",
+        originFeatId: undefined,
+      });
+      setDraft("abilityBonuses", "background", []);
+      setDraft("abilityBonusStyle", "background", "standard");
     },
-    setOriginFeat(name: string) {
-      setDraft("originFeat", name);
+    setOriginFeat(name: string, id?: string) {
+      setDraft({ originFeat: name, originFeatId: name ? id : undefined });
+    },
+
+    setHpMaxOverride(value: number | undefined) {
+      setDraft("hp", "maxOverride", value);
+    },
+    setHpCurrent(value: number | undefined) {
+      setDraft("hp", "current", value);
+    },
+    setHpTemp(value: number) {
+      setDraft("hp", "temp", Math.max(0, Math.floor(value || 0)));
     },
 
     addLanguage(language: string) {
@@ -149,27 +194,53 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
         baseScores: zeroScores(),
       });
     },
-    applyBackgroundBoost(assignment: Partial<Record<AbilityKey, number>>) {
-      setDraft("backgroundBoosts", reconcile(assignment));
+    /** Assign a bonus token's slot; steals the ability from any other slot in the same source. */
+    assignAbilityBonus(source: "species" | "background", index: number, ability: AbilitySlot) {
+      setDraft(
+        "abilityBonuses",
+        source,
+        produce((slots) => {
+          if (ability) {
+            slots.forEach((slot, i) => {
+              if (i !== index && slot === ability) slots[i] = "";
+            });
+          }
+          slots[index] = ability;
+        }),
+      );
     },
-    clearBackgroundBoosts() {
-      setDraft("backgroundBoosts", reconcile({}));
+    /** Swap +2/+1 ↔ three +1s; the cleared slots reseed to the new pool's defaults in the provider. */
+    setAbilityBonusStyle(source: "species" | "background", style: AbilityBonusStyle) {
+      setDraft("abilityBonusStyle", source, style);
+      setDraft("abilityBonuses", source, []);
+    },
+    /** Overwrite a source's slot assignments (provider default-seeding + the panel's reset button). */
+    resetAbilityBonusSlots(source: "species" | "background", slots: AbilitySlot[]) {
+      setDraft("abilityBonuses", source, [...slots]);
     },
 
     cycleSkill(skill: string, currentState: SkillOverrideState) {
       setDraft("skillOverrides", skill, nextSkillState[currentState]);
     },
 
-    addFeat(name: string) {
-      if (!name || draft.feats.includes(name)) return;
-      setDraft("feats", draft.feats.length, name);
+    addFeat(key: string) {
+      if (!key || draft.feats.includes(key)) return;
+      setDraft("feats", draft.feats.length, key);
     },
-    removeFeat(name: string) {
-      setDraft("feats", (feats) => feats.filter((f) => f !== name));
+    removeFeat(key: string) {
+      setDraft("feats", (feats) => feats.filter((f) => f !== key));
     },
 
-    setMadStatChoice(key: string, ability: string) {
-      setDraft("madChoices", "stats", key, ability);
+    /** CSV of picked ability keys (the Character contract's multi-pick storage shape). */
+    setMadStatChoice(key: string, picksCsv: string) {
+      setDraft("madChoices", "stats", key, picksCsv);
+    },
+    /** Resolve a feat-or-ASI slot: "asi" or a feat selector key. A feat clears the stale ability pick. */
+    setFeatOrAsi(featureKey: string, value: string) {
+      setDraft("featOrAsi", featureKey, value);
+      if (value !== "asi") {
+        setDraft("madChoices", "stats", featureKey, undefined as unknown as string);
+      }
     },
     /** CSV of picked skill names (the Character contract's storage shape). */
     setMadProficiencyChoice(key: string, picksCsv: string) {
@@ -179,13 +250,16 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
     setMadSpellChoice(key: string, picksCsv: string) {
       setDraft("madChoices", "spells", key, picksCsv);
     },
-
-    addSpell(name: string) {
-      if (!name || draft.spells.includes(name)) return;
-      setDraft("spells", draft.spells.length, name);
+    setMadItemChoice(key: string, picksCsv: string) {
+      setDraft("madChoices", "items", key, picksCsv);
     },
-    removeSpell(name: string) {
-      setDraft("spells", (spells) => spells.filter((s) => s !== name));
+
+    addSpell(key: string) {
+      if (!key || draft.spells.includes(key)) return;
+      setDraft("spells", draft.spells.length, key);
+    },
+    removeSpell(key: string) {
+      setDraft("spells", (spells) => spells.filter((s) => s !== key));
     },
 
     setDetail<K extends keyof CharacterDetails>(key: K, value: CharacterDetails[K]) {
@@ -195,17 +269,17 @@ export function createDraftStore(initial?: Partial<CharacterDraft>) {
     updateItems(patch: Partial<DraftItems>) {
       setDraft("items", patch);
     },
-    addInventoryItem(name: string) {
-      if (!name || draft.items.inventory.includes(name)) return;
-      setDraft("items", "inventory", draft.items.inventory.length, name);
+    addInventoryItem(entry: CharacterItemRef) {
+      if (!entry.name || draft.items.inventory.some((i) => sameGearEntry(i, entry))) return;
+      setDraft("items", "inventory", draft.items.inventory.length, { ...entry });
     },
-    removeInventoryItem(name: string) {
+    removeInventoryItem(entry: CharacterItemRef) {
       setDraft(
         "items",
         produce((items) => {
-          items.inventory = items.inventory.filter((i) => i !== name);
-          items.equipped = items.equipped.filter((i) => i !== name);
-          items.attuned = items.attuned.filter((i) => i !== name);
+          items.inventory = items.inventory.filter((i) => !sameGearEntry(i, entry));
+          items.equipped = items.equipped.filter((i) => !sameGearEntry(i, entry));
+          items.attuned = items.attuned.filter((i) => !sameGearEntry(i, entry));
         }),
       );
     },

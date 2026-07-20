@@ -75,7 +75,47 @@
     "details": {
      "id": "a708dbd3-24ae-5311-96e2-d0d9c103e5b4",
      "name": "Dwarven Combat Training",
-     "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
+     "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Battleaxes"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Handaxes"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Light Hammers"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Warhammers"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "54f8b041-e8f6-579e-ab11-902725a6b36a"
@@ -84,7 +124,22 @@
     "details": {
      "id": "4f568a43-725d-589e-995d-0c6a18655f27",
      "name": "Tool Proficiency",
-     "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools."
+     "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddToolProficiencies",
+        "value": {
+         "tool": "choice",
+         "options": "Smith's Tools,Brewer's Supplies,Mason's Tools",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "dc353234-257a-53df-9cca-23f673c5b43c"
@@ -404,7 +459,22 @@
     "details": {
      "id": "696946cc-2bd3-5c42-8a79-c1b85d1ecf54",
      "name": "Damage Resistance",
-     "description": "You have resistance to the damage type associated with your draconic ancestry."
+     "description": "You have resistance to the damage type associated with your draconic ancestry.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "choice",
+         "options": "Acid,Cold,Fire,Lightning,Poison",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "6b0041be-7be4-4b37-99a9-add0cf1f217f"
@@ -856,7 +926,14 @@
          "ID": "6a06dae2-7823-41ef-9981-b83782dd1f45"
         },
         "type": 0,
-        "prerequisites": [],
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "3",
+          "group": 0
+         }
+        ],
         "group": 0
        },
        {
@@ -865,7 +942,14 @@
          "ID": "37ea62e0-bea1-4890-99b5-5c0e63f35a8c"
         },
         "type": 0,
-        "prerequisites": [],
+        "prerequisites": [
+         {
+          "value": "level",
+          "operation": ">=",
+          "keyValue": "5",
+          "group": 0
+         }
+        ],
         "group": 0
        }
       ]

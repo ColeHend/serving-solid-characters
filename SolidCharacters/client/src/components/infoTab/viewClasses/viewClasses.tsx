@@ -170,7 +170,7 @@ const viewClasses: Component = () => {
                   </Column>
                   <Column name="menu" class={`${styles.menuCol}`}>
                     <Cell<Class5E> onClick={(e)=>e.stopPropagation()}>
-                      {(dndClass) => <ClassMenu dndClass={dndClass} openDialog={() => {
+                      {(dndClass) => <ClassMenu dndClass={dndClass} subclasses={allSubclasses} openDialog={() => {
                         setCurrentClass(dndClass);
                         setSearchParam({ name: dndClass.name });
                         setShowClass(true);

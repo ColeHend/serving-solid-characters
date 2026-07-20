@@ -1,4 +1,4 @@
-import { Character, DamageAffinity } from '../../../models/character.model';
+import { Character, DamageAffinity, itemRefName } from '../../../models/character.model';
 import { FeatureDetail } from '../../../models/generated';
 import { Stats } from '../../customHooks/dndInfo/useCharacters';
 import { getAbilityModifier, getProficiencyBonus, signed } from '../../customHooks/utility/tools/dndMath';
@@ -94,18 +94,22 @@ export function characterToSheetValues(
   // `profs` is resolved in-component (see `useExportProficiencies`) and passed in
   // so this mapper stays headless. Missing → blanks (the generator skips empties).
   const ARMOR_MARK = 'X'; // WinAnsi-safe; matches the spell-table checkbox glyph
-  const hasArmor = (k: string): boolean => (profs?.armor ?? []).some((a) => a.toLowerCase() === k.toLowerCase());
-  out.armorLight = hasArmor('Light') ? ARMOR_MARK : '';
-  out.armorMedium = hasArmor('Medium') ? ARMOR_MARK : '';
-  out.armorHeavy = hasArmor('Heavy') ? ARMOR_MARK : '';
+  // Sources disagree on casing/suffix ("Light Armor" mads, "Light armor" SRD 2024, "Light"):
+  // strip a trailing " armor"/" armour" so every spelling ticks its box.
+  const normArmor = (a: string): string => a.toLowerCase().replace(/\s+armou?r$/, '').trim();
+  const hasArmor = (k: string): boolean => (profs?.armor ?? []).some((a) => normArmor(a) === k.toLowerCase());
+  const hasAllArmor = hasArmor('All'); // "All Armor" covers the three weights, not Shields
+  out.armorLight = hasArmor('Light') || hasAllArmor ? ARMOR_MARK : '';
+  out.armorMedium = hasArmor('Medium') || hasAllArmor ? ARMOR_MARK : '';
+  out.armorHeavy = hasArmor('Heavy') || hasAllArmor ? ARMOR_MARK : '';
   out.armorShields = hasArmor('Shields') || hasArmor('Shield') ? ARMOR_MARK : '';
   out.weaponProficiencies = (profs?.weapons ?? []).join(', ');
   out.toolProficiencies = (profs?.tools ?? []).join(', ');
 
   // ── Equipment ──
-  out.inventory = (char.items?.inventory ?? []).join(', ');
-  out.equipped = (char.items?.equipped ?? []).join(', ');
-  out.attuned = (char.items?.attuned ?? []).join(', ');
+  out.inventory = (char.items?.inventory ?? []).map(itemRefName).join(', ');
+  out.equipped = (char.items?.equipped ?? []).map(itemRefName).join(', ');
+  out.attuned = (char.items?.attuned ?? []).map(itemRefName).join(', ');
 
   // ── Currency (note `sliverPieces` typo key) ──
   const c = char.items?.currency;
@@ -141,7 +145,12 @@ function names(arr: FeatureDetail[] | undefined): string {
 }
 
 function featureNames(char: Character): string {
-  return names([...(char.features ?? []), ...(char.race?.features ?? []), ...classFeatures(char)]);
+  return names([
+    ...(char.features ?? []),
+    ...(char.backgroundFeatures ?? []),
+    ...(char.race?.features ?? []),
+    ...classFeatures(char),
+  ]);
 }
 
 /**
@@ -155,7 +164,8 @@ export function characterToFeatureLists(char: Character | undefined): Record<str
   return {
     classFeatures: classFeatures(char),
     speciesTraits: (char.race?.features ?? []).filter((f) => f?.name),
-    feats: (char.features ?? []).filter((f) => f?.name),
+    // Background features share the feats placement — the sheet has no fourth list slot.
+    feats: [...(char.features ?? []), ...(char.backgroundFeatures ?? [])].filter((f) => f?.name),
   };
 }
 

@@ -10,19 +10,23 @@ import type { MadMap } from "../spec.ts";
  * Deliberately SKIPPED (choice-dependent, PB-scaling, or no catalog category can express them):
  *  - Trance, Halfling Nimbleness / Luck / Naturally Stealthy, Human Resourceful
  *    (Heroic Inspiration) / Versatile (origin feat of choice) — no category.
- *  - Dragonborn Draconic Ancestry / Damage Resistance — the resisted type is CHOICE-dependent
- *    (picked from the Draconic Ancestors table), so no fixed Resistances command can be authored.
- *  - Tiefling Fiendish Legacy / Otherworldly Presence, Elf Elven Lineage, Gnome Gnomish Lineage
- *    (Forest/Rock Gnome) — the resistance/cantrip/spells depend on the legacy/lineage CHOICE.
  *  - Goliath Giant Ancestry — the boon is a CHOICE from seven options (and its uses scale with PB).
- *  - Human Skillful — "one skill of your choice"; Elf Keen Senses — "Insight, Perception, or
- *    Survival" (a CHOICE in 2024, unlike 5.1's fixed Perception) — no fixed Proficiencies command.
  *  - Goliath Speed (35 ft) — a species Speed lives in the structured `speed` field, not a command.
+ *  - Lineage spellcasting-ability picks (Int/Wis/Cha "choose when you select the lineage") — no category.
  *  - PB-SCALING limited uses (Uses needs a fixed `amount`, PB is not a constant): Dragonborn Breath
  *    Weapon, Dwarf Stonecunning, Orc Adrenaline Rush — "a number of times equal to your Proficiency
  *    Bonus". Left uncoded rather than pinned to a wrong fixed count. (Stonecunning's Tremorsense is
  *    also a 10-minute bonus-action effect — temporary, so no Senses command either.)
+ *
+ * Formerly skipped, now encoded:
+ *  - Dragonborn Damage Resistance — choice-form Resistances over the Draconic Ancestors table's types.
+ *  - Elven Lineage / Fiendish Legacy / Gnomish Lineage — branch GROUPS (group N + groupLabel): the
+ *    player picks ONE branch on the sheet; level-3/5 lineage spells carry `level >=` prerequisites.
  */
+
+/** Character-level gate for the lineage spells learned at levels 3 and 5. */
+const atLevel = (keyValue: string) =>
+    [{ value: "level", operation: ">=", keyValue, group: 0 }];
 
 /** "You have Darkvision with a range of N feet." */
 const darkvision = (range: string) =>
@@ -104,11 +108,17 @@ export const map: MadMap = {
     "Elf/Keen Senses": [
         { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: "Insight,Perception,Survival", count: "1" } },
     ],
-    // Forest Gnome is a discrete lineage-branch trait (separate row from Rock Gnome), so its grants are literal once the branch is selected. Grounding: "You [Uses equal to Proficiency Bonus (Speak with Animals)]
-    "Gnome/Forest Gnome": [
-        { type: "Add", category: "Spells", value: {  }, target: "Minor Illusion" },
-        { type: "Add", category: "Spells", value: {  }, target: "Speak with Animals" },
-        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" } },
+    // The lineage WRAPPER carries the branch groups so the player picks Forest OR Rock on the
+    // sheet (the Forest Gnome/Rock Gnome trait rows stay narrative — grants here would apply to
+    // every gnome unconditionally). Grounding: Forest "You know the *Minor Illusion* cantrip. You
+    // also always have the *Speak with Animals* spell prepared." [PB uses/Long Rest]; Rock "You
+    // know the *Mending* and *Prestidigitation* cantrips."
+    "Gnome/Gnomish Lineage": [
+        { type: "Add", category: "Spells", value: {}, target: "Minor Illusion", group: 1, groupLabel: "Forest Gnome" },
+        { type: "Add", category: "Spells", value: {}, target: "Speak with Animals", group: 1, groupLabel: "Forest Gnome" },
+        { type: "Add", category: "Uses", value: { amount: "1", recharge: "Long Rest" }, group: 1, groupLabel: "Forest Gnome" },
+        { type: "Add", category: "Spells", value: {}, target: "Mending", group: 2, groupLabel: "Rock Gnome" },
+        { type: "Add", category: "Spells", value: {}, target: "Prestidigitation", group: 2, groupLabel: "Rock Gnome" },
     ],
     // The chosen boon is one of seven options (teleport, damage riders, Prone, damage-reduction Reaction, etc.) — none encodable and all choice-dependent. B [Uses equal to Proficiency Bonus]
     "Goliath/Giant Ancestry": [
@@ -126,12 +136,49 @@ export const map: MadMap = {
     "Tiefling/Otherworldly Presence": [
         { type: "Add", category: "Spells", value: {  }, target: "Thaumaturgy" },
     ],
-};
 
-/*
- * Coverage-gap sweep (July 2026) — documented SKIPS (verified; no fitting category or
- * deliberately out of scope per the decision rules):
- *  - Dragonborn/Damage Resistance: Grounding: "You have Resistance to the damage type determined by your Draconic Ancestry trait." The resisted type is chosen from the Draconic Ancestor
- *  - Elf/Elven Lineage: Every benefit is lineage-choice-dependent: Wood Elf "Your Speed increases to 35 feet", Drow "range of your Darkvision increases to 120 feet", each wit
- *  - Tiefling/Fiendish Legacy: The level-1 resistance is legacy-choice-dependent: Abyssal=Poison, Chthonic=Necrotic, Infernal=Fire, each also granting a different cantrip and level-
- */
+    // ================================================================
+    // Choice/branch encodings (July 2026): choice-form Resistances and
+    // branch groups replaced the former documented skips below.
+    // ================================================================
+
+    // Grounding: "You have Resistance to the damage type determined by your Draconic Ancestry
+    // trait." — the Draconic Ancestors table's distinct damage types, picked on the sheet.
+    "Dragonborn/Damage Resistance": [
+        { type: "Add", category: "Resistances", value: { damageType: "choice", options: "Acid,Cold,Fire,Lightning,Poison", count: "1" } },
+    ],
+
+    // Grounding: Elven Lineages table. One branch per lineage; the level-1 benefits are
+    // unconditional within the branch, the level-3/5 spells are always-prepared and level-gated.
+    // (The High Elf "replace the cantrip after a Long Rest" clause stays narrative.)
+    "Elf/Elven Lineage": [
+        { type: "Add", category: "Senses", value: { sense: "darkvision", range: "120" }, group: 1, groupLabel: "Drow" },
+        { type: "Add", category: "Spells", value: {}, target: "Dancing Lights", group: 1, groupLabel: "Drow" },
+        { type: "Add", category: "Spells", value: {}, target: "Faerie Fire", group: 1, groupLabel: "Drow", prerequisites: atLevel("3") },
+        { type: "Add", category: "Spells", value: {}, target: "Darkness", group: 1, groupLabel: "Drow", prerequisites: atLevel("5") },
+        { type: "Add", category: "Spells", value: {}, target: "Prestidigitation", group: 2, groupLabel: "High Elf" },
+        { type: "Add", category: "Spells", value: {}, target: "Detect Magic", group: 2, groupLabel: "High Elf", prerequisites: atLevel("3") },
+        { type: "Add", category: "Spells", value: {}, target: "Misty Step", group: 2, groupLabel: "High Elf", prerequisites: atLevel("5") },
+        { type: "Add", category: "Speed", value: { speed: "35", mode: "set" }, group: 3, groupLabel: "Wood Elf" },
+        { type: "Add", category: "Spells", value: {}, target: "Druidcraft", group: 3, groupLabel: "Wood Elf" },
+        { type: "Add", category: "Spells", value: {}, target: "Longstrider", group: 3, groupLabel: "Wood Elf", prerequisites: atLevel("3") },
+        { type: "Add", category: "Spells", value: {}, target: "Pass without Trace", group: 3, groupLabel: "Wood Elf", prerequisites: atLevel("5") },
+    ],
+
+    // Grounding: Fiendish Legacies table. One branch per legacy: a level-1 resistance + cantrip,
+    // then always-prepared level-3/5 spells gated on character level.
+    "Tiefling/Fiendish Legacy": [
+        { type: "Add", category: "Resistances", value: { damageType: "Poison" }, group: 1, groupLabel: "Abyssal" },
+        { type: "Add", category: "Spells", value: {}, target: "Poison Spray", group: 1, groupLabel: "Abyssal" },
+        { type: "Add", category: "Spells", value: {}, target: "Ray of Sickness", group: 1, groupLabel: "Abyssal", prerequisites: atLevel("3") },
+        { type: "Add", category: "Spells", value: {}, target: "Hold Person", group: 1, groupLabel: "Abyssal", prerequisites: atLevel("5") },
+        { type: "Add", category: "Resistances", value: { damageType: "Necrotic" }, group: 2, groupLabel: "Chthonic" },
+        { type: "Add", category: "Spells", value: {}, target: "Chill Touch", group: 2, groupLabel: "Chthonic" },
+        { type: "Add", category: "Spells", value: {}, target: "False Life", group: 2, groupLabel: "Chthonic", prerequisites: atLevel("3") },
+        { type: "Add", category: "Spells", value: {}, target: "Ray of Enfeeblement", group: 2, groupLabel: "Chthonic", prerequisites: atLevel("5") },
+        { type: "Add", category: "Resistances", value: { damageType: "Fire" }, group: 3, groupLabel: "Infernal" },
+        { type: "Add", category: "Spells", value: {}, target: "Fire Bolt", group: 3, groupLabel: "Infernal" },
+        { type: "Add", category: "Spells", value: {}, target: "Hellish Rebuke", group: 3, groupLabel: "Infernal", prerequisites: atLevel("3") },
+        { type: "Add", category: "Spells", value: {}, target: "Darkness", group: 3, groupLabel: "Infernal", prerequisites: atLevel("5") },
+    ],
+};

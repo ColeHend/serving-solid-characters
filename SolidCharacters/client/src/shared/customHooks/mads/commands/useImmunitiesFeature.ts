@@ -3,7 +3,8 @@ import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addImmunities = (character: Character, feature: MadFeature): Character => {
-    const type = feature.value?.['damageType']?.trim() ?? "";
+    // An immunity is either a damage type or a condition/affliction ("Disease") — one or the other.
+    const type = feature.value?.['damageType']?.trim() || feature.value?.['condition']?.trim() || "";
 
     if (!type) {
         DebugConsole.error("No immunity type provided for AddImmunities command");
@@ -18,7 +19,7 @@ const addImmunities = (character: Character, feature: MadFeature): Character => 
 }
 
 const removeImmunities = (character: Character, feature: MadFeature): Character => {
-    const type = feature.value?.['damageType']?.trim() ?? "";
+    const type = feature.value?.['damageType']?.trim() || feature.value?.['condition']?.trim() || "";
 
     if (!type) {
         DebugConsole.error("No immunity type provided for RemoveImmunities command");

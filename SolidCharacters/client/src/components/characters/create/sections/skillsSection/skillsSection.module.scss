@@ -25,6 +25,10 @@
 }
 
 .pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   min-width: 84px;
   font-family: $font-ui;
   font-size: 0.7rem;
@@ -35,7 +39,7 @@
   color: var(--codex-ink-dim);
   cursor: pointer;
 
-  &:hover {
+  &:not(.pillLocked):hover {
     border-color: var(--codex-gold-deep);
   }
 }
@@ -50,6 +54,12 @@
   border-color: var(--codex-gold);
   color: var(--codex-gold);
   background: color-mix(in srgb, var(--codex-gold) 12%, transparent);
+}
+
+// Feature-granted state: not player-toggleable. Dashed border + lock icon read as "fixed".
+.pillLocked {
+  border-style: dashed;
+  cursor: default;
 }
 
 .name {

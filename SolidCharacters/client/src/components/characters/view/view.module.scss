@@ -291,3 +291,19 @@ $mobile: 768px;
     flex-wrap: wrap;
     justify-content: center;
 }
+
+.equipProfLines {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 10px 6px;
+    font-size: 0.9rem;
+}
+
+.equipProfTitle {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}

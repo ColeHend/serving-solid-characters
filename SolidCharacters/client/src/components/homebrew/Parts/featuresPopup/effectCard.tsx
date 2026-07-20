@@ -1,5 +1,5 @@
 import { Component, For, Match, Show, Switch, createMemo, runWithOwner } from "solid-js";
-import { Button, Icon, Input, Option, Select } from "coles-solid-library";
+import { Button, Icon, Option, Select } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
 import { MadType } from "../../../../shared/customHooks/mads/madModels";
 import { MadForm } from "../../../../models/data/formModels";
@@ -28,7 +28,10 @@ import { RollBonusFeature } from "./parts/rollBonusFeature/rollBonusFeature";
 import { ActionsFeature } from "./parts/actionsFeature/actionsFeature";
 import { AttacksFeature } from "./parts/attacksFeature/attacksFeature";
 import { UsesFeature } from "./parts/usesFeature/usesFeature";
-import { EffectCardData, MAD_CATEGORIES, MadsApi, PrereqFormArray, PrereqState } from "./featuresPopup.shared";
+import { ArmorProfFeature } from "./parts/armorProfFeature/armorProfFeature";
+import { WeaponProfFeature } from "./parts/weaponProfFeature/weaponProfFeature";
+import { ToolProfFeature } from "./parts/toolProfFeature/toolProfFeature";
+import { EffectCardData, MAD_CATEGORIES, MadsApi, PrereqFormArray, PrereqState, branchLabel, branchNumbers } from "./featuresPopup.shared";
 import styles from "./featuresPopup.module.scss";
 
 interface EffectCardProps {
@@ -56,8 +59,11 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
     const editorOpen = () => props.api.isEditorOpen(props.row.name);
 
     // Editor commits: write the value, stamp the command string, fold the editor away.
+    // Editors rebuild the value object from scratch — carry the branch label through so
+    // re-editing an effect doesn't silently unlabel its branch.
     const commitValue = (value: Record<string, string>) => {
-        props.api.setMadFeature("value", props.index, value);
+        const groupLabel = (props.row.value?.["groupLabel"] ?? "").trim();
+        props.api.setMadFeature("value", props.index, groupLabel ? { groupLabel, ...value } : value);
         props.api.setMadFeature("command", props.index, command());
         props.api.setEditorOpen(props.row.name, false);
     };
@@ -68,6 +74,20 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
             props.api.setMadFeature("command", props.index, `${type}${props.row.commandCategory}`);
         }
     };
+
+    /** Lowest unused branch number, for the "+ New branch" option. */
+    const nextBranch = createMemo(() => {
+        const used = branchNumbers(props.api.rows());
+        return used.length ? Math.max(...used) + 1 : 1;
+    });
+
+    // runWithOwner(null) + equality guard: coles Select fires onChange from a tracked
+    // effect (echo) — see setCategory below.
+    const setBranch = (raw: string) => runWithOwner(null, () => {
+        const next = Number(raw) || 0;
+        if (next === (Number(props.row.group) || 0)) return;
+        props.api.setMadFeature("group", props.index, next);
+    });
 
     const setCategory = (category: string) => runWithOwner(null, () => {
         if (category === props.row.commandCategory) return;
@@ -133,14 +153,20 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                 <Show when={editorOpen()}>
                     <Switch>
                         <Match when={command() === "AddSpells" || command() === "RemoveSpells"}>
-                            <SpellFeature allSpells={props.data.allSpells} getValue={getValue} toggleSpell={(id) => {
-                                commitValue(getValue()?.["ID"] === id ? { "ID": "" } : { "ID": id });
-                            }} />
+                            <SpellFeature
+                                allSpells={props.data.allSpells}
+                                getValue={getValue}
+                                allowChoice={command() === "AddSpells"}
+                                commit={commitValue}
+                            />
                         </Match>
                         <Match when={command() === "AddItems" || command() === "RemoveItems"}>
-                            <ItemFeature allItems={props.data.allItems} getValue={getValue} toggleItem={(id: string) => {
-                                commitValue(getValue()?.["ID"] === id ? { "ID": "" } : { "ID": id });
-                            }} />
+                            <ItemFeature
+                                allItems={props.data.allItems}
+                                getValue={getValue}
+                                allowChoice={command() === "AddItems"}
+                                commit={commitValue}
+                            />
                         </Match>
                         <Match when={command() === "AddCurrency" || command() === "RemoveCurrency"}>
                             <CurrencyFeature getValue={getValue} setCurrecy={(type, amount) => {
@@ -215,6 +241,7 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                                     const next: Record<string, string> = { "stat": stat, "statValue": value.toString() };
                                     if (extra?.options) next["options"] = extra.options;
                                     if (extra?.mode) next["mode"] = extra.mode;
+                                    if (stat === "choice" && extra?.count) next["count"] = extra.count;
                                     commitValue(next);
                                 }}
                             />
@@ -269,10 +296,11 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         <Match when={command() === "AddRollBonus" || command() === "RemoveRollBonus"}>
                             <RollBonusFeature
                                 getValue={getValue}
-                                toggleValue={(rollType, bonus, proficiencyBonus, stat, condition) => {
+                                toggleValue={(rollType, bonus, proficiencyBonus, statBonus, stat, condition) => {
                                     const next: Record<string, string> = { "rollType": rollType };
                                     if (bonus) next["bonus"] = bonus;
                                     if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
+                                    if (statBonus) next["statBonus"] = statBonus;
                                     if (stat) next["stat"] = stat;
                                     if (condition) next["condition"] = condition;
                                     commitValue(next);
@@ -282,9 +310,13 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         <Match when={command() === "AddActions" || command() === "RemoveActions"}>
                             <ActionsFeature
                                 getValue={getValue}
-                                toggleValue={(name, actionType, description) => {
+                                toggleValue={(name, actionType, description, amount, proficiencyBonus, recharge) => {
                                     const next: Record<string, string> = { "name": name, "actionType": actionType };
                                     if (description) next["description"] = description;
+                                    if (amount) next["amount"] = amount;
+                                    if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
+                                    // recharge only means something alongside a uses spec
+                                    if ((amount || proficiencyBonus) && recharge) next["recharge"] = recharge;
                                     commitValue(next);
                                 }}
                             />
@@ -300,14 +332,58 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         <Match when={command() === "AddUses" || command() === "RemoveUses"}>
                             <UsesFeature
                                 getValue={getValue}
-                                toggleValue={(amount, recharge) => {
-                                    props.api.setMadFeature("value", props.index, { "amount": amount.toString(), "recharge": recharge });
+                                toggleValue={(amount, proficiencyBonus, recharge) => {
+                                    const next: Record<string, string> = { "recharge": recharge };
+                                    if (amount) next["amount"] = amount;
+                                    if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
+                                    props.api.setMadFeature("value", props.index, next);
                                     props.api.setMadFeature("command", props.index, command());
                                     // Uses describes its owning feature (uses/recharge), not a sheet change.
                                     props.api.setMadFeature("type", props.index, MadType.Info);
                                     props.api.setEditorOpen(props.row.name, false);
                                 }}
                             />
+                        </Match>
+                        <Match when={command() === "AddArmorProficiencies" || command() === "RemoveArmorProficiencies"}>
+                            <ArmorProfFeature
+                                getValue={getValue}
+                                allowChoice={command() === "AddArmorProficiencies"}
+                                toggleProf={(armor, extra) => {
+                                    const next: Record<string, string> = { "armor": armor };
+                                    if (armor === "choice" && extra?.options) {
+                                        next["options"] = extra.options;
+                                        next["count"] = extra.count ?? "1";
+                                    }
+                                    commitValue(next);
+                                }} />
+                        </Match>
+                        <Match when={command() === "AddWeaponProficiencies" || command() === "RemoveWeaponProficiencies"}>
+                            <WeaponProfFeature
+                                allItems={props.data.allItems}
+                                getValue={getValue}
+                                allowChoice={command() === "AddWeaponProficiencies"}
+                                toggleProf={(weapon, extra) => {
+                                    const next: Record<string, string> = { "weapon": weapon };
+                                    if (weapon === "choice" && extra?.options) {
+                                        next["options"] = extra.options;
+                                        next["count"] = extra.count ?? "1";
+                                    }
+                                    commitValue(next);
+                                }} />
+                        </Match>
+                        <Match when={command() === "AddToolProficiencies" || command() === "RemoveToolProficiencies"}>
+                            <ToolProfFeature
+                                allItems={props.data.allItems}
+                                getValue={getValue}
+                                allowChoice={command() === "AddToolProficiencies"}
+                                toggleProf={(tool, extra) => {
+                                    const next: Record<string, string> = { "tool": tool };
+                                    if (tool === "choice" && extra?.options) {
+                                        next["options"] = extra.options;
+                                        next["count"] = extra.count ?? "1";
+                                    }
+                                    commitValue(next);
+                                }} />
                         </Match>
                         <Match when={command() === "AddMovement" || command() === "RemoveMovement"}>
                             <MovementFeature
@@ -346,19 +422,19 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
             </div>
 
             <div class={styles.choiceGroupRow}>
-                <label class={styles.label}>Choice group</label>
-                <div class={`${styles.underlineField} ${styles.choiceGroupInput}`}>
-                    <Input
-                        transparent
-                        type="number"
-                        min={0}
-                        value={props.row.group}
-                        onChange={(e) => props.api.setMadFeature("group", props.index, +e.currentTarget.value)}
-                        aria-label="Choice group"
-                    />
-                </div>
+                <label class={styles.label}>Applies</label>
+                <Select value={String(props.row.group ?? 0)} onChange={setBranch} aria-label="Effect branch">
+                    <Option value="0">Always</Option>
+                    <For each={branchNumbers(props.api.rows())}>
+                        {(group) => {
+                            const label = branchLabel(props.api.rows(), group);
+                            return <Option value={String(group)}>{label ? `Branch ${group} — ${label}` : `Branch ${group}`}</Option>;
+                        }}
+                    </For>
+                    <Option value={String(nextBranch())}>+ New branch</Option>
+                </Select>
                 <span class={styles.choiceCaption}>
-                    Same group number → the player picks one · different numbers → all apply
+                    Branches are exclusive — the player picks ONE · "Always" effects apply regardless
                 </span>
             </div>
         </div>

@@ -71,11 +71,10 @@ export const map: MadMap = {
         { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: ALL_SKILLS, count: "3" } },
     ],
 
-    // Ability Score Improvement — "Increase one ability score of your choice by 2, or increase two
-    // ability scores of your choice by 1." Only the +2-to-one form is representable; the +1/+1 split
-    // can't be expressed by a single command, so this is an APPROXIMATION of the feat's stronger option.
+    // Ability Score Improvement — increase two DIFFERENT abilities of your choice by 1 each
+    // (choice-form Stats with count: the player picks `count` distinct abilities on the sheet).
     "Ability Score Improvement": [
-        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "2" } },
+        { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" } },
     ],
 
     // Grappler — "Increase your Strength or Dexterity score by 1." (Grapple riders are situational → skipped.)

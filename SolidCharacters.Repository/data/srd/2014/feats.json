@@ -29,5 +29,37 @@
   ],
   "legacy": true,
   "source": "SRD 5.1"
+ },
+ {
+  "id": "84a577f7-342f-5128-807a-15f8a82cd068",
+  "details": {
+   "id": "a193bccb-5f5f-5c6f-8cb4-0cf7fd188043",
+   "name": "Ability Score Improvement",
+   "description": "Increase two different ability scores of your choice by 1 each. As normal, you can't increase an ability score above 20 using this feat.",
+   "metadata": {
+    "mads": [
+     {
+      "command": "AddStats",
+      "value": {
+       "stat": "choice",
+       "statValue": "1",
+       "options": "str,dex,con,int,wis,cha",
+       "count": "2"
+      },
+      "type": 0,
+      "prerequisites": [],
+      "group": 0
+     }
+    ]
+   }
+  },
+  "prerequisites": [
+   {
+    "type": 1,
+    "value": "4"
+   }
+  ],
+  "legacy": true,
+  "source": "SRD 5.1"
  }
 ]

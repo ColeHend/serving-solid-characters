@@ -80,6 +80,12 @@
   font-family: $font-ui;
 }
 
+.blockHint {
+  font-family: $font-ui;
+  font-size: 0.78rem;
+  color: var(--codex-ink-dim);
+}
+
 .pairingNotice {
   margin: 0 0 10px;
   font-family: $font-ui;

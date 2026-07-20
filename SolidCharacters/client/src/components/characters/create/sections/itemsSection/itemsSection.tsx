@@ -1,8 +1,10 @@
 import { Component, For, Match, Setter, Show, Switch, createMemo, createSignal } from "solid-js";
 import { Button, Checkbox, Chip } from "coles-solid-library";
+import { CharacterItemRef } from "../../../../../models/character.model";
 import { srdItem } from "../../../../../models/data/generated";
 import { Item } from "../../../../../models/generated";
 import { ItemPopup } from "../../../../../shared/components/modals/ItemModal/ItemModal";
+import { entitySelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { InfoButton } from "../../shell/infoButton";
 import { useCreate } from "../../state/createContext";
 import { AddItem } from "./addItem/AddItem";
@@ -19,7 +21,7 @@ const CURRENCIES = [
 ] as const;
 
 export const ItemsSection: Component = () => {
-  const { draft, actions, derived, data, editName } = useCreate();
+  const { draft, actions, derived, data, editId } = useCreate();
   const [classMode, setClassMode] = createSignal<"items" | "gold">("items");
   const [backgroundMode, setBackgroundMode] = createSignal<"items" | "gold">("items");
 
@@ -29,11 +31,13 @@ export const ItemsSection: Component = () => {
     setViewedItem(item);
     setShowItemView(true);
   };
-  /** Inventory holds free-text names (equipment packs included) — only SRD-resolvable ones get a view button. */
-  const itemByName = (name: string) =>
-    data.items().find((item) => item.name?.toLowerCase() === name.toLowerCase());
+  /** Inventory holds {name, id?} refs — the id pins an exact catalog row; free-text falls back to name. */
+  const itemByRef = (entry: CharacterItemRef) =>
+    (entry.id ? data.items().find((item) => entitySelectorKey(item) === entry.id) : undefined) ??
+    data.items().find((item) => item.name?.toLowerCase() === entry.name.toLowerCase());
 
-  const initialClass = createMemo(() => derived.classByName(draft.classes[0]?.name ?? ""));
+  const initialClass = createMemo(() =>
+    draft.classes[0] ? derived.classByKey(draft.classes[0]) : undefined);
 
   /**
    * Equipment choice GROUPS: 2024 classes have a single "equipment" group; 2014 classes
@@ -64,10 +68,13 @@ export const ItemsSection: Component = () => {
       actions.setCurrency(coin.key, draft.items.currency[coin.key] + delta);
     }
     if (checked) {
-      actions.updateItems({ inventory: [...draft.items.inventory, ...items] });
+      // Pack contents are free-text ("10 torches") — name-only refs, never id-keyed.
+      actions.updateItems({
+        inventory: [...draft.items.inventory, ...items.map((name) => ({ name }))],
+      });
     } else {
       actions.updateItems({
-        inventory: draft.items.inventory.filter((item) => !items.includes(item)),
+        inventory: draft.items.inventory.filter((entry) => !items.includes(entry.name)),
       });
     }
   };
@@ -103,16 +110,18 @@ export const ItemsSection: Component = () => {
   };
 
   // AddItem keeps its [Accessor, Setter] contract; adapt the store to it.
-  const inventoryAccessor = () => [...draft.items.inventory];
-  const inventorySetter = ((value: string[] | ((prev: string[]) => string[])) => {
-    const next = typeof value === "function" ? value([...draft.items.inventory]) : value;
+  const inventoryAccessor = () => draft.items.inventory.map((entry) => ({ ...entry }));
+  const inventorySetter = ((
+    value: CharacterItemRef[] | ((prev: CharacterItemRef[]) => CharacterItemRef[]),
+  ) => {
+    const next = typeof value === "function" ? value(inventoryAccessor()) : value;
     actions.updateItems({ inventory: next });
     return next;
-  }) as Setter<string[]>;
+  }) as Setter<CharacterItemRef[]>;
 
   return (
     <div>
-      <Show when={!editName() && (initialClass() || derived.selectedBackground())}>
+      <Show when={!editId() && (initialClass() || derived.selectedBackground())}>
         <h5 class={styles.blockLabel}>Starting equipment</h5>
         <Show when={draft.classes.length > 1}>
           <p class={styles.multiclassHint}>
@@ -258,12 +267,12 @@ export const ItemsSection: Component = () => {
       <Show when={draft.items.inventory.length > 0} fallback={<Chip value="None" />}>
         <div class={styles.inventoryBox}>
           <For each={draft.items.inventory}>
-            {(item) => (
+            {(entry) => (
               <span class={styles.chipWithInfo}>
-                <Chip value={item} remove={() => actions.removeInventoryItem(item)} />
-                <Show when={itemByName(item)}>
+                <Chip value={entry.name} remove={() => actions.removeInventoryItem(entry)} />
+                <Show when={itemByRef(entry)}>
                   {(resolved) => (
-                    <InfoButton label={`View ${item} details`} onClick={() => viewItem(resolved())} />
+                    <InfoButton label={`View ${entry.name} details`} onClick={() => viewItem(resolved())} />
                   )}
                 </Show>
               </span>

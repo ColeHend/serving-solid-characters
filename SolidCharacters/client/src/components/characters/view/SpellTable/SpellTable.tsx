@@ -73,7 +73,7 @@ export const SpellTable:Component<tableProps> = (props) => {
                     <Button transparent onClick={()=>{
                         const confirm = window.confirm("Are you sure?");
 
-                        if (confirm) characterManager.deleteCharSpell(props.currentCharacter().name, spell.name);
+                        if (confirm) characterManager.deleteCharSpell(props.currentCharacter().id, spell.name);
                     }}><Icon color="red" icon={Delete} /></Button>
                 </span>}</Cell>
             </Column>

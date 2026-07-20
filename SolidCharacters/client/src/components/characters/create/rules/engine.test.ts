@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { CasterType, Class5E, Feat, Spell, Subclass } from "../../../../models/generated";
+import { CharacterSkillProficiency } from "../../../../models/character.model";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
 import {
+  backgroundBonusPool,
   casterTypeLabel,
   classSkillChoiceSpec,
   collectLanguages,
   computeAc,
   computeFinalScores,
+  defaultSlots,
+  speciesBonusPool,
+  sumBonusPool,
   computeInitiative,
   computeMaxHp,
   computePassivePerception,
@@ -15,9 +20,12 @@ import {
   computeSpellcasting,
   darkvisionRange,
   featCategory,
+  featureRowsByLevel,
   getProficiencyBonus,
+  hitDieLabel,
   hitDieSides,
   isOffList,
+  mergeMadSkillRows,
   multiclassCasterLevel,
   spellFlavor,
   subclassUnlockLevel,
@@ -45,8 +53,9 @@ const sorcerer = {
   spellcasting: { metadata: { casterType: CasterType.Full, slots: {} }, knownType: 0, learnedSpells: {} },
 } as unknown as Class5E;
 
-const classByName = (name: string) =>
-  ({ barbarian, sorcerer } as Record<string, Class5E>)[name.toLowerCase()];
+// Entry-based resolver (mirrors derived.classByKey — id-first in prod, name here).
+const classByName = (entry: { name: string }) =>
+  ({ barbarian, sorcerer } as Record<string, Class5E>)[entry.name.toLowerCase()];
 
 // The plan's verification character: Barbarian 1 (initial) / Sorcerer 3, scores above.
 const classes = [
@@ -71,9 +80,8 @@ describe("screenshot scenario (Barbarian 1 / Sorcerer 3, STR15 DEX16 CON14 INT12
     expect(computeAc(3)).toBe(13);
   });
 
-  it("initiative stays at DEX mod with Alert (design behavior, RAW behind the constant)", () => {
-    expect(computeInitiative(3, ["Alert"], 2)).toBe(3);
-    expect(computeInitiative(3, [], 2)).toBe(3);
+  it("initiative is the DEX mod with no Initiative roll bonuses", () => {
+    expect(computeInitiative(3, [], 2, scores)).toBe(3);
   });
 
   it("saving throws are proficient for the initial class only", () => {
@@ -99,6 +107,26 @@ describe("screenshot scenario (Barbarian 1 / Sorcerer 3, STR15 DEX16 CON14 INT12
       profBonus: 2,
     });
     expect(computePassivePerception(rows)).toBe(12);
+  });
+});
+
+describe("computeInitiative", () => {
+  it("is the DEX mod alone when no roll bonuses apply", () => {
+    expect(computeInitiative(3, [], 2, scores)).toBe(3);
+  });
+
+  it("adds a 2014 Alert-style flat Initiative bonus (DEX + 5)", () => {
+    expect(computeInitiative(3, [{ rollType: "Initiative", bonus: 5 }], 2, scores)).toBe(8);
+  });
+
+  it("adds a 2024 Alert-style Full-PB Initiative bonus (DEX + PB)", () => {
+    expect(
+      computeInitiative(3, [{ rollType: "Initiative", proficiencyBonus: "Full PB" }], 2, scores),
+    ).toBe(5);
+  });
+
+  it("ignores roll bonuses that aren't Initiative", () => {
+    expect(computeInitiative(3, [{ rollType: "SavingThrow", bonus: 5 }], 2, scores)).toBe(3);
   });
 });
 
@@ -131,61 +159,190 @@ describe("computeSkillRows", () => {
   });
 });
 
+describe("mergeMadSkillRows", () => {
+  const prof = (
+    stat: keyof Stats,
+    value: number,
+    proficient = false,
+    expertise = false,
+  ): CharacterSkillProficiency => ({ stat, value, proficient, expertise });
+
+  // Athletics/Acrobatics come in class-proficient; every other row is untrained.
+  const baseRows = computeSkillRows({
+    classSkills: ["Athletics", "Acrobatics"],
+    backgroundSkills: [],
+    overrides: {},
+    finalScores: scores,
+    profBonus: 2,
+  });
+  const merge = (
+    baseSkills: Record<string, CharacterSkillProficiency>,
+    madSkills: Record<string, CharacterSkillProficiency>,
+  ) =>
+    Object.fromEntries(
+      mergeMadSkillRows(baseRows, baseSkills, madSkills, scores, 2).map((r) => [r.name, r]),
+    );
+
+  it("locks in a feature-granted proficiency on an untrained skill", () => {
+    const rows = merge({ Perception: prof("wis", 0) }, { Perception: prof("wis", 2, true) });
+    expect(rows.Perception).toMatchObject({
+      state: "proficient",
+      source: "feature",
+      locked: true,
+      mod: 2, // WIS 0 + PB 2
+    });
+  });
+
+  it("upgrades a class-granted proficiency to feature expertise", () => {
+    const rows = merge(
+      { Athletics: prof("str", 4, true) },
+      { Athletics: prof("str", 6, true, true) },
+    );
+    expect(rows.Athletics).toMatchObject({
+      state: "expertise",
+      source: "feature",
+      locked: true,
+      mod: 6, // STR 2 + 2×PB
+    });
+  });
+
+  it("leaves the row untouched when the mad state isn't an upgrade", () => {
+    const rows = merge({ Acrobatics: prof("dex", 5, true) }, { Acrobatics: prof("dex", 5, true) });
+    expect(rows.Acrobatics).toMatchObject({
+      state: "proficient",
+      source: "class",
+      locked: false,
+      mod: 5, // DEX 3 + PB, unchanged
+    });
+  });
+
+  it("adds an AllProficiencies-style value bump to an unchanged row", () => {
+    // Jack of All Trades bumps the stored value by half PB without granting proficiency.
+    const rows = merge({ Stealth: prof("dex", 3) }, { Stealth: prof("dex", 4) });
+    expect(rows.Stealth).toMatchObject({
+      state: "none",
+      source: null,
+      locked: false,
+      mod: 4, // DEX 3 + (4 − 3) bump
+    });
+  });
+
+  it("matches a display-name row against its storage key", () => {
+    const rows = merge({}, { "Sleight Of Hand": prof("dex", 5, true) });
+    expect(rows["Sleight of Hand"]).toMatchObject({
+      state: "proficient",
+      source: "feature",
+      locked: true,
+      mod: 5, // DEX 3 + PB
+    });
+  });
+});
+
 describe("computeFinalScores", () => {
   const base: Stats = { str: 15, dex: 14, con: 13, int: 12, wis: 10, cha: 8 };
   const zero: Stats = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
 
-  it("2024 applies background boosts, ignores race", () => {
-    const race = { abilityBonuses: [{ stat: 1, value: 2 }] } as never;
-    const out = computeFinalScores("2024", base, { ...zero, dex: 2 }, { str: 2, int: 1 }, race);
-    expect(out).toEqual({ str: 17, dex: 16, con: 13, int: 13, wis: 10, cha: 8 });
+  it("sums base, manual bonus, and both assigned bonus maps", () => {
+    const out = computeFinalScores(base, { ...zero, dex: 2 }, { dex: 2, int: 1 }, { str: 2 });
+    expect(out).toEqual({ str: 17, dex: 18, con: 13, int: 13, wis: 10, cha: 8 });
   });
 
-  it("2014 applies race/subrace bonuses automatically, ignores background boosts", () => {
-    const race = { abilityBonuses: [{ stat: 1, value: 2 }] } as never; // DEX +2
-    const subrace = { abilityBonuses: [{ stat: 3, value: 1 }] } as never; // INT +1
-    const out = computeFinalScores("2014", base, zero, { str: 2 }, race, subrace);
-    expect(out).toEqual({ str: 15, dex: 16, con: 13, int: 13, wis: 10, cha: 8 });
+  it("empty bonus maps leave the base + manual sums untouched", () => {
+    expect(computeFinalScores(base, zero, {}, {})).toEqual(base);
+  });
+});
+
+describe("speciesBonusPool", () => {
+  const dwarf = { abilityBonuses: [{ stat: 2, value: 2 }] } as never; // CON +2
+
+  it("a fixed bonus becomes a reassignable token prefilled with the book stat", () => {
+    const pool = speciesBonusPool("2014", dwarf);
+    expect(pool.tokens).toEqual([{ value: 2, preset: "con", allowed: [] }]);
+    expect(pool.canSpread).toBe(false);
+    // zero-click parity: the defaults reproduce the book assignment
+    expect(sumBonusPool(pool, defaultSlots(pool))).toEqual({ con: 2 });
+    // an empty (never-seeded) slot list falls back to those defaults too
+    expect(sumBonusPool(pool, [])).toEqual({ con: 2 });
+    // ...and the token can be moved anywhere
+    expect(sumBonusPool(pool, ["str"])).toEqual({ str: 2 });
   });
 
-  it("an ALL race bonus raises every score", () => {
-    const race = { abilityBonuses: [{ stat: 7, value: 1 }] } as never; // Human 2014
-    const out = computeFinalScores("2014", base, zero, {}, race);
-    expect(out).toEqual({ str: 16, dex: 15, con: 14, int: 13, wis: 11, cha: 9 });
+  it("folds an ALL bonus into `all` with no tokens (2014 Human)", () => {
+    const human = { abilityBonuses: [{ stat: 7, value: 1 }] } as never;
+    const pool = speciesBonusPool("2014", human);
+    expect(pool).toMatchObject({ tokens: [], all: 1, canSpread: false });
+    expect(sumBonusPool(pool, [])).toEqual({ str: 1, dex: 1, con: 1, int: 1, wis: 1, cha: 1 });
   });
 
-  it("both-mode: a legacy species grants its own bonuses (paired legacy background has no boosts)", () => {
-    const race = { legacy: true, abilityBonuses: [{ stat: 1, value: 2 }] } as never; // DEX +2
-    const out = computeFinalScores("both", base, zero, {}, race);
-    expect(out).toEqual({ str: 15, dex: 16, con: 13, int: 12, wis: 10, cha: 8 });
-  });
-
-  it("both-mode: a current species grants nothing — background boosts apply instead", () => {
-    const race = { abilityBonuses: [{ stat: 1, value: 2 }] } as never; // 2024 row, no legacy flag
-    const out = computeFinalScores("both", base, zero, { str: 2, int: 1 }, race);
-    expect(out).toEqual({ str: 17, dex: 14, con: 13, int: 13, wis: 10, cha: 8 });
-  });
-
-  it("applies the race's abilityBonusChoice picks (2014 Half-Elf's two +1s)", () => {
+  it("Half-Elf: +2 prefilled on CHA plus two restricted choice tokens", () => {
     const halfElf = {
       abilityBonuses: [{ stat: 5, value: 2 }], // CHA +2 fixed
       abilityBonusChoice: {
         amount: 2,
-        choices: [0, 1, 2, 3, 4].map((stat) => ({ stat, value: 1 })),
+        choices: [0, 1, 2, 3, 4].map((stat) => ({ stat, value: 1 })), // CHA excluded
       },
     } as never;
-    const out = computeFinalScores("2014", base, zero, {}, halfElf, undefined, ["str", "con"]);
-    expect(out).toEqual({ str: 16, dex: 14, con: 14, int: 12, wis: 10, cha: 10 });
+    const pool = speciesBonusPool("2014", halfElf);
+    expect(pool.canSpread).toBe(false);
+    expect(defaultSlots(pool)).toEqual(["cha", "", ""]);
+    expect(pool.tokens[1]).toEqual({ value: 1, preset: "", allowed: ["str", "dex", "con", "int", "wis"] });
+    expect(sumBonusPool(pool, ["cha", "str", "con"])).toEqual({ cha: 2, str: 1, con: 1 });
+    // a choice token dropped on an off-allowed stat contributes nothing
+    expect(sumBonusPool(pool, ["cha", "cha", "con"])).toEqual({ cha: 2, con: 1 });
+    // unassigned choice tokens contribute nothing (checklist flags them instead)
+    expect(sumBonusPool(pool, defaultSlots(pool))).toEqual({ cha: 2 });
   });
 
-  it("caps abilityBonusChoice picks at the allowed amount and ignores off-list picks", () => {
-    const race = {
-      abilityBonuses: [],
-      abilityBonusChoice: { amount: 1, choices: [{ stat: 0, value: 1 }] },
-    } as never;
-    const out = computeFinalScores("2014", base, zero, {}, race, undefined, ["dex", "str"]);
-    // DEX isn't in the choice list; STR is second but the cap of 1 already consumed the pick.
-    expect(out).toEqual(base);
+  it("a +2/+1 race+subrace pool canSpread, and spread style swaps in three floating +1s", () => {
+    const elf = { abilityBonuses: [{ stat: 1, value: 2 }] } as never; // DEX +2
+    const highElf = { abilityBonuses: [{ stat: 3, value: 1 }] } as never; // INT +1
+    const standard = speciesBonusPool("2014", elf, highElf);
+    expect(standard.canSpread).toBe(true);
+    expect(defaultSlots(standard)).toEqual(["dex", "int"]);
+
+    const spread = speciesBonusPool("2014", elf, highElf, "spread");
+    expect(spread.canSpread).toBe(true);
+    expect(spread.tokens).toEqual([
+      { value: 1, preset: "", allowed: [] },
+      { value: 1, preset: "", allowed: [] },
+      { value: 1, preset: "", allowed: [] },
+    ]);
+    expect(sumBonusPool(spread, ["str", "wis", "cha"])).toEqual({ str: 1, wis: 1, cha: 1 });
+  });
+
+  it("gates by edition: empty for 2024, and legacy-flag-driven in both-mode", () => {
+    expect(speciesBonusPool("2024", dwarf).tokens).toEqual([]);
+    expect(speciesBonusPool("both", dwarf).tokens).toEqual([]); // no legacy flag → current row
+    const legacyDwarf = { legacy: true, abilityBonuses: [{ stat: 2, value: 2 }] } as never;
+    expect(speciesBonusPool("both", legacyDwarf).tokens).toHaveLength(1);
+  });
+});
+
+describe("backgroundBonusPool", () => {
+  const acolyte = { abilityOptions: ["Intelligence", "Wisdom", "Charisma"] } as never;
+
+  it("standard style is a +2 and a +1 restricted to the background's options", () => {
+    const pool = backgroundBonusPool("2024", acolyte);
+    expect(pool.canSpread).toBe(true);
+    expect(pool.tokens).toEqual([
+      { value: 2, preset: "", allowed: ["int", "wis", "cha"] },
+      { value: 1, preset: "", allowed: ["int", "wis", "cha"] },
+    ]);
+    expect(sumBonusPool(pool, ["wis", "int"])).toEqual({ wis: 2, int: 1 });
+    // an off-options assignment contributes nothing
+    expect(sumBonusPool(pool, ["str", "int"])).toEqual({ int: 1 });
+  });
+
+  it("spread style is three +1s over the same options", () => {
+    const pool = backgroundBonusPool("2024", acolyte, "spread");
+    expect(pool.tokens.map((t) => t.value)).toEqual([1, 1, 1]);
+    expect(sumBonusPool(pool, ["int", "wis", "cha"])).toEqual({ int: 1, wis: 1, cha: 1 });
+  });
+
+  it("empty for 2014, for a background without options, and with no background at all", () => {
+    expect(backgroundBonusPool("2014", acolyte).tokens).toEqual([]);
+    expect(backgroundBonusPool("2024", { abilityOptions: [] } as never).tokens).toEqual([]);
+    expect(backgroundBonusPool("2024", undefined).tokens).toEqual([]);
   });
 });
 
@@ -224,6 +381,14 @@ describe("data normalization helpers", () => {
     expect(hitDieSides("weird")).toBe(0);
   });
 
+  it("hitDieLabel normalizes every hit-die shape to display form", () => {
+    expect(hitDieLabel("12")).toBe("d12"); // bare 2014 string
+    expect(hitDieLabel("d8")).toBe("d8");
+    expect(hitDieLabel(6)).toBe("d6"); // numeric homebrew coercion
+    expect(hitDieLabel(undefined)).toBe("");
+    expect(hitDieLabel("weird")).toBe("");
+  });
+
   it("casterTypeLabel maps the enum, defaulting to Martial", () => {
     expect(casterTypeLabel(barbarian)).toBe("Martial");
     expect(casterTypeLabel(sorcerer)).toBe("Full caster");
@@ -234,7 +399,7 @@ describe("data normalization helpers", () => {
       name: "Paladin",
       spellcasting: { metadata: { casterType: CasterType.Half, slots: {} } },
     } as unknown as Class5E;
-    const lookup = (n: string) => (n === "Paladin" ? paladin : classByName(n));
+    const lookup = (entry: { name: string }) => (entry.name === "Paladin" ? paladin : classByName(entry));
     expect(
       multiclassCasterLevel(
         [
@@ -261,6 +426,72 @@ describe("subclassUnlockLevel", () => {
     const sub = { features: { 2: [], 6: [] } } as unknown as Subclass;
     expect(subclassUnlockLevel(undefined, [sub])).toBe(2);
     expect(subclassUnlockLevel(undefined, [])).toBe(3);
+  });
+});
+
+describe("featureRowsByLevel", () => {
+  // 2014-shaped wizard: dense keys, archetype-title markers at 2 and 6, dead levels 3 and 5.
+  const wizard = {
+    name: "Wizard",
+    features: {
+      1: [{ id: "", name: "Spellcasting", description: "" }, { id: "", name: "Arcane Recovery", description: "" }],
+      2: [{ id: "", name: "Arcane Tradition", description: "" }],
+      3: [],
+      4: [{ id: "", name: "Ability Score Improvement", description: "" }],
+      5: [],
+      6: [{ id: "", name: "Arcane Tradition Feature", description: "" }],
+    },
+  } as unknown as Class5E;
+  const evocation = {
+    name: "School of Evocation",
+    features: {
+      2: [{ id: "", name: "Evocation Savant", description: "" }, { id: "", name: "Sculpt Spells", description: "" }],
+      6: [{ id: "", name: "Potent Cantrip", description: "" }],
+    },
+  } as unknown as Subclass;
+
+  it("emits one row per level 1..maxLevel, with dead levels as kind 'empty'", () => {
+    const rows = featureRowsByLevel(wizard, undefined, 6);
+    expect(rows.map((r) => r.level)).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(rows[0]).toEqual({ level: 1, names: ["Spellcasting", "Arcane Recovery"], kind: "features" });
+    expect(rows[2]).toEqual({ level: 3, names: [], kind: "empty" });
+    expect(rows[4].kind).toBe("empty");
+  });
+
+  it("passes the data's generic placeholders through when no subclass is chosen", () => {
+    const rows = featureRowsByLevel(wizard, undefined, 6);
+    expect(rows[1]).toEqual({ level: 2, names: ["Arcane Tradition"], kind: "subclass" });
+    expect(rows[5]).toEqual({ level: 6, names: ["Arcane Tradition Feature"], kind: "subclass" });
+  });
+
+  it("drops the generic term everywhere once a subclass is chosen — real features only", () => {
+    const rows = featureRowsByLevel(wizard, evocation, 6);
+    expect(rows[1]).toEqual({ level: 2, names: ["Evocation Savant", "Sculpt Spells"], kind: "features" });
+    expect(rows[5]).toEqual({ level: 6, names: ["Potent Cantrip"], kind: "features" });
+  });
+
+  it("marker levels the chosen subclass never filled become plain 'empty' rows (strict drop)", () => {
+    const sparse = {
+      name: "Homebrew Tradition",
+      features: { 2: [{ id: "", name: "Only Feature", description: "" }] },
+    } as unknown as Subclass;
+    expect(featureRowsByLevel(wizard, sparse, 6)[5]).toEqual({ level: 6, names: [], kind: "empty" });
+  });
+
+  it("synthesizes a subclass slot from hint levels for sparse homebrew classes", () => {
+    const homebrew = {
+      name: "Stormwarden",
+      features: { 1: [{ id: "", name: "Storm Strike", description: "" }] },
+    } as unknown as Class5E;
+    const rows = featureRowsByLevel(homebrew, undefined, 3, [3, 7]);
+    expect(rows[1]).toEqual({ level: 2, names: [], kind: "empty" });
+    expect(rows[2]).toEqual({ level: 3, names: ["Subclass Feature"], kind: "subclass" });
+  });
+
+  it("returns [] when the class has no named feature data, or maxLevel < 1", () => {
+    expect(featureRowsByLevel({ name: "X", features: {} } as unknown as Class5E, undefined, 5)).toEqual([]);
+    expect(featureRowsByLevel(undefined, undefined, 5)).toEqual([]);
+    expect(featureRowsByLevel(wizard, undefined, 0)).toEqual([]);
   });
 });
 

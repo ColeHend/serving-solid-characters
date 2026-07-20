@@ -1,26 +1,5 @@
-import { Subrace } from "../../../../../models/generated";
-import HttpClient$ from "../../../utility/tools/httpClientObs";
-import { concatMap, of, take, tap } from "rxjs";
-import HombrewDB from "../../../utility/localDB/new/homebrewDB";
-import { createSignal } from "solid-js";
+import homebrewManager from "../../../homebrewManager";
 
-const [subrace, setSubrace] = createSignal<Subrace[]>([]);
-
-export function useGetHombrewSubraces() {
-  const LocalItems = HttpClient$.toObservable(HombrewDB.subraces.toArray());
-
-  if (subrace().length === 0) {
-    LocalItems.pipe(
-      take(1),
-      concatMap((items) => {
-        if (items.length > 0) {
-          return of(items);
-        } else {
-          return of([])
-        }
-      }),
-      tap((items) => !!items && items.length > 0 ? setSubrace(items) : null),
-    ).subscribe();
-  }
-  return subrace;
-}
+// Live signal — reflects homebrewManager subrace mutations in the same session
+// (the old one-shot Dexie snapshot went stale until reload).
+export function useGetHombrewSubraces() { return homebrewManager.subraces; }

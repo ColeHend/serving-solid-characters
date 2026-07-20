@@ -1,6 +1,8 @@
-import { Character } from "../../../../models/character.model";
+import { Character, GrantedAction } from "../../../../models/character.model";
 import { FeatureDetail } from "../../../../models/generated";
+import { getProficiencyBonus } from "../../utility/tools/dndMath";
 import { MadFeature } from "../madModels";
+import { resolvePbFraction } from "./pbFraction";
 
 export const SHORT_REST = "Short Rest";
 export const LONG_REST = "Long Rest";
@@ -22,22 +24,43 @@ const addUsesFeature = (character: Character, _feature: MadFeature): Character =
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const removeUsesFeature = (character: Character, _feature: MadFeature): Character => character;
 
-const normalizeRecharge = (raw?: string): RechargeType =>
+export const normalizeRecharge = (raw?: string): RechargeType =>
     raw?.toLowerCase().includes("short") ? SHORT_REST : LONG_REST;
+
+/**
+ * Resolve an {amount | proficiencyBonus, recharge} uses spec: a fixed amount wins over a
+ * PB fraction; the fraction resolves against `level` (unknown level counts as level 1).
+ * Null when neither yields a positive max.
+ */
+function usageFromParts(
+    amount: number | string | undefined,
+    proficiencyBonus: string | undefined,
+    recharge: string | undefined,
+    level?: number,
+): FeatureUsage | null {
+    const max = Number(amount);
+    if (Number.isFinite(max) && max > 0) {
+        return { max, recharge: normalizeRecharge(recharge) };
+    }
+    const pbMax = resolvePbFraction(proficiencyBonus?.trim(), getProficiencyBonus(level ?? 1));
+    if (pbMax > 0) {
+        return { max: pbMax, recharge: normalizeRecharge(recharge) };
+    }
+    return null;
+}
 
 /**
  * The limited-use definition for a feature: an AddUses command on the feature wins,
  * falling back to metadata.uses/recharge. Null when the feature is not limited-use.
  */
-export function featureUsage(feature: FeatureDetail): FeatureUsage | null {
+export function featureUsage(feature: FeatureDetail, level?: number): FeatureUsage | null {
     const mads = (feature.metadata?.mads ?? []) as MadFeature[];
     const usesMad = mads.find(m => m.command === "AddUses");
 
     if (usesMad) {
-        const max = Number(usesMad.value?.['amount']);
-        if (Number.isFinite(max) && max > 0) {
-            return { max, recharge: normalizeRecharge(usesMad.value?.['recharge']) };
-        }
+        const fromMad = usageFromParts(
+            usesMad.value?.['amount'], usesMad.value?.['proficiencyBonus'], usesMad.value?.['recharge'], level);
+        if (fromMad) return fromMad;
     }
 
     const metaUses = Number(feature.metadata?.uses);
@@ -47,6 +70,38 @@ export function featureUsage(feature: FeatureDetail): FeatureUsage | null {
 
     return null;
 }
+
+/**
+ * The limited-use definition for a granted action: uses carried inline on the action win,
+ * falling back to the granting feature's featureUsage (the SRD pairs a feature-level AddUses
+ * with the action, linked by `source`). Null when the action is not limited-use.
+ */
+export function grantedActionUsage(
+    action: GrantedAction,
+    features: FeatureDetail[],
+    level?: number,
+): FeatureUsage | null {
+    const inline = usageFromParts(action.uses, action.proficiencyBonus, action.recharge, level);
+    if (inline) return inline;
+
+    if (action.source) {
+        const feat = features.find(f => f.name === action.source);
+        if (feat) return featureUsage(feat, level);
+    }
+
+    return null;
+}
+
+/**
+ * The featureUses pool a granted action spends from. An action with INLINE uses gets its own
+ * prefixed pool — its max comes from the action, so sharing a counter with a like-named
+ * limited-use feature (whose max may differ) would corrupt both trackers. A source-fallback
+ * action shares its granting feature's pool, keeping the two trackers in sync.
+ */
+export const actionUsesKey = (action: GrantedAction): string =>
+    (action.uses !== undefined || action.proficiencyBonus)
+        ? `action:${action.name}`
+        : (action.source || action.name);
 
 /**
  * Clears spent use counts for a rest: a long rest restores everything, a short rest

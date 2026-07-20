@@ -15,7 +15,7 @@ interface TopBarProps {
 
 /** Sticky page header: name, alignment, rules toggle, live summary, level badge, actions. */
 export const TopBar: Component<TopBarProps> = (props) => {
-  const { draft, actions, derived, loadEditionData, editName } = useCreate();
+  const { draft, actions, derived, loadEditionData, editId } = useCreate();
   const [showConfirm, setShowConfirm] = createSignal(false);
   const [pendingSwitch, setPendingSwitch] = createSignal<{
     target: RulesetSelection;
@@ -26,8 +26,13 @@ export const TopBar: Component<TopBarProps> = (props) => {
   const switchEdition = async (target: RulesetSelection) => {
     if (target === draft.edition) return;
     try {
-      const data = await loadEditionData(target);
-      const { next, dropped } = reconcileEdition(draft, target, data);
+      // The source snapshot recovers names for key-shaped selections (spells/feats) so
+      // same-named entities survive the switch instead of being dropped.
+      const [data, source] = await Promise.all([
+        loadEditionData(target),
+        loadEditionData(draft.edition),
+      ]);
+      const { next, dropped } = reconcileEdition(draft, target, data, source);
       const apply = () => {
         actions.load(next);
         setShowConfirm(false);
@@ -96,13 +101,13 @@ export const TopBar: Component<TopBarProps> = (props) => {
         <Button onClick={props.onCreateSheet} transparent title="Export a PDF sheet">
           PDF
         </Button>
-        <Show when={editName()}>
+        <Show when={editId()}>
           <Button onClick={props.onDelete} theme="error" transparent>
             Delete
           </Button>
         </Show>
         <Button onClick={props.onSave} disabled={props.saveDisabled}>
-          {editName() ? "Update" : "Save"}
+          {editId() ? "Update" : "Save"}
         </Button>
       </div>
 

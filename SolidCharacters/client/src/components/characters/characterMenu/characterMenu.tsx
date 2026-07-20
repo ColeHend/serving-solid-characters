@@ -29,7 +29,7 @@ export const CharacterMenu: Component<menuProps> = (props) => {
             <Icon icon={MoreVert}/>
         </Button>
         <Menu anchorElement={anchorEle} show={[showMenu,setShowMenu]} position="left" class={`${styles.menu}`} >
-            <MenuItem onClick={() => navigate(`/characters/create?name=${character().name}`)}>
+            <MenuItem onClick={() => navigate(`/characters/create?id=${character().id}`)}>
             Edit
             </MenuItem>
             <MenuItem onClick={() => createCharacterSheet(character(), fullStats(), profs())}>

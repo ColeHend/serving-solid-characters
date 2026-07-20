@@ -3,12 +3,27 @@ import {
   Background,
   Class5E,
   Feat,
+  MagicItem,
   Race,
   Spell,
   Subclass,
   Subrace,
 } from "../../../../models/generated";
-import { Character } from "../../../../models/character.model";
+import {
+  Character,
+  GrantedAction,
+  RollAdvantage,
+  RollBonus,
+} from "../../../../models/character.model";
+import { movementModeLabels } from "../../../../shared/customHooks/mads/rollFormat";
+import {
+  collectMadFeatures,
+  collectMagicItemMads,
+} from "../../../../shared/customHooks/mads/useMadCharacters";
+import {
+  EquipProficiencies,
+  resolveCharacterEquipProficiencies,
+} from "../../../../shared/customHooks/mads/equipmentProficiencies";
 import { srdItem } from "../../../../models/data/generated";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
 import {
@@ -19,21 +34,31 @@ import {
   withVariantFirst,
 } from "../state/bothMode";
 import { draftToCharacter } from "../state/draftMapper";
-import { CharacterDraft } from "../state/types";
+import { CharacterDraft, DraftClass } from "../state/types";
+import {
+  entitySelectorKey,
+  featSelectorKey,
+  selectorKeyDisplayName,
+} from "../../../../shared/customHooks/utility/tools/entityKey";
 import { MadChoice, applyCreatorMads, draftMadChoices } from "./applyMads";
 import {
+  AbilityBonusPool,
   SaveRow,
   SkillRow,
   SpellcastingInfo,
+  backgroundBonusPool,
   computeAc,
   computeFinalScores,
   computeInitiative,
+  computeMaxHp,
   computePassivePerception,
-  computeSavingThrows,
   computeSkillRows,
   computeSpellcasting,
   getAbilityModifier,
   getProficiencyBonus,
+  mergeMadSkillRows,
+  speciesBonusPool,
+  sumBonusPool,
   totalLevel,
 } from "./engine";
 import { ABILITY_KEYS, AbilityKey } from "./constants";
@@ -54,6 +79,7 @@ export interface CreateData {
   feats: Accessor<Feat[]>;
   spells: Accessor<Spell[]>;
   items: Accessor<srdItem[]>;
+  magicItems: Accessor<MagicItem[]>;
 }
 
 /** Both-mode species↔background edition pairing: which side is locked, and by which pick. */
@@ -70,9 +96,18 @@ export interface Derived {
   selectedSubrace: Accessor<Subrace | undefined>;
   selectedBackground: Accessor<Background | undefined>;
   classByName: (name: string) => Class5E | undefined;
+  /** Id-first class resolution for a draft entry (selector key, falling back to the name). */
+  classByKey: (entry: Pick<DraftClass, "classId" | "name">) => Class5E | undefined;
+  /** The species' assignable ability-bonus tokens (empty when the species grants none). */
+  speciesBonusPool: Accessor<AbilityBonusPool>;
+  /** The background's assignable ability-bonus tokens (2024-style boosts; empty for 2014). */
+  backgroundBonusPool: Accessor<AbilityBonusPool>;
   finalScores: Accessor<Stats>;
   abilityMods: Accessor<Record<AbilityKey, number>>;
+  /** Effective max HP (manual override and MADS applied) — what the sheet shows. */
   maxHp: Accessor<number>;
+  /** The computed max HP before any manual override — the HP section's "auto" figure. */
+  autoMaxHp: Accessor<number>;
   ac: Accessor<number>;
   initiative: Accessor<number>;
   speed: Accessor<number>;
@@ -99,6 +134,20 @@ export interface Derived {
   defenses: Accessor<{ resistances: string[]; immunities: string[]; vulnerabilities: string[] }>;
   /** Spell names granted by MADS commands beyond the draft's own picks. */
   grantedSpells: Accessor<string[]>;
+  /** Actions/bonus actions/reactions granted by MADS commands (Second Wind, ...). */
+  grantedActions: Accessor<GrantedAction[]>;
+  /** Advantage/disadvantage grants from MADS commands. */
+  rollAdvantages: Accessor<RollAdvantage[]>;
+  /** Flat/PB d20 bonuses from MADS commands (Initiative ones already fold into `initiative`). */
+  rollBonuses: Accessor<RollBonus[]>;
+  /** Attacks per Attack action (Extra Attack). */
+  attacksPerAction: Accessor<number>;
+  /** Non-walking movement modes as "Fly 60 ft" labels. */
+  movementModes: Accessor<string[]>;
+  /** Armor/weapon/tool proficiencies: class+background base lists with equipment-proficiency mads applied. */
+  equipProficiencies: Accessor<EquipProficiencies>;
+  /** Ability keys a mode:"set" AddStats mad forces (Headband of Intellect) — display "set", not "+N". */
+  setStats: Accessor<Set<string>>;
   /** Choice-form MADS commands on the character's features, with pending state. */
   madChoices: Accessor<MadChoice[]>;
   /** The background's origin feat name, '' when none. */
@@ -116,6 +165,16 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
   // one wins for name-keyed class lookups.
   const classByName = (name: string) =>
     preferCurrent(data.classes().filter((c) => c.name?.toLowerCase() === name.toLowerCase()));
+
+  /** Exact selector-key lookup; undefined when no key is stored (legacy saves fall back to names). */
+  const byKey = <T extends { id?: string; name?: string }>(
+    list: T[],
+    key: string | undefined,
+  ): T | undefined =>
+    key ? list.find((e) => entitySelectorKey({ id: e.id, name: e.name ?? "" }) === key) : undefined;
+
+  const classByKey = (entry: Pick<DraftClass, "classId" | "name">) =>
+    byKey(data.classes(), entry.classId) ?? classByName(entry.name);
 
   const pairing = createMemo<PairingState>(() => {
     if (draft.edition !== "both") return { side: undefined, anchor: null };
@@ -145,28 +204,33 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
     ));
 
   const selectedRace = createMemo(() =>
+    byKey(data.racesRaw(), draft.speciesId) ??
     resolveVariant(data.racesRaw(), draft.species, pairing().side));
   const selectedSubrace = createMemo(() =>
     draft.lineage
-      ? preferCurrent(
-        data.subraces().filter((r) => r.name?.toLowerCase() === draft.lineage.toLowerCase()),
-      )
+      ? byKey(data.subraces(), draft.lineageId) ??
+        preferCurrent(
+          data.subraces().filter((r) => r.name?.toLowerCase() === draft.lineage.toLowerCase()),
+        )
       : undefined);
   const selectedBackground = createMemo(() =>
+    byKey(data.backgroundsRaw(), draft.backgroundId) ??
     resolveVariant(data.backgroundsRaw(), draft.background, pairing().side));
 
   const level = createMemo(() => totalLevel(draft.classes));
   const profBonus = createMemo(() => getProficiencyBonus(level()));
 
+  const speciesBonusTokens = createMemo(() =>
+    speciesBonusPool(draft.edition, selectedRace(), selectedSubrace(), draft.abilityBonusStyle.species));
+  const backgroundBonusTokens = createMemo(() =>
+    backgroundBonusPool(draft.edition, selectedBackground(), draft.abilityBonusStyle.background));
+
   const finalScores = createMemo(() =>
     computeFinalScores(
-      draft.edition,
       draft.baseScores,
       draft.bonusScores,
-      draft.backgroundBoosts,
-      selectedRace(),
-      selectedSubrace(),
-      draft.raceAbilityChoices,
+      sumBonusPool(speciesBonusTokens(), draft.abilityBonuses.species),
+      sumBonusPool(backgroundBonusTokens(), draft.abilityBonuses.background),
     ));
   const abilityMods = createMemo(() => {
     const scores = finalScores();
@@ -177,9 +241,11 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
 
   const backgroundFeat = createMemo(() =>
     selectedBackground() ? draft.originFeat || (selectedBackground()?.feat ?? "") : "");
+  const featNameOfKey = (key: string) =>
+    data.feats().find((f) => featSelectorKey(f) === key)?.details?.name ?? selectorKeyDisplayName(key);
   const allFeatNames = createMemo(() => [
     ...(backgroundFeat() ? [backgroundFeat()] : []),
-    ...draft.feats,
+    ...draft.feats.map(featNameOfKey),
   ]);
 
   // The MADS layer mirrors the view page: map the draft to a Character, apply the feature
@@ -192,8 +258,9 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
       subraces: data.subraces(),
       backgrounds: withVariantFirst(data.backgrounds(), selectedBackground()),
       feats: data.feats(),
+      spells: data.spells(),
     }));
-  const madCharacter = createMemo(() => applyCreatorMads(draftCharacter()));
+  const madCharacter = createMemo(() => applyCreatorMads(draftCharacter(), data.magicItems()));
   const madChoices = createMemo(() => draftMadChoices(draftCharacter()));
 
   const effectiveScores = createMemo(() => madCharacter().stats ?? finalScores());
@@ -206,22 +273,36 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
 
   const spellNameById = createMemo(
     () => new Map(data.spells().map((s) => [(s.id ?? "").toLowerCase(), s.name])));
+  const spellNameByKey = createMemo(
+    () => new Map(data.spells().map((s) => [entitySelectorKey(s), s.name])));
   const grantedSpells = createMemo(() => {
-    const known = new Set(draft.spells.map((name) => name.toLowerCase()));
+    // Known spells are stored as selector keys; granted ones still dedupe by display name.
+    const known = new Set(
+      draft.spells.map((key) => (spellNameByKey().get(key) ?? selectorKeyDisplayName(key)).toLowerCase()),
+    );
     return (madCharacter().spells ?? [])
       .map((s) => s.name)
       .filter((name) => name && !known.has(name.toLowerCase()))
       .map((name) => spellNameById().get(name.toLowerCase()) ?? name);
   });
 
+  // Base rows from the draft picks, then mads-granted proficiencies/expertise (Skilled,
+  // Primal Knowledge picks, Jack of All Trades bumps) overlaid — display only; the save
+  // path keeps the raw computeSkillRows output.
   const skillRows = createMemo(() =>
-    computeSkillRows({
-      classSkills: draft.classes.flatMap((c) => c.skillChoices),
-      backgroundSkills: selectedBackground()?.proficiencies?.skills ?? [],
-      overrides: draft.skillOverrides,
-      finalScores: effectiveScores(),
-      profBonus: profBonus(),
-    }));
+    mergeMadSkillRows(
+      computeSkillRows({
+        classSkills: draft.classes.flatMap((c) => c.skillChoices),
+        backgroundSkills: selectedBackground()?.proficiencies?.skills ?? [],
+        overrides: draft.skillOverrides,
+        finalScores: effectiveScores(),
+        profBonus: profBonus(),
+      }),
+      draftCharacter().proficiencies?.skills ?? {},
+      madCharacter().proficiencies?.skills ?? {},
+      effectiveScores(),
+      profBonus(),
+    ));
 
   const classSummary = createMemo(() =>
     draft.classes.map((c) => `${c.name} ${c.level}`).join(" / "));
@@ -244,18 +325,39 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
     selectedSubrace,
     selectedBackground,
     classByName,
+    classByKey,
+    speciesBonusPool: speciesBonusTokens,
+    backgroundBonusPool: backgroundBonusTokens,
     finalScores,
     abilityMods,
     maxHp: createMemo(() => madCharacter().health?.max ?? 0),
+    autoMaxHp: createMemo(() => computeMaxHp(draft.classes, classByKey, abilityMods().con)),
     ac: createMemo(() => madCharacter().ArmorClass ?? computeAc(abilityMods().dex)),
-    initiative: createMemo(() => computeInitiative(effectiveMods().dex, allFeatNames(), profBonus())),
+    initiative: createMemo(() =>
+      computeInitiative(
+        effectiveMods().dex,
+        madCharacter().rollBonuses ?? [],
+        profBonus(),
+        effectiveScores(),
+      )),
     speed: createMemo(() => madCharacter().Speed ?? 0),
     skillRows,
     passivePerception: createMemo(() => computePassivePerception(skillRows())),
-    savingThrows: createMemo(() =>
-      computeSavingThrows(classByName(draft.classes[0]?.name ?? ""), effectiveScores(), profBonus())),
+    // The saved character's savingThrows (initial class) with mads applied on top
+    // (Resilient-style AddSavingThrows), re-modded from effective scores.
+    savingThrows: createMemo(() => {
+      const applied = madCharacter().savingThrows ?? [];
+      return ABILITY_KEYS.map((key) => {
+        const proficient = applied.some((s) => s.stat === key && s.proficient);
+        return {
+          key,
+          proficient,
+          mod: getAbilityModifier(effectiveScores()[key] ?? 10) + (proficient ? profBonus() : 0),
+        };
+      });
+    }),
     spellcasting: createMemo(() =>
-      computeSpellcasting(draft.classes, classByName, effectiveScores(), profBonus())),
+      computeSpellcasting(draft.classes, classByKey, effectiveScores(), profBonus())),
     speciesPool,
     backgroundPool,
     pairing,
@@ -271,6 +373,27 @@ export function useDerived(draft: CharacterDraft, data: CreateData): Derived {
       vulnerabilities: (madCharacter().vulnerabilities ?? []).map((r) => r.type),
     })),
     grantedSpells,
+    grantedActions: createMemo(() => madCharacter().grantedActions ?? []),
+    rollAdvantages: createMemo(() => madCharacter().rollAdvantages ?? []),
+    rollBonuses: createMemo(() => madCharacter().rollBonuses ?? []),
+    attacksPerAction: createMemo(() => madCharacter().attacksPerAction ?? 1),
+    movementModes: createMemo(() => movementModeLabels(madCharacter())),
+    // Edition-scoped lists (data.*), NOT the settings-scoped useExportProficiencies hooks —
+    // a 2014 draft under 2024 user settings must still union the 2014 class's lists.
+    equipProficiencies: createMemo(() =>
+      resolveCharacterEquipProficiencies(draftCharacter(), data.classes(), data.backgrounds())),
+    setStats: createMemo(() => {
+      const mads = [
+        ...collectMadFeatures(draftCharacter()),
+        ...collectMagicItemMads(draftCharacter(), data.magicItems()),
+      ];
+      return new Set(
+        mads
+          .filter((m) => m.command === "AddStats" && m.value?.["mode"] === "set")
+          .map((m) => (m.value?.["stat"] ?? "").toLowerCase())
+          .filter(Boolean),
+      );
+    }),
     madChoices,
     backgroundFeat,
     allFeatNames,

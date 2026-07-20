@@ -10,13 +10,14 @@ const renderPage = () =>
     </Router>
   ));
 
-test("renders the codex shell with all ten sections", async () => {
+test("renders the codex shell with all eleven sections", async () => {
   renderPage();
   for (const title of [
     "Class",
     "Species",
     "Background",
     "Abilities",
+    "Hit Points",
     "Skills",
     "Feats",
     "Spells",

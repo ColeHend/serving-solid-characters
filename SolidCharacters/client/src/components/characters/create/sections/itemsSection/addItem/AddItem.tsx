@@ -1,15 +1,17 @@
 import { Accessor, Component, createEffect, createMemo, createSignal, Setter } from "solid-js";
+import { CharacterItemRef } from "../../../../../../models/character.model";
 import { Item, ItemType } from "../../../../../../models/generated";
 import { Button, Cell, Column, Header, Table } from "coles-solid-library";
 import SearchBar from "../../../../../../shared/components/SearchBar/SearchBar";
 import { Paginator } from "../../../../../../shared";
+import { entitySelectorKey } from "../../../../../../shared/customHooks/utility/tools/entityKey";
 import { InfoButton } from "../../../shell/infoButton";
 import { LegacyBadge } from "../../../shell/legacyBadge";
 import styles from "./AddItem.module.scss";
 
 interface props {
     allItems: Accessor<Item[]>;
-    inventory: [Accessor<string[]>, Setter<string[]>];
+    inventory: [Accessor<CharacterItemRef[]>, Setter<CharacterItemRef[]>];
     /** Opens the item detail dialog (rendered by the parent section). */
     onView?: (item: Item) => void;
     /** Both-mode: badge legacy (2014) rows. */
@@ -35,10 +37,11 @@ export const AddItem: Component<props> = (props) => {
 
     const [inventory, setInventory] = props.inventory;
 
-    const is_Added = (value: string) => {
+    // Id-keyed entries pin the exact catalog row (2014 vs 2024); name-only entries match by name.
+    const matchesItem = (entry: CharacterItemRef, item: Item) =>
+        entry.id ? entry.id === entitySelectorKey(item) : entry.name === item.name;
 
-        return inventory().includes(value);
-    }
+    const is_Added = (item: Item) => inventory().some((entry) => matchesItem(entry, item));
 
     const sortByType = (type: ItemType) => {
         setSearchedItems(srdItems())
@@ -123,13 +126,13 @@ export const AddItem: Component<props> = (props) => {
                     <Cell<Item>>
                         {(item)=><div style={{display: "flex", "flex-direction":"column","align-items": 'center'}}>
                             <Button onClick={()=>{
-                                if (is_Added(item.name)) {
-                                    setInventory(old => old.filter(old => old !== item.name));
+                                if (is_Added(item)) {
+                                    setInventory(old => old.filter(entry => !matchesItem(entry, item)));
                                 } else {
-                                    setInventory(old => [...old, item.name]);
+                                    setInventory(old => [...old, { name: item.name, id: entitySelectorKey(item) }]);
                                 }
                             }}>
-                                {is_Added(item.name) ? "Delete" : "Insert"}
+                                {is_Added(item) ? "Delete" : "Insert"}
                             </Button>
                         </div>}
                     </Cell>

@@ -7,12 +7,14 @@ import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/sp
 import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
 import { useDndFeature } from "../../../../shared/customHooks/dndInfo/useDndFeatures";
 import { useDnDFeats } from "../../../../shared/customHooks/dndInfo/info/all/feats";
+import { getScreenSize } from "../../../../shared/customHooks/utility/tools/getScreenSize";
 import { PopupHeader } from "./popupHeader";
 import { PopupFooter } from "./popupFooter";
 import { DetailsTab } from "./detailsTab";
 import { UsageSpellsTab } from "./usageSpellsTab";
 import { EffectsTab } from "./effectsTab";
-import { FeaturesPopupProps, MadsApi, buildSubtitle, splitCommand, usageOwnedIndices } from "./featuresPopup.shared";
+import { CloseGuardDialog, PendingClose } from "./closeGuardDialog";
+import { FeaturesPopupProps, MadsApi, buildSubtitle, isUnsetRow, splitCommand, usageOwnedIndices } from "./featuresPopup.shared";
 import styles from "./featuresPopup.module.scss";
 
 export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
@@ -24,8 +26,11 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
     // Effect cards are recreated on every row write (see effectCard.tsx), so the
     // value editors' open/closed flags live here, keyed by the row's stable name.
     const [editorOpen, setEditorOpen] = createSignal<Record<string, boolean>>({});
+    // Close intercepted by the unset-effects guard, awaiting confirmation.
+    const [pendingClose, setPendingClose] = createSignal<PendingClose>(null);
 
     const is_edit = createMemo(() => props.isEdit());
+    const { screenSize } = getScreenSize();
     const allSpells = useDnDSpells();
     const allItems = useDnDItems();
     const { allFeatures } = useDndFeature();
@@ -65,11 +70,15 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         setEditorOpen: (key, open) => setEditorOpen(old => ({ ...old, [key]: open })),
     };
 
-    const save = () => {
+    const unsetCount = createMemo(() => rows().filter(isUnsetRow).length);
+
+    const doSave = () => {
         const name = getFeatureValue("name")?.() ?? "";
         const desc = getFeatureValue("description")?.() ?? "";
 
-        const madsData = currentFeatureMetadata.get().flatMap(metadata => {
+        // Unset rows (no category / no value) do nothing on the sheet — drop them
+        // rather than persisting junk mads with an empty command or value.
+        const madsData = currentFeatureMetadata.get().filter(metadata => !isUnsetRow(metadata)).flatMap(metadata => {
             return {
                 command: metadata.command,
                 value: metadata.value,
@@ -106,12 +115,32 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         setPrerequisites({});
         currentFeatureMetadata.reset();
         setEditorOpen({});
+        setPendingClose(null);
         setActiveTab(0);
     }
 
-    const cancel = () => {
+    const doCancel = () => {
         clearInputs();
         setShow(false);
+    }
+
+    // Closing with unset effects diverts to the guard dialog first.
+    const save = () => unsetCount() > 0 ? setPendingClose("save") : doSave();
+    const cancel = () => unsetCount() > 0 ? setPendingClose("cancel") : doCancel();
+
+    // The library Modal's backdrop click and Escape close by writing show[1](false)
+    // directly — route those through the same guard as the Cancel button. doCancel/
+    // doSave call the raw setShow, so a confirmed close passes straight through.
+    const guardedSetShow = ((value: boolean) => {
+        if (value === false && show()) { cancel(); return; }
+        setShow(value);
+    }) as typeof setShow;
+
+    const confirmClose = () => {
+        const mode = pendingClose();
+        setPendingClose(null);
+        if (mode === "save") doSave();
+        else if (mode === "cancel") doCancel();
     }
 
     const getFeatureValue = <T extends keyof FeatureDetail>(key: T): Accessor<FeatureDetail[T]> | null => {
@@ -201,13 +230,22 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         }
     }))
 
-    // DOM-only side effect: strip the modal wrapper's bottom padding once it mounts.
+    // DOM-only side effects on the library modal chrome once it mounts: strip the
+    // dialog's bottom padding, and turn its overflow:hidden boxes into clip.
+    // hidden boxes are still programmatically scrollable — the Select dropdown's
+    // focus/scrollIntoView scrolls the dialog itself, sticking the header out of
+    // view with no scrollbar to recover. clip boxes cannot scroll at all.
     createEffect(() => {
         const popup = popupRef();
         if (!popup) return;
-        const parent = popup.parentElement?.parentElement;
-        if (parent) {
-            parent.style.setProperty("padding-bottom", "0", "important")
+        const body = popup.parentElement;
+        const dialog = body?.parentElement;
+        if (body) {
+            body.style.setProperty("overflow", "clip");
+        }
+        if (dialog) {
+            dialog.style.setProperty("padding-bottom", "0", "important");
+            dialog.style.setProperty("overflow", "clip");
         }
     })
 
@@ -217,7 +255,13 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
 
     const title = () => `${is_edit() ? "Edit" : "Add"} Feature`;
 
-    return <Modal noHeader show={[show, setShow]} title={title()} width="min(700px, 94vw)">
+    return <Modal
+        noHeader
+        show={[show, guardedSetShow]}
+        title={title()}
+        width={screenSize() === "large" ? "min(1120px, 92vw)" : "min(700px, 94vw)"}
+        height={screenSize() === "small" ? "95vh" : "88vh"}
+    >
         <div class={styles.wrapper} ref={(e) => setPopupRef(e)}>
             <PopupHeader
                 title={title()}
@@ -261,6 +305,13 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
             </div>
 
             <PopupFooter effectCount={effectCount()} onCancel={cancel} onSave={save} />
+
+            <CloseGuardDialog
+                pending={pendingClose}
+                unsetCount={unsetCount}
+                onKeepEditing={() => setPendingClose(null)}
+                onConfirm={confirmClose}
+            />
         </div>
     </Modal>
 }

@@ -2,6 +2,10 @@ import { Component, For, Show, createMemo, createSignal } from "solid-js";
 import { Button, Chip, Input } from "coles-solid-library";
 import { Feat, PrerequisiteType } from "../../../../../models/generated";
 import FeatView from "../../../../../shared/components/modals/featModal/featView";
+import {
+  featSelectorKey,
+  selectorKeyDisplayName,
+} from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { featCategory, normalizeAbility, summarize } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
 import { LegacyBadge } from "../../shell/legacyBadge";
@@ -21,6 +25,7 @@ export const FeatsSection: Component = () => {
   };
   const featByName = (name: string | undefined) =>
     data.feats().find((feat) => feat.details?.name?.toLowerCase() === (name ?? "").toLowerCase());
+  const featByKey = (key: string) => data.feats().find((feat) => featSelectorKey(feat) === key);
 
   const filteredFeats = createMemo(() => {
     const query = search().trim().toLowerCase();
@@ -30,7 +35,12 @@ export const FeatsSection: Component = () => {
       .sort((a, b) => (a.details?.name ?? "").localeCompare(b.details?.name ?? ""));
   });
 
-  const isTaken = (name: string | undefined) => !!name && draft.feats.includes(name);
+  const isTaken = (feat: Feat) => draft.feats.includes(featSelectorKey(feat));
+
+  /** Feats chosen in a class feat-or-ASI slot — taken, but released by the slot, not here. */
+  const asiChosenKeys = createMemo(
+    () => new Set(Object.values(draft.featOrAsi).filter((value) => value && value !== "asi")));
+  const isAsiTaken = (feat: Feat) => asiChosenKeys().has(featSelectorKey(feat));
 
   /** Prerequisite summary; ability-score ones ("Strength 13") are checked, the rest shown as-is. */
   const prereqStatus = (feat: Feat): { text: string; unmet: boolean } | null => {
@@ -61,14 +71,32 @@ export const FeatsSection: Component = () => {
           </span>
         </Show>
         <For each={draft.feats}>
-          {(name) => (
-            <span class={styles.chipWithInfo}>
-              <Chip value={name} remove={() => actions.removeFeat(name)} />
-              <Show when={featByName(name)}>
-                {(feat) => <InfoButton label={`View ${name} details`} onClick={() => viewFeat(feat())} />}
-              </Show>
-            </span>
-          )}
+          {(key) => {
+            const feat = () => featByKey(key);
+            const name = () => feat()?.details?.name ?? selectorKeyDisplayName(key);
+            return (
+              <span class={styles.chipWithInfo}>
+                <Chip value={name()} remove={() => actions.removeFeat(key)} />
+                <Show when={feat()}>
+                  {(found) => <InfoButton label={`View ${name()} details`} onClick={() => viewFeat(found())} />}
+                </Show>
+              </span>
+            );
+          }}
+        </For>
+        <For each={[...asiChosenKeys()]}>
+          {(key) => {
+            const feat = () => featByKey(key);
+            const name = () => feat()?.details?.name ?? selectorKeyDisplayName(key);
+            return (
+              <span class={styles.lockedChip}>
+                {name()} · in place of an ASI
+                <Show when={feat()}>
+                  {(found) => <InfoButton label={`View ${name()} details`} onClick={() => viewFeat(found())} />}
+                </Show>
+              </span>
+            );
+          }}
         </For>
       </div>
 
@@ -105,21 +133,30 @@ export const FeatsSection: Component = () => {
                 </Show>
               </div>
               <Show
-                when={isTaken(feat.details?.name)}
+                when={!isAsiTaken(feat)}
                 fallback={
-                  <Button onClick={() => actions.addFeat(feat.details?.name ?? "")}>Add</Button>
+                  <Button disabled title="Chosen in a class feat-or-ASI slot — release it there">
+                    Taken
+                  </Button>
                 }
               >
-                <Button theme="error" transparent onClick={() => actions.removeFeat(feat.details?.name ?? "")}>
-                  Remove
-                </Button>
+                <Show
+                  when={isTaken(feat)}
+                  fallback={
+                    <Button onClick={() => actions.addFeat(featSelectorKey(feat))}>Add</Button>
+                  }
+                >
+                  <Button theme="error" transparent onClick={() => actions.removeFeat(featSelectorKey(feat))}>
+                    Remove
+                  </Button>
+                </Show>
               </Show>
             </div>
           )}
         </For>
       </div>
 
-      <FeatureChoices />
+      <FeatureChoices source="feat" label="Feat choices" />
 
       <Show when={viewedFeat()} keyed>
         {(feat) => <FeatView feat={() => feat} show={[showFeatView, setShowFeatView]} width="40%" height="40%" />}

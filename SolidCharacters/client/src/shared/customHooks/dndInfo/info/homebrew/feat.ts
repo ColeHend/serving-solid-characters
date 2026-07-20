@@ -1,26 +1,10 @@
 import { Feat } from "../../../../../models/generated";
-import HttpClient$ from "../../../utility/tools/httpClientObs";
-import { concatMap, of, take, tap } from "rxjs";
-import HombrewDB from "../../../utility/localDB/new/homebrewDB";
-import { createSignal } from "solid-js";
+import { Accessor } from "solid-js";
+import homebrewManager from "../../../homebrewManager";
 
-const [feats, setFeats] = createSignal<Feat[]>([]);
-
-export function useGetHombrewFeats() {
-  const LocalFeats = HttpClient$.toObservable(HombrewDB.feats.toArray());
-
-  if (feats().length === 0) {
-    LocalFeats.pipe(
-      take(1),
-      concatMap((feats) => {
-        if (feats.length > 0) {
-          return of(feats);
-        } else {
-          return of([])
-        }
-      }),
-      tap((feats) => !!feats && feats.length > 0 ? setFeats(feats) : null),
-    ).subscribe();
-  }
-  return feats;
+// Live signal — reflects homebrewManager feat mutations in the same session
+// (the old one-shot Dexie snapshot went stale until reload). The manager's accessor is
+// loosely typed (any[]); this hook keeps the typed contract consumers rely on.
+export function useGetHombrewFeats(): Accessor<Feat[]> {
+  return homebrewManager.feats as Accessor<Feat[]>;
 }

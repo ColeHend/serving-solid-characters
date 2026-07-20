@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { detectSubclassFeatureLevels, ensureAllClassLevels, subclassMarkerInput, MAX_CLASS_LEVEL } from "./classProgression";
+import { detectSubclassFeatureLevels, ensureAllClassLevels, isSubclassMarkerFeature, subclassMarkerInput, MAX_CLASS_LEVEL } from "./classProgression";
 import type { FeatureDetail } from "../../../models/generated";
 
 /**
@@ -126,5 +126,28 @@ describe("detectSubclassFeatureLevels", () => {
             },
         };
         expect(detectSubclassFeatureLevels(cls)).toEqual([1, 6, 10]);
+    });
+});
+
+describe("isSubclassMarkerFeature", () => {
+    it("matches the homebrew metadata marker regardless of the feature's name", () => {
+        expect(isSubclassMarkerFeature("Stormwarden", { ...feat("Anything"), metadata: { category: "Subclass" } })).toBe(true);
+    });
+
+    it("matches the 2024 names — '<ClassName> Subclass' and 'Subclass Feature' — case-insensitively", () => {
+        expect(isSubclassMarkerFeature("Wizard", feat("Wizard Subclass"))).toBe(true);
+        expect(isSubclassMarkerFeature("Wizard", feat("subclass feature"))).toBe(true);
+        expect(isSubclassMarkerFeature("Sorcerer", feat("Wizard Subclass"))).toBe(false);
+    });
+
+    it("matches 2014 archetype titles, '<title> feature', and Barbarian's 'Path feature'", () => {
+        expect(isSubclassMarkerFeature("Wizard", feat("Arcane Tradition"))).toBe(true);
+        expect(isSubclassMarkerFeature("Wizard", feat("Arcane Tradition Feature"))).toBe(true);
+        expect(isSubclassMarkerFeature("Barbarian", feat("Path feature"))).toBe(true);
+    });
+
+    it("rejects real features", () => {
+        expect(isSubclassMarkerFeature("Barbarian", feat("Rage"))).toBe(false);
+        expect(isSubclassMarkerFeature("Wizard", feat("Ability Score Improvement"))).toBe(false);
     });
 });

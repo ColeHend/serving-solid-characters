@@ -2,6 +2,12 @@ import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
 
 export type AbilityKey = keyof Stats;
 
+/** An assignable-bonus slot's target ability; '' = not chosen yet. */
+export type AbilitySlot = AbilityKey | "";
+
+/** How a +2/+1 bonus pool is taken: as-written, or spread into three +1s. */
+export type AbilityBonusStyle = "standard" | "spread";
+
 export const ABILITY_KEYS: AbilityKey[] = ["str", "dex", "con", "int", "wis", "cha"];
 
 export const ABILITY_LABELS: Record<AbilityKey, string> = {

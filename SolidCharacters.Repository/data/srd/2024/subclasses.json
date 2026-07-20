@@ -65,7 +65,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "12af8c33-73fe-461b-a813-bc5fb3402132"
  },
  {
   "id": "8e9b151a-b847-47cd-a7e2-27729c0596b2",
@@ -117,7 +118,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "da5435a0-7c94-4c2f-b34a-214805c22396"
  },
  {
   "id": "fb3b0004-f7db-45a3-ab82-702081864aa5",
@@ -280,7 +282,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "31e2452c-ccfb-4cf5-9d3d-96b8c0776c0e"
  },
  {
   "id": "8c8faaa8-43a2-4620-9186-cc7bc7150fd9",
@@ -382,7 +385,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "3a5594a6-4a72-4e9f-9c63-8749021d050a"
  },
  {
   "id": "127653d6-d1fb-4377-ae85-c65aad1cdb2e",
@@ -474,7 +478,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "b5c7ef14-adc6-4dfb-89c9-1745d2580d58"
  },
  {
   "id": "e9bede68-0b19-5574-9046-947357c3faf8",
@@ -527,7 +532,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "b8485e64-cedd-406b-aa35-5d04ea17502d"
  },
  {
   "id": "9c7ac12d-d60b-430f-b963-1944c89e47ca",
@@ -691,7 +697,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "67910be0-51cd-4765-90f8-8f3341349113"
  },
  {
   "id": "469f040a-7612-49c5-b280-0f12ad8ce0ed",
@@ -735,7 +742,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "83e69412-d466-4821-a6b5-5de9ab19cb23"
  },
  {
   "id": "03a23802-3b05-4dcd-9312-2e49678e415a",
@@ -807,7 +815,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "614f376d-abc0-4acd-8db4-318f95c4a74c"
  },
  {
   "id": "5aa82a59-58ca-5fc8-a2a3-a22511fb79a4",
@@ -961,7 +970,22 @@
     {
      "id": "5c0e588f-6590-5d4d-8bfc-b56916665342",
      "name": "Elemental Affinity",
-     "description": "Your draconic magic has an affinity with a damage type associated with dragons. Choose one of those types: Acid, Cold, Fire, Lightning, or Poison.\n\nYou have Resistance to that damage type, and when you cast a spell that deals damage of that type, you can add your Charisma modifier to one damage roll of that spell."
+     "description": "Your draconic magic has an affinity with a damage type associated with dragons. Choose one of those types: Acid, Cold, Fire, Lightning, or Poison.\n\nYou have Resistance to that damage type, and when you cast a spell that deals damage of that type, you can add your Charisma modifier to one damage roll of that spell.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddResistances",
+        "value": {
+         "damageType": "choice",
+         "options": "Acid,Cold,Fire,Lightning,Poison",
+         "count": "1"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     }
    ],
    "14": [
@@ -1009,7 +1033,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "94fba721-0644-4673-9f9e-15f1a39f130f"
  },
  {
   "id": "0b4cee6e-60e4-4f53-8ee6-da45e10d500c",
@@ -1187,7 +1212,8 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "2e7eae19-9f4a-4472-b5eb-3230c3a9f084"
  },
  {
   "id": "b8360259-b706-424d-95a1-14a713cf1431",
@@ -1231,6 +1257,7 @@
   },
   "spellcasting": null,
   "legacy": false,
-  "source": "SRD 5.2"
+  "source": "SRD 5.2",
+  "parent_class_id": "4633a78f-d775-4694-b20f-2d2e13d2e226"
  }
 ]

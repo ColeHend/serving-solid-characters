@@ -7,6 +7,7 @@ const h = vi.hoisted(() => ({
   navigate: vi.fn(),
   snackbar: vi.fn(),
   subclasses: [] as unknown[],
+  srdSubclasses: [] as unknown[],
   classes: [] as unknown[],
   addSubclass: vi.fn().mockResolvedValue(true),
   updateSubclass: vi.fn().mockResolvedValue(true),
@@ -31,6 +32,9 @@ vi.mock('../../../../../../shared/customHooks/homebrewManager', () => ({
 }));
 vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/classes', () => ({
   useDnDClasses: () => (() => h.classes),
+}));
+vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/subclasses', () => ({
+  useDnDSubclasses: () => (() => h.srdSubclasses),
 }));
 vi.mock('../../../../../../shared/customHooks/dndInfo/info/all/spells', () => ({
   useDnDSpells: () => (() => [{ name: 'Fire Bolt', level: 0 }, { name: 'Magic Missile', level: 1 }]),
@@ -63,6 +67,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   h.params = {};
   h.subclasses = [];
+  h.srdSubclasses = [];
   // Name-only classes → no detectable subclass levels → the Features step's all-20 fallback.
   h.classes = [{ name: 'Wizard' }, { name: 'Fighter' }];
   h.addSubclass.mockResolvedValue(true);
@@ -117,6 +122,34 @@ describe('Subclasses wizard', () => {
     const saved = h.updateSubclass.mock.calls[0][0];
     expect(saved.storage_key).toBe('wizard__echo');
     expect(saved.features[3][0].name).toBe('Echo Step');
+    await waitFor(() => expect(h.navigate).toHaveBeenCalledWith('/homebrew'));
+  });
+
+  it('clones an SRD subclass (?name=&subclass= with no homebrew row) through addSubclass', async () => {
+    h.params = { name: 'Wizard', subclass: 'Evocation' };
+    h.subclasses = [];
+    h.srdSubclasses = [{
+      id: 'sc-evocation', legacy: false,
+      name: 'Evocation',
+      parentClass: 'Wizard',
+      description: 'Blast things',
+      features: { 3: [{ name: 'Evocation Savant', description: 'Cheaper evocation copying' }] },
+    }];
+    const { container } = render(() => <Subclasses />);
+    const formEl = container.querySelector('[data-testid="subclass-form"]') as HTMLElement;
+    await waitFor(() => expect(formEl.getAttribute('data-name')).toBe('Evocation'));
+    expect(formEl.getAttribute('data-parent-class')).toBe('Wizard');
+    expect(formEl.getAttribute('data-feature-levels')).toBe('3');
+
+    fireEvent.click(screen.getByText('Review')); // stepper jump
+    const publishBtn = await screen.findByText(/^Publish/);
+    fireEvent.click(publishBtn);
+
+    await waitFor(() => expect(h.addSubclass).toHaveBeenCalledTimes(1));
+    expect(h.updateSubclass).not.toHaveBeenCalled();
+    const saved = h.addSubclass.mock.calls[0][0];
+    expect(saved.name).toBe('Evocation');
+    expect(saved.features[3][0].name).toBe('Evocation Savant');
     await waitFor(() => expect(h.navigate).toHaveBeenCalledWith('/homebrew'));
   });
 

@@ -1,0 +1,83 @@
+// Nested modal — portals outside the featuresPopup wrapper, so the --pop-*
+// vars PopupHeader relies on are redeclared here.
+.pickerDialog {
+  --pop-accent: var(--primary-color);
+  --pop-accent-bright: var(--primary-color);
+  --pop-on-accent: var(--on-primary-color);
+  --pop-text-muted: color-mix(in srgb, var(--on-surface-color) 60%, transparent);
+  --pop-text-faint: color-mix(in srgb, var(--on-surface-color) 45%, transparent);
+  --pop-label: color-mix(in srgb, var(--on-surface-color) 55%, transparent);
+  --pop-hairline: color-mix(in srgb, var(--on-surface-color) 22%, transparent);
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 0 16px 16px;
+  overflow-y: auto;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+}
+
+.spellList {
+  flex: 1;
+
+  table {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  thead,
+  tbody {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    tr {
+      display: flex;
+      width: 100%;
+    }
+  }
+
+  th,
+  td {
+    flex: 1;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  tbody {
+    height: 46vh;
+    overflow-y: scroll;
+    gap: 0.5rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    table {
+      width: 100%;
+    }
+
+    font-size: .8em;
+  }
+}
+
+.details {
+  flex: 1;
+  margin: 0 1rem;
+  overflow-y: auto;
+}
+
+.footerRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+}

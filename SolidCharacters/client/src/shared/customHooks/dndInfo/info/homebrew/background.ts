@@ -1,26 +1,10 @@
 import { Background } from "../../../../../models/generated";
-import HttpClient$ from "../../../utility/tools/httpClientObs";
-import { concatMap, of, take, tap } from "rxjs";
-import HombrewDB from "../../../utility/localDB/new/homebrewDB";
-import { createSignal } from "solid-js";
+import { Accessor } from "solid-js";
+import homebrewManager from "../../../homebrewManager";
 
-const [backgrounds, setBackgrounds] = createSignal<Background[]>([]);
-
-export function useGetHombrewBackgrounds() {
-  const LocalBackgrounds = HttpClient$.toObservable(HombrewDB.backgrounds.toArray());
-
-  if (backgrounds().length === 0) {
-    LocalBackgrounds.pipe(
-      take(1),
-      concatMap((backgrounds) => {
-        if (backgrounds.length > 0) {
-          return of(backgrounds);
-        } else {
-          return of([])
-        }
-      }),
-      tap((backgrounds) => !!backgrounds && backgrounds.length > 0 ? setBackgrounds(backgrounds) : null),
-    ).subscribe();
-  }
-  return backgrounds;
+// Live signal — reflects homebrewManager background mutations in the same session
+// (the old one-shot Dexie snapshot went stale until reload). The manager's accessor is
+// loosely typed (any[]); this hook keeps the typed contract consumers rely on.
+export function useGetHombrewBackgrounds(): Accessor<Background[]> {
+  return homebrewManager.backgrounds as Accessor<Background[]>;
 }

@@ -66,7 +66,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "481ed09a-b505-4bbb-86cb-98482151691d"
  },
  {
   "id": "6af678ca-23b1-4ef9-b417-5d9db31890a2",
@@ -117,7 +118,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "2e018eb1-fc86-4319-9fd2-7716eeec10e8"
  },
  {
   "id": "882c9f29-d9e7-46a7-945f-40102557fc28",
@@ -144,6 +146,15 @@
        "raise dead"
       ],
       "mads": [
+       {
+        "command": "AddArmorProficiencies",
+        "value": {
+         "armor": "Heavy Armor"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
        {
         "command": "AddSpells",
         "value": {
@@ -273,7 +284,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "66209f87-c6e1-4348-9cd7-a82be312368c"
  },
  {
   "id": "69d0a13f-06db-459e-a53b-14219d3e435d",
@@ -398,7 +410,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "790ab343-5817-4e8a-a5d8-fcfbb06438ce"
  },
  {
   "id": "94610ffa-ee9e-48c4-aefc-030a2d3f28e5",
@@ -443,7 +456,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "e773ac06-b31c-4beb-91e7-97209f552952"
  },
  {
   "id": "62272522-35fa-4643-bd20-946d6f38da47",
@@ -481,7 +495,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "d128340f-85c3-43e2-b799-406b5bf6f165"
  },
  {
   "id": "28e62c98-99fd-40c7-b1c8-566afade2811",
@@ -663,7 +678,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "51c6913d-90bd-4ed9-bcf7-75332f9b329f"
  },
  {
   "id": "c4fdab6f-cc07-43f9-8c9c-a58bcfaafd9f",
@@ -701,7 +717,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "4c8c39a0-6bf7-46e4-b082-f8899a7cca4c"
  },
  {
   "id": "fc6009af-4a44-403b-9c40-5364dbf09be0",
@@ -760,7 +777,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "2017cf77-17c7-489f-a36f-5c6abab15614"
  },
  {
   "id": "67faff29-ba21-49a9-8122-ec032068268f",
@@ -853,7 +871,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "95cafb97-77ad-4632-87f6-0d496c624469"
  },
  {
   "id": "0372bee7-37a9-44aa-af7b-8eb298ea680c",
@@ -910,7 +929,8 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "ba516ec1-b640-478f-a89e-00dc05e610ca"
  },
  {
   "id": "4e57865f-4ea4-420c-9b49-9e53c77e8c08",
@@ -953,6 +973,7 @@
    ]
   },
   "legacy": true,
-  "source": "SRD 5.1"
+  "source": "SRD 5.1",
+  "parent_class_id": "b605b882-9fad-4066-aea0-45ebeac5ee65"
  }
 ]

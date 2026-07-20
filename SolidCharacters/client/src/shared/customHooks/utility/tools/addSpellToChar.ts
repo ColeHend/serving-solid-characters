@@ -4,25 +4,21 @@ import { CharacterSpell } from "../../../../models/character.model";
 import characterManager from "../../dndInfo/useCharacters";
 import { Clone } from "./Tools";
 
-export const AddSpell = (spell: Spell, charName: string) => {
-  addSnackbar({
-    message: `Adding Spell to ${charName}`,
-    severity: "info",
-  });
+export const AddSpell = (spell: Spell, charId: string) => {
   const newSpell: CharacterSpell = {
     name: spell.name,
     prepared: false,
+    id: spell.id || undefined,
   };
-  const character = characterManager.getCharacter(charName);
+  const character = characterManager.getCharacter(charId);
 
-  console.log("new spell", newSpell);
-  
-  
   if (character) {
+    addSnackbar({
+      message: `Adding Spell to ${character.name}`,
+      severity: "info",
+    });
     const newSpellArr = [...character.spells, newSpell];
 
-    console.log("new spell arr", newSpellArr);
-    
     addSnackbar({
       message: `Added ${spell.name} sucsessfully`,
       severity: "info",
@@ -34,7 +30,7 @@ export const AddSpell = (spell: Spell, charName: string) => {
     return;
   } else {
     addSnackbar({
-      message: `Couldn't find ${charName}`,
+      message: `Couldn't find that character`,
       severity: "error",
     });
     return;

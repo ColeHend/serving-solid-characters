@@ -1,5 +1,6 @@
 import {
   AbilityScores,
+  Background,
   CasterType,
   Class5E,
   Feat,
@@ -9,25 +10,31 @@ import {
   Subrace,
 } from "../../../../models/generated";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
-import { SkillOverrideState } from "../../../../models/character.model";
+import {
+  CharacterSkillProficiency,
+  RollBonus,
+  SkillOverrideState,
+} from "../../../../models/character.model";
+import { rollBonusAmount } from "../../../../shared/customHooks/mads/commands/useRollBonusFeature";
 import {
   getAbilityModifier,
   getProficiencyBonus,
 } from "../../../../shared/customHooks/utility/tools/dndMath";
-import { detectSubclassFeatureLevels } from "../../../../shared/ai/refs/classProgression";
-import { ABILITY_KEYS, AbilityKey, SKILLS, SPELL_ABILITY } from "./constants";
+import {
+  detectSubclassFeatureLevels,
+  isSubclassMarkerFeature,
+  SUBCLASS_FEATURE_NAME_2024,
+} from "../../../../shared/ai/refs/classProgression";
+import { ABILITY_KEYS, AbilityBonusStyle, AbilityKey, AbilitySlot, SKILLS, SPELL_ABILITY } from "./constants";
+
+export type { AbilityBonusStyle, AbilitySlot };
 
 export { getAbilityModifier, getProficiencyBonus };
 
-/**
- * The target design shows initiative as the plain DEX mod even with Alert taken (2024 RAW would
- * add the proficiency bonus). Ship the design's behavior; the saved character still carries
- * Alert's RollBonus metadata, so flipping this constant is the only change needed to go RAW.
- */
-export const ALERT_ADDS_PROF_TO_INITIATIVE = false;
-
 export interface LeveledClass {
   name: string;
+  /** Selector key of the class when known — resolvers should prefer it over the name. */
+  classId?: string;
   level: number;
 }
 
@@ -43,70 +50,170 @@ export function hitDieSides(hitDie: string | number | undefined | null): number 
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+/** Display form of any hit-die shape ("12" | "d12" | 12 → "d12"); "" when absent/unparseable. */
+export function hitDieLabel(hitDie: string | number | undefined | null): string {
+  const sides = hitDieSides(hitDie);
+  return sides > 0 ? `d${sides}` : "";
+}
+
 /** "Strength" | "STR" | "str." → 'str'; unknown → undefined. */
 export function normalizeAbility(name: string | undefined | null): AbilityKey | undefined {
   const key = (name ?? "").trim().slice(0, 3).toLowerCase();
   return (ABILITY_KEYS as string[]).includes(key) ? (key as AbilityKey) : undefined;
 }
 
-function raceBonuses(race: Race | Subrace | undefined): Partial<Record<AbilityKey, number>> {
-  const out: Partial<Record<AbilityKey, number>> = {};
-  race?.abilityBonuses?.forEach((bonus) => {
-    if (bonus.stat === AbilityScores.ALL) {
-      ABILITY_KEYS.forEach((k) => (out[k] = (out[k] ?? 0) + bonus.value));
-      return;
-    }
-    // CHOICE-stat entries resolve through abilityBonusChoice + the player's picks instead.
-    const key = normalizeAbility(AbilityScores[bonus.stat]);
-    if (key) out[key] = (out[key] ?? 0) + bonus.value;
-  });
-  return out;
+// ---- ability score bonuses (assignable token pools) ----
+
+export interface AbilityBonusToken {
+  value: number;
+  /** Book-default stat prefilled into the slot; '' for tokens the player must place. */
+  preset: AbilitySlot;
+  /** Stats this token may be assigned to; empty = any of the six. */
+  allowed: AbilityKey[];
 }
 
-/** The race's abilityBonusChoice applied to the player's picked abilities. */
-function raceChoiceBonuses(
-  race: Race | undefined,
-  picks: AbilityKey[],
-): Partial<Record<AbilityKey, number>> {
-  const out: Partial<Record<AbilityKey, number>> = {};
-  if (!race?.abilityBonusChoice || picks.length === 0) return out;
-  const capped = picks.slice(0, race.abilityBonusChoice.amount);
-  race.abilityBonusChoice.choices?.forEach((bonus) => {
-    const key = normalizeAbility(AbilityScores[bonus.stat]);
-    if (key && capped.includes(key)) out[key] = (out[key] ?? 0) + bonus.value;
+export interface AbilityBonusPool {
+  tokens: AbilityBonusToken[];
+  /** Flat bonus to every ability (2014 Human) — fixed, never assigned. */
+  all: number;
+  /** True when the pool is exactly +2/+1 and may alternatively be taken as three +1s. */
+  canSpread: boolean;
+}
+
+const EMPTY_POOL: AbilityBonusPool = { tokens: [], all: 0, canSpread: false };
+
+/**
+ * The race+subrace ability bonuses as an assignable token pool (Tasha's-style: the book's
+ * stats prefill via `preset`, but any token may be reassigned). Empty unless the species
+ * grants bonuses in this edition (2014, or a legacy species in both-mode) — 2024 species
+ * leave ability increases to the background. AbilityScores.ALL bonuses (2014 Human) fold
+ * into `all`. abilityBonusChoice entries become preset-less tokens restricted to the
+ * choice's stats (Half-Elf's two +1s, CHA excluded). style "spread" swaps a +2/+1 pool
+ * for three floating +1s.
+ */
+export function speciesBonusPool(
+  edition: "2014" | "2024" | "both",
+  race?: Race,
+  subrace?: Subrace,
+  style: AbilityBonusStyle = "standard",
+): AbilityBonusPool {
+  const raceGrantsBonuses = edition === "2014" || (edition === "both" && race?.legacy === true);
+  if (!raceGrantsBonuses) return EMPTY_POOL;
+
+  const tokens: AbilityBonusToken[] = [];
+  let all = 0;
+  [race, subrace].forEach((source) => {
+    source?.abilityBonuses?.forEach((bonus) => {
+      if (bonus.stat === AbilityScores.ALL) {
+        all += bonus.value;
+        return;
+      }
+      // CHOICE-stat entries resolve through abilityBonusChoice tokens instead.
+      const key = normalizeAbility(AbilityScores[bonus.stat]);
+      if (key) tokens.push({ value: bonus.value, preset: key, allowed: [] });
+    });
+    const choice = source?.abilityBonusChoice;
+    if (choice && choice.amount > 0) {
+      const allowed = (choice.choices ?? [])
+        .map((c) => normalizeAbility(AbilityScores[c.stat]))
+        .filter((key): key is AbilityKey => key !== undefined);
+      const value = choice.choices?.[0]?.value ?? 1;
+      for (let i = 0; i < choice.amount; i++) tokens.push({ value, preset: "", allowed });
+    }
   });
-  return out;
+
+  const values = tokens.map((t) => t.value).sort((a, b) => b - a);
+  const canSpread = all === 0 && values.length === 2 && values[0] === 2 && values[1] === 1;
+  if (canSpread && style === "spread") {
+    return {
+      tokens: [1, 1, 1].map((value) => ({ value, preset: "" as AbilitySlot, allowed: [] })),
+      all,
+      canSpread,
+    };
+  }
+  return { tokens, all, canSpread };
 }
 
 /**
- * Final ability scores. 2024: species grant nothing — base + manual bonus + background boosts.
- * 2014: ability increases come from race/subrace instead and apply automatically.
- * Both: the species' edition decides — a legacy species grants its own bonuses, a current
- * one leaves the increases to the (edition-paired) background's boosts.
+ * The 2024-style background ability boosts (+2/+1 by default, three +1s in "spread" style)
+ * as an assignable token pool over the background's abilityOptions. Empty for 2014 — that
+ * edition's backgrounds carry no abilityOptions, and both-mode stays data-driven the same way.
  */
-export function computeFinalScores(
+export function backgroundBonusPool(
   edition: "2014" | "2024" | "both",
+  background?: Background,
+  style: AbilityBonusStyle = "standard",
+): AbilityBonusPool {
+  if (edition === "2014") return EMPTY_POOL;
+  const allowed = (background?.abilityOptions ?? [])
+    .map(normalizeAbility)
+    .filter((key): key is AbilityKey => key !== undefined);
+  if (allowed.length === 0) return EMPTY_POOL;
+  const values = style === "spread" ? [1, 1, 1] : [2, 1];
+  return {
+    tokens: values.map((value) => ({ value, preset: "" as AbilitySlot, allowed })),
+    all: 0,
+    canSpread: true,
+  };
+}
+
+/** Each token's book-default slot ('' where the player must choose). */
+export function defaultSlots(pool: AbilityBonusPool): AbilitySlot[] {
+  return pool.tokens.map((token) => token.preset);
+}
+
+/**
+ * The per-ability bonus map a pool + the player's slot assignments produce. `all` applies
+ * to every ability; unassigned ('') or off-allowed slots contribute nothing (the checklist
+ * surfaces them as pending instead of guessing).
+ */
+export function sumBonusPool(
+  pool: AbilityBonusPool,
+  slots: AbilitySlot[],
+): Partial<Record<AbilityKey, number>> {
+  // An empty slot list means "never assigned" (a draft built outside the provider's
+  // default-seeding) — fall back to the book defaults so pure consumers keep zero-click parity.
+  const effective = slots.length === 0 && pool.tokens.length > 0 ? defaultSlots(pool) : slots;
+  const out: Partial<Record<AbilityKey, number>> = {};
+  if (pool.all) ABILITY_KEYS.forEach((k) => (out[k] = (out[k] ?? 0) + pool.all));
+  pool.tokens.forEach((token, i) => {
+    const slot = effective[i] ?? "";
+    if (!slot) return;
+    if (token.allowed.length > 0 && !token.allowed.includes(slot)) return;
+    out[slot] = (out[slot] ?? 0) + token.value;
+  });
+  return out;
+}
+
+/** Both sources' assigned bonus maps in one call — the mapper and the derived layer share it. */
+export function resolveAbilityBonuses(
+  edition: "2014" | "2024" | "both",
+  race: Race | undefined,
+  subrace: Subrace | undefined,
+  background: Background | undefined,
+  slots: { species: AbilitySlot[]; background: AbilitySlot[] },
+  style: { species: AbilityBonusStyle; background: AbilityBonusStyle },
+): { species: Partial<Record<AbilityKey, number>>; background: Partial<Record<AbilityKey, number>> } {
+  return {
+    species: sumBonusPool(speciesBonusPool(edition, race, subrace, style.species), slots.species),
+    background: sumBonusPool(backgroundBonusPool(edition, background, style.background), slots.background),
+  };
+}
+
+/** Final ability scores: player-entered base + manual bonus + assigned species/background bonuses. */
+export function computeFinalScores(
   base: Stats,
   bonus: Stats,
-  backgroundBoosts: Partial<Record<AbilityKey, number>>,
-  race?: Race,
-  subrace?: Subrace,
-  raceAbilityChoices: AbilityKey[] = [],
+  speciesBonuses: Partial<Record<AbilityKey, number>>,
+  backgroundBonuses: Partial<Record<AbilityKey, number>>,
 ): Stats {
   const out = {} as Stats;
-  const raceGrantsBonuses = edition === "2014" || (edition === "both" && race?.legacy === true);
-  const fromRace = raceGrantsBonuses ? raceBonuses(race) : {};
-  const fromSubrace = raceGrantsBonuses ? raceBonuses(subrace) : {};
-  const fromChoice = raceGrantsBonuses ? raceChoiceBonuses(race, raceAbilityChoices) : {};
-  const boosts = edition !== "2014" ? backgroundBoosts : {};
   ABILITY_KEYS.forEach((k) => {
     out[k] =
       (base[k] ?? 0) +
       (bonus[k] ?? 0) +
-      (boosts[k] ?? 0) +
-      (fromRace[k] ?? 0) +
-      (fromSubrace[k] ?? 0) +
-      (fromChoice[k] ?? 0);
+      (speciesBonuses[k] ?? 0) +
+      (backgroundBonuses[k] ?? 0);
   });
   return out;
 }
@@ -138,12 +245,12 @@ export function collectLanguages(
  */
 export function computeMaxHp(
   classes: LeveledClass[],
-  classByName: (name: string) => Class5E | undefined,
+  resolveClass: (entry: LeveledClass) => Class5E | undefined,
   conMod: number,
 ): number {
   let hp = 0;
   classes.forEach((entry, classIndex) => {
-    const sides = hitDieSides(classByName(entry.name)?.hitDie);
+    const sides = hitDieSides(resolveClass(entry)?.hitDie);
     for (let lvl = 1; lvl <= (entry.level || 0); lvl++) {
       const die = classIndex === 0 && lvl === 1 ? sides : Math.floor(sides / 2) + 1;
       hp += Math.max(1, die + conMod);
@@ -157,9 +264,22 @@ export function computeAc(dexMod: number): number {
   return 10 + dexMod;
 }
 
-export function computeInitiative(dexMod: number, featNames: string[], profBonus: number): number {
-  const hasAlert = featNames.some((f) => f.trim().toLowerCase() === "alert");
-  return dexMod + (hasAlert && ALERT_ADDS_PROF_TO_INITIATIVE ? profBonus : 0);
+/**
+ * DEX mod plus every Initiative RollBonus the character's mads granted — 2024 Alert (Full PB)
+ * and 2014 Alert (flat +5) both flow through generically.
+ */
+export function computeInitiative(
+  dexMod: number,
+  rollBonuses: RollBonus[],
+  profBonus: number,
+  stats: Stats,
+): number {
+  return (
+    dexMod +
+    rollBonuses
+      .filter((b) => b.rollType === "Initiative")
+      .reduce((sum, b) => sum + rollBonusAmount(b, profBonus, stats), 0)
+  );
 }
 
 export interface SkillRow {
@@ -167,7 +287,9 @@ export interface SkillRow {
   ability: AbilityKey;
   state: SkillOverrideState;
   /** Where the current state came from; null when the skill is untrained. */
-  source: "class" | "background" | "manual" | null;
+  source: "class" | "background" | "manual" | "feature" | null;
+  /** True when a feature mad grants the state — the pill isn't player-toggleable. */
+  locked: boolean;
   mod: number;
 }
 
@@ -180,6 +302,10 @@ export interface SkillInputs {
   finalScores: Stats;
   profBonus: number;
 }
+
+/** Skill-state → proficiency-bonus multiplier (the one place the ranking lives). */
+const stateRank = (state: SkillOverrideState) =>
+  state === "expertise" ? 2 : state === "proficient" ? 1 : 0;
 
 export function computeSkillRows(inputs: SkillInputs): SkillRow[] {
   const classSet = new Set(inputs.classSkills.map((s) => s.toLowerCase()));
@@ -199,11 +325,59 @@ export function computeSkillRows(inputs: SkillInputs): SkillRow[] {
       state = "proficient";
       source = "background";
     }
-    const profMultiplier = state === "expertise" ? 2 : state === "proficient" ? 1 : 0;
     const mod =
       getAbilityModifier(inputs.finalScores[skill.ability] ?? 10) +
-      inputs.profBonus * profMultiplier;
-    return { name: skill.name, ability: skill.ability, state, source, mod };
+      inputs.profBonus * stateRank(state);
+    return { name: skill.name, ability: skill.ability, state, source, locked: false, mod };
+  });
+}
+
+/** Character.proficiencies.skills storage key — one legacy-cased entry differs from the display name. */
+export const skillStorageKey = (name: string) =>
+  name === "Sleight of Hand" ? "Sleight Of Hand" : name;
+export const skillDisplayName = (key: string) =>
+  key === "Sleight Of Hand" ? "Sleight of Hand" : key;
+
+/**
+ * Overlay mads-driven skill changes onto the base rows (display only — the save path keeps
+ * the raw rows). A feature GRANT beats a lower base state, including a manual "none"
+ * (features are hard grants); a feature REMOVE — detected as the applied state dropping
+ * below the pre-mads base state — downgrades the row the same way. Touched rows come back
+ * `locked` with source "feature". Mods are always recomputed from `scores` — the mad
+ * handlers leave `.value` stale — plus the applied-vs-base `.value` delta, which carries
+ * AllProficiencies-style PB-fraction bumps (Jack of All Trades) that state alone can't express.
+ */
+export function mergeMadSkillRows(
+  rows: SkillRow[],
+  baseSkills: Record<string, CharacterSkillProficiency>,
+  madSkills: Record<string, CharacterSkillProficiency>,
+  scores: Stats,
+  profBonus: number,
+): SkillRow[] {
+  const lookup = (skills: Record<string, CharacterSkillProficiency>, name: string) =>
+    skills[name] ?? skills[skillStorageKey(name)];
+  const entryState = (entry: CharacterSkillProficiency | undefined): SkillOverrideState =>
+    entry?.expertise ? "expertise" : entry?.proficient ? "proficient" : "none";
+  return rows.map((row) => {
+    const mad = lookup(madSkills, row.name);
+    const madState = entryState(mad);
+    const baseState = entryState(lookup(baseSkills, row.name));
+    const granted = stateRank(madState) > stateRank(row.state);
+    const removed = stateRank(madState) < stateRank(baseState);
+    const touched = granted || removed;
+    const state = touched ? madState : row.state;
+    const allProfBump = (mad?.value ?? 0) - (lookup(baseSkills, row.name)?.value ?? 0);
+    const mod =
+      getAbilityModifier(scores[row.ability] ?? 10) +
+      profBonus * stateRank(state) +
+      (touched ? 0 : allProfBump);
+    return {
+      ...row,
+      state,
+      source: touched ? ("feature" as const) : row.source,
+      locked: touched,
+      mod,
+    };
   });
 }
 
@@ -245,12 +419,12 @@ export interface SpellcastingInfo {
 
 export function computeSpellcasting(
   classes: LeveledClass[],
-  classByName: (name: string) => Class5E | undefined,
+  resolveClass: (entry: LeveledClass) => Class5E | undefined,
   finalScores: Stats,
   profBonus: number,
 ): SpellcastingInfo[] {
   return classes
-    .map((entry) => ({ entry, class5e: classByName(entry.name) }))
+    .map((entry) => ({ entry, class5e: resolveClass(entry) }))
     .filter(({ class5e }) => !!class5e?.spellcasting)
     .map(({ entry, class5e }) => {
       const ability =
@@ -297,6 +471,57 @@ export function subclassUnlockLevel(
     .flatMap((sub) => Object.keys(sub.features ?? {}).map(Number))
     .filter((lvl) => Number.isFinite(lvl) && lvl > 0);
   return featureLevels.length > 0 ? Math.min(...featureLevels) : 3;
+}
+
+export interface LevelFeatureRow {
+  level: number;
+  /** Display names; empty for kind "empty". */
+  names: string[];
+  /** "subclass" = a generic subclass-slot placeholder row (no subclass chosen yet). */
+  kind: "features" | "subclass" | "empty";
+}
+
+/**
+ * One row per level 1..maxLevel for the class card's feature list — dense, so dead levels render
+ * as "no new features" instead of vanishing. With no subclass chosen, subclass-slot markers pass
+ * through as kind:"subclass" (`subclassLevelHints` — the union of candidate subclasses' feature
+ * levels — synthesizes the slot for sparse homebrew classes that never keyed it). Once a subclass
+ * IS chosen, generic markers never show: only real class + subclass features remain. Returns []
+ * when the class has no named feature data at all, so the card's fallback line still fires.
+ */
+export function featureRowsByLevel(
+  class5e: Class5E | undefined,
+  subclass: Subclass | undefined,
+  maxLevel: number,
+  subclassLevelHints: number[] = [],
+): LevelFeatureRow[] {
+  const classFeatures = class5e?.features ?? {};
+  const hasAnyData = Object.values(classFeatures).some((list) => (list ?? []).some((f) => f?.name));
+  if (!hasAnyData || maxLevel < 1) return [];
+
+  const subFeatures = subclass?.features ?? {};
+  const hints = new Set(subclassLevelHints.filter((lvl) => Number.isFinite(lvl) && lvl > 0));
+  const rows: LevelFeatureRow[] = [];
+  for (let level = 1; level <= maxLevel; level++) {
+    const realNames: string[] = [];
+    const markerNames: string[] = [];
+    for (const feature of (classFeatures[level] ?? []).filter((f) => f?.name)) {
+      (isSubclassMarkerFeature(class5e?.name, feature) ? markerNames : realNames).push(feature.name ?? "");
+    }
+
+    if (subclass) {
+      const subNames = (subFeatures[level] ?? []).map((f) => f?.name ?? "").filter(Boolean);
+      const names = [...realNames, ...subNames];
+      rows.push(names.length > 0 ? { level, names, kind: "features" } : { level, names: [], kind: "empty" });
+    } else if (realNames.length > 0 || markerNames.length > 0) {
+      rows.push({ level, names: [...realNames, ...markerNames], kind: realNames.length > 0 ? "features" : "subclass" });
+    } else if (hints.has(level)) {
+      rows.push({ level, names: [SUBCLASS_FEATURE_NAME_2024], kind: "subclass" });
+    } else {
+      rows.push({ level, names: [], kind: "empty" });
+    }
+  }
+  return rows;
 }
 
 export interface SkillChoiceSpec {
@@ -353,10 +578,10 @@ export function featCategory(feat: Feat): FeatCategory {
 /** Combined caster level for multiclass slot tables (full + half/2 + third/3, rounded down). */
 export function multiclassCasterLevel(
   classes: LeveledClass[],
-  classByName: (name: string) => Class5E | undefined,
+  resolveClass: (entry: LeveledClass) => Class5E | undefined,
 ): number {
   return classes.reduce((sum, entry) => {
-    switch (classByName(entry.name)?.spellcasting?.metadata?.casterType) {
+    switch (resolveClass(entry)?.spellcasting?.metadata?.casterType) {
       case CasterType.Full:
       case CasterType.Pact:
         return sum + entry.level;

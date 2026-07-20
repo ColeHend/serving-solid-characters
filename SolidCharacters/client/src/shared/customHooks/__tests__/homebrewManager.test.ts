@@ -3,6 +3,8 @@ import homebrewManager from '../homebrewManager';
 import { Class5E, Item, Feat, Spell, Background, Race, ClassStartChoices } from '../../../models/generated';
 import { ItemType } from '../../../models/generated';
 import { createNewId } from '../utility/tools/idGen';
+import { srdSubclass } from '../../../models/data/generated';
+import HombrewDB from '../utility/localDB/new/homebrewDB';
 
 // Mock snackbar to avoid DOM side-effects
 vi.mock('../../components/Snackbar/snackbar', () => ({
@@ -152,5 +154,43 @@ describe('homebrewManager (5E internal types)', () => {
     await homebrewManager.saveSubrace(sampleSubrace());
     expect(await homebrewManager.removeSubrace('Elf', 'Renamed-in-form', 'wood-id')).toBe(true);
     expect(homebrewManager.subraces().length).toBe(0);
+  });
+
+  function sampleSubclass(overrides: Partial<srdSubclass> = {}): srdSubclass {
+    return {
+      name: 'Storm Herald',
+      parentClass: 'Barbarian',
+      description: 'Storms.',
+      features: {},
+      ...overrides,
+    } as srdSubclass;
+  }
+
+  it('addSubclass mints an id when absent and keeps a supplied one', async () => {
+    await homebrewManager.addSubclass(sampleSubclass());
+    const stored = homebrewManager.subclasses().find(s => s.name === 'Storm Herald');
+    expect(stored?.id).toBeTruthy();
+    expect((stored as any)?.storage_key).toBe('barbarian__storm herald');
+
+    await homebrewManager.addSubclass(sampleSubclass({ name: 'Wild Soul', id: 'ai-sub-1' }));
+    expect(homebrewManager.subclasses().find(s => s.name === 'Wild Soul')?.id).toBe('ai-sub-1');
+  });
+
+  it('updateSubclass preserves the stored id across an edit', async () => {
+    await homebrewManager.addSubclass(sampleSubclass());
+    const minted = homebrewManager.subclasses().find(s => s.name === 'Storm Herald')?.id;
+    expect(minted).toBeTruthy();
+    expect(await homebrewManager.updateSubclass(sampleSubclass({ description: 'Rework' }))).toBe(true);
+    const updated = homebrewManager.subclasses().find(s => s.name === 'Storm Herald');
+    expect(updated?.description).toBe('Rework');
+    expect(updated?.id).toBe(minted);
+  });
+
+  it('same-named subclasses under different parent classes coexist in the DB', async () => {
+    await homebrewManager.addSubclass(sampleSubclass());
+    await homebrewManager.addSubclass(sampleSubclass({ parentClass: 'Fighter' }));
+    // The store is keyed by storage_key (parent__name), so neither row may clobber the other.
+    const dbRows = await HombrewDB.subclasses.toArray();
+    expect(dbRows.filter(s => s.name === 'Storm Herald')).toHaveLength(2);
   });
 });

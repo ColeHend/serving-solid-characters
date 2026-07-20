@@ -30,9 +30,10 @@ export const map: MadMap = {
     //   Secrets (player-choice spells).
 
     // ----- Life (Cleric, Life Domain) -----
-    // Domain spells are always prepared → grant each. (Heavy-armor proficiency has no armor-prof
-    // category and is skipped; the spell list is stamped on this feature by the parser.)
+    // "you gain proficiency with heavy armor" + domain spells (always prepared → grant each;
+    // the spell list is stamped on this feature by the parser).
     "Life/Bonus Proficiency": [
+        { type: "Add", category: "ArmorProficiencies", value: { armor: "Heavy Armor" } },
         { type: "Add", category: "Spells", target: "bless", value: {} },
         { type: "Add", category: "Spells", target: "cure wounds", value: {} },
         { type: "Add", category: "Spells", target: "lesser restoration", value: {} },

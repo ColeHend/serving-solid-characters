@@ -38,6 +38,7 @@ const StatBar: Component<Props> = (props) => {
         stat={props.fullStats().str}
         name="Strength"
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
+        stats={props.fullStats()}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Strength")}
         bonuses={bonusesFor("Strength")}
@@ -46,6 +47,7 @@ const StatBar: Component<Props> = (props) => {
         stat={props.fullStats().dex}
         name="Dexterity"
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
+        stats={props.fullStats()}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Dexterity")}
         bonuses={bonusesFor("Dexterity")}
@@ -54,6 +56,7 @@ const StatBar: Component<Props> = (props) => {
         stat={props.fullStats().con}
         name="Constitution"
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
+        stats={props.fullStats()}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Constitution")}
         bonuses={bonusesFor("Constitution")}
@@ -62,6 +65,7 @@ const StatBar: Component<Props> = (props) => {
         stat={props.fullStats().int}
         name="Intelligence"
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
+        stats={props.fullStats()}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Intelligence")}
         bonuses={bonusesFor("Intelligence")}
@@ -70,6 +74,7 @@ const StatBar: Component<Props> = (props) => {
         stat={props.fullStats().wis}
         name="Wisdom"
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
+        stats={props.fullStats()}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Wisdom")}
         bonuses={bonusesFor("Wisdom")}
@@ -78,6 +83,7 @@ const StatBar: Component<Props> = (props) => {
         stat={props.fullStats().cha}
         name="Charisma"
         proficientMod={getProficiencyBonus(props.currentCharacter()?.level)}
+        stats={props.fullStats()}
         skills={props.currentCharacter()?.proficiencies.skills}
         advantages={advantagesFor("Charisma")}
         bonuses={bonusesFor("Charisma")}

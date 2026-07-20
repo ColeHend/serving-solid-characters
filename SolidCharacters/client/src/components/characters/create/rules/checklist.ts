@@ -22,6 +22,8 @@ export interface ChecklistClassInput {
   skillChoiceAmount: number;
   subclassUnlockLevel: number;
   hasSubclasses: boolean;
+  /** A subclass is selected but no longer resolves (renamed/deleted homebrew, missing data). */
+  subclassUnresolved?: boolean;
 }
 
 export interface ChecklistInputs {
@@ -139,6 +141,19 @@ export function buildChecklist(inputs: ChecklistInputs): ChecklistItem[] {
     });
   }
 
+  const unresolvedSubclass = inputs.classes.filter((c) => c.subclassUnresolved);
+  if (unresolvedSubclass.length > 0) {
+    rows.push({
+      id: "subclassMissing",
+      label: "Subclass missing",
+      status: "warn",
+      detail: `${unresolvedSubclass
+        .map((c) => `${c.subclass || "The selected subclass"} (${c.name})`)
+        .join(", ")} could not be found — its features won't apply.`,
+      sectionId: "codex-class",
+    });
+  }
+
   if (inputs.isCaster) {
     rows.push({
       id: "spells",
@@ -176,7 +191,7 @@ export function buildChecklist(inputs: ChecklistInputs): ChecklistItem[] {
       id: "featureChoices",
       label: "Feature choices",
       status: "warn",
-      detail: `${inputs.pendingFeatureChoices} pending — pick them under Feats.`,
+      detail: `${inputs.pendingFeatureChoices} pending — pick them in their Class, Species, or Feats section.`,
       sectionId: "codex-feats",
     });
   }

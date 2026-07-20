@@ -3,7 +3,8 @@ import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
 
 const addExpertiseFeature = (character: Character, feature: MadFeature) => {
-    const skillNames = feature.value?.["proficiencies"].split(",").map(p => p.trim()) ?? [];
+    // Legacy CSV form OR the resolved singular form a choice pick expands into.
+    const skillNames = (feature.value?.["proficiencies"] ?? feature.value?.["proficiency"] ?? "").split(",").map(p => p.trim()).filter(Boolean);
 
     if (skillNames.length === 0) {
         DebugConsole.error("No proficiencies provided for AddExpertise command");
@@ -33,7 +34,7 @@ const addExpertiseFeature = (character: Character, feature: MadFeature) => {
 }
 
 const removeExpertiseFeature = (character: Character, feature: MadFeature) => {
-    const skillNames = feature.value?.["proficiencies"].split(",").map(p => p.trim()) ?? [];
+    const skillNames = (feature.value?.["proficiencies"] ?? feature.value?.["proficiency"] ?? "").split(",").map(p => p.trim()).filter(Boolean);
 
     if (skillNames.length === 0) {
         DebugConsole.error("No proficiencies provided for RemoveExpertise command");

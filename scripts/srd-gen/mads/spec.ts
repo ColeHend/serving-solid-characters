@@ -11,6 +11,20 @@ export interface CommandSpecInput {
     value: Record<string, string>;
     /** For id-based categories (Spells/Items/Features/Feats): the referenced entity's exact name. */
     target?: string;
+    /**
+     * Mutually-exclusive branch number. Group 0 (default) always applies; commands sharing a nonzero
+     * group form one branch, and the player picks exactly ONE branch on the sheet (e.g. an Elven
+     * Lineage). Pair every nonzero group with a groupLabel so the picker can name the branch.
+     */
+    group?: number;
+    /** Display name for this command's branch ("Drow", "Infernal"...). Stored as value.groupLabel. */
+    groupLabel?: string;
+    /**
+     * Optional prerequisites stamped verbatim onto the coerced command. Evaluated at apply time
+     * for Spells/Items only (checkPreReqs) — e.g. a character-level gate on a lineage spell:
+     * { value: "level", operation: ">=", keyValue: "3", group: 0 }.
+     */
+    prerequisites?: { value: string; operation: string; keyValue: string; group: number }[];
 }
 
 /**

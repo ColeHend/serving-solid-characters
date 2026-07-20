@@ -114,9 +114,26 @@
   padding: 4px 18px 16px;
 }
 
-.grimoireFilters {
+.grimoireSearchRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grimoireSearchField {
+  flex: 1;
+  min-width: 0;
+
+  // coles Input doesn't stretch to its flex cell on its own.
+  > *,
+  input {
+    width: 100%;
+  }
+}
+
+.grimoireFilterRow {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
 
   @media (max-width: 768px) {

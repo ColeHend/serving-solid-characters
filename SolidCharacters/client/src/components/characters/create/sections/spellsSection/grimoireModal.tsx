@@ -1,6 +1,7 @@
 import { Accessor, Component, For, Setter, Show, createMemo, createSignal } from "solid-js";
 import { Button, Input, Modal, Option, Select } from "coles-solid-library";
 import { Spell } from "../../../../../models/generated";
+import { entitySelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
 import { isOffList, spellFlavor } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
 import { LegacyBadge } from "../../shell/legacyBadge";
@@ -21,9 +22,14 @@ const ANY_CLASS = "Any class";
 export const GrimoireModal: Component<GrimoireModalProps> = (props) => {
   const { draft, actions, data } = useCreate();
   const [search, setSearch] = createSignal("");
+  const [showFilters, setShowFilters] = createSignal(false);
   const [levelFilter, setLevelFilter] = createSignal(ALL_LEVELS);
   const [schoolFilter, setSchoolFilter] = createSignal(ALL_SCHOOLS);
   const [classFilter, setClassFilter] = createSignal(ANY_CLASS);
+
+  const activeFilterCount = createMemo(() =>
+    [levelFilter() !== ALL_LEVELS, schoolFilter() !== ALL_SCHOOLS, classFilter() !== ANY_CLASS]
+      .filter(Boolean).length);
 
   const classNames = () => draft.classes.map((c) => c.name);
 
@@ -55,32 +61,41 @@ export const GrimoireModal: Component<GrimoireModalProps> = (props) => {
       .sort((a, b) => Number(a.level) - Number(b.level) || a.name.localeCompare(b.name));
   });
 
-  const isKnown = (name: string) => draft.spells.includes(name);
+  const isKnown = (spell: Spell) => draft.spells.includes(entitySelectorKey(spell));
 
   return (
     <Modal title="✦ The Grimoire" show={props.show} width="720px" height="80vh">
       <div class={styles.grimoire}>
-        <div class={styles.grimoireFilters}>
-          <Input
-            value={search()}
-            onInput={(e) => setSearch(e.currentTarget.value)}
-            placeholder="Search spells…"
-          />
-          <Select value={levelFilter()} onChange={(value: string) => setLevelFilter(value)}>
-            <Option value={ALL_LEVELS}>{ALL_LEVELS}</Option>
-            <For each={levels()}>
-              {(level) => <Option value={level}>{spellLevelLabel(level)}</Option>}
-            </For>
-          </Select>
-          <Select value={schoolFilter()} onChange={(value: string) => setSchoolFilter(value)}>
-            <Option value={ALL_SCHOOLS}>{ALL_SCHOOLS}</Option>
-            <For each={schools()}>{(school) => <Option value={school}>{school}</Option>}</For>
-          </Select>
-          <Select value={classFilter()} onChange={(value: string) => setClassFilter(value)}>
-            <Option value={ANY_CLASS}>{ANY_CLASS}</Option>
-            <For each={spellClasses()}>{(name) => <Option value={name}>{name}</Option>}</For>
-          </Select>
+        <div class={styles.grimoireSearchRow}>
+          <div class={styles.grimoireSearchField}>
+            <Input
+              value={search()}
+              onInput={(e) => setSearch(e.currentTarget.value)}
+              placeholder="Search spells…"
+            />
+          </div>
+          <Button transparent onClick={() => setShowFilters(!showFilters())}>
+            Filters{activeFilterCount() > 0 ? ` (${activeFilterCount()})` : ""} {showFilters() ? "▴" : "▾"}
+          </Button>
         </div>
+        <Show when={showFilters()}>
+          <div class={styles.grimoireFilterRow}>
+            <Select value={levelFilter()} onChange={(value: string) => setLevelFilter(value)}>
+              <Option value={ALL_LEVELS}>{ALL_LEVELS}</Option>
+              <For each={levels()}>
+                {(level) => <Option value={level}>{spellLevelLabel(level)}</Option>}
+              </For>
+            </Select>
+            <Select value={schoolFilter()} onChange={(value: string) => setSchoolFilter(value)}>
+              <Option value={ALL_SCHOOLS}>{ALL_SCHOOLS}</Option>
+              <For each={schools()}>{(school) => <Option value={school}>{school}</Option>}</For>
+            </Select>
+            <Select value={classFilter()} onChange={(value: string) => setClassFilter(value)}>
+              <Option value={ANY_CLASS}>{ANY_CLASS}</Option>
+              <For each={spellClasses()}>{(name) => <Option value={name}>{name}</Option>}</For>
+            </Select>
+          </div>
+        </Show>
 
         <p class={styles.grimoireCount}>
           {filtered().length} spells — spells outside your class lists are marked ✦ and can be added freely.
@@ -109,10 +124,10 @@ export const GrimoireModal: Component<GrimoireModalProps> = (props) => {
                 </div>
                 <span class={styles.grimoireFlavor}>{spellFlavor(spell)}</span>
                 <Show
-                  when={isKnown(spell.name)}
-                  fallback={<Button onClick={() => actions.addSpell(spell.name)}>Add</Button>}
+                  when={isKnown(spell)}
+                  fallback={<Button onClick={() => actions.addSpell(entitySelectorKey(spell))}>Add</Button>}
                 >
-                  <Button transparent onClick={() => actions.removeSpell(spell.name)}>
+                  <Button transparent onClick={() => actions.removeSpell(entitySelectorKey(spell))}>
                     ✓ Known
                   </Button>
                 </Show>

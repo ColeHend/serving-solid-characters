@@ -83,7 +83,47 @@
     "details": {
      "id": "becd947f-c0a9-58f2-9320-84030a88e350",
      "name": "Elf Weapon Training",
-     "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow."
+     "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Longswords"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Shortswords"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Shortbows"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       },
+       {
+        "command": "AddWeaponProficiencies",
+        "value": {
+         "weapon": "Longbows"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "b7272c65-0e16-5a00-abe5-8a799e052c02"
@@ -92,7 +132,23 @@
     "details": {
      "id": "b0a80079-5acf-5c9d-8520-72038394c563",
      "name": "Cantrip",
-     "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."
+     "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddSpells",
+        "value": {
+         "ID": "choice",
+         "options": "3c92b769-0c8e-48a5-98eb-73d32bf0b3ab,f90c3e88-67ce-4d9a-bf2a-d12fac82c712,fe896621-482c-4c20-ab6d-4fcfa3ef19ef,d0d42231-2164-4bbe-97eb-ec2cf2b02d9d,62d3cea2-fb1e-48bc-8f1a-94ee6e948803,ef59f2b2-8a11-46fa-a647-26a6ebd0ad01,71a8d162-5986-4814-b6b8-63fb5780ec2b,865277e2-6569-4c51-b04c-def56112fbeb,c92ae7e2-d1d9-45ad-8993-678b6ea03845,84ac09ab-31cc-4611-b717-b25e37cf364b,67ec9853-1a6f-4194-85e1-a4d48967ad3a,3ca9b936-01df-49b6-a3a3-b5b9b64285a9,f2a620ba-570a-4e66-8664-54e2ead7bf5e,c415595c-4bb0-4520-a550-02a09df9ae90",
+         "count": "1",
+         "spellLevel": "0"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "5a305ee5-d02e-549b-9751-5968fa3fb6a9"
@@ -167,7 +223,20 @@
     "details": {
      "id": "e0896c8e-60aa-5d32-b956-1cc51dacbdb0",
      "name": "Tinker",
-     "description": "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time.\nWhen you create a device, choose one of the following options:"
+     "description": "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time.\nWhen you create a device, choose one of the following options:",
+     "metadata": {
+      "mads": [
+       {
+        "command": "AddToolProficiencies",
+        "value": {
+         "tool": "Tinker's Tools"
+        },
+        "type": 0,
+        "prerequisites": [],
+        "group": 0
+       }
+      ]
+     }
     },
     "prerequisites": [],
     "id": "9d0938d7-9276-40b8-99f6-c465b4a8d93b"

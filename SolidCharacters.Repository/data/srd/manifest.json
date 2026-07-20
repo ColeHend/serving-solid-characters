@@ -1,9 +1,9 @@
 {
- "version": "a52c8e047ddc1164adecc13bf6c4e5af60ee0037d25df067391f403de39415d7",
- "generatedAt": "2026-07-17T19:35:32.498Z",
+ "version": "113655df410528ed1a4780c423a50acb52767b6345aa1fec2b7d3e798f0117b2",
+ "generatedAt": "2026-07-19T19:26:01.168Z",
  "rulesets": {
   "2014": {
-   "hash": "a67f94dd8962c91aef8214c254a69d992073e007fe87b4479b240925fe232d34",
+   "hash": "48ed30ef1b93ae7bf1a5071296812b73e0f7aaf0395cbfd6f8df537a50c94ce4",
    "counts": {
     "classes": 12,
     "subclasses": 12,
@@ -11,7 +11,7 @@
     "subraces": 4,
     "spells": 319,
     "backgrounds": 1,
-    "feats": 1,
+    "feats": 2,
     "magic_items": 273,
     "rules": 24,
     "monsters": 316,
@@ -19,10 +19,10 @@
     "weapons": 37,
     "armor": 13
    },
-   "generatedAt": "2026-07-17T19:35:32.372Z"
+   "generatedAt": "2026-07-19T19:26:01.043Z"
   },
   "2024": {
-   "hash": "7d706ca7c3d687d785c0899fbd326a5d770b8dc814a43ad0f9da84247bf59df8",
+   "hash": "4f08d56a4f32985e436f53e5e8f5e81f6f1afc28d6183af87c6a20c0aa23e94e",
    "counts": {
     "classes": 12,
     "subclasses": 12,
@@ -37,7 +37,7 @@
     "items": 163,
     "weapon_masteries": 38
    },
-   "generatedAt": "2026-07-17T19:35:32.498Z"
+   "generatedAt": "2026-07-19T19:26:01.167Z"
   }
  }
 }
