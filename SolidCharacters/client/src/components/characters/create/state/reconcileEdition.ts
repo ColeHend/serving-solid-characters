@@ -108,11 +108,29 @@ export function reconcileEdition(
   }
 
   let background = draft.background;
+  let backgroundId = draft.backgroundId;
   let originFeat = draft.originFeat;
-  if (background && data.backgrounds.length > 0 && !names(data.backgrounds).has(background.toLowerCase())) {
-    dropped.push(`${background} (background)`);
-    background = "";
-    originFeat = "";
+  if (background && data.backgrounds.length > 0) {
+    const backgroundByName = (name: string) => {
+      const matches = data.backgrounds.filter((b) => b.name?.toLowerCase() === name.toLowerCase());
+      return matches.find((b) => b.legacy !== true) ?? matches[0];
+    };
+    const match =
+      (backgroundId
+        ? data.backgrounds.find(
+          (b) => entitySelectorKey({ id: b.id, name: b.name }) === backgroundId,
+        )
+        : undefined) ?? backgroundByName(background);
+    if (!match) {
+      dropped.push(`${background} (background)`);
+      background = "";
+      // A dangling selector key would otherwise resolve the dropped background right back.
+      backgroundId = undefined;
+      originFeat = "";
+    } else {
+      // Re-key to the target edition's row, like subclasses/feats/spells below.
+      backgroundId = entitySelectorKey({ id: match.id, name: match.name });
+    }
   }
 
   let feats = draft.feats;
@@ -154,7 +172,9 @@ export function reconcileEdition(
       originFeat = "";
     }
     // The background's own recommended feat is derived — flag it when it won't exist anymore.
-    const recommended = background ? backgroundFeatName({ background }, data.backgrounds) : "";
+    const recommended = background
+      ? backgroundFeatName({ background, backgroundId }, data.backgrounds)
+      : "";
     if (background && recommended && !featNames.has(recommended.toLowerCase())) {
       dropped.push(`${recommended} (background feat)`);
     }
@@ -185,6 +205,7 @@ export function reconcileEdition(
       species,
       lineage,
       background,
+      backgroundId,
       originFeat,
       feats,
       featOrAsi,
