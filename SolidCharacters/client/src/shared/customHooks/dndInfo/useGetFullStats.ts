@@ -15,13 +15,16 @@ const useExportFullStats = (currentCharacter: Accessor<Character>) => {
     const race = dndSrdRaces().filter(
       (x) => x.name.toLowerCase() === currentCharacter()?.race.species.toLowerCase()
     )[0];
+    // Guard every read: a character can be undefined mid-load, and older saves may omit stats.
+    // Without `?? 0` these become undefined and every derived modifier turns into NaN.
+    const stats = currentCharacter()?.stats;
     const fullStats: Stats = {
-      str: currentCharacter()?.stats.str,
-      dex: currentCharacter()?.stats.dex,
-      con: currentCharacter()?.stats.con,
-      int: currentCharacter()?.stats.int,
-      wis: currentCharacter()?.stats.wis,
-      cha: currentCharacter()?.stats.cha,
+      str: stats?.str ?? 0,
+      dex: stats?.dex ?? 0,
+      con: stats?.con ?? 0,
+      int: stats?.int ?? 0,
+      wis: stats?.wis ?? 0,
+      cha: stats?.cha ?? 0,
     };
 
     // Characters saved by the rebuilt creator store final scores (statsInclusive) —

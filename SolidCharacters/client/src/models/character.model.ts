@@ -93,6 +93,20 @@ export class Character {
   public builder?: CharacterBuilderState;
   /** True = stats already include species/background/manual bonuses; consumers must not re-add race bonuses. */
   public statsInclusive?: boolean;
+  /** Death-save tally tracked from the character sheet. Absent on older saves — read with a fallback. */
+  public deathSaves: DeathSaves = { successes: 0, failures: 0 };
+  /** Heroic inspiration toggle. Absent on older saves — read with `?? false`. */
+  public inspiration: boolean = false;
+  /** Hit dice spent this rest cycle, keyed by die size (e.g. `{ 8: 2 }`). Absent on older saves — read with `?? {}`. */
+  public hitDiceUsed: Record<number, number> = {};
+  /** Spell slots spent since the last long rest, keyed by slot level (e.g. `{ 1: 2 }`). Absent on older saves — read with `?? {}`. */
+  public spellSlotsUsed: Record<number, number> = {};
+}
+
+/** Successes/failures on death saving throws (0–3 each). */
+export interface DeathSaves {
+  successes: number;
+  failures: number;
 }
 
 export type CharacterEdition = '2014' | '2024';
