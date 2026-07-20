@@ -239,6 +239,7 @@ const CoreTab: Component<CoreTabProps> = (props) => {
       return usage ? [{ feature: f, usage }] : [];
     }),
   );
+
   const ResourcesCard = () => (
     <Show when={limitedFeatures().length}>
       <SectionCard icon={Bolt} title="Resources">
@@ -288,6 +289,7 @@ const CoreTab: Component<CoreTabProps> = (props) => {
     }
     return rows;
   });
+
   const AttacksCard = () => (
     <Show when={attackRows().length}>
       <SectionCard icon={Swords} title="Attacks & Cantrips">
@@ -320,8 +322,9 @@ const CoreTab: Component<CoreTabProps> = (props) => {
       .map((a) => ({ name: a.name, desc: a.description ?? "", granted: a }));
     return [...GENERIC_ACTIONS[activeEconomy()].map((a) => ({ ...a, granted: undefined })), ...granted];
   });
+
   const ActionsCard = () => (
-    <FlatCard icon={DirectionsRun} headerName={<span class={styles.cardTitle}>Actions</span>}>
+    <FlatCard icon={DirectionsRun} headerName={<span class={styles.cardTitle}>Actions</span>} transparent>
       <div class={styles.segmented}>
         <Button transparent borderTheme={activeEconomy() === "action" ? "primary" : "none"} onClick={() => setActiveEconomy("action")}>Actions</Button>
         <Button transparent borderTheme={activeEconomy() === "bonusAction" ? "primary" : "none"} onClick={() => setActiveEconomy("bonusAction")}>Bonus</Button>

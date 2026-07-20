@@ -6,9 +6,10 @@ $mobile: 900px;
 .sheet {
   width: min(1200px, 96%);
   margin: 0 auto;
-  padding: var(--spacing-2) 0 var(--spacing-4);
+  // padding: var(--spacing-2) 0 var(--spacing-4);
   color: var(--on-surface-color);
   background-color: color-mix(in srgb, vars.$color-surface 85%, transparent) !important;
+  border-radius: 8px;
 }
 
 .tabPanel {
@@ -20,7 +21,7 @@ $mobile: 900px;
   display: block;
   padding: var(--spacing-2);
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   box-shadow: var(--shadow-elevation-1);
 }
 
@@ -54,7 +55,7 @@ $mobile: 900px;
   gap: var(--spacing-3);
   padding: var(--spacing-2) var(--spacing-3);
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   background: transparent;
   box-shadow: var(--shadow-elevation-1);
 }
@@ -92,7 +93,7 @@ $mobile: 900px;
   flex-direction: column;
   gap: 2px;
   padding-bottom: 2px;
-  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
 }
 
 .fieldValue {
@@ -113,7 +114,7 @@ $mobile: 900px;
   gap: 2px;
   padding: var(--spacing-1);
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -179,7 +180,7 @@ $mobile: 900px;
   gap: 2px;
   padding: var(--spacing-1) 0 6px;
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
 }
 
 .abilityName {
@@ -200,7 +201,7 @@ $mobile: 900px;
   text-align: center;
   padding: 1px 6px;
   border-radius: var(--border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   font-size: var(--font-size-small);
 }
 
@@ -216,7 +217,7 @@ $mobile: 900px;
   gap: var(--spacing-1);
   padding: var(--spacing-1);
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
 }
 
 .metaBadge {
@@ -242,7 +243,7 @@ $mobile: 900px;
   align-items: center;
   gap: var(--spacing-1);
   padding: 4px 2px;
-  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 8%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 18%, transparent);
 
   &:last-child {
     border-bottom: none;
@@ -302,7 +303,7 @@ $mobile: 900px;
   width: 14px;
   height: 14px;
   box-sizing: border-box;
-  border: 2px solid color-mix(in srgb, var(--on-surface-color) 40%, transparent);
+  border: 2px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   background: transparent;
 }
 
@@ -344,8 +345,9 @@ $mobile: 900px;
   gap: 2px;
   padding: var(--spacing-2) var(--spacing-1);
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   text-align: center;
+  background: transparent;
 }
 
 .miniValue {
@@ -396,7 +398,7 @@ $mobile: 900px;
   min-width: 64px;
   padding: 2px 6px;
   border-radius: var(--border-radius-md);
-  border: 1px dashed color-mix(in srgb, var(--on-surface-color) 30%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   cursor: pointer;
   user-select: none;
 }
@@ -440,7 +442,7 @@ $mobile: 900px;
   display: flex;
   align-items: center;
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   overflow: hidden;
 }
 
@@ -449,8 +451,8 @@ $mobile: 900px;
   text-align: center;
   background: transparent;
   border: none;
-  border-left: 1px solid color-mix(in srgb, var(--on-surface-color) 20%, transparent);
-  border-right: 1px solid color-mix(in srgb, var(--on-surface-color) 20%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   color: inherit;
   -moz-appearance: textfield;
 
@@ -511,7 +513,7 @@ $mobile: 900px;
   min-width: 40px;
   padding: 4px 8px;
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -546,7 +548,7 @@ $mobile: 900px;
 
 .dataTable td {
   padding: 6px 8px;
-  border-top: 1px solid color-mix(in srgb, var(--on-surface-color) 8%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   vertical-align: top;
 }
 
@@ -625,7 +627,7 @@ $mobile: 900px;
   align-items: center;
   gap: var(--spacing-1);
   padding: 5px 2px;
-  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 8%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
 }
 
 .equipQty {
@@ -640,7 +642,7 @@ $mobile: 900px;
   gap: var(--spacing-1);
   margin-top: var(--spacing-1);
   padding-top: var(--spacing-1);
-  border-top: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   font-size: var(--font-size-small);
   opacity: 0.85;
   fill: var(--primary-color);
@@ -735,7 +737,7 @@ $mobile: 900px;
   width: 100%;
   aspect-ratio: 3 / 4;
   border-radius: var(--border-radius-md);
-  border: 1px dashed color-mix(in srgb, var(--on-surface-color) 25%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -770,7 +772,7 @@ $mobile: 900px;
   gap: 2px;
   padding: var(--spacing-1);
   border-radius: var(--border-radius-md);
-  border: 1px solid color-mix(in srgb, var(--on-surface-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
   text-align: center;
 }
 
