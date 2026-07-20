@@ -137,7 +137,7 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
       </span>
       <Switch>
         <Match when={props.choice.kind === "stat"}>
-          {/* One dropdown per pick slot; a slot's options hide the OTHER slots' picks (distinct abilities). */}
+          {/* One dropdown per pick slot; the same ability may be picked in more than one slot (+1 twice = +2). */}
           <Index
             each={statChoicePicks(
               draft.madChoices.stats[statChoiceKey(props.choice.feature)],
@@ -146,8 +146,6 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
           >
             {(pick, i) => {
               const key = () => statChoiceKey(props.choice.feature);
-              const picks = () =>
-                statChoicePicks(draft.madChoices.stats[key()], statChoiceCount(props.choice.mad));
               return (
                 <Select
                   value={pick()}
@@ -160,7 +158,7 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
                   }}
                   placeholder="Choose an ability…"
                 >
-                  <For each={statChoiceOptions(props.choice.mad).filter((k) => k === pick() || !picks().includes(k))}>
+                  <For each={statChoiceOptions(props.choice.mad)}>
                     {(k) => <Option value={k}>{abilityLabel(k)}</Option>}
                   </For>
                 </Select>

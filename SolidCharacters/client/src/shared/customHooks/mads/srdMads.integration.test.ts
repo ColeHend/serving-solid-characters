@@ -148,7 +148,7 @@ describe("generated SRD data through the mads runtime (2024)", () => {
     const feats2024 = read("2024/feats.json");
     const findFeat = (name: string) => feats2024.find((f: { details: { name: string } }) => f.details?.name === name)?.details;
 
-    it("the 2024 ASI feat asks for two distinct picks and applies +1 to each", () => {
+    it("the 2024 ASI feat asks for two picks and applies +1 to each", () => {
         const asi = findFeat("Ability Score Improvement");
         expect(asi?.metadata?.mads).toEqual([expect.objectContaining({
             command: "AddStats",
@@ -170,6 +170,11 @@ describe("generated SRD data through the mads runtime (2024)", () => {
         const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
         expect(applied.stats.int).toBe(9);
         expect(applied.stats.wis).toBe(11);
+
+        // the same ability twice → +2 to that score
+        c.statChoices = { [statChoiceKey(asi)]: "int,int" };
+        expect(pendingStatChoices(c, asi)).toHaveLength(0);
+        expect(useMadCharacters(structuredClone(c), collectMadFeatures(c)).stats.int).toBe(10);
     });
 
     it("Alert carries a PB-to-Initiative RollBonus that lands on rollBonuses", () => {

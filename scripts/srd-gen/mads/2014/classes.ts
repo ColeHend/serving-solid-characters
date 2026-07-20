@@ -12,8 +12,8 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
  * capstones are intentionally skipped — see the per-class // skipped notes.
  *
  * Limited-use (Uses) commands carry the BASE amount; level-scaling of uses stays in classSpecific.
- * Ability Score Improvement is modeled as +1 to two DIFFERENT abilities of the player's choice
- * (choice-form Stats with count: "2"; the sheet enforces two distinct picks).
+ * Ability Score Improvement is modeled as two +1 picks of the player's choice (choice-form Stats
+ * with count: "2"; the same ability may be picked twice for the "+2 to one score" form).
  */
 
 // an activated ability: a new action/bonusAction/reaction on the sheet; source (defaults to the
@@ -22,7 +22,7 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
 const action = (name: string, actionType: string, source?: string, description?: string): CommandSpecInput =>
     ({ type: "Add", category: "Actions", value: { name, actionType, source: source ?? name, ...(description ? { description } : {}) } });
 
-// ASI: +1 to two DIFFERENT abilities of the player's choice (count picks, distinct).
+// ASI: two +1 picks of the player's choice; the same ability twice = +2 (count picks, repeats allowed).
 const asi = (): CommandSpecInput =>
     ({ type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" } });
 

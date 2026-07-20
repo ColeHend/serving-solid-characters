@@ -310,7 +310,7 @@ describe("AddStats set mode and choice form", () => {
         expect(statChoiceKey({ id: "", name: "ASI" })).toBe("ASI");
     });
 
-    it("count=2 expands into one command per distinct pick and stays pending until complete", () => {
+    it("count=2 expands into one command per pick and stays pending until complete", () => {
         const choice = mad("AddStats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" });
         const feature: FeatureDetail = { id: "asi-2024", name: "Ability Score Improvement", description: "", metadata: { mads: stored(choice) } };
         const base = makeCharacter({ features: [feature] });
@@ -324,9 +324,12 @@ describe("AddStats set mode and choice form", () => {
         expect(collectMadFeatures(half)).toEqual([]);
         expect(pendingStatChoices(half, feature)).toHaveLength(1);
 
-        // duplicate picks are rejected — the abilities must be DIFFERENT
+        // the same ability picked twice stacks — an ASI can be +2 to one score
         const duped = makeCharacter({ ...base, statChoices: { "asi-2024": "int,int" } });
-        expect(collectMadFeatures(duped)).toEqual([]);
+        const dupedCollected = collectMadFeatures(duped);
+        expect(dupedCollected.map(m => m.value["stat"])).toEqual(["int", "int"]);
+        expect(pendingStatChoices(duped, feature)).toHaveLength(0);
+        expect(useMadCharacters(structuredClone(duped), dupedCollected).stats.int).toBe(12);
 
         // two distinct picks → two concrete +1 commands, +1 to each ability
         const picked = makeCharacter({ ...base, statChoices: { "asi-2024": "int,wis" } });
@@ -345,13 +348,15 @@ describe("AddStats set mode and choice form", () => {
         expect(statChoiceCount(mad("AddStats", { stat: "choice", options: "str", statValue: "1", count: "0" }))).toBe(1);
     });
 
-    it("statChoicePicks pads to count and setStatPickAt steals duplicates from other slots", () => {
+    it("statChoicePicks pads to count and setStatPickAt writes slots independently", () => {
         expect(statChoicePicks("int", 2)).toEqual(["int", ""]);
         expect(statChoicePicks("int,wis", 2)).toEqual(["int", "wis"]);
         expect(setStatPickAt(undefined, 0, "int", 2)).toBe("int,");
         expect(setStatPickAt("int,", 1, "wis", 2)).toBe("int,wis");
-        // re-picking slot 1 to the ability slot 0 holds clears slot 0 (distinct picks)
-        expect(setStatPickAt("int,wis", 1, "int", 2)).toBe(",int");
+        // re-picking slot 1 to the ability slot 0 holds keeps both — repeats are allowed (+2)
+        expect(setStatPickAt("int,wis", 1, "int", 2)).toBe("int,int");
+        // rewriting a slot to its current ability is a no-op
+        expect(setStatPickAt("str,", 0, "str", 2)).toBe("str,");
     });
 });
 

@@ -21,7 +21,7 @@ import type { MadMap } from "../spec.ts";
  *    (Boon of Truesight's permanent Truesight IS encoded — see its entry.)
  *
  * NOTE: the "+2 max" / "+1 max" caps and the epic-boon max-30 caps are not representable; the Stats
- * command just adds. Ability Score Improvement is an approximation — see its comment.
+ * command just adds.
  * Defense's +1 AC applies only "while wearing Light, Medium, or Heavy armor" — the sheet applies it
  * unconditionally, with the qualifier carried in the command's condition text (documented approximation).
  */
@@ -71,8 +71,8 @@ export const map: MadMap = {
         { type: "Add", category: "Proficiencies", value: { proficiency: "choice", options: ALL_SKILLS, count: "3" } },
     ],
 
-    // Ability Score Improvement — increase two DIFFERENT abilities of your choice by 1 each
-    // (choice-form Stats with count: the player picks `count` distinct abilities on the sheet).
+    // Ability Score Improvement — "+2 to one ability or +1 to two" as two +1 picks
+    // (choice-form Stats with count: the player may pick the same ability twice for the +2).
     "Ability Score Improvement": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" } },
     ],

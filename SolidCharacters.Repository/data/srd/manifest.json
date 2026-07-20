@@ -1,9 +1,9 @@
 {
- "version": "113655df410528ed1a4780c423a50acb52767b6345aa1fec2b7d3e798f0117b2",
- "generatedAt": "2026-07-19T19:26:01.168Z",
+ "version": "f3dbff1843713aebc5a58ddd2fdf4077691dde58b72e528d1cf0c72e4b76c6a0",
+ "generatedAt": "2026-07-20T23:14:07.329Z",
  "rulesets": {
   "2014": {
-   "hash": "48ed30ef1b93ae7bf1a5071296812b73e0f7aaf0395cbfd6f8df537a50c94ce4",
+   "hash": "725491d06398600641fe78677f769c0126f88a7e703a99e5e3209d56e3459f52",
    "counts": {
     "classes": 12,
     "subclasses": 12,
@@ -19,7 +19,7 @@
     "weapons": 37,
     "armor": 13
    },
-   "generatedAt": "2026-07-19T19:26:01.043Z"
+   "generatedAt": "2026-07-20T23:14:07.204Z"
   },
   "2024": {
    "hash": "4f08d56a4f32985e436f53e5e8f5e81f6f1afc28d6183af87c6a20c0aa23e94e",
@@ -37,7 +37,7 @@
     "items": 163,
     "weapon_masteries": 38
    },
-   "generatedAt": "2026-07-19T19:26:01.167Z"
+   "generatedAt": "2026-07-20T23:14:07.328Z"
   }
  }
 }

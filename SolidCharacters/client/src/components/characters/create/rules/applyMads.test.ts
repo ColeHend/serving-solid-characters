@@ -85,7 +85,7 @@ describe("applyCreatorMads on the creator's mapped character", () => {
     expect(draftMadChoices(half).filter((c) => c.pending && c.kind === "stat")).toHaveLength(1);
     expect(applyCreatorMads(half).stats.con).toBe(14);
 
-    // both picks → +1 to each distinct ability
+    // both picks → +1 to each ability
     const picked = dwarfBarbarian(4, {
       madChoices: { stats: { [statChoiceKey(asi)]: "con,str" }, proficiencies: {}, spells: {}, items: {} },
     });
@@ -94,6 +94,13 @@ describe("applyCreatorMads on the creator's mapped character", () => {
     const applied = applyCreatorMads(character);
     expect(applied.stats.con).toBe(15);
     expect(applied.stats.str).toBe(17);
+
+    // the same ability twice → +2 to one score
+    const doubled = draftToCharacter(dwarfBarbarian(4, {
+      madChoices: { stats: { [statChoiceKey(asi)]: "con,con" }, proficiencies: {}, spells: {}, items: {} },
+    }), lookups);
+    expect(draftMadChoices(doubled).filter((c) => c.pending && c.kind === "stat")).toHaveLength(0);
+    expect(applyCreatorMads(doubled).stats.con).toBe(16);
   });
 
   it("tags each choice with its source so sections can filter their own", () => {

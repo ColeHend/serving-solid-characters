@@ -225,7 +225,7 @@ export function statChoiceOptions(m: MadFeature): string[] {
     return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
 }
 
-/** How many DISTINCT abilities the player picks (defaults to 1). */
+/** How many abilities the player picks (defaults to 1). */
 export function statChoiceCount(m: MadFeature): number {
     const n = Number(m.value?.["count"] ?? "1");
     return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
@@ -240,14 +240,11 @@ export function statChoicePicks(csv: string | undefined, count: number): string[
 
 /**
  * A statChoices CSV with `ability` written into slot `index` — the shared write path for the
- * per-slot dropdown UIs. Picks must be DISTINCT: choosing an ability already held by another
- * slot clears that other slot rather than silently keeping a duplicate.
+ * per-slot dropdown UIs. Repeats are allowed: picking the same ability in two slots stacks
+ * (an ASI can be +2 to one score instead of +1 to two).
  */
 export function setStatPickAt(csv: string | undefined, index: number, ability: string, count: number): string {
     const picks = statChoicePicks(csv, Math.max(count, index + 1));
-    for (let i = 0; i < picks.length; i++) {
-        if (i !== index && ability && picks[i] === ability) picks[i] = "";
-    }
     picks[index] = ability;
     return picks.join(",");
 }
@@ -264,14 +261,13 @@ export function statChoiceKey(feature: { id?: string; name: string }): string {
 /**
  * A choice-form Stats command EXPANDED into one concrete command per picked ability
  * (character.statChoices holds a CSV of picks, keyed by statChoiceKey) — or null while the
- * picks are missing/incomplete/duplicated/invalid, in which case the command must NOT apply.
- * Picks must be DISTINCT ("increase two different ability scores").
+ * picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ * The same ability may be picked more than once and stacks (+1 twice = +2).
  */
 function resolveChoiceStatMads(character: Character, choiceKey: string, m: MadFeature): MadFeature[] | null {
     const picks = (character.statChoices?.[choiceKey] ?? "").split(",").map(s => s.trim()).filter(Boolean);
     const options = statChoiceOptions(m);
     if (picks.length !== statChoiceCount(m)) return null;
-    if (new Set(picks).size !== picks.length) return null;
     if (!picks.every(p => options.includes(p))) return null;
     return picks.map(pick => ({ ...m, value: { ...m.value, stat: pick } }));
 }
