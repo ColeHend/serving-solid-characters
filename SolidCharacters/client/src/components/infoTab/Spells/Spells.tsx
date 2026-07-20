@@ -12,7 +12,7 @@ import styles from "./Spells.module.scss";
 import Paginator from "../../../shared/components/paginator/paginator";
 import { useSearchParams } from "@solidjs/router";
 import SpellModal from "../../../shared/components/modals/spellModal/spellModal.component";
-import { createTableSort, createTableFilter, createSelectionSync, FilterFieldConfig, SortState } from "../../../shared";
+import { createTableSort, createTableFilter, createSelectionSync, SortState } from "../../../shared";
 import { Body, Table, Column, Cell, Header, Row, Chip, Button, Icon } from "coles-solid-library";
 import { FilterAlt } from "coles-solid-library/icons";
 import { SpellMenu } from "./spellMenu/spellMenu";
@@ -22,20 +22,9 @@ import SearchBar from "../../../shared/components/SearchBar/SearchBar";
 import { FilterDialog } from "../../../shared/components/filterDialog/filterDialog";
 import { FilterChips } from "../../../shared/components/filterDialog/filterChips";
 import { trackRecentItem } from "../../../shared/customHooks/useRecentItems";
+import { spellFilterFields } from "../../../shared/customHooks/mads/spellChoiceFilters";
 
 const SPELL_INITIAL_SORT: SortState = { sortKey: "level", isAsc: true };
-
-const yesNo = (value: string) => (value === "true" ? "Yes" : "No");
-
-const spellFilterFields: FilterFieldConfig<Spell>[] = [
-  { key: "level", label: "Level" },
-  { key: "school", label: "School" },
-  { key: "castingTime", label: "Casting time" },
-  { key: "damageType", label: "Damage type" },
-  { key: "concentration", label: "Concentration", format: yesNo },
-  { key: "ritual", label: "Ritual", format: yesNo },
-  { key: "classes", label: "Class", getValues: (spell) => spell.classes },
-];
 
 const masterSpells: Component = () => {
   const dndSrdSpells = useDnDSpells();

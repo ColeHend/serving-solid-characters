@@ -1,4 +1,5 @@
 import { MadFeature, MadType } from "../../../models/generated";
+import { hasDerivedSpellPool, hasSpellFilterValue } from "../../customHooks/mads/spellChoiceFilters";
 
 /**
  * Single source of truth for the "mads" character-change commands the homebrew command sub-agent can
@@ -181,11 +182,28 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
             { key: "options", type: "refCsv", required: false },
             { key: "count", type: "number", required: false },
             { key: "spellLevel", type: "number", required: false },
+            // Filter-form choice: the allowed list is described by filters over the
+            // spell catalog (CSV per field, AND across fields, OR within one) and
+            // unions with any explicit `options` ids. Keys mirror spellChoiceFilters.ts.
+            { key: "filterLevel", type: "textCsv", required: false },
+            { key: "filterSchool", type: "textCsv", required: false },
+            { key: "filterClass", type: "textCsv", required: false },
+            { key: "filterCastingTime", type: "textCsv", required: false },
+            { key: "filterDamageType", type: "textCsv", required: false },
+            { key: "filterConcentration", type: "textCsv", required: false },
+            { key: "filterRitual", type: "textCsv", required: false },
         ],
         removeFields: [{ key: "ID", type: "refOrChoice", required: true }],
         hint: "grants/removes a spell — target = exact spell name. " +
             "For 'choose N spells/cantrips of your choice from a list' use ID = choice with options = comma-separated allowed spell names, " +
-            "count = how many the player picks, spellLevel = the spell level (0 = cantrip; the player picks on the sheet).",
+            "count = how many the player picks, spellLevel = the spell level (0 = cantrip; the player picks on the sheet). " +
+            "Instead of (or in addition to) options, a choice may describe the list with catalog filters: " +
+            "filterLevel (spell levels, 0 = cantrip), filterSchool, filterClass (class spell lists), filterCastingTime, " +
+            "filterDamageType, filterConcentration/filterRitual (true or false). Each filter is CSV of plain labels " +
+            "(NOT resolved to ids); a spell must match every provided filter (any value within one filter matches); " +
+            "filter matches union with the explicit options list. spellLevel also restricts filter matches to that " +
+            "level unless filterLevel is set (filterLevel wins); with no options and no filters, spellLevel alone " +
+            "means 'any spell of that level'. When options are present without filters the pool is exactly the options.",
     },
     Items: {
         category: "Items", idBased: true, refKind: "item",
@@ -482,12 +500,15 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
     },
     Actions: {
         category: "Actions", idBased: false,
-        labelKeys: ["name", "actionType"],
+        labelKeys: ["name", "actionType", "amount", "proficiencyBonus", "recharge"],
         addFields: [
             { key: "name", type: "text", required: true },
             { key: "actionType", type: "actionType", required: true },
             { key: "description", type: "text", required: false },
             { key: "source", type: "text", required: false },
+            { key: "amount", type: "number", required: false },
+            { key: "proficiencyBonus", type: "pbChoice", required: false },
+            { key: "recharge", type: "recharge", required: false },
         ],
         removeFields: [
             { key: "name", type: "text", required: true },
@@ -496,7 +517,9 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         hint: "grants a new Action, Bonus Action, or Reaction the character can take (Channel Divinity, Second Wind, Rage...); " +
             "name = the action's name, actionType = action/bonusAction/reaction, description (optional) = its rules text, " +
             "source (optional) = the granting feature's name. This is for an ACTIVATED ability the character chooses to use — " +
-            "NOT a passive bonus, resistance, or always-on trait; pair with Uses when it is limited-use.",
+            "NOT a passive bonus, resistance, or always-on trait. When the action is limited-use, put its uses inline: " +
+            "amount = a fixed number of uses OR proficiencyBonus = 'Third PB'/'Half PB'/'Full PB', plus recharge = Short Rest or Long Rest " +
+            "(a separate Uses command on the same feature also still works).",
     },
 };
 
@@ -534,7 +557,10 @@ export const COMMAND_COMMON_MISTAKES =
     "- \"you gain proficiency with Thieves' Tools\" → ToolProficiencies {\"tool\":\"Thieves' Tools\"}\n" +
     "- \"advantage on Stealth checks\" → Advantage {\"rollType\":\"AbilityCheck\",\"mode\":\"advantage\",\"stat\":\"dex\",\"condition\":\"Stealth checks\"} (state WHEN it applies in condition)\n" +
     "- \"As a Bonus Action, you can enter a Rage\" → Actions {\"name\":\"Rage\",\"actionType\":\"bonusAction\"} (an activated ability the character uses — NOT a passive bonus)\n" +
-    "- \"you learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list\" → Spells {\"ID\":\"choice\",\"options\":\"<comma-separated allowed spell names>\",\"count\":\"2\",\"spellLevel\":\"0\"}\n" +
+    "- \"As a Bonus Action, you can Rage, twice per Long Rest\" → Actions {\"name\":\"Rage\",\"actionType\":\"bonusAction\",\"amount\":\"2\",\"recharge\":\"Long Rest\"} (a limited-use action carries its uses inline)\n" +
+    "- \"you learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list\" → Spells {\"ID\":\"choice\",\"filterClass\":\"Cleric,Druid,Wizard\",\"filterLevel\":\"0\",\"count\":\"2\",\"spellLevel\":\"0\"} (a whole spell list is a FILTER, never an enumerated options CSV)\n" +
+    "- \"you learn one 1st-level Wizard ritual spell\" → Spells {\"ID\":\"choice\",\"filterClass\":\"Wizard\",\"filterLevel\":\"1\",\"filterRitual\":\"true\",\"count\":\"1\",\"spellLevel\":\"1\"}\n" +
+    "- \"choose Guidance or Resistance\" → Spells {\"ID\":\"choice\",\"options\":\"Guidance,Resistance\",\"count\":\"1\",\"spellLevel\":\"0\"} (a short named list stays explicit options)\n" +
     "- \"you gain one simple weapon of your choice\" → Items {\"ID\":\"choice\",\"options\":\"<comma-separated allowed item names>\",\"count\":\"1\"}\n" +
     "- \"a number of times equal to your Proficiency Bonus, regaining all uses on a Long Rest\" → Uses {\"proficiencyBonus\":\"Full PB\",\"recharge\":\"Long Rest\"} (PB-scaled uses omit amount)\n" +
     "- \"once per long rest…\" → Uses (temporary effects, healing, and damage bonuses/rerolls have no category)";
@@ -805,14 +831,22 @@ export function coerceCommand(
     if (category === "ArmorProficiencies" && value["armor"] === "choice" && !value["options"]) return null;
     if (category === "WeaponProficiencies" && value["weapon"] === "choice" && !value["options"]) return null;
     if (category === "ToolProficiencies" && value["tool"] === "choice" && !value["options"]) return null;
-    // choice-form Spells likewise needs its allowed-spells list
-    if (category === "Spells" && value["ID"] === "choice" && !value["options"]) return null;
+    // choice-form Spells needs a pool: explicit options, filters, or a bare spellLevel ("any spell of that
+    // level"). An options list that was PROPOSED but resolved to nothing must not silently widen into a
+    // level-wide pool — a curated list stays curated or the command drops (filters still rescue it).
+    if (category === "Spells" && value["ID"] === "choice" && !value["options"]) {
+        const optionsWereProposed = String(rawValue?.["options"] ?? "").trim() !== "";
+        const poolless = optionsWereProposed ? !hasSpellFilterValue(value) : !hasDerivedSpellPool(value);
+        if (poolless) return null;
+    }
     // choice-form Items likewise needs its allowed-items list
     if (category === "Items" && value["ID"] === "choice" && !value["options"]) return null;
     // a RollBonus with no flat bonus, PB fraction, or ability modifier would be a no-op badge
     if (category === "RollBonus" && !value["bonus"] && !value["proficiencyBonus"] && !value["statBonus"]) return null;
     // a Uses with neither a fixed amount nor a PB fraction has no resolvable maximum
     if (category === "Uses" && t === "Add" && !value["amount"] && !value["proficiencyBonus"]) return null;
+    // an Actions recharge without an amount or PB fraction is a no-op key — drop it, keep the action
+    if (category === "Actions" && value["recharge"] && !value["amount"] && !value["proficiencyBonus"]) delete value["recharge"];
     return { command: `${t}${category}`, value, type: spec.madType ?? MadType.Character, prerequisites: [], group: 0 };
 }
 
@@ -910,8 +944,10 @@ export function validateStoredCommand(mad: MadFeature): string[] {
     }
     if (category === "Spells" && isAdd && String(value["ID"] ?? "") === "choice") {
         // Options hold opaque spell ids post-enrichment — only require the list to be non-empty.
+        // A derived-pool choice needs no options: its list comes from the spell catalog
+        // (filters, or a bare spellLevel meaning "any spell of that level").
         const opts = typeof value["options"] === "string" ? (value["options"] as string).trim() : "";
-        if (!opts) errors.push(`${prettyCommand(command)} uses ID "choice" but has no options list`);
+        if (!opts && !hasDerivedSpellPool(value)) errors.push(`${prettyCommand(command)} uses ID "choice" but has no options list, filter, or spell level`);
     }
     if (category === "Items" && isAdd && String(value["ID"] ?? "") === "choice") {
         // Options hold opaque item ids post-enrichment — only require the list to be non-empty.
@@ -928,6 +964,12 @@ export function validateStoredCommand(mad: MadFeature): string[] {
         const amount = coerceField({ key: "amount", type: "number", required: false }, value["amount"], "", () => null, undefined);
         const pb = coerceField({ key: "proficiencyBonus", type: "pbChoice", required: false }, value["proficiencyBonus"], "", () => null, undefined);
         if (!amount && !pb) errors.push(`${prettyCommand(command)} needs an amount or a proficiencyBonus`);
+    }
+    if (category === "Actions" && isAdd) {
+        const amount = coerceField({ key: "amount", type: "number", required: false }, value["amount"], "", () => null, undefined);
+        const pb = coerceField({ key: "proficiencyBonus", type: "pbChoice", required: false }, value["proficiencyBonus"], "", () => null, undefined);
+        const recharge = coerceField({ key: "recharge", type: "recharge", required: false }, value["recharge"], "", () => null, undefined);
+        if (recharge && !amount && !pb) errors.push(`${prettyCommand(command)} has a recharge but no amount or proficiencyBonus`);
     }
     return errors;
 }

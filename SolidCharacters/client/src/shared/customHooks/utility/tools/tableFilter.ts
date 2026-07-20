@@ -47,6 +47,29 @@ export type FilterChipModel =
 
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
+/** String-coerced values of `field` on `item` (multi-valued via getValues). */
+export const fieldValuesOf = <T>(item: T, field: FilterFieldConfig<T>): string[] => {
+  const raw = field.getValues
+    ? field.getValues(item)
+    : (item as Record<string, unknown>)[field.key] as FilterPrimitive;
+  return (Array.isArray(raw) ? raw : [raw])
+    .filter((v) => v !== null && v !== undefined && v !== "")
+    .map(String);
+};
+
+/** AND across fields, OR within a field; fields with no selection always match. */
+export const matchesFields = <T>(
+  item: T,
+  fields: FilterFieldConfig<T>[],
+  selections: Record<string, string[]>,
+): boolean =>
+  fields.every((field) => {
+    const sel = selections[field.key] ?? [];
+    if (sel.length === 0) return true;
+    if (field.matches) return field.matches(item, sel);
+    return sel.some((s) => fieldValuesOf(item, field).includes(s));
+  });
+
 /**
  * Headless filter state for a data table: per-field multi-select value
  * filters (distinct values derived from the source data), an optional
@@ -60,15 +83,6 @@ export function createTableFilter<T>(config: TableFilterConfig<T>) {
   const [legacyMode, setLegacyMode] = createSignal<LegacyMode>("all");
   const fieldByKey = new Map(config.fields.map((f) => [f.key, f]));
 
-  const valuesOf = (item: T, field: FilterFieldConfig<T>): string[] => {
-    const raw = field.getValues
-      ? field.getValues(item)
-      : (item as Record<string, unknown>)[field.key] as FilterPrimitive;
-    return (Array.isArray(raw) ? raw : [raw])
-      .filter((v) => v !== null && v !== undefined && v !== "")
-      .map(String);
-  };
-
   const isLegacyItem = (item: T) =>
     (config.legacy?.getValue?.(item) ?? (item as { legacy?: boolean }).legacy) === true;
 
@@ -80,7 +94,7 @@ export function createTableFilter<T>(config: TableFilterConfig<T>) {
         continue;
       }
       const set = new Set<string>();
-      for (const item of config.source()) valuesOf(item, field).forEach((v) => set.add(v));
+      for (const item of config.source()) fieldValuesOf(item, field).forEach((v) => set.add(v));
       map.set(field.key, [...set].sort(collator.compare));
     }
     return map;
@@ -102,11 +116,7 @@ export function createTableFilter<T>(config: TableFilterConfig<T>) {
       if (config.legacy && mode !== "all") {
         if (mode === "legacy" ? !isLegacyItem(item) : isLegacyItem(item)) return false;
       }
-      return active.every((f) => {
-        if (f.matches) return f.matches(item, sel[f.key]);
-        const values = valuesOf(item, f);
-        return sel[f.key].some((s) => values.includes(s));
-      });
+      return matchesFields(item, active, sel);
     });
   });
 

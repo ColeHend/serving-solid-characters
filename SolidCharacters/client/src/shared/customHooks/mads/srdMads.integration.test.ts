@@ -9,6 +9,7 @@ vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeature
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
 import { collectMadFeatures, useMadCharacters, pendingStatChoices, pendingProficiencyChoices, statChoiceKey, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, pendingExpertiseChoices, expertiseChoiceKey, pendingResistanceChoices, resistanceChoiceKey, pendingGroupChoice, groupChoiceKey, featureGroupOptions } from "./useMadCharacters";
+import { grantedActionUsage, LONG_REST } from "./commands/useUsesFeature";
 
 /**
  * Integration gate: the GENERATED server SRD JSON (SolidCharacters.Repository/data/srd)
@@ -82,6 +83,11 @@ describe("generated SRD data through the mads runtime (2014)", () => {
         expect(actions).toEqual(expect.arrayContaining([
             expect.objectContaining({ name: "Rage", actionType: "bonusAction" }),
         ]));
+
+        // the SRD carries no inline uses — the action resolves them via its source feature
+        const rage = barb.features["1"].find((f: FeatureDetail) => f.name === "Rage")!;
+        const rageAction = actions.find(a => a.name === "Rage")!;
+        expect(grantedActionUsage(rageAction, [rage], 5)).toEqual({ max: 2, recharge: LONG_REST });
     });
 
     it("a level 2 Cleric gains Turn Undead from Channel Divinity (1/rest)", () => {

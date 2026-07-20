@@ -1,6 +1,8 @@
-import { ActionType, Character, GrantedAction } from "../../../../models/character.model";
+import { ActionType, Character, GrantedAction, PbFraction } from "../../../../models/character.model";
 import { MadFeature } from "../madModels";
 import { DebugConsole } from "../../DebugConsole";
+import { PB_FRACTIONS } from "./pbFraction";
+import { normalizeRecharge } from "./useUsesFeature";
 
 const ACTION_TYPES: readonly ActionType[] = ["action", "bonusAction", "reaction"];
 
@@ -15,12 +17,27 @@ const parseAction = (feature: MadFeature): GrantedAction | null => {
     const description = feature.value?.['description']?.trim();
     const source = feature.value?.['source']?.trim();
 
-    return {
+    const entry: GrantedAction = {
         name,
         actionType,
         description: description || undefined,
         source: source || undefined,
     };
+
+    // Inline limited-use spec: a fixed amount wins over a PB fraction; a recharge
+    // without either is meaningless and is dropped with the rest of the spec.
+    const amount = Number(feature.value?.['amount']);
+    const pbFraction = feature.value?.['proficiencyBonus']?.trim() as PbFraction;
+    if (Number.isFinite(amount) && amount > 0) {
+        entry.uses = amount;
+    } else if (PB_FRACTIONS.includes(pbFraction)) {
+        entry.proficiencyBonus = pbFraction;
+    }
+    if (entry.uses !== undefined || entry.proficiencyBonus) {
+        entry.recharge = normalizeRecharge(feature.value?.['recharge']);
+    }
+
+    return entry;
 }
 
 const sameAction = (a: GrantedAction, b: GrantedAction): boolean =>

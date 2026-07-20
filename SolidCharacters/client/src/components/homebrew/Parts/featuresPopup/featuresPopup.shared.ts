@@ -58,19 +58,30 @@ export const isConcreteSpellMad = (mad: Pick<MadForm, "command" | "value">): boo
     mad.command === "AddSpells" && !!mad.value?.["ID"] && mad.value["ID"] !== "choice";
 
 /**
- * Row indices the Usage & spells tab edits: the FIRST AddUses row plus every
- * concrete AddSpells row. The Effects tab hides exactly these — anything else
- * (duplicate AddUses, RemoveSpells, choice-form AddSpells) stays visible there
- * so no row is ever silently unreachable.
+ * Row indices the Usage & spells tab exclusively edits: only the FIRST AddUses
+ * row (it has dedicated inputs there). The Effects tab hides exactly these.
+ * Concrete AddSpells rows deliberately show in BOTH tabs — as effect cards AND
+ * as "Spells granted" chips (both edit the same FormArray, so they stay in
+ * sync). Hiding them here made a spell effect committed on the Effects tab
+ * silently vanish from it.
  */
 export function usageOwnedIndices(mads: Pick<MadForm, "command" | "value">[]): Set<number> {
     const owned = new Set<number>();
     const firstUses = mads.findIndex(isUsesMad);
     if (firstUses >= 0) owned.add(firstUses);
-    mads.forEach((mad, i) => {
-        if (isConcreteSpellMad(mad)) owned.add(i);
-    });
     return owned;
+}
+
+/**
+ * An effect row the author never finished: no category picked, or no committed value.
+ * groupLabel doesn't count as a value — branch renaming writes it onto every row in the
+ * branch, including empty ones. Unset rows do nothing on the sheet; the close guard warns
+ * about them and save drops them.
+ */
+export function isUnsetRow(row: Pick<MadForm, "commandCategory" | "value">): boolean {
+    if (!row.commandCategory) return true;
+    return !Object.entries(row.value ?? {}).some(([key, v]) =>
+        key !== "groupLabel" && String(v ?? "").trim() !== "");
 }
 
 /**

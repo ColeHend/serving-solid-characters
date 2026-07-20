@@ -5,16 +5,10 @@ import {
   featSelectorKey,
   selectorKeyDisplayName,
 } from "../../../../shared/customHooks/utility/tools/entityKey";
-import { advantageLabel, rollBonusLabel, senseLabels } from "../../../../shared/customHooks/mads/rollFormat";
+import { advantageLabel, grantedActionLabel, rollBonusLabel, senseLabels } from "../../../../shared/customHooks/mads/rollFormat";
 import { ABILITY_LABELS, ABILITY_KEYS } from "../rules/constants";
 import { useCreate } from "../state/createContext";
 import styles from "./livingSheet.module.scss";
-
-/** Suffix shown after a granted action's name; plain "action" gets no suffix. */
-const ACTION_TYPE_LABELS: Record<string, string> = {
-  bonusAction: "bonus action",
-  reaction: "reaction",
-};
 
 const SPELL_LEVEL_LABELS: Record<string, string> = {
   "0": "Cantrips",
@@ -93,12 +87,7 @@ export const LivingSheet: Component<LivingSheetProps> = (props) => {
   });
 
   const actionsLine = createMemo(() =>
-    derived.grantedActions()
-      .map((action) => {
-        const suffix = ACTION_TYPE_LABELS[action.actionType];
-        return suffix ? `${action.name} (${suffix})` : action.name;
-      })
-      .join(", "));
+    derived.grantedActions().map(grantedActionLabel).join(", "));
 
   const advantagesLine = createMemo(() =>
     derived.rollAdvantages().map((adv) => `${adv.rollType} ${advantageLabel(adv)}`).join(" · "));

@@ -295,6 +295,9 @@ export interface RollBonus {
 
 export type ActionType = "action" | "bonusAction" | "reaction";
 
+/** When a limited-use pool refills (matches RECHARGE_TYPES in the command catalog). */
+export type RestType = "Short Rest" | "Long Rest";
+
 /** An action/bonus action/reaction a mad granted the character (Channel Divinity, Second Wind, ...). */
 export interface GrantedAction {
   name: string;
@@ -303,6 +306,12 @@ export interface GrantedAction {
   description?: string;
   /** Name of the granting feature — links to featureUses (keyed by feature name) for uses tracking. */
   source?: string;
+  /** Inline fixed number of uses. Absent when proficiencyBonus drives it, or the action is unlimited. */
+  uses?: number;
+  /** Inline uses equal to this fraction of the proficiency bonus (a fixed `uses` wins over this). */
+  proficiencyBonus?: PbFraction;
+  /** When the inline uses refill; only meaningful alongside uses/proficiencyBonus. */
+  recharge?: RestType;
 }
 
 // -- Character Form Models --

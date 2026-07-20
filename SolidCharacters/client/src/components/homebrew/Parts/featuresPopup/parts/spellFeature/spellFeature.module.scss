@@ -1,48 +1,42 @@
-.wrapper {
+.spellFeature {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.spellList{
-    table {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chosenRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+}
+
+.numberRow {
+  display: flex;
+  gap: 14px;
+
+  > * {
+    flex: 0 1 220px;
   }
+}
 
-  thead,
-  tbody {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+.pickerHint {
+  font-size: 13px;
+  color: var(--pop-text-faint);
+}
 
-    tr {
-      display: flex;
-      width: 100%;
-    }
-  }
+.warn {
+  color: var(--error-color, #d9822b);
+}
 
-  th,
-  td {
-    flex: 1;
-    padding: 0.5rem;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  tbody {
-    height: 39vh;
-    overflow-y: scroll;
-    gap: 0.5rem;
-  }
-
-  @media screen and (max-width: 768px) {
-    table {
-      width: 100%;
-    }
-
-    font-size: .8em;
-  }
+.selectionSummary {
+  font-size: 14px;
+  color: var(--pop-text-muted);
 }

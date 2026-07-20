@@ -1,24 +1,44 @@
 import { describe, it, expect } from 'vitest';
-import { buildSubtitle, normalizeRecharge, splitCommand, usageOwnedIndices } from '../featuresPopup.shared';
+import { buildSubtitle, isUnsetRow, normalizeRecharge, splitCommand, usageOwnedIndices } from '../featuresPopup.shared';
 
 const mad = (command: string, value: Record<string, string> = {}) => ({ command, value });
 
 describe('usageOwnedIndices', () => {
-  it('claims the first AddUses and every concrete AddSpells', () => {
+  it('claims only the first AddUses — spell rows show in both tabs', () => {
     const mads = [
       mad('AddHitPoints', { amount: '5' }),
       mad('AddUses', { amount: '1' }),
-      mad('AddSpells', { ID: 'sp1' }),
+      mad('AddSpells', { ID: 'sp1' }),      // concrete grant — ALSO an effect card
       mad('AddUses', { amount: '9' }),      // duplicate — stays an effect
       mad('AddSpells', { ID: 'choice', options: 'a,b' }), // choice form — stays an effect
       mad('RemoveSpells', { ID: 'sp2' }),   // removal — stays an effect
     ];
-    expect([...usageOwnedIndices(mads)].sort()).toEqual([1, 2]);
+    expect([...usageOwnedIndices(mads)].sort()).toEqual([1]);
   });
 
   it('claims nothing on an empty or effect-only list', () => {
     expect(usageOwnedIndices([]).size).toBe(0);
     expect(usageOwnedIndices([mad('AddArmorClass', { bonus: '2' })]).size).toBe(0);
+  });
+});
+
+describe('isUnsetRow', () => {
+  const row = (commandCategory: string, value: Record<string, string> = {}) => ({ commandCategory, value });
+
+  it('flags rows with no category or no committed value', () => {
+    expect(isUnsetRow(row('', {}))).toBe(true);
+    expect(isUnsetRow(row('Spells', {}))).toBe(true);
+    expect(isUnsetRow(row('Spells', { ID: '  ' }))).toBe(true);
+  });
+
+  it('groupLabel alone is not a value — branch renaming writes it onto empty rows', () => {
+    expect(isUnsetRow(row('Spells', { groupLabel: 'Thaumaturge' }))).toBe(true);
+    expect(isUnsetRow(row('Spells', { groupLabel: 'Thaumaturge', ID: 'sp1' }))).toBe(false);
+  });
+
+  it('accepts any committed value', () => {
+    expect(isUnsetRow(row('Spells', { ID: 'sp1' }))).toBe(false);
+    expect(isUnsetRow(row('Uses', { amount: '1', recharge: 'Long Rest' }))).toBe(false);
   });
 });
 

@@ -1,6 +1,7 @@
 import { Character, GrantedAction, itemRefId, itemRefName } from "../../../models/character.model";
 import { MagicItem } from "../../../models/generated";
 import { entitySelectorKey } from "../utility/tools/entityKey";
+import { hasDerivedSpellPool, hasSpellFilterValue } from "./spellChoiceFilters";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
 import { addActionsFeature, removeActionsFeature } from "./commands/useActionsFeature";
 import { addAdvantageFeature, removeAdvantageFeature } from "./commands/useAdvantageFeature";
@@ -328,6 +329,11 @@ function isChoiceSpellMad(m: MadFeature): boolean {
     return (m.command === "AddSpells" || m.command === "RemoveSpells") && m.value?.["ID"] === "choice";
 }
 
+/** True for a choice-form Spells command whose allowed list is (partly) filter-derived. */
+export function isFilterFormSpellMad(m: MadFeature): boolean {
+    return isChoiceSpellMad(m) && hasSpellFilterValue(m.value);
+}
+
 /** The spell ids a choice-form Spells command allows ("id1,id2" → ["id1","id2"]). */
 export function spellChoiceOptions(m: MadFeature): string[] {
     return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
@@ -355,8 +361,11 @@ export function spellChoiceKey(feature: { id?: string; name: string }, m: MadFea
  */
 function resolveChoiceSpellMads(character: Character, feature: { id?: string; name: string }, m: MadFeature): MadFeature[] | null {
     const picks = (character.spellChoices?.[spellChoiceKey(feature, m)] ?? "").split(",").map(s => s.trim()).filter(Boolean);
-    const options = spellChoiceOptions(m);
-    if (picks.length !== spellChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    if (picks.length !== spellChoiceCount(m)) return null;
+    // Derived pools (filters, or bare spellLevel = "any spell of that level") come from the spell
+    // catalog, which this resolver doesn't have — membership is enforced by the creator picker
+    // (the only writer), so count is all we check.
+    if (!hasDerivedSpellPool(m.value) && !picks.every(p => spellChoiceOptions(m).includes(p))) return null;
     return picks.map(pick => ({ ...m, value: { ...m.value, ID: pick } }));
 }
 

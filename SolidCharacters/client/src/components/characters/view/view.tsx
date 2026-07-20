@@ -8,9 +8,11 @@ import useStyles from "../../../shared/customHooks/utility/style/styleHook";
 import getUserSettings from "../../../shared/customHooks/userSettings";
 import { Body, Select, Option, Input, TabBar, Button, Checkbox, Table, Column, Header, Cell, Row, Chip } from "coles-solid-library";
 import {
+  ActionType,
   AdvantageRollType,
   Character,
   CharacterGearEntry,
+  GrantedAction,
   RollBonus,
   itemRefId,
   itemRefName,
@@ -24,7 +26,7 @@ import { useDnDItems } from "../../../shared/customHooks/dndInfo/info/all/items"
 import { characterManager, Clone } from "../../../shared";
 import { characterMadFeatureSources, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, statChoiceOptions, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, proficiencyChoiceOptions, proficiencyChoiceCount, choiceExpertiseMads, expertiseChoiceCount, expertiseChoiceKey, expertiseChoiceOptions } from "../../../shared/customHooks/mads/useMadCharacters";
 import useExportProficiencies from "../../../shared/customHooks/dndInfo/useExportProficiencies";
-import { featureUsage, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
+import { featureUsage, grantedActionUsage, actionUsesKey, resetFeatureUses, RechargeType, SHORT_REST, LONG_REST } from "../../../shared/customHooks/mads/commands/useUsesFeature";
 import { advantageLabel, movementModeLabels, rollBonusLabel, senseLabels } from "../../../shared/customHooks/mads/rollFormat";
 import { useDnDMagicItems } from "../../../shared/customHooks/dndInfo/info/all/magicItems";
 import UsesTracker from "./usesTracker/usesTracker";
@@ -91,30 +93,34 @@ const CharacterView: Component = () => {
     setShowSpellModal(true);
   }
 
-  const [actionList] = createSignal<{name:string, desc:string;}[]>([
-    { name: "Attack", desc: "Make a melee or ranged attack." },
-    { name: "Magic", desc: "Cast a spell." },
-    { name: "Dash", desc: "Double your movement speed for the turn." },
-    { name: "Disengage", desc: "Move without provoking opportunity attacks." },
-    { name: "Dodge", desc: "Focus on avoiding attacks, giving attackers disadvantage." },
-    { name: "Help", desc: "Assist an ally, giving them advantage on their next attack." },
-    { name: "Hide", desc: "Attempt to hide from enemies." },
-    { name: "Ready", desc: "Prepare an action to trigger later." },
-    { name: "Search", desc: "Look for hidden objects or creatures." },
-    { name: "Use an Object", desc: "Interact with an object." }
-  ]);
-  const [bonusActionList] = createSignal<{name:string, desc:string;}[]>([
-    { name: "Second Wind", desc: "Regain hit points." },
-    { name: "Rage", desc: "Enter a state of heightened combat prowess." },
-    { name: "Healing Word", desc: "Heal an ally with a quick spell." }
-  ]);
-  const [reactionList] = createSignal<{name:string, desc:string;}[]>([
-    { name: "Opportunity Attack", desc: "Make a melee attack against a creature that leaves your reach." },
-    { name: "Shield", desc: "Cast the Shield spell in response to an attack." },
-    { name: "Counterspell", desc: "Attempt to interrupt a spell being cast." },
-    { name: "Hellish Rebuke", desc: "Deal fire damage to a creature that damaged you." }
-  ]);
-  const [currentActionList, setCurrentActionList] = createSignal(actionList());
+  // Universal action-economy entries every character has; class/feature-specific
+  // entries come from the character's grantedActions.
+  const GENERIC_ACTIONS: Record<ActionType, { name: string; desc: string }[]> = {
+    action: [
+      { name: "Attack", desc: "Make a melee or ranged attack." },
+      { name: "Magic", desc: "Cast a spell." },
+      { name: "Dash", desc: "Double your movement speed for the turn." },
+      { name: "Disengage", desc: "Move without provoking opportunity attacks." },
+      { name: "Dodge", desc: "Focus on avoiding attacks, giving attackers disadvantage." },
+      { name: "Help", desc: "Assist an ally, giving them advantage on their next attack." },
+      { name: "Hide", desc: "Attempt to hide from enemies." },
+      { name: "Ready", desc: "Prepare an action to trigger later." },
+      { name: "Search", desc: "Look for hidden objects or creatures." },
+      { name: "Use an Object", desc: "Interact with an object." },
+    ],
+    bonusAction: [],
+    reaction: [
+      { name: "Opportunity Attack", desc: "Make a melee attack against a creature that leaves your reach." },
+    ],
+  };
+  const [activeEconomy, setActiveEconomy] = createSignal<ActionType>("action");
+  type ActionEconomyRow = { name: string; desc: string; granted?: GrantedAction };
+  const displayedActions = createMemo<ActionEconomyRow[]>(() => {
+    const granted = (displayCharacter()?.grantedActions ?? [])
+      .filter((a) => a.actionType === activeEconomy())
+      .map((a) => ({ name: a.name, desc: a.description ?? "", granted: a }));
+    return [...GENERIC_ACTIONS[activeEconomy()], ...granted];
+  });
   const [currentViewedItems, setCurrentViewedItems] = createSignal<CharacterGearEntry[]>(currentCharacter()?.items.inventory);
 
   const fullStats = useGetFullStats(displayCharacter);
@@ -216,11 +222,17 @@ const CharacterView: Component = () => {
   const takeRest = (rest: RechargeType) => {
     const base = currentCharacter();
     if (!base) return;
+    const level = displayCharacter()?.level;
     const limited = allFeatures().flatMap(f => {
-      const usage = featureUsage(f, displayCharacter()?.level);
+      const usage = featureUsage(f, level);
       return usage ? [{ name: f.name, recharge: usage.recharge }] : [];
     });
-    persistCharacter(resetFeatureUses(Clone(base), rest, limited));
+    // Granted-action pools too — inline-uses actions have no backing feature to list.
+    const actionLimited = (displayCharacter()?.grantedActions ?? []).flatMap(a => {
+      const usage = grantedActionUsage(a, allFeatures(), level);
+      return usage ? [{ name: actionUsesKey(a), recharge: usage.recharge }] : [];
+    });
+    persistCharacter(resetFeatureUses(Clone(base), rest, [...limited, ...actionLimited]));
   };
 
   const [isMobile, setIsMobile] = createSignal(false);
@@ -470,18 +482,37 @@ const CharacterView: Component = () => {
                     setActiveActionTab(index);
                   }}
                   tabs={["Spells", "Items", "Actions"]} />
-                <Show when={activeActionTab() === 1}>
+                <Show when={activeActionTab() === 2}>
                   <div>
                     <div class={`${styles.actionButtonList}`}>
-                      <Button onClick={()=>{setCurrentActionList(actionList())}}>Actions</Button>
-                      <Button onClick={()=>{setCurrentActionList(bonusActionList())}}>Bonus Actions</Button>
-                      <Button onClick={()=>{setCurrentActionList(reactionList())}}>Reactions</Button>
+                      <Button onClick={()=>{setActiveEconomy("action")}}>Actions</Button>
+                      <Button onClick={()=>{setActiveEconomy("bonusAction")}}>Bonus Actions</Button>
+                      <Button onClick={()=>{setActiveEconomy("reaction")}}>Reactions</Button>
                     </div>
-                    <For each={currentActionList()}>{(actionItem)=>{
-                      return (<FlatCard headerName={<span>{actionItem.name}</span>}  class={`${styles.actionList}`} transparent>
-                        <div class={`${styles.actionList}`}>{actionItem.desc}</div>
+                    {/* Index, not For: a pip click clones the character, so row objects are rebuilt
+                        every persist — For would remount (and collapse) the FlatCard mid-interaction. */}
+                    <Index each={displayedActions()}>{(actionItem)=>{
+                      const usage = createMemo(() => {
+                        const granted = actionItem().granted;
+                        return granted ? grantedActionUsage(granted, allFeatures(), displayCharacter()?.level) : null;
+                      });
+                      const poolKey = () => {
+                        const granted = actionItem().granted;
+                        return granted ? actionUsesKey(granted) : "";
+                      };
+                      return (<FlatCard headerName={<span>{actionItem().name}</span>}  class={`${styles.actionList}`} transparent>
+                        <div class={`${styles.actionList}`}>{actionItem().desc}</div>
+                        <Show when={usage()}>
+                          <UsesTracker
+                            featureName={actionItem().name}
+                            max={usage()?.max ?? 0}
+                            recharge={usage()?.recharge ?? LONG_REST}
+                            spent={currentCharacter()?.featureUses?.[poolKey()] ?? 0}
+                            onChange={(spent) => spendUses(poolKey(), spent)}
+                          />
+                        </Show>
                       </FlatCard>)
-                    }}</For>
+                    }}</Index>
                   </div>
                 </Show>
                 <Show when={activeActionTab() === 0}>
@@ -571,7 +602,7 @@ const CharacterView: Component = () => {
                     <SpellModal spell={currentSelectedSpell} backgroundClick={[showSpellModal, setShowSpellModal]} />
                   </div>
                 </Show>
-                <Show when={activeActionTab() === 2}>
+                <Show when={activeActionTab() === 1}>
                   <div class={`${styles.actionButtonList}`}>
                     <Button onClick={()=>{setCurrentViewedItems(currentCharacter()?.items.inventory)}}>Inventory</Button>
                     <Button onClick={()=>{setCurrentViewedItems(currentCharacter()?.items.equipped)}}>Equipped</Button>

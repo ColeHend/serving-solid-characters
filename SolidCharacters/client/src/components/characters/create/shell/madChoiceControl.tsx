@@ -1,5 +1,7 @@
-import { Component, For, Index, Match, Show, Switch } from "solid-js";
+import { Component, For, Index, Match, Show, Switch, createSignal } from "solid-js";
 import { Option, Select } from "coles-solid-library";
+import { Spell } from "../../../../models/generated";
+import { filterSpellsForChoice } from "../../../../shared/customHooks/mads/spellChoiceFilters";
 import {
   expertiseChoiceCount,
   expertiseChoiceKey,
@@ -55,6 +57,16 @@ const EQUIP_KIND: Partial<Record<MadChoiceKind, EquipProfKind>> = {
   toolProf: "tool",
 };
 
+/** Spell pools bigger than this swap the pill grid for a searchable list. */
+const SPELL_PILL_LIMIT = 15;
+/** Rows shown in the searchable list before asking the player to refine the search. */
+const SPELL_LIST_CAP = 150;
+
+type SpellPoolEntry = { id: string; label: string; detail?: string };
+
+const spellPoolDetail = (spell: Spell): string =>
+  `${spell.level === "0" ? "Cantrip" : `Level ${spell.level}`} · ${spell.school}`;
+
 /**
  * One choice-form MADS picker row — ability increases, skill/armor/weapon/tool proficiencies,
  * and granted-spell choices. Picks land in draft.madChoices and resolve live through
@@ -76,6 +88,39 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
 
   const spellName = (id: string) =>
     data.spells().find((s) => (s.id ?? "").toLowerCase() === id.toLowerCase())?.name ?? id;
+
+  // ── Spell-choice pool (only evaluated by the spell branch) ──
+  const [spellSearch, setSpellSearch] = createSignal("");
+
+  const spellKey = () => spellChoiceKey(props.choice.feature, props.choice.mad);
+  const spellPicks = () => csvPicks(draft.madChoices.spells[spellKey()]);
+  const toggleSpellPick = (id: string) => {
+    const next = toggleCsv(draft.madChoices.spells[spellKey()], id, spellChoiceCount(props.choice.mad));
+    if (next !== null) actions.setMadSpellChoice(spellKey(), next);
+  };
+
+  /** Union of the command's explicit option ids and its filter matches. Explicit ids missing
+   *  from the catalog still show (by raw id) so a stale options CSV can't hide the choice. */
+  const spellPool = (): SpellPoolEntry[] => {
+    const all = data.spells();
+    const byLc = new Map(all.map((s) => [(s.id ?? "").toLowerCase(), s]));
+    const pool = new Map<string, SpellPoolEntry>();
+    for (const id of spellChoiceOptions(props.choice.mad)) {
+      const spell = byLc.get(id.toLowerCase());
+      pool.set(id.toLowerCase(), { id, label: spell?.name ?? id, detail: spell && spellPoolDetail(spell) });
+    }
+    for (const spell of filterSpellsForChoice(all, props.choice.mad.value)) {
+      const lc = (spell.id ?? "").toLowerCase();
+      if (!pool.has(lc)) pool.set(lc, { id: spell.id, label: spell.name, detail: spellPoolDetail(spell) });
+    }
+    return [...pool.values()];
+  };
+
+  const searchedSpellPool = () => {
+    const term = spellSearch().trim().toLowerCase();
+    const pool = spellPool();
+    return term ? pool.filter((e) => e.label.toLowerCase().includes(term)) : pool;
+  };
 
   const itemName = (id: string) =>
     data.items().find((i) => (i.id ?? "").toLowerCase() === id.toLowerCase())?.name ?? id;
@@ -317,34 +362,76 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
         </Match>
         <Match when={props.choice.kind === "spell"}>
           <span class={styles.choiceHint}>Choose {spellChoiceCount(props.choice.mad)}:</span>
-          <div class={styles.choicePills}>
-            <For each={spellChoiceOptions(props.choice.mad)}>
-              {(id) => {
-                const key = spellChoiceKey(props.choice.feature, props.choice.mad);
-                return (
-                  <button
-                    type="button"
-                    class={styles.choicePill}
-                    classList={{
-                      [styles.choicePillActive]: csvPicks(
-                        draft.madChoices.spells[key],
-                      ).includes(id),
-                    }}
-                    onClick={() => {
-                      const next = toggleCsv(
-                        draft.madChoices.spells[key],
-                        id,
-                        spellChoiceCount(props.choice.mad),
-                      );
-                      if (next !== null) actions.setMadSpellChoice(key, next);
-                    }}
-                  >
-                    {spellName(id)}
-                  </button>
-                );
-              }}
-            </For>
-          </div>
+          <Show
+            when={spellPool().length > SPELL_PILL_LIMIT}
+            fallback={
+              <div class={styles.choicePills}>
+                <For each={spellPool()}>
+                  {(entry) => (
+                    <button
+                      type="button"
+                      class={styles.choicePill}
+                      classList={{ [styles.choicePillActive]: spellPicks().includes(entry.id) }}
+                      onClick={() => toggleSpellPick(entry.id)}
+                    >
+                      {entry.label}
+                    </button>
+                  )}
+                </For>
+              </div>
+            }
+          >
+            <div class={styles.spellPicker}>
+              <Show when={spellPicks().length}>
+                <div class={styles.choicePills}>
+                  <For each={spellPicks()}>
+                    {(id) => (
+                      <button
+                        type="button"
+                        class={`${styles.choicePill} ${styles.choicePillActive}`}
+                        onClick={() => toggleSpellPick(id)}
+                      >
+                        {spellName(id)}
+                      </button>
+                    )}
+                  </For>
+                </div>
+              </Show>
+              <div class={styles.spellSearchRow}>
+                <input
+                  class={styles.spellSearch}
+                  placeholder="Search the allowed spells..."
+                  value={spellSearch()}
+                  onInput={(e) => setSpellSearch(e.currentTarget.value)}
+                />
+                <span class={styles.choiceHint}>
+                  {spellPicks().length}/{spellChoiceCount(props.choice.mad)} chosen
+                </span>
+              </div>
+              <div class={styles.spellPickerList}>
+                <For each={searchedSpellPool().slice(0, SPELL_LIST_CAP)}>
+                  {(entry) => (
+                    <button
+                      type="button"
+                      class={styles.spellPickerRow}
+                      classList={{ [styles.spellPickerRowActive]: spellPicks().includes(entry.id) }}
+                      onClick={() => toggleSpellPick(entry.id)}
+                    >
+                      <span>{entry.label}</span>
+                      <Show when={entry.detail}>
+                        <span class={styles.spellPickerDetail}>{entry.detail}</span>
+                      </Show>
+                    </button>
+                  )}
+                </For>
+                <Show when={searchedSpellPool().length > SPELL_LIST_CAP}>
+                  <span class={styles.spellPickerMore}>
+                    {searchedSpellPool().length - SPELL_LIST_CAP} more — refine the search
+                  </span>
+                </Show>
+              </div>
+            </div>
+          </Show>
         </Match>
         <Match when={props.choice.kind === "item"}>
           <span class={styles.choiceHint}>Choose {itemChoiceCount(props.choice.mad)}:</span>

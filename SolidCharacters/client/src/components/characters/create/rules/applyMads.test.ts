@@ -209,6 +209,7 @@ describe("draftMadChoices — new choice kinds and branch groups", () => {
       statChoices: {},
       spellChoices: {},
       itemChoices: {},
+      spells: [],
     }) as unknown as Parameters<typeof draftMadChoices>[0];
 
   it("emits expertise, resistance and language choices with live pending state", () => {
@@ -232,6 +233,27 @@ describe("draftMadChoices — new choice kinds and branch groups", () => {
       "f-1::languages": "Elvish,Giant",
     }));
     expect(done.every((c) => !c.pending)).toBe(true);
+  });
+
+  it("emits a filter-form spell choice as pending, then grants the picks once complete", () => {
+    const feature = {
+      id: "f-3",
+      name: "Wizardly Dabbler",
+      metadata: { mads: [
+        madOf("AddSpells", { ID: "choice", filterClass: "Wizard", filterLevel: "0", count: "2", spellLevel: "0" }),
+      ] },
+    } as FeatureDetail;
+
+    const unpicked = raceCharacter(feature);
+    const pendingChoices = draftMadChoices(unpicked);
+    expect(pendingChoices.map((c) => c.kind)).toEqual(["spell"]);
+    expect(pendingChoices[0].pending).toBe(true);
+    expect(applyCreatorMads(unpicked).spells).toEqual([]);
+
+    const picked = raceCharacter(feature);
+    (picked as unknown as { spellChoices: Record<string, string> }).spellChoices = { "f-3::0": "sp-a,sp-b" };
+    expect(draftMadChoices(picked).every((c) => !c.pending)).toBe(true);
+    expect(applyCreatorMads(picked).spells.map((s) => s.name).sort()).toEqual(["sp-a", "sp-b"]);
   });
 
   it("emits one group choice per branched feature and keeps dormant-branch sub-choices hidden", () => {

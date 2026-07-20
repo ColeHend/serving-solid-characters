@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import type { Character, CharacterSavingThrow } from "../../../models/character.model";
+import type { Character, CharacterSavingThrow, GrantedAction } from "../../../models/character.model";
 import { MovementType, itemRefName } from "../../../models/character.model";
 import type { FeatureDetail, MadFeature as StoredMad, MagicItem } from "../../../models/generated";
 
@@ -8,9 +8,9 @@ import type { FeatureDetail, MadFeature as StoredMad, MagicItem } from "../../..
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount, choiceExpertiseMads, pendingExpertiseChoices, expertiseChoiceKey, choiceResistanceMads, pendingResistanceChoices, resistanceChoiceKey, choiceLanguageMads, pendingLanguageChoices, languageChoiceKey, featureGroupOptions, groupChoiceKey, pendingGroupChoice, activeFeatureMads } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, isFilterFormSpellMad, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount, choiceExpertiseMads, pendingExpertiseChoices, expertiseChoiceKey, choiceResistanceMads, pendingResistanceChoices, resistanceChoiceKey, choiceLanguageMads, pendingLanguageChoices, languageChoiceKey, featureGroupOptions, groupChoiceKey, pendingGroupChoice, activeFeatureMads } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
-import { featureUsage, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
+import { featureUsage, grantedActionUsage, actionUsesKey, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
 import { rollBonusAmount } from "./commands/useRollBonusFeature";
 
 function makeCharacter(overrides: Partial<Character> = {}): Character {
@@ -688,6 +688,81 @@ describe("AddActions / RemoveActions", () => {
             name: "Wild Shape", actionType: "bonusAction", description: undefined, source: undefined,
         }]);
     });
+
+    it("inline uses: a fixed amount parses onto the granted action with a normalized recharge", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddActions", {
+            name: "Rage", actionType: "bonusAction", amount: "2", recharge: "Long Rest",
+        }));
+
+        expect(c.grantedActions?.[0]).toMatchObject({ name: "Rage", uses: 2, recharge: LONG_REST });
+        expect(c.grantedActions?.[0].proficiencyBonus).toBeUndefined();
+    });
+
+    it("inline uses: a PB fraction parses (recharge defaults to Long Rest), a fixed amount wins over it", () => {
+        const pbOnly = addMadFeature(makeCharacter(), mad("AddActions", {
+            name: "Divine Sense", actionType: "action", proficiencyBonus: "Full PB", recharge: "Short Rest",
+        }));
+        expect(pbOnly.grantedActions?.[0]).toMatchObject({ proficiencyBonus: "Full PB", recharge: SHORT_REST });
+        expect(pbOnly.grantedActions?.[0].uses).toBeUndefined();
+
+        const both = addMadFeature(makeCharacter(), mad("AddActions", {
+            name: "Rage", actionType: "bonusAction", amount: "4", proficiencyBonus: "Full PB",
+        }));
+        expect(both.grantedActions?.[0]).toMatchObject({ uses: 4, recharge: LONG_REST });
+        expect(both.grantedActions?.[0].proficiencyBonus).toBeUndefined();
+    });
+
+    it("inline uses: a recharge without an amount or PB fraction parses NO uses fields", () => {
+        const c = addMadFeature(makeCharacter(), mad("AddActions", {
+            name: "Dash", actionType: "action", recharge: "Long Rest",
+        }));
+
+        expect(c.grantedActions?.[0].uses).toBeUndefined();
+        expect(c.grantedActions?.[0].proficiencyBonus).toBeUndefined();
+        expect(c.grantedActions?.[0].recharge).toBeUndefined();
+    });
+});
+
+describe("grantedActionUsage / actionUsesKey", () => {
+    const rageFeature: FeatureDetail = {
+        id: "", name: "Rage", description: "",
+        metadata: { mads: stored(mad("AddUses", { amount: "2", recharge: "Long Rest" }, MadType.Info)) },
+    };
+
+    it("inline fixed uses resolve directly", () => {
+        const action: GrantedAction = { name: "Smite", actionType: "bonusAction", uses: 3, recharge: SHORT_REST };
+        expect(grantedActionUsage(action, [], 5)).toEqual({ max: 3, recharge: SHORT_REST });
+    });
+
+    it("inline PB fraction resolves against the character level", () => {
+        const action: GrantedAction = { name: "Divine Sense", actionType: "action", proficiencyBonus: "Full PB", recharge: LONG_REST };
+        expect(grantedActionUsage(action, [], 5)).toEqual({ max: 3, recharge: LONG_REST });
+        // no level → treated as level 1 (PB 2)
+        expect(grantedActionUsage(action, [])).toEqual({ max: 2, recharge: LONG_REST });
+    });
+
+    it("no inline uses + a source falls back to that feature's featureUsage", () => {
+        const action: GrantedAction = { name: "Rage", actionType: "bonusAction", source: "Rage" };
+        expect(grantedActionUsage(action, [rageFeature], 5)).toEqual({ max: 2, recharge: LONG_REST });
+    });
+
+    it("inline uses win over the source feature; no inline + no matching feature is null", () => {
+        const inlineToo: GrantedAction = { name: "Rage", actionType: "bonusAction", source: "Rage", uses: 5, recharge: SHORT_REST };
+        expect(grantedActionUsage(inlineToo, [rageFeature], 5)).toEqual({ max: 5, recharge: SHORT_REST });
+
+        const unlimited: GrantedAction = { name: "Dash", actionType: "action" };
+        expect(grantedActionUsage(unlimited, [rageFeature], 5)).toBeNull();
+        const orphan: GrantedAction = { name: "Lost", actionType: "action", source: "Gone" };
+        expect(grantedActionUsage(orphan, [rageFeature], 5)).toBeNull();
+    });
+
+    it("actionUsesKey: source-fallback actions share the feature's pool; inline-uses actions get their own", () => {
+        expect(actionUsesKey({ name: "Rage", actionType: "bonusAction", source: "Rage (1/rest)" })).toBe("Rage (1/rest)");
+        expect(actionUsesKey({ name: "Shadow Step", actionType: "bonusAction" })).toBe("Shadow Step");
+        // inline uses → own prefixed pool, even when a source is set (the maxes may disagree)
+        expect(actionUsesKey({ name: "Rage", actionType: "bonusAction", source: "Rage", uses: 5, recharge: SHORT_REST })).toBe("action:Rage");
+        expect(actionUsesKey({ name: "Divine Sense", actionType: "action", proficiencyBonus: "Full PB" })).toBe("action:Divine Sense");
+    });
 });
 
 describe("useMadCharacters returnActions flag", () => {
@@ -775,6 +850,61 @@ describe("AddSpells choice form", () => {
     it("fixed-form AddSpells still applies unchanged", () => {
         const c = addMadFeature(makeCharacter(), mad("AddSpells", { ID: "spell-123" }));
         expect(c.spells).toEqual([{ name: "spell-123", prepared: false }]);
+    });
+
+    it("isFilterFormSpellMad flags choices carrying a filter field, not options-only ones", () => {
+        expect(isFilterFormSpellMad(mad("AddSpells", { ID: "choice", filterClass: "Wizard", count: "1" }))).toBe(true);
+        expect(isFilterFormSpellMad(mad("AddSpells", { ID: "choice", options: "sp-a,sp-b", count: "1" }))).toBe(false);
+        expect(isFilterFormSpellMad(mad("AddSpells", { ID: "sp-a", filterClass: "Wizard" }))).toBe(false);
+    });
+
+    it("a filter-form choice resolves on pick count alone (membership is the picker's job)", () => {
+        const choice = mad("AddSpells", { ID: "choice", filterClass: "Wizard", filterLevel: "0", count: "2", spellLevel: "0" });
+        const feature: FeatureDetail = { id: "mi-4", name: "Wizardly", description: "", metadata: { mads: stored(choice) } };
+
+        // no picks / incomplete picks → pending, nothing applies
+        const none = makeCharacter({ features: [feature] });
+        expect(collectMadFeatures(none)).toEqual([]);
+        expect(pendingSpellChoices(none, feature)).toHaveLength(1);
+        const partial = makeCharacter({ features: [feature], spellChoices: { "mi-4::0": "sp-a" } });
+        expect(collectMadFeatures(partial)).toEqual([]);
+
+        // complete picks expand to concrete grants without an options membership check
+        const picked = makeCharacter({ features: [feature], spellChoices: { "mi-4::0": "sp-a,sp-b" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected.map(m => m.value["ID"]).sort()).toEqual(["sp-a", "sp-b"]);
+        expect(pendingSpellChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.spells.map(s => s.name).sort()).toEqual(["sp-a", "sp-b"]);
+    });
+
+    it("a filter-form choice with explicit options accepts picks beyond the options CSV (union)", () => {
+        const choice = mad("AddSpells", { ID: "choice", options: "sp-a", filterSchool: "Evocation", count: "2", spellLevel: "1" });
+        const feature: FeatureDetail = { id: "mi-5", name: "Evoker", description: "", metadata: { mads: stored(choice) } };
+        const c = makeCharacter({ features: [feature], spellChoices: { "mi-5::1": "sp-a,sp-filtered" } });
+        expect(collectMadFeatures(c).map(m => m.value["ID"]).sort()).toEqual(["sp-a", "sp-filtered"]);
+    });
+
+    it("a bare-spellLevel choice (no options, no filters) resolves on pick count alone", () => {
+        const choice = mad("AddSpells", { ID: "choice", count: "2", spellLevel: "1" });
+        const feature: FeatureDetail = { id: "mi-6", name: "Versatile", description: "", metadata: { mads: stored(choice) } };
+
+        // no picks / incomplete picks → pending, nothing applies
+        const none = makeCharacter({ features: [feature] });
+        expect(collectMadFeatures(none)).toEqual([]);
+        expect(pendingSpellChoices(none, feature)).toHaveLength(1);
+        const partial = makeCharacter({ features: [feature], spellChoices: { "mi-6::1": "sp-a" } });
+        expect(collectMadFeatures(partial)).toEqual([]);
+
+        // complete picks expand without an options membership check (pool is catalog-derived)
+        const picked = makeCharacter({ features: [feature], spellChoices: { "mi-6::1": "sp-a,sp-b" } });
+        const collected = collectMadFeatures(picked);
+        expect(collected.map(m => m.value["ID"]).sort()).toEqual(["sp-a", "sp-b"]);
+        expect(pendingSpellChoices(picked, feature)).toHaveLength(0);
+
+        const applied = useMadCharacters(structuredClone(picked), collected);
+        expect(applied.spells.map(s => s.name).sort()).toEqual(["sp-a", "sp-b"]);
     });
 });
 

@@ -153,9 +153,12 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                 <Show when={editorOpen()}>
                     <Switch>
                         <Match when={command() === "AddSpells" || command() === "RemoveSpells"}>
-                            <SpellFeature allSpells={props.data.allSpells} getValue={getValue} toggleSpell={(id) => {
-                                commitValue(getValue()?.["ID"] === id ? { "ID": "" } : { "ID": id });
-                            }} />
+                            <SpellFeature
+                                allSpells={props.data.allSpells}
+                                getValue={getValue}
+                                allowChoice={command() === "AddSpells"}
+                                commit={commitValue}
+                            />
                         </Match>
                         <Match when={command() === "AddItems" || command() === "RemoveItems"}>
                             <ItemFeature
@@ -307,9 +310,13 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         <Match when={command() === "AddActions" || command() === "RemoveActions"}>
                             <ActionsFeature
                                 getValue={getValue}
-                                toggleValue={(name, actionType, description) => {
+                                toggleValue={(name, actionType, description, amount, proficiencyBonus, recharge) => {
                                     const next: Record<string, string> = { "name": name, "actionType": actionType };
                                     if (description) next["description"] = description;
+                                    if (amount) next["amount"] = amount;
+                                    if (proficiencyBonus) next["proficiencyBonus"] = proficiencyBonus;
+                                    // recharge only means something alongside a uses spec
+                                    if ((amount || proficiencyBonus) && recharge) next["recharge"] = recharge;
                                     commitValue(next);
                                 }}
                             />
