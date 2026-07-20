@@ -1,0 +1,817 @@
+@use 'coles-solid-library/themes/variables' as vars;
+
+$mobile: 900px;
+
+// ─── Page + tab shells ───────────────────────────────────────────────
+.sheet {
+  width: min(1200px, 96%);
+  margin: 0 auto;
+  // padding: var(--spacing-2) 0 var(--spacing-4);
+  color: var(--on-surface-color);
+  background-color: color-mix(in srgb, vars.$color-surface 85%, transparent) !important;
+  border-radius: 8px;
+}
+
+.tabPanel {
+  margin-top: var(--spacing-2);
+}
+
+// ─── Generic card ────────────────────────────────────────────────────
+.card {
+  display: block;
+  padding: var(--spacing-2);
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  box-shadow: var(--shadow-elevation-1);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-2);
+  fill: var(--primary-color);
+}
+
+.cardTitle {
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.headerExtra {
+  margin-left: auto;
+  font-size: var(--font-size-small);
+  opacity: 0.75;
+}
+
+// ─── Header (identity) ───────────────────────────────────────────────
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  background: transparent;
+  box-shadow: var(--shadow-elevation-1);
+}
+
+.headerName {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.headerNameValue {
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.headerFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-1) var(--spacing-3);
+  flex: 1;
+  min-width: 220px;
+}
+
+.headerField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+}
+
+.fieldValue {
+  font-size: var(--font-size-base);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+.inspoBtn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-1);
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  fill: var(--on-surface-color);
+
+  &.inspoOn {
+    color: var(--primary-color);
+    fill: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+}
+
+.inspoLabel {
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.restGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.restLabel {
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+// ─── Core layout ─────────────────────────────────────────────────────
+.coreGrid {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) 1fr;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+
+  @media (max-width: $mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coreLeft,
+.coreRight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+// ─── Ability cards ───────────────────────────────────────────────────
+.abilityGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-1);
+}
+
+.abilityCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-1) 0 6px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+}
+
+.abilityName {
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.abilityMod {
+  font-size: var(--font-size-h2);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.abilityScore {
+  min-width: 34px;
+  text-align: center;
+  padding: 1px 6px;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  font-size: var(--font-size-small);
+}
+
+.abilityMetaRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-1);
+}
+
+.abilityMetaTile {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1);
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+}
+
+.metaBadge {
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-md);
+  background: color-mix(in srgb, var(--primary-color) 22%, transparent);
+  color: var(--on-surface-color);
+}
+
+.metaLabel {
+  font-size: var(--font-size-small);
+}
+
+// ─── Stat pills (saves & skills) ─────────────────────────────────────
+.pillList {
+  display: flex;
+  flex-direction: column;
+}
+
+.statPill {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: 4px 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 18%, transparent);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.pillLabel {
+  flex: 0 0 auto;
+}
+
+.pillSub {
+  font-size: var(--font-size-small);
+  opacity: 0.55;
+  text-transform: uppercase;
+}
+
+.pillValue {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.profDot {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--on-surface-color) 45%, transparent);
+  box-sizing: border-box;
+}
+
+.dot_none {
+  background: transparent;
+}
+
+.dot_proficient {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.dot_expertise {
+  background: var(--primary-color);
+  border-color: var(--on-surface-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 45%, transparent);
+}
+
+// ─── Pips (slots / death saves / uses) ───────────────────────────────
+.pipRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pip {
+  width: 14px;
+  height: 14px;
+  box-sizing: border-box;
+  border: 2px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  background: transparent;
+}
+
+.pipDiamond {
+  transform: rotate(45deg);
+  border-radius: 2px;
+}
+
+.pipCircle {
+  border-radius: 50%;
+}
+
+.pipFilled {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.pipSuccess.pipFilled {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.pipFail.pipFilled {
+  background: var(--error-color);
+  border-color: var(--error-color);
+}
+
+// ─── Mini stat tiles ─────────────────────────────────────────────────
+.miniRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: var(--spacing-1);
+}
+
+.miniCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-2) var(--spacing-1);
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  text-align: center;
+  background: transparent;
+}
+
+.miniValue {
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.miniLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.7;
+  fill: var(--primary-color);
+}
+
+.miniSub {
+  font-size: var(--font-size-small);
+  opacity: 0.55;
+}
+
+// ─── Hit points ──────────────────────────────────────────────────────
+.hpTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+}
+
+.hpNumbers {
+  font-size: var(--font-size-h2);
+  font-weight: 700;
+}
+
+.hpNumbers .hpMax {
+  font-size: var(--font-size-base);
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+.tempBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+  padding: 2px 6px;
+  border-radius: var(--border-radius-md);
+  border: 1px dashed color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tempValue {
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tempLabel {
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.tempAdd {
+  align-self: flex-end;
+}
+
+.hpBar {
+  height: 10px;
+  margin: var(--spacing-2) 0;
+  border-radius: var(--border-radius-lg);
+  background: color-mix(in srgb, var(--on-surface-color) 14%, transparent);
+  overflow: hidden;
+}
+
+.hpBarFill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary-color);
+  transition: width 200ms ease;
+}
+
+.hpControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  flex-wrap: wrap;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  overflow: hidden;
+}
+
+.stepperInput {
+  width: 44px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  border-left: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  color: inherit;
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.stepBtn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: var(--font-size-base);
+}
+
+// two-up card row (hit dice + death saves)
+.cardRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-2);
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.deathRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  margin-bottom: 6px;
+}
+
+.deathRowLabel {
+  width: 74px;
+  font-size: var(--font-size-small);
+  opacity: 0.75;
+}
+
+.hint {
+  font-size: var(--font-size-small);
+  opacity: 0.55;
+  margin-top: 6px;
+}
+
+.diceRow {
+  display: flex;
+  gap: var(--spacing-1);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.die {
+  min-width: 40px;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &.dieSpent {
+    opacity: 0.4;
+  }
+}
+
+// ─── Data tables (attacks / equipment / features) ────────────────────
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-base);
+}
+
+.dataTable th {
+  text-align: left;
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.55;
+  font-weight: var(--font-weight-medium);
+  padding: 4px 8px;
+}
+
+.dataTable td {
+  padding: 6px 8px;
+  border-top: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  vertical-align: top;
+}
+
+.tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid color-mix(in srgb, var(--primary-color) 55%, transparent);
+  color: var(--primary-color);
+  font-size: var(--font-size-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.notesCell {
+  opacity: 0.7;
+  font-size: var(--font-size-small);
+}
+
+// ─── Features ────────────────────────────────────────────────────────
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.featureHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  width: 100%;
+}
+
+.featureName {
+  font-weight: 600;
+}
+
+.featureCat {
+  margin-left: auto;
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.featureBody {
+  font-size: var(--font-size-base);
+  opacity: 0.9;
+
+  p {
+    margin: 0 0 var(--spacing-1);
+  }
+}
+
+.choiceBlock {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-1);
+}
+
+.choiceChips {
+  display: flex;
+  gap: var(--spacing-1);
+  flex-wrap: wrap;
+}
+
+// ─── Equipment ───────────────────────────────────────────────────────
+.equipList {
+  display: flex;
+  flex-direction: column;
+}
+
+.equipRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: 5px 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+}
+
+.equipQty {
+  margin-left: auto;
+  opacity: 0.6;
+  font-size: var(--font-size-small);
+}
+
+.currencyLine {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  margin-top: var(--spacing-1);
+  padding-top: var(--spacing-1);
+  border-top: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  font-size: var(--font-size-small);
+  opacity: 0.85;
+  fill: var(--primary-color);
+}
+
+.segmented {
+  display: flex;
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-1);
+  flex-wrap: wrap;
+}
+
+// ─── Spellcasting tab ────────────────────────────────────────────────
+.spellTopRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+}
+
+.spellGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+}
+
+.slotRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 6px 0;
+}
+
+.slotLabel {
+  width: 84px;
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.slotCount {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+.legend {
+  margin-top: var(--spacing-2);
+  font-size: var(--font-size-small);
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.concBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--secondary-color);
+  color: var(--on-secondary-color);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+// ─── Details tab ─────────────────────────────────────────────────────
+.detailsGrid {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+
+  @media (max-width: $mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detailsCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.portrait {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--border-radius-md);
+  border: 1px dashed color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--on-surface-color) 45%, transparent);
+  fill: color-mix(in srgb, var(--on-surface-color) 45%, transparent);
+  text-align: center;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &.dragOver {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+}
+
+.physicalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-1);
+}
+
+.physicalCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-1);
+  border-radius: var(--border-radius-md);
+  border: 1px solid color-mix(in srgb, var(--on-surface-color) 50%, transparent);
+  text-align: center;
+}
+
+.physicalValue {
+  font-weight: 600;
+}
+
+.physicalLabel {
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.proseCard p {
+  margin: 0;
+  line-height: var(--line-height);
+}
+
+.profGroup {
+  margin-bottom: var(--spacing-2);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.profGroupLabel {
+  font-size: var(--font-size-small);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 2px;
+}
+
+.clickable {
+  cursor: pointer;
+}
