@@ -259,9 +259,9 @@ export const map: MadMap = {
 
     // ----- Warlock -----
     "Warlock/Ability Score Improvement": [asi()],
-    // skipped: Pact Magic (spell slots), Eldritch Invocations (player-choice picks), Pact Boon
-    //   (player-choice), Mystic Arcanum (player-choice spell), Eldritch Master (slot recovery),
-    //   Otherworldly Patron (subclass).
+    // skipped: Pact Magic (spell slots), Mystic Arcanum (player-choice spell), Eldritch Master
+    //   (slot recovery), Otherworldly Patron (subclass).
+    // Eldritch Invocations + Pact Boon are curated as OPTION lists in mads/2014/invocations.ts.
 
     // ----- Wizard -----
     "Wizard/Ability Score Improvement": [asi()],

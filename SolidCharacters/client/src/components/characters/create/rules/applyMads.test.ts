@@ -285,3 +285,51 @@ describe("draftMadChoices — new choice kinds and branch groups", () => {
     expect(picked.find((c) => c.kind === "spell")?.pending).toBe(true);
   });
 });
+
+describe("draftMadChoices — feature options (Warlock invocations from the generated SRD)", () => {
+  const warlock = classes.find((c: { name: string }) => c.name === "Warlock");
+  const warlockLookups: SrdLookups = { ...lookups, classes: [warlock] };
+  const invFeature = warlock.features["2"].find((f: FeatureDetail) => f.name === "Eldritch Invocations") as FeatureDetail;
+  const pactFeature = warlock.features["3"].find((f: FeatureDetail) => f.name === "Pact Boon") as FeatureDetail;
+  const invKey = `${invFeature.id}::options`;
+  const pactKey = `${pactFeature.id}::options`;
+
+  const warlockDraft = (level: number, proficiencies: Record<string, string> = {}): CharacterDraft =>
+    emptyDraft("2014", {
+      name: "Vex",
+      classes: [{ name: "Warlock", level, subclass: "", skillChoices: [] }],
+      abilityMethod: "manual",
+      baseScores: { str: 8, dex: 14, con: 12, int: 10, wis: 10, cha: 16 },
+      madChoices: { stats: {}, proficiencies, spells: {}, items: {} },
+    });
+
+  it("emits a pending options choice for the invocations feature, tagged to the class", () => {
+    const character = draftToCharacter(warlockDraft(2), warlockLookups);
+    const optionChoices = draftMadChoices(character).filter((c) => c.kind === "options");
+    expect(optionChoices).toHaveLength(1);
+    expect(optionChoices[0]).toMatchObject({ pending: true, source: "class", sourceKey: "hb:Warlock" });
+    expect(optionChoices[0].feature.name).toBe("Eldritch Invocations");
+  });
+
+  it("applies chosen invocations (Devil's Sight senses) and clears pending", () => {
+    const character = draftToCharacter(
+      warlockDraft(2, { [invKey]: "Armor of Shadows,Devil's Sight" }),
+      warlockLookups,
+    );
+    expect(draftMadChoices(character).filter((c) => c.kind === "options" && c.pending)).toHaveLength(0);
+    const applied = applyCreatorMads(character);
+    expect(applied.senses?.darkvision).toBe(120);
+    expect(applied.spells.length).toBeGreaterThan(0); // Armor of Shadows grants mage armor
+  });
+
+  it("surfaces a chosen option's nested spell picker in the parent's section (Pact of the Tome)", () => {
+    const character = draftToCharacter(
+      warlockDraft(3, { [pactKey]: "Pact of the Tome" }),
+      warlockLookups,
+    );
+    const spellChoices = draftMadChoices(character).filter((c) => c.kind === "spell");
+    expect(spellChoices).toHaveLength(1);
+    expect(spellChoices[0]).toMatchObject({ pending: true, source: "class", sourceKey: "hb:Warlock" });
+    expect(spellChoices[0].feature.name).toBe("Pact of the Tome");
+  });
+});

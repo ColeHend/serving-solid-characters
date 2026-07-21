@@ -60,6 +60,31 @@ export enum MadType {
     Info = 1,
 }
 
+/** One pickable sub-option of a feature (Eldritch Invocation, Maneuver, Metamagic…); a chosen option grants its description and mads. */
+export interface FeatureOption {
+    name: string;
+    description: string;
+    prerequisites?: OptionPrerequisite;
+    mads?: MadFeature[];
+}
+
+export interface OptionPrerequisite {
+    /** Minimum level in the owning class (total level for non-class features). */
+    minLevel?: number;
+    /** Feature (or other chosen option) the character must have, matched by name. */
+    requiredFeature?: string;
+    /** Display-only prerequisite text, e.g. "Pact of the Blade feature". */
+    text?: string;
+}
+
+export interface OptionsConfig {
+    /** What one option is called, e.g. "Invocation", "Maneuver". */
+    label?: string;
+    count?: number;
+    /** Level-scaled pick count as "level:count" pairs, e.g. "2:2,5:3,7:4". */
+    countScaling?: string;
+}
+
 export interface Madprerequisite {
     /**
      * The key on the character to check the prerequisite against. For example, if the prerequisite is "Strength Score >= 15", the value would be "Strength Score".

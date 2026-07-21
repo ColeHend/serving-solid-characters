@@ -5359,7 +5359,469 @@
     {
      "id": "62addbfd-69cc-4e2c-b767-3ef5fd850182",
      "name": "Eldritch Invocations",
-     "description": "You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with an abiding magical ability or other lessons. You gain one invocation of your choice, such as Pact of the Tome. Invocations are described in the \"Eldritch Invocation Options\" section later in this class's description.\n\n**Prerequisites.** If an invocation has a prerequisite, you must meet it to learn that invocation. For example, if an invocation requires you to be a level 5+ Warlock, you can select the invocation once you reach Warlock level 5.\n\n**Replacing and Gaining Invocations.** Whenever you gain a Warlock level, you can replace one of your invocations with another one for which you qualify. You can't replace an invocation if it's a prerequisite for another invocation that you have.\n\nWhen you gain certain Warlock levels, you gain more invocations of your choice, as shown in the Invocations column of the Warlock Features table.\n\nYou can't pick the same invocation more than once unless its description says otherwise."
+     "description": "You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with an abiding magical ability or other lessons. You gain one invocation of your choice, such as Pact of the Tome. Invocations are described in the \"Eldritch Invocation Options\" section later in this class's description.\n\n**Prerequisites.** If an invocation has a prerequisite, you must meet it to learn that invocation. For example, if an invocation requires you to be a level 5+ Warlock, you can select the invocation once you reach Warlock level 5.\n\n**Replacing and Gaining Invocations.** Whenever you gain a Warlock level, you can replace one of your invocations with another one for which you qualify. You can't replace an invocation if it's a prerequisite for another invocation that you have.\n\nWhen you gain certain Warlock levels, you gain more invocations of your choice, as shown in the Invocations column of the Warlock Features table.\n\nYou can't pick the same invocation more than once unless its description says otherwise.",
+     "metadata": {
+      "options": [
+       {
+        "name": "Agonizing Blast",
+        "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable: each time you take this invocation, choose a different eligible cantrip.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock, a Warlock cantrip that deals damage"
+        },
+        "mads": []
+       },
+       {
+        "name": "Armor of Shadows",
+        "description": "You can cast Mage Armor on yourself without expending a spell slot.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "34307856-8a38-4c64-b04e-2b591a59c24a"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Ascendant Step",
+        "description": "You can cast Levitate on yourself without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 5,
+         "text": "Level 5+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "0f1af673-c251-4e79-b770-7acc1883369b"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Devil's Sight",
+        "description": "You can see normally in Dim Light and Darkness — both magical and nonmagical — within 120 feet of yourself.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSenses",
+          "value": {
+           "sense": "darkvision",
+           "range": "120"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Devouring Blade",
+        "description": "The Extra Attack of your Thirsting Blade invocation confers two extra attacks rather than one.",
+        "prerequisites": {
+         "minLevel": 12,
+         "requiredFeature": "Thirsting Blade",
+         "text": "Level 12+ Warlock, Thirsting Blade invocation"
+        },
+        "mads": []
+       },
+       {
+        "name": "Eldritch Mind",
+        "description": "You have Advantage on Constitution saving throws that you make to maintain Concentration.",
+        "mads": [
+         {
+          "command": "AddAdvantage",
+          "value": {
+           "rollType": "SavingThrow",
+           "mode": "advantage",
+           "stat": "con",
+           "condition": "to maintain Concentration"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Eldritch Smite",
+        "description": "Once per turn when you hit a creature with your pact weapon, you can expend a Pact Magic spell slot to deal an extra 1d8 Force damage to the target, plus another 1d8 per level of the spell slot, and you can give the target the Prone condition if it is Huge or smaller.",
+        "prerequisites": {
+         "minLevel": 5,
+         "requiredFeature": "Pact of the Blade",
+         "text": "Level 5+ Warlock, Pact of the Blade invocation"
+        },
+        "mads": []
+       },
+       {
+        "name": "Eldritch Spear",
+        "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable: each time you take this invocation, choose a different eligible cantrip.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock, a Warlock cantrip that deals damage"
+        },
+        "mads": []
+       },
+       {
+        "name": "Fiendish Vigor",
+        "description": "You can cast False Life on yourself without expending a spell slot. When you cast the spell with this feature, you don't roll the die for the Temporary Hit Points; you automatically get the highest number on the die.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "249d0cae-85b8-41ca-8881-6a59491fc982"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Gaze of Two Minds",
+        "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn, maintaining the connection on subsequent turns. While perceiving through the other creature's senses, you benefit from its special senses, and you can cast spells as if you were in your space or the other creature's space if you are within 60 feet of each other.",
+        "prerequisites": {
+         "minLevel": 5,
+         "text": "Level 5+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddActions",
+          "value": {
+           "name": "Gaze of Two Minds",
+           "actionType": "bonusAction",
+           "description": "Touch a willing creature and perceive through its senses until the end of your next turn.",
+           "source": "Gaze of Two Minds"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Gift of the Depths",
+        "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot, regaining that use on a Long Rest.",
+        "prerequisites": {
+         "minLevel": 5,
+         "text": "Level 5+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddMovement",
+          "value": {
+           "movementType": "swim"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         },
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "6d736ab4-f045-4145-9d4a-d612b8152eec"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Gift of the Protectors",
+        "description": "A new page appears in your Book of Shadows when you conjure it. A creature can write its name on that page (up to your Charisma modifier in names). When a named creature is reduced to 0 Hit Points but not killed outright, it drops to 1 Hit Point instead. Once triggered, no creature benefits until you finish a Long Rest.",
+        "prerequisites": {
+         "minLevel": 9,
+         "requiredFeature": "Pact of the Tome",
+         "text": "Level 9+ Warlock, Pact of the Tome invocation"
+        },
+        "mads": []
+       },
+       {
+        "name": "Investment of the Chain Master",
+        "description": "When you cast Find Familiar, the familiar gains a Fly or Swim Speed of 40 feet; you can command it to take the Attack action as a Bonus Action; its attacks can deal Necrotic or Radiant damage; it uses your spell save DC; and you can take a Reaction to grant it Resistance against damage it takes.",
+        "prerequisites": {
+         "minLevel": 5,
+         "requiredFeature": "Pact of the Chain",
+         "text": "Level 5+ Warlock, Pact of the Chain invocation"
+        },
+        "mads": []
+       },
+       {
+        "name": "Lessons of the First Ones",
+        "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice. Repeatable: each time you take this invocation, choose a different Origin feat.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock"
+        },
+        "mads": []
+       },
+       {
+        "name": "Lifedrinker",
+        "description": "Once per turn when you hit a creature with your pact weapon, you can deal an extra 1d6 Necrotic, Psychic, or Radiant damage (your choice), and you can expend one of your Hit Point Dice to roll it and regain Hit Points equal to the roll plus your Constitution modifier (minimum of 1).",
+        "prerequisites": {
+         "minLevel": 9,
+         "requiredFeature": "Pact of the Blade",
+         "text": "Level 9+ Warlock, Pact of the Blade invocation"
+        },
+        "mads": []
+       },
+       {
+        "name": "Mask of Many Faces",
+        "description": "You can cast Disguise Self without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "9c237757-894a-4f3f-9b77-e65a9ec80266"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Master of Myriad Forms",
+        "description": "You can cast Alter Self without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 5,
+         "text": "Level 5+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "39bb835d-fcc3-4b5c-af8e-c808db88c013"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Misty Visions",
+        "description": "You can cast Silent Image without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "bd46b3a5-9bc3-4273-9791-6111fd870774"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "One with Shadows",
+        "description": "While you're in an area of Dim Light or Darkness, you can cast Invisibility on yourself without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 5,
+         "text": "Level 5+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "7c9f4504-dae4-46e6-a7e8-a7c3b2d3f286"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Otherworldly Leap",
+        "description": "You can cast Jump on yourself without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "1d6aab21-157d-489b-8e6a-39539f9f4b72"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Pact of the Blade",
+        "description": "As a Bonus Action, you can conjure a pact weapon in your hand — a Simple or Martial Melee weapon of your choice — or bond with a magic weapon you touch. Until the bond ends, you have proficiency with the weapon and can use it as a Spellcasting Focus. You can use your Charisma modifier for its attack and damage rolls, and it can deal Necrotic, Psychic, or Radiant damage or its normal type.",
+        "mads": [
+         {
+          "command": "AddActions",
+          "value": {
+           "name": "Conjure Pact Weapon",
+           "actionType": "bonusAction",
+           "description": "Conjure a pact weapon in your hand or bond with a magic weapon you touch.",
+           "source": "Conjure Pact Weapon"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Pact of the Chain",
+        "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. Your familiar can take special forms (Imp, Pseudodragon, Quasit, Skeleton, Sphinx of Wonder, Sprite, Venomous Snake), and when you take the Attack action you can forgo one of your attacks to let your familiar make one with its Reaction.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "058cfaaa-8dae-4dc0-a3e4-ee2840ac3abf"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Pact of the Tome",
+        "description": "You conjure a Book of Shadows at the end of a Short or Long Rest. When the book appears, choose three cantrips and two level 1 spells with the Ritual tag from any class's spell list. While the book is on your person, you have those spells prepared, and they function as Warlock spells for you. You can use the book as a Spellcasting Focus.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "choice",
+           "count": "3",
+           "spellLevel": "0",
+           "filterLevel": "0"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         },
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "choice",
+           "count": "2",
+           "spellLevel": "1",
+           "filterLevel": "1",
+           "filterRitual": "true"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Repelling Blast",
+        "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable: each time you take this invocation, choose a different eligible cantrip.",
+        "prerequisites": {
+         "minLevel": 2,
+         "text": "Level 2+ Warlock, a Warlock cantrip that deals damage via an attack roll"
+        },
+        "mads": []
+       },
+       {
+        "name": "Thirsting Blade",
+        "description": "You gain the Extra Attack feature for your pact weapon only. With that feature, you can attack twice with the weapon instead of once when you take the Attack action on your turn.",
+        "prerequisites": {
+         "minLevel": 5,
+         "requiredFeature": "Pact of the Blade",
+         "text": "Level 5+ Warlock, Pact of the Blade invocation"
+        },
+        "mads": []
+       },
+       {
+        "name": "Visions of Distant Realms",
+        "description": "You can cast Arcane Eye without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 9,
+         "text": "Level 9+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "dc51d217-c9ee-45e9-a53c-807645763c25"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Whispers of the Grave",
+        "description": "You can cast Speak with Dead without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 7,
+         "text": "Level 7+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "959c0aa3-fc30-46d4-af83-3321f9a48e6a"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Witch Sight",
+        "description": "You have Truesight with a range of 30 feet.",
+        "prerequisites": {
+         "minLevel": 15,
+         "text": "Level 15+ Warlock"
+        },
+        "mads": [
+         {
+          "command": "AddSenses",
+          "value": {
+           "sense": "truesight",
+           "range": "30"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       }
+      ],
+      "optionsConfig": {
+       "label": "Invocation",
+       "countScaling": "1:1,2:3,5:5,7:6,9:7,12:8,15:9,18:10"
+      }
+     }
     },
     {
      "id": "66b9b5c9-486b-4940-86ed-ba1b49ca9d9c",

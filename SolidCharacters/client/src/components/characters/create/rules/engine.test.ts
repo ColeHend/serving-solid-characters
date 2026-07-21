@@ -25,9 +25,11 @@ import {
   hitDieLabel,
   hitDieSides,
   isOffList,
+  maxCastableSpellLevel,
   mergeMadSkillRows,
   multiclassCasterLevel,
   spellFlavor,
+  spellWithinLevelCap,
   subclassUnlockLevel,
   totalLevel,
 } from "./engine";
@@ -410,6 +412,86 @@ describe("data normalization helpers", () => {
         lookup,
       ),
     ).toBe(5);
+  });
+});
+
+describe("maxCastableSpellLevel", () => {
+  const caster = (name: string, slots: Record<number, Record<string, number>>) =>
+    ({ name, spellcasting: { metadata: { casterType: CasterType.Full, slots } } }) as unknown as Class5E;
+
+  const cleric = caster("Cleric", {
+    3: { spellSlotsLevel1: 4, spellSlotsLevel2: 2 },
+    5: { spellSlotsLevel1: 4, spellSlotsLevel2: 3, spellSlotsLevel3: 2 },
+  });
+  const wizard = caster("Wizard", { 3: { spellSlotsLevel1: 4, spellSlotsLevel2: 2 } });
+  const paladin = caster("Paladin", { 2: { spellSlotsLevel1: 2 } }); // slot onset at level 2
+  const warlock = caster("Warlock", { 5: { spellSlotsLevel3: 2 } }); // stored pact row
+  const fighter = { name: "Fighter" } as unknown as Class5E;
+  const lookup = (entry: { name: string }) =>
+    ({ cleric, wizard, paladin, warlock, fighter } as Record<string, Class5E>)[entry.name.toLowerCase()];
+
+  it("reads the highest slot level from the class's stored slot row", () => {
+    expect(maxCastableSpellLevel([{ name: "Cleric", level: 5 }], lookup)).toBe(3);
+  });
+
+  it("returns null for non-casters", () => {
+    expect(maxCastableSpellLevel([{ name: "Fighter", level: 5 }], lookup)).toBe(null);
+    expect(maxCastableSpellLevel([], lookup)).toBe(null);
+  });
+
+  it("returns null for a caster below its slot onset", () => {
+    expect(maxCastableSpellLevel([{ name: "Paladin", level: 1 }], lookup)).toBe(null);
+  });
+
+  it("handles pact casters via their stored pact-slot row", () => {
+    expect(maxCastableSpellLevel([{ name: "Warlock", level: 5 }], lookup)).toBe(3);
+  });
+
+  it("takes the max across classes (deliberately per-class, not combined multiclass slots)", () => {
+    expect(
+      maxCastableSpellLevel(
+        [
+          { name: "Cleric", level: 3 },
+          { name: "Wizard", level: 3 },
+        ],
+        lookup,
+      ),
+    ).toBe(2);
+    expect(
+      maxCastableSpellLevel(
+        [
+          { name: "Cleric", level: 5 },
+          { name: "Fighter", level: 5 },
+        ],
+        lookup,
+      ),
+    ).toBe(3);
+  });
+
+  it("a later class raises a max already established by an earlier caster", () => {
+    expect(
+      maxCastableSpellLevel(
+        [
+          { name: "Paladin", level: 2 },
+          { name: "Cleric", level: 5 },
+        ],
+        lookup,
+      ),
+    ).toBe(3);
+  });
+});
+
+describe("spellWithinLevelCap", () => {
+  const atLevel = (level: string) => ({ level } as unknown as Spell);
+
+  it("passes cantrips and everything up to the cap, excludes above it", () => {
+    expect(spellWithinLevelCap(atLevel("0"), 1)).toBe(true);
+    expect(spellWithinLevelCap(atLevel("3"), 3)).toBe(true);
+    expect(spellWithinLevelCap(atLevel("4"), 3)).toBe(false);
+  });
+
+  it("a null cap passes everything", () => {
+    expect(spellWithinLevelCap(atLevel("9"), null)).toBe(true);
   });
 });
 

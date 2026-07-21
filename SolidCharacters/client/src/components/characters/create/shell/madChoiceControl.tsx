@@ -37,18 +37,9 @@ import {
 import { MadChoice, MadChoiceKind } from "../rules/applyMads";
 import { ABILITY_FULL_NAMES, AbilityKey } from "../rules/constants";
 import { useCreate } from "../state/createContext";
+import { csvPicks, toggleCsv } from "./madChoiceControl.shared";
+import { OptionChoiceControl } from "./optionChoiceControl";
 import styles from "./madChoiceControl.module.scss";
-
-const csvPicks = (raw: string | undefined): string[] =>
-  (raw ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-
-/** Toggle `value` in a CSV pick list capped at `max`; null = at the cap, ignore. */
-const toggleCsv = (raw: string | undefined, value: string, max: number): string | null => {
-  const picks = csvPicks(raw);
-  if (picks.includes(value)) return picks.filter((p) => p !== value).join(",");
-  if (picks.length >= max) return null;
-  return [...picks, value].join(",");
-};
 
 /** MadChoiceKind → the equipment-proficiency kind it wraps (undefined for stat/proficiency/spell). */
 const EQUIP_KIND: Partial<Record<MadChoiceKind, EquipProfKind>> = {
@@ -222,6 +213,10 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
               }}
             </For>
           </div>
+        </Match>
+        <Match when={props.choice.kind === "options"}>
+          {/* Named sub-option picker (Invocations, Maneuvers…): cards with descriptions + prereqs. */}
+          <OptionChoiceControl choice={props.choice} />
         </Match>
         <Match when={props.choice.kind === "expertise"}>
           <span class={styles.choiceHint}>

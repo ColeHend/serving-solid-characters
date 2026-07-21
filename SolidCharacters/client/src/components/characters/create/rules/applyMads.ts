@@ -3,10 +3,13 @@ import { FeatureDetail, MagicItem } from "../../../../models/generated";
 import { entitySelectorKey } from "../../../../shared/customHooks/utility/tools/entityKey";
 import { Clone } from "../../../../shared";
 import { Stats } from "../../../../shared/customHooks/dndInfo/useCharacters";
-import { MadFeature } from "../../../../shared/customHooks/mads/madModels";
+import { MadFeature, MadType } from "../../../../shared/customHooks/mads/madModels";
 import {
   activeFeatureMads,
   choiceExpertiseMads,
+  chosenOptionFeatures,
+  featureOptions,
+  pendingOptionChoice,
   choiceItemMads,
   choiceLanguageMads,
   choiceProficiencyMads,
@@ -97,7 +100,7 @@ export function isFeatOrAsiFeature(feature: FeatureDetail): boolean {
 
 export type MadChoiceKind =
   | "stat" | "proficiency" | "expertise" | "resistance" | "language"
-  | "spell" | "item" | "armorProf" | "weaponProf" | "toolProf" | "group";
+  | "spell" | "item" | "armorProf" | "weaponProf" | "toolProf" | "group" | "options";
 
 /** Where a choice-bearing feature came from, so each creator section renders only its own. */
 export type MadChoiceSource = "class" | "race" | "background" | "feat";
@@ -120,7 +123,7 @@ interface TaggedFeature {
 }
 
 function featureSources(character: Character): TaggedFeature[] {
-  return [
+  const base: TaggedFeature[] = [
     ...(character.levels ?? []).flatMap((level) =>
       (level.features ?? []).map((feature) => ({
         feature,
@@ -131,7 +134,25 @@ function featureSources(character: Character): TaggedFeature[] {
     ...(character.backgroundFeatures ?? []).map((feature) => ({ feature, source: "background" as const })),
     ...(character.features ?? []).map((feature) => ({ feature, source: "feat" as const })),
   ];
+  // Chosen feature-options join as synthetic features tagged with their PARENT's source, so an
+  // option's own nested choice pickers render in the section that granted the option.
+  return [
+    ...base,
+    ...base.flatMap(({ feature, source, sourceKey }) =>
+      chosenOptionFeatures(character, feature).map((synthetic) => ({ feature: synthetic, source, sourceKey }))),
+  ];
 }
+
+/**
+ * The options kind has no single carrying command — the picker reads feature.metadata.options —
+ * but MadChoice.mad is load-bearing for every other kind, so it carries this inert stand-in.
+ */
+const OPTIONS_PLACEHOLDER_MAD: MadFeature = {
+  command: "AddClassFeature",
+  value: {},
+  type: MadType.Character,
+  group: 0,
+};
 
 /** Every choice-form mad on the character's features, flagged with whether it still needs a pick. */
 export function draftMadChoices(character: Character): MadChoice[] {
@@ -164,8 +185,19 @@ export function draftMadChoices(character: Character): MadChoice[] {
         sourceKey,
       }]
       : [];
+    const optionsChoice: MadChoice[] = featureOptions(feature).length
+      ? [{
+        feature,
+        mad: OPTIONS_PLACEHOLDER_MAD,
+        kind: "options" as const,
+        pending: pendingOptionChoice(character, feature),
+        source,
+        sourceKey,
+      }]
+      : [];
     return [
       ...groupChoice,
+      ...optionsChoice,
       ...choiceStatMads(feature).filter(inActive).map((mad) => ({
         feature,
         mad,

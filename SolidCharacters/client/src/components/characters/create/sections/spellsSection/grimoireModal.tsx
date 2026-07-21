@@ -1,8 +1,8 @@
-import { Accessor, Component, For, Setter, Show, createMemo, createSignal } from "solid-js";
+import { Accessor, Component, For, Setter, Show, createEffect, createMemo, createSignal, untrack } from "solid-js";
 import { Button, Input, Modal, Option, Select } from "coles-solid-library";
 import { Spell } from "../../../../../models/generated";
 import { entitySelectorKey } from "../../../../../shared/customHooks/utility/tools/entityKey";
-import { isOffList, spellFlavor } from "../../rules/engine";
+import { isOffList, maxCastableSpellLevel, spellFlavor, spellWithinLevelCap } from "../../rules/engine";
 import { InfoButton } from "../../shell/infoButton";
 import { LegacyBadge } from "../../shell/legacyBadge";
 import { useCreate } from "../../state/createContext";
@@ -18,9 +18,11 @@ interface GrimoireModalProps {
 const ALL_LEVELS = "All levels";
 const ALL_SCHOOLS = "All schools";
 const ANY_CLASS = "Any class";
+const MY_CLASSES = "My classes";
+const CASTABLE_LEVELS = "Castable levels";
 
 export const GrimoireModal: Component<GrimoireModalProps> = (props) => {
-  const { draft, actions, data } = useCreate();
+  const { draft, actions, derived, data } = useCreate();
   const [search, setSearch] = createSignal("");
   const [showFilters, setShowFilters] = createSignal(false);
   const [levelFilter, setLevelFilter] = createSignal(ALL_LEVELS);
@@ -32,6 +34,37 @@ export const GrimoireModal: Component<GrimoireModalProps> = (props) => {
       .filter(Boolean).length);
 
   const classNames = () => draft.classes.map((c) => c.name);
+  const maxCastableLevel = createMemo(() => maxCastableSpellLevel(draft.classes, derived.classByKey));
+  const hasOnListSpells = createMemo(() => data.spells().some((spell) => !isOffList(spell, classNames())));
+  const castableLabel = () => {
+    const max = maxCastableLevel();
+    return max === null ? CASTABLE_LEVELS : `Up to ${spellLevelLabel(`${max}`)}`;
+  };
+
+  // Every open starts from the character's available spells: their class lists, capped at the
+  // highest slot level they have. Each seed independently falls back to its unfiltered default
+  // when it would show nothing — no class on any spell list (martials, homebrew names), or no
+  // slot yet (Paladin 1). untrack keeps draft edits mid-session from stomping the user's tweaks.
+  const seedFilters = () => {
+    setSearch("");
+    setSchoolFilter(ALL_SCHOOLS);
+    const classSeed = hasOnListSpells() ? MY_CLASSES : ANY_CLASS;
+    const levelSeed = maxCastableLevel() !== null ? CASTABLE_LEVELS : ALL_LEVELS;
+    setClassFilter(classSeed);
+    setLevelFilter(levelSeed);
+    if (classSeed !== ANY_CLASS || levelSeed !== ALL_LEVELS) setShowFilters(true);
+  };
+  let wasOpen = false;
+  let seedStale = false; // seeded while the catalogs were still loading — retry once they land
+  createEffect(() => {
+    const open = props.show[0]();
+    const ready = data.spells().length > 0 && data.classes().length > 0;
+    if (open && (!wasOpen || (seedStale && ready))) {
+      untrack(seedFilters);
+      seedStale = !ready;
+    }
+    wasOpen = open;
+  });
 
   const levels = createMemo(() => {
     const distinct = [...new Set(data.spells().map((spell) => `${spell.level}`))];
@@ -44,13 +77,20 @@ export const GrimoireModal: Component<GrimoireModalProps> = (props) => {
 
   const filtered = createMemo(() => {
     const query = search().trim().toLowerCase();
+    const max = maxCastableLevel();
     return data
       .spells()
       .filter((spell) => {
         if (query && !spell.name.toLowerCase().includes(query)) return false;
-        if (levelFilter() !== ALL_LEVELS && `${spell.level}` !== levelFilter()) return false;
+        if (levelFilter() === CASTABLE_LEVELS) {
+          if (!spellWithinLevelCap(spell, max)) return false;
+        } else if (levelFilter() !== ALL_LEVELS && `${spell.level}` !== levelFilter()) {
+          return false;
+        }
         if (schoolFilter() !== ALL_SCHOOLS && spell.school !== schoolFilter()) return false;
-        if (
+        if (classFilter() === MY_CLASSES) {
+          if (isOffList(spell, classNames())) return false;
+        } else if (
           classFilter() !== ANY_CLASS &&
           !(spell.classes ?? []).some((c) => c.toLowerCase() === classFilter().toLowerCase())
         ) {
@@ -82,6 +122,9 @@ export const GrimoireModal: Component<GrimoireModalProps> = (props) => {
           <div class={styles.grimoireFilterRow}>
             <Select value={levelFilter()} onChange={(value: string) => setLevelFilter(value)}>
               <Option value={ALL_LEVELS}>{ALL_LEVELS}</Option>
+              <Show when={maxCastableLevel() !== null}>
+                <Option value={CASTABLE_LEVELS}>{castableLabel()}</Option>
+              </Show>
               <For each={levels()}>
                 {(level) => <Option value={level}>{spellLevelLabel(level)}</Option>}
               </For>
@@ -92,6 +135,9 @@ export const GrimoireModal: Component<GrimoireModalProps> = (props) => {
             </Select>
             <Select value={classFilter()} onChange={(value: string) => setClassFilter(value)}>
               <Option value={ANY_CLASS}>{ANY_CLASS}</Option>
+              <Show when={hasOnListSpells()}>
+                <Option value={MY_CLASSES}>{MY_CLASSES}</Option>
+              </Show>
               <For each={spellClasses()}>{(name) => <Option value={name}>{name}</Option>}</For>
             </Select>
           </div>

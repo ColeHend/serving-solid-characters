@@ -1,5 +1,6 @@
 import { FormArray, FormGroup, Modal, TabBar } from "coles-solid-library";
 import { Accessor, Component, Match, Switch, createEffect, createMemo, createSignal, on, onCleanup, untrack } from "solid-js";
+import { createStore } from "solid-js/store";
 import { MadType } from "../../../../shared/customHooks/mads/madModels";
 import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
 import { MadForm, MadPrereqForm } from "../../../../models/data/formModels";
@@ -15,6 +16,19 @@ import { UsageSpellsTab } from "./usageSpellsTab";
 import { EffectsTab } from "./effectsTab";
 import { CloseGuardDialog, PendingClose } from "./closeGuardDialog";
 import { FeaturesPopupProps, MadsApi, buildSubtitle, isUnsetRow, splitCommand, usageOwnedIndices } from "./featuresPopup.shared";
+import { OptionsTab } from "./parts/optionsFeature/optionsTab";
+import {
+    OptionRow,
+    OptionsApi,
+    OptionsConfigForm,
+    blankOptionRow,
+    emptyOptionsConfigForm,
+    hydrateOptionRow,
+    hydrateOptionsConfig,
+    newMadFormGroup,
+    serializeOptionRows,
+    serializeOptionsConfig,
+} from "./parts/optionsFeature/optionsFeature.shared";
 import styles from "./featuresPopup.module.scss";
 
 export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
@@ -70,6 +84,40 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         setEditorOpen: (key, open) => setEditorOpen(old => ({ ...old, [key]: open })),
     };
 
+    // Feature options (named sub-picks). Rows live in a store so field edits keep row
+    // identity — the option cards' inputs survive keystrokes instead of remounting.
+    // Each row's nested effects FormArray is a class instance the store leaves unwrapped.
+    const [optionState, setOptionState] = createStore<{ rows: OptionRow[] }>({ rows: [] });
+    const [optionsConfig, setOptionsConfig] = createSignal<OptionsConfigForm>(emptyOptionsConfigForm());
+    let optionSeq = 0;
+
+    const optionsApi: OptionsApi = {
+        rows: () => optionState.rows,
+        config: optionsConfig,
+        setConfig: (patch) => setOptionsConfig(old => ({ ...old, ...patch })),
+        addRow: () => setOptionState("rows", optionState.rows.length, blankOptionRow(++optionSeq)),
+        removeRow: (key) => setOptionState("rows", (rows) => rows.filter(row => row.key !== key)),
+        updateRow: (key, patch) => {
+            const index = optionState.rows.findIndex(row => row.key === key);
+            if (index >= 0) setOptionState("rows", index, patch);
+        },
+        madsApiFor: (row) => ({
+            rows: () => row.mads.get(),
+            setMadFeature: (key, index, value) => row.mads.getGroup(index)?.set(key, value),
+            addMadRow: (init = {}) => row.mads.add(newMadFormGroup(init)),
+            removeMad: (index) => row.mads.remove(index),
+            // Editor-open flags share the popup signal, prefixed so options can't collide
+            // with the feature-level effect rows (or each other).
+            isEditorOpen: (key) => !!editorOpen()[`opt${row.key}:${key}`],
+            setEditorOpen: (key, open) => setEditorOpen(old => ({ ...old, [`opt${row.key}:${key}`]: open })),
+        }),
+    };
+
+    const resetOptions = () => {
+        setOptionState("rows", () => []);
+        setOptionsConfig(emptyOptionsConfigForm());
+    };
+
     const unsetCount = createMemo(() => rows().filter(isUnsetRow).length);
 
     const doSave = () => {
@@ -88,6 +136,9 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
             }
         });
 
+        // Options with no name have nothing to pick — dropped like unset effect rows.
+        const optionsData = serializeOptionRows(optionState.rows);
+
         const current = feature();
         const newFeature: FeatureDetail = {
             id: current?.id ?? "",
@@ -100,6 +151,8 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
                 spells: [],
                 category: current?.metadata?.category ?? "",
                 mads: madsData,
+                options: optionsData.length ? optionsData : undefined,
+                optionsConfig: optionsData.length ? serializeOptionsConfig(optionsConfig()) : undefined,
             }
         }
 
@@ -114,6 +167,7 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         setFeature(null);
         setPrerequisites({});
         currentFeatureMetadata.reset();
+        resetOptions();
         setEditorOpen({});
         setPendingClose(null);
         setActiveTab(0);
@@ -202,6 +256,8 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
                 // and value editor all show the hydrated state.
                 addMadRow({ ...mad, ...splitCommand(mad.command), name: `${index + 1}` });
             });
+            setOptionState("rows", () => (parentFeature().metadata?.options ?? []).map(option => hydrateOptionRow(option, ++optionSeq)));
+            setOptionsConfig(hydrateOptionsConfig(parentFeature().metadata?.optionsConfig));
         })
     }
 
@@ -227,6 +283,7 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         } else {
             // Add mode (blank feature): drop any rows left over from a previous edit.
             currentFeatureMetadata.reset();
+            resetOptions();
         }
     }))
 
@@ -271,7 +328,7 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
 
             <div class={styles.tabsRow}>
                 <TabBar
-                    tabs={["Details", "Usage & spells", `Effects (${effectCount()})`]}
+                    tabs={["Details", "Usage & spells", `Effects (${effectCount()})`, `Options (${optionState.rows.length})`]}
                     activeTab={activeTab()}
                     onTabChange={(label, i) => setActiveTab(i)}
                     colors={{ indicator: "var(--pop-accent)", text: "var(--on-surface-color)" }}
@@ -296,6 +353,14 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
                     <Match when={activeTab() === 2}>
                         <EffectsTab
                             api={api}
+                            data={{ allSpells, allItems, allFeatures, allFeats }}
+                            prereqForm={currentFeaturePrerequisites}
+                            prereqs={[prerequisites, setPrerequisites]}
+                        />
+                    </Match>
+                    <Match when={activeTab() === 3}>
+                        <OptionsTab
+                            api={optionsApi}
                             data={{ allSpells, allItems, allFeatures, allFeats }}
                             prereqForm={currentFeaturePrerequisites}
                             prereqs={[prerequisites, setPrerequisites]}

@@ -6,6 +6,7 @@ import {
   Feat,
   Race,
   Spell,
+  Spellslots,
   Subclass,
   Subrace,
 } from "../../../../models/generated";
@@ -593,6 +594,38 @@ export function multiclassCasterLevel(
         return sum;
     }
   }, 0);
+}
+
+/**
+ * Highest spell level the character can currently cast, read from each caster class's stored
+ * slot table at its class level (the same source the sheet reads). Returns null when no class
+ * has a slot yet — non-casters and casters below slot onset (Paladin 1) — so callers can skip
+ * any level cap. Pact classes contribute via their stored pact-slot row. Taking the max across
+ * classes deliberately undercounts combined multiclass slots (Cleric 3/Wizard 3 → 2nd, not the
+ * combined 3rd) — the safe direction for a default filter. Slot-table-only also means the 2014
+ * warlock caps at 5th (its data has no rows for Mystic Arcanum levels; the 2024 table does).
+ */
+export function maxCastableSpellLevel(
+  classes: LeveledClass[],
+  resolveClass: (entry: LeveledClass) => Class5E | undefined,
+): number | null {
+  let max = 0;
+  for (const entry of classes) {
+    const row = resolveClass(entry)?.spellcasting?.metadata?.slots?.[entry.level];
+    if (!row) continue;
+    for (let i = 9; i > max; i--) {
+      if (row[`spellSlotsLevel${i}` as keyof Spellslots]) {
+        max = i;
+        break;
+      }
+    }
+  }
+  return max > 0 ? max : null;
+}
+
+/** Level-cap filter predicate — cantrips and spells up to the cap pass; a null cap passes everything. */
+export function spellWithinLevelCap(spell: Spell, maxLevel: number | null): boolean {
+  return maxLevel === null || Number(spell.level) <= maxLevel;
 }
 
 /** Parse a darkvision range out of species trait text, e.g. "…Darkvision with a range of 60 feet…". */

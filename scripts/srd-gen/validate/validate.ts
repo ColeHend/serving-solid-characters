@@ -42,7 +42,15 @@ export function validateMadsInData(data: RulesetData): ValidationResult {
             }
         }
     };
-    eachFeature(data, (owner, _kind, f) => checkMads(owner, f.name, f.metadata?.mads));
+    eachFeature(data, (owner, _kind, f) => {
+        checkMads(owner, f.name, f.metadata?.mads);
+        // Option lists carry nested mads (a chosen invocation's effects) — same command gate.
+        const options = f.metadata?.options ?? [];
+        for (const o of options) checkMads(owner, `${f.name}/option:${o.name}`, o.mads);
+        if (options.length && !f.metadata?.optionsConfig) {
+            res.errors.push(`${owner}/${f.name}: options without optionsConfig`);
+        }
+    });
     for (const m of data.magicItems) checkMads("magic_item", m.name, m.metadata?.mads);
     return res;
 }

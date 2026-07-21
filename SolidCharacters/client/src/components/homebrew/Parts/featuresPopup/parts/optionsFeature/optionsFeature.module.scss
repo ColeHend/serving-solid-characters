@@ -1,0 +1,67 @@
+// ── Options tab: pick-config card, scaling milestone rows, option cards ──
+.configCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--pop-hairline);
+  border-radius: 8px;
+}
+
+.configRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scalingRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.scalingText {
+  font-size: 0.8rem;
+  color: var(--pop-text-muted);
+}
+
+.scalingInput {
+  width: 72px;
+}
+
+.scalingHint {
+  font-size: 0.72rem;
+  color: var(--pop-text-faint);
+}
+
+.optionCardTitle {
+  font-weight: 600;
+}
+
+.optionFields {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prereqGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.optionEffects {
+  margin-top: 10px;
+  padding-top: 4px;
+  border-top: 1px solid var(--pop-hairline);
+}

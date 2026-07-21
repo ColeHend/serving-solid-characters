@@ -22,10 +22,11 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
  *    right (base 1 attack + Extra Attack +1 = 2; + Two Extra Attacks +1 = 3; + Three Extra Attacks +1 = 4).
  *
  * SKIPPED (no fitting category / player-or-DM choice / situational — see inline comments):
- *  Weapon Mastery (choice of weapons), Fighting Style & Metamagic & Eldritch Invocations (choice of
- *  option/feat), Epic Boon (choice of feat), condition immunities (Immunities is damage-type only),
+ *  Weapon Mastery (choice of weapons), Fighting Style & Metamagic (choice of option/feat),
+ *  Epic Boon (choice of feat), condition immunities (Immunities is damage-type only),
  *  flat save bonuses, temp-HP / damage riders / rerolls, "while raging"-style situational effects,
  *  and choice-dependent spell/resistance grants.
+ *  Eldritch Invocations are curated as an OPTION list in mads/2024/invocations.ts.
  */
 
 // ---- tiny authoring helpers (all value fields are strings) ----
@@ -219,8 +220,9 @@ export const map: MadMap = {
     "Warlock/Contact Patron": [spell("Contact Other Plane"), uses("1", "Long Rest")],
     "Warlock/Mystic Arcanum (level 6 spell)": [uses("1", "Long Rest")], // the chosen arcanum spell is a choice → skip
     "Warlock/Ability Score Improvement": [asi()],
-    // skip: Eldritch Invocations (choice), Pact Magic, Mystic Arcanum (level 7/8/9 spell) (extra uses =
-    //       scaling of the same resource), Eldritch Master, Epic Boon.
+    // skip: Pact Magic, Mystic Arcanum (level 7/8/9 spell) (extra uses = scaling of the same
+    //       resource), Eldritch Master, Epic Boon.
+    // Eldritch Invocations are curated as an OPTION list in mads/2024/invocations.ts.
 
     // ============================================================ Wizard
     "Wizard/Arcane Recovery": [uses("1", "Long Rest")],
