@@ -10,6 +10,8 @@ interface EffectsTabProps {
     data: EffectCardData;
     prereqForm: PrereqFormArray;
     prereqs: PrereqState;
+    /** Overrides the header helper line (the Options tab embeds this per option). */
+    helperText?: string;
 }
 
 export const EffectsTab: Component<EffectsTabProps> = (props) => {
@@ -58,7 +60,7 @@ export const EffectsTab: Component<EffectsTabProps> = (props) => {
     return (
         <div>
             <div class={styles.effectsHead}>
-                <span class={styles.effectsHelper}>Effects run automatically when the feature is gained.</span>
+                <span class={styles.effectsHelper}>{props.helperText ?? "Effects run automatically when the feature is gained."}</span>
                 <Button class={styles.addEffectBtn} onClick={() => props.api.addMadRow()}>
                     + Add effect
                 </Button>

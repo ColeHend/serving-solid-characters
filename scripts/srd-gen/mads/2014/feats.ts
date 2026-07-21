@@ -13,7 +13,8 @@ export const map: MadMap = {
     "Grappler": [
         { type: "Add", category: "Advantage", value: { rollType: "WeaponAttack", mode: "advantage", condition: "against a creature you are grappling" } },
     ],
-    // Ability Score Improvement — +1 to two DIFFERENT abilities of the player's choice (count picks, distinct).
+    // Ability Score Improvement — two +1 picks of the player's choice; the same ability may be
+    // picked twice for a +2 (count picks, repeats allowed).
     "Ability Score Improvement": [
         { type: "Add", category: "Stats", value: { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" } },
     ],

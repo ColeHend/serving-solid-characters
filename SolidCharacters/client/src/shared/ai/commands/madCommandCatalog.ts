@@ -298,7 +298,7 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         ],
         hint: "changes an ability score; stat = str/dex/con/int/wis/cha, statValue = number (for '+1 Con' style increases — never for AC formulas or skill bonuses). " +
             "For 'increase an ability of your choice' use stat = choice with options = comma-separated allowed abilities (the player picks on the sheet). " +
-            "For 'increase N different abilities of your choice by X each' use stat = choice, statValue = X, count = N (the player picks count DISTINCT abilities on the sheet). " +
+            "For 'increase N abilities of your choice by X each' use stat = choice, statValue = X, count = N (the player makes count picks on the sheet and may repeat an ability to stack the bonus, e.g. an ASI's '+2 to one or +1 to two'). " +
             "For 'your score IS N' effects use mode = set (default mode is increase).",
     },
     SavingThrows: {

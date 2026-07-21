@@ -177,6 +177,62 @@ describe("reconcileEdition", () => {
     expect(next.edition).toBe("2014");
   });
 
+  it("re-keys a kept background's selector key to the target edition's row", () => {
+    const src: EditionData = {
+      ...source2024,
+      backgrounds: [{ id: "acolyte-24", name: "Acolyte" } as unknown as Background],
+    };
+    const tgt: EditionData = {
+      ...data2014,
+      backgrounds: [{ id: "acolyte-14", name: "Acolyte", legacy: true } as unknown as Background],
+    };
+    const withBg = { ...draft(), background: "Acolyte", backgroundId: "acolyte-24" };
+    const { next, dropped } = reconcileEdition(withBg, "2014", tgt, src);
+    expect(next.background).toBe("Acolyte");
+    expect(next.backgroundId).toBe("acolyte-14");
+    expect(dropped).not.toContain("Acolyte (background)");
+  });
+
+  it("clears the stale selector key alongside a dropped background", () => {
+    const withKey = { ...draft(), backgroundId: "soldier-24" };
+    const { next } = reconcileEdition(withKey, "2014", data2014, source2024);
+    expect(next.background).toBe("");
+    expect(next.backgroundId).toBeUndefined();
+  });
+
+  it("keeps the picked both-mode row when its key resolves in the merged dataset", () => {
+    // Both-mode: the 2014 and 2024 Acolytes coexist; the legacy pick must not swap to the
+    // 2024 row (whose origin feat the legacy printing doesn't grant).
+    const merged: EditionData = {
+      ...data2014,
+      backgrounds: [
+        { id: "acolyte-14", name: "Acolyte", legacy: true } as unknown as Background,
+        { id: "acolyte-24", name: "Acolyte", feat: "Magic Initiate (Cleric)" } as unknown as Background,
+      ],
+    };
+    const withBg = { ...draft(), background: "Acolyte", backgroundId: "acolyte-14" };
+    const { next } = reconcileEdition(withBg, "both", merged, source2024);
+    expect(next.backgroundId).toBe("acolyte-14");
+  });
+
+  it("derives the recommended-feat warning from the re-keyed target row", () => {
+    const src: EditionData = {
+      ...data2014,
+      backgrounds: [{ id: "acolyte-14", name: "Acolyte", legacy: true } as unknown as Background],
+    };
+    const tgt: EditionData = {
+      ...source2024,
+      backgrounds: [
+        { id: "acolyte-24", name: "Acolyte", feat: "Magic Initiate (Cleric)" } as unknown as Background,
+      ],
+    };
+    const withBg = { ...draft(), background: "Acolyte", backgroundId: "acolyte-14" };
+    const { next, dropped } = reconcileEdition(withBg, "2024", tgt, src);
+    expect(next.backgroundId).toBe("acolyte-24");
+    // The 2024 fixture feats lack Magic Initiate — the warning must fire from the target row.
+    expect(dropped).toContain("Magic Initiate (Cleric) (background feat)");
+  });
+
   it("switches silently when everything survives", () => {
     const survivor = emptyDraft("2014", {
       classes: [

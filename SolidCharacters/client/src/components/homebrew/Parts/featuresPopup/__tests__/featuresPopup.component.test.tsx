@@ -106,6 +106,38 @@ describe('FeaturesPopup edit hydration', () => {
     expect(emitted.metadata!.mads![0].command).toBe('AddHitPoints');
   });
 
+  it('hydrates and re-emits feature options + optionsConfig on save (metadata rebuild must not drop them)', async () => {
+    const feature = editFeature();
+    feature.metadata!.optionsConfig = { label: 'Invocation', countScaling: '2:2,5:3' };
+    feature.metadata!.options = [
+      {
+        name: 'Armor of Shadows',
+        description: 'Cast mage armor at will.',
+        mads: [{ command: 'AddSpells', value: { ID: 'sp1' }, type: 0, prerequisites: [], group: 0 }],
+      },
+      {
+        name: 'Thirsting Blade',
+        description: 'Attack twice with your pact weapon.',
+        prerequisites: { minLevel: 5, requiredFeature: 'Pact of the Blade', text: '5th level, Pact of the Blade' },
+        mads: [],
+      },
+    ];
+    const { container, getByText, onClose } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Save changes'));
+    const emitted = lastEmitted(onClose);
+    expect(emitted.metadata!.optionsConfig).toEqual({ label: 'Invocation', countScaling: '2:2,5:3' });
+    expect(emitted.metadata!.options).toHaveLength(2);
+    expect(emitted.metadata!.options![0]).toMatchObject({
+      name: 'Armor of Shadows',
+      mads: [{ command: 'AddSpells', value: { ID: 'sp1' } }],
+    });
+    expect(emitted.metadata!.options![1].prerequisites).toEqual({
+      minLevel: 5, requiredFeature: 'Pact of the Blade', text: '5th level, Pact of the Blade',
+    });
+  });
+
   it('preserves an edited free-text category on save', async () => {
     const feature = editFeature();
     feature.metadata!.category = 'Channel Divinity';

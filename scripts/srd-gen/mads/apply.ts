@@ -1,7 +1,8 @@
 import { coerceCommand } from "../../../SolidCharacters/client/src/shared/ai/commands/madCommandCatalog.ts";
+import { hasDerivedSpellPool } from "../../../SolidCharacters/client/src/shared/customHooks/mads/spellChoiceFilters.ts";
 import { nameKey } from "../lib/util.ts";
-import type { FeatureDetailJson, MadFeatureJson, RulesetData, Ruleset } from "../types.ts";
-import type { CommandSpecInput, MadMap } from "./spec.ts";
+import type { FeatureDetailJson, FeatureOptionJson, MadFeatureJson, RulesetData, Ruleset } from "../types.ts";
+import type { CommandSpecInput, MadMap, OptionsMap } from "./spec.ts";
 import type { RefKind } from "./resolver.ts";
 
 export interface MadApplyReport {
@@ -57,8 +58,10 @@ function coerceSpecs(
             errors.push(`"${key}": choice-form ${mad.command} is missing its options list`);
             continue;
         }
-        // likewise a choice-form AddSpells needs its resolved options list (refCsv drops unresolvable names)
-        if (spec.category.toLowerCase().startsWith("spell") && mad.value["ID"] === "choice" && !mad.value["options"]) {
+        // likewise a choice-form AddSpells needs a pool: a resolved options list (refCsv drops
+        // unresolvable names) or a filter/spellLevel-derived pool (Pact of the Tome's "any cantrip").
+        if (spec.category.toLowerCase().startsWith("spell") && mad.value["ID"] === "choice"
+            && !mad.value["options"] && !hasDerivedSpellPool(mad.value)) {
             errors.push(`"${key}": choice-form ${mad.command} is missing its options list`);
             continue;
         }
@@ -141,6 +144,99 @@ export function applyMads(
         item.metadata.mads = [...(item.metadata.mads ?? []), ...mads];
         report.featuresWithMads++;
         report.attached += mads.length;
+    }
+
+    return report;
+}
+
+const SCALING_SHAPE = /^\d+:\d+(,\d+:\d+)*$/;
+
+/**
+ * Third pass: attach curated OPTION lists (Eldritch Invocations, Pact Boon) to features —
+ * metadata.options + metadata.optionsConfig. Same hard-gate posture as applyMads: unmatched
+ * keys, malformed configs, and option mads that fail coercion all fail the run. In the report,
+ * `attached` counts options and `featuresWithMads` counts features that received a list.
+ */
+export function applyOptions(
+    data: RulesetData,
+    optionsMap: OptionsMap,
+    resolveRef: (refKind: RefKind, name: string) => string | null,
+): MadApplyReport {
+    const report: MadApplyReport = { attached: 0, featuresWithMads: 0, errors: [], unmatchedKeys: [] };
+
+    const refs = collectFeatureRefs(data);
+    const byKey = new Map<string, FeatureRef[]>();
+    for (const r of refs) {
+        const list = byKey.get(r.key) ?? [];
+        list.push(r);
+        byKey.set(r.key, list);
+    }
+
+    for (const [rawKey, entry] of Object.entries(optionsMap)) {
+        const slash = rawKey.indexOf("/");
+        const key = slash >= 0
+            ? `${nameKey(rawKey.slice(0, slash))}/${nameKey(rawKey.slice(slash + 1))}`
+            : nameKey(rawKey);
+        const targets = byKey.get(key);
+        if (!targets?.length) {
+            report.unmatchedKeys.push(`options: ${rawKey}`);
+            continue;
+        }
+
+        const scaling = (entry.config.countScaling ?? "").trim();
+        if (scaling && !SCALING_SHAPE.test(scaling)) {
+            report.errors.push(`"${rawKey}": countScaling "${scaling}" is not "level:count,level:count..."`);
+            continue;
+        }
+        if (!scaling && !(entry.config.count && entry.config.count >= 1)) {
+            report.errors.push(`"${rawKey}": optionsConfig needs count >= 1 or countScaling`);
+            continue;
+        }
+
+        const seen = new Set<string>();
+        const options: FeatureOptionJson[] = [];
+        for (const spec of entry.options) {
+            const optKey = `${rawKey}/${spec.name}`;
+            if (!spec.name?.trim()) {
+                report.errors.push(`"${rawKey}": option with an empty name`);
+                continue;
+            }
+            if (spec.name.includes(",")) {
+                report.errors.push(`"${optKey}": option names must not contain commas (picks persist as a name CSV)`);
+                continue;
+            }
+            if (seen.has(nameKey(spec.name))) {
+                report.errors.push(`"${optKey}": duplicate option name`);
+                continue;
+            }
+            seen.add(nameKey(spec.name));
+            if (!spec.description?.trim()) {
+                report.errors.push(`"${optKey}": option needs a description`);
+                continue;
+            }
+            const mads = spec.mads?.length ? coerceSpecs(spec.mads, optKey, resolveRef, report.errors) : [];
+            // coerceSpecs already reported the failing spec — dropping the whole option keeps
+            // the gate honest (a partially-applied invocation would look done when it isn't).
+            if ((spec.mads?.length ?? 0) !== mads.length) continue;
+            options.push({
+                name: spec.name.trim(),
+                description: spec.description,
+                ...(spec.prerequisite ? { prerequisites: { ...spec.prerequisite } } : {}),
+                mads,
+            });
+        }
+
+        for (const t of targets) {
+            t.detail.metadata = t.detail.metadata ?? {};
+            t.detail.metadata.options = options.map(o => ({
+                ...o,
+                ...(o.prerequisites ? { prerequisites: { ...o.prerequisites } } : {}),
+                mads: (o.mads ?? []).map(m => ({ ...m, value: { ...m.value } })),
+            }));
+            t.detail.metadata.optionsConfig = { ...entry.config };
+            report.featuresWithMads++;
+            report.attached += options.length;
+        }
     }
 
     return report;

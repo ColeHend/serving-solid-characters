@@ -116,6 +116,15 @@ export interface FeatureMetadata {
   spells?: string[];
   category?: string;
   mads?: MadFeature[];
+  options?: FeatureOption[];
+  optionsConfig?: OptionsConfig;
+}
+
+export interface FeatureOption {
+  name: string;
+  description: string;
+  prerequisites?: OptionPrerequisite;
+  mads?: MadFeature[];
 }
 
 export interface GrantedAction {
@@ -262,6 +271,18 @@ export interface MovementSpeeds {
   climb?: number;
   burrow?: number;
   hover?: boolean;
+}
+
+export interface OptionPrerequisite {
+  minLevel?: number;
+  requiredFeature?: string;
+  text?: string;
+}
+
+export interface OptionsConfig {
+  label?: string;
+  count?: number;
+  countScaling?: string;
 }
 
 export interface Prerequisite {

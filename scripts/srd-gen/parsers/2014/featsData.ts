@@ -13,7 +13,7 @@ export const CURATED_FEATS_2014: FeatJson[] = [
             id: "",
             name: "Ability Score Improvement",
             description:
-                "Increase two different ability scores of your choice by 1 each. " +
+                "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1 each. " +
                 "As normal, you can't increase an ability score above 20 using this feat.",
         },
         prerequisites: [{ type: 1, value: "4" }], // PrerequisiteType.Level = 1 (mirrors the 2024 feat's level-4 gate)

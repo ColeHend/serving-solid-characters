@@ -37,3 +37,25 @@ export interface CommandSpecInput {
  *  - magic items:         "Belt of Giant Strength"   (attaches to item.metadata.mads)
  */
 export type MadMap = Record<string, CommandSpecInput[]>;
+
+/**
+ * One curated feature option (an Eldritch Invocation, Pact Boon…). The player picks N options
+ * on the sheet; a chosen option shows as a named feature and applies its mads. Mads run through
+ * the same coerceCommand hard gate as CommandSpecInput maps.
+ */
+export interface OptionSpecInput {
+    name: string;
+    description: string;
+    /** minLevel = level in the OWNING class; requiredFeature matches a feature OR chosen-option name; text is display-only. */
+    prerequisite?: { minLevel?: number; requiredFeature?: string; text?: string };
+    mads?: CommandSpecInput[];
+}
+
+/**
+ * Curated option lists keyed like MadMap feature keys ("Warlock/Eldritch Invocations").
+ * config needs count or countScaling ("level:count" pairs against the owning class's level).
+ */
+export type OptionsMap = Record<string, {
+    config: { label?: string; count?: number; countScaling?: string };
+    options: OptionSpecInput[];
+}>;

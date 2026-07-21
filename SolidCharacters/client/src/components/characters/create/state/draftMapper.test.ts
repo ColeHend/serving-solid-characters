@@ -639,6 +639,81 @@ describe("background features", () => {
   });
 });
 
+describe("both-mode background origin feat", () => {
+  // Same-name pair distinguished only by id + legacy flag — the 2014 printing grants no feat.
+  const acolyte14 = {
+    id: "acolyte-14",
+    name: "Acolyte",
+    legacy: true,
+    proficiencies: { skills: ["Insight", "Religion"], tools: [], weapons: [], armor: [] },
+  } as unknown as Background;
+  const acolyte24 = {
+    id: "acolyte-24",
+    name: "Acolyte",
+    feat: "Magic Initiate (Cleric)",
+    proficiencies: { skills: ["Insight", "Religion"], tools: [], weapons: [], armor: [] },
+    abilityOptions: ["Intelligence", "Wisdom", "Charisma"],
+  } as unknown as Background;
+  const bothLookups: SrdLookups = {
+    ...lookups,
+    backgrounds: [acolyte14, acolyte24],
+    feats: [...lookups.feats, feat("Magic Initiate")],
+  };
+
+  const acolyteDraft = (backgroundId: string) =>
+    emptyDraft("both", {
+      name: "Devout",
+      classes: [{ name: "Barbarian", level: 1, subclass: "", skillChoices: [] }],
+      species: "Human",
+      background: "Acolyte",
+      backgroundId,
+    });
+
+  it("grants no origin feat for the legacy 2014 Acolyte", () => {
+    const character = draftToCharacter(acolyteDraft("acolyte-14"), bothLookups);
+    expect((character.featsTaken ?? []).filter((f) => f.source === "background")).toEqual([]);
+    expect(character.features.map((f) => f.name)).not.toContain("Magic Initiate");
+  });
+
+  it("still grants the 2024 Acolyte's origin feat", () => {
+    const character = draftToCharacter(acolyteDraft("acolyte-24"), bothLookups);
+    expect(character.featsTaken).toContainEqual({
+      name: "Magic Initiate (Cleric)",
+      source: "background",
+      id: "Magic Initiate",
+    });
+    expect(character.features.map((f) => f.name)).toContain("Magic Initiate");
+  });
+
+  it("round-trips the legacy pick without inventing an origin feat", () => {
+    const saved = draftToCharacter(acolyteDraft("acolyte-14"), bothLookups);
+    const restored = characterToDraft(saved, bothLookups, "2014");
+    expect(restored.background).toBe("Acolyte");
+    expect(restored.backgroundId).toBe("acolyte-14");
+    expect(restored.feats).toEqual([]);
+    expect(restored.originFeat).toBe("");
+  });
+
+  it("does not misfilter a chosen feat on a legacy save without featsTaken", () => {
+    // Pre-rebuild save shape: the chosen feat lives only in features. The 2014 Acolyte
+    // recommends nothing, so the feat must survive into draft.feats instead of being
+    // filtered out as a (wrongly name-derived) origin feat.
+    const legacy = {
+      name: "Old Devout",
+      className: "Barbarian",
+      subclass: [],
+      background: "Acolyte",
+      backgroundId: "acolyte-14",
+      levels: [{ class: "Barbarian", subclass: "", level: 1, hitDie: 12, features: [] }],
+      race: { species: "Human", features: [] },
+      stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+      features: [{ id: "", name: "Magic Initiate (Cleric)", description: "" }],
+    } as unknown as Character;
+    const restored = characterToDraft(legacy, bothLookups, "2014");
+    expect(restored.feats).toEqual(["Magic Initiate"]);
+  });
+});
+
 describe("mad choice keying", () => {
   // A class feature bearing a choice-form Proficiencies mad — draftMadChoices must key its
   // class-source choice by the owning class's selector key (draftClassKey), i.e. its classId.

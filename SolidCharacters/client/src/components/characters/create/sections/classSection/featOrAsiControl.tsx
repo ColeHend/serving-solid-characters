@@ -81,7 +81,7 @@ export const FeatOrAsiControl: Component<{ choice: MadChoice }> = (props) => {
         </For>
       </Select>
       <Show when={slotValue() === "asi"}>
-        {/* One dropdown per pick slot; a slot's options hide the OTHER slots' picks (distinct abilities). */}
+        {/* One dropdown per pick slot; the same ability may be picked in more than one slot (+1 twice = +2). */}
         <Index each={statPicks()}>
           {(pick, i) => (
             <Select
@@ -95,7 +95,7 @@ export const FeatOrAsiControl: Component<{ choice: MadChoice }> = (props) => {
               }}
               placeholder="Choose an ability…"
             >
-              <For each={statChoiceOptions(props.choice.mad).filter((key) => key === pick() || !statPicks().includes(key))}>
+              <For each={statChoiceOptions(props.choice.mad)}>
                 {(key) => <Option value={key}>{abilityLabel(key)}</Option>}
               </For>
             </Select>

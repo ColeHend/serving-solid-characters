@@ -22,12 +22,35 @@ export interface MadFeatureJson {
     group: number;
 }
 
+export interface OptionPrerequisiteJson {
+    minLevel?: number;
+    requiredFeature?: string;
+    text?: string;
+}
+
+/** One pickable sub-option of a feature (Eldritch Invocation…); the player's chosen options grant their mads. */
+export interface FeatureOptionJson {
+    name: string;
+    description: string;
+    prerequisites?: OptionPrerequisiteJson;
+    mads?: MadFeatureJson[];
+}
+
+export interface OptionsConfigJson {
+    label?: string;
+    count?: number;
+    /** "level:count" pairs, e.g. "2:2,5:3" — pick count at each owning-class level threshold. */
+    countScaling?: string;
+}
+
 export interface FeatureMetadataJson {
     uses?: number;
     recharge?: string;
     spells?: string[];
     category?: string;
     mads?: MadFeatureJson[];
+    options?: FeatureOptionJson[];
+    optionsConfig?: OptionsConfigJson;
 }
 
 export interface FeatureDetailJson {

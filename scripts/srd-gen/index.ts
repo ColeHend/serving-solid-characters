@@ -13,7 +13,7 @@ import { DATA_ROOT, OUT_2014, OUT_2024 } from "./config.ts";
 import type { Ruleset, RulesetData } from "./types.ts";
 import { IdStore, assignIds } from "./ids/idStore.ts";
 import { buildResolver } from "./mads/resolver.ts";
-import { applyMads } from "./mads/apply.ts";
+import { applyMads, applyOptions } from "./mads/apply.ts";
 import { expandMagicItemVariants } from "./mads/variants.ts";
 import { coverageGaps, choiceWordingLint } from "./mads/coverage.ts";
 import { filePlan, writeFiles, cleanupBackups } from "./emit/writers.ts";
@@ -40,8 +40,8 @@ import { parseMagicItems2024 } from "./parsers/2024/magicItems.ts";
 import { parseRules2024 } from "./parsers/2024/rules.ts";
 import { parseMonsters2024 } from "./parsers/2024/monsters.ts";
 
-import { featureMap as featureMap2014, magicItemMap as magicItemMap2014 } from "./mads/2014/index.ts";
-import { featureMap as featureMap2024, magicItemMap as magicItemMap2024 } from "./mads/2024/index.ts";
+import { featureMap as featureMap2014, magicItemMap as magicItemMap2014, optionsMap as optionsMap2014 } from "./mads/2014/index.ts";
+import { featureMap as featureMap2024, magicItemMap as magicItemMap2024, optionsMap as optionsMap2024 } from "./mads/2024/index.ts";
 
 const args = process.argv.slice(2);
 const flag = (name: string) => args.includes(name);
@@ -116,9 +116,14 @@ for (const ruleset of rulesets) {
     const resolveRef = buildResolver(data);
     const featureMap = ruleset === "2014" ? featureMap2014 : featureMap2024;
     const magicItemMap = ruleset === "2014" ? magicItemMap2014 : magicItemMap2024;
+    const optionsMap = ruleset === "2014" ? optionsMap2014 : optionsMap2024;
+    const emptyReport = () => ({ attached: 0, featuresWithMads: 0, errors: [], unmatchedKeys: [] });
     const madReport = noMads
-        ? { attached: 0, featuresWithMads: 0, errors: [], unmatchedKeys: [] }
+        ? emptyReport()
         : applyMads(ruleset, data, featureMap, magicItemMap, resolveRef);
+    const optionsReport = noMads
+        ? emptyReport()
+        : applyOptions(data, optionsMap, resolveRef);
 
     const plan = filePlan(ruleset, data);
     const errors: string[] = [];
@@ -130,6 +135,8 @@ for (const ruleset of rulesets) {
     errors.push(...variantReport.errors);
     errors.push(...madReport.errors.map(e => `mads: ${e}`));
     errors.push(...madReport.unmatchedKeys.map(k => `mads: curated key matched nothing: ${k}`));
+    errors.push(...optionsReport.errors.map(e => `options: ${e}`));
+    errors.push(...optionsReport.unmatchedKeys.map(k => `options: curated key matched nothing: ${k}`));
     errors.push(...choiceWordingLint(data).map(e => `mads-lint: ${e}`));
 
     const gaps = noMads ? [] : coverageGaps(data);
@@ -138,6 +145,7 @@ for (const ruleset of rulesets) {
     console.log(`ids: preserved ${store.preserved}, minted ${store.minted}`);
     console.log(`variants: ${variantReport.expanded} concrete items from split combined entries`);
     console.log(`mads: ${madReport.attached} commands on ${madReport.featuresWithMads} features/items; coverage gaps: ${gaps.length}`);
+    console.log(`options: ${optionsReport.attached} options on ${optionsReport.featuresWithMads} features`);
     if (warnings.length) console.log(`warnings (${warnings.length}):\n  - ` + warnings.slice(0, 15).join("\n  - ") + (warnings.length > 15 ? `\n  ... +${warnings.length - 15} more` : ""));
     if (errors.length) {
         failed = true;

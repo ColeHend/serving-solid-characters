@@ -1,0 +1,123 @@
+@use '../../../../index.scss' as *;
+
+// ── Named sub-option picker (Invocations, Maneuvers…) rendered inside a MadChoiceControl row ──
+.optionPicker {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.optionHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.optionHint {
+  font-size: 0.75rem;
+  color: var(--codex-ink-dim);
+  font-family: $font-ui;
+}
+
+.optionSearch {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.82rem;
+
+  &:focus {
+    outline: none;
+    border-color: var(--codex-gold);
+  }
+}
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.optionCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--codex-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--codex-parchment);
+  font-family: $font-ui;
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--codex-gold);
+  }
+}
+
+.optionCardActive {
+  border-color: var(--codex-gold);
+  background: color-mix(in srgb, var(--codex-gold) 12%, transparent);
+}
+
+.optionCardDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.optionCardInvalid {
+  border-color: var(--error-color, #b3413e);
+}
+
+.optionCardTitle {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-weight: 600;
+  color: inherit;
+}
+
+.optionCardActive .optionCardTitle {
+  color: var(--codex-gold);
+}
+
+.optionPrereq {
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--codex-border);
+  border-radius: 999px;
+  color: var(--codex-ink-dim);
+}
+
+.optionPrereqUnmet {
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--error-color, #b3413e);
+  border-radius: 999px;
+  color: var(--error-color, #b3413e);
+}
+
+.optionCardDescription {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--codex-ink-dim);
+  white-space: pre-line;
+}
