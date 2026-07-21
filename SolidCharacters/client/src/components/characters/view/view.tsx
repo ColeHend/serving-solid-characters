@@ -238,10 +238,16 @@ const CharacterView: Component = () => {
     persistCharacter(updated);
   };
 
-  // Keep the URL on the shown character's id (and clear any legacy ?name= leftover).
+  // Keep the URL on the shown character's id (and clear any legacy ?name= leftover). Only write
+  // when the id actually changes — every mutation replaces currentCharacter with a fresh clone,
+  // and re-firing setSearchParam on each one is a needless router navigation per edit.
+  let lastSyncedId: string | undefined;
   createEffect(() => {
     const id = currentCharacter()?.id;
-    if (id) setSearchParam({ id, name: undefined });
+    if (id && id !== lastSyncedId) {
+      lastSyncedId = id;
+      setSearchParam({ id, name: undefined });
+    }
   });
 
   onMount(() => {

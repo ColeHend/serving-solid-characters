@@ -4,10 +4,12 @@ import { Character } from "../../../../models/character.model";
 import { Spell } from "../../../../models/generated";
 import { signed } from "../../../../shared/customHooks/utility/tools/dndMath";
 import { SheetDerived } from "./useSheetDerived";
-import { SectionCard, MiniStat, PipRow } from "./SheetCard";
+import { PipRow } from "./CoreTabParts/PipRow/PipRow";
 import { SpellTable } from "../SpellTable/SpellTable";
 import SpellModal from "../../../../shared/components/modals/spellModal/spellModal.component";
 import styles from "./sheet.module.scss";
+import { MiniStat } from "./CoreTabParts/MiniStat/MiniStat";
+import { SectionCard } from "./CoreTabParts/SectionCard/SectionCard";
 
 const ordinal = (n: number): string =>
   n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : `${n}th`;
