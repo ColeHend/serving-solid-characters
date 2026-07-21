@@ -8,7 +8,7 @@ import type { FeatureDetail, MadFeature as StoredMad, MagicItem } from "../../..
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, isFilterFormSpellMad, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount, choiceExpertiseMads, pendingExpertiseChoices, expertiseChoiceKey, choiceResistanceMads, pendingResistanceChoices, resistanceChoiceKey, choiceLanguageMads, pendingLanguageChoices, languageChoiceKey, featureGroupOptions, groupChoiceKey, pendingGroupChoice, activeFeatureMads } from "./useMadCharacters";
+import { addMadFeature, collectMadFeatures, collectMagicItemMads, useMadCharacters, choiceStatMads, pendingStatChoices, statChoiceKey, statChoiceCount, statChoicePicks, setStatPickAt, choiceProficiencyMads, pendingProficiencyChoices, proficiencyChoiceOptions, proficiencyChoiceCount, choiceSpellMads, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, spellChoiceCount, isFilterFormSpellMad, choiceItemMads, pendingItemChoices, itemChoiceKey, itemChoiceOptions, itemChoiceCount, choiceExpertiseMads, pendingExpertiseChoices, expertiseChoiceKey, choiceResistanceMads, pendingResistanceChoices, resistanceChoiceKey, choiceLanguageMads, pendingLanguageChoices, languageChoiceKey, featureGroupOptions, groupChoiceKey, pendingGroupChoice, activeFeatureMads, parseCountScaling, optionOwnerLevel, optionCount, optionChoiceKey, chosenOptionNames, optionPrereqMet, chosenOptionFeatures, pendingOptionChoice, characterMadFeatureSources, featureOptions } from "./useMadCharacters";
 import { MadFeature, MadType } from "./madModels";
 import { featureUsage, grantedActionUsage, actionUsesKey, resetFeatureUses, SHORT_REST, LONG_REST, RechargeType } from "./commands/useUsesFeature";
 import { rollBonusAmount } from "./commands/useRollBonusFeature";
@@ -310,7 +310,7 @@ describe("AddStats set mode and choice form", () => {
         expect(statChoiceKey({ id: "", name: "ASI" })).toBe("ASI");
     });
 
-    it("count=2 expands into one command per distinct pick and stays pending until complete", () => {
+    it("count=2 expands into one command per pick and stays pending until complete", () => {
         const choice = mad("AddStats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" });
         const feature: FeatureDetail = { id: "asi-2024", name: "Ability Score Improvement", description: "", metadata: { mads: stored(choice) } };
         const base = makeCharacter({ features: [feature] });
@@ -324,9 +324,12 @@ describe("AddStats set mode and choice form", () => {
         expect(collectMadFeatures(half)).toEqual([]);
         expect(pendingStatChoices(half, feature)).toHaveLength(1);
 
-        // duplicate picks are rejected — the abilities must be DIFFERENT
+        // the same ability picked twice stacks — an ASI can be +2 to one score
         const duped = makeCharacter({ ...base, statChoices: { "asi-2024": "int,int" } });
-        expect(collectMadFeatures(duped)).toEqual([]);
+        const dupedCollected = collectMadFeatures(duped);
+        expect(dupedCollected.map(m => m.value["stat"])).toEqual(["int", "int"]);
+        expect(pendingStatChoices(duped, feature)).toHaveLength(0);
+        expect(useMadCharacters(structuredClone(duped), dupedCollected).stats.int).toBe(12);
 
         // two distinct picks → two concrete +1 commands, +1 to each ability
         const picked = makeCharacter({ ...base, statChoices: { "asi-2024": "int,wis" } });
@@ -345,13 +348,15 @@ describe("AddStats set mode and choice form", () => {
         expect(statChoiceCount(mad("AddStats", { stat: "choice", options: "str", statValue: "1", count: "0" }))).toBe(1);
     });
 
-    it("statChoicePicks pads to count and setStatPickAt steals duplicates from other slots", () => {
+    it("statChoicePicks pads to count and setStatPickAt writes slots independently", () => {
         expect(statChoicePicks("int", 2)).toEqual(["int", ""]);
         expect(statChoicePicks("int,wis", 2)).toEqual(["int", "wis"]);
         expect(setStatPickAt(undefined, 0, "int", 2)).toBe("int,");
         expect(setStatPickAt("int,", 1, "wis", 2)).toBe("int,wis");
-        // re-picking slot 1 to the ability slot 0 holds clears slot 0 (distinct picks)
-        expect(setStatPickAt("int,wis", 1, "int", 2)).toBe(",int");
+        // re-picking slot 1 to the ability slot 0 holds keeps both — repeats are allowed (+2)
+        expect(setStatPickAt("int,wis", 1, "int", 2)).toBe("int,int");
+        // rewriting a slot to its current ability is a no-op
+        expect(setStatPickAt("str,", 0, "str", 2)).toBe("str,");
     });
 });
 
@@ -1186,5 +1191,204 @@ describe("branch groups (pick-one lineage)", () => {
         const feat = { id: "plain", name: "Plain", metadata: { mads: stored(mad("AddSpeed", { speed: "10" })) } } as FeatureDetail;
         const c = makeCharacter({ features: [feat] });
         expect(activeFeatureMads(c, feat)).toHaveLength(1);
+    });
+});
+
+describe("feature options (Eldritch Invocations / Maneuvers)", () => {
+    /** An invocations-style feature: pick-N named options, each with its own mads. */
+    function invocationsFeature(overrides: Partial<FeatureDetail["metadata"]> = {}): FeatureDetail {
+        return {
+            id: "inv-feat",
+            name: "Eldritch Invocations",
+            description: "",
+            metadata: {
+                mads: [],
+                optionsConfig: { label: "Invocation", countScaling: "2:2,5:3,7:4" },
+                options: [
+                    {
+                        name: "Armor of Shadows",
+                        description: "Cast mage armor at will.",
+                        mads: stored(mad("AddSpells", { ID: "mage-armor-id" })),
+                    },
+                    {
+                        name: "Devil's Sight",
+                        description: "See in darkness to 120 feet.",
+                        mads: stored(mad("AddSenses", { sense: "darkvision", range: "120" })),
+                    },
+                    {
+                        name: "Thirsting Blade",
+                        description: "Attack twice with your pact weapon.",
+                        prerequisites: { minLevel: 5, requiredFeature: "Pact of the Blade", text: "5th level, Pact of the Blade" },
+                        mads: [],
+                    },
+                    {
+                        name: "Eyes of the Rune Keeper",
+                        description: "You can read all writing.",
+                        mads: [],
+                    },
+                ],
+                ...overrides,
+            },
+        } as FeatureDetail;
+    }
+
+    /** A character whose warlock levels carry the feature (owner-level = warlock count). */
+    function warlock(levelCount: number, feature: FeatureDetail, extraLevels: { class: string; count: number }[] = []): Character {
+        const levels = Array.from({ length: levelCount }, (_, i) => ({
+            class: "Warlock", level: i + 1, hitDie: 8, features: i === 0 ? [feature] : [],
+        }));
+        for (const extra of extraLevels) {
+            for (let i = 0; i < extra.count; i++) {
+                levels.push({ class: extra.class, level: levels.length + 1, hitDie: 10, features: [] });
+            }
+        }
+        return makeCharacter({ levels: levels as Character["levels"] });
+    }
+
+    it("parseCountScaling picks the highest threshold at or below the level (0 below the lowest)", () => {
+        expect(parseCountScaling("2:2,5:3,7:4", 1)).toBe(0);
+        expect(parseCountScaling("2:2,5:3,7:4", 2)).toBe(2);
+        expect(parseCountScaling("2:2,5:3,7:4", 4)).toBe(2);
+        expect(parseCountScaling("2:2,5:3,7:4", 5)).toBe(3);
+        expect(parseCountScaling("2:2,5:3,7:4", 20)).toBe(4);
+        expect(parseCountScaling("garbage,5:3", 6)).toBe(3); // malformed pairs skipped
+        expect(parseCountScaling(undefined, 6)).toBe(0);
+    });
+
+    it("optionOwnerLevel counts the owning class's levels, not total level", () => {
+        const feat = invocationsFeature();
+        const c = warlock(5, feat, [{ class: "Fighter", count: 3 }]);
+        expect(c.levels).toHaveLength(8);
+        expect(optionOwnerLevel(c, feat)).toBe(5);
+    });
+
+    it("optionOwnerLevel falls back to total level for non-class features", () => {
+        const feat = invocationsFeature();
+        const c = makeCharacter({ levels: [
+            { class: "Fighter", level: 1, hitDie: 10, features: [] },
+            { class: "Fighter", level: 2, hitDie: 10, features: [] },
+        ] as Character["levels"], features: [feat] });
+        expect(optionOwnerLevel(c, feat)).toBe(2);
+    });
+
+    it("optionCount: countScaling wins over the static count; static count is the fallback", () => {
+        const scaled = invocationsFeature();
+        expect(optionCount(warlock(1, scaled), scaled)).toBe(0);
+        expect(optionCount(warlock(2, scaled), scaled)).toBe(2);
+        expect(optionCount(warlock(7, scaled), scaled)).toBe(4);
+
+        const flat = invocationsFeature({ optionsConfig: { label: "Pact Boon", count: 1 } });
+        expect(optionCount(warlock(3, flat), flat)).toBe(1);
+    });
+
+    it("chosen options apply their mads through the normal pipeline and appear as synthetic features", () => {
+        const feat = invocationsFeature();
+        const c = warlock(2, feat);
+        c.proficiencyChoices = { [optionChoiceKey(feat)]: "Armor of Shadows,Devil's Sight" };
+
+        const sources = characterMadFeatureSources(c);
+        expect(sources.map(f => f.name)).toContain("Armor of Shadows");
+        expect(sources.find(f => f.name === "Devil's Sight")?.metadata?.category).toBe("Invocation");
+
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.spells.some(s => (s.id ?? s.name) === "mage-armor-id" || s.name === "mage-armor-id")).toBe(true);
+        expect(applied.senses?.darkvision).toBe(120);
+    });
+
+    it("caps applied options at the current count but keeps stored picks", () => {
+        const feat = invocationsFeature();
+        const c = warlock(2, feat); // count 2
+        c.proficiencyChoices = { [optionChoiceKey(feat)]: "Armor of Shadows,Devil's Sight,Eyes of the Rune Keeper" };
+        expect(chosenOptionNames(c, feat)).toHaveLength(3);
+        expect(chosenOptionFeatures(c, feat).map(f => f.name)).toEqual(["Armor of Shadows", "Devil's Sight"]);
+    });
+
+    it("prerequisites gate application: minLevel and requiredFeature (unmet -> excluded, still stored)", () => {
+        const feat = invocationsFeature();
+        const c = warlock(2, feat);
+        c.proficiencyChoices = { [optionChoiceKey(feat)]: "Thirsting Blade" };
+        const option = featureOptions(feat).find(o => o.name === "Thirsting Blade")!;
+
+        expect(optionPrereqMet(c, feat, option)).toBe(false); // level 2 < 5, no pact
+        expect(chosenOptionFeatures(c, feat)).toEqual([]);
+
+        const atLevel = warlock(5, feat);
+        atLevel.proficiencyChoices = { [optionChoiceKey(feat)]: "Thirsting Blade" };
+        expect(optionPrereqMet(atLevel, feat, option)).toBe(false); // level ok, pact missing
+
+        atLevel.features = [{ id: "", name: "Pact of the Blade", description: "" } as FeatureDetail];
+        expect(optionPrereqMet(atLevel, feat, option)).toBe(true);
+        expect(chosenOptionFeatures(atLevel, feat).map(f => f.name)).toEqual(["Thirsting Blade"]);
+    });
+
+    it("requiredFeature matches an option chosen on ANOTHER feature (pact chosen as a Pact Boon option)", () => {
+        const pactBoon = {
+            id: "pact-boon", name: "Pact Boon", description: "",
+            metadata: {
+                mads: [],
+                optionsConfig: { label: "Pact Boon", count: 1 },
+                options: [
+                    { name: "Pact of the Blade", description: "Summon a pact weapon.", mads: [] },
+                    { name: "Pact of the Tome", description: "Gain a Book of Shadows.", mads: [] },
+                ],
+            },
+        } as unknown as FeatureDetail;
+        const inv = invocationsFeature();
+        const c = warlock(5, inv);
+        c.levels[0].features.push(pactBoon);
+        c.proficiencyChoices = {
+            [optionChoiceKey(pactBoon)]: "Pact of the Blade",
+            [optionChoiceKey(inv)]: "Thirsting Blade",
+        };
+
+        const option = featureOptions(inv).find(o => o.name === "Thirsting Blade")!;
+        expect(optionPrereqMet(c, inv, option)).toBe(true);
+        expect(chosenOptionFeatures(c, inv).map(f => f.name)).toEqual(["Thirsting Blade"]);
+    });
+
+    it("pendingOptionChoice tracks missing/invalid picks and clears when full", () => {
+        const feat = invocationsFeature();
+        const below = warlock(1, feat); // count 0 -> nothing to pick
+        expect(pendingOptionChoice(below, feat)).toBe(false);
+
+        const c = warlock(2, feat); // count 2
+        expect(pendingOptionChoice(c, feat)).toBe(true);
+        c.proficiencyChoices = { [optionChoiceKey(feat)]: "Armor of Shadows" };
+        expect(pendingOptionChoice(c, feat)).toBe(true);
+        c.proficiencyChoices = { [optionChoiceKey(feat)]: "Armor of Shadows,Devil's Sight" };
+        expect(pendingOptionChoice(c, feat)).toBe(false);
+        // A stale pick (unknown option) doesn't count toward the quota.
+        c.proficiencyChoices = { [optionChoiceKey(feat)]: "Armor of Shadows,Renamed Away" };
+        expect(pendingOptionChoice(c, feat)).toBe(true);
+    });
+
+    it("resolves a nested choice-form mad inside a chosen option via the synthetic feature's key", () => {
+        const feat = invocationsFeature({
+            options: [{
+                name: "Pact of the Tome",
+                description: "Choose three cantrips.",
+                mads: stored(mad("AddSpells", { ID: "choice", count: "2", spellLevel: "0", options: "c1,c2,c3" })),
+            }],
+        });
+        const c = warlock(3, feat);
+        c.proficiencyChoices = { [optionChoiceKey(feat)]: "Pact of the Tome" };
+
+        // Unresolved nested pick -> the spell command must NOT apply.
+        expect(collectMadFeatures(c).filter(m => m.command === "AddSpells")).toEqual([]);
+
+        // The synthetic feature (id "", name = option name) keys the nested choice.
+        c.spellChoices = { "Pact of the Tome::0": "c1,c3" };
+        const spells = collectMadFeatures(c).filter(m => m.command === "AddSpells");
+        expect(spells.map(m => m.value["ID"])).toEqual(["c1", "c3"]);
+    });
+
+    it("options never expand recursively (synthetic features carry no options)", () => {
+        const feat = invocationsFeature();
+        const c = warlock(2, feat);
+        c.proficiencyChoices = { [optionChoiceKey(feat)]: "Armor of Shadows,Devil's Sight" };
+        const sources = characterMadFeatureSources(c);
+        // base feature + 2 synthetic options and nothing more
+        expect(sources.filter(f => f.name === "Armor of Shadows")).toHaveLength(1);
+        expect(sources).toHaveLength(1 + 2);
     });
 });

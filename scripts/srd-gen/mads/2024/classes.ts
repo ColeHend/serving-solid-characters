@@ -16,16 +16,17 @@ import type { CommandSpecInput, MadMap } from "../spec.ts";
  *  - Uses.amount is the count granted at THIS feature; per-level scaling stays in the class table.
  *    Where the count is an ability modifier ("equal to your Charisma modifier, minimum of once") we
  *    approximate with the minimum "1" and flag it — the modifier isn't representable.
- *  - Ability Score Improvement (the 2024 feat) → choice-form +1 to two DIFFERENT abilities
- *    (count: "2"; the sheet lets the player pick two distinct abilities).
+ *  - Ability Score Improvement (the 2024 feat) → choice-form Stats with two +1 picks
+ *    (count: "2"; the same ability may be picked twice for the "+2 to one score" form).
  *  - Extra-attack chains: each distinctly named feature adds the DELTA so the cumulative total is
  *    right (base 1 attack + Extra Attack +1 = 2; + Two Extra Attacks +1 = 3; + Three Extra Attacks +1 = 4).
  *
  * SKIPPED (no fitting category / player-or-DM choice / situational — see inline comments):
- *  Weapon Mastery (choice of weapons), Fighting Style & Metamagic & Eldritch Invocations (choice of
- *  option/feat), Epic Boon (choice of feat), condition immunities (Immunities is damage-type only),
+ *  Weapon Mastery (choice of weapons), Fighting Style & Metamagic (choice of option/feat),
+ *  Epic Boon (choice of feat), condition immunities (Immunities is damage-type only),
  *  flat save bonuses, temp-HP / damage riders / rerolls, "while raging"-style situational effects,
  *  and choice-dependent spell/resistance grants.
+ *  Eldritch Invocations are curated as an OPTION list in mads/2024/invocations.ts.
  */
 
 // ---- tiny authoring helpers (all value fields are strings) ----
@@ -51,7 +52,7 @@ const adv = (rollType: string, extra: Record<string, string> = {}): CommandSpecI
 // description = a short cost/condition qualifier when the grant isn't unconditional
 const action = (name: string, actionType: string, source?: string, description?: string): CommandSpecInput =>
     add("Actions", { name, actionType, source: source ?? name, ...(description ? { description } : {}) });
-// 2024 ASI feat: +1 to two DIFFERENT abilities of the player's choice (count picks, distinct).
+// 2024 ASI feat: two +1 picks of the player's choice; the same ability twice = +2 (count picks, repeats allowed).
 const asi = (): CommandSpecInput => add("Stats", { stat: "choice", options: "str,dex,con,int,wis,cha", statValue: "1", count: "2" });
 // choice-form Expertise: the player picks N skills (the sheet limits the picker to proficient skills).
 const expertiseChoice = (options: string, count: string): CommandSpecInput =>
@@ -219,8 +220,9 @@ export const map: MadMap = {
     "Warlock/Contact Patron": [spell("Contact Other Plane"), uses("1", "Long Rest")],
     "Warlock/Mystic Arcanum (level 6 spell)": [uses("1", "Long Rest")], // the chosen arcanum spell is a choice → skip
     "Warlock/Ability Score Improvement": [asi()],
-    // skip: Eldritch Invocations (choice), Pact Magic, Mystic Arcanum (level 7/8/9 spell) (extra uses =
-    //       scaling of the same resource), Eldritch Master, Epic Boon.
+    // skip: Pact Magic, Mystic Arcanum (level 7/8/9 spell) (extra uses = scaling of the same
+    //       resource), Eldritch Master, Epic Boon.
+    // Eldritch Invocations are curated as an OPTION list in mads/2024/invocations.ts.
 
     // ============================================================ Wizard
     "Wizard/Arcane Recovery": [uses("1", "Long Rest")],

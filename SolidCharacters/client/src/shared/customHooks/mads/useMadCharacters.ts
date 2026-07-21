@@ -1,5 +1,5 @@
 import { Character, GrantedAction, itemRefId, itemRefName } from "../../../models/character.model";
-import { MagicItem } from "../../../models/generated";
+import { FeatureDetail, MagicItem } from "../../../models/generated";
 import { entitySelectorKey } from "../utility/tools/entityKey";
 import { hasDerivedSpellPool, hasSpellFilterValue } from "./spellChoiceFilters";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
@@ -27,7 +27,7 @@ import { AddSpellFeature, RemoveSpellFeature } from "./commands/useSpellFeature"
 import { addStatFeature, removeStatFeature } from "./commands/useStatFeature";
 import { addUsesFeature, removeUsesFeature } from "./commands/useUsesFeature";
 import { addVulnerabilityFeature, removeVulnerabilityFeature } from "./commands/useVulnerabilitiesFeature";
-import { MadFeature, MadType } from "./madModels";
+import { FeatureOption, MadFeature, MadType, OptionsConfig } from "./madModels";
 
 // this hook should return a character with its MAD attributes applied, so that the character sheet can be rendered with the MAD features included. It should also be memoized to prevent unnecessary recalculations when the character or MAD features haven't changed.
 export function useMadCharacters(character: Character, madFeatures: MadFeature[]): Character;
@@ -225,7 +225,7 @@ export function statChoiceOptions(m: MadFeature): string[] {
     return (m.value?.["options"] ?? "").split(",").map(s => s.trim()).filter(Boolean);
 }
 
-/** How many DISTINCT abilities the player picks (defaults to 1). */
+/** How many abilities the player picks (defaults to 1). */
 export function statChoiceCount(m: MadFeature): number {
     const n = Number(m.value?.["count"] ?? "1");
     return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
@@ -240,14 +240,11 @@ export function statChoicePicks(csv: string | undefined, count: number): string[
 
 /**
  * A statChoices CSV with `ability` written into slot `index` — the shared write path for the
- * per-slot dropdown UIs. Picks must be DISTINCT: choosing an ability already held by another
- * slot clears that other slot rather than silently keeping a duplicate.
+ * per-slot dropdown UIs. Repeats are allowed: picking the same ability in two slots stacks
+ * (an ASI can be +2 to one score instead of +1 to two).
  */
 export function setStatPickAt(csv: string | undefined, index: number, ability: string, count: number): string {
     const picks = statChoicePicks(csv, Math.max(count, index + 1));
-    for (let i = 0; i < picks.length; i++) {
-        if (i !== index && ability && picks[i] === ability) picks[i] = "";
-    }
     picks[index] = ability;
     return picks.join(",");
 }
@@ -264,14 +261,13 @@ export function statChoiceKey(feature: { id?: string; name: string }): string {
 /**
  * A choice-form Stats command EXPANDED into one concrete command per picked ability
  * (character.statChoices holds a CSV of picks, keyed by statChoiceKey) — or null while the
- * picks are missing/incomplete/duplicated/invalid, in which case the command must NOT apply.
- * Picks must be DISTINCT ("increase two different ability scores").
+ * picks are missing/incomplete/invalid, in which case the command must NOT apply.
+ * The same ability may be picked more than once and stacks (+1 twice = +2).
  */
 function resolveChoiceStatMads(character: Character, choiceKey: string, m: MadFeature): MadFeature[] | null {
     const picks = (character.statChoices?.[choiceKey] ?? "").split(",").map(s => s.trim()).filter(Boolean);
     const options = statChoiceOptions(m);
     if (picks.length !== statChoiceCount(m)) return null;
-    if (new Set(picks).size !== picks.length) return null;
     if (!picks.every(p => options.includes(p))) return null;
     return picks.map(pick => ({ ...m, value: { ...m.value, stat: pick } }));
 }
@@ -613,6 +609,134 @@ export function pendingItemChoices(character: Character, feature: { id?: string;
     return choiceItemMads(feature).filter(m => !resolveChoiceItemMads(character, feature, m));
 }
 
+// ---- feature options ("pick N named sub-options": Eldritch Invocations, Maneuvers, Metamagic…) ----
+
+/** Loose feature shape the option helpers accept (metadata may come from generated or homebrew models). */
+type OptionFeatureRef = { id?: string; name: string; metadata?: { mads?: unknown; options?: unknown; optionsConfig?: unknown } };
+
+/** The pickable sub-options a feature carries (empty when it has none). */
+export function featureOptions(feature: OptionFeatureRef): FeatureOption[] {
+    return ((feature.metadata?.options ?? []) as FeatureOption[]).filter(o => (o?.name ?? "").trim());
+}
+
+export function featureOptionsConfig(feature: OptionFeatureRef): OptionsConfig {
+    return (feature.metadata?.optionsConfig ?? {}) as OptionsConfig;
+}
+
+/**
+ * Picks the count out of a "level:count" scaling string ("2:2,5:3,7:4" = 2 known at levels 2-4,
+ * 3 at 5-6…): the count of the highest threshold at or below `level`, 0 below the lowest
+ * (a level-1 warlock knows no invocations). Malformed pairs are skipped.
+ */
+export function parseCountScaling(scaling: string | undefined, level: number): number {
+    let best = 0;
+    let bestLevel = -1;
+    for (const pair of (scaling ?? "").split(",")) {
+        const [lvlRaw, countRaw] = pair.split(":");
+        const lvl = Number(lvlRaw?.trim());
+        const count = Number(countRaw?.trim());
+        if (!Number.isFinite(lvl) || !Number.isFinite(count) || count < 0) continue;
+        if (lvl <= level && lvl > bestLevel) {
+            bestLevel = lvl;
+            best = Math.floor(count);
+        }
+    }
+    return best;
+}
+
+/**
+ * The level option counts and prerequisites scale against: the level in the feature's OWNING
+ * class (a Warlock 5/Fighter 3 knows 3 invocations, not 5). Found by locating the level entry
+ * carrying this feature and counting entries of the same class; race/background/feat features
+ * (and anything unfound) fall back to total character level. NOTE: character.level is a
+ * prototype getter that structuredClone/Dexie strip — always count `levels` directly.
+ */
+export function optionOwnerLevel(character: Character, feature: OptionFeatureRef): number {
+    const levels = character.levels ?? [];
+    const key = statChoiceKey(feature);
+    const owner = levels.find(l => (l.features ?? []).some(f => f === feature || statChoiceKey(f) === key));
+    if (!owner?.class) return levels.length;
+    return levels.filter(l => l.class === owner.class).length;
+}
+
+/** How many options the player may have chosen right now: countScaling when set, else the static count. */
+export function optionCount(character: Character, feature: OptionFeatureRef): number {
+    const config = featureOptionsConfig(feature);
+    if ((config.countScaling ?? "").trim()) {
+        return parseCountScaling(config.countScaling, optionOwnerLevel(character, feature));
+    }
+    const n = Number(config.count ?? 0);
+    return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+}
+
+/** The character.proficiencyChoices key holding a feature's chosen option names (CSV). */
+export function optionChoiceKey(feature: OptionFeatureRef): string {
+    return `${statChoiceKey(feature)}::options`;
+}
+
+/** The option names the player has picked for a feature (may include stale/invalid names). */
+export function chosenOptionNames(character: Character, feature: OptionFeatureRef): string[] {
+    return (character.proficiencyChoices?.[optionChoiceKey(feature)] ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+/**
+ * Whether the character qualifies for an option. minLevel checks the owning class's level;
+ * requiredFeature matches (case-insensitively) any feature name on the character INCLUDING
+ * chosen option names — so "Thirsting Blade requires Pact of the Blade" holds when the pact
+ * is itself a chosen option. Chosen names are matched raw (not prereq-filtered) to keep the
+ * check non-recursive. `text` is display-only.
+ */
+export function optionPrereqMet(character: Character, feature: OptionFeatureRef, option: FeatureOption): boolean {
+    const prereq = option.prerequisites;
+    if (!prereq) return true;
+    if (prereq.minLevel && optionOwnerLevel(character, feature) < prereq.minLevel) return false;
+    const wanted = (prereq.requiredFeature ?? "").trim().toLowerCase();
+    if (wanted) {
+        const base = baseMadFeatureSources(character);
+        const hasFeature = base.some(f => (f.name ?? "").trim().toLowerCase() === wanted);
+        const hasOption = base.some(f => chosenOptionNames(character, f).some(n => n.toLowerCase() === wanted));
+        if (!hasFeature && !hasOption) return false;
+    }
+    return true;
+}
+
+/**
+ * The chosen options of a feature as synthetic inert features — name + description on the card,
+ * the option's mads in metadata — capped at the current optionCount. Feeding these through
+ * characterMadFeatureSources is what makes options display, apply, and resolve nested choice
+ * pickers through the one existing pipeline. Stale picks (unknown names, unmet prerequisites)
+ * are skipped here but stay stored, so the picker can show them for correction.
+ */
+export function chosenOptionFeatures(character: Character, feature: OptionFeatureRef): FeatureDetail[] {
+    const options = featureOptions(feature);
+    if (options.length === 0) return [];
+    const count = optionCount(character, feature);
+    const label = (featureOptionsConfig(feature).label ?? "").trim();
+    const byName = new Map(options.map(o => [o.name.trim().toLowerCase(), o]));
+    const out: FeatureDetail[] = [];
+    for (const name of chosenOptionNames(character, feature)) {
+        if (out.length >= count) break;
+        const option = byName.get(name.toLowerCase());
+        if (!option || !optionPrereqMet(character, feature, option)) continue;
+        out.push({
+            id: "",
+            name: option.name,
+            description: option.description ?? "",
+            metadata: {
+                mads: (option.mads ?? []) as unknown as NonNullable<FeatureDetail["metadata"]>["mads"],
+                category: label || undefined,
+            },
+        });
+    }
+    return out;
+}
+
+/** True while a feature's option list still needs (more) valid picks from the player. */
+export function pendingOptionChoice(character: Character, feature: OptionFeatureRef): boolean {
+    if (featureOptions(feature).length === 0) return false;
+    return chosenOptionFeatures(character, feature).length < optionCount(character, feature);
+}
+
 /**
  * Every Character-type mad across all of a character's feature sources
  * (class levels, race, and top-level features), ready to feed useMadCharacters.
@@ -626,13 +750,21 @@ export function pendingItemChoices(character: Character, feature: { id?: string;
  * equipment proficiencies and the view page's feature list reuse it, so a new source is
  * added here once, not in four hand-maintained copies.
  */
-export function characterMadFeatureSources(character: Character) {
+function baseMadFeatureSources(character: Character) {
     return [
         ...(character.levels ?? []).flatMap(l => l.features ?? []),
         ...(character.race?.features ?? []),
         ...(character.backgroundFeatures ?? []),
         ...(character.features ?? []),
     ];
+}
+
+export function characterMadFeatureSources(character: Character) {
+    const base = baseMadFeatureSources(character);
+    // Chosen feature-options expand into synthetic features AFTER the base list so their mads,
+    // sheet cards, and nested choice pickers ride the same pipeline as real features. Synthetic
+    // features never carry options themselves, so the expansion cannot recurse.
+    return [...base, ...base.flatMap(f => chosenOptionFeatures(character, f))];
 }
 
 export function collectMadFeatures(character: Character): MadFeature[] {

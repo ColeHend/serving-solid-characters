@@ -439,3 +439,22 @@ describe("stripInvalidMads", () => {
         expect((entity as Feat).details.metadata!.mads).toHaveLength(3);
     });
 });
+
+describe("feature options are inert to the AI validate pipeline", () => {
+    it("validateMads/stripInvalidMads ignore metadata.options and never strip them", () => {
+        const feat = featWith([mad({})]);
+        feat.details.metadata!.optionsConfig = { label: "Invocation", countScaling: "2:2,5:3" };
+        feat.details.metadata!.options = [{
+            name: "Armor of Shadows",
+            description: "Cast mage armor at will.",
+            mads: [mad({ command: "AddSpells", value: { ID: "sp1" } })],
+        }];
+
+        const verdict = validateMads("feat", feat as never);
+        expect(verdict.errors).toEqual([]);
+
+        const stripped = stripInvalidMads("feat", feat as never) as unknown as Feat;
+        expect(stripped.details.metadata!.options).toEqual(feat.details.metadata!.options);
+        expect(stripped.details.metadata!.optionsConfig).toEqual({ label: "Invocation", countScaling: "2:2,5:3" });
+    });
+});

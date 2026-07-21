@@ -5203,14 +5203,571 @@
     {
      "id": "351119ca-be00-4798-8dfe-4b4505b2a33b",
      "name": "Eldritch Invocations",
-     "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability.\n\nAt 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table.\n\nAdditionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level."
+     "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability.\n\nAt 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table.\n\nAdditionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level.",
+     "metadata": {
+      "options": [
+       {
+        "name": "Agonizing Blast",
+        "description": "When you cast eldritch blast, add your Charisma modifier to the damage it deals on a hit.",
+        "prerequisites": {
+         "text": "Eldritch Blast cantrip"
+        },
+        "mads": []
+       },
+       {
+        "name": "Armor of Shadows",
+        "description": "You can cast mage armor on yourself at will, without expending a spell slot or material components.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "397e2293-3e2a-4262-8800-d48557a8f51d"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Ascendant Step",
+        "description": "You can cast levitate on yourself at will, without expending a spell slot or material components.",
+        "prerequisites": {
+         "minLevel": 9,
+         "text": "9th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "b47c3aa0-62a3-4a88-bdf8-f0336ce8be37"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Beast Speech",
+        "description": "You can cast speak with animals at will, without expending a spell slot.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "c0dda6ba-893a-43d2-bd7c-7e743612562a"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Beguiling Influence",
+        "description": "You gain proficiency in the Deception and Persuasion skills.",
+        "mads": [
+         {
+          "command": "AddProficiencies",
+          "value": {
+           "proficiency": "Deception"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         },
+         {
+          "command": "AddProficiencies",
+          "value": {
+           "proficiency": "Persuasion"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Bewitching Whispers",
+        "description": "You can cast compulsion once using a warlock spell slot. You can't do so again until you finish a long rest.",
+        "prerequisites": {
+         "minLevel": 7,
+         "text": "7th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "24a249fe-0e79-402b-8f79-f6adecd1305e"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Book of Ancient Secrets",
+        "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list. With your Book of Shadows in hand, you can cast the chosen spells as rituals, and you can add other ritual spells you find to the book.",
+        "prerequisites": {
+         "requiredFeature": "Pact of the Tome",
+         "text": "Pact of the Tome feature"
+        },
+        "mads": []
+       },
+       {
+        "name": "Chains of Carceri",
+        "description": "You can cast hold monster at will — targeting a celestial, fiend, or elemental — without expending a spell slot or material components. You must finish a long rest before you can use this invocation on the same creature again.",
+        "prerequisites": {
+         "minLevel": 15,
+         "requiredFeature": "Pact of the Chain",
+         "text": "15th level, Pact of the Chain feature"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "4a7ca521-3551-48cd-88fd-86663523191a"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Devil's Sight",
+        "description": "You can see normally in darkness, both magical and nonmagical, to a distance of 120 feet.",
+        "mads": [
+         {
+          "command": "AddSenses",
+          "value": {
+           "sense": "darkvision",
+           "range": "120"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Dreadful Word",
+        "description": "You can cast confusion once using a warlock spell slot. You can't do so again until you finish a long rest.",
+        "prerequisites": {
+         "minLevel": 7,
+         "text": "7th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "d8c0b697-8189-4b3e-98ae-f0d1e9721f40"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Eldritch Sight",
+        "description": "You can cast detect magic at will, without expending a spell slot.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "2f7742e4-9e55-424e-8163-e6db269af689"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Eldritch Spear",
+        "description": "When you cast eldritch blast, its range is 300 feet.",
+        "prerequisites": {
+         "text": "Eldritch Blast cantrip"
+        },
+        "mads": []
+       },
+       {
+        "name": "Eyes of the Rune Keeper",
+        "description": "You can read all writing.",
+        "mads": []
+       },
+       {
+        "name": "Fiendish Vigor",
+        "description": "You can cast false life on yourself at will as a 1st-level spell, without expending a spell slot or material components.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "c779f454-6ad1-4a2c-ad02-3188a8b29b3d"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Gaze of Two Minds",
+        "description": "You can use your action to touch a willing humanoid and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can use your action on subsequent turns to maintain this connection. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you are blinded and deafened to your own surroundings.",
+        "mads": [
+         {
+          "command": "AddActions",
+          "value": {
+           "name": "Gaze of Two Minds",
+           "actionType": "action",
+           "description": "Touch a willing humanoid and perceive through its senses until the end of your next turn.",
+           "source": "Gaze of Two Minds"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Lifedrinker",
+        "description": "When you hit a creature with your pact weapon, the creature takes extra necrotic damage equal to your Charisma modifier (minimum 1).",
+        "prerequisites": {
+         "minLevel": 12,
+         "requiredFeature": "Pact of the Blade",
+         "text": "12th level, Pact of the Blade feature"
+        },
+        "mads": []
+       },
+       {
+        "name": "Mask of Many Faces",
+        "description": "You can cast disguise self at will, without expending a spell slot.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "a1bd5899-5d77-4ef0-bc29-7c14ec924b06"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Master of Myriad Forms",
+        "description": "You can cast alter self at will, without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 15,
+         "text": "15th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "6521dca9-c3f2-43ab-a98c-946cac108b0a"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Minions of Chaos",
+        "description": "You can cast conjure elemental once using a warlock spell slot. You can't do so again until you finish a long rest.",
+        "prerequisites": {
+         "minLevel": 9,
+         "text": "9th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "65759a43-2d53-43f4-ad03-6cd9eb218886"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Mire the Mind",
+        "description": "You can cast slow once using a warlock spell slot. You can't do so again until you finish a long rest.",
+        "prerequisites": {
+         "minLevel": 5,
+         "text": "5th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "73353c1f-592a-40df-acc1-e174e6cb2cdf"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Misty Visions",
+        "description": "You can cast silent image at will, without expending a spell slot or material components.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "4e87c202-0e16-4cde-8684-1215de168bcb"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "One with Shadows",
+        "description": "When you are in an area of dim light or darkness, you can use your action to become invisible until you move or take an action or a reaction.",
+        "prerequisites": {
+         "minLevel": 5,
+         "text": "5th level"
+        },
+        "mads": [
+         {
+          "command": "AddActions",
+          "value": {
+           "name": "One with Shadows",
+           "actionType": "action",
+           "description": "While in dim light or darkness, become invisible until you move or take an action or a reaction.",
+           "source": "One with Shadows"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Otherworldly Leap",
+        "description": "You can cast jump on yourself at will, without expending a spell slot or material components.",
+        "prerequisites": {
+         "minLevel": 9,
+         "text": "9th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "4c1181d2-cdf8-4d0e-b1d7-2002f11bda5a"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Repelling Blast",
+        "description": "When you hit a creature with eldritch blast, you can push the creature up to 10 feet away from you in a straight line.",
+        "prerequisites": {
+         "text": "Eldritch Blast cantrip"
+        },
+        "mads": []
+       },
+       {
+        "name": "Sculptor of Flesh",
+        "description": "You can cast polymorph once using a warlock spell slot. You can't do so again until you finish a long rest.",
+        "prerequisites": {
+         "minLevel": 7,
+         "text": "7th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "cba22362-7ec8-4711-a34d-a9b80eb2e94f"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Sign of Ill Omen",
+        "description": "You can cast bestow curse once using a warlock spell slot. You can't do so again until you finish a long rest.",
+        "prerequisites": {
+         "minLevel": 5,
+         "text": "5th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "3b733caa-4b3c-41fe-b202-3fb4ce67ff10"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Thief of Five Fates",
+        "description": "You can cast bane once using a warlock spell slot. You can't do so again until you finish a long rest.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "d6aa2c75-cb44-441e-bf2d-85f1295b9bd0"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Thirsting Blade",
+        "description": "You can attack with your pact weapon twice, instead of once, whenever you take the Attack action on your turn.",
+        "prerequisites": {
+         "minLevel": 5,
+         "requiredFeature": "Pact of the Blade",
+         "text": "5th level, Pact of the Blade feature"
+        },
+        "mads": []
+       },
+       {
+        "name": "Visions of Distant Realms",
+        "description": "You can cast arcane eye at will, without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 15,
+         "text": "15th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "aad01900-0f96-4ad1-8e75-e160b4d48930"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Voice of the Chain Master",
+        "description": "You can communicate telepathically with your familiar and perceive through your familiar's senses as long as you are on the same plane of existence. Additionally, while perceiving through your familiar's senses, you can also speak through your familiar in your own voice.",
+        "prerequisites": {
+         "requiredFeature": "Pact of the Chain",
+         "text": "Pact of the Chain feature"
+        },
+        "mads": []
+       },
+       {
+        "name": "Whispers of the Grave",
+        "description": "You can cast speak with dead at will, without expending a spell slot.",
+        "prerequisites": {
+         "minLevel": 9,
+         "text": "9th level"
+        },
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "280f5afe-32f3-42e6-b21f-57ef9b4122e5"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Witch Sight",
+        "description": "You can see the true form of any shapechanger or creature concealed by illusion or transmutation magic while the creature is within 30 feet of you and within line of sight.",
+        "prerequisites": {
+         "minLevel": 15,
+         "text": "15th level"
+        },
+        "mads": []
+       }
+      ],
+      "optionsConfig": {
+       "label": "Invocation",
+       "countScaling": "2:2,5:3,7:4,9:5,12:6,15:7,18:8"
+      }
+     }
     }
    ],
    "3": [
     {
      "id": "f3c7b761-9278-4070-8905-301096dbe08a",
      "name": "Pact Boon",
-     "description": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice.\nPact of the Chain. You learn the *find familiar* spell and can cast it as a ritual. The spell doesn't count against your number of spells known.\n\nWhen you cast the spell, you can choose one of the normal forms for your familiar or one of the following special forms: imp, pseudodragon, quasit, or sprite.\n\nAdditionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack with its reaction.\nPact of the Blade. You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it. You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.\n\nYour pact weapon disappears if it is more than 5 feet away from you for 1 minute or more. It also disappears if you use this feature again, if you dismiss the weapon (no action required), or if you die.\n\nYou can transform one magic weapon into your pact weapon by performing a special ritual while you hold the weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. You can then dismiss the weapon, shunting it into an extradimensional space, and it appears whenever you create your pact weapon thereafter. You can't affect an artifact or a sentient weapon in this way. The weapon ceases being your pact weapon if you die, if you perform the 1-hour ritual on a different weapon, or if you use a 1-hour ritual to break your bond to it. The weapon appears at your feet if it is in the extradimensional space when the bond breaks.\nPact of the Tome. Your patron gives you a grimoire called a Book of Shadows. When you gain this feature, choose three cantrips from any class's spell list (the three needn't be from the same list). While the book is on your person, you can cast those cantrips at will. They don't count against your number of cantrips known. If they don't appear on the warlock spell list, they are nonetheless warlock spells for you.\n\nIf you lose your Book of Shadows, you can perform a 1-hour ceremony to receive a replacement from your patron. This ceremony can be performed during a short or long rest, and it destroys the previous book. The book turns to ash when you die."
+     "description": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice.\nPact of the Chain. You learn the *find familiar* spell and can cast it as a ritual. The spell doesn't count against your number of spells known.\n\nWhen you cast the spell, you can choose one of the normal forms for your familiar or one of the following special forms: imp, pseudodragon, quasit, or sprite.\n\nAdditionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack with its reaction.\nPact of the Blade. You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it. You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.\n\nYour pact weapon disappears if it is more than 5 feet away from you for 1 minute or more. It also disappears if you use this feature again, if you dismiss the weapon (no action required), or if you die.\n\nYou can transform one magic weapon into your pact weapon by performing a special ritual while you hold the weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. You can then dismiss the weapon, shunting it into an extradimensional space, and it appears whenever you create your pact weapon thereafter. You can't affect an artifact or a sentient weapon in this way. The weapon ceases being your pact weapon if you die, if you perform the 1-hour ritual on a different weapon, or if you use a 1-hour ritual to break your bond to it. The weapon appears at your feet if it is in the extradimensional space when the bond breaks.\nPact of the Tome. Your patron gives you a grimoire called a Book of Shadows. When you gain this feature, choose three cantrips from any class's spell list (the three needn't be from the same list). While the book is on your person, you can cast those cantrips at will. They don't count against your number of cantrips known. If they don't appear on the warlock spell list, they are nonetheless warlock spells for you.\n\nIf you lose your Book of Shadows, you can perform a 1-hour ceremony to receive a replacement from your patron. This ceremony can be performed during a short or long rest, and it destroys the previous book. The book turns to ash when you die.",
+     "metadata": {
+      "options": [
+       {
+        "name": "Pact of the Chain",
+        "description": "You learn the find familiar spell and can cast it as a ritual. The spell doesn't count against your number of spells known. When you cast the spell, you can choose one of the normal forms for your familiar or one of the following special forms: imp, pseudodragon, quasit, or sprite. Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack with its reaction.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "f359b105-cee8-4b71-834b-502b3026c2f0"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Pact of the Blade",
+        "description": "You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it. You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+        "mads": [
+         {
+          "command": "AddActions",
+          "value": {
+           "name": "Create Pact Weapon",
+           "actionType": "action",
+           "description": "Create a pact weapon in your empty hand, choosing its melee form. You are proficient with it while you wield it.",
+           "source": "Create Pact Weapon"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       },
+       {
+        "name": "Pact of the Tome",
+        "description": "Your patron gives you a grimoire called a Book of Shadows. Choose three cantrips from any class's spell list. While the book is on your person, you can cast those cantrips at will. They don't count against your number of cantrips known.",
+        "mads": [
+         {
+          "command": "AddSpells",
+          "value": {
+           "ID": "choice",
+           "count": "3",
+           "spellLevel": "0",
+           "filterLevel": "0"
+          },
+          "type": 0,
+          "prerequisites": [],
+          "group": 0
+         }
+        ]
+       }
+      ],
+      "optionsConfig": {
+       "label": "Pact Boon",
+       "count": 1
+      }
+     }
     }
    ],
    "4": [

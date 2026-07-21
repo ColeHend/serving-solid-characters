@@ -378,7 +378,7 @@ const CoreTab: Component<CoreTabProps> = (props) => {
                       if (val && val !== pick()) props.chooseStatAt(statChoiceKey(featureProps.feature), i, val, count);
                     })}
                   >
-                    <For each={statChoiceOptions(mad).filter((key) => key === pick() || !picks().includes(key))}>
+                    <For each={statChoiceOptions(mad)}>
                       {(key) => <Option value={key}>{STAT_LABELS[key] ?? key}</Option>}
                     </For>
                   </Select>

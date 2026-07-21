@@ -35,6 +35,37 @@ public class FeatureMetadata
   [JsonProperty("spells")] public List<string>? Spells { get; set; }
   [JsonProperty("category")] public string? Category { get; set; }
   [JsonProperty("mads")] public List<MadFeature>? Mads {get; set;}
+  /// <summary>Named sub-options the player picks from (Eldritch Invocations, Maneuvers, Metamagic…).</summary>
+  [JsonProperty("options")] public List<FeatureOption>? Options { get; set; }
+  [JsonProperty("optionsConfig")] public OptionsConfig? OptionsConfig { get; set; }
+}
+
+/// <summary>One pickable sub-option of a feature; a chosen option grants its description and mads.</summary>
+public class FeatureOption
+{
+  [JsonProperty("name")] public string Name { get; set; } = null!;
+  [JsonProperty("description")] public string Description { get; set; } = null!;
+  [JsonProperty("prerequisites")] public OptionPrerequisite? Prerequisites { get; set; }
+  [JsonProperty("mads")] public List<MadFeature>? Mads { get; set; }
+}
+
+public class OptionPrerequisite
+{
+  /// <summary>Minimum level in the owning class (total level for non-class features).</summary>
+  [JsonProperty("minLevel")] public int? MinLevel { get; set; }
+  /// <summary>Feature (or other chosen option) the character must have, matched by name.</summary>
+  [JsonProperty("requiredFeature")] public string? RequiredFeature { get; set; }
+  /// <summary>Display-only prerequisite text, e.g. "Pact of the Blade feature".</summary>
+  [JsonProperty("text")] public string? Text { get; set; }
+}
+
+public class OptionsConfig
+{
+  /// <summary>What one option is called, e.g. "Invocation", "Maneuver".</summary>
+  [JsonProperty("label")] public string? Label { get; set; }
+  [JsonProperty("count")] public int? Count { get; set; }
+  /// <summary>Level-scaled pick count as "level:count" pairs, e.g. "2:2,5:3,7:4".</summary>
+  [JsonProperty("countScaling")] public string? CountScaling { get; set; }
 }
 
 public enum MadType

@@ -107,10 +107,14 @@ function findFeat(feats: Feat[], name: string): Feat | undefined {
  * recommended feat. Empty without a background.
  */
 export function backgroundFeatName(
-  draft: Pick<CharacterDraft, "background"> & Partial<Pick<CharacterDraft, "originFeat">>,
+  draft: Pick<CharacterDraft, "background"> &
+    Partial<Pick<CharacterDraft, "backgroundId" | "originFeat">>,
   backgrounds: Background[],
 ): string {
-  const background = byName(backgrounds, draft.background);
+  // Key-first: a both-mode name collision (2014 + 2024 Acolyte) must yield the picked
+  // row's feat — byName alone would hand the legacy pick the 2024 printing's feat.
+  const background =
+    byId(backgrounds, draft.backgroundId) ?? byName(backgrounds, draft.background);
   if (!background) return "";
   return draft.originFeat || (background.feat ?? "");
 }
@@ -459,7 +463,10 @@ export function characterToDraft(
         ]),
     );
 
-  const originFeat = backgroundFeatName({ background: character.background ?? "" }, lookups.backgrounds);
+  const originFeat = backgroundFeatName(
+    { background: character.background ?? "", backgroundId: character.backgroundId },
+    lookups.backgrounds,
+  );
   // Stored feats become selector keys: the saved id when it still resolves, else re-keyed by
   // name (legacy name-only saves), else a name-derived key so the display name survives.
   const featKeyFor = (taken: { name: string; id?: string }): string => {

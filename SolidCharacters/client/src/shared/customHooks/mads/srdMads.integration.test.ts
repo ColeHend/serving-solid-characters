@@ -8,7 +8,7 @@ import { Character, MovementType } from "../../../models/character.model";
 vi.mock("../dndInfo/useDndFeatures", () => ({ useDndFeature: () => ({ allFeatures: () => [] }) }));
 vi.mock("../dndInfo/info/all/feats", () => ({ useDnDFeats: () => () => [] }));
 
-import { collectMadFeatures, useMadCharacters, pendingStatChoices, pendingProficiencyChoices, statChoiceKey, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, pendingExpertiseChoices, expertiseChoiceKey, pendingResistanceChoices, resistanceChoiceKey, pendingGroupChoice, groupChoiceKey, featureGroupOptions } from "./useMadCharacters";
+import { collectMadFeatures, useMadCharacters, pendingStatChoices, pendingProficiencyChoices, statChoiceKey, pendingSpellChoices, spellChoiceKey, spellChoiceOptions, pendingExpertiseChoices, expertiseChoiceKey, pendingResistanceChoices, resistanceChoiceKey, pendingGroupChoice, groupChoiceKey, featureGroupOptions, characterMadFeatureSources, chosenOptionFeatures, featureOptions, featureOptionsConfig, optionChoiceKey, optionCount, pendingOptionChoice } from "./useMadCharacters";
 import { grantedActionUsage, LONG_REST } from "./commands/useUsesFeature";
 
 /**
@@ -148,7 +148,7 @@ describe("generated SRD data through the mads runtime (2024)", () => {
     const feats2024 = read("2024/feats.json");
     const findFeat = (name: string) => feats2024.find((f: { details: { name: string } }) => f.details?.name === name)?.details;
 
-    it("the 2024 ASI feat asks for two distinct picks and applies +1 to each", () => {
+    it("the 2024 ASI feat asks for two picks and applies +1 to each", () => {
         const asi = findFeat("Ability Score Improvement");
         expect(asi?.metadata?.mads).toEqual([expect.objectContaining({
             command: "AddStats",
@@ -170,6 +170,11 @@ describe("generated SRD data through the mads runtime (2024)", () => {
         const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
         expect(applied.stats.int).toBe(9);
         expect(applied.stats.wis).toBe(11);
+
+        // the same ability twice → +2 to that score
+        c.statChoices = { [statChoiceKey(asi)]: "int,int" };
+        expect(pendingStatChoices(c, asi)).toHaveLength(0);
+        expect(useMadCharacters(structuredClone(c), collectMadFeatures(c)).stats.int).toBe(10);
     });
 
     it("Alert carries a PB-to-Initiative RollBonus that lands on rollBonuses", () => {
@@ -444,5 +449,81 @@ describe("choice-form Expertise / Resistances / branch groups from the generated
         }
         const applied = useMadCharacters(structuredClone(c), collectMadFeatures(c));
         expect(applied.immunities.map(i => i.type)).toContain("Disease");
+    });
+});
+
+describe("generated SRD Warlock invocations through the options runtime", () => {
+    const classes2014 = read("2014/classes.json");
+    const classes2024 = read("2024/classes.json");
+    const warlock2014 = classes2014.find((c: { name: string }) => c.name === "Warlock");
+    const warlock2024 = classes2024.find((c: { name: string }) => c.name === "Warlock");
+
+    function warlockAt(warlock: { features: Record<string, FeatureDetail[]> }, level: number): Character {
+        const c = new Character();
+        c.stats = { str: 8, dex: 14, con: 12, int: 10, wis: 10, cha: 16 };
+        for (let lvl = 1; lvl <= level; lvl++) {
+            c.levels.push({ class: "Warlock", level: lvl, hitDie: 8, features: warlock.features[String(lvl)] ?? [] });
+        }
+        return c;
+    }
+
+    const invocationsFeature = (w: { features: Record<string, FeatureDetail[]> }, lvl: string) =>
+        w.features[lvl].find((f) => f.name === "Eldritch Invocations")!;
+
+    it("2014: carries 32 invocations with the class-table scaling and a 3-option Pact Boon", () => {
+        const inv = invocationsFeature(warlock2014, "2");
+        expect(featureOptions(inv)).toHaveLength(32);
+        expect(featureOptionsConfig(inv).countScaling).toBe("2:2,5:3,7:4,9:5,12:6,15:7,18:8");
+
+        const pact = warlock2014.features["3"].find((f: FeatureDetail) => f.name === "Pact Boon")!;
+        expect(featureOptions(pact).map(o => o.name)).toEqual(["Pact of the Chain", "Pact of the Blade", "Pact of the Tome"]);
+        expect(featureOptionsConfig(pact).count).toBe(1);
+    });
+
+    it("2014: counts scale with warlock level and picks apply real mads (Devil's Sight)", () => {
+        const c2 = warlockAt(warlock2014, 2);
+        const inv = invocationsFeature(warlock2014, "2");
+        expect(optionCount(c2, inv)).toBe(2);
+        expect(pendingOptionChoice(c2, inv)).toBe(true);
+
+        c2.proficiencyChoices = { [optionChoiceKey(inv)]: "Armor of Shadows,Devil's Sight" };
+        expect(pendingOptionChoice(c2, inv)).toBe(false);
+        const applied = useMadCharacters(structuredClone(c2), collectMadFeatures(c2));
+        expect(applied.senses?.darkvision).toBe(120);
+        expect(applied.spells.length).toBe(1); // Armor of Shadows' mage armor grant
+
+        expect(optionCount(warlockAt(warlock2014, 9), inv)).toBe(5);
+    });
+
+    it("2014: a pact chosen on Pact Boon satisfies an invocation's requiredFeature (Thirsting Blade)", () => {
+        const c = warlockAt(warlock2014, 5);
+        const inv = invocationsFeature(warlock2014, "2");
+        const pact = warlock2014.features["3"].find((f: FeatureDetail) => f.name === "Pact Boon")!;
+
+        c.proficiencyChoices = { [optionChoiceKey(inv)]: "Thirsting Blade" };
+        expect(chosenOptionFeatures(c, inv)).toEqual([]); // no pact yet
+
+        c.proficiencyChoices[optionChoiceKey(pact)] = "Pact of the Blade";
+        expect(chosenOptionFeatures(c, inv).map(f => f.name)).toEqual(["Thirsting Blade"]);
+        // Both chosen options show as sheet features via the shared source list.
+        const names = characterMadFeatureSources(c).map(f => f.name);
+        expect(names).toContain("Pact of the Blade");
+        expect(names).toContain("Thirsting Blade");
+    });
+
+    it("2024: invocations start at level 1 (count 1) and gate on warlock level (Devil's Sight needs 2)", () => {
+        const inv = invocationsFeature(warlock2024, "1");
+        expect(featureOptions(inv)).toHaveLength(28);
+
+        const c1 = warlockAt(warlock2024, 1);
+        expect(optionCount(c1, inv)).toBe(1);
+        // Devil's Sight requires level 2+ — chosen at level 1 it must NOT apply...
+        c1.proficiencyChoices = { [optionChoiceKey(inv)]: "Devil's Sight" };
+        expect(chosenOptionFeatures(c1, inv)).toEqual([]);
+        // ...but a no-prereq pick (Pact of the Tome) applies and exposes its nested cantrip choice.
+        c1.proficiencyChoices = { [optionChoiceKey(inv)]: "Pact of the Tome" };
+        const tome = chosenOptionFeatures(c1, inv);
+        expect(tome.map(f => f.name)).toEqual(["Pact of the Tome"]);
+        expect(pendingSpellChoices(c1, tome[0]).length).toBe(2); // 3 cantrips + 2 ritual level-1s
     });
 });

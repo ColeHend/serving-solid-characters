@@ -37,18 +37,9 @@ import {
 import { MadChoice, MadChoiceKind } from "../rules/applyMads";
 import { ABILITY_FULL_NAMES, AbilityKey } from "../rules/constants";
 import { useCreate } from "../state/createContext";
+import { csvPicks, toggleCsv } from "./madChoiceControl.shared";
+import { OptionChoiceControl } from "./optionChoiceControl";
 import styles from "./madChoiceControl.module.scss";
-
-const csvPicks = (raw: string | undefined): string[] =>
-  (raw ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-
-/** Toggle `value` in a CSV pick list capped at `max`; null = at the cap, ignore. */
-const toggleCsv = (raw: string | undefined, value: string, max: number): string | null => {
-  const picks = csvPicks(raw);
-  if (picks.includes(value)) return picks.filter((p) => p !== value).join(",");
-  if (picks.length >= max) return null;
-  return [...picks, value].join(",");
-};
 
 /** MadChoiceKind → the equipment-proficiency kind it wraps (undefined for stat/proficiency/spell). */
 const EQUIP_KIND: Partial<Record<MadChoiceKind, EquipProfKind>> = {
@@ -137,7 +128,7 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
       </span>
       <Switch>
         <Match when={props.choice.kind === "stat"}>
-          {/* One dropdown per pick slot; a slot's options hide the OTHER slots' picks (distinct abilities). */}
+          {/* One dropdown per pick slot; the same ability may be picked in more than one slot (+1 twice = +2). */}
           <Index
             each={statChoicePicks(
               draft.madChoices.stats[statChoiceKey(props.choice.feature)],
@@ -146,8 +137,6 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
           >
             {(pick, i) => {
               const key = () => statChoiceKey(props.choice.feature);
-              const picks = () =>
-                statChoicePicks(draft.madChoices.stats[key()], statChoiceCount(props.choice.mad));
               return (
                 <Select
                   value={pick()}
@@ -160,7 +149,7 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
                   }}
                   placeholder="Choose an ability…"
                 >
-                  <For each={statChoiceOptions(props.choice.mad).filter((k) => k === pick() || !picks().includes(k))}>
+                  <For each={statChoiceOptions(props.choice.mad)}>
                     {(k) => <Option value={k}>{abilityLabel(k)}</Option>}
                   </For>
                 </Select>
@@ -224,6 +213,10 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
               }}
             </For>
           </div>
+        </Match>
+        <Match when={props.choice.kind === "options"}>
+          {/* Named sub-option picker (Invocations, Maneuvers…): cards with descriptions + prereqs. */}
+          <OptionChoiceControl choice={props.choice} />
         </Match>
         <Match when={props.choice.kind === "expertise"}>
           <span class={styles.choiceHint}>
