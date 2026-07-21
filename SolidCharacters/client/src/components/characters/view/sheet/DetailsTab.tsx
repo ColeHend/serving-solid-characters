@@ -2,7 +2,7 @@ import { Accessor, Component, For, Show, createSignal } from "solid-js";
 import { Icon } from "coles-solid-library";
 import { Image as ImageIcon, MenuBook, Badge, Backpack, Paid } from "coles-solid-library/icons";
 import { Character, itemRefName } from "../../../../models/character.model";
-import { SectionCard } from "./SheetCard";
+import { SectionCard } from "./CoreTabParts/SectionCard/SectionCard";
 import styles from "./sheet.module.scss";
 
 type Props = {
