@@ -70,3 +70,45 @@ export const ActionsCard:Component<props> = (props) => {
       </For>
     </FlatCard>
 }
+
+
+
+
+/*
+
+
+const ActionsCard = () => (
+    <FlatCard icon={DirectionsRun} headerName={<span class={styles.cardTitle}>Actions</span>} transparent>
+      <div class={styles.segmented}>
+        <Button transparent borderTheme={activeEconomy() === "action" ? "primary" : "none"} onClick={() => setActiveEconomy("action")}>Actions</Button>
+        <Button transparent borderTheme={activeEconomy() === "bonusAction" ? "primary" : "none"} onClick={() => setActiveEconomy("bonusAction")}>Bonus</Button>
+        <Button transparent borderTheme={activeEconomy() === "reaction" ? "primary" : "none"} onClick={() => setActiveEconomy("reaction")}>Reactions</Button>
+      </div>
+      <Index each={economyRows()}>
+        {(row) => {
+          const usage = createMemo(() => {
+            const g = row().granted;
+            return g ? grantedActionUsage(g, props.allFeatures(), d().level) : null;
+          });
+          const poolKey = () => (row().granted ? actionUsesKey(row().granted!) : "");
+          return (
+            <div class={styles.featureBody}>
+              <div class={styles.featureHeaderRow}><span class={styles.featureName}>{row().name}</span></div>
+              <p>{row().desc}</p>
+              <Show when={usage()}>
+                <UsesTracker
+                  featureName={row().name}
+                  max={usage()?.max ?? 0}
+                  recharge={usage()?.recharge ?? LONG_REST}
+                  spent={props.currentCharacter()?.featureUses?.[poolKey()] ?? 0}
+                  onChange={(spent) => props.spendUses(poolKey(), spent)}
+                />
+              </Show>
+            </div>
+          );
+        }}
+      </Index>
+    </FlatCard>
+  );
+
+  */
