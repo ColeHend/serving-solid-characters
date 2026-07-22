@@ -32,7 +32,7 @@ export const HitDiceCard:Component<props> = (props) => {
                       class={styles.die}
                       classList={{ [styles.dieSpent]: i >= remaining() }}
                       onClick={() =>
-                        props.onSpendHitDie(pool.sides, i >= remaining() ? i : i + 1)
+                        props.onSpendHitDie(pool.sides, i >= remaining() ? pool.total - i - 1 : pool.total - i) 
                       }
                     >
                       d{pool.sides}
