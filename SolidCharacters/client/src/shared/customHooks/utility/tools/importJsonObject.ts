@@ -2,6 +2,7 @@ import { Trade } from "../../../../models/trade.model";
 import {addSnackbar} from "coles-solid-library";
 import homebrewManager from "../../homebrewManager";
 import characterManager from "../../dndInfo/useCharacters";
+import { srdItem } from "../../../../models/data/generated";
 
 export function importJsonObject(data: Trade) {
   addSnackbar({
@@ -41,7 +42,7 @@ export function importJsonObject(data: Trade) {
       message:`Importing ${data.items.length} Items`,
       closeTimeout: 4000,
     })
-    data.items.forEach(item => homebrewManager.addItem(item));
+    data.items.forEach(item => homebrewManager.addItem(item as srdItem));
   }
 
   if (data.races.length > 0) {
@@ -53,6 +54,14 @@ export function importJsonObject(data: Trade) {
     data.races.forEach(race => homebrewManager.addRace(race));
   }
 
+  if (data.subraces.length > 0) {
+    addSnackbar({
+      severity: "info",
+      message: `Importing ${data.subraces.length} Subraces`
+    })
+    data.subraces.forEach(subrace => homebrewManager.saveSubrace(subrace))
+  }
+
   if (data.srdclasses.length > 0) {
     addSnackbar({
       severity:"info",
@@ -61,15 +70,23 @@ export function importJsonObject(data: Trade) {
     })
     data.srdclasses.forEach(srdClass => homebrewManager.addClass(srdClass));
   }
+
+  if (data.srdSubclasses.length > 0) {
+    addSnackbar({
+      severity: "info",
+      message: `Importing ${data.srdSubclasses.length} subclasses`
+    })
+    data.srdSubclasses.forEach(subclass => homebrewManager.addSubclass(subclass));
+  }
     
-    if (data.characters.length > 0) {
-     addSnackbar({
-          severity:"info",
-          message:`Importing ${data.characters.length} Characters`,
-          closeTimeout:4000,
-      })
-     data.characters.forEach(character => characterManager.createCharacter(character));
-    }
+  if (data.characters.length > 0) {
+    addSnackbar({
+        severity:"info",
+        message:`Importing ${data.characters.length} Characters`,
+        closeTimeout:4000,
+    })
+    data.characters.forEach(character => characterManager.createCharacter(character));
+  }
     
 
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, For, Show, createSignal } from "solid-js";
 import styles from "./Exporting.module.scss";
 import { characterManager, homebrewManager, isNullish } from "../../../shared";
@@ -32,9 +33,11 @@ const Exporting: Component = () => {
     spells: [],
     feats: [],
     srdclasses: [],
+    srdSubclasses: [],
     backgrounds: [],
     items: [],
     races: [],
+    subraces: [],
     characters: [],
   });
 
@@ -42,9 +45,11 @@ const Exporting: Component = () => {
     { key: "spells", label: "Spells", source: () => homebrewManager.spells() },
     { key: "feats", label: "Feats", source: () => homebrewManager.feats() },
     { key: "srdclasses", label: "Classes", source: () => homebrewManager.classes() },
+    { key: "srdSubclasses", label: "Subclasses", source: () => homebrewManager.subclasses() },
     { key: "backgrounds", label: "Backgrounds", source: () => homebrewManager.backgrounds() },
     { key: "items", label: "Items", source: () => homebrewManager.items() },
     { key: "races", label: "Races", source: () => homebrewManager.races() },
+    { key: "subraces", label: "subraces", source: () => homebrewManager.subraces()},
     { key: "characters", label: "Characters", source: () => characterManager.characters() },
   ];
 
