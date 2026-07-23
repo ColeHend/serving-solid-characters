@@ -25,7 +25,7 @@ const SearchBar = <T,>(props: Props<T>) => {
 
       if (props.searchFunction) return props.searchFunction(item, searchValue());
       if(search.trim().length === 0) return true;
-      return JSON.stringify(item).toLowerCase().includes(search);
+      return JSON.stringify(item).toLowerCase().trim().includes(search.toLowerCase().trim());
     });
     
     if (results.length >= 1) {
@@ -51,6 +51,10 @@ const SearchBar = <T,>(props: Props<T>) => {
   // async dataSource to load before filtering.
   let appliedSeed: string | undefined;
   createEffect(() => {
+    if (searchValue() === "") {
+      props.setResults(props.dataSource());
+    }
+
     const seed = props.seed?.trim();
     if (!seed || seed === appliedSeed || props.dataSource().length === 0) return;
     appliedSeed = seed;
