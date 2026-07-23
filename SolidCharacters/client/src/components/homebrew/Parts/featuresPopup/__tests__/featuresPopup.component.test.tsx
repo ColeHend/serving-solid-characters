@@ -164,6 +164,43 @@ describe('FeaturesPopup edit hydration', () => {
   });
 });
 
+describe('Per-effect prerequisites', () => {
+
+  it("persists each hydrated mad's own prerequisites through save", async () => {
+    const feature = editFeature();
+    feature.metadata!.mads = [
+      { command: 'AddHitPoints', value: { amount: '5' }, type: 0, prerequisites: [{ value: 'Level', operation: '>=', keyValue: '7', group: 0 }], group: 0 },
+      { command: 'AddSpells', value: { ID: 'sp1' }, type: 0, prerequisites: [{ value: 'Class', operation: '===', keyValue: 'Fighter', group: 0 }], group: 0 },
+    ];
+    const { container, getByText, onClose } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads[0].prerequisites).toEqual([{ value: 'Level', operation: '>=', keyValue: '7', group: 0 }]);
+    expect(mads[1].prerequisites).toEqual([{ value: 'Class', operation: '===', keyValue: 'Fighter', group: 0 }]);
+  });
+
+  it('adding a rule on one effect card leaves the other card untouched', async () => {
+    const feature = editFeature();
+    feature.metadata!.mads = [
+      { command: 'AddHitPoints', value: { amount: '5' }, type: 0, prerequisites: [], group: 0 },
+      { command: 'AddSpells', value: { ID: 'sp1' }, type: 0, prerequisites: [], group: 0 },
+    ];
+    const { container, getByText, getAllByText } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Effects (2)'));
+    const addRuleButtons = getAllByText('+ Add Rule');
+    expect(addRuleButtons).toHaveLength(2);
+
+    fireEvent.click(addRuleButtons[0]);
+
+    // Exactly ONE rule row in the whole tab — the shared-form bug rendered it on every card.
+    expect(getAllByText('Character has')).toHaveLength(1);
+  });
+});
+
 describe('Usage & spells ↔ mads bridge', () => {
 
   it('binds limited uses to the AddUses mad and excludes it from the effect count', async () => {

@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo, createSignal } from "solid-js";
+import { Component, For, Show, createEffect, createMemo, createSignal } from "solid-js";
 import { addSnackbar } from "coles-solid-library";
 import { Class5E, Subclass } from "../../../../../models/generated";
 import ClassModal from "../../../../../shared/components/modals/classModal/classModal.component";
@@ -32,7 +32,10 @@ export const ClassSection: Component = () => {
   const [showClassView, setShowClassView] = createSignal(false);
   const [viewedSubclass, setViewedSubclass] = createSignal<Subclass>();
   const [showSubclassView, setShowSubclassView] = createSignal(false);
-
+  createEffect(()=>{
+    console.log(viewedSubclass());
+    
+  })
   const viewClass = (class5e: Class5E) => {
     setViewedClass(class5e);
     setShowClassView(true);

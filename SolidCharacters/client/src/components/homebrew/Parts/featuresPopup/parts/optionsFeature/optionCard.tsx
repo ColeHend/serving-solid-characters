@@ -2,7 +2,7 @@ import { Component } from "solid-js";
 import { Button, Icon, Input, TextArea } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
 import { FlatCard } from "../../../../../../shared/components/flatCard/flatCard";
-import { EffectCardData, PrereqFormArray, PrereqState } from "../../featuresPopup.shared";
+import { EffectCardData } from "../../featuresPopup.shared";
 import { EffectsTab } from "../../effectsTab";
 import { OptionRow, OptionsApi } from "./optionsFeature.shared";
 import popupStyles from "../../featuresPopup.module.scss";
@@ -12,8 +12,6 @@ interface OptionCardProps {
     row: OptionRow;
     api: OptionsApi;
     data: EffectCardData;
-    prereqForm: PrereqFormArray;
-    prereqs: PrereqState;
 }
 
 /**
@@ -104,8 +102,6 @@ export const OptionCard: Component<OptionCardProps> = (props) => {
                     <EffectsTab
                         api={props.api.madsApiFor(props.row)}
                         data={props.data}
-                        prereqForm={props.prereqForm}
-                        prereqs={props.prereqs}
                         helperText="Effects apply while this option is chosen."
                     />
                 </div>

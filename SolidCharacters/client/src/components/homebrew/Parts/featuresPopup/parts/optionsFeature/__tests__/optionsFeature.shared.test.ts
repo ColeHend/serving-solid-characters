@@ -76,6 +76,31 @@ describe("option row serialization", () => {
         expect(out[0].name).toBe("Foo the Great");
     });
 
+    it("round-trips a mad's own prerequisites through the row's prereq forms", () => {
+        const option: FeatureOption = {
+            name: "Thirsting Blade",
+            description: "Attack twice.",
+            mads: [{
+                command: "AddActions",
+                value: { name: "Extra Attack" },
+                type: 0,
+                prerequisites: [{ value: "Level", operation: ">=", keyValue: "5", group: 0 }],
+                group: 0,
+            }],
+        };
+        const row = hydrateOptionRow(option, 1);
+        expect(row.prereqForms.size).toBe(1);
+
+        const [out] = serializeOptionRows([row]);
+        expect(out.mads).toEqual([{
+            command: "AddActions",
+            value: { name: "Extra Attack" },
+            type: 0,
+            prerequisites: [{ value: "Level", operation: ">=", keyValue: "5", group: 0 }],
+            group: 0,
+        }]);
+    });
+
     it("omits prerequisites entirely when all fields are blank/invalid", () => {
         const row = blankOptionRow(1);
         row.name = "Plain";

@@ -31,7 +31,7 @@ import { UsesFeature } from "./parts/usesFeature/usesFeature";
 import { ArmorProfFeature } from "./parts/armorProfFeature/armorProfFeature";
 import { WeaponProfFeature } from "./parts/weaponProfFeature/weaponProfFeature";
 import { ToolProfFeature } from "./parts/toolProfFeature/toolProfFeature";
-import { EffectCardData, MAD_CATEGORIES, MadsApi, PrereqFormArray, PrereqState, branchLabel, branchNumbers } from "./featuresPopup.shared";
+import { EffectCardData, MAD_CATEGORIES, MadsApi, branchLabel, branchNumbers } from "./featuresPopup.shared";
 import styles from "./featuresPopup.module.scss";
 
 interface EffectCardProps {
@@ -39,8 +39,6 @@ interface EffectCardProps {
     index: number;
     api: MadsApi;
     data: EffectCardData;
-    prereqForm: PrereqFormArray;
-    prereqs: PrereqState;
     onDelete: () => void;
 }
 
@@ -418,7 +416,7 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
             </Show>
 
             <div class={styles.prereqSection}>
-                <FeaturePrerequisites prereqForm={props.prereqForm} prereqs={props.prereqs} Submit={() => { /* prereq→mad wiring pending (pre-existing) */ }} />
+                <FeaturePrerequisites prereqForm={props.api.prereqFormFor(props.row.name)} />
             </div>
 
             <div class={styles.choiceGroupRow}>

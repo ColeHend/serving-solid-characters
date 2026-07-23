@@ -1,4 +1,4 @@
-import { Component, For, Show, createMemo } from "solid-js";
+import { Component, For, Show, createEffect, createMemo } from "solid-js";
 import { Option, Select } from "coles-solid-library";
 import { Class5E, Subclass } from "../../../../../models/generated";
 import { resolveSubclassSelection, subclassCandidates } from "../../../../../models/data/subclasses";
@@ -73,6 +73,11 @@ export const ClassDetailCard: Component<ClassDetailCardProps> = (props) => {
 
   const proficiencyLine = (list: string[] | undefined) =>
     list?.length ? list.join(", ") : "None";
+
+  createEffect(()=>{
+    console.log(chosenSubclass());
+    
+  })
 
   return (
     <div class={styles.detailCard}>

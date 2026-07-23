@@ -1,7 +1,7 @@
 import { Component, For, Show } from "solid-js";
 import { Button, Icon, Input } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
-import { EffectCardData, PrereqFormArray, PrereqState } from "../../featuresPopup.shared";
+import { EffectCardData } from "../../featuresPopup.shared";
 import { OptionCard } from "./optionCard";
 import { OptionScalingRow, OptionsApi } from "./optionsFeature.shared";
 import popupStyles from "../../featuresPopup.module.scss";
@@ -10,8 +10,6 @@ import styles from "./optionsFeature.module.scss";
 interface OptionsTabProps {
     api: OptionsApi;
     data: EffectCardData;
-    prereqForm: PrereqFormArray;
-    prereqs: PrereqState;
 }
 
 /**
@@ -138,8 +136,6 @@ export const OptionsTab: Component<OptionsTabProps> = (props) => {
                             row={row}
                             api={props.api}
                             data={props.data}
-                            prereqForm={props.prereqForm}
-                            prereqs={props.prereqs}
                         />
                     )}
                 </For>

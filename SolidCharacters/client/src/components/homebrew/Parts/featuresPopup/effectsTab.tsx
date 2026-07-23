@@ -2,14 +2,12 @@ import { Component, ErrorBoundary, For, Show, createMemo } from "solid-js";
 import { Button } from "coles-solid-library";
 import { EffectCard } from "./effectCard";
 import { BranchHeader } from "./branchHeader";
-import { EffectCardData, MadsApi, PrereqFormArray, PrereqState, branchLabel, branchNumbers, usageOwnedIndices } from "./featuresPopup.shared";
+import { EffectCardData, MadsApi, branchLabel, branchNumbers, usageOwnedIndices } from "./featuresPopup.shared";
 import styles from "./featuresPopup.module.scss";
 
 interface EffectsTabProps {
     api: MadsApi;
     data: EffectCardData;
-    prereqForm: PrereqFormArray;
-    prereqs: PrereqState;
     /** Overrides the header helper line (the Options tab embeds this per option). */
     helperText?: string;
 }
@@ -50,8 +48,6 @@ export const EffectsTab: Component<EffectsTabProps> = (props) => {
                 index={item.index}
                 api={props.api}
                 data={props.data}
-                prereqForm={props.prereqForm}
-                prereqs={props.prereqs}
                 onDelete={() => props.api.removeMad(item.index)}
             />
         </ErrorBoundary>
