@@ -153,4 +153,8 @@
     justify-content: center;
     gap: var(--spacing-2);
     margin: var(--spacing-3);
+
+    input {
+        color: $color-on-surface!important;
+    }
 }
