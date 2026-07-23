@@ -22,6 +22,8 @@ export interface BackgroundForm {
   desc: string;
   /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
   source?: string;
+  /** Edition tag: true = 2014, false = 2024, undefined = Both/neutral. */
+  legacy?: boolean;
   /** Selected origin feat's SRD id — '' = none. */
   feat: string;
   /** Ability score display names the background offers (2024-style), max 3. */
@@ -199,6 +201,7 @@ export function toBackground(fg: FormGroup<BackgroundForm>, extras: BackgroundEx
     id: existingId || createNewId(),
     name: ((fg.get('name') as string) || '').trim(),
     ...(source ? { source } : {}),
+    ...(fg.get('legacy') !== undefined ? { legacy: fg.get('legacy') as boolean } : {}),
     desc: (fg.get('desc') as string) || '',
     proficiencies: {
       armor: (fg.get('armorProfs') as string[]) ?? [],
@@ -333,7 +336,7 @@ export const backgroundDraftKey = (editName?: string): string =>
   `hb:backgroundDraft:${(editName ?? '').trim().toLowerCase() || 'new'}`;
 
 export const DRAFT_FORM_KEYS = [
-  'name', 'desc', 'source', 'feat', 'abilityOptions',
+  'name', 'desc', 'source', 'legacy', 'feat', 'abilityOptions',
   'languages', 'langChoiceAmount',
   'armorProfs', 'weaponProfs', 'toolProfs', 'skillProfs',
 ] as const satisfies readonly (keyof BackgroundForm)[];

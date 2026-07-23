@@ -7,6 +7,7 @@ import { toClass5E } from "./classAdapter";
 import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
 import { useDnDItems } from "../../../../../shared/customHooks/dndInfo/info/all/items";
+import { defaultEditionKey, editionToLegacy } from "../../../../../shared/customHooks/dndInfo/info/edition";
 import { Class5E } from "../../../../../models/data/classes";
 import { FeatureDetail } from "../../../../../models/generated";
 import { createNewId } from "../../../../../shared/customHooks/utility/tools/idGen";
@@ -60,6 +61,7 @@ export const Classes: Component = () => {
     name: ['', [Validators.Required]],
     description: ['', []],
     source: ['', []],
+    legacy: [editionToLegacy(defaultEditionKey()), []],
     hitDie: [undefined, [Validators.Required]],
     primaryStat: [[], [Validators.Required]],
     savingThrows: [[], []],
@@ -128,6 +130,7 @@ export const Classes: Component = () => {
     // Basic fields
     setField('name', cls.name || '');
     setField('source', cls.source ?? '');
+    setField('legacy', cls.legacy);
     // Persisted / SRD class data is snake_case (see toClass5E in classAdapter.ts); fall back to camelCase
     const hitDieRaw = (cls as any).hit_die ?? cls.hitDie;
     const dieNum = typeof hitDieRaw === 'string' ? parseInt(hitDieRaw.replace(/^[dD]/, '') || '0') : hitDieRaw || 0;

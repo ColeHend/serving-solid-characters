@@ -185,6 +185,7 @@ export function toClass5E(form: ClassForm, profs: ProfStore, levels: LevelEntity
   const payload: Class5EPayload = {
     name: form.name?.trim(),
     ...(source ? { source } : {}),
+    ...(form.legacy !== undefined ? { legacy: form.legacy } : {}),
     hit_die,
     primary_ability: primaryAbility,
     saving_throws: (form.savingThrows || []).map(statName),

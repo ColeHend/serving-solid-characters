@@ -10,6 +10,7 @@ import {
 } from './wizard.shared';
 import { OptionCard } from './optionCard';
 import { ToggleChip } from './toggleChip';
+import { EditionPicker } from './editionPicker';
 import styles from './classesWizard.module.scss';
 
 // Step 1 of the class wizard: name, hit die, primary abilities and description.
@@ -85,6 +86,15 @@ export const StepIdentity: Component<StepProps> = (props) => {
           value={props.formGroup.get('source') ?? ''}
           onChange={(e) => props.formGroup.set('source', e.currentTarget.value)}
           placeholder="e.g. My Campaign"
+        />
+      </div>
+
+      {/* 6. Edition */}
+      <div class={styles.boxedField}>
+        <span class={styles.cardLabel}>Edition</span>
+        <EditionPicker
+          value={props.formGroup.get('legacy') as boolean | undefined}
+          onChange={(v) => props.formGroup.set('legacy', v as never)}
         />
       </div>
     </div>

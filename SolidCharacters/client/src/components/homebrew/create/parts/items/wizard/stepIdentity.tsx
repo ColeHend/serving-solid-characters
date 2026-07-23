@@ -3,6 +3,7 @@ import { Input, Option, Select, TextArea } from 'coles-solid-library';
 import { itemsStore } from '../itemsStore';
 import { KIND_CARDS, StepProps } from './wizard.shared';
 import { OptionCard } from '../../classes/wizard/optionCard';
+import { EditionPicker } from '../../classes/wizard/editionPicker';
 import sharedStyles from '../../classes/wizard/classesWizard.module.scss';
 import styles from './itemsWizard.module.scss';
 
@@ -85,6 +86,14 @@ export const StepIdentity: Component<StepProps> = (props) => {
               value={store.state.form!.source ?? ''}
               onInput={e => store.updateField('source', e.currentTarget.value)}
               placeholder="e.g. My Campaign"
+            />
+          </div>
+
+          <div class={sharedStyles.boxedField}>
+            <span class={sharedStyles.cardLabel}>Edition</span>
+            <EditionPicker
+              value={store.state.form!.legacy}
+              onChange={(v) => store.updateField('legacy', v)}
             />
           </div>
 

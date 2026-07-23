@@ -6,6 +6,7 @@ import { ItemType as DataItemTypeEnum } from '../../../../../models/data/items';
 import { Feature } from '../../../../../models/old/core.model';
 import { useGetSrdItems } from '../../../../../shared/customHooks/dndInfo/info/srd/items';
 import getUserSettings from '../../../../../shared/customHooks/userSettings';
+import { defaultEditionKey, editionToLegacy } from '../../../../../shared/customHooks/dndInfo/info/edition';
 
 // Unified discriminated draft type
 export type DraftKind = 'Item' | 'Weapon' | 'Armor';
@@ -19,6 +20,8 @@ export interface DraftItem {
   desc: string; // single rich text / markdown string (joined for legacy arrays)
   /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
   source?: string;
+  /** Edition tag: true = 2014, false = 2024, undefined = Both/neutral. */
+  legacy?: boolean;
   cost: { quantity: number; unit: string };
   weight?: number;
   tags: string[];
@@ -51,6 +54,7 @@ const blankDraft = (): DraftItem => ({
   kind: 'Item',
   name: '',
   desc: '',
+  legacy: editionToLegacy(defaultEditionKey()),
   cost: { quantity: 0, unit: 'GP' },
   weight: 0,
   tags: [],
@@ -94,6 +98,7 @@ function toDraft(entity: any): DraftItem {
       name: entity.name || blob.name || '',
       desc: typeof entity.desc === 'string' ? entity.desc : blob.desc || '',
       source: entity.source || blob.source || '',
+      legacy: entity.legacy ?? blob.legacy,
       cost: parsedCost
     } as DraftItem;
   }
@@ -127,6 +132,7 @@ function toDraft(entity: any): DraftItem {
     name: entity.name || '',
     desc: Array.isArray(entity.desc) ? (entity.desc[0] || '') : (entity.desc || ''),
     source: entity.source || '',
+    legacy: entity.legacy,
     cost: parsedCost,
     weight: entity.weight,
     // Tags: merge any explicit tags plus parsed weapon/armor property keywords
@@ -250,6 +256,7 @@ function fromDraftToData(d: DraftItem, existing?: DataItem): DataItem {
     id: existing?.id || Date.now(),
     name: d.name,
     ...(source ? { source } : {}),
+    ...(d.legacy !== undefined ? { legacy: d.legacy } : {}),
     desc: d.desc,
     type: typeEnum,
     weight: d.weight || 0,

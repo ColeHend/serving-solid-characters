@@ -1,6 +1,7 @@
 import { Component, For, runWithOwner } from 'solid-js';
 import { Input, Option, Select, TextArea } from 'coles-solid-library';
 import { SPELL_LEVELS, StepProps, getSchools, spellLevelLabel } from './wizard.shared';
+import { EditionPicker } from '../../classes/wizard/editionPicker';
 import styles from '../../classes/wizard/classesWizard.module.scss';
 
 // Step 1 of the spell wizard: name, level, school and the descriptive text.
@@ -77,6 +78,14 @@ export const StepIdentity: Component<StepProps> = (props) => {
           value={props.formGroup.get('source') ?? ''}
           onChange={(e) => props.formGroup.set('source', e.currentTarget.value)}
           placeholder="e.g. My Campaign"
+        />
+      </div>
+
+      <div class={styles.boxedField}>
+        <span class={styles.cardLabel}>Edition</span>
+        <EditionPicker
+          value={props.formGroup.get('legacy') as boolean | undefined}
+          onChange={(v) => props.formGroup.set('legacy', v as never)}
         />
       </div>
     </div>

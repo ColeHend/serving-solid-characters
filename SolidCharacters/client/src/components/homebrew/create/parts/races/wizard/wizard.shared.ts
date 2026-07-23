@@ -24,6 +24,8 @@ export interface RaceForm {
   name: string;
   /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
   source?: string;
+  /** Edition tag: true = 2014, false = 2024, undefined = Both/neutral. */
+  legacy?: boolean;
   /** Size options the race offers — the persisted model joins them with ', '. */
   size: string[];
   speed: number;
@@ -225,7 +227,7 @@ export const raceDraftKey = (editName?: string): string =>
   `hb:raceDraft:${(editName ?? '').trim().toLowerCase() || 'new'}`;
 
 export const DRAFT_FORM_KEYS = [
-  'name', 'source', 'size', 'speed',
+  'name', 'source', 'legacy', 'size', 'speed',
   'languages', 'langChoiceAmount', 'langChoiceOptions',
   'abilityBonuses',
   'descAge', 'descAlignment', 'descSize', 'descLanguage', 'descAbilities',

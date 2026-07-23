@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-solid-library";
 import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { useDnDRaces } from "../../../../../shared/customHooks/dndInfo/info/all/races";
+import { defaultEditionKey, editionToLegacy } from "../../../../../shared/customHooks/dndInfo/info/edition";
 import { FeatureDetail, Race } from "../../../../../models/generated";
 import { createNewId } from "../../../../../shared/customHooks/utility/tools/idGen";
 import { FeaturesPopup } from "../../../Parts/featuresPopup/featuresPopup";
@@ -42,6 +43,7 @@ const Races: Component = () => {
   const RaceFormGroup = new FormGroup<RaceForm>({
     name: ['', [Validators.Required]],
     source: ['', []],
+    legacy: [editionToLegacy(defaultEditionKey()), []],
     size: [[], []],
     speed: [30, []],
     languages: [[], []],
@@ -75,6 +77,7 @@ const Races: Component = () => {
     batch(() => {
       setField('name', found.name || '');
       setField('source', found.source ?? '');
+      setField('legacy', found.legacy);
       setField('size', parseSizes(found.size));
       setField('speed', found.speed || 30);
       setField('languages', [...(found.languages ?? [])]);

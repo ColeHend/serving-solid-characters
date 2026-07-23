@@ -17,6 +17,7 @@ import type { Feat, FeatureDetail, Race } from '../../../../../../models/generat
 const makeForm = (overrides: Partial<RaceForm> = {}) => {
   const fg = new FormGroup<RaceForm>({
     name: ['', []],
+    legacy: [undefined, []],
     size: [[], []],
     speed: [30, []],
     languages: [[], []],
@@ -148,19 +149,28 @@ describe('toRace / hydration round trip', () => {
   it('never emits fields the wizard has no UI for, so the update spread preserves them', () => {
     const existing = {
       ...toRace(makeForm({ name: 'Elf' }), emptyExtras(), 'race-1'),
-      legacy: true,
       abilityBonusChoice: { amount: 1, options: [] },
       traitChoice: { amount: 2, options: [] },
     } as unknown as Race;
     const built = toRace(makeForm({ name: 'Elf', speed: 25 }), emptyExtras(), existing.id);
     expect(Object.keys(built)).not.toContain('abilityBonusChoice');
     expect(Object.keys(built)).not.toContain('traitChoice');
-    expect(Object.keys(built)).not.toContain('legacy');
     const updated = { ...existing, ...built };
     expect(updated.abilityBonusChoice).toEqual({ amount: 1, options: [] });
     expect(updated.traitChoice).toEqual({ amount: 2, options: [] });
-    expect(updated.legacy).toBe(true);
     expect(updated.speed).toBe(25);
+  });
+
+  it('emits the edition tag from the picker, so switching to Both clears a prior legacy flag', () => {
+    // A 2014-tagged row, re-published with the picker on "Both" (undefined), must clear the
+    // flag through the {...existing, ...built} update spread instead of resurrecting it.
+    const existing = { ...toRace(makeForm({ name: 'Elf', legacy: true }), emptyExtras(), 'race-1') } as Race;
+    expect(existing.legacy).toBe(true);
+    const built = toRace(makeForm({ name: 'Elf', legacy: undefined }), emptyExtras(), existing.id);
+    expect(Object.keys(built)).toContain('legacy');
+    expect({ ...existing, ...built }.legacy).toBeUndefined();
+    // A 2024 pick lands as legacy:false.
+    expect(toRace(makeForm({ name: 'Elf', legacy: false }), emptyExtras(), 'race-1').legacy).toBe(false);
   });
 
   it('hydrateTraits unwraps Feat.details losslessly and stamps missing ids', () => {
