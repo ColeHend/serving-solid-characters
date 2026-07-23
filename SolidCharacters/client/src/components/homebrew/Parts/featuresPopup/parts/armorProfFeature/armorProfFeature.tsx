@@ -1,6 +1,7 @@
 import { Button, Checkbox, FormField, Input, Option, Select } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
 import { ARMOR_KEYS } from "../../../../../../shared/ai/commands/madCommandCatalog";
+import { OptionsMultiSelect } from "../optionsMultiSelect/optionsMultiSelect";
 
 interface props {
     toggleProf: (armor: string, extra?: { options?: string; count?: string }) => void;
@@ -20,10 +21,6 @@ export const ArmorProfFeature: Component<props> = (props) => {
     const [isChoice, setIsChoice] = createSignal(armor() === "choice");
     const [options, setOptions] = createSignal<string[]>((getMadValue("options") ?? "").split(",").map(s => s.trim()).filter(Boolean));
     const [count, setCount] = createSignal(+(getMadValue("count") ?? "1") || 1);
-
-    const toggleOption = (category: string) => {
-        setOptions(old => old.includes(category) ? old.filter(o => o !== category) : [...old, category]);
-    };
 
     const commit = () => {
         if (isChoice()) {
@@ -53,19 +50,12 @@ export const ArmorProfFeature: Component<props> = (props) => {
         </Show>
 
         <Show when={isChoice()}>
-            <FormField name="Allowed armor categories">
-                <div>
-                    <For each={[...ARMOR_KEYS]}>
-                        {(category) => (
-                            <Checkbox
-                                label={category}
-                                checked={options().includes(category)}
-                                onChange={() => toggleOption(category)}
-                            />
-                        )}
-                    </For>
-                </div>
-            </FormField>
+            <OptionsMultiSelect
+                label="Allowed armor categories"
+                options={[...ARMOR_KEYS]}
+                selected={options}
+                onChange={setOptions}
+            />
 
             <FormField name="How many the player picks">
                 <Input value={count()} type="number" min={1} onChange={(e) => setCount(Math.max(1, +e.currentTarget.value || 1))} />

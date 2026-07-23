@@ -32,7 +32,14 @@
 }
 
 .scalingInput {
-  width: 72px;
+  width: 92px;
+
+  // Reclaim some of coles' generous 16px inner padding so 2 digits fit
+  // alongside the visible stepper column.
+  input {
+    padding-inline: 8px;
+    text-align: center;
+  }
 }
 
 .scalingHint {

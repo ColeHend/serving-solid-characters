@@ -393,8 +393,13 @@ describe('Languages effect editor', () => {
     fireEvent.click(getByText('Edit value'));
     fireEvent.click(checkbox(container, 'Let the player choose the language(s)'));
     fireEvent.click(checkbox(container, 'Limit to a curated list'));
-    fireEvent.click(checkbox(container, 'Elvish'));
-    fireEvent.click(checkbox(container, 'Giant'));
+
+    const allowed = container.querySelector('select[data-mock="Select"][multiple]') as HTMLSelectElement;
+    for (const opt of Array.from(allowed.options)) {
+      if (opt.value === 'Elvish' || opt.value === 'Giant') opt.selected = true;
+    }
+    fireEvent.change(allowed);
+
     fireEvent.click(getByText('Set Languages'));
 
     fireEvent.click(getByText('Save changes'));

@@ -1,6 +1,7 @@
 import { Button, Checkbox, FormField, Input, Option, Select } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
 import { ALL_LANGUAGES } from "../../../../../../shared/customHooks/mads/languagePool";
+import { OptionsMultiSelect } from "../optionsMultiSelect/optionsMultiSelect";
 
 interface props {
     toggleValue: (name: string, extra?: { options?: string; count?: string }) => void;
@@ -24,10 +25,6 @@ export const LanguagesFeature: Component<props> = (props) => {
     const [options, setOptions] = createSignal<string[]>((getMadValue("options") ?? "").split(",").map(s => s.trim()).filter(Boolean));
     const [curated, setCurated] = createSignal(options().length > 0);
     const [count, setCount] = createSignal(+(getMadValue("count") ?? "1") || 1);
-
-    const toggleOption = (language: string) => {
-        setOptions(old => old.includes(language) ? old.filter(o => o !== language) : [...old, language]);
-    };
 
     const commit = () => {
         if (!isChoice()) {
@@ -66,19 +63,12 @@ export const LanguagesFeature: Component<props> = (props) => {
             />
 
             <Show when={curated()} fallback={<p>The player may pick any language.</p>}>
-                <FormField name="Allowed languages">
-                    <div>
-                        <For each={ALL_LANGUAGES}>
-                            {(lang) => (
-                                <Checkbox
-                                    label={lang}
-                                    checked={options().includes(lang)}
-                                    onChange={() => toggleOption(lang)}
-                                />
-                            )}
-                        </For>
-                    </div>
-                </FormField>
+                <OptionsMultiSelect
+                    label="Allowed languages"
+                    options={ALL_LANGUAGES}
+                    selected={options}
+                    onChange={setOptions}
+                />
             </Show>
 
             <FormField name="How many the player picks">
