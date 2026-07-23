@@ -15,13 +15,15 @@ const DataTransferModal:Component<props> = (props) => {
     <div class={`${styles.body}`}>
       <TabBar tabs={["Import","Export"]} activeTab={activeTab()} onTabChange={(label,index)=>setActiveTab(index)}/>
 
-      <Show when={activeTab() === 0}>
-        <Importing />
-      </Show>
+      <div class={`${styles.scrollable}`}>
+        <Show when={activeTab() === 0}>
+          <Importing />
+        </Show>
 
-      <Show when={activeTab() === 1}>
-        <Exporting />
-      </Show>
+        <Show when={activeTab() === 1}>
+          <Exporting />
+        </Show>
+      </div>
     </div>
   </Modal>
 }

@@ -1,3 +1,5 @@
+@use 'coles-solid-library/themes/variables' as *;
+
 .body {
     display: flex;
     flex-direction: column;
@@ -137,6 +139,11 @@
 
 .exportBtn {
     z-index: 1;
+    padding: 10px 12px !important;
+    background-color: $color-primary-variant!important;
+    color: $color-on-primary !important;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .confirmContent {
