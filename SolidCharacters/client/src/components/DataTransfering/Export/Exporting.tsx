@@ -47,7 +47,7 @@ const Exporting: Component = () => {
     { key: "backgrounds", label: "Backgrounds", source: () => homebrewManager.backgrounds() },
     { key: "items", label: "Items", source: () => homebrewManager.items() },
     { key: "races", label: "Races", source: () => homebrewManager.races() },
-    { key: "subraces", label: "subraces", source: () => homebrewManager.subraces()},
+    { key: "subraces", label: "Subraces", source: () => homebrewManager.subraces()},
     { key: "characters", label: "Characters", source: () => characterManager.characters() },
   ];
 
