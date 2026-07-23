@@ -1,0 +1,13 @@
+.concBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--primary-color-varient) !important;
+  color: var(--on-secondary-color) !important; 
+  font-size: var(--font-size-small) !important;
+  font-weight: 700;
+  margin: 0;
+}

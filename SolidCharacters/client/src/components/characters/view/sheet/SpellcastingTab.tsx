@@ -10,6 +10,8 @@ import SpellModal from "../../../../shared/components/modals/spellModal/spellMod
 import styles from "./sheet.module.scss";
 import { MiniStat } from "./CoreTabParts/MiniStat/MiniStat";
 import { SectionCard } from "./CoreTabParts/SectionCard/SectionCard";
+import { ConcBadge } from "./CoreTabParts/concBadge/concBadge";
+import { LegacyBadge } from "./CoreTabParts/legacyBadge/legacyBadge";
 
 const ordinal = (n: number): string =>
   n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : `${n}th`;
@@ -64,6 +66,15 @@ const SpellcastingTab: Component<Props> = (props) => {
             </SectionCard>
           </div>
         </Show>
+        
+        <div class={styles.legend}>
+          <span>
+            <ConcBadge /> requires concentration.
+          </span>
+          <span>
+            <LegacyBadge /> SRD 5.1
+          </span>
+        </div>
 
         <div class={styles.spellGrid}>
           <For each={props.spellGroups()}>
@@ -79,9 +90,7 @@ const SpellcastingTab: Component<Props> = (props) => {
           </For>
         </div>
 
-        <div class={styles.legend}>
-          <span class={styles.concBadge}>C</span> requires concentration.
-        </div>
+        
 
         <SpellModal spell={props.selectedSpell} backgroundClick={props.showSpellModal} />
       </Show>

@@ -1,3 +1,5 @@
+@use "../../../../index.scss" as *;
+
 .header {
     display: flex;
     flex-direction: row;
@@ -25,4 +27,63 @@
     >*:nth-child(n) {
         margin-right: 0.5rem;
     }
+}
+
+.dot {
+
+    @include dot;
+}
+
+.spellTopAttr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5%;
+}
+
+.attribute {
+    display: flex;
+    justify-content: space-between;
+    gap:5%;
+    width: 100%;
+}
+
+.flankedHeader {
+
+    @include FlankedLabel;
+}
+
+.ViewButton {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    width: 100%;
+    margin-top: 10px;
+
+    button {
+        flex: 1 !important;
+    }
+}
+
+.clickyHeader {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.badges {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.spellList {
+    height: 33vh;
+    overflow: scroll;
+}
+
+.searchBar {
+    margin-bottom: 8px;
+    padding-right: 12px;
 }
