@@ -37,6 +37,7 @@ import {
 import { MadChoice, MadChoiceKind } from "../rules/applyMads";
 import { ABILITY_FULL_NAMES, AbilityKey } from "../rules/constants";
 import { useCreate } from "../state/createContext";
+import { ALL_LANGUAGES } from "../../../../shared/customHooks/mads/languagePool";
 import { csvPicks, toggleCsv } from "./madChoiceControl.shared";
 import { OptionChoiceControl } from "./optionChoiceControl";
 import styles from "./madChoiceControl.module.scss";
@@ -54,6 +55,12 @@ const SPELL_PILL_LIMIT = 15;
 const SPELL_LIST_CAP = 150;
 
 type SpellPoolEntry = { id: string; label: string; detail?: string };
+
+/** A language choice's pool: its curated options, or every language when none are set. */
+const languagePool = (mad: MadChoice["mad"]): readonly string[] => {
+  const options = languageChoiceOptions(mad);
+  return options.length ? options : ALL_LANGUAGES;
+};
 
 const spellPoolDetail = (spell: Spell): string =>
   `${spell.level === "0" ? "Cantrip" : `Level ${spell.level}`} · ${spell.school}`;
@@ -288,7 +295,7 @@ export const MadChoiceControl: Component<{ choice: MadChoice }> = (props) => {
         <Match when={props.choice.kind === "language"}>
           <span class={styles.choiceHint}>Choose {languageChoiceCount(props.choice.mad)}:</span>
           <div class={styles.choicePills}>
-            <For each={languageChoiceOptions(props.choice.mad)}>
+            <For each={languagePool(props.choice.mad)}>
               {(language) => {
                 const key = languageChoiceKey(props.choice.feature);
                 return (

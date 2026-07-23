@@ -7,6 +7,8 @@ import styles from "./sheet.module.scss";
 
 type Props = {
   currentCharacter: Accessor<Character | undefined>;
+  /** Mads-applied character — languages render from here so choice-granted ones show up. */
+  displayCharacter: Accessor<Character | undefined>;
   equipLines: Accessor<string[]>;
   onSetPortrait: (dataUrl: string) => void;
 };
@@ -141,10 +143,10 @@ const DetailsTab: Component<Props> = (props) => {
         </Show>
 
         <SectionCard icon={Badge} title="Proficiencies & Languages">
-          <Show when={props.currentCharacter()?.languages?.length}>
+          <Show when={props.displayCharacter()?.languages?.length}>
             <div class={styles.profGroup}>
               <div class={styles.profGroupLabel}>Languages</div>
-              <div>{props.currentCharacter()?.languages?.join(", ")}</div>
+              <div>{props.displayCharacter()?.languages?.join(", ")}</div>
             </div>
           </Show>
           <For each={props.equipLines()}>

@@ -336,3 +336,69 @@ describe('Usage & spells ↔ mads bridge', () => {
     expect(mads[1].value["amount"]).toBe('9');
   });
 });
+
+describe('Languages effect editor', () => {
+
+  const languagesFeature = (value: Record<string, string>): FeatureDetail => ({
+    id: 'f2',
+    name: 'Linguist',
+    description: 'Learn languages',
+    metadata: {
+      uses: 0,
+      recharge: '',
+      spells: [],
+      category: '',
+      mads: [{ command: 'AddLanguages', value, type: 0, prerequisites: [], group: 0 }],
+    },
+  });
+
+  const checkbox = (container: HTMLElement, label: string) =>
+    container.querySelector(`input[data-mock="Checkbox"][label="${label}"]`) as HTMLInputElement;
+
+  it('re-commits an existing single language instead of wiping it (hydration regression)', async () => {
+    const { container, getByText, onClose } = renderPopup(languagesFeature({ name: 'Elvish' }));
+    await waitFor(() => expect(nameInput(container).value).toBe('Linguist'));
+
+    fireEvent.click(getByText('Effects (1)'));
+    fireEvent.click(getByText('Edit value'));
+    fireEvent.click(getByText('Set Languages'));
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads).toHaveLength(1);
+    expect(mads[0].value).toEqual({ name: 'Elvish' });
+  });
+
+  it('commits the all-languages choice form (choice + count, no options)', async () => {
+    const { container, getByText, onClose } = renderPopup(languagesFeature({ name: 'Elvish' }));
+    await waitFor(() => expect(nameInput(container).value).toBe('Linguist'));
+
+    fireEvent.click(getByText('Effects (1)'));
+    fireEvent.click(getByText('Edit value'));
+    fireEvent.click(checkbox(container, 'Let the player choose the language(s)'));
+    getByText('The player may pick any language.');
+    fireEvent.change(container.querySelector('input[type="number"]')!, { target: { value: '2' } });
+    fireEvent.click(getByText('Set Languages'));
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads[0].value).toEqual({ name: 'choice', count: '2' });
+  });
+
+  it('commits the curated choice form with an options CSV', async () => {
+    const { container, getByText, onClose } = renderPopup(languagesFeature({ name: 'Elvish' }));
+    await waitFor(() => expect(nameInput(container).value).toBe('Linguist'));
+
+    fireEvent.click(getByText('Effects (1)'));
+    fireEvent.click(getByText('Edit value'));
+    fireEvent.click(checkbox(container, 'Let the player choose the language(s)'));
+    fireEvent.click(checkbox(container, 'Limit to a curated list'));
+    fireEvent.click(checkbox(container, 'Elvish'));
+    fireEvent.click(checkbox(container, 'Giant'));
+    fireEvent.click(getByText('Set Languages'));
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads[0].value).toEqual({ name: 'choice', options: 'Elvish,Giant', count: '1' });
+  });
+});

@@ -315,6 +315,7 @@ const CharacterView: Component = () => {
       <Show when={mainActiveTab() === 2}>
         <DetailsTab
           currentCharacter={currentCharacter}
+          displayCharacter={displayCharacter}
           equipLines={equipLines}
           onSetPortrait={setPortrait}
         />

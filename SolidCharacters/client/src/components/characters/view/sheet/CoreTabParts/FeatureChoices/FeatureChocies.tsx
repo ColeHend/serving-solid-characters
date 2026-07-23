@@ -3,7 +3,8 @@ import { Badge } from "coles-solid-library/icons";
 import { For, Index, runWithOwner, Show, createMemo, Component, Accessor } from "solid-js";
 import { FeatureDetail } from "../../../../../../shared";
 import { featureUsage } from "../../../../../../shared/customHooks/mads/commands/useUsesFeature";
-import { choiceStatMads, statChoiceCount, statChoicePicks, statChoiceKey, statChoiceOptions, choiceProficiencyMads, proficiencyChoiceCount, proficiencyChoiceOptions, choiceExpertiseMads, expertiseChoiceCount, expertiseChoiceKey, expertiseChoiceOptions } from "../../../../../../shared/customHooks/mads/useMadCharacters";
+import { choiceStatMads, statChoiceCount, statChoicePicks, statChoiceKey, statChoiceOptions, choiceProficiencyMads, proficiencyChoiceCount, proficiencyChoiceOptions, choiceExpertiseMads, expertiseChoiceCount, expertiseChoiceKey, expertiseChoiceOptions, choiceLanguageMads, languageChoiceCount, languageChoiceKey, languageChoiceOptions } from "../../../../../../shared/customHooks/mads/useMadCharacters";
+import { ALL_LANGUAGES } from "../../../../../../shared/customHooks/mads/languagePool";
 import { SectionCard } from "../SectionCard/SectionCard";
 import styles from "../../sheet.module.scss";
 import { SheetDerived } from "../../useSheetDerived";
@@ -179,6 +180,32 @@ export const FeaturesCard:Component<props> = (props) => {
                         )}
                         </For>
                         <Show when={options().length === 0}><span>No eligible proficient skills yet</span></Show>
+                    </div>
+                    </div>
+                );
+                }}
+            </For>
+            <For each={choiceLanguageMads(featureProps.feature)}>
+                {(mad) => {
+                const count = languageChoiceCount(mad);
+                const key = () => languageChoiceKey(featureProps.feature);
+                const pool = () => {
+                    const options = languageChoiceOptions(mad);
+                    return options.length ? options : ALL_LANGUAGES;
+                };
+                return (
+                    <div class={styles.choiceBlock}>
+                    <span>{`Languages — choose ${count} (${props.proficiencyPicks(key()).length}/${count}):`}</span>
+                    <div class={styles.choiceChips}>
+                        <For each={pool()}>
+                        {(language) => (
+                            <Checkbox
+                            label={language}
+                            checked={props.proficiencyPicks(key()).includes(language)}
+                            onChange={() => runWithOwner(null, () => props.toggleProficiencyPick(key(), language, count))}
+                            />
+                        )}
+                        </For>
                     </div>
                     </div>
                 );

@@ -210,8 +210,14 @@ export const EffectCard: Component<EffectCardProps> = (props) => {
                         <Match when={command() === "AddLanguages" || command() === "RemoveLanguages"}>
                             <LanguagesFeature
                                 getValue={getValue}
-                                toggleValue={(language) => {
-                                    commitValue(getValue()?.["name"] === language ? { "name": "" } : { "name": language });
+                                allowChoice={command() === "AddLanguages"}
+                                toggleValue={(language, extra) => {
+                                    const next: Record<string, string> = { "name": language };
+                                    if (language === "choice") {
+                                        if (extra?.options) next["options"] = extra.options;
+                                        next["count"] = extra?.count ?? "1";
+                                    }
+                                    commitValue(next);
                                 }}
                             />
                         </Match>

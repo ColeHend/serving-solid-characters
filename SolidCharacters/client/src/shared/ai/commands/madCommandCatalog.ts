@@ -1,5 +1,6 @@
 import { MadFeature, MadType } from "../../../models/generated";
 import { hasDerivedSpellPool, hasSpellFilterValue } from "../../customHooks/mads/spellChoiceFilters";
+import { ALL_LANGUAGES } from "../../customHooks/mads/languagePool";
 
 /**
  * Single source of truth for the "mads" character-change commands the homebrew command sub-agent can
@@ -101,10 +102,7 @@ const WEAPON_CATEGORY_ALIASES: Record<string, string> = {
 };
 
 /** Standard languages — a HINT for the model; any non-empty string is accepted. */
-export const COMMON_LANGUAGES = [
-    "Common", "Undercommon", "Abyssal", "Infernal", "Celestial", "Primordial", "Draconic",
-    "Dwarvish", "Elvish", "Giant", "Gnomish", "Goblin", "Halfling", "Orc", "Sylvan", "Deep Speech",
-] as const;
+export const COMMON_LANGUAGES = ALL_LANGUAGES;
 
 /** Roll types an Advantage command can target (matches AdvantageRollType on the character model). */
 export const ROLL_TYPES = ["SavingThrow", "WeaponAttack", "SpellAttack", "Initiative", "AbilityCheck"] as const;
@@ -417,7 +415,8 @@ export const COMMAND_CATALOG: Record<MadCategory, CommandSpec> = {
         ],
         removeFields: [{ key: "name", type: "text", required: true }],
         hint: "grants/removes a language; name = the language. " +
-            "For 'N languages of your choice' use name = choice with options = comma-separated allowed languages and count = how many the player picks (the player picks on the sheet).",
+            "For 'N languages of your choice' use name = choice and count = how many the player picks (the player picks on the sheet); " +
+            "add options = comma-separated allowed languages to restrict the pool, or omit options to let the player pick ANY language.",
     },
     Currency: {
         category: "Currency", idBased: false,
@@ -823,8 +822,11 @@ export function coerceCommand(
     }
     // choice-form Resistances likewise needs its allowed-damage-types list
     if (category === "Resistances" && value["damageType"] === "choice" && !value["options"]) return null;
-    // choice-form Languages likewise needs its allowed-languages list
-    if (category === "Languages" && value["name"] === "choice" && !value["options"]) return null;
+    // choice-form Languages with no options at all = "any language". An options list that was
+    // PROPOSED but coerced to nothing must not silently widen a curated list into the full pool.
+    if (category === "Languages" && value["name"] === "choice" && !value["options"]) {
+        if (String(rawValue?.["options"] ?? "").trim() !== "") return null;
+    }
     // an Immunities grant is either a damage type or a condition/affliction
     if (category === "Immunities" && !value["damageType"] && !value["condition"]) return null;
     // choice-form armor/weapon/tool proficiencies likewise need their allowed-options list
@@ -922,8 +924,11 @@ export function validateStoredCommand(mad: MadFeature): string[] {
         if (!opts) errors.push(`${prettyCommand(command)} uses damageType "choice" but has no valid options list`);
     }
     if (category === "Languages" && isAdd && String(value["name"] ?? "") === "choice") {
-        const opts = coerceField({ key: "options", type: "textCsv", required: true }, value["options"], "", () => null, undefined);
-        if (!opts) errors.push(`${prettyCommand(command)} uses name "choice" but has no valid options list`);
+        // No options at all = "any language" (derived pool); present-but-invalid options is an error.
+        if (String(value["options"] ?? "").trim() !== "") {
+            const opts = coerceField({ key: "options", type: "textCsv", required: true }, value["options"], "", () => null, undefined);
+            if (!opts) errors.push(`${prettyCommand(command)} uses name "choice" with an invalid options list`);
+        }
     }
     if (category === "Immunities") {
         const dmg = coerceField({ key: "damageType", type: "damageType", required: false }, value["damageType"], "", () => null, undefined);
