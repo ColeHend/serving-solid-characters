@@ -1,10 +1,14 @@
-import { Accessor, Component, createMemo } from "solid-js";
+import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
 import { Spell } from "../../../../models/generated";
-import { Table, Column, Header, Cell, Row, Button, Icon } from "coles-solid-library";
+import { Table, Column, Header, Cell, Row, Button, Icon, FlatCard } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
 import { Character } from "../../../../models/character.model";
 import styles from "./SpellTable.module.scss";
 import { characterManager } from "../../../../shared";
+import { ConcBadge } from "../sheet/CoreTabParts/concBadge/concBadge";
+import { FleuronDivider } from "../../../../shared/components/fleuronDivider/fleuronDivider";
+import { LegacyBadge } from "../sheet/CoreTabParts/legacyBadge/legacyBadge";
+import SearchBar from "../../../../shared/components/SearchBar/SearchBar";
 
 interface tableProps {
     spells: Accessor<Spell[]>;
@@ -13,6 +17,8 @@ interface tableProps {
 }
 
 export const SpellTable:Component<tableProps> = (props) => {
+    const [results, setResults] = createSignal<Spell[]>([]);
+
     const level = createMemo(() => props.spells()[0].level );
 
     const displayLevel = () => {
@@ -49,36 +55,61 @@ export const SpellTable:Component<tableProps> = (props) => {
         <div class={`${styles.header}`}>
             <span>{displayLevel()}</span>
 
-            <span>Spells: {props.spells().length}</span>                 
+            <span>Spells: {props.spells().length}</span>            
         </div>
-        <Table<Spell> 
-            columns={["prepaired","name","level"]} 
-            data={(()=>props.spells())}
-            class={styles.spellTable}>
-            <Column name="name">
-                <Header><></></Header>
-                <Cell<Spell>>{(spell) => <span class={`${styles.nameColumn}`}>
-                    <h4>{spell.name}</h4>
-                    <span>{spell.school}</span>
-                    <span>{spell.duration}</span>
-                    <span>{spell.castingTime}</span>
-                    <span>{spell.ritual && <em> (Ritual)</em>}</span>    
-                </span>}</Cell>
-            </Column>
-            <Column name="level">
-                <Header><></></Header>
-                <Cell<Spell> onClick={(e)=>e.stopPropagation()}>{(spell) => <span class={`${styles.levelColumn}`}>
-                    <span>{showLevel(spell.level)}</span>
-                    
-                    <Button transparent onClick={()=>{
-                        const confirm = window.confirm("Are you sure?");
 
-                        if (confirm) characterManager.deleteCharSpell(props.currentCharacter().id, spell.name);
-                    }}><Icon color="red" icon={Delete} /></Button>
-                </span>}</Cell>
-            </Column>
+        <div class={`${styles.searchBar}`}>
+            <SearchBar dataSource={props.spells} setResults={setResults} />
+        </div>
 
-            <Row onClick={(e, spell)=>props.show(spell)} />
-        </Table>
+        <div class={`${styles.spellList}`}>
+            <Show when={props.spells().length}>
+                <For each={results()}>
+                    {(spell,i) => <FlatCard header={<div class={`${styles.clickyHeader}`} onClick={() => props.show(spell)}>
+                        <span>{spell.name}</span> 
+                        <span class={`${styles.dot}`}>·</span> 
+                        <span>{spell.school}</span>
+                        <Show when={spell.concentration}> 
+                            <span class={`${styles.dot}`}>·</span> 
+
+                            <span class={`${styles.badges}`}>
+                                <ConcBadge />
+                                <Show when={spell.legacy}>
+                                    <LegacyBadge />
+                                </Show>
+                            </span>
+                        </Show>   
+                    </div>} hideBottomBorder={i() !== props.spells().length - 1}> 
+                        <div>
+                            <div class={`${styles.spellTopAttr}`}>
+                                <span class={`${styles.attribute}`}>
+                                    <span>Range</span> 
+
+                                    {spell.range}
+                                </span>
+
+                                <span class={`${styles.attribute}`}>
+                                    <span>Components</span> 
+
+                                    {spell.components}
+                                </span>
+
+                                <span class={`${styles.attribute}`}>
+                                    <span>Casting Time</span>
+
+                                    {spell.castingTime}
+                                </span>
+                            </div>
+
+                            <FleuronDivider color="#ffd875"/>
+
+                            <div class={`${styles.ViewButton}`}>
+                                <Button onClick={() => props.show(spell)}>View {spell.name}</Button>
+                            </div>
+                        </div>
+                    </FlatCard>}
+                </For>
+            </Show>
+        </div>
     </>
 }

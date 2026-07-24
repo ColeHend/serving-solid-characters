@@ -102,7 +102,7 @@ const CharacterView: Component = () => {
 
   // ── spells ───────────────────────────────────────────────────────
   const getKnownSpells = (character: Character | undefined): Spell[] =>
-    allSpells().filter((spell) => character?.spells?.some((s) => s.name === spell.name));
+    allSpells().filter((spell) => character?.spells?.some((s) => s.id === spell.id));
   const cantrips = createMemo(() => getKnownSpells(currentCharacter()).filter((s) => +s.level === 0));
   const spellGroups = createMemo(() => {
     const known = getKnownSpells(currentCharacter());
