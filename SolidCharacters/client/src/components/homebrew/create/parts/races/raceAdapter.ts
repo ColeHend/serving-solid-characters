@@ -99,17 +99,18 @@ export const hydrateBonuses = (bonuses?: Race['abilityBonuses']): RaceStatBonus[
 /**
  * Assemble the persisted Race from the wizard state. Emits ONLY editor-managed
  * keys — fields the wizard has no UI for (abilityBonusChoice, traitChoice,
- * legacy, the undeclared subRaces extension) are deliberately NOT emitted, so
- * callers updating an existing entity must spread over it ({...existing, ...built})
- * for those to survive.
+ * the undeclared subRaces extension) are deliberately NOT emitted, so callers
+ * updating an existing entity must spread over it ({...existing, ...built}) for
+ * those to survive. (legacy IS emitted now — the Identity step's edition picker.)
  */
 export function toRace(fg: FormGroup<RaceForm>, extras: RaceExtras, existingId?: string): Race {
   return {
     id: existingId || createNewId(),
     name: ((fg.get('name') as string) || '').trim(),
-    // Always emitted (undefined when blank) so clearing the field survives the
+    // Always emitted (undefined when blank/Both) so clearing the field survives the
     // {...existing, ...built} update spread instead of resurrecting the old value.
     source: ((fg.get('source') as string) || '').trim() || undefined,
+    legacy: fg.get('legacy') as boolean | undefined,
     size: ((fg.get('size') as string[]) ?? []).join(', '),
     speed: (fg.get('speed') as number) || 0,
     languages: [...((fg.get('languages') as string[]) ?? [])],

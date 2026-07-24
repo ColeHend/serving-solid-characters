@@ -1,5 +1,6 @@
 import { Button, Checkbox, FormField, Input, Option, Select } from "coles-solid-library";
 import { Accessor, Component, Show, createMemo, createSignal, For } from "solid-js";
+import { OptionsMultiSelect } from "../optionsMultiSelect/optionsMultiSelect";
 
 interface props {
     toggleValue: (stat: string, value: number, extra?: { options?: string; mode?: string; count?: string }) => void;
@@ -43,10 +44,6 @@ export const StatFeature:Component<props> = (props) => {
     const [currentCount, setCount] = createSignal(GetMadValue("count"));
     const [isSet, setIsSet] = createSignal(GetMadValue("mode") === "set");
 
-    const toggleOption = (key: string) => {
-        setOptions(old => old.includes(key) ? old.filter(o => o !== key) : [...old, key]);
-    };
-
     const commit = () => {
         const extra: { options?: string; mode?: string; count?: string } = {};
         if (currentStat() === "choice") {
@@ -68,19 +65,12 @@ export const StatFeature:Component<props> = (props) => {
             </FormField>
 
             <Show when={currentStat() === "choice"}>
-                <FormField name="Allowed abilities">
-                    <div>
-                        <For each={stats}>
-                            {(key) => (
-                                <Checkbox
-                                    label={getStatName(key) ?? key}
-                                    checked={currentOptions().includes(key)}
-                                    onChange={() => toggleOption(key)}
-                                />
-                            )}
-                        </For>
-                    </div>
-                </FormField>
+                <OptionsMultiSelect
+                    label="Allowed abilities"
+                    options={stats.map(k => ({ value: k, label: getStatName(k) ?? k }))}
+                    selected={currentOptions}
+                    onChange={setOptions}
+                />
                 <FormField name="How many the player picks">
                     <Input value={currentCount()} type="number" onChange={(e) => setCount(e.currentTarget.value)} />
                 </FormField>

@@ -10,11 +10,16 @@ import {
     choiceProficiencyMads, 
     proficiencyChoiceCount, 
     proficiencyChoiceOptions, 
-    choiceExpertiseMads, 
-    expertiseChoiceCount, 
-    expertiseChoiceKey, 
-    expertiseChoiceOptions 
+    choiceExpertiseMads,
+    expertiseChoiceCount,
+    expertiseChoiceKey,
+    expertiseChoiceOptions,
+    choiceLanguageMads,
+    languageChoiceCount,
+    languageChoiceKey,
+    languageChoiceOptions
 } from "../../../../../../../../shared/customHooks/mads/useMadCharacters";
+import { ALL_LANGUAGES } from "../../../../../../../../shared/customHooks/mads/languagePool";
 import { Character } from "../../../../../../../../models/character.model";
 import { SheetDerived } from "../../../../useSheetDerived";
 import styles from "../../../../sheet.module.scss";
@@ -108,6 +113,32 @@ export const FeatureChoices:Component<props> = (props) => {
                     )}
                     </For>
                     <Show when={options().length === 0}><span>No eligible proficient skills yet</span></Show>
+                </div>
+                </div>
+            );
+            }}
+        </For>
+        <For each={choiceLanguageMads(props.feature)}>
+            {(mad) => {
+            const count = languageChoiceCount(mad);
+            const key = () => languageChoiceKey(props.feature);
+            const pool = () => {
+                const options = languageChoiceOptions(mad);
+                return options.length ? options : ALL_LANGUAGES;
+            };
+            return (
+                <div class={styles.choiceBlock}>
+                <span>{`Languages — choose ${count} (${props.proficiencyPicks(key()).length}/${count}):`}</span>
+                <div class={styles.choiceChips}>
+                    <For each={pool()}>
+                    {(language) => (
+                        <Checkbox
+                        label={language}
+                        checked={props.proficiencyPicks(key()).includes(language)}
+                        onChange={() => runWithOwner(null, () => props.toggleProficiencyPick(key(), language, count))}
+                        />
+                    )}
+                    </For>
                 </div>
                 </div>
             );

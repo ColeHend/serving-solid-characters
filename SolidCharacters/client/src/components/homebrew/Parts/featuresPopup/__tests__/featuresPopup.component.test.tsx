@@ -164,6 +164,43 @@ describe('FeaturesPopup edit hydration', () => {
   });
 });
 
+describe('Per-effect prerequisites', () => {
+
+  it("persists each hydrated mad's own prerequisites through save", async () => {
+    const feature = editFeature();
+    feature.metadata!.mads = [
+      { command: 'AddHitPoints', value: { amount: '5' }, type: 0, prerequisites: [{ value: 'Level', operation: '>=', keyValue: '7', group: 0 }], group: 0 },
+      { command: 'AddSpells', value: { ID: 'sp1' }, type: 0, prerequisites: [{ value: 'Class', operation: '===', keyValue: 'Fighter', group: 0 }], group: 0 },
+    ];
+    const { container, getByText, onClose } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads[0].prerequisites).toEqual([{ value: 'Level', operation: '>=', keyValue: '7', group: 0 }]);
+    expect(mads[1].prerequisites).toEqual([{ value: 'Class', operation: '===', keyValue: 'Fighter', group: 0 }]);
+  });
+
+  it('adding a rule on one effect card leaves the other card untouched', async () => {
+    const feature = editFeature();
+    feature.metadata!.mads = [
+      { command: 'AddHitPoints', value: { amount: '5' }, type: 0, prerequisites: [], group: 0 },
+      { command: 'AddSpells', value: { ID: 'sp1' }, type: 0, prerequisites: [], group: 0 },
+    ];
+    const { container, getByText, getAllByText } = renderPopup(feature);
+    await waitFor(() => expect(nameInput(container).value).toBe('Second Wind'));
+
+    fireEvent.click(getByText('Effects (2)'));
+    const addRuleButtons = getAllByText('+ Add Rule');
+    expect(addRuleButtons).toHaveLength(2);
+
+    fireEvent.click(addRuleButtons[0]);
+
+    // Exactly ONE rule row in the whole tab — the shared-form bug rendered it on every card.
+    expect(getAllByText('Character has')).toHaveLength(1);
+  });
+});
+
 describe('Usage & spells ↔ mads bridge', () => {
 
   it('binds limited uses to the AddUses mad and excludes it from the effect count', async () => {
@@ -297,5 +334,76 @@ describe('Usage & spells ↔ mads bridge', () => {
     const mads = lastEmitted(onClose).metadata!.mads!;
     expect(mads[0].value["amount"]).toBe('4');
     expect(mads[1].value["amount"]).toBe('9');
+  });
+});
+
+describe('Languages effect editor', () => {
+
+  const languagesFeature = (value: Record<string, string>): FeatureDetail => ({
+    id: 'f2',
+    name: 'Linguist',
+    description: 'Learn languages',
+    metadata: {
+      uses: 0,
+      recharge: '',
+      spells: [],
+      category: '',
+      mads: [{ command: 'AddLanguages', value, type: 0, prerequisites: [], group: 0 }],
+    },
+  });
+
+  const checkbox = (container: HTMLElement, label: string) =>
+    container.querySelector(`input[data-mock="Checkbox"][label="${label}"]`) as HTMLInputElement;
+
+  it('re-commits an existing single language instead of wiping it (hydration regression)', async () => {
+    const { container, getByText, onClose } = renderPopup(languagesFeature({ name: 'Elvish' }));
+    await waitFor(() => expect(nameInput(container).value).toBe('Linguist'));
+
+    fireEvent.click(getByText('Effects (1)'));
+    fireEvent.click(getByText('Edit value'));
+    fireEvent.click(getByText('Set Languages'));
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads).toHaveLength(1);
+    expect(mads[0].value).toEqual({ name: 'Elvish' });
+  });
+
+  it('commits the all-languages choice form (choice + count, no options)', async () => {
+    const { container, getByText, onClose } = renderPopup(languagesFeature({ name: 'Elvish' }));
+    await waitFor(() => expect(nameInput(container).value).toBe('Linguist'));
+
+    fireEvent.click(getByText('Effects (1)'));
+    fireEvent.click(getByText('Edit value'));
+    fireEvent.click(checkbox(container, 'Let the player choose the language(s)'));
+    getByText('The player may pick any language.');
+    fireEvent.change(container.querySelector('input[type="number"]')!, { target: { value: '2' } });
+    fireEvent.click(getByText('Set Languages'));
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads[0].value).toEqual({ name: 'choice', count: '2' });
+  });
+
+  it('commits the curated choice form with an options CSV', async () => {
+    const { container, getByText, onClose } = renderPopup(languagesFeature({ name: 'Elvish' }));
+    await waitFor(() => expect(nameInput(container).value).toBe('Linguist'));
+
+    fireEvent.click(getByText('Effects (1)'));
+    fireEvent.click(getByText('Edit value'));
+    fireEvent.click(checkbox(container, 'Let the player choose the language(s)'));
+    fireEvent.click(checkbox(container, 'Limit to a curated list'));
+
+    const allowed = container.querySelector('select[data-mock="Select"][multiple]') as HTMLSelectElement;
+    for (const opt of Array.from(allowed.options)) {
+      if (opt.value === 'Elvish' || opt.value === 'Giant') opt.selected = true;
+    }
+    fireEvent.change(allowed);
+
+    fireEvent.click(getByText('Set Languages'));
+
+    fireEvent.click(getByText('Save changes'));
+    const mads = lastEmitted(onClose).metadata!.mads!;
+    expect(mads[0].value).toEqual({ name: 'choice', options: 'Elvish,Giant', count: '1' });
   });
 });

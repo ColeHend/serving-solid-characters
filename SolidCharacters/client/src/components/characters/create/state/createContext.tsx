@@ -83,14 +83,21 @@ export function CreateProvider(props: { children: JSX.Element }) {
   };
 
   // The magic-item hook takes a single year, so both-mode merges the two catalogs with the
-  // current rows FIRST — collectMagicItemMads keeps the first row per name, so a same-name
-  // item resolves to its 2024 printing and never applies twice.
+  // current rows FIRST — a same-name item resolves to its 2024 printing and never appears
+  // (or applies) twice. Magic items carry no edition tag, so a homebrew magic item is present
+  // in BOTH per-version lists; dedupe by name here, keeping the first (2024) occurrence.
   const magicItems2014 = useDnDMagicItems({ overrideVersion: "2014" });
   const magicItems2024 = useDnDMagicItems({ overrideVersion: "2024" });
   const magicItems = createMemo(() => {
     if (draft.edition === "2014") return magicItems2014();
     if (draft.edition === "2024") return magicItems2024();
-    return [...magicItems2024(), ...magicItems2014()];
+    const seen = new Set<string>();
+    return [...magicItems2024(), ...magicItems2014()].filter((mi) => {
+      const key = (mi?.name ?? "").toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   });
 
   const data: CreateData = {

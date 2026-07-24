@@ -1132,6 +1132,31 @@ describe("choice-form Resistances and Languages commands", () => {
         const applied = useMadCharacters(c, collectMadFeatures(c));
         expect(applied.languages).toEqual(expect.arrayContaining(["Elvish", "Giant"]));
     });
+
+    it("language choice with no options draws from all languages (count is all that's checked)", () => {
+        const feat = { id: "lang-any", name: "Linguist", metadata: { mads: stored(
+            mad("AddLanguages", { name: "choice", count: "2" }),
+        ) } } as FeatureDetail;
+        const c = makeCharacter({ features: [feat] });
+        expect(pendingLanguageChoices(c, feat)).toHaveLength(1);
+        expect(collectMadFeatures(c)).toEqual([]);
+
+        // Picks that would fail an options-membership check — the derived pool skips it.
+        c.proficiencyChoices = { [languageChoiceKey(feat)]: "Sylvan,Deep Speech" };
+        expect(pendingLanguageChoices(c, feat)).toHaveLength(0);
+        const applied = useMadCharacters(c, collectMadFeatures(c));
+        expect(applied.languages).toEqual(expect.arrayContaining(["Sylvan", "Deep Speech"]));
+    });
+
+    it("curated language choice still rejects picks outside its options", () => {
+        const feat = { id: "lang-cur", name: "Deft Explorer", metadata: { mads: stored(
+            mad("AddLanguages", { name: "choice", options: "Elvish,Dwarvish", count: "1" }),
+        ) } } as FeatureDetail;
+        const c = makeCharacter({ features: [feat] });
+        c.proficiencyChoices = { [languageChoiceKey(feat)]: "Sylvan" };
+        expect(pendingLanguageChoices(c, feat)).toHaveLength(1);
+        expect(collectMadFeatures(c)).toEqual([]);
+    });
 });
 
 describe("branch groups (pick-one lineage)", () => {

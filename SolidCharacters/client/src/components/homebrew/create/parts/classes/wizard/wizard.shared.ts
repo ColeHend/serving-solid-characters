@@ -26,6 +26,8 @@ export interface ClassForm {
   description: string;
   /** Provenance label, e.g. "My Campaign"; empty/undefined = plain homebrew. */
   source?: string;
+  /** Edition tag: true = 2014, false = 2024, undefined = Both/neutral. */
+  legacy?: boolean;
   hitDie: number;
   primaryStat: Stat[];
   savingThrows: Stat[];
@@ -379,7 +381,7 @@ export const draftKey = (editName?: string): string =>
 /** Every ClassForm field that round-trips through a draft (classLevels/subclasses excluded — the
  *  levels store is serialized separately and subclasses are not edited by this wizard). */
 export const DRAFT_FORM_KEYS = [
-  'name', 'description', 'source', 'hitDie', 'primaryStat', 'savingThrows',
+  'name', 'description', 'source', 'legacy', 'hitDie', 'primaryStat', 'savingThrows',
   'armorProficiencies', 'weaponProficiencies', 'toolProficiencies',
   'armorStart', 'weaponStart', 'itemStart',
   'armorProfChoices', 'weaponProfChoices', 'toolProfChoices',

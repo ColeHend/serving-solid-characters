@@ -3,7 +3,7 @@ import { FeatureDetail, MadPrerequisite, Spell } from "../../../../models/genera
 import { MadForm, MadPrereqForm } from "../../../../models/data/formModels";
 import { srdItem } from "../../../../models/data/generated";
 import { Feat } from "../../../../shared";
-import { FormArray } from "coles-solid-library";
+import { FormArray, FormGroup } from "coles-solid-library";
 import { MAD_CATEGORIES } from "../../../../shared/ai/commands/madCommandCatalog";
 
 export { MAD_CATEGORIES };
@@ -38,6 +38,8 @@ export interface MadsApi {
     removeMad: (index: number) => void;
     isEditorOpen: (key: string) => boolean;
     setEditorOpen: (key: string, open: boolean) => void;
+    /** The row's own prerequisites FormArray, keyed by its stable name. */
+    prereqFormFor: (name: string) => PrereqFormArray;
 }
 
 /** Data hooks the per-category value editors need, fetched once by the popup. */
@@ -48,8 +50,28 @@ export interface EffectCardData {
     allFeats: Accessor<Feat[]>;
 }
 
-export type PrereqState = [Accessor<Record<string, MadPrerequisite>>, Setter<Record<string, MadPrerequisite>>];
 export type PrereqFormArray = FormArray<MadPrereqForm>;
+
+/** A prerequisite rule row, mirroring the shape FeaturePrerequisites' Add Rule seeds. */
+export function newPrereqFormGroup(init: Partial<MadPrereqForm> = {}): FormGroup<MadPrereqForm> {
+    return new FormGroup<MadPrereqForm>({
+        formName: [init.formName ?? "", []],
+        keyValue: [init.keyValue ?? "", []],
+        operation: [init.operation ?? "", []],
+        value: [init.value ?? "", []],
+        group: [init.group ?? 0, []],
+    });
+}
+
+/**
+ * A row's prereq FormArray serialized for storage. Rules with no trait picked do
+ * nothing on the sheet — dropped like unset effect rows; formName is editor-only.
+ */
+export function serializePrereqs(fa: PrereqFormArray | undefined): MadPrerequisite[] {
+    return (fa?.get() ?? [])
+        .filter(p => String(p.value ?? "").trim() !== "")
+        .map(p => ({ value: p.value, operation: p.operation, keyValue: p.keyValue, group: p.group }));
+}
 
 export const isUsesMad = (mad: Pick<MadForm, "command">): boolean => mad.command === "AddUses";
 

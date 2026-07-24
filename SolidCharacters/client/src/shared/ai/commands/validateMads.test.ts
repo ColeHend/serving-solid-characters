@@ -286,6 +286,31 @@ describe("Spells choice form", () => {
     });
 });
 
+describe("Languages choice form", () => {
+    const noRef = () => null;
+
+    it("coerces the curated choice form", () => {
+        const m = coerceCommand("Add", "Languages", { name: "choice", options: "Elvish, Dwarvish", count: "2" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddLanguages", value: { name: "choice", options: "Elvish,Dwarvish", count: "2" } });
+    });
+
+    it("a choice with no options at all is a valid derived pool ('any language')", () => {
+        const m = coerceCommand("Add", "Languages", { name: "choice", count: "2" }, undefined, noRef);
+        expect(m).toMatchObject({ command: "AddLanguages", value: { name: "choice", count: "2" } });
+        expect(m?.value["options"]).toBeUndefined();
+    });
+
+    it("an options list that coerces to nothing does NOT widen into the all-languages pool", () => {
+        expect(coerceCommand("Add", "Languages", { name: "choice", options: " , ,", count: "1" }, undefined, noRef)).toBeNull();
+    });
+
+    it("validateStoredCommand accepts both forms and rejects a present-but-invalid options list", () => {
+        expect(validateStoredCommand(mad({ command: "AddLanguages", value: { name: "choice", options: "Elvish,Giant", count: "2" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddLanguages", value: { name: "choice", count: "1" } }))).toEqual([]);
+        expect(validateStoredCommand(mad({ command: "AddLanguages", value: { name: "choice", options: " , ", count: "1" } }))).not.toEqual([]);
+    });
+});
+
 describe("Items choice form", () => {
     // A tiny item "catalog": Longsword / Shortbow resolve, anything else doesn't.
     const ids: Record<string, string> = { "longsword": "it-longsword", "shortbow": "it-shortbow" };

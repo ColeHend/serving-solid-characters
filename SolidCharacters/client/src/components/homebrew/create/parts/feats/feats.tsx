@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-solid-library";
 import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/feats";
+import { defaultEditionKey, editionToLegacy } from "../../../../../shared/customHooks/dndInfo/info/edition";
 import { Feat, FeatureDetail, FeatureMetadata, Prerequisite } from "../../../../../models/generated";
 import { takeEditHandoff } from "../../../../../shared/ai/editHandoff";
 import { FeaturesPopup } from "../../../Parts/featuresPopup/featuresPopup";
@@ -49,7 +50,7 @@ const Feats: Component = () => {
     prerequisites: [[], []],
     metadata: [undefined, []],
     id: ['', []],
-    legacy: [undefined, []],
+    legacy: [editionToLegacy(defaultEditionKey()), []],
   });
 
   const setField = <K extends keyof FeatForm>(key: K, value: FeatForm[K]) =>

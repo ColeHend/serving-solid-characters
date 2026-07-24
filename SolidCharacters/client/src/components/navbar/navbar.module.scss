@@ -14,7 +14,9 @@
     flex-direction: row;
     align-items: center;
     $mobile: 768px;
-    color: $header-on-background-color !important;
+    button {
+        color: $header-on-background-color;
+    }
     background-color: transparent;
     // Brand sweep over the Container's solid header color; if the token is ever
     // missing the Container color simply shows through.

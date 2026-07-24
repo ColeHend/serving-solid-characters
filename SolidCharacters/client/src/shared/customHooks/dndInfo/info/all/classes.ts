@@ -1,6 +1,7 @@
 import { useGetSrdClasses } from "../srd/classes";
 import { useGetHombrewClasses } from "../homebrew/classes";
 import { markHomebrew } from "../provenance";
+import { homebrewForEdition } from "../edition";
 import { createMemo } from "solid-js";
 import getUserSettings from "../../../userSettings";
 
@@ -17,6 +18,6 @@ export function useDnDClasses(settings?: settings) {
     const srd = useGetSrdClasses(version);
     
 
-    return [...srd(), ...markHomebrew(HombrewClasses())]
+    return [...srd(), ...markHomebrew(homebrewForEdition(HombrewClasses(), version))]
   });
 }

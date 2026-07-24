@@ -1,5 +1,6 @@
 import { Button, Checkbox, FormField, Input, Option, Select } from "coles-solid-library";
 import { Accessor, Component, createMemo, createSignal, For, Show } from "solid-js";
+import { OptionsMultiSelect } from "../optionsMultiSelect/optionsMultiSelect";
 
 interface props {
     toggleProf: (proficiencies: string, extra?: { options?: string; count?: string }) => void;
@@ -44,10 +45,6 @@ export const ProficienciesFeature: Component<props> = (props) => {
         "Survival"
     ]
 
-    const toggleOption = (skill: string) => {
-        setOptions(old => old.includes(skill) ? old.filter(o => o !== skill) : [...old, skill]);
-    };
-
     const commit = () => {
         if (isChoice()) {
             props.toggleProf("choice", { options: options().join(","), count: `${count()}` });
@@ -76,19 +73,12 @@ export const ProficienciesFeature: Component<props> = (props) => {
         </Show>
 
         <Show when={isChoice()}>
-            <FormField name="Allowed skills">
-                <div>
-                    <For each={skills}>
-                        {(skill) => (
-                            <Checkbox
-                                label={skill}
-                                checked={options().includes(skill)}
-                                onChange={() => toggleOption(skill)}
-                            />
-                        )}
-                    </For>
-                </div>
-            </FormField>
+            <OptionsMultiSelect
+                label="Allowed skills"
+                options={skills}
+                selected={options}
+                onChange={setOptions}
+            />
 
             <FormField name="How many the player picks">
                 <Input value={count()} type="number" min={1} onInput={(e) => setCount(Math.max(1, +e.currentTarget.value || 1))} />

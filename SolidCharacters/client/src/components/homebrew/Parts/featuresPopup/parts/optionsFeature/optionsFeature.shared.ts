@@ -1,9 +1,9 @@
 import { Accessor } from "solid-js";
 import { FormArray, FormGroup } from "coles-solid-library";
 import { FeatureOption, OptionPrerequisite, OptionsConfig } from "../../../../../../models/generated";
-import { MadForm } from "../../../../../../models/data/formModels";
+import { MadForm, MadPrereqForm } from "../../../../../../models/data/formModels";
 import { MadType } from "../../../../../../shared/customHooks/mads/madModels";
-import { MadsApi, isUnsetRow, splitCommand } from "../../featuresPopup.shared";
+import { MadsApi, PrereqFormArray, isUnsetRow, newPrereqFormGroup, serializePrereqs, splitCommand } from "../../featuresPopup.shared";
 
 /**
  * Authoring state for one feature option (an Eldritch Invocation, Maneuver, Metamagic…).
@@ -24,6 +24,8 @@ export interface OptionRow {
     /** True for rows added this session — their card starts expanded. */
     fresh: boolean;
     mads: FormArray<MadForm>;
+    /** Each nested effect's OWN prerequisites, keyed by the mad row's stable name. */
+    prereqForms: Map<string, PrereqFormArray>;
 }
 
 export interface OptionScalingRow {
@@ -45,7 +47,7 @@ export interface OptionsApi {
     setConfig: (patch: Partial<OptionsConfigForm>) => void;
     addRow: () => void;
     removeRow: (key: number) => void;
-    updateRow: (key: number, patch: Partial<Omit<OptionRow, "key" | "mads">>) => void;
+    updateRow: (key: number, patch: Partial<Omit<OptionRow, "key" | "mads" | "prereqForms">>) => void;
     /** A MadsApi scoped to one option's nested effects FormArray. */
     madsApiFor: (row: OptionRow) => MadsApi;
 }
@@ -76,14 +78,26 @@ export function blankOptionRow(key: number): OptionRow {
         prereqText: "",
         fresh: true,
         mads: new FormArray<MadForm>([]),
+        prereqForms: new Map(),
     };
 }
 
 /** A stored option rebuilt into authoring state (stored command strings split for the editors). */
 export function hydrateOptionRow(option: FeatureOption, key: number): OptionRow {
     const mads = new FormArray<MadForm>([]);
+    const prereqForms = new Map<string, PrereqFormArray>();
     (option.mads ?? []).forEach((mad) => {
-        mads.add(newMadFormGroup({ ...mad, ...splitCommand(mad.command) }));
+        // value/prerequisites cloned — the spread would alias the stored entity's objects.
+        const group = newMadFormGroup({
+            ...mad,
+            value: structuredClone(mad.value ?? {}),
+            prerequisites: structuredClone(mad.prerequisites ?? []),
+            ...splitCommand(mad.command),
+        });
+        mads.add(group);
+        const fa = new FormArray<MadPrereqForm>([]);
+        (mad.prerequisites ?? []).forEach(p => fa.add(newPrereqFormGroup(p)));
+        prereqForms.set(group.get().name, fa);
     });
     return {
         key,
@@ -94,6 +108,7 @@ export function hydrateOptionRow(option: FeatureOption, key: number): OptionRow 
         prereqText: option.prerequisites?.text ?? "",
         fresh: false,
         mads,
+        prereqForms,
     };
 }
 
@@ -120,7 +135,7 @@ export function serializeOptionRows(rows: OptionRow[]): FeatureOption[] {
                     command: mad.command,
                     value: mad.value,
                     type: mad.type,
-                    prerequisites: mad.prerequisites ?? [],
+                    prerequisites: serializePrereqs(row.prereqForms.get(mad.name)),
                     group: mad.group,
                 })),
             };

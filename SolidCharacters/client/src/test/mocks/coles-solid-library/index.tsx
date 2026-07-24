@@ -101,7 +101,12 @@ export const Select: Component<AnyProps> = (p) => {
       // clicks inside a FormField (its onSelect never fires on that path, so
       // app code must not rely on onSelect). Real onChange additionally echoes
       // from a tracked effect — handlers must be untracked/idempotent.
-      onChange={(e) => local.onChange && local.onChange(e.currentTarget.value)}
+      // In multiple mode the real Select emits an array; mirror that so
+      // multi-select handlers receive string[] (single mode stays a string).
+      onChange={(e) => local.onChange && local.onChange(
+        p.multiple
+          ? Array.from(e.currentTarget.selectedOptions, (o: HTMLOptionElement) => o.value)
+          : e.currentTarget.value)}
       {...rest}
     >{local.children}</select>
   );

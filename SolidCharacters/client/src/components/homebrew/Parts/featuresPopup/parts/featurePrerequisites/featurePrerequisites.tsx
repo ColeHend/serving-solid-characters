@@ -1,14 +1,13 @@
-import { Accessor, Component, createMemo, For, Match, Setter, Show, Switch } from "solid-js";
+import { Component, createMemo, For, Match, Show, Switch } from "solid-js";
 import { EXAMPLE_CHARACTER } from "../../../../../../shared/customHooks/dndInfo/useExampleChars";
 import { Button, FormArray, FormField, FormGroup, Icon, Input, Option, Select, Container } from "coles-solid-library";
 import { Delete } from "coles-solid-library/icons";
 import style from "./featurePrerequisites.module.scss";
-import { MadPrerequisite } from "../../../../../../shared";
 import { MadPrereqForm } from "../../../../../../models/data/formModels";
+import { newPrereqFormGroup } from "../../featuresPopup.shared";
 
 interface props {
-    Submit: (key: string) => void;
-    prereqs: [Accessor<Record<string, MadPrerequisite>>, Setter<Record<string, MadPrerequisite>>];
+    /** The owning effect row's OWN prerequisites — one standalone FormArray per row. */
     prereqForm: FormArray<MadPrereqForm>;
 }
 
@@ -19,45 +18,19 @@ export const FeaturePrerequisites: Component<props> = (props) => {
     const currentFormLength = createMemo(() => formGroup.get().length);
 
     const addNewPrerequisites = () => {
-        const newForm = new FormGroup<MadPrereqForm>({
-            formName: [`prereq ${currentFormLength() + 1}`, []],
-            keyValue: ["", []],
-            operation: ["", []],
-            value: ['', []],
-            group: [0, []],
-        })
-
-        formGroup.add(newForm);
+        formGroup.add(newPrereqFormGroup({ formName: `prereq ${currentFormLength() + 1}` }));
     }
 
-    const setPrereq = <T  extends keyof MadPrereqForm>(key: T, index: number, value: MadPrereqForm[T]) => {
-        const form = formGroup.getGroup(index);
-
-
-        if (!form || value === undefined) {
-            return;
-        }
-
-
+    const setField = <T extends keyof MadPrereqForm>(form: FormGroup<MadPrereqForm>, key: T, value: MadPrereqForm[T] | undefined) => {
+        if (value === undefined) return;
         form.set(key, value);
-    }
+    };
 
-    const getPrereq = <T extends keyof MadPrereqForm>(key: T, index: number) => {
-        const form = formGroup.getGroup(index);
-
-        if (!form) {
-            return null;
-        }
-
-        const toReturn = form.get()[key];
-
-        return toReturn;
-    }
-
-    const selectedType = (index: number) =>
-        getCharacterKeyType(getPrereq("value", index) ?? "");
-
-    const prerequisites = createMemo(() => formGroup.get());
+    // Stable FormGroup refs, NOT .get() clones: <For> keys rows by reference, so a
+    // delete unmounts exactly the clicked row. The library Select keeps its display
+    // state in the FormField provider (props.value only seeds at mount) — position-
+    // keyed rows would leave the deleted row's traits showing on the survivor.
+    const prerequisites = createMemo(() => formGroup.getGroups());
 
     const keys = [
         "Name",
@@ -262,59 +235,64 @@ export const FeaturePrerequisites: Component<props> = (props) => {
 
         <div class={style.prerequisites}>
             <For each={prerequisites()}>
-                {(form, i) => <Container theme="container" class={style.prereqBox}>
-                    <div class={style.prereqItem}>
-                        <span class={style.prefix}><i>Character has</i></span>
+                {(form, i) => {
+                    const trait = () => form.get()["value"] ?? "";
+                    const rowType = () => getCharacterKeyType(trait());
+                    return <Container theme="container" class={style.prereqBox}>
+                        <div class={style.prereqItem}>
+                            <span class={style.prefix}><i>Character has</i></span>
 
-                        <FormField name="Trait" class={style.keyField}>
-                            <Select transparent value={getPrereq("value", i()) ?? ""} onChange={(value) => setPrereq("value", i(), value)}>
-                                <For each={keys}>
-                                    {key => <Option value={key}>{key}</Option>}
-                                </For>
-                            </Select>
-                        </FormField>
-
-                        <Show when={["string", "number", "bigint"].includes(selectedType(i()))}>
-                            <FormField name="Operation" class={style.operationField}>
-                                <Switch>
-                                    <Match when={selectedType(i()) === "string"}>
-                                        <Select transparent defaultValue="===" value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)}>
-                                            <For each={stringOperations}>
-                                                {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
-                                            </For>
-                                        </Select>
-                                    </Match>
-                                    <Match when={selectedType(i()) === "number" || selectedType(i()) === "bigint"}>
-                                        <Select transparent value={getPrereq("operation", i()) ?? ""} onChange={(value) => setPrereq("operation", i(), value)}>
-                                            <For each={numberOperations}>
-                                                {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
-                                            </For>
-                                        </Select>
-                                    </Match>
-                                </Switch>
+                            <FormField name="Trait" class={style.keyField}>
+                                <Select transparent value={trait()} onChange={(value) => setField(form, "value", value)}>
+                                    <For each={keys}>
+                                        {key => <Option value={key}>{key}</Option>}
+                                    </For>
+                                </Select>
                             </FormField>
 
-                            <FormField name="Value" class={style.valueField}>
-                                <Switch>
-                                    <Match when={selectedType(i()) === "string"}>
-                                        <Input transparent type="text" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} />
-                                    </Match>
-                                    <Match when={selectedType(i()) === "number" || selectedType(i()) === "bigint"}>
-                                        <Input transparent type="number" value={getPrereq("keyValue", i()) ?? ""} onInput={(e) => setPrereq("keyValue", i(), e.currentTarget.value)} />
-                                    </Match>
-                                </Switch>
+                            <Show when={["string", "number", "bigint"].includes(rowType())}>
+                                <FormField name="Operation" class={style.operationField}>
+                                    <Switch>
+                                        <Match when={rowType() === "string"}>
+                                            <Select transparent defaultValue="===" value={form.get()["operation"] ?? ""} onChange={(value) => setField(form, "operation", value)}>
+                                                <For each={stringOperations}>
+                                                    {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
+                                                </For>
+                                            </Select>
+                                        </Match>
+                                        <Match when={rowType() === "number" || rowType() === "bigint"}>
+                                            <Select transparent value={form.get()["operation"] ?? ""} onChange={(value) => setField(form, "operation", value)}>
+                                                <For each={numberOperations}>
+                                                    {operation => <Option value={operation}>{getPrettyOpName(operation)}</Option>}
+                                                </For>
+                                            </Select>
+                                        </Match>
+                                    </Switch>
+                                </FormField>
+
+                                <FormField name="Value" class={style.valueField}>
+                                    <Switch>
+                                        <Match when={rowType() === "string"}>
+                                            <Input transparent type="text" value={form.get()["keyValue"] ?? ""} onInput={(e) => setField(form, "keyValue", e.currentTarget.value)} />
+                                        </Match>
+                                        <Match when={rowType() === "number" || rowType() === "bigint"}>
+                                            {/* number inputs never fire onInput in the library — onChange only */}
+                                            <Input transparent type="number" value={form.get()["keyValue"] ?? ""} onChange={(e) => setField(form, "keyValue", e.currentTarget.value)} />
+                                        </Match>
+                                    </Switch>
+                                </FormField>
+                            </Show>
+
+                            <FormField name="Group" class={style.groupField}>
+                                <Input transparent type="number" value={form.get()["group"] ?? 0} onChange={(e) => setField(form, "group", +e.currentTarget.value)}/>
                             </FormField>
-                        </Show>
 
-                        <FormField name="Group" class={style.groupField}>
-                            <Input transparent type="number" value={getPrereq("group", i()) ?? 0} onInput={(e) => setPrereq("group", i(), +e.currentTarget.value)}/>
-                        </FormField>
-
-                        <Button transparent class={style.deleteButton} aria-label="Remove rule" onClick={() => props.prereqForm.remove(i())}>
-                            <Icon icon={Delete} size="small" color="red" />
-                        </Button>
-                    </div>
-                </Container>}
+                            <Button transparent class={style.deleteButton} aria-label="Remove rule" onClick={() => props.prereqForm.remove(i())}>
+                                <Icon icon={Delete} size="small" color="red" />
+                            </Button>
+                        </div>
+                    </Container>;
+                }}
             </For>
 
         </div>

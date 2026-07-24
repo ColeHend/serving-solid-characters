@@ -5,6 +5,7 @@ import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-sol
 import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { useDnDBackgrounds } from "../../../../../shared/customHooks/dndInfo/info/all/backgrounds";
 import { useDnDFeats } from "../../../../../shared/customHooks/dndInfo/info/all/feats";
+import { defaultEditionKey, editionToLegacy } from "../../../../../shared/customHooks/dndInfo/info/edition";
 import { Background, FeatureDetail } from "../../../../../models/generated";
 import { createNewId } from "../../../../../shared/customHooks/utility/tools/idGen";
 import { FeaturesPopup } from "../../../Parts/featuresPopup/featuresPopup";
@@ -47,6 +48,7 @@ const Backgrounds: Component = () => {
     name: ['', [Validators.Required]],
     desc: ['', []],
     source: ['', []],
+    legacy: [editionToLegacy(defaultEditionKey()), []],
     feat: ['', []],
     abilityOptions: [[], []],
     languages: [[], []],
@@ -78,6 +80,7 @@ const Backgrounds: Component = () => {
       setField('name', found.name || '');
       setField('desc', found.desc || '');
       setField('source', found.source ?? '');
+      setField('legacy', found.legacy);
       setField('feat', found.feat || '');
       setField('abilityOptions', found.abilityOptions ?? []);
       setField('languages', found.languages?.options ?? []);

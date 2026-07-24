@@ -2,7 +2,7 @@ import { FormArray, FormGroup, Modal, TabBar } from "coles-solid-library";
 import { Accessor, Component, Match, Switch, createEffect, createMemo, createSignal, on, onCleanup, untrack } from "solid-js";
 import { createStore } from "solid-js/store";
 import { MadType } from "../../../../shared/customHooks/mads/madModels";
-import { FeatureDetail, FeatureMetadata, MadPrerequisite } from "../../../../models/generated";
+import { FeatureDetail, FeatureMetadata } from "../../../../models/generated";
 import { MadForm, MadPrereqForm } from "../../../../models/data/formModels";
 import { useDnDSpells } from "../../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDItems } from "../../../../shared/customHooks/dndInfo/info/all/items";
@@ -15,7 +15,7 @@ import { DetailsTab } from "./detailsTab";
 import { UsageSpellsTab } from "./usageSpellsTab";
 import { EffectsTab } from "./effectsTab";
 import { CloseGuardDialog, PendingClose } from "./closeGuardDialog";
-import { FeaturesPopupProps, MadsApi, buildSubtitle, isUnsetRow, splitCommand, usageOwnedIndices } from "./featuresPopup.shared";
+import { FeaturesPopupProps, MadsApi, PrereqFormArray, buildSubtitle, isUnsetRow, newPrereqFormGroup, serializePrereqs, splitCommand, usageOwnedIndices } from "./featuresPopup.shared";
 import { OptionsTab } from "./parts/optionsFeature/optionsTab";
 import {
     OptionRow,
@@ -35,7 +35,6 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
     const [show, setShow] = props.Show;
     const [feature, setFeature] = createSignal<FeatureDetail | null>(null);
     const [popupRef, setPopupRef] = createSignal<HTMLElement | null>(null);
-    const [prerequisites, setPrerequisites] = createSignal<Record<string, MadPrerequisite>>({});
     const [activeTab, setActiveTab] = createSignal(0);
     // Effect cards are recreated on every row write (see effectCard.tsx), so the
     // value editors' open/closed flags live here, keyed by the row's stable name.
@@ -51,12 +50,22 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
     const allFeats = useDnDFeats();
 
     const currentFeatureMetadata = new FormArray<MadForm>([]);
-    const currentFeaturePrerequisites = new FormArray<MadPrereqForm>([]);
+    // Each effect row's OWN prerequisites live in a standalone FormArray keyed by the
+    // row's stable name (like editorOpen) — sharing one array tied every card together,
+    // and writing prereqs through currentFeatureMetadata would remount cards mid-edit.
+    const prereqForms = new Map<string, PrereqFormArray>();
+
+    const seedPrereqForm = (map: Map<string, PrereqFormArray>, name: string, prereqs: MadForm["prerequisites"] | undefined) => {
+        const fa = new FormArray<MadPrereqForm>([]);
+        (prereqs ?? []).forEach(p => fa.add(newPrereqFormGroup(p)));
+        map.set(name, fa);
+    };
 
     let rowSeq = 0;
     const addMadRow = (init: Partial<MadForm> = {}) => {
+        const name = init.name ?? `row-${++rowSeq}`;
         currentFeatureMetadata.add(new FormGroup<MadForm>({
-            name: [init.name ?? `row-${++rowSeq}`, []],
+            name: [name, []],
             command: [init.command ?? "", []],
             value: [init.value ?? {}, []],
             type: [init.type ?? MadType.Character, []],
@@ -65,6 +74,16 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
             commandCategory: [init.commandCategory ?? "", []],
             commandType: [init.commandType ?? "Add", []],
         }));
+        seedPrereqForm(prereqForms, name, init.prerequisites);
+    };
+
+    const prereqFormFrom = (map: Map<string, PrereqFormArray>, name: string): PrereqFormArray => {
+        let fa = map.get(name);
+        if (!fa) {
+            fa = new FormArray<MadPrereqForm>([]);
+            map.set(name, fa);
+        }
+        return fa;
     };
 
     const rows = createMemo(() => currentFeatureMetadata.get());
@@ -79,9 +98,14 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         rows,
         setMadFeature,
         addMadRow,
-        removeMad: (index) => currentFeatureMetadata.remove(index),
+        removeMad: (index) => {
+            const name = currentFeatureMetadata.getAt(index)?.name;
+            if (name) prereqForms.delete(name);
+            currentFeatureMetadata.remove(index);
+        },
         isEditorOpen: (key) => !!editorOpen()[key],
         setEditorOpen: (key, open) => setEditorOpen(old => ({ ...old, [key]: open })),
+        prereqFormFor: (name) => prereqFormFrom(prereqForms, name),
     };
 
     // Feature options (named sub-picks). Rows live in a store so field edits keep row
@@ -104,12 +128,21 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         madsApiFor: (row) => ({
             rows: () => row.mads.get(),
             setMadFeature: (key, index, value) => row.mads.getGroup(index)?.set(key, value),
-            addMadRow: (init = {}) => row.mads.add(newMadFormGroup(init)),
-            removeMad: (index) => row.mads.remove(index),
+            addMadRow: (init = {}) => {
+                const group = newMadFormGroup(init);
+                row.mads.add(group);
+                seedPrereqForm(row.prereqForms, group.get().name, init.prerequisites);
+            },
+            removeMad: (index) => {
+                const name = row.mads.getAt(index)?.name;
+                if (name) row.prereqForms.delete(name);
+                row.mads.remove(index);
+            },
             // Editor-open flags share the popup signal, prefixed so options can't collide
             // with the feature-level effect rows (or each other).
             isEditorOpen: (key) => !!editorOpen()[`opt${row.key}:${key}`],
             setEditorOpen: (key, open) => setEditorOpen(old => ({ ...old, [`opt${row.key}:${key}`]: open })),
+            prereqFormFor: (name) => prereqFormFrom(row.prereqForms, name),
         }),
     };
 
@@ -131,7 +164,7 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
                 command: metadata.command,
                 value: metadata.value,
                 type: metadata.type,
-                prerequisites: metadata.prerequisites,
+                prerequisites: serializePrereqs(prereqForms.get(metadata.name)),
                 group: metadata.group
             }
         });
@@ -165,7 +198,7 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
 
     const clearInputs = () => {
         setFeature(null);
-        setPrerequisites({});
+        prereqForms.clear();
         currentFeatureMetadata.reset();
         resetOptions();
         setEditorOpen({});
@@ -250,11 +283,19 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         // re-fill replaces the rows instead of appending duplicates.
         untrack(() => {
             currentFeatureMetadata.reset();
+            prereqForms.clear();
             setEditorOpen({});
             mads.forEach((mad, index) => {
                 // Split the stored command so the Add/Remove toggle, category select
-                // and value editor all show the hydrated state.
-                addMadRow({ ...mad, ...splitCommand(mad.command), name: `${index + 1}` });
+                // and value editor all show the hydrated state. value/prerequisites are
+                // cloned — the spread would alias the stored entity's objects into the form.
+                addMadRow({
+                    ...mad,
+                    value: structuredClone(mad.value ?? {}),
+                    prerequisites: structuredClone(mad.prerequisites ?? []),
+                    ...splitCommand(mad.command),
+                    name: `${index + 1}`,
+                });
             });
             setOptionState("rows", () => (parentFeature().metadata?.options ?? []).map(option => hydrateOptionRow(option, ++optionSeq)));
             setOptionsConfig(hydrateOptionsConfig(parentFeature().metadata?.optionsConfig));
@@ -283,6 +324,7 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
         } else {
             // Add mode (blank feature): drop any rows left over from a previous edit.
             currentFeatureMetadata.reset();
+            prereqForms.clear();
             resetOptions();
         }
     }))
@@ -354,16 +396,12 @@ export const FeaturesPopup: Component<FeaturesPopupProps> = (props) => {
                         <EffectsTab
                             api={api}
                             data={{ allSpells, allItems, allFeatures, allFeats }}
-                            prereqForm={currentFeaturePrerequisites}
-                            prereqs={[prerequisites, setPrerequisites]}
                         />
                     </Match>
                     <Match when={activeTab() === 3}>
                         <OptionsTab
                             api={optionsApi}
                             data={{ allSpells, allItems, allFeatures, allFeats }}
-                            prereqForm={currentFeaturePrerequisites}
-                            prereqs={[prerequisites, setPrerequisites]}
                         />
                     </Match>
                 </Switch>

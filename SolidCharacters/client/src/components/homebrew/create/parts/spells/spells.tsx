@@ -4,6 +4,7 @@ import { Button, Container, FormGroup, Validators, addSnackbar } from "coles-sol
 import { homebrewManager } from "../../../../../shared/customHooks/homebrewManager";
 import { useDnDSpells } from "../../../../../shared/customHooks/dndInfo/info/all/spells";
 import { useDnDClasses } from "../../../../../shared/customHooks/dndInfo/info/all/classes";
+import { defaultEditionKey, editionToLegacy } from "../../../../../shared/customHooks/dndInfo/info/edition";
 import { Spell } from "../../../../../models/generated";
 import { takeEditHandoff } from "../../../../../shared/ai/editHandoff";
 import {
@@ -56,7 +57,7 @@ const Spells: Component = () => {
     damageType: ['', []],
     page: ['', []],
     subClasses: [[], []],
-    legacy: [undefined, []],
+    legacy: [editionToLegacy(defaultEditionKey()), []],
     source: ['', []],
   });
 

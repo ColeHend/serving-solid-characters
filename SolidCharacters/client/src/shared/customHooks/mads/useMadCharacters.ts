@@ -2,6 +2,7 @@ import { Character, GrantedAction, itemRefId, itemRefName } from "../../../model
 import { FeatureDetail, MagicItem } from "../../../models/generated";
 import { entitySelectorKey } from "../utility/tools/entityKey";
 import { hasDerivedSpellPool, hasSpellFilterValue } from "./spellChoiceFilters";
+import { hasDerivedLanguagePool } from "./languagePool";
 import {addACFeature, removeACFeature} from "./commands/useACFeature";
 import { addActionsFeature, removeActionsFeature } from "./commands/useActionsFeature";
 import { addAdvantageFeature, removeAdvantageFeature } from "./commands/useAdvantageFeature";
@@ -492,8 +493,10 @@ export function languageChoiceKey(feature: { id?: string; name: string }): strin
  */
 function resolveChoiceLanguageMads(character: Character, feature: { id?: string; name: string }, m: MadFeature): MadFeature[] | null {
     const picks = (character.proficiencyChoices?.[languageChoiceKey(feature)] ?? "").split(",").map(s => s.trim()).filter(Boolean);
-    const options = languageChoiceOptions(m);
-    if (picks.length !== languageChoiceCount(m) || !picks.every(p => options.includes(p))) return null;
+    if (picks.length !== languageChoiceCount(m)) return null;
+    // Derived pool (no options = any language) — membership is enforced by the creator/viewer
+    // picker (the only writers), so count is all we check.
+    if (!hasDerivedLanguagePool(m.value) && !picks.every(p => languageChoiceOptions(m).includes(p))) return null;
     return picks.map(pick => ({ ...m, value: { ...m.value, name: pick } }));
 }
 

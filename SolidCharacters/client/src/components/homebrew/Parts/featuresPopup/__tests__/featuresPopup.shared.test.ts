@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { buildSubtitle, isUnsetRow, normalizeRecharge, splitCommand, usageOwnedIndices } from '../featuresPopup.shared';
+import { FormArray } from 'coles-solid-library';
+import type { MadPrereqForm } from '../../../../../models/data/formModels';
+import { buildSubtitle, isUnsetRow, newPrereqFormGroup, normalizeRecharge, serializePrereqs, splitCommand, usageOwnedIndices } from '../featuresPopup.shared';
 
 const mad = (command: string, value: Record<string, string> = {}) => ({ command, value });
 
@@ -39,6 +41,21 @@ describe('isUnsetRow', () => {
   it('accepts any committed value', () => {
     expect(isUnsetRow(row('Spells', { ID: 'sp1' }))).toBe(false);
     expect(isUnsetRow(row('Uses', { amount: '1', recharge: 'Long Rest' }))).toBe(false);
+  });
+});
+
+describe('serializePrereqs', () => {
+  it('returns [] for an absent form', () => {
+    expect(serializePrereqs(undefined)).toEqual([]);
+  });
+
+  it('drops rules with no trait picked and strips the editor-only formName', () => {
+    const fa = new FormArray<MadPrereqForm>([]);
+    fa.add(newPrereqFormGroup({ formName: 'prereq 1', value: 'Level', operation: '>=', keyValue: '7', group: 0 }));
+    fa.add(newPrereqFormGroup({ formName: 'prereq 2' })); // + Add Rule with nothing chosen
+    expect(serializePrereqs(fa)).toEqual([
+      { value: 'Level', operation: '>=', keyValue: '7', group: 0 },
+    ]);
   });
 });
 
